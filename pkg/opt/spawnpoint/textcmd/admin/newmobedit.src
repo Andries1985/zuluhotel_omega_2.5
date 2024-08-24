@@ -265,17 +265,6 @@ program textcmd_mobedit(who)
             Print($"elem: {el[1]} -> {el[2]}");
         endforeach
         AppendConfigFileElem( ":spawnpoint:newnpcs", "npctemplate", old_stats[1], props );
-/*
-	elseif (gump_ret[0] == 777)
-		SendSysMessage(who, "Saved mob info to cfg!", FONT_NORMAL, 43);
-		var props := array;
-		Print($"props is currently 1: " +props);
-		for (i := 1; i <= 76; i := i + 1)
-			props.append(desc_list[i] + "	" +old_stats[i]);
-		endfor
-		Print($"props is currently 2: " +props);
-		AppendConfigFileElem( ":spawnpoint:newnpcs", "npctemplate", old_stats[1], props );
-		*/
 	elseif (gump_ret[0] == 999)
 		if (old_stats == new_stats)
 			SendSysMessage(who, "No change detected.");
