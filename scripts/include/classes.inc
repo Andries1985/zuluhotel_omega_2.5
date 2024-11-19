@@ -692,9 +692,9 @@ endfunction
 
 // This function gets the weapons that certains classes can use. uses graphics
 // It runs a seperate "canhit" script based on the players class level..
-function ClassWeapons(class)
+function ClassWeapons(classString)
 
-	case (class)
+	case (classString)
 		"IsBard": return {0x0e81, 0x13B2, 0x13fd, 0x0f4f};
 		"IsThief": return {0x0f4f, 0x13B2, 0x13fd, 0x1401, 0x1402, 0x0f63, 0x1404, 0x0f51, 0x0ec4, 0x0e87};
 		"IsMage": return {0x0df0, 0x13f9, 0x0e8a};
@@ -719,13 +719,13 @@ function GetClass(who)
 endfunction
 
 
-function GetClasseSkillTotal (who, class)
+function GetClasseSkillTotal(who, aclass)
 
 	var classtotal:=0;
-	var skills:=GetClasseSkills(class);
+	var skills:=GetClasseSkills(aclass);
 	for i:= 0 to SKILLID__HIGHEST
 		if (i in skills)
-			classtotal:=classtotal+ CDbl(GetEffectiveSkillBaseValue(who, i)) /10;
+			classtotal:=classtotal+ CDbl(GetEffectiveSkillBaseValue(who, i)) / 10;
 		endif
 	endfor
 
@@ -736,9 +736,9 @@ endfunction
 // Returns class level (regardless of class)
 function GetClasseLevel(who)
 
-	var class:= GetClass(who);
-	if (class)
-		return GetObjProperty(who, class);
+	var characterClass := GetClass(who);
+	if (characterClass)
+		return GetObjProperty(who, characterClass);
 	else
 		return 0;
 	endif

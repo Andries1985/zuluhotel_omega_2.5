@@ -6,7 +6,7 @@ include ":gumps:include/gumps";
 include "include/classes";
 include "include/attributes";
 
-program class(who, lvl)
+program textcmd_class(who, lvl)
 
 	if (!lvl)
 		lvl := 1;

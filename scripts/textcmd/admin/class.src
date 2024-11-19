@@ -5,7 +5,7 @@ include ":gumps:include/gumps";
 include "include/classes";
 include "include/attributes";
 
-program class(who, amount)
+program textcmd_class(who, amount)
 
 	if(!amount)
 		amount := 150;

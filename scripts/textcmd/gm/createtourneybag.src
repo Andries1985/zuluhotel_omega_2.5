@@ -244,7 +244,7 @@ program textcmd_createtourneybag(who, text)
     SendSysMessage(who, "Creating a " + text + " tournament backpack.");
 
     var params := SplitWords(text);
-    var class := params[1];
+    var classString := params[1];
     var damage := params[2];
     if (!damage)
         damage := "force";
@@ -263,17 +263,17 @@ program textcmd_createtourneybag(who, text)
         damage := 15;
     endif
 
-    if (class == "ranger")
+    if (classString == "ranger")
         createRangerBag(backpack, damage);
-    elseif (class == "warrior")
+    elseif (classString == "warrior")
         createWarriorBag(backpack, damage);
-    elseif (class == "mage")
+    elseif (classString == "mage")
         createMageBag(backpack, damage);
-    elseif (class == "thief")
+    elseif (classString == "thief")
         createThiefBag(backpack, damage);
-    elseif (class == "bard")
+    elseif (classString == "bard")
         createBardBag(backpack, damage);
-    elseif (class == "pp")
+    elseif (classString == "pp")
         createPPBag(backpack, damage);
     endif
 
