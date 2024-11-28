@@ -72,10 +72,10 @@ program cast_Astral_Storm( parms )
 	duration := duration / skillresist;
 	
 	//Reduce time further for mages?
-	var class := GetObjProperty(cast_on, "IsMage");
+	var characterClass := GetObjProperty(cast_on, "IsMage");
 	var classresist := 1;
-	if (class > 0)
-		classresist := 1+ (CDbl(class)*0.05);
+	if (characterClass > 0)
+		classresist := 1+ (CDbl(characterClass)*0.05);
 	endif
 	duration := duration/classresist;
 	

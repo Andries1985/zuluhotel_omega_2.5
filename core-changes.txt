@@ -1,4 +1,83 @@
 -- POL100.2.0 --
+11-13-2024 Turley:
+    Added: regions.cfg ItemsDecay setting, if deactivated items will not decay in this area.
+    Added: multi.items_decay r/w member, defaults to also added itemdesc.cfg entry ItemsDecay (1/0 default 0). If set to 1 items in this multi will decay.
+     Note: These settings are strongly recommended instead of using CanDecay systemhook
+11-09-2024 Kukkino:
+    Added: Added GetRealmDecay(realm) and SetRealmDecay(realm, has_decay) allowing to manipulate whether items decay on the ground in given realms.
+11-02-2024 DevGIB:
+    Added: MinAttackRangeIncrease(min_attack_range_increase) and MinAttackRangeIncreaseMod(min_attack_range_increase_mod) to Mobiles and Items allowing people to have a dynamic modifier to the adjust a mobiles minimum attack range.<br/>
+           Min Attack Range Increase is used as a numeric modifier to the minimum range of a weapon, e.g. Base min Weapon range of 1 + attack range increase of 1 would make the minimum attack range 2.
+    Added: MaxAttackRangeIncrease(max_attack_range_increase) and MaxAttackRangeIncreaseMod(max_attack_range_increase_mod) to Mobiles and Items allowing people to have a dynamic modifier to the adjust a mobiles maximum attack range.<br/>
+           Max Attack Range Increase is used as a numeric modifier to the maximum range of a weapon, e.g. Base max Weapon range of 3 + attack range increase of 2 would make the maximum attack range 5.
+11-01-2024 Turley:
+    Added: servspecopt.cfg AllowVisualRangeModification 0/1 default 0
+           MinimumVisualRange default 5
+           MaximumVisualRange default 24
+           if AllowVisualRangeModification is active client can define its update range
+    Added: client.visual_range member r/w
+           returns the client setting of visual range, or overwrites the current range.
+           If set to 0 the client given range will be used.
+           As long as the visual range is set via script the client can no longer modify the range.
+           VisualRangeMin/Max limit is not taken into account.
+10-27-2024 Kevin:
+    Fixed: Correctly load packages when running ecompile in non-autocompile mode.
+10-24-2024 Kevin:
+    Fixed: Correctly link method calls to base classes when using `super::`-scoped function calls.
+10-20-2024 Kukkino:
+    Added: Added moved_at and position_changed_at members to characters. Values signify when was the last time character
+           walked or changed position (for example with walking or MoveObjectToLocation)
+10-20-2024 Kevin:
+    Fixed: Correct behavior with classes when using a class-scoped variable as a function callee.
+10-19-2024 Kukkino:
+    Added: DefaultVisualRange setting to servspecopt.cfg. This setting declares how far clients can see by default.
+           Note that the same value needs to be set on both server and in client (usually 18 or 21).
+10-18-2024 Kevin:
+    Fixed: Correctly declare parameters in generated super() function as used.
+    Fixed: Correctly handle case insensitivity with classes.
+10-17-2024 Turley:
+    Fixed: Fixed crash when too many items exists an a boat.
+10-16-2024 Turley:
+    Fixed: os::OpenConnection with keep_connection did not stop correctly if the socket was closed from the other side
+  Changed: pol.cfg UseSingleThreadLogin is by default now active
+           in the general case it improves the performance and stability
+           pol.cfg renamed SelectTimeout to LoginServerSelectTimeout,
+           since its only used in this case.
+           The unit is now millisec and the new default is the former effective minimum value.
+10-14-2024 Turley:
+    Added: pol.cfg LoginServerDisconnectUnknownPkts
+           during login process disconnect connection if unknown/non-allowed pkt is received
+    Fixed: improved performance when non allowed pkts arrive
+10-09-2024 Kevin:
+    Added: Escript now supports classes! Classes are a way to bundle attributes (members) and functionality (methods) together:
+
+             class Fighter()
+               function Fighter( this, name )
+                 this.name := name;
+               endfunction
+
+               function Attack( this, what )
+                 print( $"{this.name} attacks {what}!" );
+               endfunction
+             endclass
+
+             var person = Fighter( "Alice" );
+             person.Attack( "Bob" );
+
+           See the Racalac Escript Guide for additional details.
+09-27-2024 Turley:
+    Fixed: EScript formatter missing spaces while packing function refs, better packing of function calls in eg structs
+09-12-2024 Turley:
+    Fixed: multiple problems with the EScript formatter
+    Added: more ecompile.cfg options for the formatter, see ecompile.cfg.example for details
+           FormatterBracketAttachToType, FormatterFormatInsideComments, FormatterAlignTrailingComments,
+           FormatterAllowShortCaseLabelsOnASingleLine, FormatterAllowShortFuncRefsOnASingleLine, FormatterAlignConsecutiveShortCaseStatements
+     Note: should be now "production" ready, default settings are just our personal preferences
+08-30-2024 Kevin:
+    Added: Performance improvements to the compiler
+08-27-2024 Reloecc:
+  Changed: ssopt.MobilesBlockNpcMovement now accepts values 0/1/2. Earlier 0 = false, 1 = true.
+           2 = new behavior, where npcs of the same master are allowed to walk on top of each other. Backward compatible.
 08-24-2024 Kevin:
     Fixed: Resolved an issue where the Z coordinate of objects on a boat was incorrectly
            calculated during turns (introduced in the 07-08-2024 nightly build).

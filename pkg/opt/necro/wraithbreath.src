@@ -77,10 +77,10 @@ program wraithbreath( parms )
 			
 
 			//Reduce time further for mages?
-			var class := GetObjProperty(mobile, "IsMage");
+			var characterClass := GetObjProperty(mobile, "IsMage");
 			var classresist := 1;
-			if (class > 0)
-				classresist := 1+ (CDbl(class)*0.05);
+			if (characterClass > 0)
+				classresist := 1+ (CDbl(characterClass)*0.05);
 			endif
 			duration := duration/classresist;
 

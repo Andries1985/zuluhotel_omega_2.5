@@ -102,6 +102,13 @@ InactivityDisconnectTimeout=20
 #
 #AllowMultiClientsPerAccount=0
 
+#
+# LoginServerDisconnectUnknownPkts:
+#   during login process disconnect connection if unknown/non-allowed pkt is received
+# default 0
+#
+#LoginServerDisconnectUnknownPkts=0
+
 #############################################################################
 ## System Profiling and Performance
 #############################################################################
@@ -211,9 +218,16 @@ TimestampEveryLine=1
 # UseSingleThreadLogin
 # if set all prelogin clients are handled inside the listener thread and not inside an extra thread
 # this will reduce the amount of thread creates and destroys
-# Default is 0
+# Default is 1
 #
-UseSingleThreadLogin=1
+#UseSingleThreadLogin=1
+
+# LoginServerSelectTimeout
+# socket timeout in ms
+# only used when UseSingleThreadLogin is active
+# Default 1
+#
+#LoginServerSelectTimeout=1
 
 #
 # ThreadDecayStatistics
@@ -493,6 +507,7 @@ MaxAnimID=0x800
 #
 #AllowedEnvironmentVariablesAccess=
 
+
 #############################################################################
 ## Experimental Options - Modify at your own risk
 #############################################################################
@@ -500,14 +515,6 @@ MaxAnimID=0x800
 
 
 #############################################################################
-## Treading Settings - Do not modify unless necessary.
+## Threading Settings - Do not modify unless necessary.
 #############################################################################
-
-#
-# SelectTimeout: I/O sleep time
-#   Set to 0 for a dedicated server.
-#   Set to 10 for a non-dedicated server.
-# Default 10
-#
-#SelectTimeout=10
 
