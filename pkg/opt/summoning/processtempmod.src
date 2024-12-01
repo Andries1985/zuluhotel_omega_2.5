@@ -109,16 +109,16 @@ program processtempmods( parms )
 		"poly":
 				if(!liche)
 					SetStrengthMod( who, GetStrengthMod(who)+ mmod[2]);
-					//if(!casterismage)
-					//	SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
-					//else
-					//	SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]*0.1);
-					//endif
+					if(!casterismage)
+						SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
+					endif
 					SetIntelligenceMod( who, GetIntelligenceMod(who)+ mmod[2]);
 					who.ar_mod := who.ar_mod + cint(mmod[2] / 3 );
 				else
 					SetStrengthMod( who, GetStrengthMod(who)+ mmod[2]);
-					//SetDexterityMod( who, GetDexterityMod(who)+ (mmod[2]) );
+					if(!casterismage)
+						SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
+					endif
 					SetIntelligenceMod( who, GetIntelligenceMod(who)+ mmod[4]);
 				endif
 				BuffOn(who, "polymorph", amt, duration);
