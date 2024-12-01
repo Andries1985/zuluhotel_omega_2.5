@@ -11,12 +11,12 @@ program processtempmods( parms )
 
 	set_script_option( SCRIPTOPT_CAN_ACCESS_OFFLINE_MOBILES , 1 );
 	
-	var who	:= parms[1];
-	var stat	:= parms[2];
-	var amt	:= Cint(parms[3]);
-	var duration	:= Cint(parms[4]);
-	var liche := 0;
-	var casterismage := GetObjProperty( who, CLASSEID_MAGE );
+	var who				:= parms[1];
+	var stat			:= parms[2];
+	var amt				:= Cint(parms[3]);
+	var duration		:= Cint(parms[4]);
+	var liche 			:= 0;
+	var casterismage 	:= GetObjProperty( who, CLASSEID_MAGE );
 
 	if(len(parms) >= 5)
 		liche := parms[5];
@@ -93,6 +93,11 @@ program processtempmods( parms )
 		"cebless":
 		"ebless": 
 				SetStrengthMod( who, GetStrengthMod(who)+ mmod[2]);
+				if(!casterismage)
+					SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
+				else
+					SetDexterityMod( who, GetDexterityMod(who)+ (mmod[2]*0.4));
+				endif
 				SetIntelligenceMod( who, GetIntelligenceMod(who)+ mmod[2]);
 				if(mmod[2] > 0)
 					BuffOn(who, "bless", amt, duration);
@@ -104,12 +109,16 @@ program processtempmods( parms )
 		"poly":
 				if(!liche)
 					SetStrengthMod( who, GetStrengthMod(who)+ mmod[2]);
-					SetDexterityMod( who, GetDexterityMod(who)+ (mmod[2]*0.1) );
+					//if(!casterismage)
+					//	SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
+					//else
+					//	SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]*0.1);
+					//endif
 					SetIntelligenceMod( who, GetIntelligenceMod(who)+ mmod[2]);
 					who.ar_mod := who.ar_mod + cint(mmod[2] / 3 );
 				else
 					SetStrengthMod( who, GetStrengthMod(who)+ mmod[2]);
-					SetDexterityMod( who, GetDexterityMod(who)+ (mmod[2]*0.1) );
+					//SetDexterityMod( who, GetDexterityMod(who)+ (mmod[2]) );
 					SetIntelligenceMod( who, GetIntelligenceMod(who)+ mmod[4]);
 				endif
 				BuffOn(who, "polymorph", amt, duration);
