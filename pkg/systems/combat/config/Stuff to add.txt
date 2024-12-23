@@ -1,0 +1,300 @@
+tile 0x26ba
+{
+    Desc scythe
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 930
+    Height 1
+    Weight 5
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x26bb
+{
+    Desc bone harvester
+    UoFlags 0x00404002
+    Layer 1
+    AnimID 931
+    Height 1
+    Weight 3
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x26bc
+{
+    Desc scepter
+    UoFlags 0x00404002
+    Layer 1
+    AnimID 932
+    Height 1
+    Weight 8
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x26bd
+{
+    Desc bladed staff
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 933
+    Height 1
+    Weight 4
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x26be
+{
+    Desc pike
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 934
+    Height 1
+    Weight 8
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x26bf
+{
+    Desc double bladed staff
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 935
+    Height 1
+    Weight 2
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x26c0
+{
+    Desc lance
+    UoFlags 0x00404002
+    Layer 1
+    AnimID 936
+    Height 1
+    Weight 12
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x26c2
+{
+    Desc composite bow
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 938
+    Height 1
+    Weight 5
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x26c3
+{
+    Desc repeating crossbow
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 939
+    Height 1
+    Weight 6
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27a3
+{
+    Desc Tessen
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 520
+    Height 1
+    Weight 6
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27a4
+{
+    Desc Wakizashi
+    UoFlags 0x00404002
+    Layer 1
+    AnimID 464
+    Height 1
+    Weight 5
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27a5
+{
+    Desc Yumi
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 575
+    Height 1
+    Weight 8
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27a6
+{
+    Desc Tetsubo
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 583
+    Height 1
+    Weight 8
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27a7
+{
+    Desc Lajatang
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 526
+    Height 1
+    Weight 12
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27a9
+{
+    Desc Daisho
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 470
+    Height 1
+    Weight 8
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27aa
+{
+    Desc Fukiya
+    UoFlags 0x00404000
+    Layer 1
+    AnimID 532
+    Height 1
+    Weight 4
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27ab
+{
+    Desc Tekagi
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 533
+    Height 1
+    Weight 5
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27ac
+{
+    Desc Shuriken
+    UoFlags 0x00004000
+    Height 1
+    Weight 1
+    OverFlight 0
+    Movable 1
+    DescPrependA 1
+}
+
+tile 0x27ad
+{
+    Desc Kama
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 535
+    Height 1
+    Weight 7
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27ae
+{
+    Desc Nunchaku
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 536
+    Height 1
+    Weight 5
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+tile 0x27af
+{
+    Desc Sai
+    UoFlags 0x00404002
+    Layer 2
+    AnimID 537
+    Height 1
+    Weight 7
+    OverFlight 0
+    Movable 1
+    Equippable 1
+    DescPrependA 1
+}
+
+Graphic 774 (Girl)
+Graphic 775 (Plague Monster)
+Graphic 778 (Swarm)
+Graphic 764-773 Meer type creatures
+Graphic 768 Juggernaught
+Graphic 753,754,755,758  Gargoyles
+752 Iron Golem
+689 Timelord
+704 Shadowlord
