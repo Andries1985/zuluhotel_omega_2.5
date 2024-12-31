@@ -458,9 +458,11 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 			var absorbed := 0;
 			if( shield_defender.IsA( POLCLASS_ARMOR ) )
 				absorbed := CInt( shield_defender.ar / 2 );
+				Print($"Shield Absorbed " + absorbed);
 			elseif( shield_defender.IsA( POLCLASS_WEAPON ) )
 				var weapcfg := ReadConfigFile( ":*:itemdesc" );
 				absorbed := CInt( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
+				Print($"Weapon Absorbed " + absorbed);
 			endif
 			if( weapon.attribute == ATTRIBUTEID_ARCHERY )
 				absorbed := CInt( shield_defender.ar / 2 );
