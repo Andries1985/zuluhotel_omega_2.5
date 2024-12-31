@@ -460,12 +460,12 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 				if( parry_roll <= parry_chance )
 					var absorbed := 0;
 					if( weapon.attribute == ATTRIBUTEID_ARCHERY )
-						absorbed := CInt( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
+						absorbed := CInt( shield_defender.WeaponParryChance / 2 );
 						SendSysMessage( defender, "You successfully deflected the arrow." );
 						SendSysMessage( attacker, "Your opponent deflected the arrow with their shield." );
 						PerformAction( defender, ANIM_ATTACK_XBOW );
 					else
-						absorbed := ( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
+						absorbed := ( shield_defender.WeaponParryChance / 2 );
 						SendSysMessage( defender, "You successfully parry the attack." );
 						SendSysMessage( Attacker, "Your opponent parried the attack." );
 						PerformAction( defender, ANIM_ATTACK_XBOW );
