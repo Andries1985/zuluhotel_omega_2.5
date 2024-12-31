@@ -442,13 +442,13 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 
 	var defender_level 	:= GetClasseLevel(defender);
    	var shield_defender := GetEquipmentByLayer( defender, LAYER_HAND2 );
+	var weapon_defender;
 
     if( !shield_defender.IsA( POLCLASS_ARMOR ) )
-    	shield_defender := GetEquipmentByLayer( defender, LAYER_HAND1 );
+    	weapon_defender := GetEquipmentByLayer( defender, LAYER_HAND2 );
     endif
 		
-	if( shield_defender.IsA( POLCLASS_ARMOR ) || shield_defender.IsA( POLCLASS_WEAPON) )
-		//Shield Parry Stuff Here
+	if( shield_defender.IsA( POLCLASS_ARMOR ) || weapon_defender.IsA( POLCLASS_WEAPON) )
 		var parry_chance := GetAttribute( defender, ATTRIBUTEID_PARRY );
 		var parry_roll := ( RandomInt( 750 ) + 1 );
 		//Award skill points even on failure
@@ -457,33 +457,42 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 		if( parry_roll <= parry_chance )
 			var absorbed := 0;
 			if( shield_defender.IsA( POLCLASS_ARMOR ) )
-				absorbed := CInt( shield_defender.ar / 2 );
+				if( weapon.attribute == ATTRIBUTEID_ARCHERY )
+					absorbed := CInt( shield_defender.ar / 2 );
+					SendSysMessage( defender, "You successfully deflected the arrow." );
+					SendSysMessage( attacker, "Your opponent deflected the arrow with their shield." );
+					PerformAction( defender, ANIM_ATTACK_XBOW );
+				else
+					absorbed := CInt( shield_defender.ar / 2 );
+					SendSysMessage( defender, "You successfully parry the attack." );
+					SendSysMessage( Attacker, "Your opponent parried the attack." );
+					PerformAction( defender, ANIM_ATTACK_XBOW );
+				endif
 				Print($"Shield Absorbed " + absorbed);
-			elseif( shield_defender.IsA( POLCLASS_WEAPON ) )
+			elseif( weapon_defender.IsA( POLCLASS_WEAPON ) )
 				var weapcfg := ReadConfigFile( ":*:itemdesc" );
-				absorbed := CInt( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
-				Print($"Weapon Absorbed " + absorbed);
+				if( weapcfg[weapon_defender.objtype].CanWeaponParry := 1 )
+					absorbed := CInt( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
+					Print($"Weapon Absorbed " + absorbed);
+					SendSysMessage( defender, "You successfully parry the attack." );
+					SendSysMessage( Attacker, "Your opponent parried the attack." );
+					PerformAction( defender, ANIM_ATTACK_XBOW );
+				else 
+					absorbed := 0;
+					Print($"Non-Parry Weapon Absorbed " + absorbed);
+					SendSysMessage( defender, "You shouldnt be able to parry the attack." );
+				endif
 			endif
-			if( weapon.attribute == ATTRIBUTEID_ARCHERY )
-				absorbed := CInt( shield_defender.ar / 2 );
-				SendSysMessage( defender, "You successfully deflected the arrow." );
-				SendSysMessage( attacker, "Your opponent deflected the arrow with their shield." );
-				PerformAction( defender, ANIM_ATTACK_XBOW );
-			else
-				absorbed := ( shield_defender.ar / 2 );
-				SendSysMessage( defender, "You successfully parry the attack." );
-				SendSysMessage( Attacker, "Your opponent parried the attack." );
-				PerformAction( defender, ANIM_ATTACK_XBOW );
-			endif
+			
 			//damage shield chance on parry
 			CheckEquipmentDamage(defender, shield_defender);
-
+			Print($"Base Damage " + basedamage);
 			basedamage -= absorbed;
 			
 			if( basedamage < 0 )
 				basedamage := 0;
 			endif
-
+			Print($"Base Damage after absorb " + basedamage);
 			if(DEBUG_MODE)
 				PrintTextAbovePrivate( defender , "I parried this much damage: "+absorbed, defender );
 				SendSysMessage( attacker, "Basedamage after shieldparry: "+basedamage, FONT_NORMAL, 2569 );
