@@ -446,8 +446,48 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
     if( !shield_defender.IsA( POLCLASS_ARMOR ) )
     	shield_defender := GetEquipmentByLayer( defender, LAYER_HAND1 );
     endif
-    
-    if( shield_defender.IsA( POLCLASS_ARMOR ) )
+		
+	if( shield_defender.IsA( POLCLASS_WEAPON ) )
+			var weapcfg := ReadConfigFile( ":*:itemdesc" );
+
+			if( weapcfg[shield_defender.objtype].CanWeaponParry != 0 )
+				//Weapon Parry Stuff here
+				var parry_chance := GetAttribute( defender, ATTRIBUTEID_PARRY );
+				var parry_roll := ( RandomInt( 750 ) + 1 );
+				//Award skill points even on failure
+				AwardSkillPoints( defender, SKILLID_PARRY, 20 );
+				parry_chance := CInt( parry_chance * ClasseBonusByLevel( defender_level ) );
+				if( parry_roll <= parry_chance )
+					var absorbed := 0;
+					if( weapon.attribute == ATTRIBUTEID_ARCHERY )
+						absorbed := CInt( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
+						SendSysMessage( defender, "You successfully deflected the arrow." );
+						SendSysMessage( attacker, "Your opponent deflected the arrow with their shield." );
+						PerformAction( defender, ANIM_ATTACK_XBOW );
+					else
+						absorbed := ( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
+						SendSysMessage( defender, "You successfully parry the attack." );
+						SendSysMessage( Attacker, "Your opponent parried the attack." );
+						PerformAction( defender, ANIM_ATTACK_XBOW );
+					endif
+					//damage shield chance on parry
+					CheckEquipmentDamage(defender, shield_defender);
+
+					basedamage -= absorbed;
+					
+					if( basedamage < 0 )
+						basedamage := 0;
+					endif
+
+					if(DEBUG_MODE)
+						PrintTextAbovePrivate( defender , "I parried this much damage: "+absorbed, defender );
+						SendSysMessage( attacker, "Basedamage after shieldparry: "+basedamage, FONT_NORMAL, 2569 );
+					endif
+
+				endif
+			endif
+    elseif( shield_defender.IsA( POLCLASS_ARMOR ) )
+		//Shield Parry Stuff Here
 		var parry_chance := GetAttribute( defender, ATTRIBUTEID_PARRY );
 		var parry_roll := ( RandomInt( 750 ) + 1 );
 		//Award skill points even on failure
