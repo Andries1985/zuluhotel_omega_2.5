@@ -469,9 +469,10 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 					PerformAction( defender, ANIM_ATTACK_XBOW );
 				endif
 				Print($"Shield Absorbed " + absorbed);
+				CheckEquipmentDamage(defender, shield_defender);
 			elseif( weapon_defender.IsA( POLCLASS_WEAPON ) )
 				var weapcfg := ReadConfigFile( ":*:itemdesc" );
-				if( weapcfg[weapon_defender.objtype].CanWeaponParry := 1 )
+				if( weapcfg[weapon_defender.objtype].CanWeaponParry == 1 )
 					absorbed := CInt( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
 					Print($"Weapon Absorbed " + absorbed);
 					SendSysMessage( defender, "You successfully parry the attack." );
@@ -482,10 +483,11 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 					Print($"Non-Parry Weapon Absorbed " + absorbed);
 					SendSysMessage( defender, "You shouldnt be able to parry the attack." );
 				endif
+				CheckEquipmentDamage(defender, weapon_defender);
 			endif
 			
 			//damage shield chance on parry
-			CheckEquipmentDamage(defender, shield_defender);
+
 			Print($"Base Damage " + basedamage);
 			basedamage -= absorbed;
 			
