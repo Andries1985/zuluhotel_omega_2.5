@@ -468,19 +468,19 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 					SendSysMessage( Attacker, "Your opponent parried the attack." );
 					PerformAction( defender, ANIM_ATTACK_XBOW );
 				endif
-				Print($"Shield Absorbed " + absorbed);
+				//Print($"Shield Absorbed " + absorbed);
 				CheckEquipmentDamage(defender, shield_defender);
 			elseif( weapon_defender.IsA( POLCLASS_WEAPON ) )
 				var weapcfg := ReadConfigFile( ":*:itemdesc" );
 				if( weapcfg[weapon_defender.objtype].CanWeaponParry == 1 )
 					absorbed := CInt( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
-					Print($"Weapon Absorbed " + absorbed);
+					//Print($"Weapon Absorbed " + absorbed);
 					SendSysMessage( defender, "You successfully parry the attack." );
 					SendSysMessage( Attacker, "Your opponent parried the attack." );
 					PerformAction( defender, ANIM_ATTACK_XBOW );
 				else 
 					absorbed := 0;
-					Print($"Non-Parry Weapon Absorbed " + absorbed);
+					//Print($"Non-Parry Weapon Absorbed " + absorbed);
 					SendSysMessage( defender, "You shouldnt be able to parry the attack." );
 				endif
 				CheckEquipmentDamage(defender, weapon_defender);
@@ -488,13 +488,13 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 			
 			//damage shield chance on parry
 
-			Print($"Base Damage " + basedamage);
+			//Print($"Base Damage " + basedamage);
 			basedamage -= absorbed;
 			
 			if( basedamage < 0 )
 				basedamage := 0;
 			endif
-			Print($"Base Damage after absorb " + basedamage);
+			//Print($"Base Damage after absorb " + basedamage);
 			if(DEBUG_MODE)
 				PrintTextAbovePrivate( defender , "I parried this much damage: "+absorbed, defender );
 				SendSysMessage( attacker, "Basedamage after shieldparry: "+basedamage, FONT_NORMAL, 2569 );
