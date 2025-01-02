@@ -451,22 +451,24 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 	if( shield_defender.IsA( POLCLASS_ARMOR ) || weapon_defender.IsA( POLCLASS_WEAPON) )
 		var parry_chance := GetAttribute( defender, ATTRIBUTEID_PARRY );
 		var parry_roll := ( RandomInt( 750 ) + 1 );
-		//Award skill points even on failure
-		AwardSkillPoints( defender, SKILLID_PARRY, 20 );
+		
 		parry_chance := CInt( parry_chance * ClasseBonusByLevel( defender_level ) );
 		if( parry_roll <= parry_chance )
 			var absorbed := 0;
 			if( shield_defender.IsA( POLCLASS_ARMOR ) )
+				
 				if( weapon.attribute == ATTRIBUTEID_ARCHERY )
 					absorbed := CInt( shield_defender.ar / 2 );
 					SendSysMessage( defender, "You successfully deflected the arrow." );
 					SendSysMessage( attacker, "Your opponent deflected the arrow with their shield." );
 					PerformAction( defender, ANIM_ATTACK_XBOW );
+					AwardSkillPoints( defender, SKILLID_PARRY, 20 );
 				else
 					absorbed := CInt( shield_defender.ar / 2 );
 					SendSysMessage( defender, "You successfully parry the attack." );
 					SendSysMessage( Attacker, "Your opponent parried the attack." );
 					PerformAction( defender, ANIM_ATTACK_XBOW );
+					AwardSkillPoints( defender, SKILLID_PARRY, 20 );
 				endif
 				//Print($"Shield Absorbed " + absorbed);
 				CheckEquipmentDamage(defender, shield_defender);
@@ -478,10 +480,11 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 					SendSysMessage( defender, "You successfully parry the attack." );
 					SendSysMessage( Attacker, "Your opponent parried the attack." );
 					PerformAction( defender, ANIM_ATTACK_XBOW );
+					AwardSkillPoints( defender, SKILLID_PARRY, 20 );
 				else 
 					absorbed := 0;
 					//Print($"Non-Parry Weapon Absorbed " + absorbed);
-					SendSysMessage( defender, "You shouldnt be able to parry the attack." );
+					//SendSysMessage( defender, "You shouldnt be able to parry the attack." );
 				endif
 				CheckEquipmentDamage(defender, weapon_defender);
 			endif
