@@ -110,6 +110,9 @@ endprogram
 
 function HitWithBoulder(who, targ, damage, range)
 
+		var bonus := GetBardicEfficiency(who);
+		damage := bonus * damage;
+
 	// needs to be in LOS still, in range, not hidde/concealed/or dead
 	if ((Distance(who, targ) <= range) && !targ.dead && !targ.hidden && !targ.concealed && CheckLineOfSight( who, targ ))
 
@@ -117,11 +120,11 @@ function HitWithBoulder(who, targ, damage, range)
 			PlayMovingEffectXYZEx( targ.x-10, targ.y-10, targ.z+10, targ.x, targ.y, targ.z, targ.realm, GFX_EFFECT, 6, 10);
 			sleep(1);
 			PlaySoundEffect(targ, SOUND_EFFECT);
-			ApplyBardicDamage(who,targ, element, damage);
-			var rock := CreateItemAtLocation( targ.x, targ.y, targ.z, GFX_EFFECT );
+			ApplyBardicDamage(who, targ, element, damage);
+			var rock := CreateItemAtLocation( targ.x, targ.y, targ.z, GFX_EFFECT, 1, targ.realm );
 			var z := rock.z;
 			var multiple := 0;
-			foreach thing in ListItemsNearLocationOfType( rock.x,rock.y,rock.z, 0, GFX_EFFECT)
+			foreach thing in ListItemsNearLocationOfType( rock.x, rock.y, rock.z, 0, GFX_EFFECT, rock.realm)
 				if (thing != rock)
 					if (thing.z > z)
 						z := thing.z;
@@ -138,7 +141,7 @@ function HitWithBoulder(who, targ, damage, range)
 			MoveObjectToLocation(rock, rock.x, rock.y, z+3, rock.realm, MOVEOBJECT_FORCELOCATION);
 			rock.movable := 0;
 			SetObjProperty(rock, "f", 1);
-			Start_Script("::misc/deleter", {rock, 1});
+			Start_Script("::misc/deleter", {rock, (1+RandomInt(5))});
 			//Start_Script("::misc/deleter", {rock, (10+RandomInt(60))});
 		else
 			return 0;

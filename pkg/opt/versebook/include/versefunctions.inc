@@ -353,7 +353,7 @@ function GetBardicEfficiency(who)
 		endif
 	endforeach
 
-	bonus := 1 + (CDbl(bonus) * 0.01);
+	bonus := 1 + (CDbl(bonus) * 0.05);
 
 	return bonus;
 

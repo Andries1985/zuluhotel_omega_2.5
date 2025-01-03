@@ -55,9 +55,9 @@ function PlayerExplosion()
 		x := (corpse.x-range) + RandomInt((range*2+1));
 		y := (corpse.y-range) + RandomInt((range*2+1));
 		z := GetStandingHeight( x, y, corpse.z).z;
-		part := CreateItemAtLocation(x, y, z, part);
-		if (!CheckLineOfSight( corpse,part))
-			MoveObjectToLocation(part, corpse.x, corpse.y, corpse.z);
+		part := CreateItemAtLocation(x, y, z, part, 1, corpse.realm);
+		if (!CheckLineOfSight( corpse, part))
+			MoveObjectToLocation(part, corpse.x, corpse.y, corpse.z, corpse.realm);
 		endif
 		part.color := player.color;
 		SetName(part, part.desc+" of "+player.name);
@@ -65,7 +65,7 @@ function PlayerExplosion()
 	endforeach
 
 	//torso
-	var part := CreateItemAtLocation(corpse.x, corpse.y, corpse.z,7583);
+	var part := CreateItemAtLocation(corpse.x, corpse.y, corpse.z, 7583, 1, corpse.realm);
 	part.color := player.color;
 	SetName(part, part.desc+" of "+player.name);
 	allparts.append(part);
@@ -77,10 +77,10 @@ function FlingItems()
 	foreach item in EnumerateItemsInContainer(corpse)
 		x := (corpse.x-range) + RandomInt((range*2+1));
 		y := (corpse.y-range) + RandomInt((range*2+1));
-		z := GetStandingHeight( x, y, corpse.z).z;
-		MoveObjectToLocation(item, x, y, z);
-		if (!CheckLineOfSight( corpse, item))
-			MoveObjectToLocation(item, corpse.x, corpse.y, corpse.z);
+		z := GetStandingHeight( x, y, corpse.z, corpse.realm).z;
+		MoveObjectToLocation(item, x, y, z, corpse.realm);
+		if (!CheckLineOfSight( corpse, item ))
+			MoveObjectToLocation(item, corpse.x, corpse.y, corpse.z, corpse.realm);
 		endif
 	endforeach
 
@@ -90,10 +90,10 @@ function FlingItems()
 	repeat
 		x := (corpse.x-range) + RandomInt((range*2+1));
 		y := (corpse.y-range) + RandomInt((range*2+1));
-		z := GetStandingHeight( x, y, corpse.z).z;
+		z := GetStandingHeight( x, y, corpse.z, corpse.realm).z;
 		blood := CreateItemAtLocatioN(x, y, z, 4650+RandomInt(6), 1);
 		if (!CheckLineOfSight( corpse,blood))
-			MoveObjectToLocation(blood, corpse.x, corpse.y, corpse.z);
+			MoveObjectToLocation(blood, corpse.x, corpse.y, corpse.z, corpse.realm);
 		endif
 		i := i + 1;
 		allparts.append(blood);

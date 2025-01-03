@@ -55,7 +55,11 @@ program Corpse_Distention(parms)
 
 	// Calculate the range, damage, and specify the loop var, as well as hit var
 	var range := GetVerseRange(who, musicianship);
-	var damage := CalculateBardicDamage(who, skills, diff,BASE_DAMAGE);
+	var damage := CalculateBardicDamage(who, skills, diff, BASE_DAMAGE);
+		
+	var bonus := GetBardicEfficiency(who);
+	damage := bonus * damage;
+	
 	var i := DAMAGE_LOOP;
 	var hit;
 
