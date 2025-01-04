@@ -55,9 +55,6 @@ program Lesser_Healing(parms)
 	var range := GetVerseRange(who, musicianship);
 	var healamt := CalculateBardicHeal(who, skills, diff, BASE_HEAL);
 	
-	var bonus := GetBardicEfficiency(who);
-	healamt := (bonus * 0.75) * healamt;
-
 	var i := HEAL_LOOP;
 	var hit;
 

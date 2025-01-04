@@ -52,7 +52,8 @@ program Bardic_Boulders(parms)
 
 	// Calculate the range, damage, and specify the loop var, as well as hit var
 	var range := GetVerseRange(who, musicianship);
-	var damage := CalculateBardicDamage(who, skills, diff,BASE_DAMAGE);
+	var damage := CalculateBardicDamage(who, skills, diff, BASE_DAMAGE);
+
 	var i := DAMAGE_LOOP;
 	var hit;
 	var targ;
@@ -109,9 +110,6 @@ program Bardic_Boulders(parms)
 endprogram
 
 function HitWithBoulder(who, targ, damage, range)
-
-		var bonus := GetBardicEfficiency(who);
-		damage := bonus * damage;
 
 	// needs to be in LOS still, in range, not hidde/concealed/or dead
 	if ((Distance(who, targ) <= range) && !targ.dead && !targ.hidden && !targ.concealed && CheckLineOfSight( who, targ ))
