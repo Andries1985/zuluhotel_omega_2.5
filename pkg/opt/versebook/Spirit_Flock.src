@@ -202,6 +202,8 @@ function SetGoatdamage(who)
 		var skill_mod := 1.0 + (CDbl(bard)/20.0);
 		total_skills := total_skills * skill_mod;
 		damage := CInt(CDbl(damage) * dmg_mod);
+		var bonus := GetBardicEfficiency(who);
+		damage := bonus * damage;
 	endif
 
 	base_dex := total_skills;

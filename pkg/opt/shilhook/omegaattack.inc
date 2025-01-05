@@ -8,6 +8,7 @@ use cfgfile;
 include "include/classes";
 include ":combat:hitscriptinc";
 include ":armor:armorZones";
+include "include/random";
 
 function OmegaAttack(attacker, defender)
 
@@ -15,6 +16,13 @@ function OmegaAttack(attacker, defender)
 
 	var weapfile := ReadConfigFile( ":combat:itemdesc" );
 	var attackerweaponType := weapfile[attacker.weapon.objtype];
+
+//	var listofanim	:=	GetConfigIntArray( attackerweaponType, "Anim" );
+
+//	Print($"listofanim " +listofanim);
+
+//	var Anim := listofanim[(Random(3)+1)];
+//	Print($"animation " +Anim);
 
 	if(attacker.weapon.attribute == ATTRIBUTEID_ARCHERY)
 		if (!checkForAndDecrementAmmunition( attacker, attackerweaponType))	

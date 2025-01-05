@@ -670,7 +670,7 @@ function IsProtected( caster, cast_on, circle, nomsg := 0 )
 
 
 	if(GetObjProperty( cast_on , CLASSEID_WARRIOR ))
-		Print($"Target is a warrior!");
+		//Print($"Target is a warrior!");
 		if( protlvl == 0)
 			circle := circle * ClasseBonus( cast_on, CLASSEID_WARRIOR );
 		elseif( protlvl <= 6)

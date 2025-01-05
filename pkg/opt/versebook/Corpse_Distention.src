@@ -13,7 +13,7 @@ include ":versebook:include/versefunctions";
 include ":versebook:include/verseconstants";
 
 var stamina, diff, skills, element, instrument, musicianship, name;
-var BASE_DAMAGE := 30;
+var BASE_DAMAGE := 40;
 
 // How many seconds between damage
 var DAMAGE_LOOP := 2;
@@ -55,7 +55,8 @@ program Corpse_Distention(parms)
 
 	// Calculate the range, damage, and specify the loop var, as well as hit var
 	var range := GetVerseRange(who, musicianship);
-	var damage := CalculateBardicDamage(who, skills, diff,BASE_DAMAGE);
+	var damage := CalculateBardicDamage(who, skills, diff, BASE_DAMAGE);
+
 	var i := DAMAGE_LOOP;
 	var hit;
 
