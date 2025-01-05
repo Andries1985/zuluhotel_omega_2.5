@@ -11,7 +11,6 @@ const GFX_COLOUR := 33;
 const SOUND_EFFECT := 0x309;
 
 var who, corpse, damage, elements;
-var range := 3;
 var x, y, z;
 var allparts := {};
 
@@ -21,13 +20,15 @@ program explode_corpse(parms)
 	corpse := parms[2];
 	damage := parms[3];
 	elements := parms[4];
+	var musicianship := GetEffectiveSkill(who, SKILLID_MUSICIANSHIP);
+	var range := GetVerseRange(who, musicianship);
 
 	PlayStationaryEffectEx( corpse.x, corpse.y, corpse.z, corpse.realm, GFX_EFFECT, 8,30, GFX_COLOUR);
 	PlaySoundEffect(corpse, SOUND_EFFECT);
 
-	FlingItems();
+	FlingItems(range);
 	if (!GetObjProperty(corpse, "npctemplate"))
-		PlayerExplosion();
+		PlayerExplosion(range);
 	endif
 
 	foreach part in allparts
@@ -46,7 +47,7 @@ program explode_corpse(parms)
 
 endprogram
 
-function PlayerExplosion()
+function PlayerExplosion(range)
 
 	var parts := {7584, 7588, 7601, 7599};
 	var player := SystemFindObjectBySerial(GetObjProperty(corpse, "whose"));
@@ -72,7 +73,7 @@ function PlayerExplosion()
 
 endfunction
 
-function FlingItems()
+function FlingItems(range)
 
 	foreach item in EnumerateItemsInContainer(corpse)
 		x := (corpse.x-range) + RandomInt((range*2+1));

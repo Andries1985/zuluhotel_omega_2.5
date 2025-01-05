@@ -13,7 +13,7 @@ include ":versebook:include/versefunctions";
 include ":versebook:include/verseconstants";
 
 var stamina, diff, skills, element, instrument, musicianship, name;
-var BASE_DAMAGE := 30;
+var BASE_DAMAGE := 40;
 
 // How many seconds between damage
 var DAMAGE_LOOP := 2;

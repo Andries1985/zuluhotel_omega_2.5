@@ -371,7 +371,7 @@ function GetVerseRange(who, musicianship)
 	var bard :=  IsBard(who);
 
 	if (bard)
-		range += ClasseBonusByLevel( bard ) * range - 4;
+		range += ClasseBonusByLevel( bard ) * range - 3;
 	endif
 
 
