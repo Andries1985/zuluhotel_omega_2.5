@@ -478,16 +478,16 @@ function ApplyBardicHeal(who, person, amount)
 	// healing items heal for more!
 	var healmod := CDbl(GetObjProperty(person, "HealingIncrease"));
 	if(DEBUG_MODE)
-		SendSysMessage(who,"initial amount to heal: "+amount);
+		SendSysMessage(who, "initial amount to heal: " + amount);
 	endif
 	if (healmod)
 		//3% bonus per level on person
 		amount *= 1.0 + (healmod * 0.03);
 	endif
 	if(DEBUG_MODE)
-		SendSysMessage(who, "Heal with prot bonus: "+amount);
+		SendSysMessage(who, "Heal with prot bonus: " + amount);
 	endif
-	HealDamage( person, CInt(amount) );
+	HealDamage(person, CInt(amount));
 
 endfunction
 
