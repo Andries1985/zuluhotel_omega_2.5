@@ -53,7 +53,8 @@ program Sonic_Disturbance(parms)
 
 	// Calculate the range, damage, and specify the loop var, as well as hit var
 	var range := GetVerseRange(who, musicianship);
-	var damage := CalculateBardicDamage(who, skills, diff,BASE_DAMAGE);
+	var damage := CalculateBardicDamage(who, skills, diff, BASE_DAMAGE);
+
 	var i := DAMAGE_LOOP;
 	var hit;
 

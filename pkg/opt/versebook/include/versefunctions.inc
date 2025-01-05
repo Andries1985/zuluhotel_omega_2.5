@@ -353,7 +353,7 @@ function GetBardicEfficiency(who)
 		endif
 	endforeach
 
-	bonus := 1 + (CDbl(bonus) * 0.01);
+	bonus := 1 + (CDbl(bonus) * 0.05);
 
 	return bonus;
 
@@ -371,7 +371,7 @@ function GetVerseRange(who, musicianship)
 	var bard :=  IsBard(who);
 
 	if (bard)
-		range += ClasseBonusByLevel( bard ) * range - 4;
+		range += ClasseBonusByLevel( bard ) * range - 3;
 	endif
 
 
@@ -395,9 +395,11 @@ function CalculateBardicDamage(who, verse_skills, diff, damage)
 	foreach skill in verse_skills
 		total_skills += GetEffectiveSkill(who, CInt(skill));	
 	endforeach
-
+	//Print("Base Damage " + damage);
 	modified_skill := (total_skills/verse_skills.size()) - diff;
 	damage *=  1.0 + modified_skill/100.00;
+
+	//Print("Modified by skill damage " + damage);
 
 	// Give damage bonus for bard
 	var bard := IsBard(who);
@@ -412,6 +414,9 @@ function CalculateBardicDamage(who, verse_skills, diff, damage)
 	endif
 
 	damage *= GetBardicEfficiency(who);
+
+	//Print("Modified by BE damage " + damage);
+
 
 	return CInt(damage);
 
@@ -473,16 +478,16 @@ function ApplyBardicHeal(who, person, amount)
 	// healing items heal for more!
 	var healmod := CDbl(GetObjProperty(person, "HealingIncrease"));
 	if(DEBUG_MODE)
-		SendSysMessage(who,"initial amount to heal: "+amount);
+		SendSysMessage(who, "initial amount to heal: " + amount);
 	endif
 	if (healmod)
 		//3% bonus per level on person
 		amount *= 1.0 + (healmod * 0.03);
 	endif
 	if(DEBUG_MODE)
-		SendSysMessage(who, "Heal with prot bonus: "+amount);
+		SendSysMessage(who, "Heal with prot bonus: " + amount);
 	endif
-	HealDamage( person, CInt(amount) );
+	HealDamage(person, CInt(amount));
 
 endfunction
 

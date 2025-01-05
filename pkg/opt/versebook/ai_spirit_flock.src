@@ -140,6 +140,7 @@ function RunCircle()
 		endif
 		
 	until (i == 0 || !GetObjProperty(master, "#Flock"));
+	
 	ApplyRawDamage(me, GetMaxHP(me)+1);
 
 endfunction

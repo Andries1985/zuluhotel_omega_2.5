@@ -45,7 +45,7 @@ program cast_earth_blessing( parms )
 
 	var mod_amount := Cint( GetModAmount( caster ) * 2.5 );
 	if(casterismage)
-		var mod_amount := Cint( GetModAmount( caster ) * 4.5 );
+		var mod_amount := Cint( GetModAmount( caster ) * 4 );
 	endif
 
 	var duration := GetModDuration( caster );

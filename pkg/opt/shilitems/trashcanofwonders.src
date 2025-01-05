@@ -170,8 +170,8 @@ function CreateWonderItem( who )
 			    0x6048,	// SleevesOfWonders
 			    0x6049,	// LeggingsOfWonders
 			    0x604a,	// GlovesOfWonders
-			    0x604b};	// BootsOfWonders
-			  // Add the wand once it is done
+			    0x604b,	// BootsOfWonders
+				0x604d};	// Add the wand once it is done
 
 	if (Random(14)==6)
 	var objtypes := { 0x6047,	// TunicOfWonders
