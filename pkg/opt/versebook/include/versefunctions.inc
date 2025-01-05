@@ -395,11 +395,11 @@ function CalculateBardicDamage(who, verse_skills, diff, damage)
 	foreach skill in verse_skills
 		total_skills += GetEffectiveSkill(who, CInt(skill));	
 	endforeach
-	Print("Base Damage " + damage);
+	//Print("Base Damage " + damage);
 	modified_skill := (total_skills/verse_skills.size()) - diff;
 	damage *=  1.0 + modified_skill/100.00;
 
-	Print("Modified by skill damage " + damage);
+	//Print("Modified by skill damage " + damage);
 
 	// Give damage bonus for bard
 	var bard := IsBard(who);
@@ -415,7 +415,7 @@ function CalculateBardicDamage(who, verse_skills, diff, damage)
 
 	damage *= GetBardicEfficiency(who);
 
-	Print("Modified by BE damage " + damage);
+	//Print("Modified by BE damage " + damage);
 
 
 	return CInt(damage);
