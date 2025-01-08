@@ -211,7 +211,7 @@ program use_magicfish( who, fish )
 				endif
 
 				// Do a skill check to not even try to cast if we can't
-				SetObjProperty(who, CASTINGOPT_PROP_NAME, {CASTINGOPT_NO_REAGENTS, CASTINGOPT_SCROLL_SKILL_GAIN, CASTINGOPT_USE_SCROLL});
+				SetObjProperty(who, CASTINGOPT_PROP_NAME, {CASTINGOPT_NO_REAGENTS, CASTINGOPT_NO_SKILL_CHECK, CASTINGOPT_USE_SCROLL});
 
 				var script := elem.Script;
 
