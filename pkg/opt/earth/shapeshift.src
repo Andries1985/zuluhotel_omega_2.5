@@ -65,6 +65,12 @@ program shapeshift( caster )
 		return;
 	endif
 
+	if( !CanMod(caster, "all") || !CanMod(caster, "ebless") )
+		EraseObjProperty( caster , "#Casting" );
+		SendSysMessage( caster , "You're already blessed." );
+		return;
+	endif
+
 	var cfg 	:= ReadConfigFile( "shapeshift" );
 	var maxint 	:= GetConfigMaxIntKey( cfg );
 	var i		:= 1;
@@ -125,7 +131,7 @@ program shapeshift( caster )
 	
 	EraseObjProperty( caster , "#Casting" );
 
-	var mod_amount := Cint( GetModAmount( caster ) * 2.5 );
+	var mod_amount := Cint( GetModAmount( caster ) * 2 );
 	if(casterismage)
 		var mod_amount := Cint( GetModAmount( caster ) * 4 );
 	endif

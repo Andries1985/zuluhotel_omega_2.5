@@ -43,14 +43,14 @@ program cast_earth_blessing( parms )
 
 	PlaySoundEffect( caster , SFX_SPELL_EARTH_BLESSING );
 
-	var mod_amount := Cint( GetModAmount( caster ) * 2.5 );
+	var mod_amount := Cint( GetModAmount( caster ) * 3 );
 	if(casterismage)
-		var mod_amount := Cint( GetModAmount( caster ) * 4 );
+		var mod_amount := Cint( GetModAmount( caster ) * 5 );
 	endif
 
 	var duration := GetModDuration( caster );
 
-	if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ))
+	if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ) && CanMod( caster, "poly")) 
 		DoTempMod( caster, "ebless" , mod_amount , duration );
 		SendBoostMessage( caster, caster, "earth blessing", mod_amount, duration, 0 );
 	else

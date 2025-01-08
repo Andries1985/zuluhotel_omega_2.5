@@ -47,6 +47,11 @@ endfunction
 program use_magicfish( who, fish )
 
 	var buff_delay := DELAY_BETWEEN_FISH;
+	var teleport_delay := DELAY_BETWEEN_FISH;
+
+	if(GetObjProperty(who, CLASSEID_RANGER))
+		teleport_delay := 5;
+	endif
 
 	if(GetObjProperty(who, CLASSEID_RANGER))
 		buff_delay := 0;
@@ -70,8 +75,10 @@ program use_magicfish( who, fish )
 	if (spellnum > 0)
 		// this magic fish has a spell set for it
 		// play the sound and animations that are requested
+		if( spellnum != 22)
 		PlaySoundEffect( who, spellsound );
-		PlayObjectCenteredEffect( who, spelleffect, 10,10);
+		PlayObjectCenteredEffect( who, spelleffect, 10, 10);
+		endif
 		// debug messages
 		// SendSysMessage( who, "Fish has spell number " + spellnum);
 		// SendSysMessage( who, "Using spell sound " + spellsound);
@@ -179,6 +186,39 @@ program use_magicfish( who, fish )
 						DELAY_BETWEEN_FISH := buff_delay;
 					endif
 				endif
+			22:
+				var spellid := 22;
+				// Do a pre mana check so we don't try cast if can't
+
+				//Variables declaration and initialisation
+				var conf	 := ReadConfigFile( ":spells:spells" );
+				var elem	 := FindConfigElem( conf, spellid );
+				var circ	 := GetConfigInt( elem, "Circle" );
+				conf	 	 := ReadConfigFile( ":*:circles" );
+				var spelldelay := Cint( conf[circ].Delay );
+				var value	 := Cint( conf[circ].PointValue );
+				var manacost	 := Cint( conf[circ].Mana );
+				var difficulty := Cint( conf[circ].Difficulty );
+
+				if (manacost > GetMana(who))
+					PrintTextAbovePrivate(who,"Not enough mana!",who);
+					return 0;
+				endif
+					
+				if (GetEffectiveSkill(who,SKILLID_FISHING) < (GetSpellDifficulty( spellid ) + 40) )
+					PrintTextAbovePrivate(who,"Not a chance...",who);
+					return 0;
+				endif
+
+				// Do a skill check to not even try to cast if we can't
+				SetObjProperty(who, CASTINGOPT_PROP_NAME, {CASTINGOPT_NO_REAGENTS, CASTINGOPT_SCROLL_SKILL_GAIN, CASTINGOPT_USE_SCROLL});
+
+				var script := elem.Script;
+
+				Start_Script(":spells:"+script, {who, spellid} );
+
+				SleepMS(spelldelay);
+				DELAY_BETWEEN_FISH := teleport_delay;
 		    44:	// invisibility
 				SetObjProperty(who, "StealthCD", ReadGameClock()+10);
 				who.hidden := 1;
