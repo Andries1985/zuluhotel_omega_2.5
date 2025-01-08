@@ -1360,6 +1360,14 @@ function SmartAoE( caster, victims)
 			SendSysMessage( caster, "same_faction "+same_faction, color :=53);
 			SendSysMessage( caster, "same_CWcolor "+same_CWcolor, color :=53);
 		endif
+		//Borrowed from SmartSongAoE Function
+		if ((victims[i].isa(POLCLASS_NPC)) && (victims[i].master == caster))
+			victims.erase(i);
+		endif
+		if ((!victims[i].isa(POLCLASS_NPC)) && caster.party && (victims[i].party == caster.party))
+			victims.erase(i);
+		endif
+		//Back to Original
 		if (!caster.isa(POLCLASS_NPC) && !caster.cmdlevel && !victims[i].isa(POLCLASS_NPC))
 			if((caster_noPK) || (victim_noPK) || (!same_faction) || (same_CWcolor))
 				if (DEBUG_MODE)
