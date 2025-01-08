@@ -77,7 +77,7 @@ endprogram
 
 function ApplyBuff(person, amt, duration)
 
-if( CanMod( person , "all" ) && CanMod( person , "ebless" ))
+if( CanMod( person , "all" ) && CanMod( person , "ebless" )  && CanMod( person , "poly"))
 	DoTempMod( person, "all" , amt , duration );
 endif
 
@@ -90,7 +90,7 @@ if (CanMod(person, "str"))
 endif
 
 if (CanMod(person, "ar"))
-	var arAmount := Cint(amt/1.7);
+	var arAmount := Cint(amt/1.25);
 	DoTempMod(person, "ar", arAmount, duration);
 endif
 

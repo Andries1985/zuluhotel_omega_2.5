@@ -81,14 +81,14 @@ program cast_teleport( parms, spell_id )
 		return;
 	endif
 
-	var multi := GetStandingHeight( caster.x, caster.y, caster.z ).multi;
+	var multi := GetStandingHeight( caster.x, caster.y, caster.z, caster.realm ).multi;
 	if( multi )
 		return;
 	endif
 
-	foreach item in ListItemsNearLocation( cint(where.x), cint(where.y), cint(where.z), 4 );
+	foreach item in ListItemsNearLocation( cint(where.x), cint(where.y), cint(where.z), 4, caster.realm );
 		if( (item.objtype == 61457 or item.objtype == 61458) and
-		  (GetMapInfo(where.x,where.y).landtile in water) )
+		  (GetMapInfo( where.x, where.y, where.realm ).landtile in water) )
 			SendSysmessage( caster, "You cannot teleport there." );
 			return;
 		endif
@@ -96,14 +96,14 @@ program cast_teleport( parms, spell_id )
 
 	var Near_Items;
 	var ok := 1;
-	Near_Items := ListItemsNearLocation(where.x, where.y, where.z,10, where.realm);
+	Near_Items := ListItemsNearLocation( where.x, where.y, where.z, 10, caster.realm );
 	foreach thing in Near_Items
 		if (thing.objtype == 0xf156 || thing.objtype == 0xa3c7)
 			ok := 0;
 		endif
 	endforeach
 
-	multi := GetStandingHeight( where.x, where.y, where.z ).multi;
+	multi := GetStandingHeight( where.x, where.y, where.z, caster.realm ).multi;
 	if( multi )
 		return;
 	endif
@@ -141,7 +141,7 @@ program cast_teleport( parms, spell_id )
 		PlaySoundEffect( caster, SFX_SPELL_TELEPORT );
 	endif
 	If (Caster.multi)
-		MoveObjectToLocation( caster, bx, by, bz, 1, caster.realm );
+		MoveObjectToLocation( caster, bx, by, bz, caster.realm, 1 );
 	endif	
 
 endprogram
