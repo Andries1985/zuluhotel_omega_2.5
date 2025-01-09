@@ -42,6 +42,7 @@ program walk_on_moongate( mobile , gate )
 	var x := GetObjProperty( gate, "GateDestX" );
 	var y := GetObjProperty( gate, "GateDestY" );
 	var z := GetObjProperty( gate, "GateDestZ" );
+	var realm := GetObjProperty( gate, "GateDestRealm" );
 
 	if( !x or !y )
 		return;
@@ -60,7 +61,7 @@ program walk_on_moongate( mobile , gate )
 
 	if( !YesNo( mobile , "Want to Teleport?" ) )
 				return;
-	elseif ( coordist(mobile.x,mobile.y,startx, starty) > 1 )
+	elseif ( coordist(mobile.x, mobile.y, startx, starty) > 1 )
 			SendSysMessage(mobile, "You've moved too far away from the gate.");
 			return;
 	endif
@@ -76,7 +77,7 @@ program walk_on_moongate( mobile , gate )
 	endif
 
 	set_critical(1);
-	if( MoveObjectToLocation( mobile , x , y , z ) )
+	if( MoveObjectToLocation( mobile , x , y , z, realm ) )
 		SetObjProperty( mobile, "JustGated", 1 );
 	endif
 	

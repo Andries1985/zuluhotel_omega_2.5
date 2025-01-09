@@ -21,32 +21,32 @@ include "include/areas";
 
 program LeaveArea(who)
 
-set_critical(1);
+	set_critical(1);
 
-var file := OpenDataFile(":areas:LeaveArea");
-var regionname := GetRegionName(who);
+	var file := OpenDataFile(":areas:LeaveArea");
+	var regionname := GetRegionName(who);
 
-if (!file)
-	CreateDataFile( ":areas:LeaveArea");
-endif
+	if (!file)
+		CreateDataFile( ":areas:LeaveArea");
+	endif
 
-var region := file.FindElement(regionname);
-UnloadDataFile(":areas:LeaveArea");
+	var region := file.FindElement(regionname);
+	UnloadDataFile(":areas:LeaveArea");
 
-// Only one message by default.
-if (!region)
-	SendSysMessage(who, "You have left "+regionname, 3, 999);
-endif
+	// Only one message by default.
+	if (!region)
+		SendSysMessage(who, "You have left "+regionname, 3, 999);
+	endif
 
-// Safe area, remove privs
-if (GetObjProperty(who, "InSafeArea"))
-	RemoveSafeAreaProperties(who);
-endif
+	// Safe area, remove privs
+	if (GetObjProperty(who, "InSafeArea"))
+		RemoveSafeAreaProperties(who);
+	endif
 
-// NOPK area, remove privs
-if (GetObjProperty(who, "NOPKAREA"))
-	RemoveNOPK(who);
-endif
+	// NOPK area, remove privs
+	if (GetObjProperty(who, "NOPKAREA"))
+		RemoveNOPK(who);
+	endif
 
 endprogram
 

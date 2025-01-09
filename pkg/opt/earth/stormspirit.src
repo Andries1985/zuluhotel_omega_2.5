@@ -37,6 +37,6 @@ program cast_storm_spirit( parms )
 	endif
 
 	EraseObjProperty( caster , "#Casting" );
-        SummonCreature( caster , "airelementallord" , cast_loc );
+    SummonCreature( caster , "airelementallord" , cast_loc );
 
 endprogram

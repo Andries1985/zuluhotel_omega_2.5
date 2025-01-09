@@ -1,6 +1,7 @@
 include "titles";
 include "include/attributes";
 include "include/random";
+include ":champspawns:include/skulls";
 
 
 function getSpawnTemplateName(altar)  
@@ -62,8 +63,8 @@ function getChampionTemplateName(altar)
 endfunction
 
 function SpawnChampion(altar)
-  PlayStationaryEffect(altar.x, altar.y, altar.z, 0x3728, 7, 0x10, 0);
-  var creature := CreateNPCFromTemplate(getChampionTemplateName(altar), altar.x, altar.y, altar.z+5, 0);
+  PlayStationaryEffect(altar.x, altar.y, altar.z, 0x3728, 7, 0x10, 0, altar.realm);
+  var creature := CreateNPCFromTemplate(getChampionTemplateName(altar), altar.x, altar.y, altar.z+5, 0, altar.realm);
   sleepms(100);
   SetObjProperty(creature, "noprovo", 1);
   SetObjProperty(creature, "altar", altar.serial);
@@ -94,8 +95,8 @@ function SpawnCreature(altar)
   if(!loc)
 	  return 0;
   endif
-  PlayStationaryEffect(loc[1], loc[2], loc[3], 0x3728, 7, 0x10, 0);
-  var creature := CreateNPCFromTemplate(getSpawnTemplateName(altar), loc[1], loc[2], loc[3], 0);
+  PlayStationaryEffect(loc[1], loc[2], loc[3], 0x3728, 7, 0x10, 0, altar.realm);
+  var creature := CreateNPCFromTemplate(getSpawnTemplateName(altar), loc[1], loc[2], loc[3], 0, altar.realm);
   if(creature)
     if(GetObjProperty(creature, "BaseStrmod") > 50)
       SetObjProperty(creature, "BaseStrmod", (GetObjProperty(creature, "BaseStrmod")*2));
@@ -145,9 +146,9 @@ function getSpawnLocation(altar)
 		1: y := altar.y + (RandomInt(range)+1);
 		2: y := altar.y - (RandomInt(range)+1);
 	endcase
-	var z := GetMapInfo(x,y).z;
+	var z := GetMapInfo(x, y, altar.realm).z;
 
-	if(altar.z > z+5)
+	if(altar.z > z + 5)
 		return 0;
 	endif
 

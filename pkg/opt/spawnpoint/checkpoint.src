@@ -220,7 +220,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 		return 0;
 	endif
 	
-	var chest	:= CreateItemAtLocation( 0, 0, 0, objtype, 1 );
+	var chest	:= CreateItemAtLocation( 0, 0, 0, objtype, 1, "britannia" );
 	if( !chest )
 		return 0;
 	elseif( !chest.IsA(POLCLASS_CONTAINER) )
@@ -263,6 +263,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 	var x		:= point.x;
 	var y		:= point.y;
 	var z		:= point.z;
+	var realm	:= point.realm;
 	
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
 	if( !serials )
@@ -277,7 +278,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 	
 	var count := 1;
 	chest.movable := 1;
-	while( !MoveObjectToLocation( chest, cint(x), cint(y), cint(z), MOVEOBJECT_NORMAL ) && (count <= 10) )
+	while( !MoveObjectToLocation( chest, cint(x), cint(y), cint(z), realm, MOVEOBJECT_NORMAL ) && (count <= 10) )
 		if( appear )
 			x := point.x + RandomInt((appear*2)+1) - appear;
 			y := point.y + RandomInt((appear*2)+1) - appear;
@@ -347,10 +348,10 @@ function CreateSpawnPointItem( byref point, byref pt_data )
 	
 	while( !item && try <= 3 )
 		if( range )
+			realm := point.realm;
 			x := point.x + Cint( RandomInt((range*2)+1) - range );
 			y := point.y + Cint( RandomInt((range*2)+1) - range );
-			z := Cint( GetWorldHeight( x, y ) );
-			realm := point.realm;
+			z := Cint( GetWorldHeight( x, y, realm ) );
 		else
 			x := point.x;
 			y := point.y;
@@ -405,6 +406,7 @@ function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
 	var x		:= Cint(point.x);
 	var y		:= Cint(point.y);
 	var z		:= Cint(point.z);
+	var realm	:= point.realm;
 	var range	:= Cint(pt_data[5]);
 	var critter;
 	var vits;
@@ -526,6 +528,7 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 	var x		:= Cint(point.x);
 	var y		:= Cint(point.y);
 	var z		:= Cint(point.z);
+	var realm 	:= Cint(point.realm);
 	var range	:= Cint(pt_data[5]);
 	var critter;
 	
@@ -560,7 +563,7 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 	
 	SetObjProperty( critter, PROPID_MOBILE_SELF_SERIAL, critter.serial );	
 	
-	var standing := GetStandingHeight( x, y, z, point.realm);
+	var standing := GetStandingHeight( x, y, z, realm);
 	var count := 1;
 	var maxcount := 10000;
 	while( count <= maxcount )
@@ -570,7 +573,7 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 					z := GetWorldHeight(x, y, point.realm);
 				endif
 
-				if( MoveObjectToLocation( critter, x, y, z , point.realm, MOVEOBJECT_FORCELOCATION ) )
+				if( MoveObjectToLocation( critter, x, y, z , realm, MOVEOBJECT_FORCELOCATION ) )
 					RestartScript(critter);
 					serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
 					if( !serials )
@@ -590,12 +593,12 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 		if( appear )
 			x := point.x + RandomInt((appear*2)+1) - appear;
 			y := point.y + RandomInt((appear*2)+1) - appear;
-			standing := GetStandingHeight( x, y, z, point.realm);
+			standing := GetStandingHeight( x, y, z, realm);
 			count := maxcount;
 		else
 			sleep(5);
 			Print("SPAWNER CANT FIND SPAWN LOCATION, CHANGE APPEAR RANGE?");
-			Print("Spawner xyz = "+point.x+" "+point.y+" "+point.z);
+			Print("Spawner xyz = "+point.x+" "+point.y+" "+point.z+" "+point.realm);
 			count := 0;
 			/*
 			var ret := error;
@@ -609,7 +612,7 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 	
 	//var ret := error;
 	//ret.errortext := "Invalid spawning location.";
-	print("roligt");
+	//print("roligt");
 	KillMobile(critter,1);
 	//return ret;
 
@@ -636,7 +639,7 @@ endfunction
 
 function TheresPlayersNear( byref obj )
 
-	foreach mobile in ListMobilesNearLocationEx( obj.x, obj.y, obj.z, 10, LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN )
+	foreach mobile in ListMobilesNearLocationEx( obj.x, obj.y, obj.z, 10, LISTEX_FLAG_NORMAL+LISTEX_FLAG_HIDDEN, obj.realm )
 		if( !mobile.IsA(POLCLASS_NPC) )
 			if( !mobile.cmdlevel )
 				return 1;
@@ -723,7 +726,7 @@ function CreateCustomNPC(point, template)
 	var vits := GetObjProperty(point, "NPCVits"); 
 	var overw := GetObjProperty(point, "overw");
 
-	var critter := CreateNpcFromTemplate( template, 5283, 1184, 0, overw, point.realm);
+	var critter := CreateNpcFromTemplate( template, 5283, 1184, 0, overw, "britannia");
 
 	var i := 0;
 	foreach skill in skills

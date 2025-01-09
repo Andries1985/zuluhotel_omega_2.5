@@ -96,7 +96,7 @@ endfunction
 function CreatePoint( byref point )
 
 	if( spawnpoints.append(point) )
-		SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","",1,0,4,0,0,0,0,0,0,0,0,"",0} );
+		SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",1,0,4,0,0,0,0,0,0,0,0,"",0} );
 		CheckPoint(point);
 		return len(spawnpoints);
 	else
@@ -148,13 +148,13 @@ function InitializeManagerSettings()
 	Start_Script( ":spawnpoint:allspawner", time_between_all_spawn );
 	set_critical(0);
 
-	
 	return 1;
 
 endfunction
 
 
 function ProcessSpawnDeath( byref ev )
+	
 	return Start_Script( ":spawnpoint:spawndeath", {ev[3],ev[4]} );
 
 endfunction
@@ -166,7 +166,27 @@ function RegisterSpawnPoints()
 	spawnpoints := {};
 	var start := ReadGameClock();
 	SysLog( "Starting spawnpoints registration..." );
-	foreach object in ListObjectsInBox( 0, 0, -128, 7167, 4094, 128 )
+	foreach object in ListObjectsInBox( 0, 0, -128, 7167, 4094, 128, "britannia" )
+		if( object.objtype == UOBJ_SPAWNPOINT )
+			spawnpoints.append(object);
+		endif
+	endforeach
+	foreach object in ListObjectsInBox( 0, 0, -128, 7167, 4094, 128, "britannia_alt" )
+		if( object.objtype == UOBJ_SPAWNPOINT )
+			spawnpoints.append(object);
+		endif
+	endforeach
+	foreach object in ListObjectsInBox( 0, 0, -128, 2560, 2048, 128, "malas" )
+		if( object.objtype == UOBJ_SPAWNPOINT )
+			spawnpoints.append(object);
+		endif
+	endforeach
+	foreach object in ListObjectsInBox( 0, 0, -128, 1448, 1448, 128, "tokuno" )
+		if( object.objtype == UOBJ_SPAWNPOINT )
+			spawnpoints.append(object);
+		endif
+	endforeach
+	foreach object in ListObjectsInBox( 0, 0, -128, 2304, 1600, 128, "ilshenar" )
 		if( object.objtype == UOBJ_SPAWNPOINT )
 			spawnpoints.append(object);
 		endif
@@ -184,7 +204,7 @@ endfunction
 
 function ResetSpawnPoint( byref point )
 	DespawnAll(point);
-	SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","",0,0,4,0,0,0,0,0,0,0,0,"",0} );
+	SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",0,0,4,0,0,0,0,0,0,0,0,"",0} );
 	EraseObjProperty( point, PROPID_SPAWNPOINT_NEXT_SPAWNING );
 	EraseObjProperty( point, PROPID_SPAWNPOINT_NEXT_VALIDATION );
 	return 1;

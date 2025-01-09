@@ -46,7 +46,7 @@ function CreateGuardian( chest , template )
     var dx := Random( 8 ) - 4;
     var dy := Random( 8 ) - 4;
 
-    var nasty := CreateNpcFromTemplate( template , chest.x+dx , chest.y+dy , chest.z , 0 );
+    var nasty := CreateNpcFromTemplate( template , chest.x+dx , chest.y+dy , chest.z , 0, chest.realm );
 
     if( nasty == "<error>" )
        CreateGuardian( chest , template );

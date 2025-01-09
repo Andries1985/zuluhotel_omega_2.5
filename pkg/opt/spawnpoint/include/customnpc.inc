@@ -112,17 +112,17 @@ o.+facing := npc.facing;
 
 if (GetObjProperty(npc, "CustomHitsLevel"))
 	maxhitsnpc := GetObjProperty(npc, "CustomHitsLevel");
-	print($"Max hits for NPC is " + maxhitsnpc);
+	//print($"Max hits for NPC is " + maxhitsnpc);
 	vits.+HITS := maxhitsnpc;
-	print($"Vits 1 is " + vits);
+	//print($"Vits 1 is " + vits);
 else
 	vits.+HITS := GetMaxHp(npc);
-	print($"Vits 2 is " + vits);
+	//print($"Vits 2 is " + vits);
 endif
 vits.+STAM := GetMaxStamina(npc);
 vits.+MANA := GetMaxMana(npc);
 
-print($"Vits 3 is " + vits);
+//print($"Vits 3 is " + vits);
 
 foreach prop in allprops
 	cprops.append({prop, GetObjProperty(npc, prop)});
@@ -182,7 +182,7 @@ endforeach
 
 endfunction
 
-function CustomNPCGump(who, point, o, vits, cprops,npc, help := 0)
+function CustomNPCGump(who, point, o, vits, cprops, npc, help := 0)
 
 var mprop, mlevel, lootgroup;
 

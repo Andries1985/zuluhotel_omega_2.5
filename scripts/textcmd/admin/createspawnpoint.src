@@ -4,6 +4,6 @@ include "include/constants/objtypes";
 
 program textcmd_createspawnpoint( who )
 
-	CreateItemAtLocation( who.x, who.y, who.z, UOBJ_SPAWNPOINT, 1 );
+	CreateItemAtLocation( who.x, who.y, who.z, UOBJ_SPAWNPOINT, 1, who.realm );
 
 endprogram

@@ -14,9 +14,9 @@ program totem(who, totem)
 	parms .+ script := "tamed";
 	detach();
 
-	var it := CreateNPCfromTemplate(npctemplate, who.x -1, who.y+1, who.z, parms);
+	var it := CreateNPCfromTemplate(npctemplate, who.x -1, who.y+1, who.z, parms, who.realm);
 	if (!it)
-		it := CreateNPCfromTemplate(npctemplate, who.x +1, who.y-1, who.z, parms);
+		it := CreateNPCfromTemplate(npctemplate, who.x +1, who.y-1, who.z, parms, who.realm);
 		if (!it)
 			SendSysMessage(who,"Canceled");
 			return;
@@ -35,7 +35,7 @@ program totem(who, totem)
 	endif
 
 	PlaySoundEffect( who, SFX_SPELL_DISPEL );
-	PlayStationaryEffect( it.x, it.y, it.z, FX_SMOKE, 0xA, 0xA );
+	PlayStationaryEffect( it.x, it.y, it.z, FX_SMOKE, 0xA, 0xA, 0, it.realm );
 	DestroyItem(totem);
 	RestartScript(it);
 

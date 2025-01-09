@@ -19,7 +19,7 @@ program summon_creature( parms )
 	var magery		:= GetEffectiveSkill( caster , SKILLID_MAGERY );
 	
 	var magic_pets := 0;
-	var mobs := ListMobilesNearLocation( caster.x, caster.y, caster.z, 15 );
+	var mobs := ListMobilesNearLocation( caster.x, caster.y, caster.z, 15, caster.realm );
 	var masterserial := caster.serial;
 	foreach mob in mobs
 		if( (mob.script == "tamed") and ( GetObjProperty( mob, "master" ) == masterserial ) )
@@ -34,7 +34,7 @@ program summon_creature( parms )
 		return;
 	endif	
 
-	var multi := GetStandingHeight( cast_loc.x, cast_loc.y, cast_loc.z ).multi;
+	var multi := GetStandingHeight( cast_loc.x, cast_loc.y, cast_loc.z, cast_loc.realm ).multi;
 	if( multi )
 		SendSysMessage(caster, "Can't summon creatures inside multis.");
 		return;
@@ -106,18 +106,18 @@ program summon_creature( parms )
 
 	Set_Critical( 0 );
 	
-	MoveObjectToLocation( thecritter, cint(cast_loc.x), cint(cast_loc.y), cint(cast_loc.z) , caster.realm, MOVEOBJECT_FORCELOCATION );
+	MoveObjectToLocation( thecritter, cint(cast_loc.x), cint(cast_loc.y), cint(cast_loc.z) , cast_loc.realm, MOVEOBJECT_FORCELOCATION );
 	RestartScript( thecritter );
 	thecritter.hidden := 0;
 	
 	Sleep( duration );
 	
 	PlaySoundEffect( thecritter , 0x01fa );
-	PlayStationaryEffect( cint(thecritter.x) , cint(thecritter.y) , cint(thecritter.z) , 0x3728 , 0xa , 0xa );
+	PlayStationaryEffect( cint(thecritter.x) , cint(thecritter.y) , cint(thecritter.z) , 0x3728 , 0xa , 0xa, 0, thecritter.realm );
 	var backpack := FindExistingPack( thecritter.serial );
 	if( backpack )
 		foreach item in EnumerateItemsInContainer( backpack );
-  			MoveObjectToLocation( item , thecritter.x , thecritter.y , thecritter.z, "britannia", MOVEOBJECT_FORCELOCATION );
+  			MoveObjectToLocation( item , thecritter.x , thecritter.y , thecritter.z, thecritter.realm, MOVEOBJECT_FORCELOCATION );
 		endforeach
 	endif
 	MoveObjectToLocation( thecritter , 0 , 0 , 0 , "britannia",MOVEOBJECT_FORCELOCATION );

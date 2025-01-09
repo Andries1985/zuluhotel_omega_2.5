@@ -38,114 +38,114 @@ Program areas(who)
 	// don't log changes, too big!
 	LogCommand(who, GetProcess(GetPid()).name);
 
-var gump := GFCreateGump(20, 20, 860, 520);
+	var gump := GFCreateGump(20, 20, 860, 520);
 
-// The main gump screen
-GFResizePic(gump, 20, 20, 9250, 860, 525);
+	// The main gump screen
+	GFResizePic(gump, 20, 20, 9250, 860, 525);
 
-// The area background gumps
-GFResizePic(gump, 35, 220, 9200, 830, 285);
-GFResizePic(gump, 35, 180, 9200, 830, 40);
+	// The area background gumps
+	GFResizePic(gump, 35, 220, 9200, 830, 285);
+	GFResizePic(gump, 35, 180, 9200, 830, 40);
 
-// Title text
-GFResizePic(gump, 175, 35, 9200, 100, 20);
-GFTextLine(gump, 180, 35, 67, "AREA SET-UP");
+	// Title text
+	GFResizePic(gump, 175, 35, 9200, 100, 20);
+	GFTextLine(gump, 180, 35, 67, "AREA SET-UP");
 
-// Button info
-GFTextLine(gump, 110, 70, 57, "Edit Area Boundaries");
-GFAddButton(gump, 60, 70, 4005, 4006, 1, 2); 
-GFTextLine(gump, 110, 105, 57, "Add Area");
-GFAddButton(gump, 60, 105, 4005, 4006, 1, 4); 
-GFTextLine(gump, 110, 140, 57, "Delete Area");
-GFAddButton(gump, 60, 140, 4005, 4006, 1, 6); 
+	// Button info
+	GFTextLine(gump, 110, 70, 57, "Edit Area Boundaries");
+	GFAddButton(gump, 60, 70, 4005, 4006, 1, 2); 
+	GFTextLine(gump, 110, 105, 57, "Add Area");
+	GFAddButton(gump, 60, 105, 4005, 4006, 1, 4); 
+	GFTextLine(gump, 110, 140, 57, "Delete Area");
+	GFAddButton(gump, 60, 140, 4005, 4006, 1, 6); 
 
-// HTML gump
-GFHTMLArea(gump, 405, 35, 390, 140, GetHelpString(), 1, 1);
+	// HTML gump
+	GFHTMLArea(gump, 405, 35, 390, 140, GetHelpString(), 1, 1);
 
-// Names for all the options
-GFTextLine(gump, 96, 185, 900, "Area");
-GFTextLine(gump, 95, 200, 900, "Name");
+	// Names for all the options
+	GFTextLine(gump, 96, 185, 900, "Area");
+	GFTextLine(gump, 95, 200, 900, "Name");
 
-GFTextLine(gump, 190, 185, 900, "Guarded");
-GFTextLine(gump, 195, 200, 900, "Area");
+	GFTextLine(gump, 190, 185, 900, "Guarded");
+	GFTextLine(gump, 195, 200, 900, "Area");
 
-GFTextLine(gump, 260, 185, 900, "Disabled");
-GFTextLine(gump, 255, 200, 900, "Recall To");
+	GFTextLine(gump, 260, 185, 900, "Disabled");
+	GFTextLine(gump, 255, 200, 900, "Recall To");
 
-GFTextLine(gump, 330, 185, 900, "Disabled");
-GFTextLine(gump, 320, 200, 900, "Recall From");
+	GFTextLine(gump, 330, 185, 900, "Disabled");
+	GFTextLine(gump, 320, 200, 900, "Recall From");
 
-GFTextLine(gump, 400, 185, 900, "Disabled");
-GFTextLine(gump, 400, 200, 900, "Marking");
+	GFTextLine(gump, 400, 185, 900, "Disabled");
+	GFTextLine(gump, 400, 200, 900, "Marking");
 
-GFTextLine(gump, 467, 185, 900, "Disabled");
-GFTextLine(gump, 475, 200, 900, "Magic");
+	GFTextLine(gump, 467, 185, 900, "Disabled");
+	GFTextLine(gump, 475, 200, 900, "Magic");
 
-GFTextLine(gump, 535, 185, 900, "Forbidden");
-GFTextLine(gump, 545, 200, 900, "Area");
+	GFTextLine(gump, 535, 185, 900, "Forbidden");
+	GFTextLine(gump, 545, 200, 900, "Area");
 
-GFTextLine(gump, 610, 185, 900, "Disabled");
-GFTextLine(gump, 612, 200, 900, "Looting");
+	GFTextLine(gump, 610, 185, 900, "Disabled");
+	GFTextLine(gump, 612, 200, 900, "Looting");
 
-GFTextLine(gump, 685, 185, 900, "Safe");
-GFTextLine(gump, 685, 200, 900, "Area");
+	GFTextLine(gump, 685, 185, 900, "Safe");
+	GFTextLine(gump, 685, 200, 900, "Area");
 
-GFTextLine(gump, 760, 185, 900, "No-PK");
-GFTextLine(gump, 760, 200, 900, "Area");
+	GFTextLine(gump, 760, 185, 900, "No-PK");
+	GFTextLine(gump, 760, 200, 900, "Area");
 
-GFTextLine(gump, 830, 185, 900, "RP");
-GFTextLine(gump, 830, 200, 900, "Area");
+	GFTextLine(gump, 830, 185, 900, "RP");
+	GFTextLine(gump, 830, 200, 900, "Area");
 
-// Block of text that displays current area info
-var y := 230;
-var perpage := 11;
-var totalpages := CInt(areas.size()/11)+1; // Very lazy, but works unless there are enough elements for EXACTLY a page number, fix later
-var page := 1;
-var retval := 0;
+	// Block of text that displays current area info
+	var y := 230;
+	var perpage := 11;
+	var totalpages := CInt(areas.size()/11)+1; // Very lazy, but works unless there are enough elements for EXACTLY a page number, fix later
+	var page := 1;
+	var retval := 0;
 
-GFPage(gump, 1);
-GFTextLine(gump, 330, 508, 1000, "Page 1 of "+totalpages);
-foreach area in areas
+	GFPage(gump, 1);
+	GFTextLine(gump, 330, 508, 1000, "Page 1 of "+totalpages);
+	foreach area in areas
 
-	if (perpage <= 0)
-		GFAddButton(gump, 765, 506, 4005, 4006, 0, page+1); // Next Page button
-		GFPage(gump, page+1);
-		GFAddButton(gump, 35, 506, 4014, 4015, 0, page); // Prev Page button
-		page := page + 1;
-		GFTextLine(gump, 360, 508, 1000, "Page "+page+" of "+totalpages);
-		y := 230;
-		perpage := 11;
+		if (perpage <= 0)
+			GFAddButton(gump, 765, 506, 4005, 4006, 0, page+1); // Next Page button
+			GFPage(gump, page+1);
+			GFAddButton(gump, 35, 506, 4014, 4015, 0, page); // Prev Page button
+			page := page + 1;
+			GFTextLine(gump, 360, 508, 1000, "Page "+page+" of "+totalpages);
+			y := 230;
+			perpage := 11;
+		endif
+
+		// Seperate each type into a group
+		retval := _area_iter*10;
+
+		GFTextLine(gump, 35, y, 0, GetAreaName(area));
+		GFCheckBox(gump, 200, y, 9026, 9027, guarded[_area_iter], retval+1);
+		GFCheckBox(gump, 270, y, 9026, 9027, norecallto[_area_iter], retval+2);
+		GFCheckBox(gump, 340, y, 9026, 9027, norecallfrom[_area_iter], retval+3);
+		GFCheckBox(gump, 410, y, 9026, 9027, disabledmarking[_area_iter], retval+4);
+		GFCheckBox(gump, 480, y, 9026, 9027, disablemagic[_area_iter], retval+5);
+		GFCheckBox(gump, 550, y, 9026, 9027, forbiddenarea[_area_iter], retval+6);
+		GFCheckBox(gump, 620, y, 9026, 9027, nolooting[_area_iter], retval+7);
+		GFCheckBox(gump, 690, y, 9026, 9027, safearea[_area_iter], retval+8);
+		GFCheckBox(gump, 760, y, 9026, 9027, nopk[_area_iter], retval+9);
+		GFCheckBox(gump, 830, y, 9026, 9027, rparea[_area_iter], retval+10);
+		perpage := perpage - 1;
+		y := y + 25;
+	endforeach
+	// End large block of text
+
+
+	var result := GFSendGump(who, gump);
+
+	if (result[0] > 1 && result < 7)
+		SendSysMessage(who, "These options are not yet supported.");
 	endif
 
-	// Seperate each type into a group
-	retval := _area_iter*10;
+	SetAllValues(result.keys);
 
-	GFTextLine(gump, 35, y, 0, GetAreaName(area));
-	GFCheckBox(gump, 200, y, 9026, 9027, guarded[_area_iter], retval+1);
-	GFCheckBox(gump, 270, y, 9026, 9027, norecallto[_area_iter], retval+2);
-	GFCheckBox(gump, 340, y, 9026, 9027, norecallfrom[_area_iter], retval+3);
-	GFCheckBox(gump, 410, y, 9026, 9027, disabledmarking[_area_iter], retval+4);
-	GFCheckBox(gump, 480, y, 9026, 9027, disablemagic[_area_iter], retval+5);
-	GFCheckBox(gump, 550, y, 9026, 9027, forbiddenarea[_area_iter], retval+6);
-	GFCheckBox(gump, 620, y, 9026, 9027, nolooting[_area_iter], retval+7);
-	GFCheckBox(gump, 690, y, 9026, 9027, safearea[_area_iter], retval+8);
-	GFCheckBox(gump, 760, y, 9026, 9027, nopk[_area_iter], retval+9);
-	GFCheckBox(gump, 830, y, 9026, 9027, rparea[_area_iter], retval+10);
-	perpage := perpage - 1;
-	y := y + 25;
-endforeach
-// End large block of text
-
-
-var result := GFSendGump(who, gump);
-
-if (result[0] > 1 && result < 7)
-	SendSysMessage(who, "These options are not yet supported.");
-endif
-
-SetAllValues(result.keys);
-
-SendSysMessage(who, "Data saved.");
+	SendSysMessage(who, "Data saved.");
 
 endprogram
 

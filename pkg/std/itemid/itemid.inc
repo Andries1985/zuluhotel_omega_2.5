@@ -6,17 +6,55 @@ include "include/namingbyenchant";
 include "include/skillpoints";
 include "include/itemutil";
 
-function SelectItemToID(who,delay)
+function SelectItemToID( who, delay )
 
 	var the_item;
-	var skillID := GetEffectiveSkill( who, SKILLID_ITEMID );
+	delay := 4;
+	var skillID;
 	var intelligence := GetAttribute( who, ATTRIBUTEID_INTELLIGENCE );
 	const MIN_DELAYMS := 250;
-	const MIN_SKILLFORBATCH := 100;
+	const MIN_SKILLFORBATCH := 80;
 	const MIN_INTFORBATCH := 100;
 
+	if ( GetObjProperty( who , CLASSEID_BARD ) )
+		skillID := GetEffectiveSkill( who, SKILLID_TASTEID );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	elseif ( GetObjProperty( who , CLASSEID_WARRIOR ) )
+		skillID := GetEffectiveSkill( who, SKILLID_ANATOMY );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	elseif ( GetObjProperty( who , CLASSEID_THIEF ) )
+		skillID := GetEffectiveSkill( who, SKILLID_REMOVETRAP );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	elseif ( GetObjProperty( who , CLASSEID_CRAFTER ) )
+		skillID := GetEffectiveSkill( who, SKILLID_ARMSLORE );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	elseif ( GetObjProperty( who , CLASSEID_RANGER ) )
+		skillID := GetEffectiveSkill( who, SKILLID_CAMPING );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	elseif ( GetObjProperty( who , CLASSEID_POWERPLAYER) || GetObjProperty( who , CLASSEID_MAGE ) )
+		skillID := GetEffectiveSkill( who, SKILLID_ITEMID );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	else
+		skillID := GetEffectiveSkill( who, SKILLID_ITEMID );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	endif
+
 	SendSysMessage( who, "Select an object to identify." );
-	the_item := Target(who, TGTOPT_CHECK_LOS);
+	the_item := Target( who, TGTOPT_CHECK_LOS );
 	if( !the_item )
 		return 0;
 	endif
@@ -37,7 +75,7 @@ function SelectItemToID(who,delay)
 	endif
 
 	if (the_item.isa(POLCLASS_CONTAINER))
-	 	if ((skillID >= MIN_SKILLFORBATCH) & (intelligence >= MIN_INTFORBATCH))
+	 	if ((skillID >= MIN_SKILLFORBATCH) && (intelligence >= MIN_INTFORBATCH))
 			var itemlist := {};
 			foreach thing in EnumerateItemsInContainer(the_item)
 				if (GetObjProperty(thing, "UnIDedMagicalItem"))
@@ -55,8 +93,8 @@ function SelectItemToID(who,delay)
 						SendSysMessage( who , "You can't reach that." );
 						return 1;
 					endif
-					ItemID(who,item);
-					sleepms(Max(delay*1000,MIN_DELAYMS));
+					ItemID( who, item);
+					sleepms( Max( delay * 1000, MIN_DELAYMS ) );
 				endforeach
 			endif
 			return 1;
@@ -82,11 +120,11 @@ function SelectItemToID(who,delay)
 		return 1;
 	endif
 
-	ItemID(who,the_item);
+	ItemID( who, the_item );
 
 endfunction
 
-function ItemID(who,the_item)
+function ItemID( who, the_item )
 
 	var thepoints := get_default_points( SKILLID_ITEMID );
 	var ided := GetObjProperty( the_item , "IDed" );

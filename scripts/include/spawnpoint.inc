@@ -447,7 +447,7 @@ function CreateSpawnPointNpc( byref point, template )
 	var y := point.y;
 	var z := point.z;
 	var range	:= Cint( GetObjProperty( point , "Range" ) );
-	var critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0 );
+	var critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0, 0, "britannia" );
 	if( !critter )
 		return 0;
 	endif

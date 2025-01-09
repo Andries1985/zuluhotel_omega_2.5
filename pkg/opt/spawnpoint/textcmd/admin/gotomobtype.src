@@ -55,7 +55,7 @@ program textcmd_gotomobtype( character , text )
 	//Once found the mobs wanted, send to gump to list
 	var chr := MakeAndProcessGump( character, found, realm );
 	if( chr )
-        LogCommand(character, GetProcess(GetPid()).name, chr.name+"/"+chr.serial, "XYZ - "+chr.x+","+chr.y+","+chr.z);
+        LogCommand(character, GetProcess(GetPid()).name, chr.name+"/"+chr.serial, "XYZ - "+chr.x+","+chr.y+","+chr.z+","+chr.realm);
         var moved := MoveObjecttoLocation( character , chr.x , chr.y , chr.z , chr.realm, MOVEOBJECT_FORCELOCATION );
               if (moved.errortext)
                SendSysMessage(character, "oh no an error... can't go to: " + moved.errortext);
