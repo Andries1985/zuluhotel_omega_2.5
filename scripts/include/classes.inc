@@ -120,7 +120,7 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 					fract_array.append( GetShieldGraphics() );
 					break;
 		CLASSEID_THIEF:		
-					fract_array.append( GetRingmailArmorGraphics() );
+					//fract_array.append( GetRingmailArmorGraphics() );
 					fract_array.append( GetChainmailArmorGraphics() );
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );

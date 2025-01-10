@@ -22,7 +22,7 @@ program fanofknives(who)
     endif
 
     var range := thief*3;
-    var victims := ListMobilesNearLocationEx( who.x, who.y, who.z, range, 0x01, who.realm );
+    var victims := ListMobilesNearLocationEx( who.x, who.y, LIST_IGNORE_Z, range, 0x01, who.realm );
     if(Len(victims) < 2)
         return;
     else
@@ -34,7 +34,7 @@ program fanofknives(who)
     var safevictims := SmartAoE(who, victims);
     foreach targ in safevictims
         if(targ != who)
-            los := CheckLosBetween( who.x, who.y, who.z, targ.x, targ.y, targ.z, who.realm );
+            los := CheckLosBetween( who.x, who.y, LIST_IGNORE_Z, targ.x, targ.y, LIST_IGNORE_Z, who.realm );
             if(los)
                 var checkNoPK := GetObjProperty(targ, "NOPKAREA");
                 PlayMovingEffectEx( who, targ, 0x2C8F, 5, 0, 0x3f, render := 0 );
