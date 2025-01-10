@@ -695,10 +695,11 @@ endfunction
 function ClassWeapons(classString)
 
 	case (classString)
-		//Shepherds Crook, bow, heavy crossbow, crossbow, Yumi, Composite Bow, Repeating Crossbow
-		"IsBard": return {0x0e81, 0x13B2, 0x13fd, 0x0f4f, 0x27a5, 0x26c2, 0x26c3};
+		//Shepherds Crook, bow, heavy crossbow, crossbow, Yumi, Composite Bow, Repeating Crossbow, Lajatang
+		"IsBard": return {0x0e81, 0x13B2, 0x13fd, 0x0f4f, 0x27a5, 0x26c2, 0x26c3, 0x27a7};
 		//crossbow, bow, heavy crossbow, Yumi, Sai, Composite Bow, Repeating Crossbow, Kryss, Short Spear, Spear, Warfork, Dagger, Skinning Knife, Pitchfork
 		"IsThief": return {0x0f4f, 0x13B2, 0x13fd, 0x27a5, 0x27af, 0x26c2, 0x26c3, 0x1401, 0x1402, 0x0f63, 0x1404, 0x0f51, 0x0ec4, 0x0e87};
+		//Black Staff, Gnarled Staff, QuarterStaff
 		"IsMage": return {0x0df0, 0x13f9, 0x0e8a};
 		default:
 	endcase
