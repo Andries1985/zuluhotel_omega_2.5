@@ -4,6 +4,7 @@ use uo;
 use os;
 
 include ":staff:include/staff";
+include "include/areas";
 
 program textcmd_summon( character , whom )
 
