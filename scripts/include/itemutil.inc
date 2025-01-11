@@ -2,7 +2,9 @@ use uo;
 
 include "include/objtype";
 include "include/attributes";
-	
+include "include/constants/settings";
+include "include/constants/propids";
+
 function ConsumeObjType( who , objtype , amount )
 
 	var item := FindItemInContainer( who.backpack , objtype );
@@ -189,14 +191,14 @@ function FitRequirements( who , item )
 	
 endfunction
 
+function GetPlatemailArmorGraphics()
 
-function GetBoneArmorGraphics()
-
-	return { 0x144e, 0x144f, 0x1450, 0x1451, 0x1452,
-		 0x1453, 0x1454, 0x1455, 0x1456, 0x1457 };
+	return { 0x1408, 0x1409, 0x140a, 0x140b, 0x140c,
+		 0x140d, 0x140e, 0x140f, 0x1410, 0x1411,
+		 0x1412, 0x1413, 0x1414, 0x1415, 0x1416,
+		 0x1417, 0x1418, 0x1419, 0x141a, 0x1c04, 0x1c05 };
 
 endfunction
-
 
 function GetChainmailArmorGraphics()
 
@@ -205,6 +207,28 @@ function GetChainmailArmorGraphics()
 
 endfunction
 
+function GetRingmailArmorGraphics()
+
+	return { 0x13e5, 0x13e6, 0x13e7, 0x13e8, 0x13e9,
+		 0x13ea, 0x13eb, 0x13ec, 0x13ed, 0x13ee,
+		 0x13ef, 0x13f0, 0x13f1, 0x13f2 };
+
+endfunction
+
+function GetBoneArmorGraphics()
+
+	return { 0x144e, 0x144f, 0x1450, 0x1451, 0x1452,
+		 0x1453, 0x1454, 0x1455, 0x1456, 0x1457 };
+
+endfunction
+
+function GetStuddedLeatherArmorGraphics()
+
+	return { 0x13d4, 0x13d5, 0x13d6, 0x13d7, 0x13d8,
+		 0x13d9, 0x13da, 0x13db, 0x13dc, 0x13dd,
+		 0x13de, 0x13df, 0x13e0, 0x13e1, 0x13e2 };
+
+endfunction
 
 function GetLeatherArmorGraphics()
 
@@ -219,16 +243,19 @@ function GetLeatherArmorGraphics()
 	// 0x141b to 0x154c is masks
 endfunction
 
+function GetShieldGraphics()
 
-function GetPlatemailArmorGraphics()
-
-	return { 0x1408, 0x1409, 0x140a, 0x140b, 0x140c,
-		 0x140d, 0x140e, 0x140f, 0x1410, 0x1411,
-		 0x1412, 0x1413, 0x1414, 0x1415, 0x1416,
-		 0x1417, 0x1418, 0x1419, 0x141a, 0x1c04, 0x1c05 };
+	return { 0x1b72, 0x1b73, 0x1b74, 0x1b75, 0x1b76,
+		 0x1b77, 0x1b78, 0x1b79, 0x1b7a, 0x1b7b, 0x982a };
 
 endfunction
 
+function GetShieldGraphicsThief()
+
+	return { 0x1b72, 0x1b74, 0x1b75, 0x1b76,
+		 0x1b77, 0x1b78, 0x1b79, 0x1b7a, 0x1b7b };
+
+endfunction
 
 function GetPossiblePropertyNames()
 
@@ -396,33 +423,6 @@ function GetPossiblePropertyNames()
 			
 endfunction
 
-
-function GetRingmailArmorGraphics()
-
-	return { 0x13e5, 0x13e6, 0x13e7, 0x13e8, 0x13e9,
-		 0x13ea, 0x13eb, 0x13ec, 0x13ed, 0x13ee,
-		 0x13ef, 0x13f0, 0x13f1, 0x13f2 };
-
-endfunction
-
-
-function GetShieldGraphics()
-
-	return { 0x1b72, 0x1b73, 0x1b74, 0x1b75, 0x1b76,
-		 0x1b77, 0x1b78, 0x1b79, 0x1b7a, 0x1b7b };
-
-endfunction
-
-
-function GetStuddedLeatherArmorGraphics()
-
-	return { 0x13d4, 0x13d5, 0x13d6, 0x13d7, 0x13d8,
-		 0x13d9, 0x13da, 0x13db, 0x13dc, 0x13dd,
-		 0x13de, 0x13df, 0x13e0, 0x13e1, 0x13e2 };
-
-endfunction
-
-
 function IsCarpet( item )
 
 	if( item.objtype >= UOBJ_CARPET_START and item.objtype <= UOBJ_CARPET_END )
@@ -442,7 +442,6 @@ function IsCloth( item )
 	endif
 
 endfunction
-
 
 function IsConsommable( item )
 
@@ -504,7 +503,6 @@ function IsConsommable( item )
 	
 endfunction
 
-
 function IsEquipped( who, what )
 
 	var hand1	:= GetEquipmentByLayer( who , 0x01 );
@@ -520,7 +518,6 @@ function IsEquipped( who, what )
 
 endfunction
 
-
 function IsFish( theobj )
 
 	if( (theobj >= UOBJ_FISH_START) and (theobj <= UOBJ_FISH_END) )
@@ -532,7 +529,6 @@ function IsFish( theobj )
 	endif
 		
 endfunction
-
 
 function IsIDable( item )
 
@@ -550,7 +546,6 @@ function IsIDable( item )
 
 endfunction
 
-
 function IsInContainer( container , item )
 
    	foreach thing in EnumerateItemsInContainer( container, ENUMERATE_ROOT_ONLY )
@@ -562,7 +557,6 @@ function IsInContainer( container , item )
    	return 0;
 
 endfunction
-
 
 function IsIngot( item )
 
@@ -585,7 +579,6 @@ function IsLog( item )
 	endif
 
 endfunction
-
 
 function IsMinable( theobj , othertype )
 
@@ -619,7 +612,6 @@ function IsMinable( theobj , othertype )
 	
 endfunction
 
-
 function IsOre( item )
 
 	if( item.objtype >= UOBJ_ORE_START  and item.objtype <= UOBJ_ORE_END )
@@ -647,7 +639,6 @@ function IsHide( objtype )
 
 endfunction
 
-
 function IsReagent( item )
 
 	if( item.objtype >= UOBJ_REAGENT_START and item.objtype <= UOBJ_REAGENT_END )
@@ -657,7 +648,6 @@ function IsReagent( item )
 	endif
 	
 endfunction
-
 
 function IsSand( theobj )
 
@@ -675,7 +665,6 @@ function IsSand( theobj )
 
 endfunction
 
-
 function IsSwamp( theobjtype )
 
 	if( (theobjtype >= 0x053b) and (theobjtype <= 0x0553) and (theobjtype != 0x0550 ) )
@@ -690,7 +679,6 @@ function IsSwamp( theobjtype )
 	endif
 	
 endfunction
-
 
 function IsTree( theobj )
 
@@ -709,7 +697,6 @@ function IsTree( theobj )
 	endif
 		
 endfunction
-
 
 function IsWater( theobj )
 
@@ -742,7 +729,6 @@ function IsWater( theobj )
 
 endfunction
 
-
 function PlayMagicCircleEffect( who ) 
 
 	var parms := {};
@@ -754,7 +740,6 @@ function PlayMagicCircleEffect( who )
 	Start_Script( ":summoning:magiccircleappear" , parms );
 	
 endfunction
-
 
 function PlayWaterfallEffect( who )
 
@@ -768,7 +753,6 @@ function PlayWaterfallEffect( who )
 	
 endfunction
 
-	
 function ResetAllHitscriptPropsExcep( item , excep := "" )
 
 	var cprops := {	"ChanceOfEffect",
@@ -894,7 +878,6 @@ function IsSign (item)
 	endif
 	return 0;
 endfunction
-
 
 function IsJewel(item)
 
