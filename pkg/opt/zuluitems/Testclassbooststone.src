@@ -44,8 +44,6 @@ program testclassbooststone( who )
 
     var gfdata := {
             "<[ STARTER CLASS ]>",
-            "You will be able to",
-            "select your class.",
             "This will max your",
             "stats and statcaps",
             "as well as skills",
