@@ -185,7 +185,7 @@ program autostart_boat( param )
 endprogram
 
 function DoEncounter()
-  foreach who in  ListMobilesNearLocationEx(cint(boat.x), cint(boat.y), cint(GetMapInfo( cint(boat.x), cint(boat.y) ).z), 4, LISTEX_FLAG_GHOST, boat.realm )
+  foreach who in  ListMobilesNearLocationEx(cint(boat.x), cint(boat.y), cint(GetMapInfo( cint(boat.x), cint(boat.y), boat.realm ).z), 4, LISTEX_FLAG_GHOST, boat.realm )
 	  PlaySoundEffect(who, SFX_SPELL_RESURRECTION);
 	  ResurrectMobile( who );
   endforeach

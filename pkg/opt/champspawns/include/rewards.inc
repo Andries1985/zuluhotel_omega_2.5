@@ -7,10 +7,10 @@ function RainDownMoney(corpse)
   for (i := -10; i <= 10 ; i := i + 1)
     var j;
     for (j := -10; j <= 10; j := j + 1)
-      tile := GetMapInfo(i, j);
+      tile := GetMapInfo(i, j, corpse.realm);
       if(tile)
 		blocked := 0;
-		var altar := ListItemsAtLocation( corpse.x+i, corpse.y+j, corpse.z );
+		var altar := ListItemsAtLocation( corpse.x+i, corpse.y+j, corpse.z, corpse.realm );
 		foreach item in altar
 			if(item.color == 1157)
 				blocked := 1;

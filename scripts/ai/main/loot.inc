@@ -1,7 +1,16 @@
+use uo;
+use os;
+use basic;
+use cfgfile;
+use npc;
+
+include "include/attributes";
+
 Const STARTHAIR := 0x2030;
 Const ENDHAIR := 0x2060;
 
 function grabloot()
+	var me;
 	if( GetGlobalProperty( "#NoNpcLooting" ) )
 		return;
 	endif
@@ -17,7 +26,7 @@ function grabloot()
 	
 	mypack := me.backpack;
 	if( !mypack )
-		var bpack := CreateItemAtLocation( me.x , me.y , me.z , 0x0E75 , 1 );
+		var bpack := CreateItemAtLocation( me.x , me.y , me.z , 0x0E75 , 1, me.realm );
 		if( bpack )
 			if( EquipItem( me , bpack ) )
 				mypack := bpack;
@@ -25,7 +34,7 @@ function grabloot()
 				return;
 			endif
 		else
-			bpack := CreateItemAtLocation( me.x , me.y , me.z , 0x0E75 , 1 );
+			bpack := CreateItemAtLocation( me.x , me.y , me.z , 0x0E75 , 1, me.realm );
 			if( bpack )
 				if( EquipItem( me , bpack ) )
 					mypack := bpack;
@@ -38,7 +47,7 @@ function grabloot()
 		endif
 	endif	
 
-	var Near_Items := ListItemsNearLocation(me.x, me.y, me.z,6);
+	var Near_Items := ListItemsNearLocation(me.x, me.y, me.z, 6, me.realm);
 
      foreach item in Near_Items
 
@@ -50,7 +59,7 @@ function grabloot()
 	if (sh.multi || sh.multi.serial)
 		break;
 	endif
-	var info := cint(GetMapInfo( cint(item.x) , cint(item.y) ).landtile);
+	var info := cint(GetMapInfo( cint(item.x) , cint(item.y), item.realm ).landtile);
 	if ((info > cint(0x405)) && (info < cint(0x456)))
 		break;
 	endif
