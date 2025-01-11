@@ -1,0 +1,175 @@
+use uo;
+
+include "include/client";
+include "include/classes";
+
+program testclassbooststone( who )
+
+    //if(GetObjProperty( who, "StartingClass" ))
+	//	SendSysmessage( who, "You've chosen a class already. Contact staff if you've made a mistake.", FONT_NORMAL, 2595 );
+	//	return;
+    //endif
+
+    var gflayout := {
+            "nodispose",                                                // You did not want to hit esc, did you?
+            "page 0",                                                   // We initialize the first page which is the background
+            "GumpPic 860 400 11265",                                    // We want the dark background
+            "text 890 470 2595 0",                                      // The main headline 
+            "page 1",	                                                // Initialize the page
+            "text 900 510 2567 1", 
+            "text 900 525 2567 2",
+            "text 900 540 2567 3",
+            "text 900 555 2567 4",
+            "text 910 610 2595 5",
+
+            "text 940 650 2496 6", 
+            "text 940 675 2496 7",
+            "text 940 700 2496 8",
+            "text 940 725 2496 9",
+            "text 940 750 2496 10",
+            "text 940 775 2496 11",
+
+            "text 887 825 2567 12",
+            "text 880 840 2567 13",
+
+            "radio 920 652 11410 11402 0 100",                             // Ranger
+            "radio 920 677 11410 11402 0 200",                             // Warrior
+            "radio 920 702 11410 11402 0 300",                             // Mage
+            "radio 920 727 11410 11402 0 400",                             // Thief
+            "radio 920 752 11410 11402 0 500",                             // Bard
+            "radio 920 777 11410 11402 0 600",                             // Crafter
+
+            "button 926 880 249 248 1 0 1"                                // Okay button
+        };
+
+    var gfdata := {
+            "<[ STARTER CLASS ]>",
+            "You will be able to",
+            "select your class.",
+            "This will max your",
+            "stats and statcaps",
+            "as well as skills",
+            "and skillcaps to 150.",
+            "<[ CLASS ]>",
+            "Ranger",
+            "Warrior",
+            "Mage",
+            "Thief",
+            "Bard",
+            "Crafter",
+            "Select a starting class",
+            "and hit the OKAY button."
+        };
+
+    var gump := SendDialogGump( who, gflayout, gfdata );
+    if( !gump )
+        SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
+        return;
+    endif
+
+    // Okay button wasn't pressed
+    if (gump[0] != 1)
+        SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
+        return 0;
+    endif
+    
+    var playerchoice;
+
+    foreach key in ( gump.keys )
+        playerchoice := key;
+    endforeach
+
+    var selectedclass;
+    var classid;
+    
+    case(playerchoice)
+        100:    selectedclass := SetObjProperty(who, "StartingClass", "Ranger" );
+                classid := CLASSEID_RANGER;
+        200:	selectedclass := SetObjProperty(who, "StartingClass", "Warrior" );
+                classid := CLASSEID_WARRIOR;
+        300:	selectedclass := SetObjProperty(who, "StartingClass", "Mage" );
+                classid := CLASSEID_MAGE;
+        400:	selectedclass := SetObjProperty(who, "StartingClass", "Thief" );
+                classid := CLASSEID_THIEF;
+        500:	selectedclass := SetObjProperty(who, "StartingClass", "Bard" );
+                classid := CLASSEID_BARD;
+        600:    selectedclass := SetObjProperty(who, "StartingClass", "Crafter" );
+                classid := CLASSEID_CRAFTER;
+        default: selectedclass := "The player must have canceled the gump without doing anything";
+    endcase
+
+    var i;
+    for(i := 0; i < 49; i := i + 1)
+        SetBaseSkill(who, i, 0);
+    endfor
+
+    var skillamount := 150;
+    foreach skill in GetClasseSkills( classid )
+        SetBaseSkill(who, skill, skillamount);
+    endforeach
+
+    SetBaseStrength(who, 150);
+    SetBaseIntelligence(who, 150);
+    SetBaseDexterity(who, 150);
+
+    AssignClasse( who );
+    testmaxcaps(who);
+    testmaxstatcaps(who);
+
+    selectedclass := GetObjProperty(who, "StartingClass");
+    SendSysmessage( who, "You are now a level 6 "+selectedclass+". Good luck in your travels!", FONT_NORMAL, 2601 );
+
+    return;
+
+endprogram
+
+function testmaxcaps(who)
+	//var player;
+	//player := Target( who );
+	var matrix := GetObjProperty(who, "pScrollMatrix");
+	var x := 40, y := 30;
+	var skill, cap, i, count := 0;
+	for(i:=0; i<49; i:=i+1)
+        matrix[i] := 20;
+	endfor
+    SetObjProperty(who, "pScrollMatrix", 20);
+return;
+
+endfunction
+
+function testmaxstatcaps(who)
+
+var statMatrix := GetObjProperty(who, "statMatrix");
+    if(!statMatrix)
+      statMatrix := {0, 0, 0};
+    endif
+    //if(stat == ATTRIBUTEID_STRENGTH)
+      if(statMatrix[1] >= 20)
+        statMatrix[1] := 20;
+      else
+         statMatrix[1] := 20;
+      endif
+      SetBaseStrength(who, 150);
+    //elseif(stat == ATTRIBUTEID_DEXTERITY)
+      if(statMatrix[2] >= 20)
+        statMatrix[2] := 20;
+      else
+        statMatrix[2] := 20;
+      endif
+      SetBaseDexterity(who, 150);
+    //elseif(stat == ATTRIBUTEID_INTELLIGENCE)
+      if(statMatrix[3] >= 20)
+        statMatrix[3] := 20;
+      else
+        statMatrix[3] := 20;
+      endif
+      SetBaseIntelligence(who, 150);
+    //endif
+
+    SetObjProperty(who, "statMatrix", statMatrix);
+
+    PlayObjectCenteredEffect(who, 0x33EA, 0x1, 10);
+    PlayObjectCenteredEffect(who, 0x373A, 0x1, 10);
+    PlaySoundEffect(who, 0x5C1);
+
+endfunction
