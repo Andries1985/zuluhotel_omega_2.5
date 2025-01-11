@@ -26,7 +26,7 @@ program cast_recall( caster, spell_id )
 		return 0;
 	endif
 
-	var multi2 := GetStandingHeight( caster.x, caster.y, caster.z ).multi;
+	var multi2 := GetStandingHeight( caster.x, caster.y, caster.z, caster.realm ).multi;
 	if( multi2 )
 		if( !Iscowner( caster, multi2 )  )
 			if( !IsFriend( caster, multi2, RECALL_TO) )
@@ -69,11 +69,13 @@ program cast_recall( caster, spell_id )
 	var tox := CInt( GetObjProperty( cast_on, "x" ) );
 	var toy := CInt( GetObjProperty( cast_on, "y" ) );
 	var toz := CInt( GetObjProperty( cast_on, "z" ) );
-	var sx  := caster.x;
-	var sy  := caster.y;
-	var sz  := caster.z;
+	var torealm := GetObjProperty( cast_on, "realm" );
+	//var sx  := caster.x;
+	//var sy  := caster.y;
+	//var sz  := caster.z;
+	//var srealm  := caster.realm;
 
-	if( !tox && !toy && !toz )
+	if( !tox && !toy && !toz && !torealm )
 		SendSysmessage( caster, "This is a blank rune!") ;
 		return 0;
 		
@@ -86,7 +88,7 @@ program cast_recall( caster, spell_id )
 
 	endif
 
-	var multi := GetStandingHeight( tox, toy, toz ).multi;
+	var multi := GetStandingHeight( tox, toy, toz, torealm ).multi;
 	if( multi )
 		if( !Iscowner( caster, multi )  )
 			if( !IsFriend( caster, multi, RECALL_TO) )
@@ -97,7 +99,7 @@ program cast_recall( caster, spell_id )
 	endif
 	var owner;
 	var lamp;
-	var Near_Items := ListItemsNearLocation(tox, toy, toz,10);
+	var Near_Items := ListItemsNearLocation(tox, toy, toz, 10, torealm);
 	foreach thing in Near_Items
 		if (thing.objtype == 0xf156)
 			lamp := thing;
@@ -124,7 +126,7 @@ program cast_recall( caster, spell_id )
 
 	PlaySoundEffect( caster, SFX_SPELL_RECALL1 );
 	sleepms(250);
-	MoveObjectToLocation( caster, tox, toy, toz );
+	MoveObjectToLocation( caster, tox, toy, toz, torealm );
 	PlaySoundEffect( caster, SFX_SPELL_RECALL2 );
 
 endprogram
