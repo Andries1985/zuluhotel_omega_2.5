@@ -30,8 +30,8 @@ use file;
 use polsys;
 use cliloc;
 
-include ":decoratefacets:decorate";
-include ":gumps:yesNo";
+include "../pkg/opt/decoratefacets/include/decorate";
+include ":mdgumps:yesNo";
 
 
 program DecorateFacets(who, text)
