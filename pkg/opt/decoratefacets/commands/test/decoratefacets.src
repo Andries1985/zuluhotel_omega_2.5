@@ -50,32 +50,28 @@ program DecorateFacets(who, text)
 	if(CStr(text) == "ALL")
 		decorate_all := 1;
 	endif
-	//var Post_SA := YesNo( who, "Please select the map version you are using, pre-Stygian Abyss or post Stygian Abyss:", "Post", "Pre", 0, NOT_LOCALIZED );
-	//Print(Post_SA);
+	var Post_SA := YesNo( who, "Are you are using Post Stygian Abyss Maps?", "Yes", "No", 0, NOT_LOCALIZED );
+
 	selected_facets := DecorateFacetsGump ( who, decorate_all );
 	foreach facet in selected_facets
 		case(facet)
 			"britannia":		PlaceDecorations(facet);
-								//if(Post_SA)
+								if(Post_SA == 1)
 									facet := facet + "/newMagincia";
 									PlaceDecorations(facet);
-									facet := 0;
-								//else
+								else
 									facet := facet + "/oldMagincia";
 									PlaceDecorations(facet);
-									facet := 0;
-								//endif
+								endif
 								SetGlobalProperty("britannia_Decorated", 1);
-			"britannia_alt":	//if(Post_SA)
+			"britannia_alt":	if(Post_SA == 1)
 									facet := facet + "/postSA";
 									PlaceDecorations(facet);
-									facet := facet;
-								//else
+								else
 									PlaceDecorations(facet + "/preSA");
 									facet := facet + "/preSA/oldMagincia";
 									PlaceDecorations(facet);
-									facet := facet;facet := facet;
-								//endif
+								endif
 								SetGlobalProperty("britannia_alt_Decorated", 1);
 			"ilshenar":			PlaceDecorations(facet);
 								SetGlobalProperty("ilshenar_Decorated", 1);
