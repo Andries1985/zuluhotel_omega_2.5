@@ -17,26 +17,18 @@ include ":staff:include/staff";
 
 program textcmd_goxyz( who, text )
 
-/* 	var gCmd := GetObjProperty(who, ".goxyz");
-	if(!gCmd)
-		SendSysMessage( who , "You havn't been granted this command." );
-		LogCommand(who, GetProcess(GetPid()).name, who.name+" is trying to use .goxyz without permission!");
-		return;
-	endif
-	if(who.cmdlevel < 4 && ReadGameClock() > gCmd)
-		SendSysMessage( who , "You can't use this command anymore." );
-		EraseObjProperty(who, ".goxyz");
-		return;
-	endif */
-
 	var params := SplitWords( text );
-    if (len(params) < 3) // didn't pass Z
-        params[3] := GetMapInfo( CInt(params[1]), CInt(params[2]) ).z;
-    endif
+
+	var realm := Lower(params[4]);
+
+	Print($"Location is "+CInt(params[1])+" "+CInt(params[2])+" "+CInt(params[3])+" "+realm);
+    //if (len(params) < 3) // didn't pass Z
+    //    params[3] := GetMapInfo( CInt(params[1]), CInt(params[2]) ).z;
+    //endif
 
 	var oldxyz := {who.x, who.y, who.z, who.realm};
-	var res := MoveObjectToLocation( who, CInt(params[1]), CInt(params[2]), CInt(params[3]), "britannia",MOVEOBJECT_FORCELOCATION );
-	LogCommand(who, GetProcess(GetPid()).name, params[1]+","+params[2]+","+params[3]);
+	var res := MoveObjectToLocation( who, CInt(params[1]), CInt(params[2]), CInt(params[3]), realm, MOVEOBJECT_FORCELOCATION );
+	LogCommand(who, GetProcess(GetPid()).name, params[1]+","+params[2]+","+params[3]+","+realm);
     if (!res)
         SendSysMessage( who, "Unable to go there: " + res.errortext );
 		return;

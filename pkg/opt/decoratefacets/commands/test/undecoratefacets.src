@@ -36,16 +36,16 @@ program UndecorateFacets( who )
 		case(facet)
 			"britannia":		RemoveDecorations(facet);
 								//if(Post_SA)
-								//	facet := facet + "/newMagincia";
-								//	RemoveDecorations(facet);
+									facet := facet + "/newMagincia";
+									RemoveDecorations(facet);
 								//else
 									facet := facet + "/oldMagincia";
 									RemoveDecorations(facet);
 								//endif
 								EraseGlobalProperty("britannia_Decorated");
 			"britannia_alt":	//if(Post_SA)
-								//	facet := facet + "/postSA";
-								//	RemoveDecorations(facet);
+									facet := facet + "/postSA";
+									RemoveDecorations(facet);
 								//else
 									RemoveDecorations(facet + "/preSA");
 									facet := facet + "/preSA/oldMagincia";

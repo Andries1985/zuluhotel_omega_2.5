@@ -57,20 +57,24 @@ program DecorateFacets(who, text)
 		case(facet)
 			"britannia":		PlaceDecorations(facet);
 								//if(Post_SA)
-								//	facet := facet + "/newMagincia";
-								//	PlaceDecorations(facet);
+									facet := facet + "/newMagincia";
+									PlaceDecorations(facet);
+									facet := 0;
 								//else
 									facet := facet + "/oldMagincia";
 									PlaceDecorations(facet);
+									facet := 0;
 								//endif
 								SetGlobalProperty("britannia_Decorated", 1);
 			"britannia_alt":	//if(Post_SA)
-								//	facet := facet + "/postSA";
-								//	PlaceDecorations(facet);
+									facet := facet + "/postSA";
+									PlaceDecorations(facet);
+									facet := facet;
 								//else
 									PlaceDecorations(facet + "/preSA");
 									facet := facet + "/preSA/oldMagincia";
 									PlaceDecorations(facet);
+									facet := facet;facet := facet;
 								//endif
 								SetGlobalProperty("britannia_alt_Decorated", 1);
 			"ilshenar":			PlaceDecorations(facet);
