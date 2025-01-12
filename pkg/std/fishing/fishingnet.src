@@ -64,20 +64,20 @@ case (foundwhat)
 6: if (Random(10)>8)
 	it := CreateItemInBackpack( character,0x1E62,1);
         it.decay :=120;
-	it.color :=1160;
+	it.color :=1765;
 
 	SendSysmessage(character, "You catch a trophy.");
    	it.desc := character.name + " fishing trophy";
    elseif (Random(10)>8)
 	it := CreateItemInBackpack( character,0x1E69,1);
         it.decay :=120;
-	it.color :=1160;
+	it.color :=1765;
 	SendSysmessage(character, "You catch a trophy.");
    	it.desc := character.name + " fishing trophy";
    else
 	it := CreateItemInBackpack( character,0x0E76,1);
         it.decay :=120;
-	it.color :=1160;
+	it.color :=1765;
         CreateItemInContainer( it, 0xeed, Random(400)+50);
         sendsysmessage(character, "You find an old bag!");
    endif
