@@ -50,28 +50,28 @@ program DecorateFacets(who, text)
 	if(CStr(text) == "ALL")
 		decorate_all := 1;
 	endif
-	var Post_SA := YesNo( who, "Please select the map version you are using, pre-Stygian Abyss or post Stygian Abyss:", "Post", "Pre", 0, NOT_LOCALIZED );
-	Print(Post_SA);
+	//var Post_SA := YesNo( who, "Please select the map version you are using, pre-Stygian Abyss or post Stygian Abyss:", "Post", "Pre", 0, NOT_LOCALIZED );
+	//Print(Post_SA);
 	selected_facets := DecorateFacetsGump ( who, decorate_all );
 	foreach facet in selected_facets
 		case(facet)
 			"britannia":		PlaceDecorations(facet);
-								if(Post_SA)
-									facet := facet + "/newMagincia";
-									PlaceDecorations(facet);
-								else
+								//if(Post_SA)
+								//	facet := facet + "/newMagincia";
+								//	PlaceDecorations(facet);
+								//else
 									facet := facet + "/oldMagincia";
 									PlaceDecorations(facet);
-								endif
+								//endif
 								SetGlobalProperty("britannia_Decorated", 1);
-			"britannia_alt":	if(Post_SA)
-									facet := facet + "/postSA";
-									PlaceDecorations(facet);
-								else
+			"britannia_alt":	//if(Post_SA)
+								//	facet := facet + "/postSA";
+								//	PlaceDecorations(facet);
+								//else
 									PlaceDecorations(facet + "/preSA");
 									facet := facet + "/preSA/oldMagincia";
 									PlaceDecorations(facet);
-								endif
+								//endif
 								SetGlobalProperty("britannia_alt_Decorated", 1);
 			"ilshenar":			PlaceDecorations(facet);
 								SetGlobalProperty("ilshenar_Decorated", 1);
@@ -89,12 +89,12 @@ endprogram
 function PlaceDecorations(facet)
 
 	Print("Processing facet " + facet);
-	var files := ListDecorationConfigFiles( "../pkg/opt/decoratefacets/decorations/" + facet );
+	var files := ListDecorationConfigFiles( ":decoratefacets:decorations/" + facet );
 	var deco_keys := {};
 	var cfg_elem;
 	var cfg_file;
 	foreach cfg_file_name in files
-		cfg_file := OpenDecorationCfgfile( "../pkg/opt/decoratefacets/decorations/" + facet + "/" + cfg_file_name );
+		cfg_file := OpenDecorationCfgfile( ":decoratefacets:decorations/" + facet + "/" + cfg_file_name );
 		deco_keys := ListDecorationCfgfileContents( cfg_file );
 		foreach key in deco_keys
 			cfg_elem := FindConfigElem( cfg_file, key );

@@ -916,7 +916,7 @@ endfunction
  *
  */
 function GetCfgConst(elem_name, prop_name)
-    var cfg := ReadConfigFile("../pkg/utils/mdgumps/config/GumpInfo");
+    var cfg := ReadConfigFile(":mdgumps:config/GumpInfo");
     if ( cfg.errortext )
         return XGFError("GetCfgConst():: Unable to open GumpInfo.cfg -> "+cfg.errortext);
     endif

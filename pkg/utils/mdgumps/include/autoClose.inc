@@ -50,7 +50,7 @@ endfunction
  *
  */
 function GFCloseGumpTimed( mobile, pid, timer, ret_val:=0 )
-	return Start_Script( "../pkg/utils/mdgumps/scripts/autoClose/autoClose", array{mobile, pid, timer, ret_val} );
+	return Start_Script( ":mdgumps:scripts/autoClose/autoClose", array{mobile, pid, timer, ret_val} );
 endfunction
 
 /*
@@ -71,7 +71,7 @@ endfunction
  *
  */
 function GFCloseGumpOnMovedCoordinateDistance( mobile, pid, variance:=1, ret_val:=0 )
-	return Start_Script( "../pkg/utils/mdgumps/scripts/autoClose/autoCloseOnMovedCoordinateDistance", array{mobile, pid, variance, ret_val} );
+	return Start_Script( ":mdgumps:scripts/autoClose/autoCloseOnMovedCoordinateDistance", array{mobile, pid, variance, ret_val} );
 endfunction
 
 /*
@@ -93,7 +93,7 @@ endfunction
  *
  */
 function GFCloseGumpOnMovedDistance( mobile, object, pid, variance:=1, ret_val:=0 )
-	return Start_Script( "../pkg/utils/mdgumps/scripts/autoClose/autoCloseOnMovedDistance", array{mobile, object, pid, dist_traveled, ret_val} );
+	return Start_Script( ":mdgumps:scripts/autoClose/autoCloseOnMovedDistance", array{mobile, object, pid, dist_traveled, ret_val} );
 endfunction
 
 /*
@@ -117,5 +117,5 @@ endfunction
  *
  */
 function GFCloseGumpOnLeaveArea( mobile, x_1, y_1, x_2, y_2, pid, variance:=1, ret_val:=0 )
-	return Start_Script( "../pkg/utils/mdgumps/scripts/autoClose/autoCloseOnLeaveArea", array{mobile, x_1, y_1, x_2, y_2, pid, ret_val} );
+	return Start_Script( ":mdgumps:scripts/autoClose/autoCloseOnLeaveArea", array{mobile, x_1, y_1, x_2, y_2, pid, ret_val} );
 endfunction

@@ -44,7 +44,7 @@ CONST ALIGN_RIGHT	:= 0x2;
  *
  */
 function GFGetCfgConst(elem_name, prop_name)
-	var cfg := ReadConfigFile("../pkg/utils/mdgumps/config/GumpInfo");
+	var cfg := ReadConfigFile(":mdgumps:config/GumpInfo");
 	if ( cfg.errortext )
 		return XGFError("GFGetCfgConst():: Unable to open GumpInfo.cfg -> "+cfg.errortext);
 	endif
