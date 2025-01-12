@@ -885,15 +885,15 @@ var aGFTlength := struct;
          "`',.;:::::::::"+//  3
          "!!!!!!!!!!!!!!"+//  4
          "il1[]]]]]]]]]\""+//  5
-         "bcejotî(){}==="+//  6
-         "adfpqrszIÑ~~~~"+//  7
-         "ghnuvyÅ <>----"+//  8
+         "bcejotÔøΩ(){}==="+//  6
+         "adfpqrszIÔøΩ~~~~"+//  7
+         "ghnuvyÔøΩ <>----"+//  8
          "xJ578$?+++++++"+//  9
          "kCE2369^/**** "+// 10
-         "mwABDFOPéô40%%"+// 11
+         "mwABDFOPÔøΩÔøΩ40%%"+// 11
          "GLNQSZ@#######"+// 12
          "HRT&__________"+// 13
-         "KöUYYYYYYYYYYY"+// 14
+         "KÔøΩUYYYYYYYYYYY"+// 14
          "XXXXXXXXXXXXXX"+// 15
          "VVVVVVVVVVVVVV"+// 16
          "MMMMMMMMMMMMMM"+// 18

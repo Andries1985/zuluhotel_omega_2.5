@@ -1,6 +1,6 @@
 use uo;
 
-include ":mdgumps:gumps";
+include "../pkg/utils/mdgumps/include/gumps";
 
 program PromptDemo(who)
 	var prompt := "Are you sure you want to take this course of action?";

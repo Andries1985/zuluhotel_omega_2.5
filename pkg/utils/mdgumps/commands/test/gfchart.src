@@ -14,7 +14,7 @@ use uo;
 use basic;
 
 //include ":gumps:old-gumps";
-include ":mdgumps:gumps";
+include "../pkg/utils/mdgumps/include/gumps";
 
 
 // Gump constants

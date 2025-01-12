@@ -1,6 +1,6 @@
 use uo;
 
-include ":mdgumps:gumps";
+include "../pkg/utils/mdgumps/include/gumps";
 
 Program GumpTest(who, gump_id)
 	gump_id := CInt(gump_id);

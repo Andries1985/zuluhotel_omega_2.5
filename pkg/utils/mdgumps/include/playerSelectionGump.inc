@@ -2,7 +2,7 @@ use uo;
 use os;
 use util;
 
-include ":mdgumps:gumps";
+include "../pkg/utils/mdgumps/include/gumps";
 
 /*
  * SelectCharacter( mobile, cmdlevel:=0 )

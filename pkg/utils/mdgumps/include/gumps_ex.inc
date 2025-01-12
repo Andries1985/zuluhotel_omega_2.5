@@ -19,6 +19,8 @@ use os;
 use polsys;
 use cfgfile;
 
+include "../pkg/utils/mdgumps/include/gumps";
+
 // CONSTants for GFTextCoords()
 CONST ALIGN_CENTER	:= 0x1;
 CONST ALIGN_RIGHT	:= 0x2;
@@ -42,7 +44,7 @@ CONST ALIGN_RIGHT	:= 0x2;
  *
  */
 function GFGetCfgConst(elem_name, prop_name)
-	var cfg := ReadConfigFile(":gumps:GumpInfo");
+	var cfg := ReadConfigFile("../pkg/utils/mdgumps/config/GumpInfo");
 	if ( cfg.errortext )
 		return XGFError("GFGetCfgConst():: Unable to open GumpInfo.cfg -> "+cfg.errortext);
 	endif

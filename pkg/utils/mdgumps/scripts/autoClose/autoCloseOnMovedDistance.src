@@ -1,4 +1,4 @@
-include ":mdgumps:gumps";
+include "../pkg/utils/mdgumps/include/gumps";
 
 program autoCloseGumpOnMovedDistance(params)
 	var mobile			:= params[1];

@@ -25,7 +25,7 @@ use datafile;
  * datafile_obj or error
  *
  */
-function GFOpenCacheDatafile( path:=":gumps:gumps" )
+function GFOpenCacheDatafile( path:="../pkg/utils/mdgumps/gumps" )
 
 	var datafile := OpenDataFile( path );
 	if( datafile.errortext )
@@ -218,10 +218,10 @@ endfunction
  * Dictionary
  *
  */
-function GFListCachedGumps( datafile:=":gumps:gumps" )
+function GFListCachedGumps( datafile:="../pkg/utils/mdgumps/gumps" )
 
-	var datafile := GFOpenCacheDatafile( datafile ),
-		info := Dictionary;
+	datafile := GFOpenCacheDatafile( datafile );
+		 var	info := Dictionary;
 	foreach key in ( datafile.Keys() )
 		info.Insert( key, datafile.FindElement( key ).PropNames() );
 	endforeach

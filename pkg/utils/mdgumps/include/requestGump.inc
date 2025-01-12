@@ -11,7 +11,7 @@
 use uo;
 use os;
 
-include ":mdgumps:gumps";
+include "../pkg/utils/mdgumps/include/gumps";
 
 CONST CANCEL_BTN_OFF	:= 0x0;
 CONST CANCEL_BTN_ON	:= 0x1;

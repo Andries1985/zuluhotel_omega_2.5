@@ -11,8 +11,8 @@
 use uo;
 use os;
 
-include ":mdgumps:gumps";
-include ":mdgumps:gumps_ex";
+include "../pkg/utils/mdgumps/include/gumps";
+include "../pkg/utils/mdgumps/include/gumps_ex";
 
 /*
  * GumpPrompt(mobile, text, movable:=0, hue:=1153)

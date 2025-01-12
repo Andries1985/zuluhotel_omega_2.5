@@ -37,16 +37,17 @@
 use uo;
 use os;
 use basic;
+use cfgfile;
 
-include ":mdgumps:autoClose";
-include ":mdgumps:gumpPrompt";
-include ":mdgumps:gumps_ex";
-include ":mdgumps:htmlGump";
-include ":mdgumps:playerSelectionGump";
-include ":mdgumps:requestGump";
-include ":mdgumps:selectionGump";
-include ":mdgumps:textConsts";
-include ":mdgumps:yesNo";
+include "../pkg/utils/mdgumps/include/autoClose";
+include "../pkg/utils/mdgumps/include/gumpPrompt";
+include "../pkg/utils/mdgumps/include/gumps_ex";
+include "../pkg/utils/mdgumps/include/htmlGump";
+include "../pkg/utils/mdgumps/include/playerSelectionGump";
+include "../pkg/utils/mdgumps/include/requestGump";
+include "../pkg/utils/mdgumps/include/selectionGump";
+include "../pkg/utils/mdgumps/include/textConsts";
+include "../pkg/utils/mdgumps/include/yesNo";
 
 // CONSTants for the GFAddButton() function
 CONST GF_PAGE_BTN	:= 0x0;
@@ -135,7 +136,7 @@ function GFClosable(byref gump, bool)
 			gump.base.CloseLoc := 0;
 			break;
 		default:
-			return XGFError("gumps::Closable: Invalid bool value '"+bool+"'");
+			return XGFError("mdgumps::Closable: Invalid bool value '"+bool+"'");
 	endcase
 	return 1;
 endfunction
@@ -178,7 +179,7 @@ function GFDisposable(byref gump, bool)
 			gump.base.DisposeLoc := 0;
 			break;
 		default:
-			return XGFError("gumps::Disposable: Invalid bool value '"+bool+"'");
+			return XGFError("mdgumps::Disposable: Invalid bool value '"+bool+"'");
 	endcase
 	return 1;
 endfunction
@@ -217,7 +218,7 @@ function GFMovable(byref gump, bool)
 			gump.base.MoveLoc := 0;
 			break;
 		default:
-			return XGFError("gumps::Movable: Invalid bool value '"+bool+"'");
+			return XGFError("mdgumps::Movable: Invalid bool value '"+bool+"'");
 	endcase
 	return 1;
 endfunction
@@ -915,7 +916,7 @@ endfunction
  *
  */
 function GetCfgConst(elem_name, prop_name)
-    var cfg := ReadConfigFile(":gumps:config/GumpInfo");
+    var cfg := ReadConfigFile("../pkg/utils/mdgumps/config/GumpInfo");
     if ( cfg.errortext )
         return XGFError("GetCfgConst():: Unable to open GumpInfo.cfg -> "+cfg.errortext);
     endif

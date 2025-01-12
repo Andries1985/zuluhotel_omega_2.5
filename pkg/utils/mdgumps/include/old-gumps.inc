@@ -123,6 +123,7 @@
 use uo;
 use os;
 use basic;
+use cfgfile;
 
 // Constants (for GF[Get|Set]NextIndex)
 /////////////////////////////////////////////////////////////////
@@ -1059,7 +1060,7 @@ endfunction
 			gump.base.CloseLoc := 0;
 			break;
 		default:
-			return XGFError("gumps::Closable: Invalid bool value '"+bool+"'");
+			return XGFError("mdgumps::Closable: Invalid bool value '"+bool+"'");
 	endcase
 	return 1;
  endfunction

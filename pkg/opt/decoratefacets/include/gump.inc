@@ -1,7 +1,7 @@
 use uo;
 use os;
 
-include ":mdgumps:gumps";
+include "../pkg/utils/mdgumps/include/gumps";
 
 function AddBlueBack( byref gump, width, height )
 

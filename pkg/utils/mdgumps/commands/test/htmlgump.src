@@ -1,11 +1,10 @@
 use uo;
 
-include ":mdgumps:gumps";
+include "../pkg/utils/mdgumps/include/gumps";
 
 program PromptDemo(who, text)
 	if ( !text )
 		text := "Hey, you didn't enter any text to go with the command!";
 	endif
-	
-	GumpPrompt(who, text);
+	SendHTMLGump(who, "Sample HTML Gump", text);
 endprogram

@@ -11,8 +11,8 @@
 use uo;
 use os;
 
-include ":mdgumps:gumps";
-include ":mdgumps:gumps_ex";
+include "../pkg/utils/mdgumps/include/gumps";
+include "../pkg/utils/mdgumps/include/gumps_ex";
 
 const LOCALIZED := 1;
 const NOT_LOCALIZED := 0;
@@ -39,9 +39,9 @@ function YesNo( mobile, prompt:="", yes_text:="Yes", no_text:="No", delay:=0, yn
 
         var params := array{mobile, prompt, yes_text, no_text, delay, yn_localized};
 
-        var script := Run_Script( ":gumps:scripts/yesNo/yesNoGump", params );
+        var script := Run_Script( "../pkg/utils/mdgumps/scripts/yesNo/yesNoGump", params );
         if( script.errortext )
-                SendSysMessage( mobile, "Error starting script <:gumps:yesNoGump> -->"+script.errortext );
+                SendSysMessage( mobile, "Error starting script <:mdgumps:yesNoGump> -->"+script.errortext );
                 return 0;
         endif
 
