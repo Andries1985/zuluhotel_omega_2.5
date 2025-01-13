@@ -72,7 +72,7 @@ function BuildShip( character, deed )
 
     set_critical( 1 );
 
-    var created := CreateShipKeysAndBuiltDeed( character, shiptype, where.x, where.y, where.z );
+    var created := CreateShipKeysAndBuiltDeed( character, shiptype, where.x, where.y, where.z, where.realm );
     if (!created) 
         return;     // note CreateShip.. prints appropriate error message
     endif
@@ -129,7 +129,7 @@ endfunction
 // Returns a structure with references to the created objects.
 //
 
-function CreateShipKeysAndBuiltDeed( character, shiptype, x, y, z )
+function CreateShipKeysAndBuiltDeed( character, shiptype, x, y, z, realm )
     var bankbox := FindBankBox( character );
 
     var packkey := CreateItemInBackpack( character, UOBJ_COPPER_KEY );
@@ -153,7 +153,7 @@ function CreateShipKeysAndBuiltDeed( character, shiptype, x, y, z )
         return 0;
     endif
 
-    var ship := CreateMultiAtLocation( x, y, z, shiptype );
+    var ship := CreateMultiAtLocation( x, y, z, shiptype, 0, realm );
     if (!ship)
         PrintTextAbovePrivate( character, "I can't place the ship there.", character );
         DestroyItem( packkey );

@@ -1,0 +1,251 @@
+/*
+   Author: MontuZ (MontuZ@aol.com) Feb 21, 2004.
+   Version: 1.0
+   Core: 093
+   Bugs: None. Atleast none that I know of..
+   PS: You know it was done by me when it's so clean.
+*/
+
+use uo;
+use cfgfile;
+
+include "include/client";
+include "include/attributes";
+
+program testOnUse_SkillStone( who )
+
+    /*
+    var Boosted := GetObjProperty( who, "Detsoob" );
+    var StatBoosted := GetObjProperty( who, "Detsnoob" );
+
+    if( Boosted >= 2 )
+		if(!StatBoosted)
+			BoostStat( Who );
+		else
+			SendSysmessage( who, "You've chosen 1 stat already.", FONT_NORMAL, 2595 );
+		endif
+		SendSysmessage( who, "You've chosen 2 skills already.", FONT_NORMAL, 2595 );
+		return;
+    endif
+    */
+
+    var mllayout := {
+    "Page 0",
+    "ReSizePic 350 200 3600 200 120",
+    "Text 420 260 2494 0",
+    "Button 400 262 2118 2117 1 0 1",
+    "Text 420 280 2494 1",
+    "Button 400 282 2118 2117 1 0 2",
+    "Text 370 220 2494 2",
+    "Text 370 240 2494 3"
+    };
+
+    var mldata := {
+    "Boost Skills",
+    "Skip Boost",
+	"You can boost a total of",
+    "2 Skills and 1 stat to 90."
+    };
+
+    var Effect := SendDialogGump( who, mllayout, mldata );
+    if( !Effect )
+        SendSysMessage( who, "Cancelled.", FONT_NORMAL, 2595 );
+        return;
+    endif
+
+    case( Effect[0] )
+    	1:
+        ChangeFromSkillList( who );
+        2:
+        SetObjProperty( who, "SkippedBoost", 1 );
+
+        SendSysmessage( who, "Alrighty.", FONT_NORMAL, 2601 );
+    endcase
+
+endprogram
+
+function ChangeFromSkillList( who )
+
+    var layout2 := array(
+    "Page 0",
+    "ReSizePic 0 0 3600 250 450",
+    "Text 75 30 2494 0"
+    );
+
+    var data2 := array(
+    "Select a Skill"
+    );
+
+    Var cfg     := ReadConfigFile( ":combat:modenchantdesc" );
+    Var count	:= 0;
+    Var done	:= 0;
+    Var page	:= 1;
+    Var perpage	:= 17;
+    Var y 	:= 55;
+    Var i;
+
+    layout2.append( "page " + page );
+
+    if( SKILLID__HIGHEST > perpage )
+        layout2.append( "Button 150 406 5540 5541 0 " + ( page + 1 ) );
+    endif
+
+    for( i := 1; i <= SKILLID__HIGHEST + 1; i := i + 1 )
+        if( done == perpage )
+            done  := 0;
+            page  := page + 1;
+            y 	  := 55;
+            layout2.append( "Page " + page );
+            layout2.append( "Button 80 406 5537 5538 0 " + ( page - 1 ) );
+            if( SKILLID__HIGHEST > ( count + perpage ) )
+                layout2.append( "button 150 406 5540 5541 0 " + ( page + 1 ) );
+            endif
+        endif
+        layout2.append( "Text 25 " + y + " 2597 " + len( data2 ) );
+        layout2.append( "Button 200 " + ( y + 5 ) + " 2104 2103 1 0 " + i );
+        data2.append( cfg[i-1].Skill );
+        y 	:= y + 20;
+        done := done + 1;
+        count := count + 1;
+    endfor
+
+    var res := SendDialogGump( who, layout2, data2 );
+    if( !res[0] )
+        SendSysmessage( who, "Cancelled.", FONT_NORMAL, 2595 );
+        return;
+    endif
+    
+    var Boosted := GetObjProperty( who, "Detsoob" );
+
+    if( !Boosted )
+
+    	SendSysMessage( who, "First Skill Set to 90", FONT_NORMAL, 2601 );
+    	SetBaseSkillBaseValue( who, res[0]-1, 900 );
+    	SetObjProperty( who, "BoostedSkillNr1", res[0]-1 );
+    	SetObjProperty( who, "Detsoob", 1 );
+    	ChangeFromSkillList( who );
+    endif
+    
+    if( Boosted >= 2 )
+    	SendSysmessage( who, "You've chosen 2 skills already.", FONT_NORMAL, 2595 );
+
+/*		Elseif( Boosted == 3 )
+
+    	SendSysMessage( who, "fourth Skill Set to 100", FONT_NORMAL, 2601 );
+
+    	SetBaseSkillBaseValue( who, res[0]-1, 1000 );
+    	EraseObjProperty( who, "Detsoob" );
+
+    	SetObjProperty( who, "Detsoob", 4 );
+
+    	BoostStat( Who );		
+
+    Elseif( Boosted == 2 )
+
+    	SendSysMessage( who, "Third Skill Set to 100", FONT_NORMAL, 2601 );
+
+    	SetBaseSkillBaseValue( who, res[0]-1, 1000 );
+    	EraseObjProperty( who, "Detsoob" );
+
+    	SetObjProperty( who, "Detsoob", 3 );
+    	ChangeFromSkillList( who );
+*/
+    elseif( Boosted == 1 )
+		if(GetObjProperty(who, "BoostedSkillNr1") == res[0]-1)
+    		SendSysMessage( who, "You've already boosted this skill.", FONT_NORMAL, 2601 );
+    		return 0;
+		endif
+
+    	SendSysMessage( who, "Second Skill Set to 90", FONT_NORMAL, 2601 );
+    	SetBaseSkillBaseValue( who, res[0]-1, 900 );
+    	SetObjProperty( who, "BoostedSkillNr2", res[0]-1 );
+    	EraseObjProperty( who, "Detsoob" );
+    	SetObjProperty( who, "Detsoob", 2 );
+    	BoostStat( Who );
+    elseif( Boosted == 0 )
+   	    SendSysMessage( who, "First Skill Set to 90", FONT_NORMAL, 2601 );
+    	SetBaseSkillBaseValue( who, res[0]-1, 900 );
+    	SetObjProperty( who, "BoostedSkillNr1", res[0]-1 );
+    	EraseObjProperty( who, "Detsoob" );
+    	SetObjProperty( who, "Detsoob", 1 );
+    	ChangeFromSkillList( who );
+    endif
+
+endfunction
+
+
+function BoostStat( Who )
+
+    var Boosted := GetObjProperty( who, "Detsoob" );
+    var StatBoosted := GetObjProperty( who, "Detsnoob" );
+
+    if(StatBoosted)
+        return 0;
+    endif
+
+    if( Boosted < 2 )
+        return 0;
+    endif
+
+    if( Boosted > 2 )
+        return 0;
+    endif
+
+    // Text X = <- +>, Y = Up- Down+, Hue, Rank
+
+    
+    var mllayout := {
+    "Page 0",
+    "ReSizePic 350 200 3600 160 120",
+    "Text 370 220 2494 0",
+
+    "Text 390 240 2494 1",
+    "Button 370 245 2104 2103 1 0 1",
+
+    "Text 390 260 2494 2",
+    "Button 370 265 2104 2103 1 0 2",
+    
+    "Text 390 280 2494 3",
+    "Button 370 285 2104 2103 1 0 3"
+    };
+
+
+    var mldata := {
+    "( Boost a Stat )",
+    "Strength",
+    "Dexterity",
+    "Intelligence"
+    };
+
+
+    var Effect := SendDialogGump( who, mllayout, mldata );
+
+    if( !Effect )
+    	SendSysMessage( who, "Cancelled.", FONT_NORMAL, 2595 );
+    	//BoostStat( Who );
+    	return;
+    endif
+
+    case( Effect[0] )
+        1:
+        SetBaseStrength( Who, 90 );
+
+        SendSysMessage( who, "Now choose a race.", FONT_NORMAL, 2601 );
+        SetObjProperty( who, "Detsnoob", 1 );
+        SetObjProperty( who, "BoostedStat", "Str" );
+
+        2:
+        SetBaseDexterity( Who, 90 );
+
+        SendSysMessage( who, "Now choose a race.", FONT_NORMAL, 2601 );
+        SetObjProperty( who, "Detsnoob", 1 );
+        SetObjProperty( who, "BoostedStatt", "Dex" );
+
+        3:
+        SetBaseIntelligence( Who, 90 );
+        SendSysMessage( who, "Now choose a race.", FONT_NORMAL, 2601 );
+        SetObjProperty( who, "Detsnoob", 1 );
+        SetObjProperty( who, "BoostedStatst", "Int" );
+    endcase
+
+EndFunction

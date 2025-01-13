@@ -5,6 +5,7 @@
 use os;
 use uo;
 use cfgfile;
+
 include ":staff:include/staff";
 include "include/math"; // Used for Mod
 
@@ -86,7 +87,7 @@ program textcmd_go( who, text )
 	if(result[0] == MaxLocs)
 		Dest    := locs[mod(result[0], MaxLocs+1)];
 	endif
-	LogCommand(who, GetProcess(GetPid()).name, traveler.name+"/"+traveler.serial, "Sent TO "+dest.x+" "+dest.y+" "+GetMapInfo(Dest.X, Dest.Y).Z);
+	LogCommand(who, GetProcess(GetPid()).name, traveler.name+"/"+traveler.serial, "Sent TO "+dest.x+" "+dest.y+" "+GetMapInfo(Dest.X, Dest.Y, Dest.R).Z+" "+Dest.R);
     // Teleport moble
     var move := MoveObjecttoLocation(Traveler, Dest.X, Dest.Y, Dest.Z, Dest.R ,MOVEOBJECT_FORCELOCATION );
 	if(!move)
@@ -95,7 +96,7 @@ program textcmd_go( who, text )
   else
 	var params := SplitWords( text );
     if (len(params) < 3) // didn't pass Z
-        params[3] := GetMapInfo( CInt(params[1]), CInt(params[2]) ,CInt(params[3]));
+        params[3] := GetMapInfo( CInt(params[1]), CInt(params[2]), params[4]);
     endif
 
 	var res := MoveObjectToLocation( who, CInt(params[1]), CInt(params[2]), CInt(params[3]), params[4],MOVEOBJECT_FORCELOCATION );

@@ -20,7 +20,7 @@ var oldwhat := what;
 if (what.container)
 	what := CreateItemInContainer(what.container, 0x1f14, 1);
 else
-	what := CreateItemAtLocation(what.x, what.y, what.z, 0x1f14, 1);
+	what := CreateItemAtLocation(what.x, what.y, what.z, 0x1f14, 1, what.realm);
 endif
 
 SubtractAmount(oldwhat, 1);
@@ -28,10 +28,12 @@ SubtractAmount(oldwhat, 1);
 var x := who.x;
 var y := who.y;
 var z := who.z;
+var realm := who.realm;
 
 SetObjProperty(what, "x", x);
 SetObjProperty(what, "y", y);
-SetObjProperty(what, "z", z); 
+SetObjProperty(what, "z", z);
+SetObjProperty(what, "realm", realm); 
 
 SendSysMessage(who, "Rune marked at your coordinates.");
 PlaySoundEffect(who, 0x1FB);
@@ -44,7 +46,7 @@ else
 	SetName(what, name);
 endif
 
-LogCommand(who, GetProcess(GetPid()).name, what.name+"/"+what.serial, "Coords: "+x+" "+y+" "+z);
+LogCommand(who, GetProcess(GetPid()).name, what.name+"/"+what.serial, "Coords: "+x+" "+y+" "+z+" "+realm);
 
 endprogram
 

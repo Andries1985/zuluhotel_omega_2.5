@@ -13,46 +13,37 @@ var START_MOD := 65;
 
 program do_itemid( who )
 
-var lastid := GetObjProperty(who, "#LastID");
+	var lastid := GetObjProperty(who, "#LastID");
+	var skill := GetEffectiveSkill( who, SKILLID_ITEMID );
+	var isamage := IsMage(who);
+	var delay := BASE_DELAY;
 
-var skill := GetEffectiveSkill( who, SKILLID_ITEMID );
-var isamage := IsMage(who);
-
-var delay := BASE_DELAY;
-
-// Level 4 mage, or anyone with 130 item id skill 0 id
-if (isamage == 4 || skill >= 140)
-	delay := 0;
-
-// ID skill eligible for a mod
-elseif (skill >= START_MOD)
-	var temp := CDbl(skill - START_MOD); // get remaining skill value after skill - startmod
-
-	// get 1 second value, ie 6.5
-	if (isamage)
-		delay := CDbl((130 - START_MOD)/( 10.0+isamage )); 
-	else
-		delay := CDbl((130 - START_MOD)/10.0);
+	// Level 4 mage, or anyone with 130 item id skill 0 id
+	if (isamage == 4 || skill >= 100)
+		delay := 0;
+	// ID skill eligible for a mod
+	elseif (skill >= START_MOD)
+		var temp := CDbl(skill - START_MOD); // get remaining skill value after skill - startmod
+		// get 1 second value, ie 6.5
+		if (isamage)
+			delay := CDbl((150 - START_MOD)/( 10.0+isamage )); 
+		else
+			delay := CDbl((150 - START_MOD)/10.0);
+		endif
+		delay := BASE_DELAY - CInt(temp/delay);
 	endif
 
-	delay := BASE_DELAY - CInt(temp/delay);
+	if ( delay < 0)
+		delay := 0;
+	endif
 
-endif
+	if ( ( lastid + delay ) > ReadGameClock() )
+		SendSysMessage(who, "You must wait to perform another action.");
+		return 0;
+	endif
 
-if ( (lastid+delay) > ReadGameClock() )
-	SendSysMessage(who, "You must wait to perform another action.");
-	return 0;
-endif
+	SelectItemToID( who , delay );
 
-/*if (delay <= 0)
-	var targ;
-	repeat
-		targ := IDItem(who);
-	until (targ == 0 || who.dead || !who.connected);
-else*/
-	SelectItemToID(who,delay);
-//endif
-
-SetObjProperty(who, "#LastID", ReadGameClock());
+	SetObjProperty( who, "#LastID", ReadGameClock() );
 
 endprogram

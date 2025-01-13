@@ -920,7 +920,7 @@ case (utterance)
         3: say("Mortal, you shall soon be my slave!");
 endcase
 
-thecritter := createnpcfromtemplate("skeleton", me.x, me.y -2, me.z, 0);
+thecritter := createnpcfromtemplate("skeleton", me.x, me.y -2, me.z, 0, me.realm);
 SetObjProperty (thecritter, "master", me.serial);
 setobjproperty(thecritter, "guardkill", 1);
 // thecritter := createnpcfromtemplate("zombie", onwho.x, onwho.y - 1, onwho.z, 0);
@@ -932,21 +932,20 @@ setobjproperty(thecritter, "guardkill", 1);
 
 endfunction
 
-function  cast_summon_fire(me, onwho)
+function cast_summon_fire(me, onwho)
 
+    var thecritter, utterance := Random(4);
 
-var thecritter, utterance := Random(4);
+    case (utterance)
+            0: say("Fire! I summon fire, death, and pain! Rise up, O Flame!");
+            1: say("Your ashes shall grace our altar, human!");
+            2: say("I call uppon the forces of fire!");
+            3: say("Burn, human, burn!");
+    endcase
 
-case (utterance)
-        0: say("Fire! I summon fire, death, and pain! Rise up, O Flame!");
-        1: say("Your ashes shall grace our altar, human!");
-        2: say("I call uppon the forces of fire!");
-        3: say("Burn, human, burn!");
-endcase
-
-thecritter := createnpcfromtemplate("fireelemental", me.x, me.y -2, me.z, 0);
-SetObjProperty (thecritter, "master", me.serial);
-setobjproperty(thecritter, "guardkill", 1);
+    thecritter := createnpcfromtemplate("fireelemental", me.x, me.y -2, me.z, 0, me.realm);
+    SetObjProperty (thecritter, "master", me.serial);
+    setobjproperty(thecritter, "guardkill", 1);
 
 endfunction
 

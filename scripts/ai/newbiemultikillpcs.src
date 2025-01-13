@@ -117,7 +117,7 @@ if (kdead == 0 and Random (30) == 1 and GetObjProperty(item,"Type") != "Animal" 
 			PerformAction( me, 0X011 );
 			sleep(1);
 			var thecritter;
-			thecritter := CreateNPCfromTemplate( npctemplate , servant.x , servant.y , servant.z );
+			thecritter := CreateNPCfromTemplate( npctemplate, servant.x, servant.y, servant.z, 0, servant.realm );
 			thecritter.hidden := 1;
 			thecritter.color  := 0x482;
 			thecritter.truecolor := 0x482;
@@ -129,7 +129,7 @@ if (kdead == 0 and Random (30) == 1 and GetObjProperty(item,"Type") != "Animal" 
 			var truename := ExtractName( servant.desc );
 			thecritter.name   := "a Reanimated " + truename;
 			if ( !thecritter.backpack )
-		var newbackpack := CreateItemAtLocation(thecritter.x , thecritter.y , thecritter.z , 0xe75 , 1 );
+		var newbackpack := CreateItemAtLocation(thecritter.x , thecritter.y , thecritter.z , 0xe75 , 1, thecritter.realm );
 				EquipItem( thecritter , newbackpack );
 			endif
 			foreach item in EnumerateItemsInContainer( servant)
@@ -620,7 +620,7 @@ function ShowFlame( who )
 		DestroyItem(coolflame);
 endfunction
 
-function ReadyStaff (me)
+function ReadyStaff(me)
 	var weaponone;
 	var weapontwo;
 	SetObjProperty(me,"amethod","magic");
@@ -691,6 +691,7 @@ function SplitLord(me)
 	var newx := me.x;
 	var newy := me.y;
 	var newz := me.z;
+	var newrealm := me.realm;
 	var tp;
 	foreach item in EnumerateItemsInContainer( me.backpack )
 		if (item.graphic == 0xf3f) 
@@ -704,14 +705,14 @@ function SplitLord(me)
 	PlaySoundEffect( me , 0x020a );	
 	sleep (1);
 	tp := me.npctemplate;
-	var twin1 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0 );
-	var twin2 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0 );
+	var twin1 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0, "britannia" );
+	var twin2 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0, "britannia" );
 	twin1.hidden := 1;
 	twin2.hidden := 1;
 	sleep(1);
-	MoveObjectToLocation( me, 5376, 1081, 0, 0);
-	MoveObjectToLocation( twin1, newx, newy, newz, 0);
-	MoveObjectToLocation( twin2, newx, newy, newz, 0);
+	MoveObjectToLocation( me, 5376, 1081, 0, "britannia");
+	MoveObjectToLocation( twin1, newx, newy, newz, newrealm);
+	MoveObjectToLocation( twin2, newx, newy, newz, newrealm);
 	twin1.hidden := 0;
 	twin2.hidden := 0;
 	PlaySoundEffect( twin1 , 0x020a );	
@@ -729,7 +730,7 @@ function ShowFlame2( who )
 		DestroyItem(coolflame);
 endfunction
 
-function ReadySword ()
+function ReadySword()
 	if (GetObjProperty(me,"amethod") != "melee")
 		SetObjProperty(me,"amethod","melee");
 		PlaySoundEffect(me,0x0057);
@@ -764,7 +765,7 @@ function ReadySword ()
 	endif
 endfunction
 
-function ReadyBow ()
+function ReadyBow()
 	if (GetObjProperty(me,"amethod") != "arch")
 		SetObjProperty(me,"oldmana",(GetMana(me)));
 		SetObjProperty(me,"amethod","arch");

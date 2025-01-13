@@ -43,6 +43,6 @@ program textcmd_createnpc( who, template )
         if(who.cmdlevel < 5)
 		    SetObjProperty(result, "LFucker", who.serial+"/"+who.name);
         endif
-		LogCommand(who, GetProcess(GetPid()).name, result.x+","+result.y+","+result.z, template+"/"+result.serial);
+		LogCommand(who, GetProcess(GetPid()).name, result.x+","+result.y+","+result.z+","+result.realm, template+"/"+result.serial);
 	endif
 endprogram

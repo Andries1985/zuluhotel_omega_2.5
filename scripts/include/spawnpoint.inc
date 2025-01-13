@@ -446,8 +446,9 @@ function CreateSpawnPointNpc( byref point, template )
 	var x := point.x;
 	var y := point.y;
 	var z := point.z;
+	var realm := point.realm;
 	var range	:= Cint( GetObjProperty( point , "Range" ) );
-	var critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0 );
+	var critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0, 0, "britannia" );
 	if( !critter )
 		return 0;
 	endif
@@ -461,6 +462,7 @@ function CreateSpawnPointNpc( byref point, template )
 		var anchor	:= struct;
 		anchor.+x	:= point.x;
 		anchor.+y	:= point.y;
+		anchor.+realm := point.realm;
 		anchor.+range	:= range;
 		anchor.+psub	:= Cint(100/range);
 		SetObjProperty(critter, "Anchor", anchor);
@@ -472,7 +474,7 @@ function CreateSpawnPointNpc( byref point, template )
 		CopyLottery(point, critter);
 	endif
 
-	if( !MoveObjectToLocation( critter, x, y, z, "britannia", MOVEOBJECT_FORCELOCATION ) )
+	if( !MoveObjectToLocation( critter, x, y, z, realm, MOVEOBJECT_FORCELOCATION ) )
 		RevokePrivilege( critter , "invul" );
 		SetObjProperty(  critter , "guardkill" , 1 );
 		ApplyRawDamage(  critter , Cint(critter.maxhp + 3) );
@@ -580,6 +582,7 @@ function CreateSpawnPointItem( byref point, data )
 	var x;
 	var y;
 	var z;
+	var realm;
 	var item;
 	var try	:= 1;
 	var range	:= Cint( GetObjProperty( point , "Range" ) );
@@ -589,14 +592,15 @@ function CreateSpawnPointItem( byref point, data )
 		if( range )
 			x := point.x + Cint( Random((range*2)+1) - range );
 			y := point.y + Cint( Random((range*2)+1) - range );
-			z := Cint( GetWorldHeight( x, y ) );
+			z := Cint( GetWorldHeight( x, y, realm ) );
 		else
 			x := point.x;
 			y := point.y;
 			z := point.z;
+			realm := point.realm;
 		endif
 		
-		item := CreateItemAtLocation( x, y, z, objtype, amount );
+		item := CreateItemAtLocation( x, y, z, objtype, amount, realm );
 	
 	endwhile
 

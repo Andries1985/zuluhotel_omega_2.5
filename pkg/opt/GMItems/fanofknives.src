@@ -16,7 +16,7 @@ program fanofknives(who)
     var remaining := last_use - time_now;
 
     if(time_now < last_use)
-        SendSysMessage(who, "You can only use shurikens every 60 seconds.");
+        SendSysMessage(who, "You can only use shurikens every 45 seconds.");
 	    SendSysMessage(who, "Time remaining: "+remaining+" seconds.");
         return;
     endif
@@ -26,7 +26,7 @@ program fanofknives(who)
     if(Len(victims) < 2)
         return;
     else
-        SetObjProperty(who, "LastShuriken", ReadGameClock()+60);
+        SetObjProperty(who, "LastShuriken", ReadGameClock()+45);
     endif
 
     var los;

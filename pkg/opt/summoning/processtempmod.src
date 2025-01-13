@@ -93,11 +93,7 @@ program processtempmods( parms )
 		"cebless":
 		"ebless": 
 				SetStrengthMod( who, GetStrengthMod(who)+ mmod[2]);
-				if(!casterismage)
-					SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
-				else
-					SetDexterityMod( who, GetDexterityMod(who)+ (mmod[2]*0.4));
-				endif
+				SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
 				SetIntelligenceMod( who, GetIntelligenceMod(who)+ mmod[2]);
 				if(mmod[2] > 0)
 					BuffOn(who, "bless", amt, duration);
@@ -109,16 +105,12 @@ program processtempmods( parms )
 		"poly":
 				if(!liche)
 					SetStrengthMod( who, GetStrengthMod(who)+ mmod[2]);
-					if(!casterismage)
-						SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
-					endif
+					SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
 					SetIntelligenceMod( who, GetIntelligenceMod(who)+ mmod[2]);
-					who.ar_mod := who.ar_mod + cint(mmod[2] / 3 );
+					who.ar_mod := who.ar_mod + cint(mmod[2] / 2 );
 				else
 					SetStrengthMod( who, GetStrengthMod(who)+ mmod[2]);
-					if(!casterismage)
-						SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
-					endif
+					SetDexterityMod( who, GetDexterityMod(who)+ mmod[2]);
 					SetIntelligenceMod( who, GetIntelligenceMod(who)+ mmod[4]);
 				endif
 				BuffOn(who, "polymorph", amt, duration);

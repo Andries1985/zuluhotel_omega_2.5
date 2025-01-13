@@ -177,7 +177,7 @@ program autostart_boat( param )
   endif
   tillerman := boat.tillerman;
   if (!tillerman)
-    syslog( "No tillerman for boat at: " + (boat.x-1) +","+ boat.y +","+ boat.z );
+    syslog( "No tillerman for boat at: " + (boat.x-1) +","+ boat.y +","+ boat.z +","+ boat.realm );
     DestroyMulti( boat );
     return;
   endif
@@ -185,7 +185,7 @@ program autostart_boat( param )
 endprogram
 
 function DoEncounter()
-  foreach who in  ListMobilesNearLocationEx(cint(boat.x), cint(boat.y), cint(GetMapInfo( cint(boat.x), cint(boat.y) ).z), 4, LISTEX_FLAG_GHOST, boat.realm )
+  foreach who in  ListMobilesNearLocationEx(cint(boat.x), cint(boat.y), cint(GetMapInfo( cint(boat.x), cint(boat.y), boat.realm ).z), 4, LISTEX_FLAG_GHOST, boat.realm )
 	  PlaySoundEffect(who, SFX_SPELL_RESURRECTION);
 	  ResurrectMobile( who );
   endforeach
@@ -310,12 +310,12 @@ function DryDock(event)
 	return;
 	endif
 
-    items := ListRootItemsInContainer(boat.hold);
+    items := ListRootItemsInContainer( boat.hold );
     foreach item in items;
-      MoveObjectToLocation(item, me.x, me.y, me.z, MOVEOBJECT_FORCELOCATION);
+      MoveObjectToLocation( item, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION );
     endforeach
-	var shiptype := getobjproperty(boat.hold,"shiptype");
-	var newboat := CreateItemInContainer(me.backpack,shiptype,1);
+	var shiptype := getobjproperty( boat.hold, "shiptype" );
+	var newboat := CreateItemInContainer( me.backpack,shiptype, 1 );
 	if (!newboat)
 	  SendSysMessage(me,"Your backpack is full!");
       return;

@@ -51,7 +51,7 @@ program cast_summon( parms, spell_id )
 	endif
 
 	var thecreature := "bladespirit";
-	var thecritter := CreateNPCfromTemplate(thecreature, cast_loc.x, cast_loc.y,cast_loc.z);
+	var thecritter := CreateNPCfromTemplate(thecreature, cast_loc.x, cast_loc.y, cast_loc.z, 0, cast_loc.realm);
 
 	setobjproperty(thecritter, "summoned",1);
 	setobjproperty(thecritter, "master",caster.serial);
@@ -78,7 +78,7 @@ program cast_summon( parms, spell_id )
 
 	if (thecritter.x)
 		PlaySoundEffect( thecritter , SFX_SPELL_BLADE_SPIRIT );
-		PlayStationaryEffect( cint(thecritter.x), cint(thecritter.y), cint(thecritter.z), FX_SPELL_BLADE_SPIRIT, SPEED_SPELL_BLADE_SPIRIT , LOOP_SPELL_BLADE_SPIRIT );
+		PlayStationaryEffect( cint(thecritter.x), cint(thecritter.y), cint(thecritter.z), FX_SPELL_BLADE_SPIRIT, SPEED_SPELL_BLADE_SPIRIT , LOOP_SPELL_BLADE_SPIRIT, 0, thecritter.realm );
 		MoveObjectToLocation(thecritter,5288,1176,0,"britannia", MOVEOBJECT_FORCELOCATION);
 		var count := 0;
 		repeat

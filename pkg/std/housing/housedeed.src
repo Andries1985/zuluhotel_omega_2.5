@@ -81,7 +81,7 @@ function Buildhouse( character, deed )
 		endif
 	endforeach
 
-    var landtype := hex(GetMapInfo( where.x, where.y ).landtile);
+    var landtype := hex(GetMapInfo( where.x, where.y, where.realm ).landtile);
 
     if ((landtype>=0x9 and landtype<=0x15) or (landtype>=0x150 and landtype<=0x15c))
         PrintTextAbovePrivate( deed, "You can't build on farmland.", character );

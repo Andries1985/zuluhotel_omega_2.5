@@ -27,7 +27,7 @@ if(!ReserveItem(Deed)) return; endif
       return;
     else
       if (!checkfornpcs(where))
-      place := CreateNpcFromTemplate( "playervendor", where.x, where.y, where.z );
+      place := CreateNpcFromTemplate( "playervendor", where.x, where.y, where.z, 0, where.realm );
 	else
 	      SendSysMessage( who, "You cannot place your vendor here");
 	      return;
@@ -50,7 +50,7 @@ if(!ReserveItem(Deed)) return; endif
 endprogram
 
 function checkfornpcs(place)
-    var mobiles := ListMobilesNearLocation( place.x, place.y,place.z,SEARCH_RANGE);
+    var mobiles := ListMobilesNearLocation( place.x, place.y, place.z, SEARCH_RANGE, place.realm);
 
     foreach npc in mobiles
 	if(Getobjproperty(npc, "MerchantType"));

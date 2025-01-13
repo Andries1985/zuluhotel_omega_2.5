@@ -67,7 +67,7 @@ function is_plantable(theobj)
 	endif
 
 	//check valid maptiles
-	var info := GetMapInfo( cint(theobj.x) , cint(theobj.y) );
+	var info := GetMapInfo( cint(theobj.x) , cint(theobj.y), theobj.realm );
 	var tile := info.landtile;
 
 	if (tile >= 0x9 and tile <= 0x15) 

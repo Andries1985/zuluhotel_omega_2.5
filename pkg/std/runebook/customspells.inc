@@ -29,12 +29,13 @@ const RECALL_DELAY_MS	:= 5000;
 const GATE_DELAY_MS	:= 8000;
 
 
-function CustomRecall( caster, x, y, z, from_charge := 0 )
+function CustomRecall( caster, x, y, z, realm, from_charge := 0 )
 
 	var shp	:= GetHP(caster);
 	var sx	:= caster.x;
 	var sy	:= caster.y;
 	var sz	:= caster.z;
+	var srealm := caster.realm;
 	var smana	:= GetMana(caster);
 	var circle	:= 1;
 	var spelldelay := RECALL_DELAY_MS;
@@ -58,14 +59,14 @@ function CustomRecall( caster, x, y, z, from_charge := 0 )
 			return 0;
 		endif
 
-		if( caster.x != sx or caster.y != sy or caster.z != sz )
+		if( caster.x != sx or caster.y != sy or caster.z != sz or caster.realm != srealm )
 			SendSysmessage( caster , "You've lost your concentration!" );
 			PlayObjectCenteredEffect(caster, FX_SPELL_FIZZLE, SPEED_SPELL_FIZZLE, LOOP_SPELL_FIZZLE );
 			PlaySoundEffect(caster, SFX_SPELL_FIZZLE);
 			return 0;
 		endif
 
-		nearbyDanger := ListHostiles(caster,4);
+		nearbyDanger := ListHostiles(caster, 4);
 		if( len(nearbyDanger) )
 			foreach mob in nearbyDanger
 				if(CheckLineOfSight( mob, caster ))
@@ -131,6 +132,7 @@ function CustomRecall( caster, x, y, z, from_charge := 0 )
 	var tox := x;
 	var toy := y;
 	var toz := z;
+	var torealm := realm;
 
 	if( !Checkpoz(tox,toy) )
 		SendSysMessage( caster , "The destination is a magic place with protection." );
@@ -143,7 +145,7 @@ function CustomRecall( caster, x, y, z, from_charge := 0 )
 	endif
 	var owner;
 	var lamp;
-	var Near_Items := ListItemsNearLocation(tox, toy, toz,10);
+	var Near_Items := ListItemsNearLocation(tox, toy, toz, 10, torealm);
 	foreach thing in Near_Items
 		if (thing.objtype == 0xf156)
 			lamp := thing;
@@ -158,7 +160,7 @@ function CustomRecall( caster, x, y, z, from_charge := 0 )
 	endif
 	
 	
-	var multi := GetStandingHeight( tox, toy, toz ).multi;
+	var multi := GetStandingHeight( tox, toy, toz, torealm ).multi;
 	if( multi )
 
 		if( !Iscowner( caster, multi )  )
@@ -169,7 +171,7 @@ function CustomRecall( caster, x, y, z, from_charge := 0 )
 		endif
 	endif
 
-	var multi2 := GetStandingHeight(sx,sy,sz).multi;
+	var multi2 := GetStandingHeight(sx, sy, sz, srealm).multi;
 	if(multi2)
 		if( !Iscowner( caster, multi2 )  )
 			if( !IsFriend( caster, multi2, RECALL_TO ) )
@@ -206,7 +208,7 @@ function CustomRecall( caster, x, y, z, from_charge := 0 )
 	PlaySoundEffect( caster, SFX_SPELL_RECALL1 );
 	sleepms(250);
 
-	MoveObjectToLocation( caster, tox, toy, toz );
+	MoveObjectToLocation( caster, tox, toy, toz, torealm );
 	PlaySoundEffect( caster, SFX_SPELL_RECALL2 );
 
         return 1;
@@ -214,12 +216,13 @@ function CustomRecall( caster, x, y, z, from_charge := 0 )
 endfunction
 
 
-function CustomGate( caster, x, y, z )
+function CustomGate( caster, x, y, z, realm )
 
 	var shp	:= GetHP(caster);
 	var sx	:= caster.x;
 	var sy	:= caster.y;
 	var sz	:= caster.z;
+	var srealm := caster.realm;
 	var smana	:= GetMana(caster);
 	var circle	:= 7;
 	var spelldelay := GATE_DELAY_MS;
@@ -244,14 +247,14 @@ function CustomGate( caster, x, y, z )
 			return 0;
 		endif
 
-		if( caster.x != sx or caster.y != sy or caster.z != sz )
+		if( caster.x != sx or caster.y != sy or caster.z != sz or caster.realm != srealm )
 			SendSysmessage( caster , "You've lost your concentration!" );
 			PlayObjectCenteredEffect(caster, FX_SPELL_FIZZLE, SPEED_SPELL_FIZZLE,LOOP_SPELL_FIZZLE );
 			PlaySoundEffect(caster, SFX_SPELL_FIZZLE);
 			return 0;
 		endif
 
-		nearbyDanger := ListHostiles(caster,4);
+		nearbyDanger := ListHostiles(caster, 4);
 		if( len(nearbyDanger) )
 			foreach mob in nearbyDanger
 				if(CheckLineOfSight( mob, caster ))
@@ -319,7 +322,7 @@ function CustomGate( caster, x, y, z )
 		endif
 	endforeach
 	
-	var multi := GetStandingHeight( caster.x, caster.y, caster.z ).multi;
+	var multi := GetStandingHeight( caster.x, caster.y, caster.z, caster.realm ).multi;
 	if( multi )
 		if( !Iscowner( caster, multi )  )
 			if( !IsFriend( caster, multi, GATE_FROM) )
@@ -332,6 +335,7 @@ function CustomGate( caster, x, y, z )
 	var tox := x;
 	var toy := y;
 	var toz := z;
+	var torealm := realm;
 
 	if( IsForbiddenAreaToGateTo( caster, tox, toy ) )
 		SendSysMessage(caster, "The destination is a magic place with protection.");
@@ -339,7 +343,7 @@ function CustomGate( caster, x, y, z )
 	endif
 		var owner;
 	var lamp;
-	var Near_Items := ListItemsNearLocation(tox, toy, toz,10);
+	var Near_Items := ListItemsNearLocation(tox, toy, toz, 10, torealm);
 	foreach thing in Near_Items
 		if (thing.objtype== 0xf156)
 			lamp := thing;
@@ -353,7 +357,7 @@ function CustomGate( caster, x, y, z )
 		endif
 	endif
 
-	var antigate2 := ListItemsNearLocation(tox, toy, toz, 10);
+	var antigate2 := ListItemsNearLocation(tox, toy, toz, 10, torealm);
 	foreach item in antigate2
 		if (item.objtype == 0xa3c9)
 			SendSysMessage( caster, "You can't gate there." );
@@ -361,7 +365,7 @@ function CustomGate( caster, x, y, z )
 		endif
 	endforeach
 	
-  multi := GetStandingHeight( tox, toy, toz ).multi;
+  multi := GetStandingHeight( tox, toy, toz, torealm ).multi;
 	if( multi )
 		if( !Iscowner( caster, multi )  )
 			if( !IsFriend( caster, multi, GATE_TO) )
@@ -396,10 +400,10 @@ function CustomGate( caster, x, y, z )
 		endif
 	endif
 
-	var gate1 := CreateItemAtLocation( caster.x, caster.y, caster.z, 0x99b1, 1 );
+	var gate1 := CreateItemAtLocation( caster.x, caster.y, caster.z, 0x99b1, 1, caster.realm );
 	gate1.facing := 1;
 
-	var gate2 := CreateItemAtLocation( tox, toy, toz, 0x99b1, 1 );
+	var gate2 := CreateItemAtLocation( tox, toy, toz, 0x99b1, 1, torealm );
 	gate2.facing := 2;
 
 	if (!gate1 or !gate2)
@@ -411,9 +415,11 @@ function CustomGate( caster, x, y, z )
 	SetObjProperty( gate1, "GateDestX", gate2.x );
 	SetObjProperty( gate1, "GateDestY", gate2.y );
 	SetObjProperty( gate1, "GateDestZ", gate2.z );
+	SetObjProperty( gate1, "GateDestRealm", gate2.realm );
 	SetObjProperty( gate2, "GateDestX", gate1.x );
 	SetObjProperty( gate2, "GateDestY", gate1.y );
 	SetObjProperty( gate2, "GateDestZ", gate1.z );
+	SetObjProperty( gate2, "GateDestRealm", gate1.realm );
 
 	Detach();
 

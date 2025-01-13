@@ -91,7 +91,7 @@ function ClearGuard()
 	me.hidden := 1;
 	setobjproperty(me,"guardkill", 1);
 	PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
-	MoveObjectToLocation(me, 5291,1166,0, "britannia", MOVEOBJECT_FORCELOCATION);
+	MoveObjectToLocation( me, 5291, 1166, 0, "britannia", MOVEOBJECT_FORCELOCATION );
 	RevokePrivilege( me, "invul" );
 
 	var count := 0;

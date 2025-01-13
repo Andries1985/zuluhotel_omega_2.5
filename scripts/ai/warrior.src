@@ -1000,7 +1000,7 @@ function ObeyCommand(ev)
 			DestroyItem(mount);
 			var spawnmount := GetObjProperty(me, "mountedon");
 			if (spawnmount)
-				var newmount := CreateNPCfromTemplate( spawnmount , me.x , me.y , me.z );
+				var newmount := CreateNPCfromTemplate( spawnmount , me.x , me.y , me.z, 0, me.realm );
 				say("all transfer");
 				SetObjProperty( newmount ,"master" , master.serial );
 				newmount.setmaster( newmount );

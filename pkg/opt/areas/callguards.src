@@ -57,7 +57,7 @@ function LookAround( who )
 			if( !elem.guardignore && !GetObjProperty(mobile,"guardignore") and !wfh)					
 				if( IsInGuardedArea(mobile) && (mobile.script != "tamed" || crimMaster) )
 					set_critical(1);
-					guard := CreateNpcFromTemplate( "guard", mobile.x, mobile.y, mobile.z, 0, who.realm );
+					guard := CreateNpcFromTemplate( "guard", mobile.x, mobile.y, mobile.z, 0, mobile.realm );
 					if( guard )
 						SetObjproperty(mobile,"guardkill", 1);
 						SetObjProperty( guard, "target", mobile.serial );

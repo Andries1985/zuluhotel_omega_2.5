@@ -53,7 +53,7 @@ case (foundwhat)
 4:
 5: SendSysmessage(character, "You caught some fish.");
    magicfish:=RandomFish(character);
-   if (magicfish>=0xA368 and magicfish<=0xA36F)
+   if (magicfish>=0xA368 and magicfish<=0xA370)
    createfish( character,magicfish,Random(2)+1,1 );
    CheckSkill(character, SKILLID_FISHING, -1, 150);
    else

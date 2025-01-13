@@ -14,41 +14,41 @@ include ":areas:include/areafunctions";
 
 program EnterAreaDelay(who)
 
-set_critical(1);
+	set_critical(1);
 
-var file := OpenDataFile(":areas:EnterArea");
-var regionname := GetRegionName(who);
+	var file := OpenDataFile(":areas:EnterArea");
+	var regionname := GetRegionName(who);
 
-if (!file)
-	CreateDataFile( ":areas:EnterArea");
-endif
+	if (!file)
+		CreateDataFile( ":areas:EnterArea");
+	endif
 
-var region := file.FindElement(regionname);
-UnloadDataFile(":areas:EnterArea");
+	var region := file.FindElement(regionname);
+	UnloadDataFile(":areas:EnterArea");
 
-// No custom message for the region, play default.
-if (!region)
-	SendSysMessage(who, "You have entered "+regionname, 3, 1001);
-endif
+	// No custom message for the region, play default.
+	if (!region)
+		SendSysMessage(who, "You have entered "+regionname, 3, 1001);
+	endif
 
-// Safe area, no more messages atm
-if (IsInSafeArea(who))
-	SendSysMessage(who, "This is a SAFE area.", 3, 1001);
-	SetSafeAreaProperties(who);
-	return 1;
-endif
+	// Safe area, no more messages atm
+	if (IsInSafeArea(who))
+		SendSysMessage(who, "This is a SAFE area.", 3, 1001);
+		SetSafeAreaProperties(who);
+		return 1;
+	endif
 
-// Safe area, no more messages atm
-if (IsInNOPKArea(who))
-	SendSysMessage(who, "This is a NO-PK area.", 3, 1001);
-	SetNOPK(who);
-endif
+	// Safe area, no more messages atm
+	if (IsInNOPKArea(who))
+		SendSysMessage(who, "This is a NO-PK area.", 3, 1001);
+		SetNOPK(who);
+	endif
 
-// Yes or no to guards
-if (IsInGuardedArea( who ))
-	SendSysMessage(who, "This is a guarded area.", 3, 1001);
-else
-	SendSysMessage(who, "This is NOT a guarded area.", 3, 1001);
-endif
+	// Yes or no to guards
+	if (IsInGuardedArea( who ))
+		SendSysMessage(who, "This is a guarded area.", 3, 1001);
+	else
+		SendSysMessage(who, "This is NOT a guarded area.", 3, 1001);
+	endif
 
 endprogram

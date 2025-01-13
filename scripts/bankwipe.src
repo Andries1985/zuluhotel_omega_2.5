@@ -14,7 +14,7 @@ return;
 		SetGlobalProperty("storagestart2", startnum);
 	endif
 
-	npctest := CreateNpcFromTemplate( "banker", 5445, 1153, 0 );
+	npctest := CreateNpcFromTemplate( "banker", 5445, 1153, 0, 0, "britannia" );
 	endnum := npctest.serial;
 	RevokePrivilege( npctest, "invul" );
 	setobjproperty(npctest, "guardkill", 1);

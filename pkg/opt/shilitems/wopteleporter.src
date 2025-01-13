@@ -12,12 +12,13 @@ program walk_on_moongate( mobile , gate )
 		var x := Cint( GetObjProperty( gate , "GateDestX" ) );
 		var y := Cint( GetObjProperty( gate , "GateDestY" ) );
 		var z := Cint( GetObjProperty( gate , "GateDestZ" ) );
+		var realm := GetObjProperty( gate , "GateDestRealm" );
 
-		if( !x and !y and !z )
+		if( !x and !y and !z and !realm )
 			return;
 		endif
 		
-		MoveObjectToLocation( mobile , x , y , z );
+		MoveObjectToLocation( mobile , x , y , z, realm );
 	endif
 	
 endprogram

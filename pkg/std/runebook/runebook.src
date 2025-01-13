@@ -8,31 +8,31 @@ include "include/client";
 include "include/objtype";
 include "include/attributes";
 
-const RENAME_BOOK		:= 0x01;
-const RECALL_WITH_CHARGES	:= 0x10;
+const RENAME_BOOK				:= 0x01;
+const RECALL_WITH_CHARGES		:= 0x10;
 const RECALL_WITHOUT_CHARGES	:= 0x20;
-const GATE_WITHOUT_CHARGES	:= 0x30;
-const SET_DEFAULT_LOCATION	:= 0x40;
+const GATE_WITHOUT_CHARGES		:= 0x30;
+const SET_DEFAULT_LOCATION		:= 0x40;
 const RESET_DEFAULT_LOCATION	:= 0x50;
-const DROP_RUNE			:= 0x60;
+const DROP_RUNE					:= 0x60;
 
-const G_BLUE_SMALL_CIRCLE_0	:= 0x0838;
-const G_BLUE_SMALL_CIRCLE_1	:= 0x0837;
-const G_GOLD_ARROW_DOWN_0	:= 0x0985;
-const G_GOLD_ARROW_DOWN_1	:= 0x0986;
+const G_BLUE_SMALL_CIRCLE_0		:= 0x0838;
+const G_BLUE_SMALL_CIRCLE_1		:= 0x0837;
+const G_GOLD_ARROW_DOWN_0		:= 0x0985;
+const G_GOLD_ARROW_DOWN_1		:= 0x0986;
 const G_BOOK_SMALL_1			:= 0x0898;
 const G_BOOK_SMALL_2			:= 0x0899;
 const G_BOOK_SMALL_3			:= 0x089a;
 const G_BOOK_SMALL_4			:= 0x089b;
-const G_CORNER_LEFT			:= 0x089d;
+const G_CORNER_LEFT				:= 0x089d;
 const G_CORNER_RIGHT			:= 0x089e;
 const G_DECO_LINE_LEFT			:= 0x0039;
 const G_DECO_LINE_CENTER		:= 0x003a;
 const G_DECO_LINE_RIGHT			:= 0x003b;
 const G_SMALL_GREEN_CIRCLE		:= 0x0939;
 const G_SMALL_RED_CIRCLE		:= 0x0938;
-const G_SPELLBOOK_CORNER_LEFT		:= 0x08bb;
-const G_SPELLBOOK_CORNER_RIGHT		:= 0x08bc;
+const G_SPELLBOOK_CORNER_LEFT	:= 0x08bb;
+const G_SPELLBOOK_CORNER_RIGHT	:= 0x08bc;
 const G_SPELLBOOK_REDUCED		:= 0x08ba;
 const G_SPELLCIRCLE_1			:= 0x08b1;
 const G_SPELLCIRCLE_2			:= 0x08b2;
@@ -43,13 +43,13 @@ const G_SPELLCIRCLE_6			:= 0x08b6;
 const G_SPELLCIRCLE_7			:= 0x08b7;
 const G_SPELLCIRCLE_8			:= 0x08b8;
 const G_SPELLICON_RECALL		:= 0x08df;
-const G_SPELLICON_GATE_TRAVEL		:= 0x08f3;
+const G_SPELLICON_GATE_TRAVEL	:= 0x08f3;
 const G_STONE_ARROW_UP			:= 0x1458;
 const G_STONE_ARROW_DOWN		:= 0x1459;
 const G_STONE_ARROW_LEFT		:= 0x1467;
 const G_STONE_ARROW_RIGHT		:= 0x1468;
-const G_RED_DIAMOND_0		:= 0x09a8;
-const G_RED_DIAMOND_1		:= 0x09a9;
+const G_RED_DIAMOND_0			:= 0x09a8;
+const G_RED_DIAMOND_1			:= 0x09a9;
 
 
 program open_runebook( who, runebook )
@@ -395,8 +395,9 @@ function RecallWithCharges( who, runebook, byref charges, byref runes_def, index
 		var tox := Cint(runes_def[index].tox);
 		var toy := Cint(runes_def[index].toy);
 		var toz := Cint(runes_def[index].toz);
+		var torealm := runes_def[index].torealm;
 
-		if( !tox and !toy and !toz )
+		if( !tox and !toy and !toz and !torealm )
 			SendSysMessage( who, "Error 2: Blank rune!" );
 			DestroyRune( runebook, runes_def, index );
 			return 0;
@@ -408,7 +409,7 @@ function RecallWithCharges( who, runebook, byref charges, byref runes_def, index
 		charges	:= new_charges;
 		SetObjProperty( who, "betatest", 1 );
 
-		if( !CustomRecall( who, tox, toy, toz, 1 ) )
+		if( !CustomRecall( who, tox, toy, toz, torealm, 1 ) )
 			return 0;
 		endif
 	endif
@@ -428,14 +429,15 @@ function RecallWithoutCharges( who, runebook, byref runes_def, index )
 	var tox := Cint(runes_def[index].tox);
 	var toy := Cint(runes_def[index].toy);
 	var toz := Cint(runes_def[index].toz);
+	var torealm := runes_def[index].torealm;
 
-	if( !tox and !toy and !toz )
+	if( !tox and !toy and !toz and !torealm )
 		SendSysMessage( who, "Error 2: Blank rune!" );
 		DestroyRune( runebook, runes_def, index );
 		return 0;
 	endif
 
-	if( !CustomRecall( who, tox, toy, toz ) )
+	if( !CustomRecall( who, tox, toy, toz, torealm ) )
 		return 0;
 	endif
 
@@ -453,8 +455,9 @@ function GateWithoutCharges( who, runebook, byref runes_def, index )
 	var tox := Cint(runes_def[index].tox);
 	var toy := Cint(runes_def[index].toy);
 	var toz := Cint(runes_def[index].toz);
+	var torealm := runes_def[index].torealm;
 
-	if( !tox and !toy and !toz )
+	if( !tox and !toy and !toz and !torealm )
 		SendSysMessage( who, "Error 2: Blank rune!" );
 		DestroyRune( runebook, runes_def, index );
 		return 0;
@@ -463,7 +466,7 @@ function GateWithoutCharges( who, runebook, byref runes_def, index )
     //A gate is about to be opened from this runebook.
     //sets its opengate prop to 1
     SetObjProperty(runebook, "opengate", 1);
-	if( !CustomGate( who, tox, toy, toz ) )
+	if( !CustomGate( who, tox, toy, toz, torealm ) )
 		SetObjProperty(runebook, "opengate", 0);
 		return 0;
 	endif
@@ -485,8 +488,9 @@ function SetDefaultLocation( runebook, byref runes_def, index, defloc := 0 )
 	var tox := Cint(runes_def[index].tox);
 	var toy := Cint(runes_def[index].toy);
 	var toz := Cint(runes_def[index].toz);
+	var torealm := runes_def[index].torealm;
 
-	if( !tox and !toy and !toz )
+	if( !tox and !toy and !toz and !torealm )
 		DestroyRune( runebook, runes_def, index );
 		set_priority(old_prio);
 		return 0;
@@ -502,6 +506,7 @@ function SetDefaultLocation( runebook, byref runes_def, index, defloc := 0 )
 	SetObjProperty( runebook, "x", tox );
 	SetObjProperty( runebook, "y", toy );
 	SetObjProperty( runebook, "z", toz );
+	SetObjProperty( runebook, "realm", torealm );
 	runes_def[index].defloc := 1;
 
 	set_priority(old_prio);
@@ -522,6 +527,7 @@ function ResetDefaultLocation( runebook, byref runes_def, index )
 	EraseObjProperty( runebook, "x" );
 	EraseObjProperty( runebook, "y" );
 	EraseObjProperty( runebook, "z" );
+	EraseObjProperty( runebook, "realm" );
 	runes_def[index].defloc := 0;
 
 	set_priority(old_prio);
@@ -563,6 +569,7 @@ function DropRune( who, runebook, byref runes_def, index )
 	var tox  := Cint(runes_def[index].tox);
 	var toy  := Cint(runes_def[index].toy);
 	var toz  := Cint(runes_def[index].toz);
+	var torealm  := runes_def[index].torealm;
 
 	if( !runes_def.erase(index) )
 		SendSysMessage( who, "Error 3: Couldn't erase the rune data from the book." );
@@ -571,7 +578,7 @@ function DropRune( who, runebook, byref runes_def, index )
 		return 0;
 	endif
 
-	if( !tox and !toy and !toz )
+	if( !tox and !toy and !toz and !torealm)
 		SendSysMessage( who, "Error 4: Blank rune!" );
 		DestroyItem( rune );
 		set_critical(0);
@@ -590,7 +597,8 @@ function DropRune( who, runebook, byref runes_def, index )
 
 	if( !SetObjProperty( rune, "x", tox ) and
 	    !SetObjProperty( rune, "y", toy ) and
-	    !SetObjProperty( rune, "z", toz ) )
+	    !SetObjProperty( rune, "z", toz ) and
+		!SetObjProperty( rune, "realm", torealm ) )
 	    	SendSysMessage( who, "Error 5: Couldn't copy the destination data on the rune!" );
 	    	DestroyItem( rune );
 	    	set_critical(0);

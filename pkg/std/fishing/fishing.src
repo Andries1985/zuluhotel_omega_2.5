@@ -132,10 +132,10 @@ program use_fishpole( character , pole )
 		return 0;
 	endif
 
-	var water, difficulty := cint(GetHarvestDifficulty( "fish", use_on.x, use_on.y,use_on.objtype ));
+	var water, difficulty := cint(GetHarvestDifficulty( "fish", use_on.x, use_on.y, use_on.objtype, use_on.realm ));
 	if (!difficulty)
-		water := GetMapInfo(use_on.x, use_on.y).landtile;	
-		difficulty := cint(GetHarvestDifficulty( "fish", use_on.x, use_on.y, water ));
+		water := GetMapInfo(use_on.x, use_on.y, use_on.realm).landtile;	
+		difficulty := cint(GetHarvestDifficulty( "fish", use_on.x, use_on.y, water, use_on.realm ));
 	endif
 
 	if (!difficulty)
@@ -148,12 +148,12 @@ program use_fishpole( character , pole )
 		if (Random(70)<5)
 			do_something(character);
 			else
-			var fish_amount := HarvestResource( "fish", use_on.x, use_on.y, 1, 1 );
+			var fish_amount := HarvestResource( "fish", use_on.x, use_on.y, 1, 1, use_on.realm );
 			var level := GetClasseLevel(character);
-			fish_amount := Cint(Random(fish_amount)+1);
+			fish_amount := Cint(Random(fish_amount) + 1);
 		
 			if( GetObjProperty( character , CLASSEID_RANGER ) )	
-				fish_amount := Cint( fish_amount + level);
+				fish_amount := Cint( fish_amount + level );
 			endif
 
 			if (fish_amount==0)
@@ -184,42 +184,41 @@ function do_something(character)
 	var tnum := Random(15)+1;
 	var it;
 	case (tnum)
-		1:
+		1:	
 			CreateItemInBackpack( character,0xa366,1);
 			SendSysmessage(character, "You just found a special fishing net.");
 		
-		2: if (Random(11)<1)
-			it := CreateItemInBackpack( character,maplevel(),1);
-			SendSysMessage(character,"You find a tattered old map!");
+		2:	
+			if (Random(11)<1)
+				it := CreateItemInBackpack( character, maplevel(), 1 );
+				SendSysMessage(character,"You find a tattered old map!");
 			endif
-		3:  if (Random(10)<3)
+
+		3:  
+			if (Random(10)<3)
 				CreateItemInBackpack( character, 0xeed, Random(200)+1);
 			endif
-	/*
-		it := CreateItemInBackpack( character,0x0E75,1);
-			it.decay :=120;
-			CreateItemInContainer( it, 0xeed, Random(200)+1);
-			sendsysmessage(character, "You find an old backpack!");
-			endif
-	*/
-	//	4: SendSysMessage(character,"You find some seaweed!");
-	//	   createfish( character,0xdba,1,1 );
+
 		4:
 			CreateItemInBackpack( Character, RandomShell(Character), 1 );
 			SendSysMessage(character,"You find something valuable!");
 			
-		5: //if (Random(10)<3 and  checkcity(character)==0)
-			//it := createnpcfromtemplate("waterelemental", character.x-1 , character.y, character.z);
-			//if (!it.errortext)
-			//     SendSysmessage(character, "You attract the attention of a water elemental");
-			//endif
-			//endif
-		6: if (Random(10)<1)
-	//          it := createnpcfromtemplate("walrus", character.x-1, character.y, character.z);
-	//          if (!it.errortext)
-	//                SendSysmessage(character, "A walrus comes by to see what you're doing");
-	//          endif
-		endif
+		/*
+		5: 
+			if (Random(10)<3 and  checkcity(character)==0)
+			it := createnpcfromtemplate("waterelemental", character.x-1 , character.y, character.z, 0, character.realm);
+				if (!it.errortext)
+				     SendSysmessage(character, "You attract the attention of a water elemental");
+				endif
+			endif
+		6: 
+			if (Random(10)<1)
+	          it := createnpcfromtemplate("walrus", character.x-1, character.y, character.z, 0, character.realm);
+	          if (!it.errortext)
+	                SendSysmessage(character, "A walrus comes by to see what you're doing");
+	          endif
+			endif
+		*/
 	endcase
 
 endfunction
@@ -234,8 +233,8 @@ function RandomShell(Character)
 	3:
 	4:
 	5:
-	6: if (getEffectiveskill(Character,SKILLID_FISHING)>120)
-		if (Random(4)==2)
+	6: if ( getEffectiveskill(Character,SKILLID_FISHING) > 120 )
+		if ( Random(4) == 2 )
 			return 0x80de;
 		else
 			return 0x80ee;
@@ -275,7 +274,7 @@ function FetchBottle(who)
 	if (good)
 	if(CheckSkill(who, SKILLID_FISHING, 135, 1000))
 		SendSysMessage(who,"You catch a sunken treasure!");
-		CreateChest(who.x,who.y,who.z);
+		CreateChest( who.x, who.y, who.z);
 	else
 		good:=0;
 	endif
@@ -329,18 +328,18 @@ endfunction
 function CreateChest( x , y , z )
    var chest := CreateItemAtLocation(x,y,z,UOBJECT_TREASURE_CHEST,1);
 
- MakeLoot( chest , Random(7), 70 , 4);
+ 	MakeLoot( chest , Random(7), 70 , 4);
 
 endfunction
 
 function CleanSos(tile);
 
-var msg := GetObjProperty(tile, "msgserial");
-msg :=SystemFindObjectBySerial(msg);
-if(msg)
-	destroyitem(msg);
-endif
-destroyitem(tile);
+	var msg := GetObjProperty(tile, "msgserial");
+	msg :=SystemFindObjectBySerial(msg);
+	if(msg)
+		destroyitem(msg);
+	endif
+	destroyitem(tile);
 
 endfunction
 

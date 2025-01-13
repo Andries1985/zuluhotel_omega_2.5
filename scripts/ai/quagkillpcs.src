@@ -63,9 +63,9 @@ if (!CheckLineOfSight( me, opponent) )
 endif
 	If(Gethp(me) <= CInt(Getmaxhp(me)/10)*5)
 		if(najs == 0)
-		riktiga := CreateNPCfromTemplate( "quagmires", me.x, me.y, me.z, 1, "britannia" );
-		copy1 := CreateNPCfromTemplate( "quagmires", me.x, me.y, me.z, 1, "britannia" );
-		copy2 := CreateNPCfromTemplate( "quagmires", me.x, me.y, me.z, 1, "britannia" );
+		riktiga := CreateNPCfromTemplate( "quagmires", me.x, me.y, me.z, 1, me.realm );
+		copy1 := CreateNPCfromTemplate( "quagmires", me.x, me.y, me.z, 1, me.realm );
+		copy2 := CreateNPCfromTemplate( "quagmires", me.x, me.y, me.z, 1, me.realm );
 		setobjproperty( copy1, "guardkill", 1);
 		setobjproperty( copy2, "guardkill", 1);
 		MoveObjectToLocation(me, 5378, 1269, 0, "britannia" );

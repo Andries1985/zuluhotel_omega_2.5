@@ -91,8 +91,8 @@ program goto_spawnpoint( who, text )
 	
 	var res := MakeAndProcessGump( who, found );
 	if( res )
-		MoveObjecttoLocation( who, res.x, res.y, res.z, "britannia", MOVEOBJECT_FORCELOCATION );
-	LogCommand(who, GetProcess(GetPid()).name, "Went to Location: "+res.x+","+res.y+","+res.z, text);
+		MoveObjecttoLocation( who, res.x, res.y, res.z, res.realm, MOVEOBJECT_FORCELOCATION );
+	LogCommand(who, GetProcess(GetPid()).name, "Went to Location: "+res.x+","+res.y+","+res.z+","+res.realm, text);
 	endif
 	
 endprogram
@@ -140,7 +140,7 @@ function MakeAndProcessGump( who, found )
 		data.append( "Rune #" + i );
 		
 		layout.append( "text 175 " + y + " 0 " + len(data) );
-		data.append( "( " + found[i].x + ", " + found[i].y + ", " + found[i].z + " )" );
+		data.append( "( " + found[i].x + ", " + found[i].y + ", " + found[i].z + ", " + found[i].realm + " )" );
 
 		y 	:= y + 20;
 		done 	:= done + 1;

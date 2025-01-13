@@ -47,33 +47,32 @@ program usestatpotion(who, potion)
 
     var statMatrix := GetObjProperty(who, "statMatrix");
     if(!statMatrix)
-    statMatrix := {0, 0, 0};
+      statMatrix := {0, 0, 0};
     endif
     if(stat == ATTRIBUTEID_STRENGTH)
-    if(statMatrix[1] >= 20)
-      statMatrix[1] := 20;
-    else
-      statMatrix[1] := statMatrix[1]+increase;
-    endif
-    SetBaseStrength(who, (GetBaseStrength(who)+increase));
+      if(statMatrix[1] >= 20)
+        statMatrix[1] := 20;
+      else
+        statMatrix[1] := statMatrix[1]+increase;
+      endif
+      SetBaseStrength(who, (GetBaseStrength(who)+increase));
     elseif(stat == ATTRIBUTEID_DEXTERITY)
-    if(statMatrix[2] >= 20)
-      statMatrix[2] := 20;
-    else
-      statMatrix[2] := statMatrix[2]+increase;
-    endif
-    SetBaseDexterity(who, (GetBaseDexterity(who)+increase));
+      if(statMatrix[2] >= 20)
+        statMatrix[2] := 20;
+      else
+        statMatrix[2] := statMatrix[2]+increase;
+      endif
+      SetBaseDexterity(who, (GetBaseDexterity(who)+increase));
     elseif(stat == ATTRIBUTEID_INTELLIGENCE)
-    if(statMatrix[3] >= 20)
-      statMatrix[3] := 20;
-    else
-      statMatrix[3] := statMatrix[3]+increase;
-    endif
-    SetBaseIntelligence(who, (GetBaseIntelligence(who)+increase));
+      if(statMatrix[3] >= 20)
+        statMatrix[3] := 20;
+      else
+        statMatrix[3] := statMatrix[3]+increase;
+      endif
+      SetBaseIntelligence(who, (GetBaseIntelligence(who)+increase));
     endif
 
     SetObjProperty(who, "statMatrix", statMatrix);
-
 
     PlayObjectCenteredEffect(who, 0x33EA, 0x1, 10);
     PlayObjectCenteredEffect(who, 0x373A, 0x1, 10);

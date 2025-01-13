@@ -12,7 +12,7 @@ use os;
 
 program EnterArea(who)
 
-Start_Script(":areas:EnterAreaDelay", who);
+    Start_Script(":areas:EnterAreaDelay", who);
 
 endprogram
 
