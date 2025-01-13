@@ -625,10 +625,10 @@ function IsProhibitedByClasse( who , item )
 	elseif( GetObjProperty( who , CLASSEID_MAGE ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_MAGE ) )
 			ret := 1;
-		//elseif( GetObjProperty( item , "str" ) )
-		//	ret := 1;
-		elseif( GetObjProperty( item , "dex" ) )
+		elseif( GetObjProperty( item , "str" ) )
 			ret := 1;
+		//elseif( GetObjProperty( item , "dex" ) )
+		//	ret := 1;
 		//elseif( GetObjProperty( item , "ArBonus" ) )
 			//ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MAGE ) )
