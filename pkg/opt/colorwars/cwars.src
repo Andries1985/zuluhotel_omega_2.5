@@ -847,7 +847,7 @@ function RunCWars()
 								sleepms(5);
 								if(dude != maxplayer and GetObjProperty(dude,"cwarring") and !dude.dead)
 									robe := GetEquipmentByLayer( dude, 22 );
-									robe.color := 1171;
+									robe.color := 11784;
 								endif
 							endforeach
 						endif

@@ -42,7 +42,7 @@ exported function hookVersion( who, byref pkt )
 	var realstring := CChrZ( newstring );
 	
 	var cfg := ReadConfigFile( ":versionHook:clients" );
-	var aClients := GetConfigStringArray( cfg["Avaiable"], "Client" );
+	var aClients := GetConfigStringArray( cfg["Available"], "Client" );
 	var pass := 0;
 
 	foreach Client in AClients
