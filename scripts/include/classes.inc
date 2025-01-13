@@ -100,7 +100,7 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 					//fract_array.append( GetPlatemailArmorGraphics() );
 					break;
 		CLASSEID_MAGE:		
-					fract_array.append( GetStuddedLeatherArmorGraphics() );
+					//fract_array.append( GetStuddedLeatherArmorGraphics() );
 					fract_array.append( GetBoneArmorGraphics() );
 					fract_array.append( GetRingmailArmorGraphics() );
 					fract_array.append( GetChainmailArmorGraphics() );
@@ -627,6 +627,8 @@ function IsProhibitedByClasse( who , item )
 			ret := 1;
 		elseif( GetObjProperty( item , "str" ) )
 			ret := 1;
+		//elseif( GetObjProperty( item , "dex" ) )
+		//	ret := 1;
 		//elseif( GetObjProperty( item , "ArBonus" ) )
 			//ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MAGE ) )
@@ -652,6 +654,8 @@ function IsProhibitedByClasse( who , item )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_THIEF ) )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_THIEF ) )
+			ret := 1;
+		elseif( GetObjProperty( item , "int" ) )
 			ret := 1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_WARRIOR ) )

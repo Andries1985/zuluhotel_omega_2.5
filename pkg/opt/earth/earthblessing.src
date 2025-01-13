@@ -43,9 +43,9 @@ program cast_earth_blessing( parms )
 
 	PlaySoundEffect( caster , SFX_SPELL_EARTH_BLESSING );
 
-	var mod_amount := Cint( GetModAmount( caster ) * 3 );
+	var mod_amount := Cint( GetModAmount( caster ) * 2.75 );
 	if(casterismage)
-		var mod_amount := Cint( GetModAmount( caster ) * 5 );
+		var mod_amount := Cint( GetModAmount( caster ) * 4.75 );
 	endif
 
 	var duration := GetModDuration( caster );
