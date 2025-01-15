@@ -34,7 +34,6 @@ function CreateNorthSouthField( caster , fieldtype , x , y , z := 0 , length := 
 
 	var counter := 0, count := 0;
 	var is_mage := GetObjProperty( caster , CLASSEID_MAGE );
-	var is_paladin := GetObjProperty( caster , CLASSEID_PALADIN );
 	var i;
 	var fires := { };
 	
@@ -63,7 +62,6 @@ function CreateEastWestField( caster , fieldtype , x , y , z := 0, length := 5 )
 		
 	var counter := 0, count := 0;
 	var is_mage := GetObjProperty( caster , CLASSEID_MAGE );
-	var is_paladin := GetObjProperty( caster , CLASSEID_PALADIN );
 	var i;
 	var fires := { };
 	

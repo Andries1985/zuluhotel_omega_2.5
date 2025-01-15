@@ -7,10 +7,13 @@ include "include/spelldata";
 
 const BASE_SPELLID := 165;
 
-program BookOfEarth( who, book )
+program HolyBook( who, book )
 
-	if (!GetObjProperty(who, CLASSEID_MAGE) || !GetObjProperty(who, CLASSEID_POWERPLAYER) || !GetObjProperty(who, CLASSEID_PALADIN) )
-		SendSysMessage(who,"Only Mages, Powerplayers and Paladins can use this!");
+	if (GetObjProperty(who, CLASSEID_MAGE))
+	elseif (GetObjProperty(who, CLASSEID_POWERPLAYER))
+	elseif (GetObjProperty(who, CLASSEID_PALADIN))
+	else
+		SendSysMessage(who,"Only Mages, Paladins and Powerplayers can use this!");
 		return;
 	endif
 	

@@ -16,16 +16,17 @@ program cast_poly( parms, spell_id )
 	var caster;
 	var cast_on := caster;	
 
-	if (GetObjProperty(caster, CLASSEID_PALADIN))
-		SendSysMessage(caster, "Paladins are restricted from using " + spell_id + "!");
-		return;
-	endif
+
 
 	if (parms[1] == "#MOB")
 		 //CastToad(parms[2],parms[3]);
 		return;
 	else
 		caster := parms;
+		if (IsPaladin(caster))
+			SendSysMessage(caster, "Paladings may not cast this spell!");
+			return 0;
+		endif
 		// For scrolls, StartSpellScript isn't working >:(
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];
@@ -36,7 +37,7 @@ program cast_poly( parms, spell_id )
 			return 0;
 		endif
 		if (!can_cast(caster, circle))
-        		return;
+        	return;
 		endif
 	endif
 	
@@ -58,10 +59,7 @@ program cast_poly( parms, spell_id )
 	var critter := Random(8);
 	
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
-		critgroup := critgroup + 1;
-		critter	:= critter + 2;
-	elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
-		critgroup := critgroup + 1;
+		critgroup := critgroup + 2;
 		critter	:= critter + 2;
 	elseif( GetObjProperty( caster , CLASSEID_WARRIOR ) )
 		critgroup := critgroup - 1;
@@ -72,6 +70,8 @@ program cast_poly( parms, spell_id )
 		
 		if( critter < 0 )
 			critter := 0;
+		elseif( critter > 4 )
+			critter := 4;
 		endif
 	endif
 

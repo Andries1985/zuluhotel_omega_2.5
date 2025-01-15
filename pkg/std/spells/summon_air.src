@@ -10,11 +10,6 @@ program summon_air( parms, spell_id )
 	var cast_loc;
 	var fromhit;
 
-	if (GetObjProperty(caster, CLASSEID_PALADIN))
-		SendSysMessage(caster, "Paladins are restricted from using " + spell_id + "!");
-		return;
-	endif
-
 	if (parms[1] == "#MOB")
 		caster := parms[2];
 		cast_loc := parms[3];
@@ -27,6 +22,10 @@ program summon_air( parms, spell_id )
 
 	else
 		caster := parms;
+		if (IsPaladin(caster))
+			SendSysMessage(caster, "Paladings may not cast this spell!");
+			return 0;
+		endif
 		// For scrolls, StartSpellScript isn't working >:(
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];
