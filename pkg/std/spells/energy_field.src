@@ -32,7 +32,7 @@ program efield( parms, spell_id )
 
         caster := parms;
 		if (IsPaladin(caster))
-			SendSysMessage(caster, "Paladings may not cast this spell!");
+			SendSysMessage(caster, "Paladins may not cast this spell!");
 			return 0;
 		endif
 		// For scrolls, StartSpellScript isn't working >:(
