@@ -9,6 +9,11 @@ program summon_fire( parms, spell_id )
 	var cast_loc;
 	var fromhit;
 
+	if (GetObjProperty(caster, CLASSEID_PALADIN))
+		SendSysMessage(caster, "Paladins are restricted from using " + spell_id + "!");
+		return;
+	endif
+
 	if (parms[1] == "#MOB")
 		caster := parms[2];
 		cast_loc := parms[3];

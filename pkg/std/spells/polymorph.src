@@ -16,6 +16,11 @@ program cast_poly( parms, spell_id )
 	var caster;
 	var cast_on := caster;	
 
+	if (GetObjProperty(caster, CLASSEID_PALADIN))
+		SendSysMessage(caster, "Paladins are restricted from using " + spell_id + "!");
+		return;
+	endif
+
 	if (parms[1] == "#MOB")
 		 //CastToad(parms[2],parms[3]);
 		return;
@@ -55,7 +60,7 @@ program cast_poly( parms, spell_id )
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		critgroup := critgroup + 1;
 		critter	:= critter + 2;
-	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
+	elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
 		critgroup := critgroup + 1;
 		critter	:= critter + 2;
 	elseif( GetObjProperty( caster , CLASSEID_WARRIOR ) )

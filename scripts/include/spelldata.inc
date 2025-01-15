@@ -189,8 +189,8 @@ function BurnSelf ( caster , circle )
         dmg := CalcSpellDamage( caster , cast_on , circle );
         if( GetObjProperty( caster , CLASSEID_MAGE ) )
         	dmg := Cint( dmg / ClasseBonus( caster , CLASSEID_MAGE ) );
-	  elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
-        	dmg := Cint( dmg / ClasseBonus( caster , CLASSEID_CLERIC ) );
+	  elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
+        	dmg := Cint( dmg / ClasseBonus( caster , CLASSEID_PALADIN ) );
         elseif( GetObjProperty( caster , CLASSEID_WARRIOR ) )
         	dmg := Cint( dmg * ClasseBonus( caster , CLASSEID_WARRIOR ) );
         endif
@@ -738,10 +738,10 @@ function ModifyWithMagicEfficiency( who, val )
 
 	if( GetObjProperty( who, CLASSEID_MAGE ) )
 		val := CInt(val * ClasseBonus( who, CLASSEID_MAGE ));
-	elseif( GetObjProperty( who, CLASSEID_CLERIC ) )
+	elseif( GetObjProperty( who, CLASSEID_PALADIN ) )
 		if( !GetObjProperty( who, "CastingNecro"))
 			//Not casting necro, gets bonus
-		val := CInt(val * ClasseBonus( who, CLASSEID_CLERIC ));
+		val := CInt(val * ClasseBonus( who, CLASSEID_PALADIN ));
 		else
 		//Casting necro, no bonus & erases CProp	
 		EraseObjProperty( who, "CastingNecro");
@@ -900,8 +900,8 @@ function Resisted( caster , cast_on , circle , dmg )
 
 	if( GetObjProperty( cast_on , CLASSEID_MAGE ) )
 		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_MAGE ) );
-	elseif( GetObjProperty( cast_on , CLASSEID_CLERIC ) )
-		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_CLERIC ) );
+	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
+		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_PALADIN ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		var bonus := ClasseBonus( cast_on , CLASSEID_WARRIOR );
 		chance := Cint( chance / bonus / 2 );
@@ -910,8 +910,8 @@ function Resisted( caster , cast_on , circle , dmg )
 
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		chance := Cint( chance / ClasseBonus( caster , CLASSEID_MAGE ) );
-	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
-		chance := Cint( chance / ClasseBonus( caster , CLASSEID_CLERIC ) );
+	elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
+		chance := Cint( chance / ClasseBonus( caster , CLASSEID_PALADIN ) );
 	elseif( GetObjProperty( caster , CLASSEID_WARRIOR ) )
 		var bonus := ClasseBonus( caster , CLASSEID_WARRIOR );
 		chance := Cint( chance * bonus * 2 );
@@ -937,8 +937,8 @@ function Resisted( caster , cast_on , circle , dmg )
 
 	if( GetObjProperty( cast_on , CLASSEID_MAGE ) )
 		dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_MAGE ) );
-	elseif( GetObjProperty( cast_on , CLASSEID_CLERIC ) )
-		dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_CLERIC ) );
+	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
+		dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_PALADIN ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		dmg := Cint( dmg * ClasseBonus( cast_on , CLASSEID_WARRIOR ) );
 	endif
@@ -979,8 +979,8 @@ function ResistedDefinedSkillGain( caster , cast_on , dmg , diff , points := 0 )
 
 	if( GetObjProperty( cast_on , CLASSEID_MAGE ) )
 		dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_MAGE ) );
-	elseif( GetObjProperty( cast_on , CLASSEID_CLERIC ) )
-		dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_CLERIC ) );
+	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
+		dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_PALADIN ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		dmg := Cint( dmg * ClasseBonus( cast_on , CLASSEID_WARRIOR ) );
 	endif

@@ -34,7 +34,7 @@ function CreateNorthSouthField( caster , fieldtype , x , y , z := 0 , length := 
 
 	var counter := 0, count := 0;
 	var is_mage := GetObjProperty( caster , CLASSEID_MAGE );
-	var is_cleric := GetObjProperty( caster , CLASSEID_CLERIC );
+	var is_paladin := GetObjProperty( caster , CLASSEID_PALADIN );
 	var i;
 	var fires := { };
 	
@@ -42,7 +42,7 @@ function CreateNorthSouthField( caster , fieldtype , x , y , z := 0 , length := 
 	count := count+1;
 		if( !len(ListMobilesNearLocation( i , y , z , 0 )) )
 			counter := counter  + 1;
-			fires[counter] := CreateItemAtLocation( i , y , z , fieldtype , 1 );
+			fires[counter] := CreateItemAtLocation( i , y , z , fieldtype , 1, caster.realm );
 			SetObjProperty( fires[counter] , "Creator" , caster.serial );
 			SetObjProperty( fires[counter] , "f" , 1 );
 			if( is_mage )
@@ -63,7 +63,7 @@ function CreateEastWestField( caster , fieldtype , x , y , z := 0, length := 5 )
 		
 	var counter := 0, count := 0;
 	var is_mage := GetObjProperty( caster , CLASSEID_MAGE );
-	var is_cleric := GetObjProperty( caster , CLASSEID_CLERIC );
+	var is_paladin := GetObjProperty( caster , CLASSEID_PALADIN );
 	var i;
 	var fires := { };
 	
@@ -71,7 +71,7 @@ function CreateEastWestField( caster , fieldtype , x , y , z := 0, length := 5 )
 	count := count+1;
 		if( !len(ListMobilesNearLocation( x , i , z , 0 )) )
 			counter := counter  + 1;
-			fires[counter] := CreateItemAtLocation( x , i , z , fieldtype , 1 );
+			fires[counter] := CreateItemAtLocation( x , i , z , fieldtype , 1, caster.realm );
 			SetObjProperty( fires[counter] , "Creator" , caster.serial );
 			SetObjProperty( fires[counter] , "f" , 1 );
 			if( is_mage )

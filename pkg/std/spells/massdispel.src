@@ -20,6 +20,11 @@ program mass_dispel ( parms, spell_id )
 	var cast_on;
 	var fromhit;
 
+	if (GetObjProperty(caster, CLASSEID_PALADIN))
+		SendSysMessage(caster, "Paladins are restricted from using " + spell_id + "!");
+		return;
+	endif
+
 	if (parms[1] == "#MOB")
 		caster := parms[2];
 		cast_on := parms[3];
@@ -78,8 +83,8 @@ program mass_dispel ( parms, spell_id )
 				
 				if( GetObjProperty( caster, CLASSEID_MAGE ) )
 					magery := Cint( magery * ClasseBonus( caster, CLASSEID_MAGE ) );
-				elseif( GetObjProperty( caster, CLASSEID_CLERIC ) )
-					magery := Cint( magery * ClasseBonus( caster, CLASSEID_CLERIC ) );
+				elseif( GetObjProperty( caster, CLASSEID_PALADIN ) )
+					magery := Cint( magery * ClasseBonus( caster, CLASSEID_PALADIN) );
 				endif
 		
 				if( !CheckSkill( mobile, SKILLID_MAGICRESISTANCE, magery, 50 ))
@@ -100,8 +105,8 @@ program mass_dispel ( parms, spell_id )
 		
 				if( GetObjProperty( caster, CLASSEID_MAGE ) )
 					magery := Cint( magery * ClasseBonus( caster, CLASSEID_MAGE ) );
-				elseif( GetObjProperty( caster, CLASSEID_CLERIC ) )
-					magery := Cint( magery * ClasseBonus( caster, CLASSEID_CLERIC ) );
+				elseif( GetObjProperty( caster, CLASSEID_PALADIN ) )
+					magery := Cint( magery * ClasseBonus( caster, CLASSEID_PALADIN ) );
 				endif
 		
 				if( !CheckSkill( mobile, SKILLID_MAGICRESISTANCE, magery, 50 ))
