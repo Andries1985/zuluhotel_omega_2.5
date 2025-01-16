@@ -652,7 +652,8 @@ function FillInArrays( who , byref layout , byref data )
 	var ranger	:= 0.0;
 	var thief	:= 0.0;
 	var warrior	:= 0.0;
-var i;	
+	var i;	
+	
 	for(i:=0; i<=SKILLID__HIGHEST; i:=i+1)
 		var name := GetAttributeIdBySkillId( i );	
 		var skillss := GetSkillIdByAttributeId( name );

@@ -1,0 +1,166 @@
+////////////////////////////////////////////////////////////////////////////
+//
+// scripts/misc/skillwin.src: skill-window request hook script
+//
+//   if this script is not present, this functionality will be executed
+//   internally.
+//
+////////////////////////////////////////////////////////////////////////////
+
+use uo;
+use os;
+use cfgfile;
+
+include ":gumps:include/gumps";
+include "include/attributes";
+include "include/classes";
+include "include/client";
+
+const SKILL_START	:= 71;
+const PERFORM_SKILL	:= 500;
+
+program skillwindow( who )
+
+	SendSkillWindow( who, who );
+
+	var gump := GFCreateGump(15, 15, 600, 500);
+	GFResizePic(gump, 15, 15, 9270, 600, 500);
+	GFResizePic(gump, 25, 25, 9350, 580, 480);
+	GFTextLine(gump, 150, 30, 53, "Skills Window - Raise, Lower Or Lock Your Skills");
+	GFTextLine(gump, 290, 395, 53, "Legend");
+
+	//var matrix := GetObjProperty(who, "pScrollMatrix");
+	var state_array   := GetObjProperty( who , "SkillsStateTest" );
+	if( !state_array )
+		state_array := {};
+	endif
+
+	var skill, cap;
+	var countb := 0;
+	var countc := 0;
+	var countd:= 0;
+	var skills, skillss := 0;
+	var buttondown := 2360;
+	var buttonup := 2361;
+	var buttonlock := 2362;
+	var buttondownvalue := 100;
+	var buttonupvalue := 300;
+	var buttonlockvalue := 200;
+	var buttonvalue := 300;
+	var buttonon_id := 2361;
+	var buttonoff_id := 2360;
+		
+	var sorted_skill_ids := GetSortedSkillIds();
+	
+	//foreach i in sorted_skill_ids
+	var i;
+	for(i:=1; i<=49; i:=i+1)
+
+		Print(sorted_skill_ids[i]);
+		skill := GetAttributeIdBySkillId( sorted_skill_ids[i] );
+		Print(skill);
+		skillss := GetBaseSkillBaseValue( who, sorted_skill_ids[i] );
+		skills := Cdbl(skillss/10.0);
+
+		if(skill == "Enticement")
+				skill := "Discordance";
+		endif
+		
+		//if(i in GetClasseSkills( CLASSEID_POWERPLAYER ) )
+			if (i <= 16)
+				var x := 40;
+				var y := 65 + countb;
+				//GFAddButton(gump, x, y + 5, buttonon_id, buttonoff_id, GF_DUMMY_BTN, buttonvalue);
+				GFTextLine(gump, x + 20, y, 0, skill);
+				GFTextLine(gump, x + 145, y, 0, skills);
+				countb := countb + 20;
+			elseif (i >= 17 && i <= 32)
+				var x := 220;
+				var y := 65 + countc;
+				//GFAddButton(gump, x, y + 5, buttonon_id, buttonoff_id, GF_DUMMY_BTN, buttonvalue);
+				GFTextLine(gump, x + 20, y, 0, skill);
+				GFTextLine(gump, x + 145, y, 0, skills);
+				countc := countc + 20;
+			elseif (i >= 33)
+				var x := 400;
+				var y := 65 + countd;
+				//GFAddButton(gump, x, y + 5, buttonon_id, buttonoff_id, GF_DUMMY_BTN, buttonvalue);
+				GFTextLine(gump, x + 20, y, 0, skill);
+				GFTextLine(gump, x + 145, y, 0, skills);
+				countd := countd + 20;
+			endif
+		//endif
+	//endforeach
+	endfor
+	
+	GFSendGump(who, gump);
+
+	//GFAddButton(gump, 160, 420, 2361, 2361, 1, 1);
+	//GFTextLine(gump, 180, 415, 0,  "If Button Looks Like this, It Will Raise Your Skills");
+	//GFAddButton(gump, 160, 440, 2360, 2360, 1, 1);
+	//GFTextLine(gump, 180, 435, 0,  "If Button Looks Like this, It Will Lower Your Skills");
+	//GFAddButton(gump, 160, 460, 2362, 2362, 1, 1);
+	//GFTextLine(gump, 180, 455, 0,  "If Button Looks Like this, It Will Lock Your Skills");
+	
+	/*
+	var res;
+	repeat
+		res := GFSendGump(who, gump);
+		res := Cint( res[0] );
+		if( res )
+			// Set the skill to decrease
+			if( res == 100 )
+				var state_array   := GetObjProperty( who , "TestSkillsState" );
+				if( !state_array )
+					state_array := {};
+				endif
+				state_array[ res ] := "d";
+				buttonvalue := 200;
+				buttonon_id := 2362;
+				buttonoff_id := 2362;
+				//TakeCurrentSkillLevelInNote( who , res );
+				SetObjProperty( who , "TestSkillsState" , state_array );
+
+			// Lock the skill
+			elseif( res == 200 )
+				var state_array   := GetObjProperty( who , "TestSkillsState" );
+				if( !state_array )
+					state_array := {};
+				endif
+				state_array[ res ] := "l";
+				buttonvalue := 300;
+				buttonon_id := 2361;
+				buttonoff_id := 2361;
+				//TakeCurrentSkillLevelInNote( who , (res-101) );
+				SetObjProperty( who , "TestSkillsState" , state_array );
+
+			// Make the skill raise again
+			elseif( res == 300 )
+				var state_array   := GetObjProperty( who , "TestSkillsState" );
+				if( !state_array )
+					state_array := {};
+				endif
+				state_array[ res ] := "r";
+				buttonvalue := 100;
+				buttonon_id := 2360;
+				buttonoff_id := 2360;
+				//TakeCurrentSkillLevelInNote( who , (res-201) );
+
+				SetObjProperty( who , "TestSkillsState" , state_array );
+
+			// Perform skill
+			elseif( res >= PERFORM_SKILL )
+			
+				
+			endif
+		endif
+
+	until( !res );
+	*/
+	return;
+endprogram
+
+function GetSortedSkillIds()
+  //return array{ 0,1,2,35,31,4,6,7,8,10,11,12,13,14,15,16,42,18,19,17,20,21,23,3,24,44,41,25,26,46,45,29,5,9,30,22,48,28,32,33,47,40,27,34,36,37,38,39,43 };
+  return array{ 0,1,2,31,4,6,7,8,10,11,12,13,14,15,16,42,18,19,17,20,21,23,3,24,44,41,25,26,46,45,29,5,9,30,22,48,28,32,33,47,40,27,34,35,36,37,38,39,43 };
+endfunction
