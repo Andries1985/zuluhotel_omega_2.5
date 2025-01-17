@@ -26,7 +26,7 @@ program skillwindow( who )
 	GFResizePic(gump, 15, 15, 9270, 600, 500);
 	GFResizePic(gump, 25, 25, 9350, 580, 480);
 	GFTextLine(gump, 185, 30, 53, "SKILL CAPS");
-	GFTextLine(gump, 385, 30, 53, "CLASS");
+	GFTextLine(gump, 375, 30, 53, "CLASS -->");
 	GFTextLine(gump, 290, 390, 53, "STAT CAPS");
 	GFTextLine(gump, 300, 440, 53, "LEGEND");
 
@@ -37,7 +37,6 @@ program skillwindow( who )
 	var countb := 0;
 	var countc := 0;
 	var countd:= 0;
-	var classdisplay := Start_Script(":scripts:show_classe", who);
 		
 	var i, hue, chue;
 	for(i:=0; i<=48; i:=i+1)
