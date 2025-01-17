@@ -25,7 +25,8 @@ program skillwindow( who )
 	var gump := GFCreateGump(15, 15, 600, 500);
 	GFResizePic(gump, 15, 15, 9270, 600, 500);
 	GFResizePic(gump, 25, 25, 9350, 580, 480);
-	GFTextLine(gump, 290, 30, 53, "SKILL CAPS");
+	GFTextLine(gump, 185, 30, 53, "SKILL CAPS");
+	GFTextLine(gump, 385, 30, 53, "CLASS");
 	GFTextLine(gump, 290, 390, 53, "STAT CAPS");
 	GFTextLine(gump, 300, 440, 53, "LEGEND");
 
@@ -36,6 +37,7 @@ program skillwindow( who )
 	var countb := 0;
 	var countc := 0;
 	var countd:= 0;
+	var classdisplay := Start_Script(":scripts:show_classe", who);
 		
 	var i, hue, chue;
 	for(i:=0; i<=48; i:=i+1)
@@ -50,7 +52,7 @@ program skillwindow( who )
 				cap := 130+matrix[i];
 			endif
 		endif
-
+		
 		var classe := GetClass(who);
 
 		if( i in GetClasseSkills( classe ) )
@@ -65,6 +67,15 @@ program skillwindow( who )
 		elseif (cap == 150)
 			hue := 1267;
 		endif   
+
+
+		var level := GetObjProperty(who, classe);
+
+		if (level)
+			GFTextLine(gump, 450, 30, 2820, classe +": "+level);
+		else
+			GFTextLine(gump, 450, 30, 0, "No Specific Class");
+		endif
 
 		skill := GetAttributeIdBySkillId( i );
 		if(skill == "Enticement")
