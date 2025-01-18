@@ -305,9 +305,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		// Strength increases damage for players, npcs too often have 2k+STR!
 		//Jan 2025 Changes
 		//Upped Str damage to 0.005 from 0.002
-		//Upped PP and Warrior damage to 0.005 from 0.002
-		//Added Paladin damage based on eval int to 0.005
-		//Added Paladin damage based on INT to 0.005
+		//Added Paladin damage based on INT to 0.002
 		if(!attacker.isA(POLCLASS_NPC))
 			basedamage *= 1 + GetStrength(attacker) *0.005;
 		endif
