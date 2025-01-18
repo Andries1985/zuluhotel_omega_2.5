@@ -285,7 +285,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		if( GetObjProperty( attacker, CLASSEID_RANGER ) || GetObjProperty( attacker, CLASSEID_BARD ))
 			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_ARCHERY) * 0.005;
 		elseif( GetObjProperty( attacker, CLASSEID_THIEF ))
-			basedamage *= 1 + avg_skill * 0.002;
+			basedamage *= 1 + avg_skill * 0.003;
 		elseif(GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ))
 			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_TACTICS) * 0.002;
 		endif
@@ -321,9 +321,9 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		if( GetObjProperty(attacker, CLASSEID_WARRIOR) || GetObjProperty(attacker, CLASSEID_POWERPLAYER))
 			basedamage *=  1 + GetAttribute( attacker, ATTRIBUTEID_ANATOMY ) * 0.002 ;
 		elseif( GetObjProperty( attacker, CLASSEID_THIEF ) && (weapon.attribute == ATTRIBUTEID_FENCING))
-			basedamage *= 1 + avg_skill * 0.003;
-		elseif( GetObjProperty(attacker, CLASSEID_PALADIN) )
-			basedamage *=  1 + GetAttribute( attacker, ATTRIBUTEID_EVALINT ) * 0.002 ;
+			basedamage *= 1 + avg_skill * 0.005;
+		//elseif( GetObjProperty(attacker, CLASSEID_PALADIN) )
+		//	basedamage *=  1 + GetAttribute( attacker, ATTRIBUTEID_EVALINT ) * 0.002 ;
 		endif
 		if(DEBUG_MODE)
 			SendSysMessage( attacker, "Skill Bonus: "+basedamage, FONT_NORMAL, 2569 );
@@ -394,7 +394,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 	else
 		if(!attacker.isA(POLCLASS_NPC))
 			if( !defender.isA(POLCLASS_NPC))
-				basedamage *= 0.7;
+				basedamage *= 0.5;
 			endif
 		endif
 	endif
