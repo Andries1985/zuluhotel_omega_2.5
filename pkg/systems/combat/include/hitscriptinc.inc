@@ -331,7 +331,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		// Attacks vs Players.
 		if( !defender.isA(POLCLASS_NPC) )
 			if( GetObjProperty( attacker, CLASSEID_WARRIOR ))
-				level := max(0, level-3);
+				level := max(0, level-4);
 				basedamage *= ClasseSmallBonusByLevel( level );
 			elseif( level )
 				level := max(0, level-4);
@@ -340,7 +340,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		// Attacks vs NPC's.
 		else
 			if( GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ) || GetObjProperty( attacker, CLASSEID_PALADIN ))
-				level := max(0, level-4);
+				level := max(0, level-3);
 				basedamage *= ClasseSmallBonusByLevel( level );
 			elseif( level )
 				level := max(0, level-4);
