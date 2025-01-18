@@ -385,7 +385,7 @@ function Calcdamage(who, xObject, basedamage)
 		//Bumped Thief damage from 0.003 to 0.005
 		//Bumped Warrior and PP damage from 0.002 to 0.005
 		if(!who.isA(POLCLASS_NPC))
-			basedamage *= 1 + GetStrength(who) *0.5;
+			basedamage *= 1 + GetStrength(who) *0.005;
 		endif
 		if(!who.isA(POLCLASS_NPC) && GetObjProperty( who, CLASSEID_PALADIN ))
 			basedamage *= 1 + GetIntelligence(who) *0.005;
