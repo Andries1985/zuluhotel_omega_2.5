@@ -105,7 +105,7 @@ program testclassbooststone( who )
         700:    selectedclass := SetObjProperty(who, "StartingClass", "Paladin" );
                 classid := CLASSEID_PALADIN;
         800:    selectedclass := SetObjProperty(who, "StartingClass", "Bladesinger" );
-                classid := CLASSEID_POWERPLAYER;
+                classid := CLASSEID_BLADESINGER;
         900:    selectedclass := SetObjProperty(who, "StartingClass", "Powerplayer" );
                 classid := CLASSEID_POWERPLAYER;
         default: selectedclass := "The player must have canceled the gump without doing anything";
