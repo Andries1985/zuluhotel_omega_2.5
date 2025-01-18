@@ -32,8 +32,8 @@ program testclassbooststone( who )
             "text 940 825 2496 13",
             "text 940 850 2496 14",
 
-            "text 887 875 2567 14",
-            "text 880 900 2567 15",
+            "text 887 875 2567 15",
+            "text 880 900 2567 16",
 
             "radio 920 652 11410 11402 0 100",                             // Ranger
             "radio 920 677 11410 11402 0 200",                             // Warrior
