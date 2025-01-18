@@ -741,7 +741,7 @@ function ModifyWithMagicEfficiency( who, val )
 	elseif( GetObjProperty( who, CLASSEID_PALADIN ) )
 		if( !GetObjProperty( who, "CastingNecro"))
 			//Not casting necro, gets bonus
-		val := CInt(val * ClasseBonus( who, CLASSEID_PALADIN ));
+		//val := CInt(val * ClasseBonus( who, CLASSEID_PALADIN ));
 		else
 		//Casting necro, no bonus & erases CProp	
 		EraseObjProperty( who, "CastingNecro");
@@ -788,14 +788,9 @@ function Reflect( source, targ )
 	PlaySoundEffect( source, SFX_SPELL_MAGIC_REFLECTION );
 	PlayObjectCenteredEffect( source, FX_SPELL_MAGIC_REFLECTION , SPEED_SPELL_MAGIC_REFLECTION , LOOP_SPELL_MAGIC_REFLECTION );
 	SendSysMessage( source, "Your magic reflect spell saved you!" );
-	if( SPELL_EFFECT_TYPE_MOVING == 1 )
+	if( source.SPELL_EFFECT_TYPE_MOVING == 1 )
 		Sleep( 1 );
-		PlayMovingEffect(source,
-		targ,
-		SPELL_EFFECT_ID,
-		SPELL_EFFECT_SPEED,
-		SPELL_EFFECT_LOOP,
-		explode := 0);
+		PlayMovingEffect(source, targ, source.SPELL_EFFECT_ID, source.SPELL_EFFECT_SPEED, source.SPELL_EFFECT_LOOP, explode := 0);
 	endif
 
 endfunction
