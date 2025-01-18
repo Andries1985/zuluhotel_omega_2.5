@@ -212,6 +212,9 @@ function FillInArrays( who , byref layout , byref data )
 				
 	elseif( GetObjProperty( who , CLASSEID_WARRIOR ) )
 		classe_title := leveltitles[ GetObjProperty( who , CLASSEID_WARRIOR )+3 ] + " " + skilltitles[ 54 ];
+
+	elseif( GetObjProperty( who , CLASSEID_PALADIN ) )
+		classe_title := leveltitles[ GetObjProperty( who , CLASSEID_PALADIN )+3 ] + " " + skilltitles[ 55 ];
 	endif
 	
 	if( classe_title )
