@@ -257,6 +257,13 @@ function GetShieldGraphicsThief()
 
 endfunction
 
+function GetGraphicsBladesinger()
+
+	return { 0x1f02, 0x9B10 };
+	
+	// Cloak of Lettenhove, Grarks Shepherds Crook
+endfunction
+
 function GetPossiblePropertyNames()
 
 	return {	"AirProtection"		,

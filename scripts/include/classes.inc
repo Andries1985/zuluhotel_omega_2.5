@@ -7,6 +7,7 @@ include ":staff:include/staff";
 
 const CLASSE_BONUS        	:= 1.5;
 const CLASSEID_BARD       	:= "IsBard";
+const CLASSEID_BLADESINGER 	:= "IsBladesinger";
 const CLASSEID_CRAFTER    	:= "IsCrafter";
 const CLASSEID_MAGE       	:= "IsMage";
 const CLASSEID_PALADIN     	:= "IsPaladin";
@@ -95,6 +96,12 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
 					break;
+		CLASSEID_BLADESINGER:
+					fract_array.append( GetLeatherArmorGraphics() );
+					fract_array.append( GetStuddedLeatherArmorGraphics() );
+					fract_array.append( GetGraphicsBladesinger() );
+					fract_array.append( GetShieldGraphics() );
+					break;
 		CLASSEID_CRAFTER:
 					break;
 		CLASSEID_MAGE:		
@@ -151,14 +158,17 @@ endfunction
 
 function GetClasseIds()
 
-	return { CLASSEID_BARD,
-		 CLASSEID_CRAFTER,
-		 CLASSEID_MAGE,
-		 CLASSEID_PALADIN,
-		 CLASSEID_RANGER,
-		 CLASSEID_THIEF,
-		 CLASSEID_WARRIOR,
-		 CLASSEID_POWERPLAYER };
+	return { 
+			CLASSEID_BARD,
+			CLASSEID_BLADESINGER,
+			CLASSEID_CRAFTER,
+			CLASSEID_MAGE,
+			CLASSEID_PALADIN,
+			CLASSEID_RANGER,
+			CLASSEID_THIEF,
+			CLASSEID_WARRIOR,
+			CLASSEID_POWERPLAYER
+			};
 
 endfunction
 
@@ -168,6 +178,7 @@ function GetClasseName( classeid )
         case( classeid )
 
                 CLASSEID_BARD:			return( "Bard" );
+				CLASSEID_BLADESINGER:	return( "IsBladesinger" );
                 CLASSEID_CRAFTER:		return( "Crafter" );
                 CLASSEID_MAGE:			return( "Mage" );
 				CLASSEID_PALADIN:		return( "Paladin" );
@@ -194,6 +205,16 @@ function GetClasseSkills( classeid )
 						 SKILLID_PEACEMAKING	,
 						 SKILLID_PROVOCATION	,
 						 SKILLID_TASTEID	};
+
+		CLASSEID_BLADESINGER:			
+				return { SKILLID_ANATOMY	,
+						 SKILLID_ENTICEMENT	,
+						 SKILLID_FENCING	,
+						 SKILLID_MUSICIANSHIP	,
+						 SKILLID_PEACEMAKING	,
+						 SKILLID_PROVOCATION	,
+						 SKILLID_SWORDSMANSHIP	,
+						 SKILLID_TACTICS	};
 
 		CLASSEID_CRAFTER:		
 				return { SKILLID_ARMSLORE	,
@@ -341,6 +362,7 @@ function GetMaxCircleForClasse( classeid )
 
 	case( classeid )
 		CLASSEID_BARD:			return 1;
+		CLASSEID_BLADESINGER:	return 1;
 		CLASSEID_CRAFTER:		return 1;
 		CLASSEID_MAGE:			return 0;
 		CLASSEID_PALADIN:		return 0;
@@ -408,6 +430,7 @@ function HaveRestrictedModEnchantmentForClasse( who , item , classeid )
 
 	case( classeid )
 		CLASSEID_BARD:			break;
+		CLASSEID_BLADESINGER:	break;
 		CLASSEID_CRAFTER:		break;
 		CLASSEID_MAGE:			break;
 		CLASSEID_PALADIN:		break;
@@ -446,6 +469,7 @@ function HaveStatAffinity( who , stat )
 
 		"dex":	classeids := {  
 					CLASSEID_BARD,
+					CLASSEID_BLADESINGER,
 					CLASSEID_THIEF };	
 					break;
 
@@ -479,6 +503,7 @@ function HaveStatDifficulty( who , stat )
 		"str":
 			classeids := {
 				CLASSEID_BARD,
+				CLASSEID_BLADESINGER,
 				CLASSEID_MAGE };
 				break;
 		"dex":
@@ -519,6 +544,10 @@ endfunction
 
 function IsBard( who )
 	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_BARD ) );
+endfunction
+
+function IsBladesinger( who )
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_BLADESINGER ) );
 endfunction
 
 function IsCrafter( who )
@@ -615,6 +644,14 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BARD ) )
 			ret := 1;
 		endif
+	elseif( GetObjProperty( who , CLASSEID_BLADESINGER	) )
+		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_BLADESINGER ) )
+			ret := 1;
+		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BLADESINGER ) )
+			ret := 1;
+		elseif( GetObjProperty( item , "int" ) )
+			ret := 1;
+		endif
 	elseif( GetObjProperty( who , CLASSEID_CRAFTER ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_CRAFTER ) )
 			ret := 1;
@@ -680,7 +717,7 @@ function AssignClasse( character )
 
 	foreach classe in GetClasseIds()
 		EraseObjProperty( character , classe );
-		if(classe == "IsRanger" || classe == "IsPaladin")
+		if(classe == "IsRanger")
 			t := IsFromThatClasse( character , GetClasseSkills(classe), 1 );
 		else
 			t := IsFromThatClasse( character , GetClasseSkills( classe ) );

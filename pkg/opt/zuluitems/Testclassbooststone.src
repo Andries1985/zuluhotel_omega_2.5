@@ -30,6 +30,7 @@ program testclassbooststone( who )
             "text 940 775 2496 11",
             "text 940 800 2496 12",
             "text 940 825 2496 13",
+            "text 940 850 2496 14",
 
             "text 887 860 2567 14",
             "text 880 885 2567 15",
@@ -41,7 +42,8 @@ program testclassbooststone( who )
             "radio 920 752 11410 11402 0 500",                             // Bard
             "radio 920 777 11410 11402 0 600",                             // Crafter
             "radio 920 802 11410 11402 0 700",                             // Paladin
-            "radio 920 827 11410 11402 0 800",                             // Powerplayer
+            "radio 920 827 11410 11402 0 800",                             // Bladesinger
+            "radio 920 852 11410 11402 0 900",                             // Powerplayer
 
             "button 926 930 249 248 1 0 1"                                // Okay button
         };
@@ -60,6 +62,7 @@ program testclassbooststone( who )
             "Bard",
             "Crafter",
             "Paladin",
+            "Bladesinger",
             "Powerplayer",
             "Select a starting class",
             "and hit the OKAY button."
@@ -101,7 +104,9 @@ program testclassbooststone( who )
                 classid := CLASSEID_CRAFTER;
         700:    selectedclass := SetObjProperty(who, "StartingClass", "Paladin" );
                 classid := CLASSEID_PALADIN;
-        800:    selectedclass := SetObjProperty(who, "StartingClass", "Powerplayer" );
+        800:    selectedclass := SetObjProperty(who, "StartingClass", "Bladesinger" );
+                classid := CLASSEID_POWERPLAYER;
+        900:    selectedclass := SetObjProperty(who, "StartingClass", "Powerplayer" );
                 classid := CLASSEID_POWERPLAYER;
         default: selectedclass := "The player must have canceled the gump without doing anything";
     endcase
