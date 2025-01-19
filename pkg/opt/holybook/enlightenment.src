@@ -40,10 +40,7 @@ program cast_CUNNING( parms )
 		cast_on := Reflected( caster , caster , circle );
 		EraseObjProperty( caster , "#Casting" );
 	else
-		PlayObjectCenteredEffect(caster, 
-                                         SPELL_EFFECT_ID,
-                                         SPELL_EFFECT_SPEED,
-                                         SPELL_EFFECT_LOOP);
+		PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 	endif
 	
 	PlaySoundEffect(caster, SFX_SPELL_ENLIGHTENMENT);

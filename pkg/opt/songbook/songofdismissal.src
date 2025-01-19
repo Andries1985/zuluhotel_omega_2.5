@@ -47,7 +47,12 @@ program cast_songofdismissal( player )
 
 	var peace := GetAttribute(player, ATTRIBUTEID_PEACEMAKING);
 	var mus := GetAttribute(player, ATTRIBUTEID_MUSICIANSHIP);
-	var spec := GetObjProperty(player,"IsBard") || GetObjProperty(player, "IsBladesinger");
+	var spec := 0;
+	if (GetObjProperty(player, "IsBard"))
+		spec := GetObjProperty(player, "IsBard");
+	elseif (GetObjProperty(player, "IsBladesinger"))
+		spec := GetObjProperty(player, "IsBladesinger");
+	endif
 	var ps;
 	if (!spec)
 		spec := 0;	

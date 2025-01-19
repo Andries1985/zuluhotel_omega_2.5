@@ -38,7 +38,12 @@ program cast_natures_touch( parms )
 	endif
 	
 	var magery := GetAttribute( caster, ATTRIBUTEID_MAGERY );
-	var specbonus := GetObjProperty(caster, "IsMage");
+	var specbonus :=0;
+	if (GetObjProperty(caster, "IsMage"))
+		specbonus := GetObjProperty(caster, "IsMage");
+	elseif (GetObjProperty(caster, "IsPaladin"))
+		specbonus := GetObjProperty(caster, "IsPaladin");
+	endif
 	if (!specbonus)
 		specbonus := 0;
 	endif
