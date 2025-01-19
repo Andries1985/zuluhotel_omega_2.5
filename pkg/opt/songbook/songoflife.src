@@ -47,7 +47,7 @@ program cast_songoflife( player )
 
 	var peace := GetAttribute(player, ATTRIBUTEID_PEACEMAKING);
 	var mus := GetAttribute(player, ATTRIBUTEID_MUSICIANSHIP);
-	var spec := GetObjProperty(player,"IsBard");
+	var spec := GetObjProperty(player,"IsBard") || GetObjProperty(player, "IsBladesinger");
 	var ps;
 	if (!spec)
 		spec := 0;	
@@ -112,7 +112,7 @@ program cast_songoflife( player )
 			SPELL_EFFECT_SPEED,
 			SPELL_EFFECT_LOOP);
 			PlaySoundEffect( cast_near , SFX_SPELL_TOUCH_OF_GOD );
-			healed := (peace/6) + (spec*10);
+			healed := (peace/5) + (spec*10);
 			bonus := GetObjProperty( cast_near , "HealingIncrease" );
 			if( bonus )
 				healed := healed + Cint( healed * bonus * 0.1 );

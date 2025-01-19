@@ -41,7 +41,7 @@ program cast_songofdefense( player )
 	
 	var peace := GetAttribute(player, ATTRIBUTEID_PEACEMAKING);
 	var mus := GetAttribute(player, ATTRIBUTEID_MUSICIANSHIP);
-	var spec := GetObjProperty(player,"IsBard");
+	var spec := GetObjProperty(player,"IsBard") || GetObjProperty(player, "IsBladesinger");
 	var ps;
 	if (!spec)
 		spec := 0;	
