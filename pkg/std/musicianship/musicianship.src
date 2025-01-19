@@ -125,7 +125,13 @@ function RegenBardMana(who)
 		return 0;
 	endif
 
-	var stamina_regen := 10 * (1 + (IsBard(who)*0.4));
+	var stamina_regen;
+
+	if (IsBard(who))
+		stamina_regen := 10 * (1 + (IsBard(who)*0.3));
+	elseif (IsBladesinger(who))
+		stamina_regen := 10 * (1 + (IsBladesinger(who)*0.3));
+	endif
 
 	SetStamina(who, (GetStamina(who)+stamina_regen));
 
