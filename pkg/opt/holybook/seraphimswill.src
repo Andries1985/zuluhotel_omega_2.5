@@ -126,7 +126,7 @@ program cast_seraphims_will( parms )
 		if( CanMod( cast_near , "ar" ) )
 			DoTempMod( cast_near , "ar" , Cint(mod_amount * 0.75)+1 , duration );
 		endif
-		*/
+		
 	endforeach
 	*/
 	EraseObjProperty( caster , "#Casting" );
