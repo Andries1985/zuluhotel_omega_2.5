@@ -38,7 +38,7 @@ program cast_seraphims_will( parms )
 	var mod_amount := 0;
 	var duration := GetModDuration( caster );
 	if(GetObjProperty( caster, "IsPaladin") )
-		mod_amount := Cint( GetModAmount( caster ) * 3 );
+		mod_amount := Cint( GetModAmount( caster ) * 5 );
 		Print("Paladin Mod Amount: "+mod_amount);
 	elseif(GetObjProperty( caster, "IsMage") )
 		mod_amount := Cint( GetModAmount( caster ) );
@@ -63,7 +63,7 @@ program cast_seraphims_will( parms )
 	if( CanMod( caster , "ar" ) )
 		DoTempMod( caster , "ar" , Cint(mod_amount * 0.75)+1 , duration );
 	endif
-	*/
+	
 
 	var magery := GetAttribute(caster, ATTRIBUTEID_MAGERY);
 	var specbonus := 0;
@@ -128,6 +128,7 @@ program cast_seraphims_will( parms )
 		endif
 		*/
 	endforeach
+	*/
 	EraseObjProperty( caster , "#Casting" );
 	
 endprogram

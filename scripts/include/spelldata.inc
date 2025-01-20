@@ -738,14 +738,6 @@ function ModifyWithMagicEfficiency( who, val )
 
 	if( GetObjProperty( who, CLASSEID_MAGE ) )
 		val := CInt(val * ClasseBonus( who, CLASSEID_MAGE ));
-	elseif( GetObjProperty( who, CLASSEID_PALADIN ) )
-		if( !GetObjProperty( who, "CastingNecro"))
-			//Not casting necro, gets bonus
-		//val := CInt(val * ClasseBonus( who, CLASSEID_PALADIN ));
-		else
-		//Casting necro, no bonus & erases CProp	
-		EraseObjProperty( who, "CastingNecro");
-	endif
 	elseif( GetObjProperty( who, CLASSEID_WARRIOR ) )
 		val := CInt(val / ClasseBonus( who, CLASSEID_WARRIOR ));
 	endif
