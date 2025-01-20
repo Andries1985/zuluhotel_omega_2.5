@@ -38,7 +38,7 @@ program cast_natures_touch( parms )
 	endif
 	
 	var magery := GetAttribute( caster, ATTRIBUTEID_MAGERY );
-	var specbonus :=0;
+	var specbonus := 0;
 	if (GetObjProperty(caster, "IsMage"))
 		specbonus := GetObjProperty(caster, "IsMage");
 	elseif (GetObjProperty(caster, "IsPaladin"))
@@ -66,15 +66,12 @@ program cast_natures_touch( parms )
 				continue;
 			endif
 		endif
-		PlayObjectCenteredEffect(cast_near, 
-				SPELL_EFFECT_ID,
-				SPELL_EFFECT_SPEED,
-				SPELL_EFFECT_LOOP);
+		PlayObjectCenteredEffect(cast_near, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 		PlaySoundEffect( cast_near , SFX_SPELL_TOUCH_OF_GOD );
 		var healed := ModifyWithMagicEfficiency( caster , RandomDiceStr( "6d4+15" ) );
 		var bonus := GetObjProperty( cast_near , "HealingIncrease" );
 		if( bonus )
-			healed := healed + Cint( healed * bonus * 0.1 );
+			healed := healed + Cint( healed * bonus * 0.2 );
 		endif
 		if( healed < 0 )
 			healed := 0;

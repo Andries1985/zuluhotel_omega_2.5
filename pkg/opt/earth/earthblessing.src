@@ -36,11 +36,7 @@ program cast_earth_blessing( parms )
 		endif
 	endif
 	
-	PlayObjectCenteredEffect(caster, 
-                                 SPELL_EFFECT_ID,
-                                 SPELL_EFFECT_SPEED,
-                                 SPELL_EFFECT_LOOP);
-
+	PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 	PlaySoundEffect( caster , SFX_SPELL_EARTH_BLESSING );
 
 	var mod_amount := Cint( GetModAmount( caster ) * 3 );

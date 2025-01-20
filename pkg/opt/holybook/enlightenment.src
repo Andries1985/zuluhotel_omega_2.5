@@ -45,6 +45,7 @@ program cast_CUNNING( parms )
 	
 	PlaySoundEffect(caster, SFX_SPELL_ENLIGHTENMENT);
 
+	/*
 	if (!CanMod(caster, "int"))
 		SendSysMessage(caster,"Already under the influence!");
 		return;
@@ -57,4 +58,34 @@ program cast_CUNNING( parms )
 	duration := GetModDuration( caster );
 	DoTempMod(caster, "ar", mod_amount, duration);
 	EraseObjProperty( caster , "#Casting" );
+	*/
+	var mod_amount := 0;
+	var duration := GetModDuration( caster );
+	if(GetObjProperty( caster, "IsPaladin") )
+		mod_amount := Cint( GetModAmount( caster ) * 3 );
+		Print("Paladin Mod Amount: "+mod_amount);
+	elseif(GetObjProperty( caster, "IsMage") )
+		mod_amount := Cint( GetModAmount( caster ) );
+		Print("Mage Mod Amount: "+mod_amount);
+	else
+		mod_amount := Cint( GetModAmount( caster ) * 2 );
+		Print("Normal Mod Amount: "+mod_amount);
+	endif
+
+	if (CanMod(caster, "dex"))
+		DoTempMod(caster, "dex", mod_amount, duration);
+	endif
+
+	if (CanMod(caster, "str"))
+		DoTempMod(caster, "str", mod_amount, duration);
+	endif
+
+	if (CanMod(caster, "ar"))
+		var arAmount := Cint(mod_amount/1.25);
+		DoTempMod(caster, "ar", arAmount, duration);
+	endif
+
+	if (CanMod(caster, "int"))
+		DoTempMod(caster, "int", mod_amount, duration);
+	endif
 endprogram

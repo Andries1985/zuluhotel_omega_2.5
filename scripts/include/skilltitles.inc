@@ -65,7 +65,7 @@ function DefineSkillTitlesDictionary()
 	skill [ 53 ]	:= "Thief";
 	skill [ 54 ]	:= "Warlord";
 	skill [ 55 ]	:= "Crusader";
-	skill [ 56 ]	:= "Bladedancer";
+	skill [ 56 ]	:= "Bladesinger";
 	return skill;
 	
 endfunction
