@@ -88,4 +88,6 @@ program cast_CUNNING( parms )
 	if (CanMod(caster, "int"))
 		DoTempMod(caster, "int", mod_amount, duration);
 	endif
+
+	EraseObjProperty( caster , "#Casting" );
 endprogram
