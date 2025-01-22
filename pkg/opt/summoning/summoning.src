@@ -42,6 +42,8 @@ program summon_creature( parms )
 
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		magery := Cint( magery * ClasseBonus( caster , CLASSEID_MAGE ) );
+	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
+		magery := Cint( magery * ClasseBonus( caster , CLASSEID_CLERIC ) );
 	elseif( GetObjProperty( caster , CLASSEID_WARRIOR ) )
 		magery := Cint( magery / ClasseBonus( caster , CLASSEID_WARRIOR ) );
 	endif

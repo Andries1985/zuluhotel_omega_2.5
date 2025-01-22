@@ -55,12 +55,7 @@ program cast_songoffright( player )
 	
 	var peace := GetAttribute(player, ATTRIBUTEID_PEACEMAKING);
 	var mus := GetAttribute(player, ATTRIBUTEID_MUSICIANSHIP);
-	var spec := 0;
-	if (GetObjProperty(player, "IsBard"))
-		spec := GetObjProperty(player, "IsBard");
-	elseif (GetObjProperty(player, "IsBladesinger"))
-		spec := GetObjProperty(player, "IsBladesinger");
-	endif
+	var spec := GetObjProperty(player,"IsBard");
 	var ps;
 	var drain := 10 + (circle*2)-(spec+5);
 	var difficulty := (circle*12)+(Random(25)-(spec*8));

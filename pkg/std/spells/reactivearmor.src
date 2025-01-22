@@ -39,9 +39,9 @@ program reactivearmor( caster, spell_id )
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		power := Cint( power * CLASSE_BONUS );
 		duration := Cint( duration * CLASSE_BONUS );
-	elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
-		power := Cint( (power * CLASSE_BONUS) * 2 );
-		duration := Cint( (duration * CLASSE_BONUS) * 2 );
+	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
+		power := Cint( power * CLASSE_BONUS );
+		duration := Cint( duration * CLASSE_BONUS );
 	endif
 
 	SetObjProperty( cast_on , "ReactiveArmor" , power );

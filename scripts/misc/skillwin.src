@@ -665,8 +665,8 @@ var i;
 			crafter := crafter + skill;
 		elseif( i in GetClasseSkills( CLASSEID_MAGE ) )
 			mage := mage + skill;
-		elseif( i in GetClasseSkills( CLASSEID_PALADIN ) )
-			paladin := paladin + skill;
+		elseif( i in GetClasseSkills( CLASSEID_CLERIC ) )
+			cleric := cleric + skill;
 		elseif( i in GetClasseSkills( CLASSEID_RANGER ) )
 			ranger := ranger + skill;
 		elseif( i in GetClasseSkills( CLASSEID_THIEF ) )

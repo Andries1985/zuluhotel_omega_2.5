@@ -33,10 +33,6 @@ program cast_WEAKEN( parms, spell_id )
 	else
 
 		caster := parms;
-		if (IsPaladin(caster))
-			SendSysMessage(caster, "Paladins may not cast this spell!");
-			return 0;
-		endif
 		// For scrolls, StartSpellScript isn't working >:(
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];

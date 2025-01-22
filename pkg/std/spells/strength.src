@@ -47,7 +47,16 @@ program cast_strength( parms, spell_id )
 		return;
 	endif
 
-	PlayObjectCenteredEffect(cast_on, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
+	/*if( !fromhit )
+		detach();
+		cast_on := Reflected( caster , cast_on , circle );
+	endif*/
+		PlayObjectCenteredEffect(cast_on, 
+                                         SPELL_EFFECT_ID,
+                                         SPELL_EFFECT_SPEED,
+                                         SPELL_EFFECT_LOOP);
+	
+	
 	PlaySoundEffect(cast_on, SFX_SPELL_STRENGTH);
 
 	if (!CanMod(cast_on, "str"))

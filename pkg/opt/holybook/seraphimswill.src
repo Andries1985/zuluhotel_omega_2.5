@@ -10,7 +10,7 @@ const SPELL_EFFECT_ID		:= FX_SPELL_HOLY_BLESS;
 const SPELL_EFFECT_SPEED	:= SPEED_SPELL_HOLY_BLESS;
 const SPELL_EFFECT_LOOP		:= LOOP_SPELL_HOLY_BLESS;
 
-program cast_seraphims_will( parms )
+program cast_earth_blessing( parms )
 
 	var circle := GetCircle( SPELLID_HOLY_BLESS );
 	var caster;
@@ -32,46 +32,23 @@ program cast_seraphims_will( parms )
 			return;
 		endif
 	endif
-	PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
-	PlaySoundEffect( caster , SFX_SPELL_HOLY_BLESS );
-	
-	var mod_amount := 0;
-	var duration := GetModDuration( caster );
-	if(GetObjProperty( caster, "IsPaladin") )
-		mod_amount := Cint( GetModAmount( caster ) * 5 );
-		//Print("Paladin Mod Amount: "+mod_amount);
-	elseif(GetObjProperty( caster, "IsMage") )
-		mod_amount := Cint( GetModAmount( caster ) );
-		//Print("Mage Mod Amount: "+mod_amount);
-	else
-		mod_amount := Cint( GetModAmount( caster ) * 2 );
-		//Print("Normal Mod Amount: "+mod_amount);
-	endif
+	PlayObjectCenteredEffect(caster, 
+        SPELL_EFFECT_ID,
+	SPELL_EFFECT_SPEED,
+	SPELL_EFFECT_LOOP);
 
-	if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ) && CanMod( caster, "poly")) 
-		DoTempMod( caster, "poly" , mod_amount , duration );
-		SendBoostMessage( caster, caster, "seraphims will", mod_amount, duration, 0 );
-	else
-		SendSysMessage( caster , "Already under the influence!" );
-	endif
-	/*
+	PlaySoundEffect( caster , SFX_SPELL_HOLY_BLESS );
 	var mod_amount := Cint( GetModAmount( caster )  );
 	var duration := Cint( GetModDuration( caster )  );
-	if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ) && CanMod( caster , "poly" ) )
+	if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ) )
 		DoTempMod( caster, "all" , mod_amount , duration );
 	endif
 	if( CanMod( caster , "ar" ) )
 		DoTempMod( caster , "ar" , Cint(mod_amount * 0.75)+1 , duration );
 	endif
-	
 
 	var magery := GetAttribute(caster, ATTRIBUTEID_MAGERY);
-	var specbonus := 0;
-	if (GetObjProperty(caster, "IsMage"))
-		specbonus := GetObjProperty(caster, "IsMage");
-	elseif (GetObjProperty(caster, "IsPaladin"))
-		specbonus := GetObjProperty(caster, "IsPaladin");
-	endif
+	var specbonus := GetObjProperty(caster, "IsMage");
 	if (!specbonus)
 		specbonus := 0;
 	endif
@@ -94,41 +71,20 @@ program cast_seraphims_will( parms )
 				continue;
 			endif
 		endif
-		PlayObjectCenteredEffect(cast_near, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);											
+		PlayObjectCenteredEffect(cast_near, 
+               	         SPELL_EFFECT_ID,
+               	         SPELL_EFFECT_SPEED,
+               	         SPELL_EFFECT_LOOP);											
 		PlaySoundEffect( cast_near , SFX_SPELL_HOLY_BLESS );	
-		
-		var mod_amount := 0;
-		var duration := GetModDuration( caster );
-		if(GetObjProperty( caster, "IsPaladin") )
-			mod_amount := Cint( GetModAmount( caster ) * 3 );
-			Print("Paladin Mod Amount: "+mod_amount);
-		elseif(GetObjProperty( caster, "IsMage") )
-			mod_amount := Cint( GetModAmount( caster ) );
-			Print("Mage Mod Amount: "+mod_amount);
-		else
-			mod_amount := Cint( GetModAmount( caster ) * 2 );
-			Print("Normal Mod Amount: "+mod_amount);
-		endif
-
-		if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ) && CanMod( caster, "poly")) 
-			DoTempMod( caster, "poly" , mod_amount , duration );
-			SendBoostMessage( caster, caster, "seraphims will", mod_amount, duration, 0 );
-		else
-			SendSysMessage( caster , "Already under the influence!" );
-		endif
-
-		/*
 		var mod_amount := Cint( GetModAmount( caster )  );
 		var duration := Cint( GetModDuration( caster )  );	
-		if( CanMod( cast_near , "all" )  && CanMod( cast_near , "ebless" ) && CanMod( caster , "poly" ) )
+		if( CanMod( cast_near , "all" )  && CanMod( cast_near , "ebless" ) )
 			DoTempMod( cast_near, "all" , mod_amount , duration );
 		endif
 		if( CanMod( cast_near , "ar" ) )
 			DoTempMod( cast_near , "ar" , Cint(mod_amount * 0.75)+1 , duration );
 		endif
-		
 	endforeach
-	*/
 	EraseObjProperty( caster , "#Casting" );
 	
 endprogram

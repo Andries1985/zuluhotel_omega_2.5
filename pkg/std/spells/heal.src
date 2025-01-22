@@ -65,7 +65,7 @@ program cast_heal( parms, spell_id )
 	var maxx := 20;
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		maxx := Cint( maxx * CLASSE_BONUS );
-	elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
+	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
 		maxx := Cint( maxx * CLASSE_BONUS );
 	endif
 	

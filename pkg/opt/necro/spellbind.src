@@ -146,6 +146,7 @@ program cast_spellbind( parms )
 			var owner_taming	:= GetEffectiveSkill( owner , SKILLID_TAMING );
 			var owner_magery	:= GetEffectiveSkill( owner , SKILLID_MAGERY );
 			owner_magery := owner_magery * ClasseBonus( owner , CLASSEID_MAGE );
+			owner_magery := owner_magery * ClasseBonus( owner , CLASSEID_CLERIC );
 			owner_taming := owner_taming * ClasseBonus( owner , CLASSEID_RANGER );
 			
 			if( owner_taming > magery or owner_magery > magery )

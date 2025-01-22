@@ -33,6 +33,9 @@ program cast_summonmammals( parms )
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		bonus := 1;
 		count := count + 1;
+	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
+		bonus := 2;
+		count := count + 2;
 	endif
 	
 	var npctemplate;
