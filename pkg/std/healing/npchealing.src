@@ -73,8 +73,6 @@ function TryToCure( character , patient , bandages )
 	
 	if( GetObjProperty( character , CLASSEID_WARRIOR ) )
 		delay := Cint( delay / CLASSE_BONUS );
-	elseif( GetObjProperty( character , CLASSEID_CLERIC ) )
-		delay := Cint( delay / CLASSE_BONUS );
 	endif
 	
 	Sleep( delay );
@@ -121,9 +119,6 @@ function TryToHeal( character , patient , bandages )
 	endif
 	
 	if( GetObjProperty( character , CLASSEID_WARRIOR ) )
-		delay := Cint( delay / CLASSE_BONUS );
-		healed := Cint( healed * CLASSE_BONUS );
-	elseif( GetObjProperty( character , CLASSEID_CLERIC ) )
 		delay := Cint( delay / CLASSE_BONUS );
 		healed := Cint( healed * CLASSE_BONUS );
 	endif

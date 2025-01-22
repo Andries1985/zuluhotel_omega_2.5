@@ -5,7 +5,7 @@ include "include/spelldata";
 
 program use_scroll( who , scroll )
 
-	if(!GetObjProperty(who,"IsBard"))	
+	if(!GetObjProperty(who,"IsBard") && !GetObjProperty(who,"IsBladesinger") )	
 		SendSysMessage(who,"Only Bards can use this!");
 		return;
 	endif
