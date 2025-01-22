@@ -11,6 +11,7 @@ program anatomy( character )
 	var thepoints := get_default_points(SKILLID_ANATOMY);
 	var skill := GetEffectiveSkill( character, SKILLID_ANATOMY );
 	var warrior  := GetObjProperty( character , CLASSEID_WARRIOR );
+	var cleric  := GetObjProperty( character , CLASSEID_CLERIC );
 
 	SendSysMessage( character, "Select a target." );
 	var subject := Target( character );

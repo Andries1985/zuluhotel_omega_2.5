@@ -49,13 +49,18 @@ program cast_bless( parms, spell_id )
 		detach();
 		cast_on := Reflected( caster , cast_on , circle );
 	endif*/
-	var graph := PlayObjectCenteredEffect(cast_on, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
+		var graph := PlayObjectCenteredEffect(cast_on, 
+                                         SPELL_EFFECT_ID,
+                                         SPELL_EFFECT_SPEED,
+                                         SPELL_EFFECT_LOOP);
+	
+	
 	PlaySoundEffect(cast_on, SFX_SPELL_BLESS);
 	
 	var mod_amount := GetModAmount( caster );
 	var duration := GetModDuration( caster );
 
-	if( CanMod( cast_on , "all" ) && CanMod( cast_on , "ebless" ) && CanMod( cast_on , "poly" ))
+	if( CanMod( cast_on , "all" ) && CanMod( cast_on , "ebless" ))
 		DoTempMod( cast_on, "all" , mod_amount , duration );
 		SendBoostMessage( caster, cast_on, "bless", mod_amount, duration, 0 );
 	else

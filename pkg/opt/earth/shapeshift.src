@@ -107,11 +107,21 @@ program shapeshift( caster )
 	endif
 
 	if( CheckSkill( caster , SKILLID_MEDITATION , 90 , 400 )) 
-		SetObjProperty(caster, "old_colah", caster.color);
-		PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID1, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);                            
-		PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID2, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);                              
-        PlaySoundEffect( caster , SFX_SPELL_SHAPESHIFT );
+			SetObjProperty(caster, "old_colah", caster.color);
+        	
+		PlayObjectCenteredEffect(caster, 
+                                         SPELL_EFFECT_ID1,
+                                         SPELL_EFFECT_SPEED,
+                                         SPELL_EFFECT_LOOP);
+                                         
+		PlayObjectCenteredEffect(caster, 
+                                         SPELL_EFFECT_ID2,
+                                         SPELL_EFFECT_SPEED,
+                                         SPELL_EFFECT_LOOP);
+                                         
+                PlaySoundEffect( caster , SFX_SPELL_SHAPESHIFT );
 	else
+		
         SendSysmessage(caster, "You fail to transform yourself");
         PlayObjectCenteredEffect(caster, FX_SPELL_FIZZLE, SPEED_SPELL_FIZZLE, LOOP_SPELL_FIZZLE );
 		PlaySoundEffect(caster, SFX_SPELL_FIZZLE);
@@ -123,7 +133,7 @@ program shapeshift( caster )
 
 	var mod_amount := Cint( GetModAmount( caster ) * 2 );
 	if(casterismage)
-		var mod_amount := Cint( GetModAmount( caster ) * 3 );
+		var mod_amount := Cint( GetModAmount( caster ) * 4 );
 	endif
 
 	var duration := Cint( GetModDuration( caster ) );

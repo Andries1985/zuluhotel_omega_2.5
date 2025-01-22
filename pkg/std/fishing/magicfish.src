@@ -170,7 +170,7 @@ program use_magicfish( who, fish )
 					var mod_amount := CInt(GetModAmountFish( who, miscprop1 ) );
 					var duration := CInt(GetModDurationFish( who, miscprop2 ) );
 					
-					if (CanMod(who, "all") && CanMod( who , "ebless" ) && CanMod( who, "poly") )
+					if (CanMod(who, "all") && CanMod( who , "ebless" ))
 						DoTempMod(who, "all", mod_amount, duration);
 						SendBoostMessage( who, who, "bless fish", mod_amount, duration, 0 );
 						DELAY_BETWEEN_FISH := buff_delay;
@@ -272,7 +272,7 @@ function GetFishHeal( who, miscprop1 )
 
 	var bonus := GetObjProperty( who , "HealingIncrease" );
 	if( bonus )
-		healed := healed + Cint( healed * bonus * 0.2 );
+		healed := healed + Cint( healed * bonus * 0.1 );
 	endif
 	
 	var level := CInt( GetObjProperty( who , CLASSEID_RANGER ) );

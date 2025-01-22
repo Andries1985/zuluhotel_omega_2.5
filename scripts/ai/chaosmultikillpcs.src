@@ -454,19 +454,17 @@ var ocraf := GetObjProperty(opponent,"IsCrafter");
 var obard := GetObjProperty(opponent,"IsBard");
 var othief:= GetObjProperty(opponent,"IsThief");
 var orang := GetObjProperty(opponent,"IsRanger");
-var opala:= GetObjProperty(opponent,"IsPaladin");
-var oblade := GetObjProperty(opponent,"IsBladesinger");
 var amethod := 0;
 var ow1;
 var ow2;
-	if (omage  || opala)
+	if (omage)
 		if (opponent.mana > 20)
 			amethod := "arch";
 		else
 			amethod := "melee";
 		endif
 	endif
-	if (owarr or ocraf or obard or othief or oblade)
+	if (owarr or ocraf or obard or othief)
 		amethod := "magic";
 	endif
 	if (orang)
