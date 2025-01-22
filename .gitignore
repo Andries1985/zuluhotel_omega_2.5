@@ -1,4 +1,6 @@
 data/
+mul/
+realm/
 *.dbg
 *.dep
 *.log
