@@ -77,7 +77,7 @@ program mana_drain ( parms, spell_id )
 
 	if( GetObjProperty( cast_on , CLASSEID_MAGE ) )
 		resist := Cint( resist * CLASSE_BONUS );
-	elseif( GetObjProperty( cast_on , CLASSEID_CLERIC ) )
+	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
 		resist := Cint( resist * CLASSE_BONUS );
 	endif
 

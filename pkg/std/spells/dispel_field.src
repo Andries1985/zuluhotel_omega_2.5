@@ -46,7 +46,7 @@ program dispel_field( parms, spell_id )
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		therange := Cint( therange * CLASSE_BONUS );
 
-	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
+	elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
 		therange := Cint( therange * CLASSE_BONUS );
 
 	endif

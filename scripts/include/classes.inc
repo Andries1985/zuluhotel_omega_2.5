@@ -7,9 +7,10 @@ include ":staff:include/staff";
 
 const CLASSE_BONUS        	:= 1.5;
 const CLASSEID_BARD       	:= "IsBard";
+const CLASSEID_BLADESINGER 	:= "IsBladesinger";
 const CLASSEID_CRAFTER    	:= "IsCrafter";
 const CLASSEID_MAGE       	:= "IsMage";
-const CLASSEID_CLERIC     	:= "IsCleric";
+const CLASSEID_PALADIN     	:= "IsPaladin";
 const CLASSEID_RANGER     	:= "IsRanger";
 const CLASSEID_THIEF      	:= "IsThief";
 const CLASSEID_WARRIOR    	:= "IsWarrior";
@@ -95,32 +96,32 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
 					break;
+		CLASSEID_BLADESINGER:
+					fract_array.append( GetLeatherArmorGraphics() );
+					fract_array.append( GetStuddedLeatherArmorGraphics() );
+					fract_array.append( GetGraphicsBladesinger() );
+					fract_array.append( GetShieldGraphics() );
+					break;
 		CLASSEID_CRAFTER:
-					//fract_array.append( GetChainmailArmorGraphics() );
-					//fract_array.append( GetPlatemailArmorGraphics() );
 					break;
 		CLASSEID_MAGE:		
-					//fract_array.append( GetStuddedLeatherArmorGraphics() );
 					fract_array.append( GetBoneArmorGraphics() );
 					fract_array.append( GetRingmailArmorGraphics() );
 					fract_array.append( GetChainmailArmorGraphics() );
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
 					break;
-/* 		CLASSEID_CLERIC:
+ 		CLASSEID_PALADIN:
+					fract_array.append( GetLeatherArmorGraphics() );
 					fract_array.append( GetStuddedLeatherArmorGraphics() );
 					fract_array.append( GetBoneArmorGraphics() );
 					fract_array.append( GetRingmailArmorGraphics() );
-					fract_array.append( GetChainmailArmorGraphics() );
-					fract_array.append( GetPlatemailArmorGraphics() );
-					fract_array.append( GetShieldGraphics() );
-					break; */
-		CLASSEID_RANGER:	
+					break;
+		CLASSEID_RANGER:
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
 					break;
 		CLASSEID_THIEF:		
-					//fract_array.append( GetRingmailArmorGraphics() );
 					fract_array.append( GetChainmailArmorGraphics() );
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphicsThief() );
@@ -157,14 +158,17 @@ endfunction
 
 function GetClasseIds()
 
-	return { CLASSEID_BARD,
-		 CLASSEID_CRAFTER,
-		 CLASSEID_MAGE,
-		// CLASSEID_CLERIC,
-		 CLASSEID_RANGER,
-		 CLASSEID_THIEF,
-		 CLASSEID_WARRIOR,
-		 CLASSEID_POWERPLAYER };
+	return { 
+			CLASSEID_BARD,
+			CLASSEID_BLADESINGER,
+			CLASSEID_CRAFTER,
+			CLASSEID_MAGE,
+			CLASSEID_PALADIN,
+			CLASSEID_RANGER,
+			CLASSEID_THIEF,
+			CLASSEID_WARRIOR,
+			CLASSEID_POWERPLAYER
+			};
 
 endfunction
 
@@ -174,9 +178,10 @@ function GetClasseName( classeid )
         case( classeid )
 
                 CLASSEID_BARD:			return( "Bard" );
+				CLASSEID_BLADESINGER:	return( "IsBladesinger" );
                 CLASSEID_CRAFTER:		return( "Crafter" );
                 CLASSEID_MAGE:			return( "Mage" );
-				//CLASSEID_CLERIC:		return( "Cleric" );
+				CLASSEID_PALADIN:		return( "Paladin" );
                 CLASSEID_RANGER:		return( "Ranger" );
                 CLASSEID_THIEF:			return( "Thief" );
                 CLASSEID_WARRIOR:		return( "Warrior" );
@@ -201,6 +206,16 @@ function GetClasseSkills( classeid )
 						 SKILLID_PROVOCATION	,
 						 SKILLID_TASTEID	};
 
+		CLASSEID_BLADESINGER:			
+				return { SKILLID_ANATOMY	,
+						 SKILLID_ENTICEMENT	,
+						 SKILLID_FENCING	,
+						 SKILLID_MUSICIANSHIP	,
+						 SKILLID_PEACEMAKING	,
+						 SKILLID_PROVOCATION	,
+						 SKILLID_SWORDSMANSHIP	,
+						 SKILLID_TACTICS	};
+
 		CLASSEID_CRAFTER:		
 				return { SKILLID_ARMSLORE	,
 						 SKILLID_BLACKSMITHY	,
@@ -221,15 +236,15 @@ function GetClasseSkills( classeid )
 						 SKILLID_MAGICRESISTANCE,
 						 SKILLID_SPIRITSPEAK	};
 
-		CLASSEID_CLERIC:		
-				return { SKILLID_ANIMALLORE	,
-						 SKILLID_EVALINT	,
-						 SKILLID_VETERINARY	,
-						 SKILLID_HEALING	,
-						 SKILLID_MAGERY		,
+		CLASSEID_PALADIN:
+				return { SKILLID_SWORDSMANSHIP	,
+						 SKILLID_PARRY	,
+						 SKILLID_TACTICS	,
+						 SKILLID_MAGERY	,
+						 SKILLID_EVALINT		,
 						 SKILLID_MEDITATION	,
 						 SKILLID_MAGICRESISTANCE,
-						 SKILLID_ANATOMY	};
+						 SKILLID_HIDING	};
 
 		CLASSEID_RANGER:		
 				return { SKILLID_ANIMALLORE	,
@@ -347,9 +362,10 @@ function GetMaxCircleForClasse( classeid )
 
 	case( classeid )
 		CLASSEID_BARD:			return 1;
+		CLASSEID_BLADESINGER:	return 1;
 		CLASSEID_CRAFTER:		return 1;
 		CLASSEID_MAGE:			return 0;
-		CLASSEID_CLERIC:		return 1;
+		CLASSEID_PALADIN:		return 0;
 		CLASSEID_RANGER:		return 5;
 		CLASSEID_THIEF:			return 5;
 		CLASSEID_WARRIOR:		return 1;
@@ -399,6 +415,8 @@ function HaveInvalidSkillEnchantmentForClasse( item , classeid )
 
 	if( classeid == CLASSEID_RANGER && skillnum == SKILLID_FORENSICS )
 		ret := 0;
+	elseif ( classeid == CLASSEID_PALADIN && skillnum == SKILLID_FORENSICS )
+		ret := 0;
 	endif
 
 	return ret;
@@ -412,9 +430,10 @@ function HaveRestrictedModEnchantmentForClasse( who , item , classeid )
 
 	case( classeid )
 		CLASSEID_BARD:			break;
+		CLASSEID_BLADESINGER:	break;
 		CLASSEID_CRAFTER:		break;
 		CLASSEID_MAGE:			break;
-		CLASSEID_CLERIC:		break;
+		CLASSEID_PALADIN:		break;
 		CLASSEID_RANGER:		break;
 		CLASSEID_THIEF:			break;
 		CLASSEID_WARRIOR:		break;
@@ -443,15 +462,22 @@ function HaveStatAffinity( who , stat )
 	var classeids;
 
 	case( stat )
-		"str":	classeids := {  CLASSEID_CRAFTER,
-					CLASSEID_WARRIOR };	break;
+		"str":	classeids := {  
+					CLASSEID_CRAFTER,
+					CLASSEID_WARRIOR };	
+					break;
 
-		"dex":	classeids := {  CLASSEID_BARD,
-					CLASSEID_THIEF   };	break;
+		"dex":	classeids := {  
+					CLASSEID_BARD,
+					CLASSEID_BLADESINGER,
+					CLASSEID_THIEF };	
+					break;
 
-		"int":	classeids := {  CLASSEID_BARD,
+		"int":	classeids := {  
+					CLASSEID_BARD,
 					CLASSEID_MAGE,
-					CLASSEID_CLERIC   };	break;
+					CLASSEID_PALADIN };	
+					break;
 
 		default:	classeids := {};
 	endcase
@@ -477,21 +503,21 @@ function HaveStatDifficulty( who , stat )
 		"str":
 			classeids := {
 				CLASSEID_BARD,
-				CLASSEID_MAGE,
-				CLASSEID_CLERIC
-			}; break;
+				CLASSEID_BLADESINGER,
+				CLASSEID_MAGE };
+				break;
 		"dex":
 			classeids := {
-				CLASSEID_MAGE
-			};	break;
+				CLASSEID_MAGE,
+				CLASSEID_PALADIN };
+				break;
 		"int":
 			classeids := {
 				CLASSEID_CRAFTER,
-				CLASSEID_WARRIOR
-			};	break;
-		default:
-			classeids := {
-			};
+				CLASSEID_WARRIOR };
+				break;
+
+		default:	classeids := {};
 	endcase
 
 	foreach id in classeids
@@ -520,6 +546,10 @@ function IsBard( who )
 	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_BARD ) );
 endfunction
 
+function IsBladesinger( who )
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_BLADESINGER ) );
+endfunction
+
 function IsCrafter( who )
 	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CRAFTER ) );
 endfunction
@@ -528,8 +558,8 @@ function IsMage( who )
 	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_MAGE ) );
 endfunction
 
-function IsCleric( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CLERIC ) );
+function IsPaladin( who )
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_PALADIN ) );
 endfunction
 
 function IsRanger( who )
@@ -549,7 +579,7 @@ function IsPowerplayer( who )
 endfunction
 
 
-function IsFromThatClasse( who , classe_skills , ranger := 0)
+function IsFromThatClasse( who , classe_skills , forensicsallowed := 0)
 
 	var classe	:= 0;
 	var total	:= 0;
@@ -557,7 +587,7 @@ function IsFromThatClasse( who , classe_skills , ranger := 0)
 	var amount := 0;
 
 	for i := 0 to SKILLID__HIGHEST
-		if(ranger)
+		if(forensicsallowed)
 			if(i != SKILLID_FORENSICS)	//Ignores forensics from spec calculation
 				amount := GetEffectiveSkill( who , i );
 				total := total + amount;
@@ -614,6 +644,14 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BARD ) )
 			ret := 1;
 		endif
+	elseif( GetObjProperty( who , CLASSEID_BLADESINGER	) )
+		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_BLADESINGER ) )
+			ret := 1;
+		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BLADESINGER ) )
+			ret := 1;
+		elseif( GetObjProperty( item , "int" ) )
+			ret := 1;
+		endif
 	elseif( GetObjProperty( who , CLASSEID_CRAFTER ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_CRAFTER ) )
 			ret := 1;
@@ -634,14 +672,12 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MAGE ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_CLERIC ) )
-		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_CLERIC ) )
+	elseif( GetObjProperty( who , CLASSEID_PALADIN ) )
+		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_PALADIN ) )
 			ret := 1;
-		elseif( GetObjProperty( item , "str" ) )
+		elseif( GetObjProperty( item , "dex" ) )
 			ret := 1;
-		elseif( GetObjProperty( item , "ArBonus" ) )
-			ret := 1;
-		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_CLERIC ) )
+		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_PALADIN ) )
 			ret := 1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_RANGER ) )

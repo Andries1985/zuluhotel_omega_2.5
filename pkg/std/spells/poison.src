@@ -33,8 +33,11 @@ program cast_poison( parms, spell_id )
 
 		send_attack( cast_on , caster , SPELLID_POISON );
 	else
-
         caster := parms;
+		if (IsPaladin(caster))
+			SendSysMessage(caster, "Paladins may not cast this spell!");
+			return 0;
+		endif
 		// For scrolls, StartSpellScript isn't working >:(
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];

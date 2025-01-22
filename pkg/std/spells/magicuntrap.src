@@ -54,7 +54,7 @@ program cast_strength( parms, spell_id )
 	var diff	:= strength * 30;
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		diff := Cint( diff / CLASSE_BONUS );
-	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
+	elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
 		diff := Cint( diff / CLASSE_BONUS );
 	endif
 	

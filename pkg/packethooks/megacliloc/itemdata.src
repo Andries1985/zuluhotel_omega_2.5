@@ -155,7 +155,7 @@ program itemdata(parms)
 				allprops.append(prop);
 			endif
 			var spellcast := GetObjProperty(xObject, "HitWithSpell");
-			if (spellcast && (IsMage(who) || IsCrafter(who)))
+			if (spellcast && (IsMage(who) || IsCrafter(who) || IsPaladin(who)) )
 				var spell_cfg := ReadConfigFile(":*:spells");
 				var elem := FindConfigElem(spell_cfg, spellcast);
 				if(elem)
@@ -166,7 +166,7 @@ program itemdata(parms)
 				endif
 			endif
 			var chanceofeffect := GetObjProperty(xObject, "ChanceOfEffect");
-			if (chanceofeffect && (IsMage(who) || IsCrafter(who)))
+			if (chanceofeffect && (IsMage(who) || IsCrafter(who) || IsPaladin(who)) )
 				prop.clilocid := 1063500; // Chance of Effect: ~1_VAL~
 				prop.values := array {chanceofeffect};
 				allprops.append(prop);
@@ -363,11 +363,13 @@ function Calcdamage(who, xObject, basedamage)
 			basedamage *= 1 + GetStrength(who) * 0.0015;
 			basedamage *= 1 + GetDexterity(who) * 0.0005;
 		endif
+		//Changes Jan 2025, Class Damage Changes
+		//Bumped Ranger and Bard damage to 0.005
 		if( GetObjProperty( who, CLASSEID_RANGER ) || GetObjProperty( who, CLASSEID_BARD ))
-			basedamage *= 1 + GetAttribute(who, ATTRIBUTEID_ARCHERY) * 0.002;
+			basedamage *= 1 + GetAttribute(who, ATTRIBUTEID_ARCHERY) * 0.005;
 		elseif( GetObjProperty( who, CLASSEID_THIEF ))
 			basedamage *= 1 + avg_skill * 0.002;
-		elseif(GetObjProperty( who, CLASSEID_WARRIOR ) || GetObjProperty( who, CLASSEID_POWERPLAYER ))
+		elseif(GetObjProperty( who, CLASSEID_WARRIOR ) || GetObjProperty( who, CLASSEID_POWERPLAYER ) || GetObjProperty( who, CLASSEID_PALADIN ))
 			basedamage *= 1 + GetAttribute(who, ATTRIBUTEID_TACTICS) * 0.002;
 		endif
 
@@ -377,14 +379,24 @@ function Calcdamage(who, xObject, basedamage)
 		endif
 
 	else
+		//Changes Jan 2025, Class Damage Changes
+		//Bumped Str damage to 0.005
+		//Added in Paladin Damage for Int
+		//Bumped Thief damage from 0.003 to 0.005
+		//Bumped Warrior and PP damage from 0.002 to 0.005
 		if(!who.isA(POLCLASS_NPC))
-			basedamage *= 1 + GetStrength(who) *0.002;
+			basedamage *= 1 + GetStrength(who) *0.005;
+		endif
+		if(!who.isA(POLCLASS_NPC) && GetObjProperty( who, CLASSEID_PALADIN ))
+			basedamage *= 1 + GetIntelligence(who) *0.005;
 		endif
 
 		if( GetObjProperty(who, CLASSEID_WARRIOR) || GetObjProperty(who, CLASSEID_POWERPLAYER))
-			basedamage *=  1 + GetAttribute( who, ATTRIBUTEID_ANATOMY ) * 0.002 ;
+			basedamage *=  1 + GetAttribute( who, ATTRIBUTEID_ANATOMY ) * 0.005 ;
 		elseif( GetObjProperty( who, CLASSEID_THIEF ) && (xObject.attribute == ATTRIBUTEID_FENCING))
-			basedamage *= 1 + avg_skill * 0.003;
+			basedamage *= 1 + avg_skill * 0.005;
+		elseif( GetObjProperty(who, CLASSEID_PALADIN) )
+			basedamage *=  1 + GetAttribute( who, ATTRIBUTEID_EVALINT ) * 0.005 ;
 		endif
 
 		level := max(0, level-4);
@@ -395,9 +407,11 @@ function Calcdamage(who, xObject, basedamage)
 		endif
 	endif
 	return basedamage;
+
 endfunction
 
 function calcdps(who, xObject, weapondesc)
+	
 	var averagedmg := (weapondesc.MinDamage + weapondesc.MaxDamage)/2;
 	return Calcdamage(who, xObject, averagedmg)/(15000/(((GetDexterity(who)/10.0)+100)*weapondesc.Speed+xObject.speed_mod));
 
