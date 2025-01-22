@@ -6,42 +6,35 @@ include ":gumps:include/gumps";
 include ":gumps:include/gumps_ex";
 include "include/spelldata";
 
-use uo;
-use os;
-use cfgfile;
+program showcaps(who)
+var gump := GFCreateGump(15, 15, 600, 500);
+GFResizePic(gump, 15, 15, 9270, 600, 500);
+GFResizePic(gump, 25, 25, 9350, 580, 480);
+GFTextLine(gump, 250, 30, 53, "Skill Caps");
+GFTextLine(gump, 60, 415, 5, "Misc ");
+GFTextLine(gump, 250, 450, 53, "Stat Caps");
 
-include ":gumps:include/gumps";
-include "include/attributes";
-include "include/classes";
-include "include/client";
-
-const SKILL_START	:= 71;
-const PERFORM_SKILL	:= 500;
-
-program skillwindow( who )
-
-	SendSkillWindow( who, who );
-
-	var gump := GFCreateGump(15, 15, 600, 500);
-	GFResizePic(gump, 15, 15, 9270, 600, 500);
-	GFResizePic(gump, 25, 25, 9350, 580, 480);
-	GFTextLine(gump, 185, 30, 53, "SKILL CAPS");
-	GFTextLine(gump, 375, 30, 53, "CLASS -->");
-	GFTextLine(gump, 290, 390, 53, "STAT CAPS");
-	GFTextLine(gump, 300, 440, 53, "LEGEND");
+GFTextLine(gump, 70, 45, 5, "Bard");
+GFTextLine(gump, 70, 230, 5, "Crafter");
+GFTextLine(gump, 270, 45, 5, "Mage");
+GFTextLine(gump, 270, 230, 5, "Ranger");
+GFTextLine(gump, 470, 45, 5, "Thief");
+GFTextLine(gump, 470, 230, 5, "Warrior");
 
 	var matrix := GetObjProperty(who, "pScrollMatrix");
-	var statMatrix := GetObjProperty(who, "statMatrix");
-
-	var skill, cap, statcap;
+	var skill, cap;
 	var countb := 0;
 	var countc := 0;
-	var countd:= 0;
-		
-	var i, hue, chue;
-	for(i:=0; i<=48; i:=i+1)
-		hue := 0;
-		chue := 0;
+	var countm := 0;
+	var countr := 0;
+	var countt := 0;
+	var countw := 0;
+
+
+	//for(i:=0; i<49; i:=i+1)
+	var sorted_skill_ids := GetSortedSkillIds();
+	foreach i in sorted_skill_ids
+		skill := GetAttributeIdBySkillId( i );
 		if(!matrix)
 				cap := 130;
 		else 
@@ -51,117 +44,50 @@ program skillwindow( who )
 				cap := 130+matrix[i];
 			endif
 		endif
-		
-		var classe := GetClass(who);
-
-		if( i in GetClasseSkills( classe ) )
-			chue := 2820;
-		endif
-		if (cap == 135)
-			hue := 1951;
-		elseif (cap == 140)
-			hue := 1992;
-		elseif (cap == 145)
-			hue := 2159;
-		elseif (cap == 150)
-			hue := 1267;
-		endif   
-
-
-		var level := GetObjProperty(who, classe);
-
-		if (level)
-			GFTextLine(gump, 450, 30, 2820, classe +": "+level);
-		else
-			GFTextLine(gump, 450, 30, 0, "No Specific Class");
-		endif
-
-		skill := GetAttributeIdBySkillId( i );
 		if(skill == "Enticement")
 				skill := "Discordance";
 		endif
-		
-		if (i <= 15)
-			var x := 40;
-			var y := 50 + countb;
-			GFTextLine(gump, x + 20, y, chue, skill);
-			GFTextLine(gump, x + 145, y, hue, cap);
+		if(i in GetClasseSkills( CLASSEID_BARD ) )
+			var x := 40, y := 65 + countb;
+			GFTextLine(gump, x, y, 0,  skill+" = "+cap);
 			countb := countb + 20;
-		elseif (i >= 16 && i <= 31)
-			var x := 220;
-			var y := 50 + countc;
-			GFTextLine(gump, x + 20, y, chue, skill);
-			GFTextLine(gump, x + 145, y, hue, cap);
+		elseif(i in GetClasseSkills( CLASSEID_CRAFTER ) )
+			var x := 40, y := 250 + countc;
+			GFTextLine(gump, x, y, 0,  skill+" = "+cap);
 			countc := countc + 20;
-		elseif (i >= 32)
-			var x := 400;
-			var y := 50 + countd;
-			GFTextLine(gump, x + 20, y, chue, skill);
-			GFTextLine(gump, x + 145, y, hue, cap);
-			countd := countd + 20;
+		elseif(i in GetClasseSkills( CLASSEID_MAGE ) )
+			var x := 240, y := 65 + countm;
+			GFTextLine(gump, x, y, 0,  skill+" = "+cap);
+			countm := countm + 20;
+		elseif(i in GetClasseSkills( CLASSEID_RANGER ) )
+			var x := 240, y := 250 + countr;
+			GFTextLine(gump, x, y, 0,  skill+" = "+cap);
+			countr := countr + 20;
+		elseif(i in GetClasseSkills( CLASSEID_THIEF ) )
+			var x := 440, y := 65 + countt;
+			GFTextLine(gump, x, y, 0,  skill+" = "+cap);
+			countt := countt + 20;
+		elseif(i in GetClasseSkills( CLASSEID_WARRIOR ) )
+			var x := 440, y := 250 + countw;
+			GFTextLine(gump, x, y, 0,  skill+" = "+cap);
+			countw := countw + 20;
+		elseif(i == 19)
+			var x := 40, y := 435;
+			GFTextLine(gump, x, y, 0,  skill+" = "+cap);
 		endif
+	endforeach
 
-	endfor
-	
+	var statMatrix := GetObjProperty(who, "statMatrix");
 	if(!statMatrix)
 		statMatrix := {0,0,0};
 	endif
-	var hue2, hue3, hue4;
-	if ( (130+statMatrix[1]) == 135 )
-		hue2 := 1951;
-	elseif ( (130+statMatrix[1]) == 140 )
-		hue2 := 1992;
-	elseif ( (130+statMatrix[1]) == 145 )
-		hue2 := 2159;
-	elseif ( (130+statMatrix[1]) == 150 )
-		hue2 := 1267;
-	endif
-
-	if ( (130+statMatrix[2]) == 135 )
-		hue3 := 1951;
-	elseif ( (130+statMatrix[2]) == 140 )
-		hue3 := 1992;
-	elseif ( (130+statMatrix[2]) == 145 )
-		hue3 := 2159;
-	elseif ( (130+statMatrix[2]) == 150 )
-		hue3 := 1267;
-	endif
-
-	if ( (130+statMatrix[3]) == 135 )
-		hue4 := 1951;
-	elseif ( (130+statMatrix[3]) == 140 )
-		hue4 := 1992;
-	elseif ( (130+statMatrix[3]) == 145 )
-		hue4 := 2159;
-	elseif ( (130+statMatrix[3]) == 150 )
-		hue4 := 1267;
-	endif
-
-	if(!statMatrix)
-		statMatrix := {0,0,0};
-	endif
-	GFTextLine(gump, 60, 410, 0,  "Strength");
-	GFTextLine(gump, 185, 410, hue2, (130+statMatrix[1]));
-	GFTextLine(gump, 240, 410, 0,  "Dexterity");
-	GFTextLine(gump, 365, 410, hue3, (130+statMatrix[2]));
-	GFTextLine(gump, 420, 410, 0,  "Intelligence");
-	GFTextLine(gump, 545, 410, hue4, (130+statMatrix[3]));
-
-	GFTextLine(gump, 60, 460, 0,  "Class Skills");
-	GFTextLine(gump, 185, 460, 2820, "Color");
-	GFTextLine(gump, 240, 460, 0,  "Cap is 130");
-	GFTextLine(gump, 365, 460, 0, "Color");
-	GFTextLine(gump, 420, 460, 0,  "Cap is 135");
-	GFTextLine(gump, 545, 460, 1951, "Color");
-
-	GFTextLine(gump, 60, 480, 0,  "Cap is 140");
-	GFTextLine(gump, 185, 480, 1992, "Color");
-	GFTextLine(gump, 240, 480, 0,  "Cap is 145");
-	GFTextLine(gump, 365, 480, 2159, "Color");
-	GFTextLine(gump, 420, 480, 0,  "Cap is 150");
-	GFTextLine(gump, 545, 480, 1267, "Color");
-
+	GFTextLine(gump, 40, 470, 0,  "Strength"+" = "+(130+statMatrix[1]));
+	GFTextLine(gump, 240, 470, 0,  "Dexterity"+" = "+(130+statMatrix[2]));
+	GFTextLine(gump, 440, 470, 0,  "Intelligence"+" = "+(130+statMatrix[3]));
 	GFSendGump(who, gump);
-
-	return;
+return;
 endprogram
+
+function GetSortedSkillIds()
+  return array{ 0,1,2,35,31,4,6,7,8,10,11,12,13,14,15,16,42,18,19,17,20,21,23,3,24,44,41,25,26,46,45,29,5,9,30,22,48,28,32,33,47,40,27,34,36,37,38,39,43};
+endfunction

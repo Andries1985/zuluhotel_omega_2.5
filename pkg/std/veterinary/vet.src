@@ -97,6 +97,10 @@ function TryToCure( who , patient , bandages )
 
 	if( GetObjProperty( who , CLASSEID_RANGER ) )
 		delay := Cint( delay / CLASSE_BONUS );
+
+	//elseif( GetObjProperty( who , CLASSEID_CLERIC ) )
+	//	delay := Cint( delay / CLASSE_BONUS );
+
 	endif
 
 	Sleep( delay );

@@ -361,8 +361,8 @@ function UndoTheMod( who , prop , amt , liche := 0 )
 					BuffOff(who, "paralyze");
 		"call":
 		"all" :		SetStrengthMod(who, GetStrengthMod(who) - amt);
-					SetDexterityMod(who, GetDexterityMod(who) - amt);
-					SetIntelligenceMod(who, GetIntelligenceMod(who) - amt);
+					SetDexterityMod(who, GetDexterityMod(who)-amt);
+					SetIntelligenceMod(who, GetIntelligenceMod(who)-amt);
 					if(amt > 0)
 						BuffOff(who, "bless");
 					else
@@ -371,8 +371,7 @@ function UndoTheMod( who , prop , amt , liche := 0 )
 		"cebless":
 		"ebless": 
 					SetStrengthMod(who, GetStrengthMod(who) - amt);
-					SetDexterityMod(who, GetDexterityMod(who) - amt);
-					SetIntelligenceMod(who, GetIntelligenceMod(who) - amt);
+					SetIntelligenceMod(who, GetIntelligenceMod(who)-amt);
 					if(amt > 0)
 						BuffOff(who, "bless");
 					else
@@ -381,7 +380,7 @@ function UndoTheMod( who , prop , amt , liche := 0 )
 		"cpoly":
 		"poly":		
 					if(!GetObjProperty( who, "IsLiche" ))
-						who.ar_mod := who.ar_mod - cint( amt / 2 );
+						who.ar_mod := who.ar_mod - cint( amt / 3 );
 						msg := "Armor is now " + who.ar;
 						SetStrengthMod(who, GetStrengthMod(who) - amt);
 						SetDexterityMod(who, GetDexterityMod(who)-amt);

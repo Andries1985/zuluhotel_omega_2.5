@@ -7,10 +7,10 @@ include "include/spelldata";
 
 const BASE_SPELLID := 181;
 
-program SongBook( who, book )
+program BookOfEarth( who, book )
 	
-	if(!GetObjProperty(who,"IsBard") && !GetObjProperty(who, "IsBladesinger"))	
-		SendSysMessage(who,"Only Bards or Bladesingers can use this!");
+	if(!GetObjProperty(who,"IsBard"))	
+		SendSysMessage(who,"Only Bards can use this!");
 		return;
 	endif
 	

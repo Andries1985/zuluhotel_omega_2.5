@@ -43,13 +43,7 @@ program cast_rising_fire( parms )
 	EraseObjProperty( caster , "#Casting" );
 	
 	var dmg;
-	var range := 0;
-	if (GetObjProperty(caster, "IsMage"))
-		range := GetObjProperty(caster, "IsMage");
-	elseif (GetObjProperty(caster, "IsPaladin"))
-		range := GetObjProperty(caster, "IsPaladin");
-	endif
-
+	var range := GetObjProperty(caster, "IsMage");
 	if (!range)
 		range := 1;
 	endif

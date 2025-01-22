@@ -75,9 +75,9 @@ program cast_cure( parms, spell_id )
 		endif
 		
 		if( GetObjProperty( caster , CLASSEID_MAGE ) )
-			diffi := Cint( diffi / CLASSE_BONUS ); 
-		elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
-			diffi := Cint( diffi / CLASSE_BONUS );
+			diffi := Cint( diffi / CLASSE_BONUS );/* 
+		elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
+			diffi := Cint( diffi / CLASSE_BONUS ); */
 		elseif( GetObjProperty( caster , CLASSEID_POWERPLAYER ) )
 			diffi := Cint( diffi *1.55 );
 		endif

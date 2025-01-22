@@ -46,12 +46,7 @@ program cast_songofglory( player )
 
 	var peace := GetAttribute(player, ATTRIBUTEID_PEACEMAKING);
 	var mus := GetAttribute(player, ATTRIBUTEID_MUSICIANSHIP);
-	var spec := 0;
-	if (GetObjProperty(player, "IsBard"))
-		spec := GetObjProperty(player, "IsBard");
-	elseif (GetObjProperty(player, "IsBladesinger"))
-		spec := GetObjProperty(player, "IsBladesinger");
-	endif
+	var spec := GetObjProperty(player,"IsBard");
 	var ps;
 	if (!spec)
 		spec := 0;	

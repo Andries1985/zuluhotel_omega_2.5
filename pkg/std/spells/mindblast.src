@@ -72,7 +72,7 @@ program cast_mind_blast( parms, spell_id )
 
 	if( GetObjProperty( cast_on , CLASSEID_MAGE ) )
 		his_int := Cint( his_int * CLASSE_BONUS );
-	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
+	elseif( GetObjProperty( cast_on , CLASSEID_CLERIC ) )
 		his_int := Cint( his_int * CLASSE_BONUS );
 	endif
 	

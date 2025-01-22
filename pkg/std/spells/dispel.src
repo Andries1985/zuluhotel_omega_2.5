@@ -82,8 +82,8 @@ program dispel ( parms, spell_id )
 		if( GetObjProperty( caster, CLASSEID_MAGE ) )
 			magery := Cint( magery * ClasseBonus( caster, CLASSEID_MAGE ) );
 
-		elseif( GetObjProperty( caster, CLASSEID_PALADIN ) )
-			magery := Cint( magery * ClasseBonus( caster, CLASSEID_PALADIN ) );
+		elseif( GetObjProperty( caster, CLASSEID_CLERIC ) )
+			magery := Cint( magery * ClasseBonus( caster, CLASSEID_CLERIC ) );
 
 		endif
 		
@@ -108,8 +108,8 @@ program dispel ( parms, spell_id )
 		if( GetObjProperty( caster, CLASSEID_MAGE ) )
 			magery := Cint( magery * ClasseBonus( caster, CLASSEID_MAGE ) );
 
-		elseif( GetObjProperty( caster, CLASSEID_PALADIN ) )
-			magery := Cint( magery * ClasseBonus( caster, CLASSEID_PALADIN ) );
+		elseif( GetObjProperty( caster, CLASSEID_CLERIC ) )
+			magery := Cint( magery * ClasseBonus( caster, CLASSEID_CLERIC ) );
 
 		endif
 		

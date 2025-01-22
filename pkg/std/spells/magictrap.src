@@ -96,7 +96,7 @@ program cast_strength( parms, spell_id )
 	var strength	:= Cint( magery / 30 );
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		strength := Cint( strength * CLASSE_BONUS );
-	elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
+	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
 		strength := Cint( strength * CLASSE_BONUS );
 	endif
 	

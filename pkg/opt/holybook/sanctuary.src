@@ -42,7 +42,10 @@ program cast_antidote( parms )
 		EraseObjProperty( caster , "#Casting" );
 		caster := Reflected( caster , caster , circle );
 	else
-		PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
+		PlayObjectCenteredEffect(caster, 
+                                         SPELL_EFFECT_ID,
+                                         SPELL_EFFECT_SPEED,
+                                         SPELL_EFFECT_LOOP);
 	endif
 
         PlaySoundEffect(caster, SFX_SPELL_SANCTUARY);
@@ -57,12 +60,7 @@ program cast_antidote( parms )
 	if( !prevprot )
 		var magery := GetAttribute( caster , ATTRIBUTEID_MAGERY );
 		var duration := ModifyWithMagicEfficiency( caster , magery * 2 );
-		var power := 0;
-		if (GetObjProperty(caster, "IsMage"))
-			power := GetObjProperty(caster, "IsMage");
-		elseif (GetObjProperty(caster, "IsPaladin"))
-			power := GetObjProperty(caster, "IsPaladin");
-		endif
+		var power := GetObjProperty(caster, "IsMage");
 		if (!power)
 			power := 0;	
 		endif;
