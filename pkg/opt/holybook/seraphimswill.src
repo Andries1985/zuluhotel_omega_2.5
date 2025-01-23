@@ -44,7 +44,7 @@ program cast_seraphims_will( parms )
 		mod_amount := Cint( GetModAmount( caster ) );
 		//Print("Mage Mod Amount: "+mod_amount);
 	else
-		mod_amount := Cint( GetModAmount( caster ) * 2 );
+		mod_amount := Cint( GetModAmount( caster ) * 3 );
 		//Print("Normal Mod Amount: "+mod_amount);
 	endif
 
