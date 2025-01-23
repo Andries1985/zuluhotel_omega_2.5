@@ -45,6 +45,16 @@ function castspell( caster, cast_on, spellname )
 		MassHolyBolt(caster);
 	"champfire":
 		ChampFire(caster);
+	"summonsshiftingearth":
+		SummonsShiftingEarth(caster, cast_on);
+	"summonsgustofair":
+		SummonsGustOfAir(caster, cast_on);
+	"summonsrisingfire":
+		SummonsRisingFire(caster, cast_on);
+	"summonsicestrike":
+		SummonsIceStrike(caster, cast_on);
+	"summonsspectretouch":
+		SummonsSpectreTouch(caster, cast_on);
 
 	default:
 		var SpellID := GetSpellID(spellname);
@@ -521,8 +531,17 @@ function PrepareToCast(caster, cast_on, spellid)
 	if (!CheckLineOfSight( caster, cast_on ))
 		return 0;
 	endif
-
-	if (saywords)
+	if(spellid == 60 || spellid == 61 || spellid == 62 || spellid == 63  || spellid == 64 || spellid == 74 || spellid == 93 || spellid == 94 || spellid == 95 || spellid == 06 )
+		var utterance := Random(4);
+		case (utterance)
+			0: say("Awake, my children! Come forth and take your rightful place!");
+			1: say("Come forth my minions!");
+			2: say("I call upon the forces of darkness to attend me!");
+			3: say("Mortal, you shall soon be my slave!");
+		endcase
+		PerformAction(caster,ANIM_CAST_DIR);
+		sleep(1);
+	elseif (saywords)
 		SpeakPowerWords( me, spellid);
 		PerformAction(caster,ANIM_CAST_DIR);
 		sleep(1);
@@ -548,13 +567,11 @@ function cast_offensive_spell(caster, cast_on)
 
 	var thespell := spells[Random( len(spells) +1 )];
 
-if(thespell == 29)
-        CastSpell(caster, caster, thespell);
-else
-
-	CastSpell(caster, cast_on, thespell);
-endif
-
+	if( thespell == "gheal" )
+		CastSpell(caster, caster, thespell);
+	else
+		CastSpell(caster, cast_on, thespell);
+	endif
 
 endfunction
 
@@ -567,5 +584,258 @@ function NpcSummonCreature( caster , npctemplate , sfx := 0x0218 )
 	parms[3] := sfx;
 
 	Start_script( ":summoning:npcsummoning" , parms );
+
+endfunction
+
+function SummonsShiftingEarth(caster, cast_on)
+	var circle := GetCircle( SPELLID_SHIFTING_EARTH );
+	var element := EARTH;
+	if(IsInSafeArea(caster))
+			EraseObjProperty( caster , "#Casting" );
+            return;
+    endif
+	
+	PlayObjectCenteredEffect(cast_on, FX_SPELL_SHIFTING_EARTH, SPEED_SPELL_SHIFTING_EARTH, LOOP_SPELL_SHIFTING_EARTH);
+	PlaySoundEffect( cast_on, SFX_SPELL_SHIFTING_EARTH );
+	
+	if(cast_on.isa(POLCLASS_NPC))
+		var magery := GeteffectiveSkill(caster, SKILLID_MAGERY);
+		var dmg := CalcSpellDamage( caster, cast_on, circle );
+		ApplyElementalDamage( caster, cast_on, circle, dmg, element );
+		EraseObjProperty( caster , "#Casting" );
+	else
+		var immunity := IsProtected( caster , cast_on , circle );
+		if( immunity == IMMUNED )
+			EraseObjProperty( caster , "#Casting" );
+			return;
+		endif
+
+		//cast_on := Reflected( caster, cast_on, circle );
+
+		var magery := GeteffectiveSkill(caster, SKILLID_MAGERY);
+		if( immunity == CURSED )
+			SendSysmessage( cast_on , "One of your equipped items increases the effect of the spell!" );
+			magery := magery * 2;
+			circle := circle * 2;
+		endif
+		var dmg := CalcSpellDamage( caster, cast_on, circle );
+		ApplyElementalDamage( caster, cast_on, circle, dmg, element );
+
+		if( !CanMod( cast_on, "dex" ) )
+        	EraseObjProperty( caster, "#Casting" );
+        	return;
+        endif
+		var prot := GetResultingElementalProt( cast_on, element );
+		if( prot )
+			magery := Cint( magery - ( magery * prot / 10 ) );
+		endif
+		
+		if( magery < 1 )
+			magery := 1;
+		endif
+		
+		EraseObjProperty( caster , "#Casting" );
+		var mod_amount := Resisted( caster, cast_on, circle, GetModAmount( caster ) );
+		var duration := GetModDuration( caster );
+		DoTempMod( cast_on, "dex", 0 - mod_amount, duration );
+	endif
+
+endfunction
+
+function SummonsGustOfAir(caster, cast_on)
+	var circle := GetCircle( SPELLID_GUST_OF_AIR);
+	var element := AIR;
+
+	if(IsInSafeArea(caster))
+			EraseObjProperty( caster, "#Casting" );
+            return;
+    endif
+	
+	PlayObjectCenteredEffect(cast_on, FX_SPELL_GUST_OF_AIR, SPEED_SPELL_GUST_OF_AIR, LOOP_SPELL_GUST_OF_AIR);
+	PlaySoundEffect( cast_on, SFX_SPELL_GUST_OF_AIR1 );
+	PlaySoundEffect( cast_on, SFX_SPELL_GUST_OF_AIR2 );
+	
+	if(cast_on.isa(POLCLASS_NPC))
+		var magery := GeteffectiveSkill(caster, SKILLID_MAGERY);
+		var dmg := CalcSpellDamage( caster, cast_on, circle );
+		ApplyElementalDamage( caster, cast_on, circle, dmg, element );
+		EraseObjProperty( caster , "#Casting" );
+	else
+		var immunity := IsProtected( caster , cast_on , circle );
+		if( immunity == IMMUNED )
+			EraseObjProperty( caster , "#Casting" );
+			return;
+		endif
+
+		//cast_on := Reflected( caster , cast_on , circle );
+
+		var magery := GeteffectiveSkill(caster, SKILLID_MAGERY);
+		if( immunity == CURSED )
+			SendSysmessage( cast_on, "One of your equipped items increases the effect of the spell!" );
+			magery := magery * 2;
+			circle := circle * 2;
+		endif
+		var dmg := CalcSpellDamage( caster, cast_on, circle );
+		ApplyElementalDamage( caster, cast_on, circle, dmg, element );
+		EraseObjProperty( caster, "#Casting" );
+	endif
+
+endfunction
+
+function SummonsIceStrike(caster, cast_on)
+	var circle := GetCircle( SPELLID_ICE_STRIKE);
+	var element := WATER;
+
+	if(IsInSafeArea(caster))
+			EraseObjProperty( caster, "#Casting" );
+            return;
+    endif
+	
+	PlayObjectCenteredEffect(cast_on, FX_SPELL_ICE_STRIKE, SPEED_SPELL_ICE_STRIKE, LOOP_SPELL_ICE_STRIKE);
+	PlaySoundEffect( cast_on, SFX_SPELL_ICE_STRIKE1 );
+	PlaySoundEffect( cast_on, SFX_SPELL_ICE_STRIKE2 );
+	
+	if(cast_on.isa(POLCLASS_NPC))
+		var magery := GeteffectiveSkill(caster, SKILLID_MAGERY);
+		var dmg := CalcSpellDamage( caster, cast_on, circle );
+		ApplyElementalDamage( caster, cast_on, circle, dmg, element );
+		EraseObjProperty( caster , "#Casting" );
+	else
+		var immunity := IsProtected( caster , cast_on , circle );
+		if( immunity == IMMUNED )
+			EraseObjProperty( caster , "#Casting" );
+			return;
+		endif
+
+		//cast_on := Reflected( caster , cast_on , circle );
+
+		var magery := GeteffectiveSkill(caster, SKILLID_MAGERY);
+		if( immunity == CURSED )
+			SendSysmessage( cast_on, "One of your equipped items increases the effect of the spell!" );
+			magery := magery * 2;
+			circle := circle * 2;
+		endif
+		var dmg := CalcSpellDamage( caster, cast_on, circle );
+		ApplyElementalDamage( caster, cast_on, circle, dmg, element );
+		EraseObjProperty( caster, "#Casting" );
+	endif
+
+endfunction
+
+function SummonsRisingFire(caster, cast_on)
+	var circle := GetCircle( SPELLID_RISING_FIRE);
+	var element := FIRE;
+
+	if(IsInSafeArea(caster))
+			EraseObjProperty( caster, "#Casting" );
+			Print("Cant cast in safe area");
+            return;
+    endif
+
+	if(cast_on.isa(POLCLASS_NPC))
+		var circ := circle;
+		var dmg := CalcSpellDamage( caster , cast_on , circ , AREA_EFFECT_SPELL );
+
+		PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);					
+		send_attack( cast_on , caster , SPELLID_RISING_FIRE );
+		Sleepms(250);
+		PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+		PlaySoundEffect( cast_on , SFX_SPELL_RISING_FIRE );
+		Sleepms(250);
+		PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+		PlaySoundEffect( cast_on , SFX_SPELL_RISING_FIRE );
+		ApplyElementalDamage( caster , cast_on , circ , Cint(dmg / 2) , element );
+
+		Sleepms(25);
+
+		PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+		send_attack( cast_on , caster , SPELLID_RISING_FIRE );
+		Sleepms(250);
+		PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+		PlaySoundEffect( cast_on , SFX_SPELL_RISING_FIRE );
+		Sleepms(250);
+		PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+		PlaySoundEffect( cast_on , SFX_SPELL_RISING_FIRE );
+		ApplyElementalDamage( caster , cast_on , circ , Cint(dmg / 2) , element );
+	else
+		var immunity := IsProtected( caster , cast_on , circle );
+		var circ := circle;
+		var dmg := CalcSpellDamage( caster , cast_on , circ , AREA_EFFECT_SPELL );
+
+		if( immunity != IMMUNED )
+			if( immunity == CURSED )
+				circ := circ * 2;
+			endif
+		
+			PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+			send_attack( cast_on , caster , SPELLID_RISING_FIRE );
+			Sleepms(250);
+			PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+			PlaySoundEffect( cast_on , SFX_SPELL_RISING_FIRE );
+			Sleepms(250);
+			PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+			PlaySoundEffect( cast_on , SFX_SPELL_RISING_FIRE );
+			ApplyElementalDamage( caster , cast_on , circ , Cint(dmg / 2) , element );
+		endif
+
+		Sleepms(25);
+
+		immunity := IsProtected( caster , cast_on , circle );
+		circ := circle;
+		if( immunity != IMMUNED )
+			if( immunity == CURSED )
+				circ := circ * 2;
+			endif
+		
+			PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+			send_attack( cast_on , caster , SPELLID_RISING_FIRE );
+			Sleepms(250);
+			PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+			PlaySoundEffect( cast_on , SFX_SPELL_RISING_FIRE );
+			Sleepms(250);
+			PlayObjectCenteredEffect(cast_on, FX_SPELL_RISING_FIRE, SPEED_SPELL_RISING_FIRE, LOOP_SPELL_RISING_FIRE);
+			PlaySoundEffect( cast_on , SFX_SPELL_RISING_FIRE );
+			ApplyElementalDamage( caster , cast_on , circ , Cint(dmg / 2) , element );
+		endif
+	endif
+
+	EraseObjProperty( caster , "#Casting" );
+
+endfunction
+
+function SummonsSpectreTouch(caster, cast_on)
+	var circle := GetCircle( SPELLID_SPECTER_TOUCH);
+	var plane := NECRO;
+
+	if(IsInSafeArea(caster))
+			EraseObjProperty( caster, "#Casting" );
+			Print("Cant cast in safe area");
+            return;
+    endif
+
+	if(cast_on.isa(POLCLASS_NPC))
+		var circ := circle;
+		var dmg := CalcSpellDamage( caster , cast_on , circ , AREA_EFFECT_SPELL );
+		Send_attack( cast_on , caster , SPELLID_SPECTER_TOUCH );
+		PlaySoundEffect( cast_on , SFX_SPELL_SPECTER_TOUCH );
+		PlayStationaryEffect( cint(cast_on.x), cint(cast_on.y), cint(cast_on.z) , FX_SPELL_SPECTER_TOUCH , SPEED_SPELL_SPECTER_TOUCH , LOOP_SPELL_SPECTER_TOUCH, 0, cast_on.realm );
+		ApplyplanarDamage( caster , cast_on , circ , dmg , plane );
+	else
+		var immunity := IsProtected( caster , cast_on , circle );
+		var circ := circle;
+		if( immunity != IMMUNED )
+			if( immunity == CURSED )
+				circ := circ * 2;
+			endif
+		
+			var dmg := CalcSpellDamage( caster , cast_on , circ , AREA_EFFECT_SPELL );
+			Send_attack( cast_on , caster , SPELLID_SPECTER_TOUCH );
+			PlaySoundEffect( cast_on , SFX_SPELL_SPECTER_TOUCH );
+			PlayStationaryEffect( cint(cast_on.x), cint(cast_on.y), cint(cast_on.z) , FX_SPELL_SPECTER_TOUCH , SPEED_SPELL_SPECTER_TOUCH , LOOP_SPELL_SPECTER_TOUCH, 0, cast_on.realm );
+			ApplyplanarDamage( caster , cast_on , circ , dmg , plane );
+		endif
+	endif
+
+	EraseObjProperty( caster , "#Casting" );
 
 endfunction

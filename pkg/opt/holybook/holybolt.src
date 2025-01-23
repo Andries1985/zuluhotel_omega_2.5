@@ -13,7 +13,7 @@ const SPELL_EFFECT_LOOP		:= LOOP_SPELL_HOLY_BOLT;
 program cast_HOLY_BOLT( parms )
 
 	var circle := GetCircle( SPELLID_HOLY_BOLT );
-	var element := HOLY;
+	var plane := HOLY;
 	var caster;
 	var cast_on;
 	var fromhit;
@@ -65,7 +65,7 @@ program cast_HOLY_BOLT( parms )
 	var dmg := (CalcSpellDamage( caster ,cast_on , circle ));
 	if ((!caster.npctemplate and cast_on.npctemplate and GetObjproperty(cast_on,"Type")== "Undead") or (caster.npctemplate and !cast_on.npctemplate))
 		
-		ApplyElementalDamage( caster , cast_on , circle , dmg , element );
+		ApplyPlanarDamage( caster , cast_on , circle , dmg , plane );
 	else
 		HealDamage( cast_on , dmg);
 	endif

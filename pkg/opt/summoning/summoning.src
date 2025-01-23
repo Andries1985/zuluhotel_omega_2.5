@@ -29,6 +29,7 @@ program summon_creature( parms )
 		endif
 	endforeach
 
+	//Max 2 pets for mystic archer
 	if(magic_pets > 4)
 		SendSysMessage(caster, "Can't summon more creatures.");
 		return;
@@ -50,14 +51,16 @@ program summon_creature( parms )
 		//SleepMs( delay );
 	endif
 
-	var duration		:= ModifyWithMagicEfficiency( caster , magery * 2 );
+	//Modify this for Mystic Archer to not require ME
+	var duration := ModifyWithMagicEfficiency( caster , magery * 2 );
 	
 	PlaySoundEffect( caster , sfx );
-	
 	Detach();
 	
 	var thecritter := CreateNpcFromTemplate( npctemplate, 5283, 1184, 0, 0, "britannia");
 	thecritter.hidden := 1;
+
+	//Modify this for Mystic Archer to not require ME
 	var power := Cint( ModifyWithMagicEfficiency( caster , Cint(magery / 1.5)) );
 	if( power > 100 )
 		power := 100;

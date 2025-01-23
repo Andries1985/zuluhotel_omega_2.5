@@ -668,7 +668,6 @@ function IsProtected( caster, cast_on, circle, nomsg := 0 )
 		protlvl := 0;
 	endif
 
-
 	if(GetObjProperty( cast_on , CLASSEID_WARRIOR ))
 		//Print($"Target is a warrior!");
 		if( protlvl == 0)
@@ -989,14 +988,15 @@ function Send_Attack( ttarget , source , spellid := 0 )
 
 	ev.type := SYSEVENT_ENGAGED;
 	ev.source := source;
-	SendEvent( ttarget , ev );
-
+	
  	if (spellid)
-         	ev.+spell;
-         	ev.type := 0x0800; //spell attack
-         	ev.spell := spellid;
-         	SendEvent(ttarget, ev);
- 	endif
+		ev.+spell;
+		ev.type := 0x0800; //spell attack
+		ev.spell := spellid;
+		SendEvent(ttarget, ev);
+ 	else
+		SendEvent( ttarget , ev );
+	endif
 
 endfunction
 
@@ -1014,7 +1014,6 @@ function SummonCreature( caster , npctemplate , cast_loc , sfx := 0x0218 , delay
 	Start_script( ":summoning:summoning" , parms );
 
 endfunction
-
 
 function TruncPkgName( name )
 
