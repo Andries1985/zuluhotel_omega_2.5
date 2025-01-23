@@ -517,7 +517,7 @@ function SpecialChampFire(caster, cast_on, element)
 endfunction
 
 function SpecialHolyBolt(caster, cast_on)
-	var circle := 8;
+	var circle := GetCircle( SPELLID_HOLY_BOLT );
 	var plane := HOLY;
 	var graph := PlayLightningBoltEffect( cast_on );
 	PlaySoundEffect( cast_on , SFX_SPELL_HOLY_BOLT );
