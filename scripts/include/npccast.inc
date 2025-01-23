@@ -449,7 +449,7 @@ Function GetSpellID(spellname)
 	"reveal"	: spellid := 48;
 	"chainlightning": spellid := 49;
 	"energy_field"	: spellid := 50;
-	"fstrike"	: spellid := 51;
+	"flamestrike"	: spellid := 51;
 	"manavamp"	: spellid := 53;
 	"massdispel"	: spellid := 54;
 	"meteor_swarm"	: spellid := 55;
