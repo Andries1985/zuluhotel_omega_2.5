@@ -36,11 +36,11 @@ PlayObjectCenteredEffectEx( who, 14089, 7, 22, 1950 );
 var range := GetEffectiveSkill(who, SKILLID_MAGERY)/20; // 130 magery is 6 range
 range := range + IsMage(who); // level 4 130 magery is 10 range
 //Old Values
-//var mod_amount := CInt(GetModAmount( who )*1.1);
-//var duration := CInt(GetModDuration( who )*1.1);
+var mod_amount := CInt(GetModAmount( who )*1.1);
+var duration := CInt(GetModDuration( who )*1.1);
 
-var mod_amount := CInt(GetModAmount( who ));
-var duration := CInt(GetModDuration( who ));
+//var mod_amount := CInt(GetModAmount( who ));
+//var duration := CInt(GetModDuration( who ));
 
 ApplyBuff(who, mod_amount, duration);
 
@@ -77,27 +77,27 @@ endprogram
 
 function ApplyBuff(person, amt, duration)
 
-if( CanMod( person , "all" ) && CanMod( person , "ebless" )  && CanMod( person , "poly"))
-	DoTempMod( person, "all" , amt , duration );
-endif
+	if( CanMod( person , "all" ) && CanMod( person , "ebless" )  && CanMod( person , "poly"))
+		DoTempMod( person, "all" , amt , duration );
+	endif
 
-if (CanMod(person, "dex"))
-	DoTempMod(person, "dex", amt, duration);
-endif
+	if (CanMod(person, "dex"))
+		DoTempMod(person, "dex", amt, duration);
+	endif
 
-if (CanMod(person, "str"))
-	DoTempMod(person, "str", amt, duration);
-endif
+	if (CanMod(person, "str"))
+		DoTempMod(person, "str", amt, duration);
+	endif
 
-if (CanMod(person, "ar"))
-	var arAmount := Cint(amt/1.25);
-	DoTempMod(person, "ar", arAmount, duration);
-endif
+	if (CanMod(person, "ar"))
+		var arAmount := Cint(amt/1.25);
+		DoTempMod(person, "ar", arAmount, duration);
+	endif
 
-if (CanMod(person, "int"))
-	DoTempMod(person, "int", amt, duration);
-endif
+	if (CanMod(person, "int"))
+		DoTempMod(person, "int", amt, duration);
+	endif
 
-SendSysMessage(person, "The power of Nagash fills you with energy!");
+	SendSysMessage(person, "The power of Nagash fills you with energy!");
 
 endfunction
