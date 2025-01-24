@@ -56,9 +56,9 @@ program skillwindow( who )
 	var i;
 	for(i:=1; i<=49; i:=i+1)
 
-		Print(sorted_skill_ids[i]);
+		//Print(sorted_skill_ids[i]);
 		skill := GetAttributeIdBySkillId( sorted_skill_ids[i] );
-		Print(skill);
+		//Print(skill);
 		skillss := GetBaseSkillBaseValue( who, sorted_skill_ids[i] );
 		skills := Cdbl(skillss/10.0);
 

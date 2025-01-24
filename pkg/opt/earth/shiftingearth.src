@@ -55,12 +55,7 @@ program cast_shifting_earth( parms )
 		EraseObjProperty( caster , "#Casting" );
 		cast_on := Reflected( caster , cast_on , circle );
 	endif
-		PlayObjectCenteredEffect(cast_on, 
-                                         SPELL_EFFECT_ID,
-                                         SPELL_EFFECT_SPEED,
-                                         SPELL_EFFECT_LOOP);
-	
-
+	PlayObjectCenteredEffect(cast_on, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 	PlaySoundEffect( cast_on , SFX_SPELL_SHIFTING_EARTH );
 
 	var immunity := IsProtected( caster , cast_on , circle );

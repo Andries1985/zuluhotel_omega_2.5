@@ -22,7 +22,6 @@ program cast_summon( parms, spell_id )
 		if (parms[5])
 			fromhit := parms[5];
 		endif
-
 	else
 		caster := parms;
 		if (IsPaladin(caster))
@@ -53,7 +52,7 @@ program cast_summon( parms, spell_id )
 	endif
 
 	var thecreature := "vortex";
-	var thecritter := CreateNPCfromTemplate(thecreature, cast_loc.x, cast_loc.y,cast_loc.z);
+	var thecritter := CreateNPCfromTemplate(thecreature, cast_loc.x, cast_loc.y, cast_loc.z, 0, cast_loc.realm);
 	PlaySoundEffect(thecritter, SFX_SPELL_ENERGY_VORTEX );
 
 	setobjproperty(thecritter, "summoned",1);

@@ -70,7 +70,9 @@ function ByPassForMages( classeid )
 	var restricted_types := {};
 
 	case( classeid )
-		CLASSEID_MAGE:		fract_array.append( GetLeatherArmorGraphics() );
+		CLASSEID_MAGE:		
+					fract_array.append( GetLeatherArmorGraphics() );
+					fract_array.append( GetStuddedLeatherArmorGraphics() );
 					break;
 
 	endcase
