@@ -1,7 +1,7 @@
-
 include "include/spelldata";
 include "include/client";
 include "include/attributes";
+
 program summon_fire( parms, spell_id )
 
 	var circle := 8;
@@ -19,6 +19,13 @@ program summon_fire( parms, spell_id )
 			fromhit := parms[5];
 		endif
 
+		var wheretocast := Random(4);
+		case (wheretocast)
+				0: 	SummonCreature( caster , "fireelemental" , cast_loc );
+				1: 	SummonCreature( caster , "fireelemental" , caster );
+				2: 	SummonCreature( caster , "fireelemental" , cast_loc );
+				3: 	SummonCreature( caster , "fireelemental" , caster );
+		endcase
 	else
 		caster := parms;
 		if (IsPaladin(caster))
@@ -38,9 +45,10 @@ program summon_fire( parms, spell_id )
 		if (!cast_loc)
 			return;
 		endif
-	endif
-	
+		SummonCreature( caster , "fireelementallord" , cast_loc );
 
-	SummonCreature( caster , "fireelemental" , cast_loc );
+	endif
+
+	//SummonCreature( caster , "fireelemental" , cast_loc );
 
 endprogram

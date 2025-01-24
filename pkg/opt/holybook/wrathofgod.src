@@ -13,7 +13,7 @@ const SPELL_EFFECT_LOOP		:= LOOP_SPELL_KARMA_BLAST;
 program cast_shifting_earth( parms )
 
 	var circle := GetCircle( SPELLID_KARMA_BLAST );
-	var element := HOLY;
+	var plane := HOLY;
 	var caster;
 	var cast_on;
 	var fromhit;
@@ -79,7 +79,7 @@ program cast_shifting_earth( parms )
 		dif := castonkarma - casterkarma;
 	elseif (castonkarma == casterkarma)
 		SendSysmessage( caster , "You are of equal Karma!" );
-		ApplyElementalDamage( caster , cast_on , circle , 0 , element );
+		ApplyPlanarDamage( caster , cast_on , circle , 0 , plane );
 		return;
 	endif
 	circle := dif / 1000;
@@ -88,9 +88,9 @@ program cast_shifting_earth( parms )
 		dmg := 175;
 	endif
 	if (casterkarma > castonkarma)
-		ApplyElementalDamage( caster , cast_on , circle , dmg , element );
+		ApplyPlanarDamage( caster , cast_on , circle , dmg , plane );
 	else
-		ApplyElementalDamage( cast_on , caster , circle , dmg , element );
+		ApplyPlanarDamage( cast_on , caster , circle , dmg , plane );
 		SendSysmessage( caster , "Their superior Karma reflects the spell!" );
    	endif
 	EraseObjProperty( caster , "#Casting" );

@@ -18,6 +18,7 @@ program cast_earth_blessing( parms )
 	var caster;
 	var fromhit;
 	var casterismage := GetObjProperty( caster, CLASSEID_MAGE );
+	var casterismysticarcher := GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER );
 
  	if (parms[1] == "#MOB")
 		caster := parms[2];
@@ -40,7 +41,7 @@ program cast_earth_blessing( parms )
 	PlaySoundEffect( caster , SFX_SPELL_EARTH_BLESSING );
 
 	var mod_amount := Cint( GetModAmount( caster ) * 4 );
-	if(casterismage)
+	if(casterismage || casterismysticarcher)
 		var mod_amount := Cint( GetModAmount( caster ) * 4.75 );
 	endif
 

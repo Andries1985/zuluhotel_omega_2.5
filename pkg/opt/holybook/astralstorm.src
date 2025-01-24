@@ -14,7 +14,7 @@ const SPELL_EFFECT_LOOP		:= LOOP_SPELL_ASTRAL_STORM;
 program cast_Astral_Storm( parms )
 
 	var circle := GetCircle( SPELLID_ASTRAL_STORM );
-	var element := HOLY;
+	var plane := HOLY;
 	var caster;
 	var cast_on;
 	var fromhit;

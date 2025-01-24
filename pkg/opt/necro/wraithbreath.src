@@ -94,22 +94,24 @@ program wraithbreath( parms )
 			endif
 
 			var time := ReadGameClock()+CInt(duration);
-			if (mobile.isa(POLCLASS_NPC) && caster.isa(POLCLASS_NPC))
-			else 
-				mobile.frozen := 1;
-			endif
-			
-			IncRevision(mobile);
-			victims.append( {mobile, time} );
 			//Trying to stop NPCs from freezing each other
 			if (mobile.isa(POLCLASS_NPC) && caster.isa(POLCLASS_NPC))
+				IncRevision(mobile);
+				victims.append( {mobile, time} );
+				PlayObjectCenteredEffect( mobile , SPELL_EFFECT_ID , SPELL_EFFECT_SPEED , SPELL_EFFECT_LOOP );
+				PlaySoundEffect( mobile , SFX_SPELL_WRAITH_BREATH );
+				Send_attack( mobile , caster , SPELLID_WRAITH_BREATH );
+				SendSysmessage( mobile , "You get paralyzed from the power of " + caster.name + "'s spell!" );
 			else 
+				mobile.frozen := 1;
+				IncRevision(mobile);
+				victims.append( {mobile, time} );
 				BuffOn(mobile, "paralyze", 1, CInt(duration));
+				PlayObjectCenteredEffect( mobile , SPELL_EFFECT_ID , SPELL_EFFECT_SPEED , SPELL_EFFECT_LOOP );
+				PlaySoundEffect( mobile , SFX_SPELL_WRAITH_BREATH );
+				Send_attack( mobile , caster , SPELLID_WRAITH_BREATH );
+				SendSysmessage( mobile , "You get paralyzed from the power of " + caster.name + "'s spell!" );
 			endif
-			PlayObjectCenteredEffect( mobile , SPELL_EFFECT_ID , SPELL_EFFECT_SPEED , SPELL_EFFECT_LOOP );
-			PlaySoundEffect( mobile , SFX_SPELL_WRAITH_BREATH );
-			Send_attack( mobile , caster , SPELLID_WRAITH_BREATH );
-			SendSysmessage( mobile , "You get paralyzed from the power of " + caster.name + "'s spell!" );
 		endif
 	endforeach
 

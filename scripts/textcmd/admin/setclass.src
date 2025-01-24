@@ -18,8 +18,8 @@ program textcmd_class(who, lvl)
 		return;
 	endif
 
-	var gump := GFCreateGump(15, 15, 200, 200);
-	GFResizePic(gump, 15, 15, 9250, 200, 200);
+	var gump := GFCreateGump(15, 15, 200, 400);
+	GFResizePic(gump, 15, 15, 9250, 200, 400);
 	GFTextLine(gump, 60, 30, 53, "--Choose a Class--");
 
 	var y := 60;

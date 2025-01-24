@@ -8,29 +8,29 @@ program astralstorm_releasetimer( parms )
 	var cast_on := parms[2];
 	var circle := parms[3];
 	
-	var element := HOLY;
+	var plane := HOLY;
 
 	detach();
 	sleep(2);
 	var dmg := (CalcSpellDamage( caster ,cast_on , circle )/8 );
 	PlayObjectCenteredEffect(cast_on, 0x374a,10, 10);
 	PlaySoundEffect( cast_on , SFX_SPELL_HOLY_BOLT );
-	ApplyElementalDamage( caster , cast_on , circle , dmg , element );
+	ApplyPlanarDamage( caster , cast_on , circle , dmg , plane );
 	sleep(2);
 	PlayObjectCenteredEffect(cast_on, 0x374a,10, 10);
 	PlaySoundEffect( cast_on , SFX_SPELL_HOLY_BOLT );
-	ApplyElementalDamage( caster , cast_on , circle , dmg , element );
+	ApplyPlanarDamage( caster , cast_on , circle , dmg , plane );
 	sleep(2);
 	PlayObjectCenteredEffect(cast_on, 0x374a,10, 10);
 	PlaySoundEffect( cast_on , SFX_SPELL_HOLY_BOLT );
-	ApplyElementalDamage( caster , cast_on , circle , dmg , element );
+	ApplyPlanarDamage( caster , cast_on , circle , dmg , plane );
 	sleep(2);
 	PlayObjectCenteredEffect(cast_on, 0x374a,10, 10);
 	PlaySoundEffect( cast_on , SFX_SPELL_HOLY_BOLT );
-	ApplyElementalDamage( caster , cast_on , circle , dmg , element );
+	ApplyPlanarDamage( caster , cast_on , circle , dmg , plane );
 	sleep(2);
 	PlayObjectCenteredEffect(cast_on, 0x374a,10, 10);
 	PlaySoundEffect( cast_on , SFX_SPELL_HOLY_BOLT );
-	ApplyElementalDamage( caster , cast_on , circle , dmg , element );
+	ApplyPlanarDamage( caster , cast_on , circle , dmg , plane );
 	
 endprogram

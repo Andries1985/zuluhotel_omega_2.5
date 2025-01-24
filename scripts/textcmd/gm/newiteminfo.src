@@ -1866,7 +1866,7 @@ function ChangeFromSkillList( who , item )
 	
 	SendSysmessage( who , "Select a skill." );
 	var res := SendDialogGump( who , layout2 , data2 );
-	print( res[0] );
+	//print( res[0] );
 	if( !res[0] )
 		SendSysmessage( who , "Canceled" );
 		return;

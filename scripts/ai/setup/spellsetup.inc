@@ -1,5 +1,10 @@
-// include "include/starteqp";
+use npc;
+
+include "include/starteqp";
 include ":spawnpoint:customnpc";
+include "include/random";
+include "include/randname";
+
 set_critical(0);
 var speech;
 var master;
