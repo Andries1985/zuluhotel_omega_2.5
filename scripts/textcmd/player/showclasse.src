@@ -362,6 +362,43 @@ program show_classe( who )
 					SetGlobalProperty("6bs", who.name);
 					endif
 				endif
+
+				if (!GetGlobalProperty("1ma"))
+					if(level == 1 and classe == CLASSEID_MYSTIC_ARCHER)
+					Broadcast( who.name + " is the first to reach level 1 Mystic Archer!" , FONT_BOLD, 1176);
+					SetGlobalProperty("1ma", who.name);
+					endif
+				endif
+				if (!GetGlobalProperty("2ma"))
+					if(level == 2 and classe == CLASSEID_MYSTIC_ARCHER)
+					Broadcast( who.name + " is the first to reach level 2 Mystic Archer!" , FONT_BOLD, 1176);
+					SetGlobalProperty("2ma", who.name);
+					endif
+				endif
+				if (!GetGlobalProperty("3ma"))
+					if(level == 3 and classe == CLASSEID_MYSTIC_ARCHER)
+					Broadcast( who.name + " is the first to reach level 3 Mystic Archer!" , FONT_BOLD, 1176);
+					SetGlobalProperty("3ma", who.name);
+					endif
+				endif
+				if (!GetGlobalProperty("4ma"))
+					if(level == 4 and classe == CLASSEID_MYSTIC_ARCHER)
+					Broadcast( who.name + " is the first to reach level 4 Mystic Archer!" , FONT_BOLD, 1176);
+					SetGlobalProperty("4ma", who.name);
+					endif
+				endif
+				if (!GetGlobalProperty("5ma"))
+					if(level == 5 and classe == CLASSEID_MYSTIC_ARCHER)
+					Broadcast( who.name + " is the first to reach level 5 Mystic Archer!" , FONT_BOLD, 1176);
+					SetGlobalProperty("5ma", who.name);
+					endif
+				endif
+				if (!GetGlobalProperty("6ma"))
+					if(level == 6 and classe == CLASSEID_MYSTIC_ARCHER)
+					Broadcast( who.name + " is the first to reach level 6 Mystic Archer!" , FONT_BOLD, 1176);
+					SetGlobalProperty("6ma", who.name);
+					endif
+				endif
 			endif
 
 			return;

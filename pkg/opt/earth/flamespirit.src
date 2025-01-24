@@ -16,7 +16,14 @@ program cast_flame_spirit( parms )
 		if (parms[4])
 			circle := parms[4];
 		endif
-
+		var wheretocast := Random(4);
+		case (wheretocast)
+				0: 	SummonCreature( caster , "fireelementallord" , cast_loc );
+				1: 	SummonCreature( caster , "fireelementallord" , caster );
+				2: 	SummonCreature( caster , "fireelementallord" , cast_loc );
+				3: 	SummonCreature( caster , "fireelementallord" , caster );
+		endcase
+		EraseObjProperty( caster , "#Casting" );
 	else
 		caster := parms;
         if(IsInSafeArea(caster))
@@ -34,9 +41,9 @@ program cast_flame_spirit( parms )
 			EraseObjProperty( caster , "#Casting" );
 			return;
 		endif
-	endif
 
-	EraseObjProperty( caster , "#Casting" );
-        SummonCreature( caster , "fireelementallord" , cast_loc );
+		EraseObjProperty( caster , "#Casting" );
+    	SummonCreature( caster , "fireelementalsummons" , cast_loc );
+	endif
 
 endprogram

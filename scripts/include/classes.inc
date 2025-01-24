@@ -5,16 +5,17 @@ include "include/itemutil";
 include "include/client";
 include ":staff:include/staff";
 
-const CLASSE_BONUS        	:= 1.5;
-const CLASSEID_BARD       	:= "IsBard";
-const CLASSEID_BLADESINGER 	:= "IsBladesinger";
-const CLASSEID_CRAFTER    	:= "IsCrafter";
-const CLASSEID_MAGE       	:= "IsMage";
-const CLASSEID_PALADIN     	:= "IsPaladin";
-const CLASSEID_RANGER     	:= "IsRanger";
-const CLASSEID_THIEF      	:= "IsThief";
-const CLASSEID_WARRIOR    	:= "IsWarrior";
-const CLASSEID_POWERPLAYER	:= "IsPowerplayer";
+const CLASSE_BONUS        		:= 1.5;
+const CLASSEID_BARD       		:= "IsBard";
+const CLASSEID_BLADESINGER 		:= "IsBladesinger";
+const CLASSEID_CRAFTER    		:= "IsCrafter";
+const CLASSEID_MAGE       		:= "IsMage";
+const CLASSEID_MYSTIC_ARCHER	:= "IsMysticArcher";
+const CLASSEID_PALADIN     		:= "IsPaladin";
+const CLASSEID_RANGER     		:= "IsRanger";
+const CLASSEID_THIEF      		:= "IsThief";
+const CLASSEID_WARRIOR    		:= "IsWarrior";
+const CLASSEID_POWERPLAYER		:= "IsPowerplayer";
 
 const EACH_MUST_REPRESENT := 7.5;
 const REPRESENT_LEVEL_MOD := 1.0;
@@ -70,7 +71,9 @@ function ByPassForMages( classeid )
 	var restricted_types := {};
 
 	case( classeid )
-		CLASSEID_MAGE:		fract_array.append( GetLeatherArmorGraphics() );
+		CLASSEID_MAGE:		
+					fract_array.append( GetLeatherArmorGraphics() );
+					fract_array.append( GetStuddedLeatherArmorGraphics() );
 					break;
 
 	endcase
@@ -108,6 +111,10 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 					fract_array.append( GetBoneArmorGraphics() );
 					fract_array.append( GetRingmailArmorGraphics() );
 					fract_array.append( GetChainmailArmorGraphics() );
+					fract_array.append( GetPlatemailArmorGraphics() );
+					fract_array.append( GetShieldGraphics() );
+					break;
+		CLASSEID_MYSTIC_ARCHER:		
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
 					break;
@@ -163,6 +170,7 @@ function GetClasseIds()
 			CLASSEID_BLADESINGER,
 			CLASSEID_CRAFTER,
 			CLASSEID_MAGE,
+			CLASSEID_MYSTIC_ARCHER,
 			CLASSEID_PALADIN,
 			CLASSEID_RANGER,
 			CLASSEID_THIEF,
@@ -178,9 +186,10 @@ function GetClasseName( classeid )
         case( classeid )
 
                 CLASSEID_BARD:			return( "Bard" );
-				CLASSEID_BLADESINGER:	return( "IsBladesinger" );
+				CLASSEID_BLADESINGER:	return( "Bladesinger" );
                 CLASSEID_CRAFTER:		return( "Crafter" );
                 CLASSEID_MAGE:			return( "Mage" );
+				CLASSEID_MYSTIC_ARCHER:	return( "Mystic Archer" );
 				CLASSEID_PALADIN:		return( "Paladin" );
                 CLASSEID_RANGER:		return( "Ranger" );
                 CLASSEID_THIEF:			return( "Thief" );
@@ -234,6 +243,16 @@ function GetClasseSkills( classeid )
 						 SKILLID_MAGERY		,
 						 SKILLID_MEDITATION	,
 						 SKILLID_MAGICRESISTANCE,
+						 SKILLID_SPIRITSPEAK	};
+
+		CLASSEID_MYSTIC_ARCHER:			
+				return { SKILLID_ARCHERY	,
+						 SKILLID_COOKING	,
+						 SKILLID_EVALINT	,
+						 SKILLID_FISHING	,
+						 SKILLID_TRACKING	,
+						 SKILLID_MAGERY		,
+						 SKILLID_MEDITATION	,
 						 SKILLID_SPIRITSPEAK	};
 
 		CLASSEID_PALADIN:
@@ -365,6 +384,7 @@ function GetMaxCircleForClasse( classeid )
 		CLASSEID_BLADESINGER:	return 1;
 		CLASSEID_CRAFTER:		return 1;
 		CLASSEID_MAGE:			return 0;
+		CLASSEID_MYSTIC_ARCHER:	return 0;
 		CLASSEID_PALADIN:		return 0;
 		CLASSEID_RANGER:		return 5;
 		CLASSEID_THIEF:			return 5;
@@ -415,8 +435,6 @@ function HaveInvalidSkillEnchantmentForClasse( item , classeid )
 
 	if( classeid == CLASSEID_RANGER && skillnum == SKILLID_FORENSICS )
 		ret := 0;
-	elseif ( classeid == CLASSEID_PALADIN && skillnum == SKILLID_FORENSICS )
-		ret := 0;
 	endif
 
 	return ret;
@@ -433,6 +451,7 @@ function HaveRestrictedModEnchantmentForClasse( who , item , classeid )
 		CLASSEID_BLADESINGER:	break;
 		CLASSEID_CRAFTER:		break;
 		CLASSEID_MAGE:			break;
+		CLASSEID_MYSTIC_ARCHER:	break;
 		CLASSEID_PALADIN:		break;
 		CLASSEID_RANGER:		break;
 		CLASSEID_THIEF:			break;
@@ -470,7 +489,8 @@ function HaveStatAffinity( who , stat )
 		"dex":	classeids := {  
 					CLASSEID_BARD,
 					CLASSEID_BLADESINGER,
-					CLASSEID_THIEF };	
+					CLASSEID_THIEF,
+					CLASSEID_MYSTIC_ARCHER };	
 					break;
 
 		"int":	classeids := {  
@@ -504,7 +524,8 @@ function HaveStatDifficulty( who , stat )
 			classeids := {
 				CLASSEID_BARD,
 				CLASSEID_BLADESINGER,
-				CLASSEID_MAGE };
+				CLASSEID_MAGE,
+				CLASSEID_MYSTIC_ARCHER };
 				break;
 		"dex":
 			classeids := {
@@ -556,6 +577,10 @@ endfunction
 
 function IsMage( who )
 	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_MAGE ) );
+endfunction
+
+function IsMysticArcher( who )
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_MYSTIC_ARCHER ) );
 endfunction
 
 function IsPaladin( who )
@@ -672,6 +697,16 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MAGE ) )
 			ret := 1;
 		endif
+	elseif( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER ) )
+		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_MYSTIC_ARCHER ) )
+			ret := 1;
+		elseif( GetObjProperty( item , "str" ) )
+			ret := 1;
+		elseif( GetObjProperty( item , "ArBonus" ) )
+			ret := 1;
+		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MYSTIC_ARCHER ) )
+			ret := 1;
+		endif
 	elseif( GetObjProperty( who , CLASSEID_PALADIN ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_PALADIN ) )
 			ret := 1;
@@ -739,7 +774,7 @@ function ClassWeapons(classString)
 		"IsBard": return {0x0e81, 0x13B2, 0x13fd, 0x0f4f, 0x27a5, 0x26c2, 0x26c3, 0x27a7};
 		//crossbow, bow, heavy crossbow, Yumi, Sai, Composite Bow, Repeating Crossbow, Kryss, Short Spear, Spear, Warfork, Dagger, Skinning Knife, Pitchfork
 		"IsThief": return {0x0f4f, 0x13B2, 0x13fd, 0x27a5, 0x27af, 0x26c2, 0x26c3, 0x1401, 0x1402, 0x0f63, 0x1404, 0x0f51, 0x0ec4, 0x0e87};
-		//Black Staff, Gnarled Staff, QuarterStaff, lajatang
+		//Black Staff, Gnarled Staff, QuarterStaff, Lajatang
 		"IsMage": return {0x0df0, 0x13f9, 0x0e8a, 0x27a7};
 		default:
 	endcase

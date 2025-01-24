@@ -48,11 +48,7 @@ program cast_natures_touch( parms )
 		cast_on := Reflected( caster , cast_on , circle );
 	endif
 
-		PlayObjectCenteredEffect(cast_on, 
-					 SPELL_EFFECT_ID,
-					 SPELL_EFFECT_SPEED,
-					 SPELL_EFFECT_LOOP);
-	
+	PlayObjectCenteredEffect(cast_on, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 	PlaySoundEffect( cast_on , SFX_SPELL_NATURES_TOUCH );
 
 	var healed := ModifyWithMagicEfficiency( caster , RandomDiceStr( "6d8+30" ) );

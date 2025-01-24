@@ -49,8 +49,10 @@ program use_magicfish( who, fish )
 	var buff_delay := DELAY_BETWEEN_FISH;
 	var teleport_delay := DELAY_BETWEEN_FISH;
 
-	if(GetObjProperty(who, CLASSEID_RANGER))
+	if( GetObjProperty(who, CLASSEID_RANGER) )
 		teleport_delay := 5;
+	elseif( GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ) )
+		teleport_delay := 10;
 	endif
 
 	if(GetObjProperty(who, CLASSEID_RANGER))
@@ -86,7 +88,7 @@ program use_magicfish( who, fish )
         
 		case (spellnum)		// handle the different magical effects
 			4:	// heal
-				if( GetObjProperty( who, CLASSEID_RANGER ) )
+				if( GetObjProperty( who, CLASSEID_RANGER ) || GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ))
 					var mod_amount := CInt(GetFishHeal( who, miscprop1 ) );
 					HealDamage( who, mod_amount);
 					SendSysMessage(who, "You've healed yourself for "+mod_amount+" damage.");
@@ -105,7 +107,7 @@ program use_magicfish( who, fish )
 				SendSysMessage(who, "You are now able to see in the darkness for "+miscprop2/60+" minutes.");
 
 			9:	// agility
-				if( GetObjProperty( who, CLASSEID_RANGER ) )
+				if( GetObjProperty( who, CLASSEID_RANGER ) || GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ))
 					var mod_amount := CInt(GetModAmountFish( who, miscprop1 ) );
 					var duration := CInt(GetModDurationFish( who, miscprop2 ) );
 					
@@ -123,7 +125,7 @@ program use_magicfish( who, fish )
 				endif
 			
 			10:	// cunning
-				if( GetObjProperty( who, CLASSEID_RANGER ) )
+				if( GetObjProperty( who, CLASSEID_RANGER ) || GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ))
 					var mod_amount := CInt(GetModAmountFish( who, miscprop1 ) );
 					var duration := CInt(GetModDurationFish( who, miscprop2 ) );
 					
@@ -149,7 +151,7 @@ program use_magicfish( who, fish )
 				endif
 
 			16:	// strength
-				if( GetObjProperty( who, CLASSEID_RANGER ) )
+				if( GetObjProperty( who, CLASSEID_RANGER ) || GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ))
 					var mod_amount := CInt(GetModAmountFish( who, miscprop1 ) );
 					var duration := CInt(GetModDurationFish( who, miscprop2 ) );
 					
@@ -166,7 +168,7 @@ program use_magicfish( who, fish )
 					endif
 				endif
 			17:	// bless
-				if( GetObjProperty( who, CLASSEID_RANGER ) )
+				if( GetObjProperty( who, CLASSEID_RANGER ) || GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ))
 					var mod_amount := CInt(GetModAmountFish( who, miscprop1 ) );
 					var duration := CInt(GetModDurationFish( who, miscprop2 ) );
 					
@@ -237,7 +239,13 @@ function GetModAmountFish( who, miscprop1 )
 
 	var fishing := GetEffectiveSkill( who , SKILLID_FISHING );
 	var amount := miscprop1;
-	var level := CInt( GetObjProperty( who , CLASSEID_RANGER ) );
+	var level := 0;
+	if( GetObjProperty( who, CLASSEID_RANGER ) )
+		level := CInt( GetObjProperty( who , CLASSEID_RANGER ) );
+	elseif( GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ) )
+		level := CInt( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER ) );
+	endif
+	
 	amount := ( (level * amount) + Random(Cint( fishing / 10 )) );
 
 	if( !amount )
@@ -255,11 +263,17 @@ endfunction
 function GetModDurationFish( who, miscprop2 )
 
 	var duration := miscprop2;
-	var level := CInt( GetObjProperty( who , CLASSEID_RANGER ) );
+	var level := 0;
+	if( GetObjProperty( who, CLASSEID_RANGER ) )
+		level := CInt( GetObjProperty( who , CLASSEID_RANGER ) );
+	elseif( GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ) )
+		level := CInt( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER ) );
+	endif
+
 	duration := level * duration;
 
 	if( !duration )
-		duration := 1;
+		duration := 2;
 	endif
 
 	return Cint(duration);
@@ -275,7 +289,12 @@ function GetFishHeal( who, miscprop1 )
 		healed := healed + Cint( healed * bonus * 0.2 );
 	endif
 	
-	var level := CInt( GetObjProperty( who , CLASSEID_RANGER ) );
+	var level := 0;
+	if( GetObjProperty( who, CLASSEID_RANGER ) )
+		level := CInt( GetObjProperty( who , CLASSEID_RANGER ) );
+	elseif( GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ) )
+		level := CInt( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER ) );
+	endif
 
 	healed := Trunc( ((level * 0.4) * healed), 0 );
 
