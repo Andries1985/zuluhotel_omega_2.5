@@ -16,6 +16,7 @@ const SPELL_EFFECT_LOOP		:= LOOP_SPELL_SHAPESHIFT;
 program shapeshift( caster )
 
 	var casterismage := GetObjProperty( caster, CLASSEID_MAGE );
+	var casterispp := GetObjProperty( caster, CLASSEID_POWERPLAYER);
 	var circle := GetCircle( SPELLID_SHAPESHIFT );
 	
 	if( TryToCast( caster, SPELLID_SHAPESHIFT ) != SUCCESS )
@@ -57,15 +58,16 @@ program shapeshift( caster )
 		endforeach
 		SetObjProperty( caster , "#mods" , newmods );
         	return;
-	endif */
+	endif 
 
 	if( !CanMod(caster, "poly") )
 		EraseObjProperty( caster , "#Casting" );
 		SendSysMessage( caster , "You're already polymorphed in something." );
 		return;
 	endif
+	*/
 
-	if( !CanMod(caster, "all") || !CanMod(caster, "ebless") )
+	if( (!CanMod(caster, "all") || !CanMod(caster, "ebless") || !CanMod(caster, "poly")) && !casterispp )
 		EraseObjProperty( caster , "#Casting" );
 		SendSysMessage( caster , "You're already blessed." );
 		return;
@@ -121,7 +123,8 @@ program shapeshift( caster )
 	
 	EraseObjProperty( caster , "#Casting" );
 
-	var mod_amount := Cint( GetModAmount( caster ) * 2 );
+	var mod_amount := Cint( GetModAmount( caster ) * 3 );
+
 	if(casterismage)
 		var mod_amount := Cint( GetModAmount( caster ) * 3 );
 	endif
