@@ -13,6 +13,7 @@ program track(who)
 unloadconfigfile(":tracking:tracking");
 
 	var ranger := GetObjProperty( who , CLASSEID_RANGER );
+	var mysticarcher := GetObjProperty( who , CLASSEID_MYSTIC_ARCHER );
 	var points := POINT_VALUE;
 
 	if( !checkskill(who, SKILLID_TRACKING, -1, points)) 
@@ -25,9 +26,11 @@ unloadconfigfile(":tracking:tracking");
 	var range := Cint(GetEffectiveSkill(who, SKILLID_TRACKING)/3);
 	if( ranger )
 		range := Cint( range * ClasseBonusByLevel( ranger ) );
+	elseif( mysticarcher )
+		range := Cint( range * ClasseBonusByLevel( mysticarcher ) );
 	endif
 
-	var nearby := ListMobilesNearLocation (who.x,who.y, who.z, range);
+	var nearby := ListMobilesNearLocation (who.x,who.y, who.z, range, who.realm);
 	if(len(nearby) == 1)
 		SendSysmessage (who, "There don't seem to be any creatures nearby");
 		return;

@@ -15,8 +15,9 @@ const SPELL_EFFECT_LOOP		:= LOOP_SPELL_SHAPESHIFT;
 
 program shapeshift( caster )
 
-	var casterismage := GetObjProperty( caster, CLASSEID_MAGE );
+  var casterismage := GetObjProperty( caster, CLASSEID_MAGE );
 	var casterispp := GetObjProperty( caster, CLASSEID_POWERPLAYER);
+  var casterismysticarcher := GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER);
 	var circle := GetCircle( SPELLID_SHAPESHIFT );
 	
 	if( TryToCast( caster, SPELLID_SHAPESHIFT ) != SUCCESS )
@@ -62,7 +63,7 @@ program shapeshift( caster )
 
 	*/
 
-	if( (!CanMod(caster, "all") || !CanMod(caster, "ebless") || !CanMod(caster, "poly")) && !casterispp )
+	if( (!CanMod(caster, "all") || !CanMod(caster, "ebless") || !CanMod(caster, "poly")) && (!casterispp || !casterismysticarcher  )
 		EraseObjProperty( caster , "#Casting" );
 		SendSysMessage( caster , "You're already blessed." );
 		return;

@@ -282,18 +282,20 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		//Skill Bonuses
 		//Jan 2025 Changes
 		//Upped Ranger, Bard damage to 0.005 from 0.002
-		if( GetObjProperty( attacker, CLASSEID_RANGER ) || GetObjProperty( attacker, CLASSEID_BARD ))
+		if( GetObjProperty( attacker, CLASSEID_RANGER ) || GetObjProperty( attacker, CLASSEID_BARD ) || GetObjProperty( attacker, CLASSEID_MYSTIC_ARCHER ))
 			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_ARCHERY) * 0.005;
 		elseif( GetObjProperty( attacker, CLASSEID_THIEF ))
 			basedamage *= 1 + avg_skill * 0.003;
 		elseif(GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
 			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_TACTICS) * 0.002;
+		elseif(GetObjProperty( attacker, CLASSEID_MYSTIC_ARCHER))
+			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_EVALINT) * 0.002;
 		endif
 		if(DEBUG_MODE)
 			SendSysMessage( attacker, "Skill Bonus: "+basedamage, FONT_NORMAL, 2569 );
 		endif
 		// Ranger ranged class bonus from lvl 2.
-		if( GetObjProperty( attacker, CLASSEID_RANGER ) )
+		if( GetObjProperty( attacker, CLASSEID_RANGER ) || GetObjProperty( attacker, CLASSEID_MYSTIC_ARCHER ))
 			level := max(0, level-3);
 			basedamage *= ClasseSmallBonusByLevel( level );
 			if(DEBUG_MODE)
