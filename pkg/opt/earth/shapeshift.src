@@ -62,8 +62,9 @@ program shapeshift( caster )
 	endif 
 
 	*/
-
-	if( (!CanMod(caster, "all") || !CanMod(caster, "ebless") || !CanMod(caster, "poly")) && (!casterispp || !casterismysticarcher) )
+  if(casterismysticarcher)
+    
+	elseif( (!CanMod(caster, "all") || !CanMod(caster, "ebless") || !CanMod(caster, "poly")) && (!casterispp) )
 		EraseObjProperty( caster , "#Casting" );
 		SendSysMessage( caster , "You're already blessed." );
 		return;
