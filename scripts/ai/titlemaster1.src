@@ -218,7 +218,6 @@ function FillInArrays( who , byref layout , byref data )
 
 	elseif( GetObjProperty( who , CLASSEID_BLADESINGER ) )
 		classe_title := leveltitles[ GetObjProperty( who , CLASSEID_BLADESINGER )+3 ] + " " + skilltitles[ 56 ];
-	endif
 
 	elseif( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER ) )
 		classe_title := leveltitles[ GetObjProperty( who , CLASSEID_MYSTIC_ARCHER )+3 ] + " " + skilltitles[ 57 ];
