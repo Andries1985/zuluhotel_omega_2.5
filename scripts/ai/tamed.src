@@ -549,7 +549,7 @@ function PetCount()
 		var mob_template := mob.npctemplate;
 		if( (mob.script == "tamed") and ( GetObjProperty( mob, "master" ) == masterserial ) )
 			if ( GetObjProperty( mob , "EBSummons" ) )
-				pets := pets + 4;
+				magic_pets := magic_pets + 4;
 			elseif( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) )
 				magic_pets := magic_pets + 1;
 			else
