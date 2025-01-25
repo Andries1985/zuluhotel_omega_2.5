@@ -60,7 +60,7 @@ program dispel ( parms, spell_id )
 
 	var magery := ModifyWithMagicEfficiency( caster , GetEffectiveSkill(caster, SKILLID_MAGERY) );
 	if( !fromhit )
-		Print($"Checking Immunities");
+		//Print($"Checking Immunities");
 		detach();
 		cast_on := Reflected( caster , cast_on , circle );
 	endif
