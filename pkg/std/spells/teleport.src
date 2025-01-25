@@ -34,9 +34,12 @@ program cast_teleport( parms, spell_id )
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];
 			spell_id := parms[2];
+			castfromfish := parms[3];
 		endif
 
-		if (parms[3] != "fish")
+		Print(castfromfish + " " + parms[3]);
+
+		if (!castfromfish)
 			if (IsMysticArcher(caster))
 				SendSysMessage(caster, "Mystic Archers may only use fish to teleport!");
 				EraseObjProperty(caster, "#Casting");
