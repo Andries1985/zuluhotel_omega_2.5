@@ -595,6 +595,7 @@ function SummonsShiftingEarth(caster, cast_on)
             return;
     endif
 	
+	say("Esmagamento Con Pedra");
 	PlayObjectCenteredEffect(cast_on, FX_SPELL_SHIFTING_EARTH, SPEED_SPELL_SHIFTING_EARTH, LOOP_SPELL_SHIFTING_EARTH);
 	PlaySoundEffect( cast_on, SFX_SPELL_SHIFTING_EARTH );
 	
@@ -651,10 +652,11 @@ function SummonsGustOfAir(caster, cast_on)
             return;
     endif
 	
+	say("Gust Do Ar");
 	PlayObjectCenteredEffect(cast_on, FX_SPELL_GUST_OF_AIR, SPEED_SPELL_GUST_OF_AIR, LOOP_SPELL_GUST_OF_AIR);
 	PlaySoundEffect( cast_on, SFX_SPELL_GUST_OF_AIR1 );
 	PlaySoundEffect( cast_on, SFX_SPELL_GUST_OF_AIR2 );
-	
+		
 	if(cast_on.isa(POLCLASS_NPC))
 		var magery := GeteffectiveSkill(caster, SKILLID_MAGERY);
 		var dmg := CalcSpellDamage( caster, cast_on, circle );
@@ -691,6 +693,7 @@ function SummonsIceStrike(caster, cast_on)
             return;
     endif
 	
+	say("Geada Com Inverno");
 	PlayObjectCenteredEffect(cast_on, FX_SPELL_ICE_STRIKE, SPEED_SPELL_ICE_STRIKE, LOOP_SPELL_ICE_STRIKE);
 	PlaySoundEffect( cast_on, SFX_SPELL_ICE_STRIKE1 );
 	PlaySoundEffect( cast_on, SFX_SPELL_ICE_STRIKE2 );
@@ -731,6 +734,8 @@ function SummonsRisingFire(caster, cast_on)
 			Print("Cant cast in safe area");
             return;
     endif
+
+	say("Batida Do Fogo");
 
 	if(cast_on.isa(POLCLASS_NPC))
 		var circ := circle;
@@ -812,6 +817,8 @@ function SummonsSpectreTouch(caster, cast_on)
 			Print("Cant cast in safe area");
             return;
     endif
+
+	say("Enervare");
 
 	if(cast_on.isa(POLCLASS_NPC))
 		var circ := circle;
