@@ -22,7 +22,9 @@ program summon_creature( parms )
 
 	foreach mob in mobs
 		if( (mob.script == "tamed") and ( GetObjProperty( mob, "master" ) == masterserial ) )
-			if( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) )
+			if ( GetObjProperty( mob , "EBSummons" ) )
+				magic_pets := magic_pets + 4;
+			elseif( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) )
 				magic_pets := magic_pets + 1;
 			endif
 		endif

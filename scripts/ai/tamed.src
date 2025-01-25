@@ -548,13 +548,13 @@ function PetCount()
 	foreach mob in ListMobilesNearLocation( me.x, me.y, me.z, 8, me.realm );
 		var mob_template := mob.npctemplate;
 		if( (mob.script == "tamed") and ( GetObjProperty( mob, "master" ) == masterserial ) )
-			if( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) )
+			if ( GetObjProperty( mob , "EBSummons" ) )
+				pets := pets + 4;
+			elseif( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) )
 				magic_pets := magic_pets + 1;
 			else
 				if ( GetObjProperty( mob , "Boss" ) )
 					pets := pets + 5;
-				elseif ( GetObjProperty( mob , "EBSummons" ) )
-					pets := pets + 4;
 				else
 					pets := pets + 1;
 				endif
