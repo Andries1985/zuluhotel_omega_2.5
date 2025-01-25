@@ -540,7 +540,7 @@ function PetCount()
 		control_skill	:= ModifyWithMagicEfficiency( master , GetEffectiveSkill( master , SKILLID_MUSICIANSHIP ) );
 	endif
 
-	var magic_maxx:= Min(Cint( control_skill / 30 ),5);
+	var magic_maxx:= Min(Cint( control_skill / 30 ),5);	
 	If(GetObjProperty( master , CLASSEID_MYSTIC_ARCHER ))
 		magic_maxx := 9;
 	endif
