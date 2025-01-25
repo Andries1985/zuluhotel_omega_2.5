@@ -536,14 +536,15 @@ function PetCount()
 		control_skill	:= ModifyWithMagicEfficiency( master , GetEffectiveSkill( master , SKILLID_MAGERY ) );
 	elseif (GetObjProperty( master , CLASSEID_BARD ))
 		control_skill	:= ModifyWithBardicEfficiency( master , GetEffectiveSkill( master , SKILLID_MUSICIANSHIP ) );
-	elseif (GetObjProperty( master , CLASSEID_MYSTIC_ARCHER ))
-		control_skill	:= ModifyWithMagicEfficiency( master , GetEffectiveSkill( master , SKILLID_MAGERY ) );
-		Print("Control Skill: " + control_skill);
 	else
-		control_skill	:= ModifyWithBardicEfficiency( master , GetEffectiveSkill( master , SKILLID_MUSICIANSHIP ) );
+		control_skill	:= ModifyWithMagicEfficiency( master , GetEffectiveSkill( master , SKILLID_MUSICIANSHIP ) );
 	endif
 
 	var magic_maxx:= Min(Cint( control_skill / 30 ),5);
+	If(GetObjProperty( master , CLASSEID_MYSTIC_ARCHER ))
+		magic_maxx := 9;
+	endif
+	Print("Magic Maxx: " + magic_maxx);
 			
 	foreach mob in ListMobilesNearLocation( me.x, me.y, me.z, 8, me.realm );
 		var mob_template := mob.npctemplate;
@@ -561,6 +562,7 @@ function PetCount()
 			endif
 		endif
 	endforeach
+	Print("Magic Pets: " + magic_pets);
 	if( imfrommagic )
 		if( (magic_pets > magic_maxx) && !master.cmdlevel)
 			Release();
