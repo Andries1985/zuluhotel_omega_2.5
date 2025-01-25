@@ -62,9 +62,10 @@ program shapeshift( caster )
 	endif 
 
 	*/
-  if(casterismysticarcher)
-    
-	elseif( (!CanMod(caster, "all") || !CanMod(caster, "ebless") || !CanMod(caster, "poly")) && (!casterispp) )
+  //if(casterismysticarcher)
+   
+	//else
+  if( (!CanMod(caster, "all") || !CanMod(caster, "ebless") || !CanMod(caster, "poly")) && (!casterispp) )
 		EraseObjProperty( caster , "#Casting" );
 		SendSysMessage( caster , "You're already blessed." );
 		return;
@@ -123,7 +124,7 @@ program shapeshift( caster )
   if(casterismage)
     mod_amount := Cint( GetModAmount( caster ) * 3 );
   elseif(casterismysticarcher)
-    mod_amount := Cint( GetModAmount( caster ) * 5 );
+    mod_amount := Cint( GetModAmount( caster ) * 4 );
   else
     mod_amount := Cint( GetModAmount( caster ) * 3 );
   endif
