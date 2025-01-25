@@ -43,8 +43,6 @@ program cast_teleport( parms, spell_id )
 				return 0;
 			endif
 		endif
-			
-		endif
 
 		if (TryToCast( caster, spell_id ) != SUCCESS);
 			EraseObjProperty(caster, "#Casting");
