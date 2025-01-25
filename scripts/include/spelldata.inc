@@ -737,6 +737,8 @@ function ModifyWithMagicEfficiency( who, val )
 
 	if( GetObjProperty( who, CLASSEID_MAGE ) )
 		val := CInt(val * ClasseBonus( who, CLASSEID_MAGE ));
+	elseif( GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ) )
+		val := CInt(val * ClasseBonus( who, CLASSEID_MYSTIC_ARCHER ));
 	elseif( GetObjProperty( who, CLASSEID_WARRIOR ) )
 		val := CInt(val / ClasseBonus( who, CLASSEID_WARRIOR ));
 	endif
@@ -745,6 +747,19 @@ function ModifyWithMagicEfficiency( who, val )
 	if( penalty >= 100 )
 		return 0;
 	endif
+
+	return CInt( val * ( 100 - penalty ) / 100 );
+
+endfunction
+
+
+function ModifyWithBardicEfficiency( who, val )
+
+	if( GetObjProperty( who, CLASSEID_BARD ) )
+		val := CInt(val * ClasseBonus( who, CLASSEID_BARD ));
+	endif
+
+	var penalty := 0;
 
 	return CInt( val * ( 100 - penalty ) / 100 );
 
