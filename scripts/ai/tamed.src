@@ -544,7 +544,7 @@ function PetCount()
 	If(GetObjProperty( master , CLASSEID_MYSTIC_ARCHER ))
 		magic_maxx := 9;
 	endif
-	Print("Magic Maxx: " + magic_maxx);
+	//Print("Magic Maxx: " + magic_maxx);
 			
 	foreach mob in ListMobilesNearLocation( me.x, me.y, me.z, 8, me.realm );
 		var mob_template := mob.npctemplate;
@@ -562,7 +562,7 @@ function PetCount()
 			endif
 		endif
 	endforeach
-	Print("Magic Pets: " + magic_pets);
+	//Print("Magic Pets: " + magic_pets);
 	if( imfrommagic )
 		if( (magic_pets > magic_maxx) && !master.cmdlevel)
 			Release();
