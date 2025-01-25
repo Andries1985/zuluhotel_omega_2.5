@@ -24,14 +24,14 @@ program summon_creature( parms )
 		if( (mob.script == "tamed") and ( GetObjProperty( mob, "master" ) == masterserial ) )
 			if ( GetObjProperty( mob , "EBSummons" ) )
 				magic_pets := magic_pets + 4;
-			elseif( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) )
+			elseif( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) && !GetObjProperty( mob , "EBSummons" ) )
 				magic_pets := magic_pets + 1;
 			endif
 		endif
 	endforeach
 
 	//Max 2 pets with new summons
-	if(magic_pets >= 9)
+	if(magic_pets > 9)
 		SendSysMessage(caster, "Can't summon more creatures.");
 		return;
 	endif	

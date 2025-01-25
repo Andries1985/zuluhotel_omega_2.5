@@ -550,7 +550,7 @@ function PetCount()
 		if( (mob.script == "tamed") and ( GetObjProperty( mob, "master" ) == masterserial ) )
 			if ( GetObjProperty( mob , "EBSummons" ) )
 				magic_pets := magic_pets + 4;
-			elseif( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) )
+			elseif( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) && !GetObjProperty( mob , "EBSummons" ))
 				magic_pets := magic_pets + 1;
 			else
 				if ( GetObjProperty( mob , "Boss" ) )
