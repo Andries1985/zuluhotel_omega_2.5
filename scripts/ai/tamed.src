@@ -553,6 +553,8 @@ function PetCount()
 			else
 				if ( GetObjProperty( mob , "Boss" ) )
 					pets := pets + 5;
+				elseif ( GetObjProperty( mob , "EBSummons" ) )
+					pets := pets + 4;
 				else
 					pets := pets + 1;
 				endif

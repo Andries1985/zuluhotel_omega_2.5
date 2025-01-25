@@ -29,7 +29,7 @@ program summon_creature( parms )
 	endforeach
 
 	//Max 2 pets with new summons
-	if(magic_pets >= 2)
+	if(magic_pets >= 9)
 		SendSysMessage(caster, "Can't summon more creatures.");
 		return;
 	endif	
