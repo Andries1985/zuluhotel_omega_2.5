@@ -13,7 +13,7 @@ program BookOfEarth( who, book )
 	elseif (GetObjProperty(who, CLASSEID_POWERPLAYER))
 	elseif (GetObjProperty(who, CLASSEID_MYSTIC_ARCHER))
 	else
-		SendSysMessage(who,"Only Mages and Powerplayers can use this!");
+		SendSysMessage(who,"Only Mages, Mystic Archers and Powerplayers can use this!");
 		return;
 	endif
 	

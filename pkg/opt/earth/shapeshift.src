@@ -119,10 +119,13 @@ program shapeshift( caster )
   endif
 
   EraseObjProperty( caster , "#Casting" );
-
-  var mod_amount := Cint( GetModAmount( caster ) * 3 );
+  var mod_amount;
   if(casterismage)
-    var mod_amount := Cint( GetModAmount( caster ) * 3 );
+    mod_amount := Cint( GetModAmount( caster ) * 3 );
+  elseif(casterismysticarcher)
+    mod_amount := Cint( GetModAmount( caster ) * 5 );
+  else
+    mod_amount := Cint( GetModAmount( caster ) * 3 );
   endif
 
   var duration := Cint( GetModDuration( caster ) );

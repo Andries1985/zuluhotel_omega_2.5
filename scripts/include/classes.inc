@@ -252,8 +252,8 @@ function GetClasseSkills( classeid )
 						 SKILLID_FISHING	,
 						 SKILLID_TRACKING	,
 						 SKILLID_MAGERY		,
-						 SKILLID_MEDITATION	,
-						 SKILLID_SPIRITSPEAK	};
+						 SKILLID_MAGICRESISTANCE,
+						 SKILLID_MEDITATION	};
 
 		CLASSEID_PALADIN:
 				return { SKILLID_SWORDSMANSHIP	,
@@ -702,8 +702,8 @@ function IsProhibitedByClasse( who , item )
 			ret := 1;
 		elseif( GetObjProperty( item , "str" ) )
 			ret := 1;
-		elseif( GetObjProperty( item , "ArBonus" ) )
-			ret := 1;
+		//elseif( GetObjProperty( item , "ArBonus" ) )
+			//ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MYSTIC_ARCHER ) )
 			ret := 1;
 		endif
