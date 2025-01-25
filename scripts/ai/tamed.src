@@ -534,12 +534,17 @@ function PetCount()
 	var control_skill;
 	if (GetObjProperty( master , CLASSEID_MAGE ))
 		control_skill	:= ModifyWithMagicEfficiency( master , GetEffectiveSkill( master , SKILLID_MAGERY ) );
+	elseif (GetObjProperty( master , CLASSEID_BARD ))
+		control_skill	:= ModifyWithBardicEfficiency( master , GetEffectiveSkill( master , SKILLID_MUSICIANSHIP ) );
+	elseif (GetObjProperty( master , CLASSEID_MYSTIC_ARCHER ))
+		control_skill	:= ModifyWithMagicEfficiency( master , GetEffectiveSkill( master , SKILLID_MAGERY ) );
+		Print("Control Skill: " + control_skill);
 	else
-		control_skill	:= ModifyWithMagicEfficiency( master , GetEffectiveSkill( master , SKILLID_MUSICIANSHIP ) );
+		control_skill	:= ModifyWithBardicEfficiency( master , GetEffectiveSkill( master , SKILLID_MUSICIANSHIP ) );
 	endif
+
 	var magic_maxx:= Min(Cint( control_skill / 30 ),5);
-	
-		
+			
 	foreach mob in ListMobilesNearLocation( me.x, me.y, me.z, 8, me.realm );
 		var mob_template := mob.npctemplate;
 		if( (mob.script == "tamed") and ( GetObjProperty( mob, "master" ) == masterserial ) )
