@@ -55,7 +55,7 @@ program use_magicfish( who, fish )
 		teleport_delay := 10;
 	endif
 
-	if(GetObjProperty(who, CLASSEID_RANGER))
+	if( GetObjProperty(who, CLASSEID_RANGER) || GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ) )
 		buff_delay := 0;
 	endif
 
@@ -188,7 +188,7 @@ program use_magicfish( who, fish )
 						DELAY_BETWEEN_FISH := buff_delay;
 					endif
 				endif
-			22:
+			22: // Teleport
 				var spellid := 22;
 				// Do a pre mana check so we don't try cast if can't
 
@@ -217,7 +217,7 @@ program use_magicfish( who, fish )
 
 				var script := elem.Script;
 
-				Start_Script(":spells:"+script, {who, spellid} );
+				Start_Script(":spells:"+script, {who, spellid, fish} );
 
 				SleepMS(spelldelay);
 				DELAY_BETWEEN_FISH := teleport_delay;

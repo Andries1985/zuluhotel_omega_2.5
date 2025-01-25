@@ -15,6 +15,7 @@ program cast_teleport( parms, spell_id )
 	var BY;
 	var BZ;
 	var fromhit;
+	var castfromfish;
 	
 	if (parms[1] == "#MOB")
 		caster := parms[2];
@@ -33,6 +34,17 @@ program cast_teleport( parms, spell_id )
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];
 			spell_id := parms[2];
+		endif
+
+		if (parms[3])
+			castfromfish := parms[3];
+		endif
+
+		if(!castfromfish)
+			if (IsMysticArcher(caster))
+				SendSysMessage(caster, "Mystic Archers may only use fish to teleport!");
+				return 0;
+			endif
 		endif
 
 		if (TryToCast( caster, spell_id ) != SUCCESS);
