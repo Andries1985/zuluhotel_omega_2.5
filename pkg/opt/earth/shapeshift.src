@@ -124,7 +124,7 @@ program shapeshift( caster )
   if(casterismage)
     mod_amount := Cint( GetModAmount( caster ) * 3 );
   elseif(casterismysticarcher)
-    mod_amount := Cint( GetModAmount( caster ) * 4 );
+    mod_amount := Cint( GetModAmount( caster ) * 3 );
   else
     mod_amount := Cint( GetModAmount( caster ) * 3 );
   endif
