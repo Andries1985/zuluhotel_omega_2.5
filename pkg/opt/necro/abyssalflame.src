@@ -59,14 +59,8 @@ program abyssalflame( parms )
 		EraseObjProperty( caster , "#Casting" );
 		cast_on := Reflected( caster , cast_on , circle );
 	endif
-		PlayMovingEffect(caster, 
-                                 cast_on, 
-                                 SPELL_EFFECT_ID, 
-                                 SPELL_EFFECT_SPEED, 
-                                 SPELL_EFFECT_LOOP, 
-                                 explode := 0);
 	
-	
+	PlayMovingEffect(caster, cast_on, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP, explode := 0);
 	PlaySoundEffect( caster , SFX_SPELL_ABYSSAL_FLAME );
 	
 	var protected := IsProtected( caster , cast_on , circle );
