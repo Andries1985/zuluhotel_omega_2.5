@@ -11,6 +11,7 @@ program cast_summonmammals( parms )
 	var circle := GetCircle( SPELLID_SUMMON_MAMMALS );
 	var caster;
 	var cast_loc;
+	var mysticarcher := IsMysticArcher(parms[2]);
 
 	if (parms[1] == "#MOB")
 		caster := parms[2];
@@ -18,7 +19,7 @@ program cast_summonmammals( parms )
 		if (parms[4])
 			circle := parms[4];
 		endif
-	else
+	elseif ( mysticarcher )
 		caster := parms;
         if(IsInSafeArea(caster))
             SendSysMessage(caster, "This spell can not be cast here.");
@@ -38,16 +39,6 @@ program cast_summonmammals( parms )
 
 		EraseObjProperty( caster , "#Casting" );
 		SummonCreature( caster , "mammalelementalsummons" , cast_loc );
-	endif
-
-endprogram
-
-
-
-
-//Old Mammals, must re-enable when mystic archer is made
-		
-/*
 	else
 		caster := parms;
 		if(IsInSafeArea(caster))
@@ -110,4 +101,4 @@ endprogram
 	endwhile
 
 endprogram
-*/
+
