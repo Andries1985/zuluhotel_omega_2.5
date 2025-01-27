@@ -47,7 +47,7 @@ program cast_earth_blessing( parms )
 	elseif(casterismysticarcher)
 		mod_amount := Cint( GetModAmount( caster ) * 4.25 );
 	elseif(casterispp)
-		mod_amount := Cint( GetModAmount( caster ) * 3 );
+		mod_amount := Cint( GetModAmount( caster ) * 2 );
 	else
 		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	endif

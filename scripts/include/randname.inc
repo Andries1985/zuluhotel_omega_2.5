@@ -17,6 +17,7 @@ function RandomName( me )
 	    OBJ_BIRD:		newname := AssignName( me , BIRD_IDX );
 	    OBJ_DAEMON:		newname := AssignName( me , DAEMON_IDX );
 	    OBJ_DAEMON_SWORD:	newname := AssignName( me , DAEMON_IDX );
+		OBJ_DAEMON_FALLEN:	newname := AssignName( me, DAEMON_IDX);
 	    OBJ_DRAGON_RED:	newname := AssignName( me , DRAGON_IDX );
 	    OBJ_DRAGON_GREY: 	newname := AssignName( me , DRAGON_IDX );
 	    OBJ_MALE: 		newname := AssignName( me , MALE_IDX );
