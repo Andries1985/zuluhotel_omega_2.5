@@ -63,13 +63,13 @@ program cast_CUNNING( parms )
 	var duration := GetModDuration( caster );
 	if(GetObjProperty( caster, "IsPaladin") )
 		mod_amount := Cint( GetModAmount( caster ) * 5 );
-		Print("Paladin Mod Amount: "+mod_amount);
+		//Print("Paladin Mod Amount: "+mod_amount);
 	elseif(GetObjProperty( caster, "IsMage") )
 		mod_amount := Cint( GetModAmount( caster ) );
-		Print("Mage Mod Amount: "+mod_amount);
+		//Print("Mage Mod Amount: "+mod_amount);
 	else
 		mod_amount := Cint( GetModAmount( caster ) * 3 );
-		Print("Normal Mod Amount: "+mod_amount);
+		//Print("Normal Mod Amount: "+mod_amount);
 	endif
 
 	if (CanMod(caster, "dex"))

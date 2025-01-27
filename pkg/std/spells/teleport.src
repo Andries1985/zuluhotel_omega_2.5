@@ -37,8 +37,6 @@ program cast_teleport( parms, spell_id )
 			castfromfish := parms[3];
 		endif
 
-		Print(castfromfish + " " + parms[3]);
-
 		if (!castfromfish)
 			if (IsMysticArcher(caster))
 				SendSysMessage(caster, "Mystic Archers may only use fish to teleport!");

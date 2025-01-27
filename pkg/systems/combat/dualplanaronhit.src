@@ -1,0 +1,74 @@
+//////////////////////////////////////////////////////////////////////////////////////////
+//											
+//	trielementalscript :								
+//											
+//	Make the special weapon to ramdomly cast a lightning on the defender.		
+//	The % of chance that lightning will be cast is included in the itemdesc.	
+//	The lightning follow the normal spell damages and use the wielder magery	
+//	and eval int to determine it.																				
+//											
+//////////////////////////////////////////////////////////////////////////////////////////
+use uo;
+
+include "include/spelldata";
+include "include/damages";
+include "include/random";
+
+program dualplanaronhit( parms )
+
+	var attacker 	 := parms[1];
+	var defender 	 := parms[2];
+	var weapon 	 := parms[3];
+	var armor 	 := parms[4];
+	var basedamage := parms[5];
+	var rawdamage	 := parms[6];
+	
+	var chance := GetObjProperty( armor , "ChanceOfEffect" );
+	if(RandomDiceStr("1d100") <= chance)
+
+		var targ;
+		if( GetObjProperty( armor , "Cursed" ) )
+			targ := defender;
+		else
+			targ := attacker;
+		endif
+
+		var spelldmg := (CalcSpellDamage( attacker, targ , 3 )*0.5);
+		spelldmg := Resisted( attacker , targ , 9 , spelldmg );
+
+		PlayMovingEffect( attacker, targ, FX_SPELL_HOLY_BOLT, SPEED_SPELL_HOLY_BOLT, LOOP_SPELL_HOLY_BOLT );
+		PlaySoundEffect( attacker, SFX_SPELL_HOLY_BOLT );
+		ApplyPlanarDamage( targ, defender, 1, spelldmg, DMGID_HOLY );
+		Sleepms( 250 );
+
+		PlayMovingEffect( attacker, targ, FX_SPELL_ABYSSAL_FLAME, SPEED_SPELL_ABYSSAL_FLAME, LOOP_SPELL_ABYSSAL_FLAME );
+		PlaySoundEffect( targ, SFX_SPELL_ABYSSAL_FLAME );
+		ApplyPlanarDamage( targ, defender, 1, spelldmg, DMGID_NECRO );
+		Sleepms( 250 );
+
+		PlayMovingEffect( attacker, targ, FX_SPELL_DIVINE_FURY, SPEED_SPELL_DIVINE_FURY, LOOP_SPELL_DIVINE_FURY );
+		PlaySoundEffect( attacker, SFX_SPELL_DIVINE_FURY );
+		ApplyPlanarDamage( targ, defender, 1, spelldmg, DMGID_HOLY );
+		Sleepms( 250 );
+
+		PlayMovingEffect( attacker, targ, FX_SPELL_SPECTER_TOUCH, SPEED_SPELL_SPECTER_TOUCH, LOOP_SPELL_SPECTER_TOUCH );
+		PlaySoundEffect( targ, SFX_SPELL_SPECTER_TOUCH );
+		ApplyPlanarDamage( targ, defender, 1, spelldmg, DMGID_NECRO );
+
+		if(DEBUG_MODE)
+			PrintTextAbovePrivate( attacker , "I'm dealing this much spell damage: " +spelldmg, attacker );
+		endif
+	endif
+	
+	if( basedamage != rawdamage )
+		rawdamage := rawdamage - 15;
+		if( rawdamage < 1 )
+			rawdamage := 1;
+		endif
+	endif
+	if(DEBUG_MODE)
+            PrintTextAbovePrivate( attacker , "I'm dealing this much physical damage: " +rawdamage, attacker );
+	endif
+	ApplyTheDamage( defender , attacker , rawdamage );
+
+endprogram
