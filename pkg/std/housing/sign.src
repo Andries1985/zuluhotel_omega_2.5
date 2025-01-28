@@ -146,10 +146,12 @@ program textcmd_sign( who , sign )
 	endif
 
 	if( (GetObjProperty( house , "numlockdowns" ) == error) or (GetObjProperty( house , "numsecure" ) == error) )
+		//Print("Assinging Default Containers");
 		AssignDefaultContainers( house );
 	endif
 
 	if(!GetObjProperty( house , "maxnumlockdowns" ) && !GetObjProperty( house , "maxnumsecure" ))
+		//Print("Assigning Max Props");
 		GetMaxProps(house);
 	endif
 
@@ -439,9 +441,9 @@ function AssignDefaultContainers( house )
 		0x6078: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 6 );
 		0x607A: SetObjProperty( house , "numlockdowns" , 1200 );
-		        SetObjProperty( house , "numsecure" , 12 );
+		        SetObjProperty( house , "numsecure" , 15 );
 		0x607C: SetObjProperty( house , "numlockdowns" , 1800 );
-		        SetObjProperty( house , "numsecure" , 18 );
+		        SetObjProperty( house , "numsecure" , 20 );
 		0x607E: SetObjProperty( house , "numlockdowns" , 2500 );
 		        SetObjProperty( house , "numsecure" , 25 );
 		0x608C: SetObjProperty( house , "numlockdowns" , 600 );
@@ -488,14 +490,14 @@ function AssignDefaultContainers( house )
 		        SetObjProperty( house , "numsecure" , 8 );
 		0xA3EB: SetObjProperty( house , "numlockdowns" , 1100 );
 		        SetObjProperty( house , "numsecure" , 11 );
-		0xA3EC: SetObjProperty( house , "numlockdowns" , 1200 );
-		        SetObjProperty( house , "numsecure" , 12 );
+		0xA3EC: SetObjProperty( house , "numlockdowns" , 1800 );
+		        SetObjProperty( house , "numsecure" , 20 );
 		0xA3ED: SetObjProperty( house , "numlockdowns" , 1500 );
 		        SetObjProperty( house , "numsecure" , 15 );
 		0xA3EE: SetObjProperty( house , "numlockdowns" , 800 );
-		        SetObjProperty( house , "numsecure" , 8 );
+		        SetObjProperty( house , "numsecure" , 12 );
 		0xA3EF: SetObjProperty( house , "numlockdowns" , 600 );
-		        SetObjProperty( house , "numsecure" , 6 );
+		        SetObjProperty( house , "numsecure" , 8 );
 		0xA3F0: SetObjProperty( house , "numlockdowns" , 1300 );
 		        SetObjProperty( house , "numsecure" , 13 );
 	endcase
@@ -1222,7 +1224,7 @@ function Setuphouse( house )
 		
 		// Assign teles based on numtele in cfg.
 		if(house.objtype == 0x607A)
-			SetObjProperty( house, "numtele", 5);
+			SetObjProperty( house, "numtele", 6);
 		elseif(house.objtype == 0x607C)
 			SetObjProperty( house, "numtele", 10);
 		elseif(house.objtype == 0x607E)
@@ -1242,7 +1244,7 @@ function Setuphouse( house )
 		elseif(house.objtype == 0xA3EB)
 			SetObjProperty( house, "numtele", 2);
 		elseif(house.objtype == 0xA3EC)
-			SetObjProperty( house, "numtele", 5);
+			SetObjProperty( house, "numtele", 6);
 		elseif(house.objtype == 0xA3ED)
 			SetObjProperty( house, "numtele", 4);
 		elseif(house.objtype == 0x607E)
@@ -1467,9 +1469,9 @@ function GetMaxProps( house )
 		0x6078: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 6 );
 		0x607A: SetObjProperty( house , "maxnumlockdowns" , 1200 );
-		        SetObjProperty( house , "maxnumsecure" , 12 );
+		        SetObjProperty( house , "maxnumsecure" , 15 );
 		0x607C: SetObjProperty( house , "maxnumlockdowns" , 1800 );
-		        SetObjProperty( house , "maxnumsecure" , 18 );
+		        SetObjProperty( house , "maxnumsecure" , 20 );
 		0x607E: SetObjProperty( house , "maxnumlockdowns" , 2500 );
 		        SetObjProperty( house , "maxnumsecure" , 25 );
 		0x608C: SetObjProperty( house , "maxnumlockdowns" , 600 );
@@ -1516,14 +1518,14 @@ function GetMaxProps( house )
 		        SetObjProperty( house , "maxnumsecure" , 8 );
 		0xA3EB: SetObjProperty( house , "maxnumlockdowns" , 1100 );
 		        SetObjProperty( house , "maxnumsecure" , 11 );
-		0xA3EC: SetObjProperty( house , "maxnumlockdowns" , 1200 );
-		        SetObjProperty( house , "maxnumsecure" , 12 );
+		0xA3EC: SetObjProperty( house , "maxnumlockdowns" , 1800 );
+		        SetObjProperty( house , "maxnumsecure" , 20 );
 		0xA3ED: SetObjProperty( house , "maxnumlockdowns" , 1500 );
 		        SetObjProperty( house , "maxnumsecure" , 15 );
 		0xA3EE: SetObjProperty( house , "maxnumlockdowns" , 800 );
-		        SetObjProperty( house , "maxnumsecure" , 8 );
+		        SetObjProperty( house , "maxnumsecure" , 12 );
 		0xA3EF: SetObjProperty( house , "maxnumlockdowns" , 600 );
-		        SetObjProperty( house , "maxnumsecure" , 6 );
+		        SetObjProperty( house , "maxnumsecure" , 8 );
 		0xA3F0: SetObjProperty( house , "maxnumlockdowns" , 1300 );
 		        SetObjProperty( house , "maxnumsecure" , 13 );
 	endcase
