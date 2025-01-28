@@ -1,3 +1,6 @@
+use uo;
+use os;
+
 // time to wait for house events before checking for banned people inside
 const EVENT_TIMEOUT := 20;
 
