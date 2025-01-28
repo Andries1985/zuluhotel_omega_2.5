@@ -20,7 +20,7 @@ var time_now := ReadGameClock();
 var last_use := GetObjProperty(staff, "LastUsed");
 var remaining := (last_use+(USE_TIME*60) - time_now)/60;
 
-if ((last_use + (USE_TIME*60)) > time_now)
+if ( ( (last_use + (USE_TIME*60)) > time_now) && !who.cmdlevel )
 	SendSysMessage(who, "You can only utilize the staff's energy once every "+USE_TIME+" minutes.");
 	SendSysMessage(who, "Time remaining: "+remaining+" minutes.");
 	return 0;
@@ -36,8 +36,8 @@ PlayObjectCenteredEffectEx( who, 14089, 7, 22, 1950 );
 var range := GetEffectiveSkill(who, SKILLID_MAGERY)/20; // 130 magery is 6 range
 range := range + IsMage(who); // level 4 130 magery is 10 range
 //Old Values
-var mod_amount := CInt(GetModAmount( who )*1.2);
-var duration := CInt(GetModDuration( who )*1.2);
+var mod_amount := CInt(GetModAmount( who )*1.1);
+var duration := CInt(GetModDuration( who )*1.1);
 
 //var mod_amount := CInt(GetModAmount( who ));
 //var duration := CInt(GetModDuration( who ));

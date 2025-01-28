@@ -331,7 +331,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		// Attacks vs Players.
 		if( !defender.isA(POLCLASS_NPC) )
 			if( GetObjProperty( attacker, CLASSEID_WARRIOR ))
-				level := max(0, level-4);
+				level := max(0, level-3);
 				basedamage *= ClasseSmallBonusByLevel( level );
 			elseif( level )
 				level := max(0, level-4);
@@ -350,19 +350,34 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		if(DEBUG_MODE)
 				SendSysMessage( attacker, "War/PP/PALA/BS Bonus: "+basedamage, FONT_NORMAL, 2569 );
 			endif
-		// Warrior class bonus reduction
-		if( GetObjProperty( defender, CLASSEID_WARRIOR ) || GetObjProperty( defender, CLASSEID_PALADIN ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ) )
+		// Warrior/Paladin/Bladesigner class bonus reduction
+		if( GetObjProperty( defender, CLASSEID_PALADIN ) )
 			// Damage reduction from NPC's.
 			if( attacker.isA(POLCLASS_NPC) )
-				basedamage := basedamage / ClasseBonusByLevel( defenderlevel );
-				
+			//Print("Base Damage Pala 1: " + basedamage);
+				basedamage := basedamage / ( (ClasseBonusByLevel( defenderlevel ) * 0.8 ) );
+			//Print("Base Damage Pala 2: " + basedamage);
 			// Damage reduction from Players.
 			else
 				defenderlevel := max(0, defenderlevel-1);
 				basedamage := basedamage / ClasseBonusByLevel( defenderlevel );
 			endif
 			if(DEBUG_MODE)
-				SendSysMessage( attacker, "Warrior/Paladin/Bladesinger reduction: "+basedamage, FONT_NORMAL, 2555 );
+				SendSysMessage( attacker, "Paladin reduction: "+basedamage, FONT_NORMAL, 2555 );
+			endif
+		elseif( GetObjProperty( defender, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ) )
+			// Damage reduction from NPC's.
+			if( attacker.isA(POLCLASS_NPC) )
+			//Print("Base Damage War/BS 1: " + basedamage);
+				basedamage := basedamage / ClasseBonusByLevel( defenderlevel );
+			//Print("Base Damage War/BS 2: " + basedamage);
+			// Damage reduction from Players.
+			else
+				defenderlevel := max(0, defenderlevel-1);
+				basedamage := basedamage / ClasseBonusByLevel( defenderlevel );
+			endif
+			if(DEBUG_MODE)
+				SendSysMessage( attacker, "Warrior/Bladesinger reduction: "+basedamage, FONT_NORMAL, 2555 );
 			endif
 		endif
 		// Mage damage reduction.
@@ -394,7 +409,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 	else
 		if(!attacker.isA(POLCLASS_NPC))
 			if( !defender.isA(POLCLASS_NPC))
-				basedamage *= 0.5;
+				basedamage *= 0.4;
 			endif
 		endif
 	endif

@@ -53,6 +53,7 @@ program cast_natures_touch( parms )
 	if (caster.npctemplate)
 		caster_NPC := 1;
 	endif
+	var selfheal := 0;
 
 	affected := SmartBoost(caster, affected);
 
@@ -77,7 +78,15 @@ program cast_natures_touch( parms )
 			healed := 0;
 		endif
 		HealDamage( cast_near , healed );
+		if(cast_near == caster)
+			selfheal := healed;
+		endif
+
 	endforeach
 	EraseObjProperty( caster , "#Casting" );
+	if (!fromhit)
+		SendSysmessage(caster , "Angelic Aura has restored " + selfheal + " damage." );
+		//SendSysmessage(cast_near , "Angelic Aura has restored " + healed + " damage." );
+	endif
 	
 endprogram

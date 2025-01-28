@@ -14,8 +14,10 @@ Const RATMAN_IDX := 12;
 Const OBJ_BIRD := 0x6;
 Const OBJ_DAEMON := 0x9;
 Const OBJ_DAEMON_SWORD := 0xA;
+Const OBJ_DAEMON_FALLEN := 0x28;
 Const OBJ_DRAGON_RED := 0x3D;
-Const OBJ_DRAGON_GREY := 0xC; 
+Const OBJ_DRAGON_GREY := 0xC;
+
 //Const OBJ_EVILMAGE :=
 Const OBJ_MALE := 0x190;
 Const OBJ_FEMALE := 0x191;

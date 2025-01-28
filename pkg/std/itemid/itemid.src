@@ -21,7 +21,7 @@ var isamage := IsMage(who);
 var delay := BASE_DELAY;
 
 // Level 4 mage, or anyone with 130 item id skill 0 id
-if (isamage == 4 || skill >= 140)
+if (isamage == 4 || skill >= 100)
 	delay := 0;
 
 // ID skill eligible for a mod
