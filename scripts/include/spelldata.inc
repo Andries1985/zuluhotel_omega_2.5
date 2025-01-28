@@ -902,7 +902,9 @@ function Resisted( caster , cast_on , circle , dmg )
 	if( GetObjProperty( cast_on , CLASSEID_MAGE ) )
 		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_MAGE ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
-		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_PALADIN ) );
+		//Print("Base Chance Pala 1: " + chance);
+		chance := Cint( chance * ( ClasseBonus( cast_on , CLASSEID_PALADIN ) * 0.8 ) );
+		//Print("Base Chance Pala 2: " + chance);
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		var bonus := ClasseBonus( cast_on , CLASSEID_WARRIOR );
 		chance := Cint( chance / bonus / 2 );
