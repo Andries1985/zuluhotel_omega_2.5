@@ -1,7 +1,6 @@
 use uo;
 use os;
 
-
 include "include/spelldata";
 include "include/client";
 
@@ -17,27 +16,34 @@ program cast_water_spirit( parms )
 		if (parms[4])
 			circle := parms[4];
 		endif
-
+		var wheretocast := Random(4);
+		case (wheretocast)
+				0: 	SummonCreature( caster , "waterelementallord" , cast_loc );
+				1: 	SummonCreature( caster , "waterelementallord" , caster );
+				2: 	SummonCreature( caster , "waterelementallord" , cast_loc );
+				3: 	SummonCreature( caster , "waterelementallord" , caster );
+		endcase
+		EraseObjProperty( caster , "#Casting" );
 	else
 		caster := parms;
         if(IsInSafeArea(caster))
             SendSysMessage(caster, "This spell can not be cast here.");
-			EraseObjProperty( caster , "#Casting" );
+			EraseObjProperty( caster, "#Casting" );
             return;
         endif
 		if( TryToCast( caster, SPELLID_WATER_SPIRIT ) != SUCCESS )
-			EraseObjProperty( caster , "#Casting" );
+			EraseObjProperty( caster, "#Casting" );
 			return;
 		endif
 		
-		cast_loc := CanTargetArea( caster , circle );
+		cast_loc := CanTargetArea( caster, circle );
 		if (!cast_loc)
-			EraseObjProperty( caster , "#Casting" );
+			EraseObjProperty( caster, "#Casting" );
 			return;
 		endif
-	endif
 
-	EraseObjProperty( caster , "#Casting" );
-        SummonCreature( caster , "waterelementallord" , cast_loc );
+		EraseObjProperty( caster, "#Casting" );
+        SummonCreature( caster, "waterelementalsummons", cast_loc );
+	endif
 
 endprogram

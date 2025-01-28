@@ -668,7 +668,6 @@ function IsProtected( caster, cast_on, circle, nomsg := 0 )
 		protlvl := 0;
 	endif
 
-
 	if(GetObjProperty( cast_on , CLASSEID_WARRIOR ))
 		//Print($"Target is a warrior!");
 		if( protlvl == 0)
@@ -738,6 +737,8 @@ function ModifyWithMagicEfficiency( who, val )
 
 	if( GetObjProperty( who, CLASSEID_MAGE ) )
 		val := CInt(val * ClasseBonus( who, CLASSEID_MAGE ));
+	elseif( GetObjProperty( who, CLASSEID_MYSTIC_ARCHER ) )
+		val := CInt(val * ClasseBonus( who, CLASSEID_MYSTIC_ARCHER ));
 	elseif( GetObjProperty( who, CLASSEID_WARRIOR ) )
 		val := CInt(val / ClasseBonus( who, CLASSEID_WARRIOR ));
 	endif
@@ -746,6 +747,19 @@ function ModifyWithMagicEfficiency( who, val )
 	if( penalty >= 100 )
 		return 0;
 	endif
+
+	return CInt( val * ( 100 - penalty ) / 100 );
+
+endfunction
+
+
+function ModifyWithBardicEfficiency( who, val )
+
+	if( GetObjProperty( who, CLASSEID_BARD ) )
+		val := CInt(val * ClasseBonus( who, CLASSEID_BARD ));
+	endif
+
+	var penalty := 0;
 
 	return CInt( val * ( 100 - penalty ) / 100 );
 
@@ -888,7 +902,9 @@ function Resisted( caster , cast_on , circle , dmg )
 	if( GetObjProperty( cast_on , CLASSEID_MAGE ) )
 		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_MAGE ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
-		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_PALADIN ) );
+		//Print("Base Chance Pala 1: " + chance);
+		chance := Cint( chance * ( ClasseBonus( cast_on , CLASSEID_PALADIN ) * 0.8 ) );
+		//Print("Base Chance Pala 2: " + chance);
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		var bonus := ClasseBonus( cast_on , CLASSEID_WARRIOR );
 		chance := Cint( chance / bonus / 2 );
@@ -989,14 +1005,15 @@ function Send_Attack( ttarget , source , spellid := 0 )
 
 	ev.type := SYSEVENT_ENGAGED;
 	ev.source := source;
-	SendEvent( ttarget , ev );
-
+	
  	if (spellid)
-         	ev.+spell;
-         	ev.type := 0x0800; //spell attack
-         	ev.spell := spellid;
-         	SendEvent(ttarget, ev);
- 	endif
+		ev.+spell;
+		ev.type := 0x0800; //spell attack
+		ev.spell := spellid;
+		SendEvent(ttarget, ev);
+ 	else
+		SendEvent( ttarget , ev );
+	endif
 
 endfunction
 
@@ -1014,7 +1031,6 @@ function SummonCreature( caster , npctemplate , cast_loc , sfx := 0x0218 , delay
 	Start_script( ":summoning:summoning" , parms );
 
 endfunction
-
 
 function TruncPkgName( name )
 

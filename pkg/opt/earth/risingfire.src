@@ -66,26 +66,15 @@ program cast_rising_fire( parms )
 					circ := circ * 2;
 				endif
 			
-				PlayObjectCenteredEffect(mobile, 
-							 SPELL_EFFECT_ID,
-							 SPELL_EFFECT_SPEED,
-							 SPELL_EFFECT_LOOP);
+				PlayObjectCenteredEffect(mobile, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
                                          
 				dmg := CalcSpellDamage( caster , mobile , circ , AREA_EFFECT_SPELL );
 				send_attack( mobile , caster , SPELLID_RISING_FIRE );
 				Sleepms(250);
-				PlayObjectCenteredEffect(mobile, 
-							 SPELL_EFFECT_ID,
-							 SPELL_EFFECT_SPEED,
-							 SPELL_EFFECT_LOOP);
-			
+				PlayObjectCenteredEffect(mobile, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 				PlaySoundEffect( mobile , SFX_SPELL_RISING_FIRE );
 				Sleepms(250);
-				PlayObjectCenteredEffect(mobile, 
-							 SPELL_EFFECT_ID,
-							 SPELL_EFFECT_SPEED,
-							 SPELL_EFFECT_LOOP);
-
+				PlayObjectCenteredEffect(mobile, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 				PlaySoundEffect( mobile , SFX_SPELL_RISING_FIRE );
 				ApplyElementalDamage( caster , mobile , circ , Cint(dmg / 2) , element );
 			endif
@@ -105,31 +94,15 @@ program cast_rising_fire( parms )
 					circ := circ * 2;
 				endif
 			
-				PlayObjectCenteredEffect(mobile, 
-							 SPELL_EFFECT_ID,
-							 SPELL_EFFECT_SPEED,
-							 SPELL_EFFECT_LOOP);
-						 
-                       		PlayObjectCenteredEffect(mobile, 
-							 SPELL_EFFECT_ID,
-							 SPELL_EFFECT_SPEED,
-							 SPELL_EFFECT_LOOP);
-						 
+				PlayObjectCenteredEffect(mobile, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
+                                         
 				dmg := CalcSpellDamage( caster , mobile , circ , AREA_EFFECT_SPELL );
 				send_attack( mobile , caster , SPELLID_RISING_FIRE );
 				Sleepms(250);
-				PlayObjectCenteredEffect(mobile, 
-							 SPELL_EFFECT_ID,
-							 SPELL_EFFECT_SPEED,
-							 SPELL_EFFECT_LOOP);
-						 
+				PlayObjectCenteredEffect(mobile, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 				PlaySoundEffect( mobile , SFX_SPELL_RISING_FIRE );
 				Sleepms(250);
-				PlayObjectCenteredEffect(mobile, 
-							 SPELL_EFFECT_ID,
-							 SPELL_EFFECT_SPEED,
-							 SPELL_EFFECT_LOOP);
-
+				PlayObjectCenteredEffect(mobile, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 				PlaySoundEffect( mobile , SFX_SPELL_RISING_FIRE );
 				ApplyElementalDamage( caster , mobile , circ , Cint(dmg / 2) , element );
 			endif

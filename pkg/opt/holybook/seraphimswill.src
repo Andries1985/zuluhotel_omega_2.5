@@ -38,7 +38,7 @@ program cast_seraphims_will( parms )
 	var mod_amount := 0;
 	var duration := GetModDuration( caster );
 	if(GetObjProperty( caster, "IsPaladin") )
-		mod_amount := Cint( GetModAmount( caster ) * 5 );
+		mod_amount := Cint( GetModAmount( caster ) * 4.25 );
 		//Print("Paladin Mod Amount: "+mod_amount);
 	elseif(GetObjProperty( caster, "IsMage") )
 		mod_amount := Cint( GetModAmount( caster ) );

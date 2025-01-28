@@ -18,6 +18,8 @@ program cast_earth_blessing( parms )
 	var caster;
 	var fromhit;
 	var casterismage := GetObjProperty( caster, CLASSEID_MAGE );
+	var casterismysticarcher := GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER );
+	var casterispp := GetObjProperty( caster, CLASSEID_POWERPLAYER );
 
  	if (parms[1] == "#MOB")
 		caster := parms[2];
@@ -39,10 +41,21 @@ program cast_earth_blessing( parms )
 	PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 	PlaySoundEffect( caster , SFX_SPELL_EARTH_BLESSING );
 
-	var mod_amount := Cint( GetModAmount( caster ) * 4 );
+	var mod_amount;
 	if(casterismage)
-		var mod_amount := Cint( GetModAmount( caster ) * 4.75 );
+		mod_amount := Cint( GetModAmount( caster ) * 4.25 );
+	elseif(casterismysticarcher)
+		mod_amount := Cint( GetModAmount( caster ) * 4.25 );
+	elseif(casterispp)
+		mod_amount := Cint( GetModAmount( caster ) * 2 );
+	else
+		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	endif
+  
+  //var mod_amount := Cint( GetModAmount( caster ) * 4 );
+	//if(casterismage || casterismysticarcher)
+	//	var mod_amount := Cint( GetModAmount( caster ) * 4.75 );
+	//endif
 
 	var duration := GetModDuration( caster );
 

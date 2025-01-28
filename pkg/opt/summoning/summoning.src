@@ -10,31 +10,33 @@ include "include/client";
 
 program summon_creature( parms )
 
-	var caster		:= parms[1];
-	var npctemplate	:= parms[2];
+	var caster			:= parms[1];
+	var npctemplate		:= parms[2];
 	var cast_loc		:= parms[3];
-	var sfx		:= parms[4];
-	var delay		:= parms[5];
+	var sfx				:= parms[4];
+	var delay			:= parms[5];
+	var magery			:= GetEffectiveSkill( caster , SKILLID_MAGERY );
+	var magic_pets 		:= 0;
+	var mobs 			:= ListMobilesNearLocation( caster.x, caster.y, caster.z, 15, caster.realm );
+	var masterserial	:= caster.serial;
 
-	var magery		:= GetEffectiveSkill( caster , SKILLID_MAGERY );
-	
-	var magic_pets := 0;
-	var mobs := ListMobilesNearLocation( caster.x, caster.y, caster.z, 15 );
-	var masterserial := caster.serial;
 	foreach mob in mobs
 		if( (mob.script == "tamed") and ( GetObjProperty( mob, "master" ) == masterserial ) )
-			if( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) )
+			if ( GetObjProperty( mob , "EBSummons" ) )
+				magic_pets := magic_pets + 4;
+			elseif( GetObjProperty( mob , "summoned" ) or GetObjProperty( mob , "animated" ) or GetObjProperty( mob , "charmed" ) && !GetObjProperty( mob , "EBSummons" ) )
 				magic_pets := magic_pets + 1;
 			endif
 		endif
 	endforeach
 
-	if(magic_pets > 4)
+	//Max 2 pets with new summons
+	if(magic_pets >= 8)
 		SendSysMessage(caster, "Can't summon more creatures.");
 		return;
 	endif	
 
-	var multi := GetStandingHeight( cast_loc.x, cast_loc.y, cast_loc.z ).multi;
+	var multi := GetStandingHeight( cast_loc.x, cast_loc.y, cast_loc.z, cast_loc.realm).multi;
 	if( multi )
 		SendSysMessage(caster, "Can't summon creatures inside multis.");
 		return;
@@ -42,6 +44,8 @@ program summon_creature( parms )
 
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		magery := Cint( magery * ClasseBonus( caster , CLASSEID_MAGE ) );
+	elseif( GetObjProperty( caster , CLASSEID_MYSTIC_ARCHER ) )
+		magery := Cint( magery * ClasseBonus( caster , CLASSEID_MYSTIC_ARCHER ) );
 	elseif( GetObjProperty( caster , CLASSEID_WARRIOR ) )
 		magery := Cint( magery / ClasseBonus( caster , CLASSEID_WARRIOR ) );
 	endif
@@ -50,20 +54,55 @@ program summon_creature( parms )
 		//SleepMs( delay );
 	endif
 
-	var duration		:= ModifyWithMagicEfficiency( caster , magery * 2 );
-	
+	//Modify this for Mystic Archer to not require ME
+	//var duration := ModifyWithMagicEfficiency( caster , magery * 2 );
+	var classlevel := GetClasseLevel(caster);
+
+	var duration := 0;
+	//Print("Duration: " + duration);
+	case(classlevel)
+		1: duration := 100;
+		2: duration := 200;
+		3: duration := 300;
+		4: duration := 400;
+		5: duration := 500;
+		6: duration := 600;
+		default : duration := 60;
+	endcase	
+	//Print("Duration after: " + duration);
+
 	PlaySoundEffect( caster , sfx );
-	
 	Detach();
 	
 	var thecritter := CreateNpcFromTemplate( npctemplate, 5283, 1184, 0, 0, "britannia");
 	thecritter.hidden := 1;
-	var power := Cint( ModifyWithMagicEfficiency( caster , Cint(magery / 1.5)) );
+
+	//Modify this for Mystic Archer to not require ME
+	//var power := Cint( ModifyWithMagicEfficiency( caster , Cint(magery / 1.5)) );
+	var power := 0;
+	
+	//Print("Power: " + power);
+	//Print("Class Level: " + classlevel);
+
+	case(classlevel)
+		1: power := 20;
+		2: power := 35;
+		3: power := 50;
+		4: power := 65;
+		5: power := 80;
+		6: power := 100;
+		default : power := 1;
+	endcase	
+	
+	//Print("Power after case: " + power);
+
+	/*
 	if( power > 100 )
 		power := 100;
 	elseif( power < 1 )
 		power := 1;
 	endif
+	*/
 
 	SetObjProperty( thecritter , "master" , caster.serial );
 	SetObjProperty( thecritter , "script" , thecritter.script );

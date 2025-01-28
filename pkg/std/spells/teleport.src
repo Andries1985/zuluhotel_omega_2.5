@@ -15,6 +15,7 @@ program cast_teleport( parms, spell_id )
 	var BY;
 	var BZ;
 	var fromhit;
+	var castfromfish;
 	
 	if (parms[1] == "#MOB")
 		caster := parms[2];
@@ -33,6 +34,15 @@ program cast_teleport( parms, spell_id )
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];
 			spell_id := parms[2];
+			castfromfish := parms[3];
+		endif
+
+		if (!castfromfish)
+			if (IsMysticArcher(caster))
+				SendSysMessage(caster, "Mystic Archers may only use fish to teleport!");
+				EraseObjProperty(caster, "#Casting");
+				return 0;
+			endif
 		endif
 
 		if (TryToCast( caster, spell_id ) != SUCCESS);
@@ -50,26 +60,6 @@ program cast_teleport( parms, spell_id )
 	By:=caster.y;
 	Bz:=caster.z;
 	var standing := where.z;
-
-	// Dreams' Teleport reduction range.
-/* 	if(!caster.IsA(POLCLASS_NPC))
-		var xConv := ((Bx+By)/Sqrt(2))/2;
-		var yConv := ((By-Bx)/Sqrt(2))/2;
-		var xTConv := ((where.x+where.y)/Sqrt(2))/2;
-		var yTConv := ((where.y-where.x)/Sqrt(2))/2;
-		var xLimit := Abs(xConv - xTConv);
-		var yLimit := Abs(yConv - yTConv);
-		if(xLimit > 4.94976 || yLimit > 6.36397)
-			SendSysmessage( caster, "You cannot teleport this far." );
-			return;
-		endif
-	endif */
-
-	/* // Reduced teleport range.
-	if(Bx > 15 || By > 15)
-		SendSysmessage( caster, "You cannot teleport this far." );
-		return;
-	endif */
 
 	var diff := Bz - standing;
 	if(diff > 19 && !caster.IsA(POLCLASS_NPC))
