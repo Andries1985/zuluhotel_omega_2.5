@@ -20,7 +20,7 @@ var time_now := ReadGameClock();
 var last_use := GetObjProperty(staff, "LastUsed");
 var remaining := (last_use+(USE_TIME*60) - time_now)/60;
 
-if ((last_use + (USE_TIME*60)) > time_now)
+if ( ( (last_use + (USE_TIME*60)) > time_now) && !who.cmdlevel )
 	SendSysMessage(who, "You can only utilize the staff's energy once every "+USE_TIME+" minutes.");
 	SendSysMessage(who, "Time remaining: "+remaining+" minutes.");
 	return 0;
