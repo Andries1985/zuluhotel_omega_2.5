@@ -77,6 +77,8 @@ program cast_natures_touch( parms )
 			healed := 0;
 		endif
 		HealDamage( cast_near , healed );
+		SendSysmessage(caster , "Angelic Aura has restored " + healed + " damage." );
+		SendSysmessage(cast_near , "Angelic Aura has restored " + healed + " damage." );
 	endforeach
 	EraseObjProperty( caster , "#Casting" );
 	
