@@ -59,20 +59,20 @@ program trielementalscript(attacker, defender, weapon, armor, basedamage, rawdam
         PlayMovingEffect( attacker , targ , FX_SPELL_FIREBALL , 5 , 1 );
         PlaySoundEffect( attacker , SFX_SPELL_FIREBALL );
         ApplyElementalDamage( targ , defender ,1, spelldmg , DMGID_FIRE );
-        PrintTextAbovePrivate( attacker , "I'm dealing this much spell damage: " +spelldmg, attacker );
+        //PrintTextAbovePrivate( attacker , "I'm dealing this much spell damage: " +spelldmg, attacker );
         Sleepms( 250 );
 
         PlayLightningBoltEffect( targ );
         PlaySoundEffect( targ , SFX_SPELL_LIGHTNING );
         ApplyElementalDamage( targ , defender ,1, spelldmg , DMGID_AIR );
-        PrintTextAbovePrivate( attacker , "I'm dealing this much spell damage: " +spelldmg, attacker );
+        //PrintTextAbovePrivate( attacker , "I'm dealing this much spell damage: " +spelldmg, attacker );
         Sleepms( 250 );
 
         PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE1);
         PlayStationaryEffect( targ.x , targ.y , targ.z , 0x3789, speed:=30, loop:=30);
         PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE2);
         ApplyElementalDamage( targ , defender ,1, spelldmg , DMGID_WATER );
-        PrintTextAbovePrivate( attacker , "I'm dealing this much spell damage: " +spelldmg, attacker );
+        //PrintTextAbovePrivate( attacker , "I'm dealing this much spell damage: " +spelldmg, attacker );
         Sleepms( 250 );
 
         if(DEBUG_MODE)
