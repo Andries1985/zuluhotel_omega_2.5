@@ -338,8 +338,8 @@ function SpecialShiftingEarth(caster, cast_on)
 endfunction
 
 function SpecialChampFire(caster, cast_on, element)
-	var circle := 8;
 
+	var circle := 8;
 	var elecolor;
 	case(element)
 		"EARTH": elecolor := 1134;

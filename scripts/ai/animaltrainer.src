@@ -419,15 +419,15 @@ function sellanimal (who)
 
 	if ((pet.script == "tamed") and (tempdata == who.serial) and !summoned and !animated and !charmed)
 
-		var buyamount := GetStrength(pet);
+    var buyamount := GetStrength(pet);
 
-		Say(pet.name + " is worth " + buyamount);
-		SetObjProperty(pet, "guardkill", 1);
-		pet.graphic := 1000;
-		ApplyRawDamage(pet, GetMaxHP(pet)+3);
+    Say(pet.name + " is worth " + buyamount);
+    SetObjProperty(pet, "guardkill", 1);
+    pet.graphic := 1000;
+    ApplyRawDamage(pet, GetMaxHP(pet)+3);
 
-		CreateItemInBackpack(who, UOBJ_GOLD_COIN, buyamount);
-		return;
+    CreateItemInBackpack(who, UOBJ_GOLD_COIN, buyamount);
+    return;
 	elseif ( (pet.graphic == CID_HUMAN_MALE) or (pet.graphic == CID_HUMAN_FEMALE) )
 		Say("Do I look like an Inn Keeper?!");
   else
@@ -448,7 +448,7 @@ function Load_Ticket_Data (me, who, ticket)
     Sleep (1);
 
     tempdata := GetObjProperty(ticket, "pettemplate");
-    newpet := CreateNPCFromTemplate(tempdata, me.x, me.y, me.z);
+    newpet := CreateNPCFromTemplate(tempdata, me.x, me.y, me.z, 0, me.realm);
 
     newpet.name := GetObjProperty(ticket, "petname");
     SetHp(newpet, CInt(GetObjProperty(ticket, "pethp"))); //doesn't work, no errors trown, some other script influencing?

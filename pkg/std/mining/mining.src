@@ -77,7 +77,7 @@ program use_picktool( character , tool )
 
   while (Autoloop_more() && NOT character.dead)
 
-	var info := GetMapInfo( use_on.x , use_on.y );
+	var info := GetMapInfo( use_on.x , use_on.y, use_on.realm );
 
 	var result;
 	if( IsSwamp( info.landtile ) )

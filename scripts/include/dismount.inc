@@ -38,7 +38,7 @@ function dismount( me, mount := 0 )
 		critter := "horse";
 	endif
 
-	var animal := CreateNpcFromTemplate(critter, me.x, me.y, me.z);
+	var animal := CreateNpcFromTemplate(critter, me.x, me.y, me.z, 0, me.realm);
 	if( !animal )
 		set_critical(0);
 		return 0;

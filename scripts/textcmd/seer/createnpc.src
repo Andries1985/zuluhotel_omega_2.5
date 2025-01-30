@@ -30,6 +30,6 @@ program textcmd_createnpc( who, template )
 		SendSysMessage( who, "NPC Creation Failed: " + result.errortext );
 	else
 		setobjproperty(result,"LFucker",who.serial + " - " + who.name);
-		LogCommand(who, GetProcess(GetPid()).name, result.x+","+result.y+","+result.z, template+"/"+result.serial);
+		LogCommand(who, GetProcess(GetPid()).name, result.x+","+result.y+","+result.z+","+result.realm, template+"/"+result.serial);
 	endif
 endprogram

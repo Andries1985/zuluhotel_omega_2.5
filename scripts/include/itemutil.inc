@@ -719,7 +719,7 @@ function IsWater( theobj )
 		endif
 	endif
 	
-	var info := GetMapInfo( cint(theobj.x) , cint(theobj.y) );
+	var info := GetMapInfo( cint(theobj.x) , cint(theobj.y), theobj.realm );
 	var tile := info.landtile;
 
 	if( tile >= 0x04c and tile <= 0x06f )

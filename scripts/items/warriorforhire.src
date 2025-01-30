@@ -1,20 +1,20 @@
 use uo;
 
 program warriorforhire (who, deed)
-	var hm := GetObjProperty(who,"henchman");
+	var hm := GetObjProperty(who, "henchman");
 	var hme := SystemFindObjectBySerial(hm);
 	if (hme)
-		SendSysMessage(who,"You already have a henchman");
+		SendSysMessage(who, "You already have a henchman");
 		return;
 	endif
-	var wfh := CreateNpcFromTemplate("warriorforhire",who.x,who.y,who.z);
+	var wfh := CreateNpcFromTemplate("warriorforhire", who.x, who.y, who.z, 0, who.realm);
 	if (wfh)
 		DestroyItem(deed);	
-		SendSysMessage(who,"Warrior for hire created!");
-		SetObjProperty(who,"henchman",wfh.serial);
-		SetObjProperty(wfh,"master",who.serial);
+		SendSysMessage(who, "Warrior for hire created!");
+		SetObjProperty(who, "henchman", wfh.serial);
+		SetObjProperty(wfh, "master", who.serial);
 		RestartScript(wfh);
 	else
-		SendSysMessage(who,"Can't place here.");
+		SendSysMessage(who, "Can't place here.");
 	endif
 endprogram

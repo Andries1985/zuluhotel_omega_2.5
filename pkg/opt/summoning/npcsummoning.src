@@ -23,7 +23,7 @@ program summon_creature( parms )
 	
 	Detach();
 	
-	var thecritter := CreateNPCfromTemplate( npctemplate , cint(caster.x + Random(1)) , cint(caster.y + Random(1)) , cint(caster.z) );
+	var thecritter := CreateNPCfromTemplate( npctemplate , cint(caster.x + Random(1)) , cint(caster.y + Random(1)) , cint(caster.z), 0, caster.realm );
 	SetObjProperty( thecritter , "summoned" , 1 );
 
 	var ev := {};
@@ -44,7 +44,7 @@ program summon_creature( parms )
 	var backpack := FindExistingPack( thecritter.serial );
 	if( backpack )
 		foreach item in EnumerateItemsInContainer( backpack );
-  			MoveObjectToLocation( item , thecritter.x , thecritter.y , thecritter.z, "britannia",MOVEOBJECT_FORCELOCATION );
+  			MoveObjectToLocation( item , thecritter.x , thecritter.y , thecritter.z, thecritter.realm, MOVEOBJECT_FORCELOCATION );
 		endforeach
 	endif
 

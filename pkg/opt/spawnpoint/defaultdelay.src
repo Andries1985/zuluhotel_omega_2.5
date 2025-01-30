@@ -20,7 +20,7 @@ program DefaultDelay( point )
 	if( !pt_data )
 		pt_data	    := array;
 		pt_data[1]  := "NPC";	// Type
-		pt_data[2]  := "";	// Template
+		pt_data[2]  := "nil";	// Template
 		pt_data[3]  := 1;	// Max appear
 		pt_data[4]  := 0;	// Appear Range
 		pt_data[5]  := 4;	// Wander Range

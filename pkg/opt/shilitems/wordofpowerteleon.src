@@ -46,8 +46,9 @@ function TeleportCharacter( who , teleporter )
 	var x := Cint( GetObjProperty( teleporter , "GateDestX" ) );
 	var y := Cint( GetObjProperty( teleporter , "GateDestY" ) );
 	var z := Cint( GetObjProperty( teleporter , "GateDestZ" ) );
+	var realm := GetObjProperty( teleporter , "GateDestRealm" );
 
-	if( !x and !y and !z )
+	if( !x and !y and !z and !realm )
 		return;
 	endif
 	
@@ -55,7 +56,7 @@ function TeleportCharacter( who , teleporter )
 	
 	Sleepms(250);
 	
-	MoveObjectToLocation( who , x , y , z );
+	MoveObjectToLocation( who , x , y , z, realm );
 	PlaySoundEffect( who , SFX_SPELL_RECALL2 );
 	
 endfunction

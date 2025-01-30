@@ -294,12 +294,12 @@ while (1)
 					Say( "By the power of the Virtues, may this soul be brought back to life!" );
 					PerformAction( me , ANIM_CAST_DIR );
 					PlaySoundEffect( me , SFX_SPELL_RESURRECTION);
-					wfh := CreateNpcFromTemplate("warriorforhire", DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z);
+					wfh := CreateNpcFromTemplate("warriorforhire", DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, 0, "britannia");
 					wfh.hidden := 1;
-					SetObjProperty(wfh,"master",event.source.serial);
+					SetObjProperty(wfh, "master", event.source.serial);
 					sleep(2);
-					SetObjProperty(wfh,"master",event.source.serial);
-					SetBaseStrength(wfh, wstr);;
+					SetObjProperty(wfh, "master", event.source.serial);
+					SetBaseStrength(wfh, wstr);
 					SetBaseIntelligence(wfh, wint);
 					SetBaseDexterity(wfh, wdex);
 					wfh.name := wname;
@@ -314,7 +314,7 @@ while (1)
 					DestroyItem(heart);
 					RestartScript(wfh);
 					wfh.hidden := 0;
-					MoveObjectToLocation(wfh,event.source.x,event.source.y,event.source.z,"britannia",0);
+					MoveObjectToLocation( wfh, event.source.x, event.source.y, event.source.z, event.source.realm, 0 );
 					sleep(3);
 					case (Random(3)+1)
 						1: PrintTextAbove(wfh,"w00t!");

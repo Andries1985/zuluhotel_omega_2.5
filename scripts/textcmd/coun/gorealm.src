@@ -76,7 +76,7 @@ program textcmd_gorealm( who, text )
 	if(result[0] == MaxLocs)
 		Dest    := locs[mod(result[0], MaxLocs+1)];
 	endif
-  LogCommand(who, GetProcess(GetPid()).name, traveler.name+"/"+traveler.serial, "Sent TO "+dest.x+" "+dest.y+" "+dest.realm+" "+GetMapInfo(Dest.X, Dest.Y, dest.realm).Z);
+  LogCommand(who, GetProcess(GetPid()).name, traveler.name+"/"+traveler.serial, "Sent TO "+dest.x+" "+dest.y+" "+GetMapInfo(Dest.X, Dest.Y, Dest.R).Z+" "+Dest.R);
   // Teleport moble
   var move := MoveObjecttoLocation(Traveler, Dest.X, Dest.Y, Dest.Z, Dest.R ,MOVEOBJECT_FORCELOCATION );
 	if(!move)
@@ -88,7 +88,7 @@ program textcmd_gorealm( who, text )
         params[3] := GetMapInfo( CInt(params[1]), CInt(params[2]) ,CInt(params[3]));
     endif
 
-	var res := MoveObjectToLocation( who, CInt(params[1]), CInt(params[2]), CInt(params[3]), params[4],MOVEOBJECT_FORCELOCATION );
+	var res := MoveObjectToLocation( who, CInt(params[1]), CInt(params[2]), CInt(params[3]), params[4], MOVEOBJECT_FORCELOCATION );
 
     if (!res)
         SendSysMessage( who, "Unable to go there: " + res.errortext );

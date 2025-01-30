@@ -20,7 +20,7 @@ const SOUND_EFFECT := 0x216;
 
 var base_dex;
 var base_str;
-var damage := 20;
+var damage := 30;
 var base_skills;
 
 program Spirit_Flock(parms)
@@ -144,7 +144,7 @@ function SummonSpiritFlock(who)
 			SetObjProperty(goat, "NPCAttack", 1);
 			goat.setmaster(who);
 
-			var wep := CreateItemAtLocation(goat.x, goat.y, goat.z, 0x7740);
+			var wep := CreateItemAtLocation(goat.x, goat.y, goat.z, 0x7740, 1, goat.realm);
 			wep.dmg_mod := damage;
 			DestroyItem(goat.weapon);
 			EquipItem(goat, wep);

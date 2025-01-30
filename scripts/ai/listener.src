@@ -32,10 +32,11 @@ if (times)
                    broadcast("Bucon: let this be your warning!");
                    return 1;
                 2: var x := ev.source.x;
-                   var y := ev.source.x;
-                   var z := ev.source.x;
+                   var y := ev.source.y;
+                   var z := ev.source.z;
+                   var realm := ev.source.realm;
                    applyrawdamage(ev.source, GetHP(ev.source) + 100);
-                   foreach corpse in listitemsnearlocation(x, y, z, 1)
+                   foreach corpse in listitemsnearlocation(x, y, z, 1, realm)
                         if (corpse.corpsetype)
                                 destroyitem(corpse);
                         endif
@@ -45,10 +46,11 @@ if (times)
                    return 1;
                  3: sendsysmessage(ev.source, "If you didn't get the message, you need to stop doing that");
                     var x := ev.source.x;
-                   var y := ev.source.x;
-                   var z := ev.source.x;
+                   var y := ev.source.y;
+                   var z := ev.source.z;
+                   var realm := ev.source.realm;
                    applyrawdamage(ev.source, GetHP(ev.source) + 100);
-                   foreach corpse in listitemsnearlocation(x, y, z, 1)
+                   foreach corpse in listitemsnearlocation(x, y, z, 1, realm)
                         if (corpse.corpsetype)
                                 destroyitem(corpse);
                         endif
@@ -67,7 +69,7 @@ case (what)
         4: tem := "necromancer";
 endcase
 
-createnpcfromtemplate(tem, ev.source.x, ev.source.y, ev.source.z);
+createnpcfromtemplate(tem, ev.source.x, ev.source.y, ev.source.z, 0, ev.source.realm);
 
 
 endfunction

@@ -117,7 +117,7 @@ program cast_animate_dead( parms )
 	endif
 	
 	var thecritter;
-	thecritter := CreateNPCfromTemplate( npctemplate , cast_on.x , cast_on.y , cast_on.z );
+	thecritter := CreateNPCfromTemplate( npctemplate , cast_on.x , cast_on.y , cast_on.z, 0, cast_on.realm );
 
 	SetObjProperty( thecritter , "master" , caster.serial );
 	SetObjProperty( thecritter , "script" , thecritter.script );

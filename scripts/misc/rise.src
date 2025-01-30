@@ -7,6 +7,7 @@ program rise(corpse)
 	var x := corpse.x;
 	var y := corpse.y;
 	var z := corpse.z;
+	var realm := corpse.realm;
 	
 	var template := GetObjProperty( corpse , "rise" );
 	var waittime := Cint( GetObjProperty( corpse , "risedelay" ) );
@@ -17,12 +18,12 @@ program rise(corpse)
 		PrintTextAbove( corpse , "*the corpse begins to stir!*" );
 			Sleepms( 1500 ); 
 
-		var the_critter := CreateNpcFromTemplate( template , x , y , z );
+		var the_critter := CreateNpcFromTemplate( template , x , y , z, 0, realm );
 		if( the_critter )
 			SetObjProperty( the_critter , "noloot" , 1 );
 				
 			if ( !the_critter.backpack )
-				var newbackpack := CreateItemAtLocation(the_critter.x , the_critter.y , the_critter.z , 0xe75 , 1 );
+				var newbackpack := CreateItemAtLocation(the_critter.x , the_critter.y , the_critter.z , 0xe75 , 1, the_critter.realm );
 				EquipItem( the_critter , newbackpack );
 			endif
 
@@ -50,7 +51,7 @@ endfunction
 
 function ShowFlame( who )
 		var coolflame;
-		coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3709, 1 );
+		coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3709, 1, who.realm );
 		PlaySoundEffect(who, 0x208);
 		Sleep(3);
 		DestroyItem(coolflame);

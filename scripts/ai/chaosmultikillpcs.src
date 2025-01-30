@@ -741,12 +741,12 @@ function SplitLord(me)
 	PlaySoundEffect( me , 0x020a );	
 	sleep (1);
 	tp := me.npctemplate;
-	var twin1 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0 );
-	var twin2 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0 );
+	var twin1 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0, "britannia" );
+	var twin2 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0, "britannia" );
 	twin1.hidden := 1;
 	twin2.hidden := 1;
 	sleep(1);
-	MoveObjectToLocation( me, 5376, 1081, 0, 0);
+	MoveObjectToLocation( me, 5376, 1081, 0, 0, "britannia");
 	MoveObjectToLocation( twin1, newx, newy, newz, newrealm, 0);
 	MoveObjectToLocation( twin2, newx, newy, newz, newrealm, 0);
 	twin1.hidden := 0;

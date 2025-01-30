@@ -182,7 +182,7 @@ endforeach
 
 endfunction
 
-function CustomNPCGump(who, point, o, vits, cprops,npc, help := 0)
+function CustomNPCGump(who, point, o, vits, cprops, npc, help := 0)
 
 var mprop, mlevel, lootgroup;
 

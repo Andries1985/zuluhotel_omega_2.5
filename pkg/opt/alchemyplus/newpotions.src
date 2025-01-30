@@ -294,10 +294,10 @@ function MakeTotem( me , what )
 	var parms := struct;
 	parms.+ script := "humuc";
 
-	var thecritter := CreateNPCfromTemplate("humuc", cint(me.x - 1), me.y, me.z, parms);
+	var thecritter := CreateNPCfromTemplate("humuc", cint(me.x - 1), me.y, me.z, parms, me.realm);
 	
 	if (!thecritter)
-		thecritter := CreateNPCfromTemplate("humuc", me.x, cint(me.y - 1), me.z, parms);
+		thecritter := CreateNPCfromTemplate("humuc", me.x, cint(me.y - 1), me.z, parms, me.realm);
 		if (!thecritter)
 			return;
 		endif
@@ -471,7 +471,7 @@ function DoRess( me , what)
 						endif
 					endwhile
 
-					var npc := CreateNPCFromTemplate(GetObjProperty(patient, "npctemplate"), patient.x, patient.y, patient.z);
+					var npc := CreateNPCFromTemplate(GetObjProperty(patient, "npctemplate"), patient.x, patient.y, patient.z, 0, patient.realm);
 					if(npc)
 						var color := getobjproperty(patient,"color");
 						DestroyItem(patient);

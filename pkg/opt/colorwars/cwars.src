@@ -568,11 +568,11 @@ function RunCWars()
 			var cwprize_quantity :=GetGlobalProperty("cwprize_quantity");
 			Broadcast( cwmatch_type+" will start in "+timer*5+" minutes!", FONT_BOLD,53 );
 			if (cwprize_type)
-				var sampleitem := CreateItemAtLocation( 5288 , 1176 , 0,cwprize_type,cwprize_quantity);
+				var sampleitem := CreateItemAtLocation( 5288 , 1176 , 0, cwprize_type, cwprize_quantity, "britannia");
 				Broadcast( "Join now for a chance to win "+sampleitem.desc, FONT_BOLD,53 );
 				DestroyItem(sampleitem);
 			endif
-			Broadcast( "Entry Fee: "+bcfee+"gp", FONT_BOLD,53 );
+			Broadcast( "Entry Fee: "+bcfee+"gp", FONT_BOLD, 53 );
 			timer -= 1;
 		endwhile
 	endif
@@ -582,7 +582,7 @@ function RunCWars()
 	if (!GetGlobalProperty("cwarsinit"))
 		return;
 	endif
-	SetGlobalProperty("cwars",1);
+	SetGlobalProperty("cwars", 1);
 	EraseGlobalProperty("cwarsinit");
 	jackpot := GetGlobalProperty("cwarsjackpot");
 	Broadcast( cwmatch_type+" will start in 1 minute...", FONT_BOLD,53 );
@@ -598,7 +598,7 @@ function RunCWars()
 		foreach item in ListItemsNearLocation( 6082 , 1366 , 50 , 20 );
 			sleepms(5);
 			if(GetObjProperty(item,"iamkoth"))
-				var ball := CreateItemAtLocation(item.x,item.y, item.z, 0xc948, 1, "britannia");
+				var ball := CreateItemAtLocation(item.x, item.y, item.z, 0xc948, 1, "britannia");
 				SetObjProperty(ball,"CW",1);
 			endif
 		endforeach
@@ -685,10 +685,10 @@ function RunCWars()
 				if( !template )
 					break;
 				endif
-				cwbaddie := CreateNPCfromTemplate( template , cwmx , cwmy , 30 );
+				cwbaddie := CreateNPCfromTemplate( template , cwmx , cwmy , 30, 0, "britannia" );
 				SetObjProperty(cwbaddie, "noloot",1);
 			else
-				cwbaddie := CreateNPCfromTemplate( cwmonsters , cwmx , cwmy , 30 );
+				cwbaddie := CreateNPCfromTemplate( cwmonsters , cwmx , cwmy , 30, 0, "britannia" );
 				SetObjProperty(cwbaddie, "noloot",1);
 			endif
 			if(cwbaddie)
@@ -847,7 +847,7 @@ function RunCWars()
 								sleepms(5);
 								if(dude != maxplayer and GetObjProperty(dude,"cwarring") and !dude.dead)
 									robe := GetEquipmentByLayer( dude, 22 );
-									robe.color := 1171;
+									robe.color := 11784;
 								endif
 							endforeach
 						endif
@@ -1011,7 +1011,7 @@ function RunCWars()
 	//Create Prize Stone
 	CreateItemAtLocation(6079, 1364, 50, 0xa394, 1);	
 	//Create Healer
-	var healer_npc := CreateNpcFromTemplate( "healer", 6084, 1366, 50, 0 );
+	var healer_npc := CreateNpcFromTemplate( "healer", 6084, 1366, 50, 0, "britannia" );
 	SetObjProperty(healer_npc, "guardkill",1);
 	//wait for arena to clear
 	var stragglers := 1;

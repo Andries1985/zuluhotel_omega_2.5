@@ -89,7 +89,7 @@ program dispel ( parms, spell_id )
 		
 		if( !CheckSkill( cast_on, SKILLID_MAGICRESISTANCE, magery, 50 ))
 			PlaySoundEffect( cast_on, SFX_SPELL_DISPEL );
-			MoveObjectToLocation(cast_on,0,0,0,"britannia",MOVEOBJECT_FORCELOCATION);
+			MoveObjectToLocation(cast_on, 0, 0, 0, "britannia", MOVEOBJECT_FORCELOCATION);
 			ApplyTheDamage( cast_on, caster, GetMaxHp(caster) + 3, DMGID_MAGIC );
 		else
 			SendSysmessage( caster , "You could not dispel the creature." );
