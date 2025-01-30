@@ -269,10 +269,6 @@ function TryToHeal( character , patient , bandages )
 
 	if( GetObjProperty( character , CLASSEID_WARRIOR ) )
 		healed := Cint( healed * ClasseBonus( character , CLASSEID_WARRIOR ) );
-
-	elseif( GetObjProperty( character , CLASSEID_CLERIC ) )
-		healed := Cint( healed * ClasseBonus( character , CLASSEID_CLERIC ) );
-
 	endif
 
 	var count	:= 10;

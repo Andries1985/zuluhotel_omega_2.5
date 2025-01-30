@@ -13,6 +13,31 @@ var START_MOD := 65;
 
 program do_itemid( who )
 
+//Test Shard Code Start
+var lastid := GetObjProperty(who, "#LastID");
+
+var skill := GetEffectiveSkill( who, SKILLID_ITEMID );
+var isamage := IsMage(who);
+
+var delay := BASE_DELAY;
+
+// Level 4 mage, or anyone with 130 item id skill 0 id
+if (isamage == 4 || skill >= 100)
+	delay := 0;
+
+// ID skill eligible for a mod
+elseif (skill >= START_MOD)
+	var temp := CDbl(skill - START_MOD); // get remaining skill value after skill - startmod
+
+	// get 1 second value, ie 6.5
+	if (isamage)
+		delay := CDbl((130 - START_MOD)/( 10.0+isamage )); 
+	else
+		delay := CDbl((130 - START_MOD)/10.0);
+    
+    
+/* Beta Shard Code & Test Shard Code End
+=======
 	var lastid := GetObjProperty(who, "#LastID");
 	var skill := GetEffectiveSkill( who, SKILLID_ITEMID );
 	var isamage := IsMage(who);
@@ -31,6 +56,9 @@ program do_itemid( who )
 			delay := CDbl((150 - START_MOD)/10.0);
 		endif
 		delay := BASE_DELAY - CInt(temp/delay);
+*/ //Beta Shard Code End
+
+
 	endif
 
 	if ( delay < 0)

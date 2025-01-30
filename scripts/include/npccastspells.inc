@@ -275,13 +275,10 @@ endfunction
 function SpecialIcestrike(caster, cast_on)
 	var circle := GetCircle( SPELLID_ICE_STRIKE );
 	var element := WATER;
-		PlayObjectCenteredEffectEx( cast_on, FX_SPELL_ICE_STRIKE, SPEED_SPELL_ICE_STRIKE, 40 );
-	
-
+	PlayObjectCenteredEffectEx( cast_on, FX_SPELL_ICE_STRIKE, SPEED_SPELL_ICE_STRIKE, 40 );
 	PlaySoundEffect( cast_on , SFX_SPELL_ICE_STRIKE1 );
 	PlaySoundEffect( cast_on , SFX_SPELL_ICE_STRIKE2 );
 	
-		
 	var immunity := IsProtected( caster , cast_on , circle );
 	if( immunity == IMMUNED )
 		EraseObjProperty( caster , "#Casting" );
@@ -299,12 +296,8 @@ endfunction
 function SpecialShiftingEarth(caster, cast_on)
 	var circle := GetCircle( SPELLID_SHIFTING_EARTH );
 	var element := EARTH;
-		PlayObjectCenteredEffect(cast_on, 
-                                         FX_SPELL_SHIFTING_EARTH,
-                                         SPEED_SPELL_SHIFTING_EARTH,
-                                         LOOP_SPELL_SHIFTING_EARTH);
 	
-
+	PlayObjectCenteredEffect(cast_on, FX_SPELL_SHIFTING_EARTH, SPEED_SPELL_SHIFTING_EARTH, LOOP_SPELL_SHIFTING_EARTH);
 	PlaySoundEffect( cast_on , SFX_SPELL_SHIFTING_EARTH );
 
 	var immunity := IsProtected( caster , cast_on , circle );
@@ -345,35 +338,29 @@ function SpecialShiftingEarth(caster, cast_on)
 endfunction
 
 function SpecialChampFire(caster, cast_on, element)
-		var circle := 8;
 
-		var elecolor;
-		case(element)
-			"EARTH": elecolor := 1134;
-			"WATER": elecolor := 1555;
-			"FIRE": elecolor := 1172;
-			"AIR": elecolor := 1655;
-			"NECRO": elecolor := 1157;
-			"HOLY": elecolor := 1153;
-		endcase
+	var circle := 8;
+	var elecolor;
+	case(element)
+		"EARTH": elecolor := 1134;
+		"WATER": elecolor := 1167;
+		"FIRE": elecolor := 1172;
+		"AIR": elecolor := 1161;
+		"NECRO": elecolor := 1157;
+		"HOLY": elecolor := 1153;
+	endcase
 
-		var eleName;
-		case(element)
-			"EARTH": eleName := "Earth";
-			"WATER": eleName := "Water";
-			"FIRE": eleName := "Fire";
-			"AIR": eleName := "Air";
-			"NECRO": eleName := "Necro";
-			"HOLY": eleName := "Holy";
-		endcase
+	var eleName;
+	case(element)
+		"EARTH": eleName := "Earth";
+		"WATER": eleName := "Water";
+		"FIRE": eleName := "Fire";
+		"AIR": eleName := "Air";
+		"NECRO": eleName := "Necro";
+		"HOLY": eleName := "Holy";
+	endcase
 
-		PlayMovingEffectEx(caster, 
-                                 cast_on, 
-                                 FX_SPELL_FIREBALL, 
-                                 SPEED_SPELL_FIREBALL, 
-                                 LOOP_SPELL_FIREBALL, 
-                                 elecolor);
-	
+	PlayMovingEffectEx(caster, cast_on, FX_SPELL_FIREBALL, SPEED_SPELL_FIREBALL, LOOP_SPELL_FIREBALL, elecolor);
 	PlaySoundEffect( caster, SFX_SPELL_FIREBALL );
 	
 	var immunity := IsProtected( caster , cast_on , circle );
@@ -393,132 +380,132 @@ function SpecialChampFire(caster, cast_on, element)
 	var counter := 0;
 	var duration := 60;
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x+2 , cast_on.y , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x+2 , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x-2 , cast_on.y , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y+1 , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y+1 , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x+2 , cast_on.y+1 , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y+1 , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x-2 , cast_on.y+1 , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y-1 , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y-1 , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x+2 , cast_on.y-1 , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y-1 , cast_on.z , 0x398c , 1, me.realm );
-	fields[counter].color := elecolor;
-	fields[counter].name := "Field of "+eleName;
-	SetObjProperty(fields[counter], "specialELE", element);
-	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x-2 , cast_on.y-1 , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x-2 , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x+2 , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x-2 , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y+2 , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y+2 , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y+2 , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x+2 , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x-2 , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
+
+	
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y+2 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y+2 , cast_on.z , 0x398c , 1, cast_on.realm );
+	fields[counter].color := elecolor;
+	fields[counter].name := "Field of "+eleName;
+	SetObjProperty(fields[counter], "specialELE", element);
+	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
+	counter := counter  + 1;
+	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y+2 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y-2 , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y-2 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y-2 , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y-2 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
 	counter := counter  + 1;
-	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y-2 , cast_on.z , 0x398c , 1, me.realm );
+	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y-2 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
@@ -530,8 +517,8 @@ function SpecialChampFire(caster, cast_on, element)
 endfunction
 
 function SpecialHolyBolt(caster, cast_on)
-	var circle := 8;
-	var element := HOLY;
+	var circle := GetCircle( SPELLID_HOLY_BOLT );
+	var plane := HOLY;
 	var graph := PlayLightningBoltEffect( cast_on );
 	PlaySoundEffect( cast_on , SFX_SPELL_HOLY_BOLT );
 			
@@ -547,8 +534,7 @@ function SpecialHolyBolt(caster, cast_on)
 	
 	var dmg := (CalcSpellDamage( caster ,cast_on , circle ));
 	if ((!caster.npctemplate and cast_on.npctemplate and GetObjproperty(cast_on,"Type")== "Undead") or (caster.npctemplate and !cast_on.npctemplate))
-		
-		ApplyElementalDamage( caster , cast_on , circle , dmg , element );
+		ApplyPlanarDamage( caster , cast_on , circle , dmg , plane );
 	else
 		HealDamage( cast_on , dmg);
 	endif

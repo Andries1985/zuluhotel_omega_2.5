@@ -14,20 +14,7 @@ include "include/attributes";
 
 program testOnUse_SkillStone( who )
 
-    /*
-    var Boosted := GetObjProperty( who, "Detsoob" );
-    var StatBoosted := GetObjProperty( who, "Detsnoob" );
-
-    if( Boosted >= 2 )
-		if(!StatBoosted)
-			BoostStat( Who );
-		else
-			SendSysmessage( who, "You've chosen 1 stat already.", FONT_NORMAL, 2595 );
-		endif
-		SendSysmessage( who, "You've chosen 2 skills already.", FONT_NORMAL, 2595 );
-		return;
-    endif
-    */
+    var Boosted := GetObjProperty( who, "Boosted" );
 
     var mllayout := {
     "Page 0",
@@ -42,9 +29,9 @@ program testOnUse_SkillStone( who )
 
     var mldata := {
     "Boost Skills",
-    "Skip Boost",
-	"You can boost a total of",
-    "2 Skills and 1 stat to 90."
+    "Boost Stat",
+	"Cancel the screen if",
+    "you are done boosting."
     };
 
     var Effect := SendDialogGump( who, mllayout, mldata );
@@ -55,11 +42,10 @@ program testOnUse_SkillStone( who )
 
     case( Effect[0] )
     	1:
-        ChangeFromSkillList( who );
+            ChangeFromSkillList( who );
+            Boosted := SetObjProperty( who, "Boosted", 1 );
         2:
-        SetObjProperty( who, "SkippedBoost", 1 );
-
-        SendSysmessage( who, "Alrighty.", FONT_NORMAL, 2601 );
+            BoostStat( Who );
     endcase
 
 endprogram
@@ -115,81 +101,23 @@ function ChangeFromSkillList( who )
         return;
     endif
     
-    var Boosted := GetObjProperty( who, "Detsoob" );
+    var Boosted := GetObjProperty( who, "Boosted" );
 
-    if( !Boosted )
-
-    	SendSysMessage( who, "First Skill Set to 90", FONT_NORMAL, 2601 );
-    	SetBaseSkillBaseValue( who, res[0]-1, 900 );
-    	SetObjProperty( who, "BoostedSkillNr1", res[0]-1 );
-    	SetObjProperty( who, "Detsoob", 1 );
-    	ChangeFromSkillList( who );
-    endif
-    
-    if( Boosted >= 2 )
-    	SendSysmessage( who, "You've chosen 2 skills already.", FONT_NORMAL, 2595 );
-
-/*		Elseif( Boosted == 3 )
-
-    	SendSysMessage( who, "fourth Skill Set to 100", FONT_NORMAL, 2601 );
-
-    	SetBaseSkillBaseValue( who, res[0]-1, 1000 );
-    	EraseObjProperty( who, "Detsoob" );
-
-    	SetObjProperty( who, "Detsoob", 4 );
-
-    	BoostStat( Who );		
-
-    Elseif( Boosted == 2 )
-
-    	SendSysMessage( who, "Third Skill Set to 100", FONT_NORMAL, 2601 );
-
-    	SetBaseSkillBaseValue( who, res[0]-1, 1000 );
-    	EraseObjProperty( who, "Detsoob" );
-
-    	SetObjProperty( who, "Detsoob", 3 );
-    	ChangeFromSkillList( who );
-*/
-    elseif( Boosted == 1 )
+    if( Boosted )
 		if(GetObjProperty(who, "BoostedSkillNr1") == res[0]-1)
     		SendSysMessage( who, "You've already boosted this skill.", FONT_NORMAL, 2601 );
     		return 0;
 		endif
 
-    	SendSysMessage( who, "Second Skill Set to 90", FONT_NORMAL, 2601 );
-    	SetBaseSkillBaseValue( who, res[0]-1, 900 );
-    	SetObjProperty( who, "BoostedSkillNr2", res[0]-1 );
-    	EraseObjProperty( who, "Detsoob" );
-    	SetObjProperty( who, "Detsoob", 2 );
-    	BoostStat( Who );
-    elseif( Boosted == 0 )
-   	    SendSysMessage( who, "First Skill Set to 90", FONT_NORMAL, 2601 );
-    	SetBaseSkillBaseValue( who, res[0]-1, 900 );
-    	SetObjProperty( who, "BoostedSkillNr1", res[0]-1 );
-    	EraseObjProperty( who, "Detsoob" );
-    	SetObjProperty( who, "Detsoob", 1 );
-    	ChangeFromSkillList( who );
+    	SendSysMessage( who, "Skill Set to 130", FONT_NORMAL, 2601 );
+    	SetBaseSkillBaseValue( who, res[0]-1, 1300 );
+       	//ChangeFromSkillList( who );
     endif
 
 endfunction
 
 
 function BoostStat( Who )
-
-    var Boosted := GetObjProperty( who, "Detsoob" );
-    var StatBoosted := GetObjProperty( who, "Detsnoob" );
-
-    if(StatBoosted)
-        return 0;
-    endif
-
-    if( Boosted < 2 )
-        return 0;
-    endif
-
-    if( Boosted > 2 )
-        return 0;
-    endif
 
     // Text X = <- +>, Y = Up- Down+, Hue, Rank
 
@@ -228,24 +156,13 @@ function BoostStat( Who )
 
     case( Effect[0] )
         1:
-        SetBaseStrength( Who, 90 );
-
-        SendSysMessage( who, "Now choose a race.", FONT_NORMAL, 2601 );
-        SetObjProperty( who, "Detsnoob", 1 );
-        SetObjProperty( who, "BoostedStat", "Str" );
+        SetBaseStrength( Who, 130 );
 
         2:
-        SetBaseDexterity( Who, 90 );
-
-        SendSysMessage( who, "Now choose a race.", FONT_NORMAL, 2601 );
-        SetObjProperty( who, "Detsnoob", 1 );
-        SetObjProperty( who, "BoostedStatt", "Dex" );
+        SetBaseDexterity( Who, 130 );
 
         3:
-        SetBaseIntelligence( Who, 90 );
-        SendSysMessage( who, "Now choose a race.", FONT_NORMAL, 2601 );
-        SetObjProperty( who, "Detsnoob", 1 );
-        SetObjProperty( who, "BoostedStatst", "Int" );
+        SetBaseIntelligence( Who, 130 );
     endcase
 
 EndFunction

@@ -332,7 +332,7 @@ function Buildhouse( character, deed )
       SetObjProperty( created.house , "component3", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
    endif
-   if (housetype==0xA3EF) // mediumtower
+   if (housetype==0xA3EF) // smalltower
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
       SetObjProperty( created.house , "component3", item.serial );

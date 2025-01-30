@@ -152,8 +152,9 @@ program use_fishpole( character , pole )
 			var level := GetClasseLevel(character);
 			fish_amount := Cint(Random(fish_amount) + 1);
 		
-			if( GetObjProperty( character , CLASSEID_RANGER ) )	
-				fish_amount := Cint( fish_amount + level );
+			if( GetObjProperty( character , CLASSEID_RANGER ) || GetObjProperty( character , CLASSEID_MYSTIC_ARCHER ) )	
+				fish_amount := Cint( fish_amount + level);
+
 			endif
 
 			if (fish_amount==0)

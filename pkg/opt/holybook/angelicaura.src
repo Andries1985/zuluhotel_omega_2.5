@@ -38,7 +38,12 @@ program cast_natures_touch( parms )
 	endif
 	
 	var magery := GetAttribute( caster, ATTRIBUTEID_MAGERY );
-	var specbonus := GetObjProperty(caster, "IsMage");
+	var specbonus := 0;
+	if (GetObjProperty(caster, "IsMage"))
+		specbonus := GetObjProperty(caster, "IsMage");
+	elseif (GetObjProperty(caster, "IsPaladin"))
+		specbonus := GetObjProperty(caster, "IsPaladin");
+	endif
 	if (!specbonus)
 		specbonus := 0;
 	endif
@@ -48,6 +53,7 @@ program cast_natures_touch( parms )
 	if (caster.npctemplate)
 		caster_NPC := 1;
 	endif
+	var selfheal := 0;
 
 	affected := SmartBoost(caster, affected);
 
@@ -61,21 +67,26 @@ program cast_natures_touch( parms )
 				continue;
 			endif
 		endif
-		PlayObjectCenteredEffect(cast_near, 
-				SPELL_EFFECT_ID,
-				SPELL_EFFECT_SPEED,
-				SPELL_EFFECT_LOOP);
+		PlayObjectCenteredEffect(cast_near, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 		PlaySoundEffect( cast_near , SFX_SPELL_TOUCH_OF_GOD );
 		var healed := ModifyWithMagicEfficiency( caster , RandomDiceStr( "6d4+15" ) );
 		var bonus := GetObjProperty( cast_near , "HealingIncrease" );
 		if( bonus )
-			healed := healed + Cint( healed * bonus * 0.1 );
+			healed := healed + Cint( healed * bonus * 0.2 );
 		endif
 		if( healed < 0 )
 			healed := 0;
 		endif
 		HealDamage( cast_near , healed );
+		if(cast_near == caster)
+			selfheal := healed;
+		endif
+
 	endforeach
 	EraseObjProperty( caster , "#Casting" );
+	if (!fromhit)
+		SendSysmessage(caster , "Angelic Aura has restored " + selfheal + " damage." );
+		//SendSysmessage(cast_near , "Angelic Aura has restored " + healed + " damage." );
+	endif
 	
 endprogram

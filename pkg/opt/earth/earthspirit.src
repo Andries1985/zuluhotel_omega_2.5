@@ -1,7 +1,6 @@
 use uo;
 use os;
 
-
 include "include/spelldata";
 include "include/client";
 
@@ -17,7 +16,14 @@ program cast_earth_spirit( parms )
 		if (parms[4])
 			circle := parms[4];
 		endif
-
+		var wheretocast := Random(4);
+		case (wheretocast)
+				0: 	SummonCreature( caster , "earthelementallord" , cast_loc );
+				1: 	SummonCreature( caster , "earthelementallord" , caster );
+				2: 	SummonCreature( caster , "earthelementallord" , cast_loc );
+				3: 	SummonCreature( caster , "earthelementallord" , caster );
+		endcase
+		EraseObjProperty( caster , "#Casting" );
 	else
 		caster := parms;
         if(IsInSafeArea(caster))
@@ -35,9 +41,9 @@ program cast_earth_spirit( parms )
 			EraseObjProperty( caster , "#Casting" );
 			return;
 		endif
-	endif
 
-	EraseObjProperty( caster , "#Casting" );
-	SummonCreature( caster , "earthelementallord" , cast_loc );
+		EraseObjProperty( caster , "#Casting" );
+		SummonCreature( caster , "earthelementalsummons" , cast_loc );
+	endif
 
 endprogram

@@ -42,22 +42,27 @@ program meditation( who )
 	endif
 	
 	
-	var sx    := who.x;
-	var sy    := who.y;
-	var shp   := GetHP(who);
-	var wait  := 5;
-	var mage  := GetObjProperty( who , CLASSEID_MAGE );
-	var cleric  := GetObjProperty( who , CLASSEID_CLERIC );
-	var skill := GetEffectiveSkill( who , SKILLID_MEDITATION );
-	var base  := Cint( (skill / 25) + (GetIntelligence(who) / 35) );
+	var sx    	:= who.x;
+	var sy   	 := who.y;
+	var shp  	 := GetHP(who);
+	var wait  	:= 5;
+	var mage  	:= GetObjProperty( who , CLASSEID_MAGE );
+	var paladin  := GetObjProperty( who , CLASSEID_PALADIN );
+	var mysticarcher  := GetObjProperty( who , CLASSEID_MYSTIC_ARCHER );
+	var skill 	:= GetEffectiveSkill( who , SKILLID_MEDITATION );
+	var base  	:= Cint( (skill / 25) + (GetIntelligence(who) / 35) );
 		
 	if( mage )
 		wait := Cint( wait / ClasseBonus( who , CLASSEID_MAGE ) );
 		base := Cint( base * ClasseBonus( who , CLASSEID_MAGE ) );
 
-	elseif( cleric )
-		wait := Cint( wait / ClasseBonus( who , CLASSEID_CLERIC ) );
-		base := Cint( base * ClasseBonus( who , CLASSEID_CLERIC ) );
+	elseif( paladin )
+		wait := Cint( wait / ClasseBonus( who , CLASSEID_PALADIN ) );
+		base := Cint( base * ClasseBonus( who , CLASSEID_PALADIN ) );
+
+	elseif( mysticarcher )
+		wait := Cint( wait / ClasseBonus( who , CLASSEID_MYSTIC_ARCHER ) );
+		base := Cint( base * ClasseBonus( who , CLASSEID_MYSTIC_ARCHER ) );
 
 	endif
 	

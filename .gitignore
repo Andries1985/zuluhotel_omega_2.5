@@ -9,7 +9,6 @@ realm/
 *.lst
 *.ecl
 config/servers.cfg
-pol.cfg
 scripts/ecompile.cfg
 config/vendorinventory.cfg
 leftovers.txt

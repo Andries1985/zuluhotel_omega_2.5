@@ -1,4 +1,3 @@
-
 include "include/spelldata";
 include "include/client";
 include "include/attributes";
@@ -20,8 +19,19 @@ program summon_air( parms, spell_id )
 			fromhit := parms[5];
 		endif
 
+		var wheretocast := Random(4);
+		case (wheretocast)
+				0: 	SummonCreature( caster , "airelemental" , cast_loc );
+				1: 	SummonCreature( caster , "airelemental" , caster );
+				2: 	SummonCreature( caster , "airelemental" , cast_loc );
+				3: 	SummonCreature( caster , "airelemental" , caster );
+		endcase
 	else
 		caster := parms;
+		if (IsPaladin(caster))
+			SendSysMessage(caster, "Paladins may not cast this spell!");
+			return 0;
+		endif
 		// For scrolls, StartSpellScript isn't working >:(
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];
@@ -35,8 +45,9 @@ program summon_air( parms, spell_id )
 		if (!cast_loc)
 			return;
 		endif
+		SummonCreature( caster , "airelementallord" , cast_loc );
 	endif
 
-	SummonCreature( caster , "airelemental" , cast_loc );
+	//SummonCreature( caster , "airelemental" , cast_loc );
 
 endprogram

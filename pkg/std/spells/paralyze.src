@@ -29,7 +29,7 @@ program cast_paralyze( parms, spell_id )
 			fromhit := parms[5];
 		endif
 
-		send_attack(cast_on,caster, SPELLID_PARALYZE);
+		send_attack(cast_on, caster, SPELLID_PARALYZE);
 	else
 
         caster := parms;
@@ -52,12 +52,7 @@ program cast_paralyze( parms, spell_id )
 		detach();
 		cast_on := Reflected( caster , cast_on , circle );
 	endif
-		PlayObjectCenteredEffect(cast_on, 
-                                         SPELL_EFFECT_ID,
-                                         SPELL_EFFECT_SPEED,
-                                         SPELL_EFFECT_LOOP);
-	
-
+	PlayObjectCenteredEffect(cast_on, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 	PlaySoundEffect( cast_on , SFX_SPELL_PARALYZE );
 	
 	var immunity := IsProtected( caster , cast_on , circle );

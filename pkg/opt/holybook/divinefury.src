@@ -12,7 +12,7 @@ const SPELL_EFFECT_LOOP		:= LOOP_SPELL_DIVINE_FURY;
 program cast_HOLY_BOLT( parms )
 
 	var circle := GetCircle( SPELLID_DIVINE_FURY );
-	var element := HOLY;
+	var plane := HOLY;
 	var caster;
 	var cast_on;
 	var fromhit;
@@ -61,7 +61,7 @@ program cast_HOLY_BOLT( parms )
 	
 	var dmg := CalcSpellDamage( caster ,cast_on , circle );
 	dmg := dmg/(1.5);
-	ApplyElementalDamage( caster , cast_on , circle , dmg , element );
+	ApplyPlanarDamage( caster , cast_on , circle , dmg , plane );
 	
 	EraseObjProperty( caster , "#Casting" );
 endprogram

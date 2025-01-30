@@ -36,8 +36,6 @@ program cast_summonspirit( parms )
 	var bonus  := 0;
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		bonus := 2;
-	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
-		bonus := 0;
 	endif
 	
 	var amount := RandomDiceStr("2d2") + bonus;
