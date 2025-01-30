@@ -15,28 +15,31 @@ program walkOnScript( mobile, tile )
         endif
 		
        if( GetObjProperty( mobile , CLASSEID_MAGE ) )
-		SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Mage" );		
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Mage" );		
 			return 0;
 		elseif( GetObjProperty( mobile , CLASSEID_BARD ) )
-		SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Bard" );		
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Bard" );		
+			return 0;
+		elseif( GetObjProperty( mobile , CLASSEID_MYSTIC_ARCHER ) )
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Bard" );		
 			return 0;
 		elseif( GetObjProperty( mobile , CLASSEID_CRAFTER ) )
-		SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Crafter" );		
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Crafter" );		
 			return 0;
-		elseif( GetObjProperty( mobile , CLASSEID_CLERIC ) )
-		SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Cleric" );		
+		elseif( GetObjProperty( mobile , CLASSEID_PALADIN ) )
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Paladin" );		
 			return 0;
 		elseif( GetObjProperty( mobile , CLASSEID_RANGER ) )
-		SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Ranger" );		
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Ranger" );		
 			return 0;
 		elseif( GetObjProperty( mobile , CLASSEID_THIEF ) )
-		SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Thief" );		
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Thief" );		
 			return 0;
 		elseif( GetObjProperty( mobile , CLASSEID_WARRIOR ) )
-		SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Warrior" );		
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Warrior" );		
 			return 0;
 		elseif( GetObjProperty( mobile , CLASSEID_POWERPLAYER ) )
-		SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Powerplayer" );		
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Powerplayer" );		
 			return 0;
 		endif	
 		

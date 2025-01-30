@@ -102,7 +102,7 @@ function LockPickTheThing( caster , chest , lvl )
 
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		lvl := Cint( lvl / CLASSE_BONUS );
-	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
+	elseif( GetObjProperty( caster , CLASSEID_PALADIN ) )
 		lvl := Cint( lvl / CLASSE_BONUS );
 	endif
 	

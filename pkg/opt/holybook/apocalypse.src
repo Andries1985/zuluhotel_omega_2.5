@@ -10,7 +10,7 @@ const SPELL_EFFECT_TYPE_MOVING 	:= MOVING_SPELL_APOCALYPSE;
 program cast_rising_fire( parms )
 
 	var circle := GetCircle( SPELLID_APOCALYPSE );
-	var element := HOLY;
+	var plane := HOLY;
 	var caster;
 	var cast_on;
 	var fromhit;
@@ -43,7 +43,13 @@ program cast_rising_fire( parms )
 	EraseObjProperty( caster , "#Casting" );
 	
 	var dmg;
-	var range := GetObjProperty(caster, "IsMage");
+	var range := 0;
+	if (GetObjProperty(caster, "IsMage"))
+		range := GetObjProperty(caster, "IsMage");
+	elseif (GetObjProperty(caster, "IsPaladin"))
+		range := GetObjProperty(caster, "IsPaladin");
+	endif
+
 	if (!range)
 		range := 1;
 	endif
@@ -73,7 +79,7 @@ program cast_rising_fire( parms )
 				PlayLightningBoltEffect( mobile );
 				PlaySoundEffect(mobile, SFX_SPELL_CHAIN_LIGHTNING);
 				PlayLightningBoltEffect( mobile );
-				ApplyElementalDamage( caster , mobile , circ , (dmg*0.24) , element );
+				ApplyPlanarDamage( caster , mobile , circ , (dmg*0.24) , plane );
 			endif
     	
 			if( mobile.serial != caster.serial )
@@ -96,12 +102,13 @@ program cast_rising_fire( parms )
 						okay:=1;
 					endif
 				if (okay)
-					 ApplyElementalDamage( caster, mobile, circ, (dmg*0.24), element ); 
+					 ApplyPlanarDamage( caster, mobile, circ, (dmg*0.24), plane ); 
 				endif
 			endif
 		endif
 		PlaySoundEffect( caster, SFX_SPELL_EARTHQUAKE2 );
-		PlayMovingEffect( caster, cast_on, FX_SPELL_METEOR_SWARM , SPEED_SPELL_METEOR_SWARM , LOOP_SPELL_METEOR_SWARM );
+		Sleepms(25);
+		PlayMovingEffect( caster, cast_on, FX_SPELL_METEOR_SWARM, SPEED_SPELL_METEOR_SWARM, LOOP_SPELL_METEOR_SWARM );
 
 		if( (CheckLosAt( mobile, cint(cast_on.x) , cint(cast_on.y) , cint(cast_on.z) ) ) )
 			var immunity := IsProtected( caster , mobile , circle );
@@ -114,7 +121,7 @@ program cast_rising_fire( parms )
 				send_attack(mobile,caster, SPELLID_METEOR_SWARM);
 				PlaySoundEffect( mobile , SFX_SPELL_METEOR_SWARM);
 				PlayMovingEffect( caster, mobile, FX_SPELL_METEOR_SWARM , SPEED_SPELL_METEOR_SWARM , LOOP_SPELL_METEOR_SWARM );
-				ApplyElementalDamage( caster , mobile , circ , dmg *0.24 + 1 , element );
+				ApplyPlanarDamage( caster , mobile , circ , dmg *0.24 + 1 , plane );
 			endif
 		endif
 		PlayMovingEffect( caster, cast_on, FX_SPELL_METEOR_SWARM , SPEED_SPELL_METEOR_SWARM , LOOP_SPELL_METEOR_SWARM );
@@ -138,7 +145,7 @@ program cast_rising_fire( parms )
 				else
 					okay:=1;
 				endif
-				if (okay) ApplyElementalDamage( caster, mobile, circ, (dmg*0.24), element ); endif
+				if (okay) ApplyPlanarDamage( caster, mobile, circ, (dmg*0.24), plane ); endif
 			endif
 		endif
 		PlaySoundEffect( caster, SFX_SPELL_EARTHQUAKE2 );
@@ -155,7 +162,7 @@ program cast_rising_fire( parms )
 				send_attack(mobile,caster, SPELLID_METEOR_SWARM);
 				PlaySoundEffect( mobile , SFX_SPELL_METEOR_SWARM);
 				PlayMovingEffect( caster, mobile, FX_SPELL_METEOR_SWARM , SPEED_SPELL_METEOR_SWARM , LOOP_SPELL_METEOR_SWARM );
-				ApplyElementalDamage( caster , mobile , circ , dmg *0.24 + 1 , element );
+				ApplyPlanarDamage( caster , mobile , circ , dmg *0.24 + 1 , plane );
 			endif
 		endif
 		PlayMovingEffect( caster, cast_on, FX_SPELL_METEOR_SWARM , SPEED_SPELL_METEOR_SWARM , LOOP_SPELL_METEOR_SWARM );

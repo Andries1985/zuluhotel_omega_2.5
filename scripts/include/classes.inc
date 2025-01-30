@@ -5,15 +5,17 @@ include "include/itemutil";
 include "include/client";
 include ":staff:include/staff";
 
-const CLASSE_BONUS        	:= 1.5;
-const CLASSEID_BARD       	:= "IsBard";
-const CLASSEID_CRAFTER    	:= "IsCrafter";
-const CLASSEID_MAGE       	:= "IsMage";
-const CLASSEID_CLERIC     	:= "IsCleric";
-const CLASSEID_RANGER     	:= "IsRanger";
-const CLASSEID_THIEF      	:= "IsThief";
-const CLASSEID_WARRIOR    	:= "IsWarrior";
-const CLASSEID_POWERPLAYER	:= "IsPowerplayer";
+const CLASSE_BONUS        		:= 1.5;
+const CLASSEID_BARD       		:= "IsBard";
+const CLASSEID_BLADESINGER 		:= "IsBladesinger";
+const CLASSEID_CRAFTER    		:= "IsCrafter";
+const CLASSEID_MAGE       		:= "IsMage";
+const CLASSEID_MYSTIC_ARCHER	:= "IsMysticArcher";
+const CLASSEID_PALADIN     		:= "IsPaladin";
+const CLASSEID_RANGER     		:= "IsRanger";
+const CLASSEID_THIEF      		:= "IsThief";
+const CLASSEID_WARRIOR    		:= "IsWarrior";
+const CLASSEID_POWERPLAYER		:= "IsPowerplayer";
 
 const EACH_MUST_REPRESENT := 7.5;
 const REPRESENT_LEVEL_MOD := 1.0;
@@ -69,7 +71,9 @@ function ByPassForMages( classeid )
 	var restricted_types := {};
 
 	case( classeid )
-		CLASSEID_MAGE:		fract_array.append( GetLeatherArmorGraphics() );
+		CLASSEID_MAGE:		
+					fract_array.append( GetLeatherArmorGraphics() );
+					fract_array.append( GetStuddedLeatherArmorGraphics() );
 					break;
 
 	endcase
@@ -95,32 +99,36 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
 					break;
+		CLASSEID_BLADESINGER:
+					fract_array.append( GetLeatherArmorGraphics() );
+					fract_array.append( GetStuddedLeatherArmorGraphics() );
+					fract_array.append( GetGraphicsBladesinger() );
+					fract_array.append( GetShieldGraphics() );
+					break;
 		CLASSEID_CRAFTER:
-					//fract_array.append( GetChainmailArmorGraphics() );
-					//fract_array.append( GetPlatemailArmorGraphics() );
 					break;
 		CLASSEID_MAGE:		
-					//fract_array.append( GetStuddedLeatherArmorGraphics() );
 					fract_array.append( GetBoneArmorGraphics() );
 					fract_array.append( GetRingmailArmorGraphics() );
 					fract_array.append( GetChainmailArmorGraphics() );
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
 					break;
-/* 		CLASSEID_CLERIC:
+		CLASSEID_MYSTIC_ARCHER:		
+					fract_array.append( GetPlatemailArmorGraphics() );
+					fract_array.append( GetShieldGraphics() );
+					break;
+ 		CLASSEID_PALADIN:
+					fract_array.append( GetLeatherArmorGraphics() );
 					fract_array.append( GetStuddedLeatherArmorGraphics() );
 					fract_array.append( GetBoneArmorGraphics() );
 					fract_array.append( GetRingmailArmorGraphics() );
-					fract_array.append( GetChainmailArmorGraphics() );
-					fract_array.append( GetPlatemailArmorGraphics() );
-					fract_array.append( GetShieldGraphics() );
-					break; */
-		CLASSEID_RANGER:	
+					break;
+		CLASSEID_RANGER:
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
 					break;
 		CLASSEID_THIEF:		
-					//fract_array.append( GetRingmailArmorGraphics() );
 					fract_array.append( GetChainmailArmorGraphics() );
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphicsThief() );
@@ -157,14 +165,18 @@ endfunction
 
 function GetClasseIds()
 
-	return { CLASSEID_BARD,
-		 CLASSEID_CRAFTER,
-		 CLASSEID_MAGE,
-		// CLASSEID_CLERIC,
-		 CLASSEID_RANGER,
-		 CLASSEID_THIEF,
-		 CLASSEID_WARRIOR,
-		 CLASSEID_POWERPLAYER };
+	return { 
+			CLASSEID_BARD,
+			CLASSEID_BLADESINGER,
+			CLASSEID_CRAFTER,
+			CLASSEID_MAGE,
+			CLASSEID_MYSTIC_ARCHER,
+			CLASSEID_PALADIN,
+			CLASSEID_RANGER,
+			CLASSEID_THIEF,
+			CLASSEID_WARRIOR,
+			CLASSEID_POWERPLAYER
+			};
 
 endfunction
 
@@ -174,9 +186,11 @@ function GetClasseName( classeid )
         case( classeid )
 
                 CLASSEID_BARD:			return( "Bard" );
+				CLASSEID_BLADESINGER:	return( "Bladesinger" );
                 CLASSEID_CRAFTER:		return( "Crafter" );
                 CLASSEID_MAGE:			return( "Mage" );
-				//CLASSEID_CLERIC:		return( "Cleric" );
+				CLASSEID_MYSTIC_ARCHER:	return( "Mystic Archer" );
+				CLASSEID_PALADIN:		return( "Paladin" );
                 CLASSEID_RANGER:		return( "Ranger" );
                 CLASSEID_THIEF:			return( "Thief" );
                 CLASSEID_WARRIOR:		return( "Warrior" );
@@ -201,6 +215,16 @@ function GetClasseSkills( classeid )
 						 SKILLID_PROVOCATION	,
 						 SKILLID_TASTEID	};
 
+		CLASSEID_BLADESINGER:			
+				return { SKILLID_ANATOMY	,
+						 SKILLID_ENTICEMENT	,
+						 SKILLID_FENCING	,
+						 SKILLID_MUSICIANSHIP	,
+						 SKILLID_PEACEMAKING	,
+						 SKILLID_PROVOCATION	,
+						 SKILLID_SWORDSMANSHIP	,
+						 SKILLID_TACTICS	};
+
 		CLASSEID_CRAFTER:		
 				return { SKILLID_ARMSLORE	,
 						 SKILLID_BLACKSMITHY	,
@@ -221,15 +245,25 @@ function GetClasseSkills( classeid )
 						 SKILLID_MAGICRESISTANCE,
 						 SKILLID_SPIRITSPEAK	};
 
-		CLASSEID_CLERIC:		
-				return { SKILLID_ANIMALLORE	,
+		CLASSEID_MYSTIC_ARCHER:			
+				return { SKILLID_ARCHERY	,
+						 SKILLID_COOKING	,
 						 SKILLID_EVALINT	,
-						 SKILLID_VETERINARY	,
-						 SKILLID_HEALING	,
+						 SKILLID_FISHING	,
+						 SKILLID_TRACKING	,
 						 SKILLID_MAGERY		,
+						 SKILLID_MAGICRESISTANCE,
+						 SKILLID_MEDITATION	};
+
+		CLASSEID_PALADIN:
+				return { SKILLID_SWORDSMANSHIP	,
+						 SKILLID_PARRY	,
+						 SKILLID_TACTICS	,
+						 SKILLID_MAGERY	,
+						 SKILLID_EVALINT		,
 						 SKILLID_MEDITATION	,
 						 SKILLID_MAGICRESISTANCE,
-						 SKILLID_ANATOMY	};
+						 SKILLID_HIDING	};
 
 		CLASSEID_RANGER:		
 				return { SKILLID_ANIMALLORE	,
@@ -347,9 +381,11 @@ function GetMaxCircleForClasse( classeid )
 
 	case( classeid )
 		CLASSEID_BARD:			return 1;
+		CLASSEID_BLADESINGER:	return 1;
 		CLASSEID_CRAFTER:		return 1;
 		CLASSEID_MAGE:			return 0;
-		CLASSEID_CLERIC:		return 1;
+		CLASSEID_MYSTIC_ARCHER:	return 0;
+		CLASSEID_PALADIN:		return 0;
 		CLASSEID_RANGER:		return 5;
 		CLASSEID_THIEF:			return 5;
 		CLASSEID_WARRIOR:		return 1;
@@ -412,9 +448,11 @@ function HaveRestrictedModEnchantmentForClasse( who , item , classeid )
 
 	case( classeid )
 		CLASSEID_BARD:			break;
+		CLASSEID_BLADESINGER:	break;
 		CLASSEID_CRAFTER:		break;
 		CLASSEID_MAGE:			break;
-		CLASSEID_CLERIC:		break;
+		CLASSEID_MYSTIC_ARCHER:	break;
+		CLASSEID_PALADIN:		break;
 		CLASSEID_RANGER:		break;
 		CLASSEID_THIEF:			break;
 		CLASSEID_WARRIOR:		break;
@@ -443,15 +481,23 @@ function HaveStatAffinity( who , stat )
 	var classeids;
 
 	case( stat )
-		"str":	classeids := {  CLASSEID_CRAFTER,
-					CLASSEID_WARRIOR };	break;
+		"str":	classeids := {  
+					CLASSEID_CRAFTER,
+					CLASSEID_WARRIOR };	
+					break;
 
-		"dex":	classeids := {  CLASSEID_BARD,
-					CLASSEID_THIEF   };	break;
+		"dex":	classeids := {  
+					CLASSEID_BARD,
+					CLASSEID_BLADESINGER,
+					CLASSEID_THIEF,
+					CLASSEID_MYSTIC_ARCHER };	
+					break;
 
-		"int":	classeids := {  CLASSEID_BARD,
+		"int":	classeids := {  
+					CLASSEID_BARD,
 					CLASSEID_MAGE,
-					CLASSEID_CLERIC   };	break;
+					CLASSEID_PALADIN };	
+					break;
 
 		default:	classeids := {};
 	endcase
@@ -477,21 +523,22 @@ function HaveStatDifficulty( who , stat )
 		"str":
 			classeids := {
 				CLASSEID_BARD,
+				CLASSEID_BLADESINGER,
 				CLASSEID_MAGE,
-				CLASSEID_CLERIC
-			}; break;
+				CLASSEID_MYSTIC_ARCHER };
+				break;
 		"dex":
 			classeids := {
-				CLASSEID_MAGE
-			};	break;
+				CLASSEID_MAGE,
+				CLASSEID_PALADIN };
+				break;
 		"int":
 			classeids := {
 				CLASSEID_CRAFTER,
-				CLASSEID_WARRIOR
-			};	break;
-		default:
-			classeids := {
-			};
+				CLASSEID_WARRIOR };
+				break;
+
+		default:	classeids := {};
 	endcase
 
 	foreach id in classeids
@@ -520,6 +567,10 @@ function IsBard( who )
 	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_BARD ) );
 endfunction
 
+function IsBladesinger( who )
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_BLADESINGER ) );
+endfunction
+
 function IsCrafter( who )
 	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CRAFTER ) );
 endfunction
@@ -528,8 +579,12 @@ function IsMage( who )
 	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_MAGE ) );
 endfunction
 
-function IsCleric( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CLERIC ) );
+function IsMysticArcher( who )
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_MYSTIC_ARCHER ) );
+endfunction
+
+function IsPaladin( who )
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_PALADIN ) );
 endfunction
 
 function IsRanger( who )
@@ -549,7 +604,7 @@ function IsPowerplayer( who )
 endfunction
 
 
-function IsFromThatClasse( who , classe_skills , ranger := 0)
+function IsFromThatClasse( who , classe_skills , forensicsallowed := 0)
 
 	var classe	:= 0;
 	var total	:= 0;
@@ -557,7 +612,7 @@ function IsFromThatClasse( who , classe_skills , ranger := 0)
 	var amount := 0;
 
 	for i := 0 to SKILLID__HIGHEST
-		if(ranger)
+		if(forensicsallowed)
 			if(i != SKILLID_FORENSICS)	//Ignores forensics from spec calculation
 				amount := GetEffectiveSkill( who , i );
 				total := total + amount;
@@ -614,6 +669,14 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BARD ) )
 			ret := 1;
 		endif
+	elseif( GetObjProperty( who , CLASSEID_BLADESINGER	) )
+		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_BLADESINGER ) )
+			ret := 1;
+		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BLADESINGER ) )
+			ret := 1;
+		elseif( GetObjProperty( item , "int" ) )
+			ret := 1;
+		endif
 	elseif( GetObjProperty( who , CLASSEID_CRAFTER ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_CRAFTER ) )
 			ret := 1;
@@ -634,14 +697,22 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MAGE ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_CLERIC ) )
-		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_CLERIC ) )
+	elseif( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER ) )
+		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_MYSTIC_ARCHER ) )
 			ret := 1;
 		elseif( GetObjProperty( item , "str" ) )
 			ret := 1;
-		elseif( GetObjProperty( item , "ArBonus" ) )
+		//elseif( GetObjProperty( item , "ArBonus" ) )
+			//ret := 1;
+		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MYSTIC_ARCHER ) )
 			ret := 1;
-		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_CLERIC ) )
+		endif
+	elseif( GetObjProperty( who , CLASSEID_PALADIN ) )
+		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_PALADIN ) )
+			ret := 1;
+		elseif( GetObjProperty( item , "dex" ) )
+			ret := 1;
+		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_PALADIN ) )
 			ret := 1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_RANGER ) )
@@ -703,7 +774,7 @@ function ClassWeapons(classString)
 		"IsBard": return {0x0e81, 0x13B2, 0x13fd, 0x0f4f, 0x27a5, 0x26c2, 0x26c3, 0x27a7};
 		//crossbow, bow, heavy crossbow, Yumi, Sai, Composite Bow, Repeating Crossbow, Kryss, Short Spear, Spear, Warfork, Dagger, Skinning Knife, Pitchfork
 		"IsThief": return {0x0f4f, 0x13B2, 0x13fd, 0x27a5, 0x27af, 0x26c2, 0x26c3, 0x1401, 0x1402, 0x0f63, 0x1404, 0x0f51, 0x0ec4, 0x0e87};
-		//Black Staff, Gnarled Staff, QuarterStaff, lajatang
+		//Black Staff, Gnarled Staff, QuarterStaff, Lajatang
 		"IsMage": return {0x0df0, 0x13f9, 0x0e8a, 0x27a7};
 		default:
 	endcase

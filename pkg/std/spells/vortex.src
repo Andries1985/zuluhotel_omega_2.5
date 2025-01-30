@@ -12,7 +12,7 @@ program cast_summon( parms, spell_id )
 	var caster;
 	var cast_loc;
 	var fromhit;
-
+	
 	if (parms[1] == "#MOB")
 		caster := parms[2];
 		cast_loc := parms[3];
@@ -22,9 +22,12 @@ program cast_summon( parms, spell_id )
 		if (parms[5])
 			fromhit := parms[5];
 		endif
-
 	else
 		caster := parms;
+		if (IsPaladin(caster))
+			SendSysMessage(caster, "Paladins may not cast this spell!");
+			return 0;
+		endif
 		// For scrolls, StartSpellScript isn't working >:(
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];
@@ -49,7 +52,7 @@ program cast_summon( parms, spell_id )
 	endif
 
 	var thecreature := "vortex";
-	var thecritter := CreateNPCfromTemplate( thecreature, cast_loc.x, cast_loc.y, cast_loc.z, 0, cast_loc.realm);
+	var thecritter := CreateNPCfromTemplate(thecreature, cast_loc.x, cast_loc.y, cast_loc.z, 0, cast_loc.realm);
 	PlaySoundEffect(thecritter, SFX_SPELL_ENERGY_VORTEX );
 
 	setobjproperty(thecritter, "summoned",1);

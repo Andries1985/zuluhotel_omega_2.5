@@ -16,11 +16,28 @@ program cast_poly( parms, spell_id )
 	var caster;
 	var cast_on := caster;	
 
+
+
 	if (parms[1] == "#MOB")
 		 //CastToad(parms[2],parms[3]);
 		return;
 	else
 		caster := parms;
+		if (IsPaladin(caster))
+			SendSysMessage(caster, "Paladins may not cast this spell!");
+			return 0;
+		endif
+		if( !CanMod(caster, "poly") )
+			EraseObjProperty( caster , "#Casting" );
+			SendSysMessage( caster , "You're already polymorphed in something." );
+			return;
+		endif
+
+		if( !CanMod(caster, "all") || !CanMod(caster, "ebless") )
+			EraseObjProperty( caster , "#Casting" );
+			SendSysMessage( caster , "You're already blessed." );
+			return;
+		endif
 		// For scrolls, StartSpellScript isn't working >:(
 		if (TypeOf(parms) == "Array")
 			caster := parms[1];
@@ -31,7 +48,7 @@ program cast_poly( parms, spell_id )
 			return 0;
 		endif
 		if (!can_cast(caster, circle))
-        		return;
+        	return;
 		endif
 	endif
 	
@@ -55,9 +72,6 @@ program cast_poly( parms, spell_id )
 	if( GetObjProperty( caster , CLASSEID_MAGE ) )
 		critgroup := critgroup + 1;
 		critter	:= critter + 2;
-	elseif( GetObjProperty( caster , CLASSEID_CLERIC ) )
-		critgroup := critgroup + 1;
-		critter	:= critter + 2;
 	elseif( GetObjProperty( caster , CLASSEID_WARRIOR ) )
 		critgroup := critgroup - 1;
 		critter	:= critter - 2;
@@ -65,9 +79,6 @@ program cast_poly( parms, spell_id )
 			critgroup := 0;
 		endif
 		
-		if( critter < 0 )
-			critter := 0;
-		endif
 	endif
 
 	case( critgroup )

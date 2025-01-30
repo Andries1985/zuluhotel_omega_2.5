@@ -40,7 +40,7 @@ program summon_creature( parms )
 	Sleep( duration );
 
 	PlaySoundEffect( thecritter , 0x01fa );
-//	PlayStationaryEffect( thecritter.x, thecritter.y, thecritter.z, 0x3728, 10, 10);
+	PlayStationaryEffect( thecritter.x, thecritter.y, thecritter.z, 0x3728, 10, 10, 0, thecritter.realm);
 	var backpack := FindExistingPack( thecritter.serial );
 	if( backpack )
 		foreach item in EnumerateItemsInContainer( backpack );

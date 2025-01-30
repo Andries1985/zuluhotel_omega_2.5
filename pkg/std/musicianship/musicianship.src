@@ -74,11 +74,14 @@ function AutoRepeat(character, instrument)
 	var cx := character.x;
 	var cy := character.y;
 	var ftic := 0;
-	var bard := GetObjProperty( character , CLASSEID_BARD );
+	//var bard := GetObjProperty( character , CLASSEID_BARD );
 
 	SendSysMessage(character,"You begin playing...");
 	if (GetObjProperty( character , CLASSEID_BARD ) && GetStamina(character) < GetMaxStamina(character))
 		PrintTextAbovePrivate(character, "*The tranquil music slowly replenishes your stamina*", character);
+	endif
+	if (GetObjProperty( character , CLASSEID_BLADESINGER ) && GetStamina(character) < GetMaxStamina(character))
+		PrintTextAbovePrivate(character, "*The singing music slowly replenishes your stamina*", character);
 	endif
 
 	repeat
@@ -94,13 +97,13 @@ function AutoRepeat(character, instrument)
 		elseif (inst_id == BIGHARP)
 			ret := play(character,SFX_HARP_SUCC,SFX_HARP_FAIL);
 		else
-				PrintTextAbovePrivate( character, "That's not something you can play", character );
+			PrintTextAbovePrivate( character, "That's not something you can play", character );
 			return 0;
 		endif
 		
 		sleep(2);
 
-		if(GetObjProperty( character , CLASSEID_BARD ))
+		if(GetObjProperty( character , CLASSEID_BARD ) || GetObjProperty( character , CLASSEID_BLADESINGER ) )
 			if(ftic == 1)
 			RegenBardMana(character);
 			endif
@@ -125,7 +128,14 @@ function RegenBardMana(who)
 		return 0;
 	endif
 
-	var stamina_regen := 10 * (1 + (IsBard(who)*0.4));
+	var stamina_regen;
+
+	if (IsBard(who))
+		stamina_regen := 10 * (1 + (IsBard(who)*0.5));
+	endif
+	if (IsBladesinger(who))
+		stamina_regen := 10 * (1 + (IsBladesinger(who)*0.5));
+	endif
 
 	SetStamina(who, (GetStamina(who)+stamina_regen));
 

@@ -38,7 +38,6 @@ function EvaluateAnimal (character, animal)
 
 	var points := POINT_VALUE;
 	var ranger := GetObjProperty( character , CLASSEID_RANGER );
-	var cleric := GetObjProperty( character , CLASSEID_CLERIC );
 
 	
 	if (!CheckSkill (character, SKILLID_ANIMALLORE, -1, points) )
