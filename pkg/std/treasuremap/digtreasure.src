@@ -254,7 +254,7 @@ function CreateGuardian( template, x , y , z, r )
 		z := 1;
 	endif
 
-    var nasty := CreateNpcFromTemplate( template , x , y , z, 0, r, MOVEOBJECT_FORCELOCATION );
+    var nasty := CreateNpcFromTemplate( template, x, y, z, 0, r, MOVEOBJECT_FORCELOCATION );
 	if( !nasty )
 		CreateGuardian( template, x, y, z, r );
 	else

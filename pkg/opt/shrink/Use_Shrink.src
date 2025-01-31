@@ -19,7 +19,7 @@ endif
 
 var npc := CreateCustomNPC(doll, GetObjProperty(doll, "NPCTemplate"));
 
-if (MoveObjectToLocation(npc, what.x, what.y, what.z, who.realm, MOVEOBJECT_FORCELOCATION))
+if (MoveObjectToLocation(npc, what.x, what.y, what.z, what.realm, MOVEOBJECT_FORCELOCATION))
 	SendSysMessage(who, "NPC spawned!", 3, 53);
 	LogCommand(who, GetProcess(GetPid()).name, doll.name+"/"+doll.serial, what.x+" "+what.y+" "+what.z);
 else
@@ -30,44 +30,44 @@ endprogram
 
 function CreateCustomNPC(point, template)
 
-var skills := GetObjProperty(point, "NPCSkills");
-var NPCProps := GetObjProperty(point, "NPCProps");
-var vits := GetObjProperty(point, "NPCVits"); 
-var overw := GetObjProperty(point, "overw");
+	var skills := GetObjProperty(point, "NPCSkills");
+	var NPCProps := GetObjProperty(point, "NPCProps");
+	var vits := GetObjProperty(point, "NPCVits"); 
+	var overw := GetObjProperty(point, "overw");
 
-var critter := CreateNpcFromTemplate( template, 5283, 1184, 0, overw, point.realm);
+	var critter := CreateNpcFromTemplate( template, 5283, 1184, 0, overw, "britannia");
 
-var i := 0;
-foreach skill in skills
-	SetBaseSkill(critter, i, skill);
-	i := i + 1;
-endforeach
+	var i := 0;
+	foreach skill in skills
+		SetBaseSkill(critter, i, skill);
+		i := i + 1;
+	endforeach
 
-var oldprops := GetObjPropertyNames( critter );
-foreach thing in oldprops
-	EraseObjProperty(critter, thing);
-endforeach
+	var oldprops := GetObjPropertyNames( critter );
+	foreach thing in oldprops
+		EraseObjProperty(critter, thing);
+	endforeach
 
-foreach prop in NPCProps
-	SetObjProperty(critter, prop[1], prop[2]);
-endforeach
+	foreach prop in NPCProps
+		SetObjProperty(critter, prop[1], prop[2]);
+	endforeach
 
-if (GetObjProperty(critter, "color"))
-	SetObjProperty(critter, "color", critter.color);
-endif
+	if (GetObjProperty(critter, "color"))
+		SetObjProperty(critter, "color", critter.color);
+	endif
 
-if (GetObjProperty(point, "CustomLoot"))
-  SetObjProperty(critter, "CustomLoot", GetObjProperty(point, "CustomLoot"));
-endif
+	if (GetObjProperty(point, "CustomLoot"))
+	SetObjProperty(critter, "CustomLoot", GetObjProperty(point, "CustomLoot"));
+	endif
 
-SetHp(critter, vits.HITS);
-SetMana(critter, vits.MANA);
-SetStamina(critter, vits.STAM);
-SetObjProperty(critter, "customnpc", 1);
+	SetHp(critter, vits.HITS);
+	SetMana(critter, vits.MANA);
+	SetStamina(critter, vits.STAM);
+	SetObjProperty(critter, "customnpc", 1);
 
-SetObjProperty(critter, "SpawnPoint", point.serial);
+	SetObjProperty(critter, "SpawnPoint", point.serial);
 
-DressNPCCustom(critter);
-return critter;
+	DressNPCCustom(critter);
+	return critter;
 
 endfunction

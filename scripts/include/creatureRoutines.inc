@@ -266,7 +266,7 @@ function cr_spawn( potential )
    endif
 
    if ( template and Random( fert_pot ) = 0)
-      newDude := CreateNpcFromTemplate( template, me.x, me.y, me.z, 0 );
+      newDude := CreateNpcFromTemplate( template, me.x, me.y, me.z, 0, me.realm );
       SetObjProperty( newDude, "spawnedBy", me.serial );
       return 1;
    endif

@@ -961,7 +961,7 @@ case (utterance)
         3: say("Care for a drink, hummie?");
 endcase
 
-thecritter := createnpcfromtemplate("waterelemental", me.x, me.y -2, me.z, 0);
+thecritter := createnpcfromtemplate("waterelemental", me.x, me.y -2, me.z, 0, me.realm);
 SetObjProperty (thecritter, "master", me.serial);
 setobjproperty(thecritter, "guardkill", 1);
 
@@ -975,7 +975,7 @@ function cast_explosion( caster, cast_on )
     var die_string := "4d6";
     var dmg := 0;
 
-    var victims := ListMobilesNearLocationEx( cast_on.x , cast_on.y , cast_on.z , 3 , 0x03);
+    var victims := ListMobilesNearLocationEx( cast_on.x , cast_on.y , cast_on.z , 3 , 0x03, cast_on.realm);
 
     foreach mobile in victims
 	if( (caster.serial != mobile.serial) and (CheckLosAt( mobile, cast_on.x , cast_on.y , cast_on.z ) and (!cast_on.npctemplate)))
@@ -1105,7 +1105,7 @@ case (utterance)
         3: say("Return to earth, human!");
 endcase
 
-thecritter := createnpcfromtemplate("earthelemental", me.x, me.y -2, me.z, 0);
+thecritter := createnpcfromtemplate("earthelemental", me.x, me.y -2, me.z, 0, me.realm);
 SetObjProperty (thecritter, "master", me.serial);
 setobjproperty(thecritter, "guardkill", 1);
 endfunction
@@ -1122,7 +1122,7 @@ case (utterance)
         3: say("By the winds of the east and west, I command you to serve me");
 endcase
 
-thecritter := createnpcfromtemplate("airelemental", me.x, me.y -2, me.z, 0);
+thecritter := createnpcfromtemplate("airelemental", me.x, me.y -2, me.z, 0, me.realm);
 SetObjProperty (thecritter, "master", me.serial);
 setobjproperty(thecritter, "guardkill", 1);
 
@@ -1139,7 +1139,7 @@ case (utterance)
         3: say("Take these slaves back to your realm, servant of darkness!");
 endcase
 
-thecritter := createnpcfromtemplate("daemon", me.x, me.y -2, me.z, 0);
+thecritter := createnpcfromtemplate("daemon", me.x, me.y -2, me.z, 0, me.realm);
 SetObjProperty (thecritter, "master", me.serial);
 setobjproperty(thecritter, "guardkill", 1);
 endfunction
@@ -1155,7 +1155,7 @@ case (utterance)
         3: say("Come forth, Chaos spawn!");
 endcase
 
-thecritter := createnpcfromtemplate("vortex", me.x, me.y -2, me.z, 0);
+thecritter := createnpcfromtemplate("vortex", me.x, me.y -2, me.z, 0, me.realm);
 SetObjProperty (thecritter, "master", me.serial);
 setobjproperty(thecritter, "guardkill", 1);
 endfunction

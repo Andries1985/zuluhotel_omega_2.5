@@ -67,7 +67,7 @@ function GenerateRandomChaosEffects(who, what, alterchance, mutatechance, gatech
 			else
 				x := x - gatechance;
 				if (x < i)
-					GatedDaemon(what.x, what.y, what.z);
+					GatedDaemon(what.x, what.y, what.z, what.realm);
 				else
 					DivertPlayer(who);
 				endif
@@ -236,13 +236,13 @@ endfunction
 
 
 
-function GatedDaemon(xpos, ypos, zpos)
+function GatedDaemon(xpos, ypos, zpos, rpos)
 
 // This effect will create a very unhappy daemon, who will likely
 // take his frustrations out upon the poor caster.  Suggest uses:
 // random effect from a Gate spell, miscast summon, etc. etc.
 
-	CreateNPCFromTemplate("daemon", xpos, ypos, zpos);
+	CreateNPCFromTemplate("daemon", xpos, ypos, zpos, 0, rpos);
 
 endfunction
 

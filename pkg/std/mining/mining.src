@@ -273,8 +273,8 @@ function DigForClay( character , use_on , info )
 	var initial_x	:= character.x;
 	var initial_y	:= character.y;
 	
-	var tdiff := GetHarvestDifficulty( "clay" , use_on.x , use_on.y , info.landtile );
-	var clay_amount := HarvestResource( "clay" , use_on.x , use_on.y , 1 , 2 );
+	var tdiff := GetHarvestDifficulty( "clay" , use_on.x , use_on.y , info.landtile, use_on.realm );
+	var clay_amount := HarvestResource( "clay" , use_on.x , use_on.y , 1 , 2, use_on.realm );
 	if( !clay_amount )
 		SendSysmessage(character, "There's no clay left there.");
 		return 0; //was -1, modified by ClasH
@@ -323,8 +323,8 @@ function DigForSand( character , use_on , info )
 	var initial_x	:= character.x;
 	var initial_y	:= character.y;
 	
-	var tdiff := GetHarvestDifficulty( "sand" , use_on.x , use_on.y , info.landtile );
-	var sandamount := HarvestResource( "sand" , use_on.x , use_on.y , 1 , 2 );
+	var tdiff := GetHarvestDifficulty( "sand" , use_on.x , use_on.y , info.landtile, use_on.realm );
+	var sandamount := HarvestResource( "sand" , use_on.x , use_on.y , 1 , 2, use_on.realm );
 	if( !sandamount )
 		SendSysmessage(character, "There's no sand left there.");
 		return -1;
