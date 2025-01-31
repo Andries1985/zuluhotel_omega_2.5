@@ -577,36 +577,28 @@ endfunction
 
 function IsInGuardedArea( byref who )
 
-// Ok wtf, why do we WANT a staff to always be in guarded territory?
-	//if( who.cmdlevel )
-	//	return 1;
-	//<div></div>endif
-	
+	var FacetNum := 0;
+	case( who.realm )
+		"britannia":		FacetNum := 0;
+		"britannia_alt":	FacetNum := 1;
+		"ilshenar":			FacetNum := 2;
+		"malas":			FacetNum := 3;
+		"tokuno":			FacetNum := 4;
+		"termur":			FacetNum := 5;
+	endcase
+
 	var i;
 	var splited;
 	var old_prio	:= set_priority(100);
 	var areas_cfg	:= ReadConfigfile(CFGFILE_AREAS);
-	
-	// These are ALWAYS unguarded areas - JUST Jhelom arena atm
-	// Get rid of this probably
-	var areas	:= GetConfigStringArray( areas_cfg[2], "Area" );
-	if( areas )
-		for( i := 1; i <= areas.size(); i := i + 1 )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 0;
-			endif
-		endfor
-	endif
 
 	var guarded := GetGlobalProperty(PROPID_GLOBAL_AREAS_GUARDED);
 	if( !guarded )
 		set_priority(old_prio);
 		return 0;
 	endif
-	
-	areas := GetConfigStringArray( areas_cfg[1], "Area" );
+
+	var areas := GetConfigStringArray( areas_cfg[FacetNum], "Area" );
 	if( !areas )
 		set_priority(old_prio);
 		return 0;
