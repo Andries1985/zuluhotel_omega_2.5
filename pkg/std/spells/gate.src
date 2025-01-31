@@ -83,7 +83,7 @@ program spell_gate( caster, spell_id )
 		return;
 	endif
 
-	if( IsForbiddenAreaToGateTo( caster, tox, toy ) )
+	if( IsForbiddenAreaToGateTo( caster, tox, toy, torealm ) )
 		SendSysMessage(caster, "The destination is a magic place with protection.");
 		if( cast_on.objtype != 0x6100 )
 			DestroyItem( cast_on );

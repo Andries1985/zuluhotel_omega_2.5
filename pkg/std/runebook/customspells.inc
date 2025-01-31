@@ -139,10 +139,11 @@ function CustomRecall( caster, x, y, z, realm, from_charge := 0 )
 		return 0;
 	endif
 
-	if( IsForbiddenAreaToRecallTo( caster , tox , toy ) )
+	if( IsForbiddenAreaToRecallTo( caster , tox , toy, torealm ) )
 		SendsysMessage( caster , "The destination is a magic place with protection." );
 		return 0;
 	endif
+	
 	var owner;
 	var lamp;
 	var Near_Items := ListItemsNearLocation(tox, toy, toz, 10, torealm);
@@ -337,7 +338,7 @@ function CustomGate( caster, x, y, z, realm )
 	var toz := z;
 	var torealm := realm;
 
-	if( IsForbiddenAreaToGateTo( caster, tox, toy ) )
+	if( IsForbiddenAreaToGateTo( caster, tox, toy, torealm ) )
 		SendSysMessage(caster, "The destination is a magic place with protection.");
 		return 0;
 	endif

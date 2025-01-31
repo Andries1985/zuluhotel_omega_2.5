@@ -3,7 +3,7 @@ use uo;
 
 include "include/areas";
 
-const MINS_BETWEEN_CHECKS := 10;
+const MINS_BETWEEN_CHECKS := 5;
 
 program areaban( who )
 
@@ -20,7 +20,7 @@ endprogram
 
 function SendPlayerToValidArea( who )
 
-	var possibles := {	{ 1475, 1645, 20 } ,	// Britain
+	var possibles := {	{ 1475, 1645, 20, "" } ,	// Britain
 				{ 2477, 399 , 0  } ,	// Minoc
 				{ 634 , 849 , 1  } };	// Yew
 
@@ -29,7 +29,7 @@ function SendPlayerToValidArea( who )
 	var z;
 
 	foreach loc in possibles
-		if( !IsForbiddenAreaToRecallTo( who, loc[1], loc[2] ) )
+		if( !IsForbiddenAreaToRecallTo( who, loc[1], loc[2], "britannia" ) )
 			x := loc[1];
 			y := loc[2];
 			z := loc[3];

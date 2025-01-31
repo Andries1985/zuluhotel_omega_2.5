@@ -11,6 +11,7 @@
 use os;
 use uo;
 use cfgfile;
+
 include ":staff:include/staff";
 include ":gumps:include/gumps";
 include "include/areas";
@@ -36,12 +37,14 @@ set_script_option(SCRIPTOPT_NO_RUNAWAY,1);
 Program areas(who, text)
 
 	if( !text )
-		SendSysMessage( who, "Usage is .areas facetnumber" );
+		SendSysMessage( who, "Usage is .areas facet (lowercase)" );
 		return 0;
 	endif
-	var facetnumber := CInt(text[1]);
 
-	var areas	:= GetConfigStringArray( areas_cfg[facetnumber], "Area" );
+	text := SplitWords(text);
+	var realm := Lower(text[1]);
+
+	var areas := GetConfigStringArray( areas_cfg[realm], "Area" );
 	// don't log changes, too big!
 	LogCommand(who, GetProcess(GetPid()).name);
 
