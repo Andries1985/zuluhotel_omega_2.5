@@ -299,7 +299,7 @@ function SetMeUp()
 	endif
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75,1);
+		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
 		if (!EquipItem(me, newbackpack)) DestroyItem(newbackpack); endif
 	endif
 	var i;
@@ -1285,7 +1285,7 @@ function MountHorse(horse)
 		if ( MoveObjectToLocation(me,horse.x,horse.y,horse.z,0) )
 			set_critical(1);
 			me.facing := horse.facing;
-			var mount := CreateItemAtLocation(5288 , 1176 , 0, 0x1F021,1);
+			var mount := CreateItemAtLocation(5288 , 1176 , 0, 0x1F021, 1, "britannia");
 			mount.color := horse.color;
 			setobjproperty(mount,"petname",horse.name);
 			setobjproperty(mount,"pethp",GetHP(horse));
@@ -1326,7 +1326,7 @@ function OpenMyPack()
 	endif
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75,1);
+		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
 		EquipItem(me, newbackpack);
 	endif
 

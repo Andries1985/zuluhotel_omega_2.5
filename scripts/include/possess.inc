@@ -39,7 +39,7 @@ endfunction
 function MoveMyPack(me)
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(5123, 1779, 0, 0xe75,1);
+		var newbackpack := CreateItemAtLocation(5123, 1779, 0, 0xe75, 1, "britannia");
 		EquipItem(me, newbackpack);
 	endif
 
@@ -59,7 +59,7 @@ endfunction
 function clone(npc, me)
 
 	if (!npc.backpack)
-		var newbackpack := CreateItemAtLocation(5123, 1779, 0, 0xe75,1);
+		var newbackpack := CreateItemAtLocation(5123, 1779, 0, 0xe75, 1, "britannia");
 		EquipItem(npc, newbackpack);
 	endif
 
@@ -177,7 +177,7 @@ endfunction
 function SwapClothes(me, npc)
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(5123, 1779, 0, 0xe75,1);
+		var newbackpack := CreateItemAtLocation(5123, 1779, 0, 0xe75, 1, "britannia");
 		EquipItem(me, newbackpack);
 	endif
 
@@ -187,7 +187,7 @@ function SwapClothes(me, npc)
 	if (hispack)
 		MoveItemToLocation(hispack, 5123, 1779, 0, MOVEITEM_FORCELOCATION);
 	else
-		hispack := CreateItemAtLocation(5123, 1779, 0, 0xe75,1);
+		hispack := CreateItemAtLocation(5123, 1779, 0, 0xe75, 1, "britannia");
 	endif
 
 	foreach thing in listequippeditems(me)

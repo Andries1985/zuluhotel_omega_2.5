@@ -426,14 +426,14 @@ function UndoTheMod( who , prop , amt , liche := 0 )
 		"hair":
 					DestroyItem( GetEquipmentByLayer( who , LAYER_HAIR ));
 					if (oldvalue)
-						var newhair := CreateItemAtLocation(5288 , 1176 , 0, oldvalue, 1);
+						var newhair := CreateItemAtLocation(5288 , 1176 , 0, oldvalue, 1, "britannia");
 						newhair.color := GetObjProperty(who,"haircolor");
 						EquipItem(who,newhair);
 					endif
 		"beard":
 					DestroyItem(GetEquipmentByLayer(who,LAYER_BEARD));
 					if (oldvalue)
-						var newhair := CreateItemAtLocation(5288 , 1176 , 0, oldvalue, 1);
+						var newhair := CreateItemAtLocation(5288 , 1176 , 0, oldvalue, 1, "britannia");
 						newhair.color := GetObjProperty(who,"haircolor");
 						EquipItem(who,newhair);
 					endif

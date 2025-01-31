@@ -614,7 +614,7 @@ endfunction
 
 function ShowFlame( who )
 		var coolflame;
-		coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3728, 1 );
+		coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3728, 1, who.realm );
 		PlaySoundEffect(who, 0x209);
 		Sleep(1);
 		DestroyItem(coolflame);
@@ -724,7 +724,7 @@ endfunction
 
 function ShowFlame2( who )
 		var coolflame;
-		coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3709, 1 );
+		coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3709, 1, who.realm );
 		PlaySoundEffect(who, 0x209);
 		Sleep(1);
 		DestroyItem(coolflame);

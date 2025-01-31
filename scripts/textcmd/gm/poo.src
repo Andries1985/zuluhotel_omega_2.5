@@ -2,7 +2,7 @@ include "include/dismount";
 include ":staff:include/staff";
 
 program pootang( me )
-	var poo := CreateItemAtLocation(me.x,me.y,me.z,0x0f3c,1);
+	var poo := CreateItemAtLocation(me.x,me.y,me.z,0x0f3c,1,me.realm);
 	poo.decayat := ReadGameClock() + 1;
 	LogCommand(me, GetProcess(GetPid()).name);
 endprogram

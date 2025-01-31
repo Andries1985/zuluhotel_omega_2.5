@@ -76,7 +76,7 @@ program spell_gate( caster, spell_id )
 	var tox := Cint(GetObjProperty( cast_on, "x" ));
 	var toy := Cint(GetObjProperty( cast_on, "y" ));
 	var toz := Cint(GetObjProperty( cast_on, "z" ));
-	var torealm := GetObjProperty( cast_on, "z" );
+	var torealm := GetObjProperty( cast_on, "realm" );
 
 	if( !tox and !toy and !toz and !torealm )
 		SendSysmessage(caster, "That is a blank rune!");

@@ -73,11 +73,11 @@ Function GetContents (container)
     var tempstr := "";
 
     for (counter := 1; counter <= tlen; counter := counter + 1)
-        if (counter = 1)
+        if (counter == 1)
                 num_regs := num_regs + 1;
                 thecontents[num_regs] := FlaskContentsType;
                 thecontents[num_regs].reg := contents[counter];
-        elseif (thecontents[counter - 1] = ",")
+        elseif (thecontents[counter - 1] == ",")
                 num_regs := num_regs + 1;
                 thecontents[num_regs] := FlaskContentsType;
                 thecontents[num_regs].reg := contents[counter];
@@ -85,7 +85,7 @@ Function GetContents (container)
                 tempstr := "";
         else
                 tempstr := tempstr + thecontents[counter];
-                if (counter = tlen)
+                if (counter == tlen)
                         thecontents[num_regs] := FlaskContentsType;
                         thecontents[num_regs].amount := cint(tempstr);
                 endif
@@ -105,7 +105,7 @@ function AddRegToFlask(flask, reg, amount)
             amount := 99;
     endif
 
-    if (contents = -1)
+    if (contents == -1)
             var stuff := FlaskContentsType;
             stuff[1].reg := reg;
             stuff[1].amount := amount;
@@ -119,7 +119,7 @@ function AddRegToFlask(flask, reg, amount)
 
         while (i <= tlen)
                 i := i + 1;
-                if (contents[i] = reg)
+                if (contents[i] == reg)
                         inthere := 1;
                         break;
                 endif
@@ -141,7 +141,7 @@ function TakeRegsFromFlask(flask, reg, amount)
 
     var contents := GetContents(flask);
 
-    if (contents = -1) //the flask is empty
+    if (contents == -1) //the flask is empty
             return -1;
     else
 

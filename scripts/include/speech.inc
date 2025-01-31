@@ -85,7 +85,7 @@ function TakeItem(you,it)
 	endforeach
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75,1);
+		var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75, 1, me.realm);
 		if (!EquipItem(me, newbackpack))
 			return;
 		endif
@@ -373,7 +373,7 @@ function BarkToKeyWord(text,speaker)
 	endforeach
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75,1);
+		var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75, 1, me.realm);
 		if (!EquipItem(me, newbackpack))
 			return;
 		endif

@@ -593,6 +593,7 @@ function CreateSpawnPointItem( byref point, data )
 			x := point.x + Cint( Random((range*2)+1) - range );
 			y := point.y + Cint( Random((range*2)+1) - range );
 			z := Cint( GetWorldHeight( x, y, realm ) );
+			realm := point.realm;
 		else
 			x := point.x;
 			y := point.y;

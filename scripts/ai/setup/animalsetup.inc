@@ -8,7 +8,7 @@ include ":spawnpoint:customnpc";
 
 	if (!me.backpack)
 		var npccfg := readconfigfile("npcdesc");
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75,1);
+		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
 		EquipItem(me, newbackpack);
 		if (npccfg[me.npctemplate].colorrange)
 			var parms := splitwords(npccfg[me.npctemplate].colorrange);

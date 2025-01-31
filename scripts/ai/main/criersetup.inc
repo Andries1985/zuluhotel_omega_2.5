@@ -10,7 +10,7 @@ if (!flee_point)
 endif
 
 if (!me.backpack)
-	var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75,1);
+	var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75,1,me.realm);
 	EquipItem(me, newbackpack);
 	if( me.name["<random>"] )
 		me.graphic := 400 + Random(2);

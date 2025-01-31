@@ -41,6 +41,7 @@ function TryToDrawCircle( who )
 	var x := who.x;
 	var y := who.y;
 	var z := who.z;
+	var r := who.realm;
 	var center_y := y + 5;
 
 	if( len(ListItemsNearLocation( x , center_y , z , 6 )) >= 1 )
@@ -66,7 +67,7 @@ function TryToDrawCircle( who )
 
 
 	//Create the speech captor
-	captor := CreateItemAtLocation( x , center_y , z , WORDS_CAPTOR , 1 );
+	captor := CreateItemAtLocation( x , center_y , z , WORDS_CAPTOR , 1, r );
 	RegisterForSpeechEvents( captor , 6 );
 	EnableEvents( SYSEVENT_SPEECH , 6 );
 
@@ -163,10 +164,10 @@ function TryToDrawCircle( who )
 		if( appear )
 			var itemX_mod := GetConfigInt( elem , "Xmod" + (current + 1) );
 			var itemY_mod	:= GetConfigInt( elem , "Ymod" + (current + 1) );
-			magic_circle.append( CreateItemAtLocation( (x + itemX_mod) , (y + itemY_mod) , z , appear , 1 ) );
+			magic_circle.append( CreateItemAtLocation( (x + itemX_mod) , (y + itemY_mod) , z , appear , 1, r ) );
 		endif
 
-		foreach mobile in ListMobilesNearLocation( who.x , who.y , who.z , 10 );
+		foreach mobile in ListMobilesNearLocation( who.x , who.y , who.z , 10, who.realm );
 			mobile.setlightlevel( base_light * current , 600 );
 		endforeach
 
@@ -177,11 +178,11 @@ function TryToDrawCircle( who )
 
 	PerformAction( who , ANIM_CAST_AREA );
 	PlaySoundEffect( who , 0x01fe );
-	CreateMagicCircle( x , y , z , magic_circle );
+	CreateMagicCircle( x , y , z , r, magic_circle );
 
 	Sleep( 1 );
 
-	CreateCandles( x , y , z , magic_circle );
+	CreateCandles( x , y , z , r, magic_circle );
 	MakeTheCircleUnDecayable( magic_circle );
 
 	return magic_circle;
@@ -190,74 +191,74 @@ endfunction
 
 
 
-function CreateMagicCircle( x , y , z , byref magic_circle )
+function CreateMagicCircle( x , y , z , r, byref magic_circle )
 
-	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 7) , z , 0xBA01 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 7) , z , 0xBA02 , 1 ) );
-	magic_circle.append( CreateItemAtLocation(  x      , (y + 7) , z , 0xBA03 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 7) , z , 0xBA04 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 7) , z , 0xBA05 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 6) , z , 0xBA06 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 5) , z , 0xBA07 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 4) , z , 0xBA08 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 3) , z , 0xBA09 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 3) , z , 0xBA0A , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 2) , z , 0xBA0B , 1 ) );
-	magic_circle.append( CreateItemAtLocation(  x      , (y + 2) , z , 0xBA0C , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 2) , z , 0xBA0D , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 2) , z , 0xBA0E , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 2) , z , 0xBA0F , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 3) , z , 0xBA10 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 4) , z , 0xBA11 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 5) , z , 0xBA12 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 6) , z , 0xBA13 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 6) , z , 0xBA14 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 6) , z , 0xBA15 , 1 ) );
-	magic_circle.append( CreateItemAtLocation(  x      , (y + 6) , z , 0xBA16 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 6) , z , 0xBA17 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 5) , z , 0xBA18 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 4) , z , 0xBA19 , 1 ) );
-	magic_circle.append( CreateItemAtLocation(  x      , (y + 3) , z , 0xBA1A , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 3) , z , 0xBA1B , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 3) , z , 0xBA1C , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 4) , z , 0xBA1D , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 5) , z , 0xBA1E , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 5) , z , 0xBA1F , 1 ) );
-	magic_circle.append( CreateItemAtLocation(  x      , (y + 5) , z , 0xBA20 , 1 ) );
-	magic_circle.append( CreateItemAtLocation(  x      , (y + 4) , z , 0xBA21 , 1 ) );
-	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 4) , z , 0xBA22 , 1 ) );
+	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 7) , z , 0xBA01 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 7) , z , 0xBA02 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation(  x      , (y + 7) , z , 0xBA03 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 7) , z , 0xBA04 , 1, r) );
+	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 7) , z , 0xBA05 , 1, r) );
+	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 6) , z , 0xBA06 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 5) , z , 0xBA07 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 4) , z , 0xBA08 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 3) , z , 0xBA09 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 3) , z , 0xBA0A , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 2) , z , 0xBA0B , 1, r ) );
+	magic_circle.append( CreateItemAtLocation(  x      , (y + 2) , z , 0xBA0C , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 2) , z , 0xBA0D , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 2) , z , 0xBA0E , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 2) , z , 0xBA0F , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 3) , z , 0xBA10 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 4) , z , 0xBA11 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 5) , z , 0xBA12 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 6) , z , 0xBA13 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 6) , z , 0xBA14 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 6) , z , 0xBA15 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation(  x      , (y + 6) , z , 0xBA16 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 6) , z , 0xBA17 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 5) , z , 0xBA18 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 4) , z , 0xBA19 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation(  x      , (y + 3) , z , 0xBA1A , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 3) , z , 0xBA1B , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 3) , z , 0xBA1C , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 4) , z , 0xBA1D , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 5) , z , 0xBA1E , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 5) , z , 0xBA1F , 1, r ) );
+	magic_circle.append( CreateItemAtLocation(  x      , (y + 5) , z , 0xBA20 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation(  x      , (y + 4) , z , 0xBA21 , 1, r ) );
+	magic_circle.append( CreateItemAtLocation( (x + 1) , (y + 4) , z , 0xBA22 , 1, r ) );
 
 endfunction
 
 
 
-function CreateCandles( x , y , z , byref magic_circle )
+function CreateCandles( x , y , z , r, byref magic_circle )
 
-	magic_circle.append( CreateItemAtLocation(  x      , (y + 2) , z , 0x1854 , 1 ) );
+	magic_circle.append( CreateItemAtLocation(  x      , (y + 2) , z , 0x1854 , 1, r ) );
 	magic_circle[len(magic_circle)].movable := 0;
 	SetName( magic_circle[len(magic_circle)] , "Magic Candle" );
 	PlaySoundEffect( magic_circle[len(magic_circle)] , 0x022b );
 	Sleep( 1 );
 
-	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 3) , z , 0x1854 , 1 ) );
+	magic_circle.append( CreateItemAtLocation( (x + 3) , (y + 3) , z , 0x1854 , 1, r ) );
 	magic_circle[len(magic_circle)].movable := 0;
 	SetName( magic_circle[len(magic_circle)] , "Magic Candle" );
 	PlaySoundEffect( magic_circle[len(magic_circle)] , 0x022b );
 	Sleep( 1 );
 
-	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 6) , z , 0x1854 , 1 ) );
+	magic_circle.append( CreateItemAtLocation( (x + 2) , (y + 6) , z , 0x1854 , 1, r ) );
 	magic_circle[len(magic_circle)].movable := 0;
 	SetName( magic_circle[len(magic_circle)] , "Magic Candle" );
 	PlaySoundEffect( magic_circle[len(magic_circle)] , 0x022b );
 	Sleep( 1 );
 
-	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 7) , z , 0x1854 , 1 ) );
+	magic_circle.append( CreateItemAtLocation( (x - 1) , (y + 7) , z , 0x1854 , 1, r ) );
 	magic_circle[len(magic_circle)].movable := 0;
 	SetName( magic_circle[len(magic_circle)] , "Magic Candle" );
 	PlaySoundEffect( magic_circle[len(magic_circle)] , 0x022b );
 	Sleep( 1 );
 
-	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 4) , z , 0x1854 , 1 ) );
+	magic_circle.append( CreateItemAtLocation( (x - 2) , (y + 4) , z , 0x1854 , 1, r ) );
 	magic_circle[len(magic_circle)].movable := 0;
 	SetName( magic_circle[len(magic_circle)] , "Magic Candle" );
 	PlaySoundEffect( magic_circle[len(magic_circle)] , 0x022b );
@@ -306,6 +307,7 @@ function ProcessRitual( who , item , byref magic_circle , the_ritual , keep_circ
 	var x  := magic_circle[1].x;
 	var y  := magic_circle[1].y;
 	var z  := magic_circle[1].z;
+	var r  := magic_circle[1].realm;
 	var cx := x;
 	var cy := y + 5;
 	var cz := z;
@@ -314,7 +316,7 @@ function ProcessRitual( who , item , byref magic_circle , the_ritual , keep_circ
 	var manapool := 0;
 
 	if( item )
-		MoveItemToLocation( item , cx , cy , cz , MOVEITEM_FORCELOCATION );
+		MoveObjectToLocation( item , cx , cy , cz , r, MOVEOBJECT_FORCELOCATION );
 		item.movable := 0;
 	endif
 
@@ -374,7 +376,7 @@ function ProcessRitual( who , item , byref magic_circle , the_ritual , keep_circ
 
 	amount := amount - 1;
 
-	var manapile	:= CreateItemAtLocation( cx , cy , cz+(4*amount) , MANA_PILE , 1 );
+	var manapile	:= CreateItemAtLocation( cx , cy , cz+(4*amount) , MANA_PILE , 1, r );
 	SetName( manapile , "Mana Cloud" );
 	manapile.movable := 0;
 
@@ -544,7 +546,7 @@ function ProcessRitual( who , item , byref magic_circle , the_ritual , keep_circ
 								to_be_created := GetObjtypeByName( the_items[count] );
 							endif
 
-							magic_circle.append( CreateItemAtLocation( x + item_x_mod , y + item_y_mod , z , to_be_created , 1 ) );
+							magic_circle.append( CreateItemAtLocation( x + item_x_mod , y + item_y_mod , z , to_be_created , 1, r ) );
 							magic_circle[len(magic_circle)].movable := 0;
 						endfor
 					endif
@@ -553,12 +555,12 @@ function ProcessRitual( who , item , byref magic_circle , the_ritual , keep_circ
 
 				if( item )
 					item.movable := 1;
-					MoveItemToLocation( item , item.x , item.y , item.z+2 , MOVEITEM_FORCELOCATION );
+					MoveObjectToLocation( item , item.x , item.y , item.z+2 , r, MOVEOBJECT_FORCELOCATION );
 					item.movable := 0;
 				endif
 
 				manapile.movable := 1;
-				MoveItemToLocation( manapile , manapile.x , manapile.y , manapile.z-2 , MOVEITEM_FORCELOCATION );
+				MoveObjectToLocation( manapile , manapile.x , manapile.y , manapile.z-2 , r, MOVEOBJECT_FORCELOCATION );
 				manapile.movable := 0;
 
 				loop	:= 0;
