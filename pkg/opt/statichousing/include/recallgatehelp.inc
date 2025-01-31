@@ -16,10 +16,10 @@ function StaticHouseSerial( who )
 	return 0;
 endfunction
 
-function StaticHouseSerialAtLocation( x, y, z )
+function StaticHouseSerialAtLocation( x, y, z, realm)
 
 	foreach item_type in tile_list
-		foreach item in ListItemsNearLocationOfType( x, y, z, 0, item_type );
+		foreach item in ListItemsNearLocationOfType( x, y, z, 0, item_type, realm );
 			if( GetObjProperty( item, "HousePlate" ) AND ( GetObjProperty( item, "houseserial" ) ) )
 				return GetObjProperty( item, "houseserial" );
 			endif

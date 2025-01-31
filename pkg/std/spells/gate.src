@@ -124,7 +124,7 @@ program spell_gate( caster, spell_id )
 	endif
 
 	//Same check as above but for static houses
-	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz );
+	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz, torealm );
 	if(serialstatichouse)
 		var sign := SystemFindObjectBySerial(serialstatichouse);
 		if( !Iscowner( caster, sign )  )

@@ -1077,7 +1077,7 @@ endfunction
 ///////////////////
 
 function CanSellAtThisLocation()
-	var signs := ListItemsNearLocationOfType(me.x, me.y, me.z, 20, 0x1E5E);
+	var signs := ListItemsNearLocationOfType(me.x, me.y, me.z, 20, 0x1E5E, me.realm);
 	if(len(signs) )
 		return 0;
 	endif

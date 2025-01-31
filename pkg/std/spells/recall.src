@@ -113,7 +113,7 @@ program cast_recall( caster, spell_id )
 		endif
 	endif
 	//Same check as above but for static houses
-	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz );
+	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz, torealm );
 	if(serialstatichouse)
 		var sign := SystemFindObjectBySerial(serialstatichouse);
 		if( !Iscowner( caster, sign )  )

@@ -116,11 +116,11 @@ program textcmd_addhouse( who )
 	while( YesNo( who, "Add another door tile?") )
 		SendSysMessage( who, "Please mark the tile just inside the door.");
 		doortile := TargetCoordinates(who);
-		items := ListItemsNearLocationOfType( doortile.x, doortile.y, doortile.z, 0, 0x755d );
+		items := ListItemsNearLocationOfType( doortile.x, doortile.y, doortile.z, 0, 0x755d, doortile.realm );
 		foreach item in items
 			DestroyItem(item);
 		endforeach
-		tile := CreateItemAtLocation( doortile.x, doortile.y, doortile.z, 0x755c, 1);
+		tile := CreateItemAtLocation( doortile.x, doortile.y, doortile.z, 0x755c, 1, doortile.realm);
 		SetObjProperty( tile, "HousePlate", 1 );
 		SetObjProperty( tile, "houseserial", sign.serial );
 	endwhile
@@ -164,7 +164,7 @@ endprogram
 function HideIt( who, sign )
 
 	foreach item_type in tile_list
-		foreach item in ListItemsNearLocationOfType( who.x,who.y, LIST_IGNORE_Z, 50, item_type );
+		foreach item in ListItemsNearLocationOfType( who.x, who.y, LIST_IGNORE_Z, 50, item_type, who.realm );
 			if( GetObjProperty( item, "HousePlate" ) && ( GetObjProperty( item, "houseserial" ) == sign.serial ) )
 				//DestroyItem( item );
 				item.invisible:= 1;

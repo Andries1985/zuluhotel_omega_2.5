@@ -443,7 +443,7 @@ endfunction
 
 function IsPlaceInHouse( who, sign, place )	
 
-	foreach item in ListItemsNearLocationOfType( place.x,place.y, place.z, 0, 0x755d );
+	foreach item in ListItemsNearLocationOfType( place.x,place.y, place.z, 0, 0x755d, place.realm );
 		if( GetObjProperty( item, "HousePlate" ) && ( GetObjProperty( item, "houseserial" ) == sign.serial ) )
 			return 1;
 		endif

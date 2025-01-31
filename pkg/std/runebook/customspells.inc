@@ -193,7 +193,7 @@ function CustomRecall( caster, x, y, z, realm, from_charge := 0 )
 			endif
 		endif
 	endif
-	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz );
+	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz, torealm );
 	if(serialstatichouse)
 		var sign := SystemFindObjectBySerial(serialstatichouse);
 		if(GetObjProperty( sign, "OwnerAcct") != caster.acctname)
@@ -387,7 +387,7 @@ function CustomGate( caster, x, y, z, realm )
 			endif
 		endif
 	endif
-	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz );
+	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz, torealm );
 	if(serialstatichouse)
 		var sign := SystemFindObjectBySerial(serialstatichouse);
 		if(GetObjProperty( sign, "OwnerAcct") != caster.acctname)
