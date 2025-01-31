@@ -62,14 +62,8 @@ program sorcerersbane( parms )
 		EraseObjProperty( caster , "#Casting" );
 		cast_on := Reflected( caster , cast_on , circle );
 	endif
-		PlayMovingEffect(caster, 
-                                 cast_on, 
-                                 SPELL_EFFECT_ID, 
-                                 SPELL_EFFECT_SPEED, 
-                                 SPELL_EFFECT_LOOP, 
-                                 explode := 0);
 	
-	
+	PlayMovingEffect(caster, cast_on, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP, explode := 0);
 	PlaySoundEffect( cast_on , SFX_SPELL_SORCERERS_BANE );
 	
 	var immunity := IsProtected( caster , cast_on , circle );
@@ -127,8 +121,8 @@ program sorcerersbane( parms )
 		return;
 	endif
 
-	var wavetop1 := CreateItemAtLocation( cint(x) , cint(y) , cint(z+110) , 0x350b , 1 );
-	var wavetop2 := CreateItemAtLocation( cint(x) , cint(y) , cint(z+110) , 0x34ed , 1 );
+	var wavetop1 := CreateItemAtLocation( cint(x) , cint(y) , cint(z+110) , 0x350b , 1, cRealm );
+	var wavetop2 := CreateItemAtLocation( cint(x) , cint(y) , cint(z+110) , 0x34ed , 1, cRealm );
 	wavetop1.movable := 0;
 	wavetop2.movable := 0;
 
@@ -153,7 +147,6 @@ program sorcerersbane( parms )
 	PlayStationaryEffect( cint(x-1), cint(y-1), cint(z), 0x17a6, 0, 0, 0, cRealm );
 	PlayStationaryEffect( cint(x), cint(y), cint(z), 0x1797, 0, 0, 0, cRealm );
 	
-
 	PlaySoundEffect(caster, 0x11);
 	
 	ApplyElementalDamage( caster , cast_on , circle , Cint( dmg / 2 ) , element2 );

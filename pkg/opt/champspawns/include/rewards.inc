@@ -18,14 +18,14 @@ function RainDownMoney(corpse)
 		endforeach
 		if(!blocked)
 			if(CheckLosBetween( corpse.x+i, corpse.y+j, corpse.z, corpse.x, corpse.y, corpse.z+5, corpse.realm) && CheckLosAt( corpse, corpse.x+i, corpse.y+j, corpse.z+5 ) )
-				CreateItemAtLocation( corpse.x+i, corpse.y+j, corpse.z, "goldcoin", RandomInt(2000)+500);
-				PlayStationaryEffect( corpse.x+i, corpse.y+j, corpse.z, 0x36b0, 7, 0, 1);
+				CreateItemAtLocation( corpse.x+i, corpse.y+j, corpse.z, "goldcoin", RandomInt(2000)+500, corpse.realm);
+				PlayStationaryEffect( corpse.x+i, corpse.y+j, corpse.z, 0x36b0, 7, 0, 1, corpse.realm);
 			else
-				CreateItemAtLocation( corpse.x, corpse.y, corpse.z, "goldcoin", RandomInt(2000)+500);
+				CreateItemAtLocation( corpse.x, corpse.y, corpse.z, "goldcoin", RandomInt(2000)+500, corpse.realm);
 			endif
 		else
-			CreateItemAtLocation( corpse.x+i, corpse.y+j, corpse.z+6, "goldcoin", RandomInt(2000)+500);
-			PlayStationaryEffect( corpse.x+i, corpse.y+j, corpse.z+6, 0x36b0, 7, 0, 1);
+			CreateItemAtLocation( corpse.x+i, corpse.y+j, corpse.z+6, "goldcoin", RandomInt(2000)+500, corpse.realm);
+			PlayStationaryEffect( corpse.x+i, corpse.y+j, corpse.z+6, 0x36b0, 7, 0, 1, corpse.realm);
 		endif
         sleepms(50);
       endif

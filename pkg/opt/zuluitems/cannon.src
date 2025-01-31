@@ -87,14 +87,14 @@ function fireworks(who, cannon, location)
 
 	var dmg := RandomDiceRoll("10d10+40"),
 	range := 1,
-	coolflame := CreateItemAtLocation( cannon.x, cannon.y, cannon.z, 0x3728, 1 );
+	coolflame := CreateItemAtLocation( cannon.x, cannon.y, cannon.z, 0x3728, 1, cannon.realm );
 	playsoundeffect(cannon, 0x11C);
 
-	var explode1 := CreateItemAtLocation( locationx, locationy, location.z, 0x36b0, 1 );
-	var explode2 := CreateItemAtLocation( locationx, locationy, location.z, 0x36bd, 1 );
+	var explode1 := CreateItemAtLocation( locationx, locationy, location.z, 0x36b0, 1, location.realm );
+	var explode2 := CreateItemAtLocation( locationx, locationy, location.z, 0x36bd, 1, location.realm );
 	PlaySoundEffect( location, SFX_220 );
 
-	foreach mobile in ListMobilesNearLocation( locationx , locationy , location.z , range );
+	foreach mobile in ListMobilesNearLocation( locationx , locationy , location.z , range, location.realm );
         PlayObjectCenteredEffect( mobile, 0x36b0, 7, 7);
         ApplyTheDamage( mobile, who, dmg );
 	endforeach

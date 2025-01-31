@@ -63,14 +63,14 @@ program processpersistedmods( parms )
 		"hair":
 			DestroyItem( GetEquipmentByLayer( who , LAYER_HAIR ) );
 			if( new_val )
-				var newhair := CreateItemAtLocation( 5288 , 1176 , 0 , cint(new_val) , 1 );
+				var newhair := CreateItemAtLocation( 5288 , 1176 , 0 , cint(new_val) , 1, "britannia" );
 				newhair.color := RandomHairColor();
 				EquipItem( who , newhair );
 			endif
 		"beard":
 			DestroyItem( GetEquipmentByLayer( who , LAYER_BEARD ) );
 			if( new_val )
-				var newhair := CreateItemAtLocation( 5288 , 1176 , 0 , cint(new_val) , 1 );
+				var newhair := CreateItemAtLocation( 5288 , 1176 , 0 , cint(new_val) , 1, "britannia" );
 				newhair.color := GetObjProperty( who ,"beardcolor" );
 				EquipItem( who , newhair );
 			endif

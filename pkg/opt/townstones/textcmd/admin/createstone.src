@@ -22,7 +22,7 @@ var insertpoint := townnames.size();
 
 SetGlobalProperty("townlist", townnames);
 
-var item := createitematlocation(who.x,who.y,who.z, 0xa320, 1);
+var item := createitematlocation(who.x,who.y,who.z, 0xa320, 1, who.realm);
 item.name := item.name+" of "+name;
 SetObjProperty(item, "town", insertpoint);
 SetObjProperty(item, "eleicao", 1);

@@ -63,7 +63,7 @@ program use_picktool( character , tool )
 		return;
 	endif
 
-	if( !CheckLosBetween(character.x, character.y, character.z, use_on.x, use_on.y, use_on.z) )
+	if( !CheckLosBetween(character.x, character.y, character.z, use_on.x, use_on.y, use_on.z, character.realm) )
 		SendSysMessage(character, "You can't see that.");
 		return 0;
 	endif

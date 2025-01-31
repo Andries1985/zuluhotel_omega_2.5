@@ -92,7 +92,7 @@ function FlingItems(range)
 		x := (corpse.x-range) + RandomInt((range*2+1));
 		y := (corpse.y-range) + RandomInt((range*2+1));
 		z := GetStandingHeight( x, y, corpse.z, corpse.realm).z;
-		blood := CreateItemAtLocatioN(x, y, z, 4650+RandomInt(6), 1);
+		blood := CreateItemAtLocatioN(x, y, z, 4650+RandomInt(6), 1, corpse.realm);
 		if (!CheckLineOfSight( corpse,blood))
 			MoveObjectToLocation(blood, corpse.x, corpse.y, corpse.z, corpse.realm);
 		endif

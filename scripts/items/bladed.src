@@ -106,7 +106,7 @@ function CarveTree( user , use_on )
 		return 0;
 	endif
 	
-	if( !CheckLosBetween(user.x, user.y, user.z, use_on.x, use_on.y, use_on.z) )
+	if( !CheckLosBetween(user.x, user.y, user.z, use_on.x, use_on.y, use_on.z, user.realm) )
 		SendSysMessage(user, "You can't see that.");
 		return 0;
 	endif
@@ -116,7 +116,7 @@ function CarveTree( user , use_on )
 		return 0;
 	endif
 
-	var wood_amount := HarvestResource( "wood" , use_on.x, use_on.y , 1 , 1 );
+	var wood_amount := HarvestResource( "wood" , use_on.x, use_on.y , 1 , 1, use_on.realm );
 	if( wood_amount == 0 or !wood_amount )
 		SendSysmessage(user, "There's not enough kindling here.");
 		return;
@@ -285,7 +285,7 @@ function carve_corpse(character, cadaver)
 			EraseObjProperty( cadaver , "cut" );
 		endif
 
-		var theblood:= CreateItemAtLocation(cint(cadaver.x), cint(cadaver.y), cint(cadaver.z), UOBJ_BLOOD, 1);
+		var theblood:= CreateItemAtLocation(cint(cadaver.x), cint(cadaver.y), cint(cadaver.z), UOBJ_BLOOD, 1, cadaver.realm);
 		theblood.saveonexit :=0;
 
 		detach();

@@ -31,7 +31,7 @@ program cast_earth_portal( caster )
 		endif
 	endforeach
 
-	var multi := GetStandingHeight( caster.x, caster.y, caster.z ).multi;
+	var multi := GetStandingHeight( caster.x, caster.y, caster.z, caster.realm ).multi;
 	if( multi )
 		if( !Iscowner( caster, multi )  )
 			if( !IsFriend( caster, multi, GATE_FROM) )
@@ -87,6 +87,8 @@ program cast_earth_portal( caster )
 	var tox := Cint(GetObjProperty( cast_on, "x" ));
 	var toy := Cint(GetObjProperty( cast_on, "y" ));
 	var toz := Cint(GetObjProperty( cast_on, "z" ));
+	var torealm := Cint(GetObjProperty( cast_on, "realm" ));
+
 
 	if( !tox and !toy and !toz )
 		SendSysmessage(caster, "That is a blank rune!");
@@ -96,7 +98,7 @@ program cast_earth_portal( caster )
 	
 	var owner;
 	var lamp;
-	var Near_Items := ListItemsNearLocation(tox, toy, toz,10);
+	var Near_Items := ListItemsNearLocation(tox, toy, toz, 10, torealm);
 	foreach thing in Near_Items
 		if (thing.objtype == 0xf156)
 			lamp := thing;
@@ -125,7 +127,7 @@ program cast_earth_portal( caster )
 		return;
 	endif
 	
-	var antigate2 := ListItemsNearLocation(tox, toy, toz, 10);
+	var antigate2 := ListItemsNearLocation(tox, toy, toz, 10, torealm);
 	foreach item in antigate2
 		if (item.objtype == 0xa3c9)
 			SendSysMessage( caster, "You can't gate there." );
@@ -133,7 +135,7 @@ program cast_earth_portal( caster )
 		endif
 	endforeach
 
-	multi := GetStandingHeight( tox, toy, toz ).multi;
+	multi := GetStandingHeight( tox, toy, toz, torealm ).multi;
 	if( multi )
 		if( !Iscowner( caster, multi )  )
 			if( !IsFriend( caster, multi, GATE_FROM) )
@@ -145,8 +147,8 @@ program cast_earth_portal( caster )
 	endif
 	Set_critical( 1 );
 	
-	var gate1 := CreateItemAtLocation( caster.x , caster.y , caster.z , UOBJ_BLACK_MOONGATE , 1 );
-	var gate2 := CreateItemAtLocation( tox , toy , toz , UOBJ_BLACK_MOONGATE , 1 );
+	var gate1 := CreateItemAtLocation( caster.x , caster.y , caster.z , UOBJ_BLACK_MOONGATE , 1, caster.realm );
+	var gate2 := CreateItemAtLocation( tox , toy , toz , UOBJ_BLACK_MOONGATE , 1, torealm );
 	
 	
 	if( !gate1 )
@@ -164,9 +166,11 @@ program cast_earth_portal( caster )
 	SetObjProperty( gate1 , "GateDestX" , gate2.x );
 	SetObjProperty( gate1 , "GateDestY" , gate2.y );
 	SetObjProperty( gate1 , "GateDestZ" , gate2.z );
+	SetObjProperty( gate1 , "GateDestRealm" , gate2.realm );
 	SetObjProperty( gate2 , "GateDestX" , gate1.x );
 	SetObjProperty( gate2 , "GateDestY" , gate1.y );
 	SetObjProperty( gate2 , "GateDestZ" , gate1.z );
+	SetObjProperty( gate2 , "GateDestRealm" , gate1.realm );
 
 	Detach();
 

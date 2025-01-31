@@ -47,7 +47,7 @@ program grab_fruit(user,item)
 	endif
 
 	var distt := coordist( user.x , user.y , use_on.x , use_on.y );
-	if( distt > 1 )
+	if( distt > 2 )
 		SendSysmessage( user , "That is too far away." );
 		return;
 	endif
@@ -72,6 +72,7 @@ program grab_fruit(user,item)
 	endif
 
 	var currentAmount := GetObjProperty(use_on, "amt");
+
 	var maxAmount:=treetypes[use_on.objtype].maxamount;
 	if(!currentAmount)	
 		if(!GetObjProperty(use_on, "FirstSetup"))
@@ -119,6 +120,8 @@ program grab_fruit(user,item)
 	Sleep( 3 );
 	Autoloop_finish();
     sendsysmessage(user,"You stop harvesting...");
+
+	
 /*
     var curamount:=getobjproperty(item,"amt"),cfg:=readconfigfile("tree");
     if (!cfg) return; endif
@@ -129,18 +132,20 @@ program grab_fruit(user,item)
       sendsysmessage(user,"It's too young to produce anything.");
       return;
     endif
-	*/
+	
     sendsysmessage(user,"Select tree to harvest.");
     var tree,loc:=targetcoordinates(user);
     if (!loc) return; endif
 
-    foreach that in listitemsnearlocation(cint(loc.x),cint(loc.y),cint(loc.z),0)
+    foreach that in listitemsnearlocation(cint(loc.x),cint(loc.y),cint(loc.z),0, loc.realm)
 		if (cfg[that.objtype]) 
 			tree:=that; 
 		endif 
-     endforeach
+	endforeach
 
-    if (distance(user,tree)>2) sendsysmessage(user,"That is too far away!"); return; endif
+    if (distance(user,tree)>2) sendsysmessage(user,"That is too far away!"); 
+		return; 
+	endif
 
     resource_type := cfg[tree.objtype].product;
     if (!resource_type) sendsysmessage(user,"It's too young to produce anything."); return; endif
@@ -149,13 +154,13 @@ program grab_fruit(user,item)
     maxamount := cfg[tree.objtype].maxamount;
 
     if (curamount>=maxamount)
-      maxamount:=getobjproperty(tree,"#regrow");
-      	if (maxamount.errortext) 
-	  		fixtree(tree, cfg[tree.objtype].regrown, cfg[tree.objtype].maxamount, PlacedBy); 
+		maxamount:=getobjproperty(tree,"#regrow");
+		if (maxamount.errortext) 
+			fixtree(tree, cfg[tree.objtype].regrown, cfg[tree.objtype].maxamount, PlacedBy); 
 		endif
-      sendsysmessage(user, cfg[tree.objtype].productname+"s is still growing.");
-      DestroyTree(user, tree);
-      return;
+		sendsysmessage(user, cfg[tree.objtype].productname+"s is still growing.");
+		DestroyTree(user, tree);
+		return;
     endif
 
     var i,num_chops,SFX_Rand,num,fruit,theamount,x:=cint(user.x),y:=cint(user.y);
@@ -163,39 +168,39 @@ program grab_fruit(user,item)
     sendsysmessage(user,"You start to harvest...");
 
     repeat
+		Print("Harvest script after Autoloop in repeat");
+		SFX_Rand:=Random(2)+1; 
+		playsoundeffect(user,Grab_SfX[SFX_Rand]);
+		performaction(user,ANIM_SALUTE);
+		sleep(2);
 
-      SFX_Rand:=Random(2)+1; 
-      playsoundeffect(user,Grab_SfX[SFX_Rand]);
-      performaction(user,ANIM_SALUTE);
-      sleep(2);
+		var difficulty:=Random(100)+1;
 
-      var difficulty:=Random(100)+1;
+		curamount:=getobjproperty(tree,"amt");
+		setobjproperty(tree,"amt",curamount);
 
-      curamount:=getobjproperty(tree,"amt");
-      setobjproperty(tree,"amt",curamount);
+		if (checkskill(user,SKILLID_LUMBERJACKING,difficulty,0))
+			num:=Random(4)+1;
+			createiteminbackpack(user,cint(cfg[tree.objtype].product),num);
+			fruit:=cfg[tree.objtype].productname;
+			setobjproperty(tree,"amt",curamount);
+		sendsysmessage(user,"You put "+num+" "+fruit+"(s) in your pack.");
+			// printtextabove(tree,"*"+num+" "+fruit+"(s)*");
 
-      if (checkskill(user,SKILLID_LUMBERJACKING,difficulty,0))
-        num:=Random(4)+1;
-        createiteminbackpack(user,cint(cfg[tree.objtype].product),num);
-        fruit:=cfg[tree.objtype].productname;
-        setobjproperty(tree,"amt",curamount);
-	sendsysmessage(user,"You put "+num+" "+fruit+"(s) in your pack.");
-        // printtextabove(tree,"*"+num+" "+fruit+"(s)*");
+		if (curamount<=maxamount)
+		//	  fixtree(tree,cfg[tree.objtype].regrown,cfg[tree.objtype].maxamount);
+			sleep(1);
+		else
+			playsoundeffect(user,Finish_SfX);
+		sendsysmessage(user,"You harvested all you can.");
+		fixtree(tree,cfg[tree.objtype].regrown,cfg[tree.objtype].maxamount, PlacedBy);
+		return 0;
+		endif
 
-	if (curamount<=maxamount)
-//	  fixtree(tree,cfg[tree.objtype].regrown,cfg[tree.objtype].maxamount);
-          sleep(1);
-	else
-          playsoundeffect(user,Finish_SfX);
-	  sendsysmessage(user,"You harvested all you can.");
-	  fixtree(tree,cfg[tree.objtype].regrown,cfg[tree.objtype].maxamount, PlacedBy);
-	  return 0;
-	endif
-
-      endif
+		endif
 
     until ((cint(user.x)!=x) or (cint(user.y)!=y));
 
     sendsysmessage(user,"You stop harvesting...");
-
+*/
 endprogram

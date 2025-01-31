@@ -1033,7 +1033,7 @@ function HouseFunctionSecure( who, house, num )
 			else
 				itemid := 0xE40;
 			endif
-			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1 );
+			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1, itemt.realm );
 			var inside := 0;
 			foreach item in (house.items)
 				if( box.serial == item.serial )
@@ -1118,7 +1118,7 @@ function AddTeleporter( who, house, num )
 				SendSysmessage( who, "Canceled." );
 				return;
 			endif
-			var tele := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, 0xa3ce, 1 );
+			var tele := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, 0xa3ce, 1, itemt.realm );
 			var inside := 0;
 			foreach item in (house.items)
 				if( tele.serial == item.serial )
@@ -1136,7 +1136,7 @@ function AddTeleporter( who, house, num )
 					SendSysmessage( who, "Canceled." );
 					return;
 				endif
-				var tele2 := CreateItemAtLocation( itemt2.x, itemt2.y, itemt2.z, 0xa3ce, 1 );
+				var tele2 := CreateItemAtLocation( itemt2.x, itemt2.y, itemt2.z, 0xa3ce, 1, itemt.realm );
 				inside := 0;
 				foreach item in (house.items)
 					if( tele2.serial == item.serial )

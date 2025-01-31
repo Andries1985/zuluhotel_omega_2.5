@@ -801,7 +801,7 @@ function HouseFunctionSecure( who, sign, num )
 			else
 				itemid := 0xE40;
 			endif
-			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1 );
+			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1, itemt.realm );
 			var inside := IsPlaceInHouse( who, sign, itemt );
 			if (inside)
 				box.movable := 0;

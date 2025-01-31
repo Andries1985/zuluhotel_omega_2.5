@@ -2,43 +2,43 @@
 
 NpcTemplate Gardener
 {
- Name        <random> the Gardener
- script      merchant
+    Name        <random> the Gardener
+    script      merchant
 
- ObjType     0x190
- Color       33784
- TrueColor   33784
- Gender      0
- STR         200
- INT         200
- DEX         200
- HITS        200
- MANA        200
- STAM        200
- guardignore 1
+    ObjType     0x190
+    Color       33784
+    TrueColor   33784
+    Gender      0
+    STR         200
+    INT         200
+    DEX         200
+    HITS        200
+    MANA        200
+    STAM        200
+    guardignore 1
 
- CProp       MerchantType  sgardener
- Equip       gardener
- alignment   good
+    CProp       MerchantType  sgardener
+    Equip       gardener
+    alignment   good
 
-ItemId	100
-Parry		100
-Mining	100
-Macefighting 100
-Fencing	100
+    ItemId	100
+    Parry		100
+    Mining	100
+    Macefighting 100
+    Fencing	100
 
-Tinkering	100
+    Tinkering	100
 
-ArmsLore	100
-Blacksmithy	100
-Tactics	100
-Swordsmanship 100
-Wrestling	100
-guardignore 1
-speech 28
-Wrestling 100
-AttackSkillId Wrestling
-AttackSpeed 80
-AttackDamage 5d100
-dstart 10
+    ArmsLore	100
+    Blacksmithy	100
+    Tactics	100
+    Swordsmanship 100
+    Wrestling	100
+    guardignore 1
+    speech 28
+    Wrestling 100
+    AttackSkillId Wrestling
+    AttackSpeed 80
+    AttackDamage 5d100
+    dstart 10
 }

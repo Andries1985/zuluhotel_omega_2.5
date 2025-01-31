@@ -155,7 +155,7 @@ endfunction
 //function vomit ( character, chance )
 //	if (Random(100) <= chance)
 //		PrintTextAbove(character, "*RALPH*");
-//		var puke := CreateItemAtLocation(character.x,character.y,character.z, 0x0f3c, 1);
+//		var puke := CreateItemAtLocation(character.x,character.y,character.z, 0x0f3c, 1, character.realm);
 //		puke.name := cstr ( character.name + "'s vomit");
 //
 //		//random color

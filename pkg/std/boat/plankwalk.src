@@ -58,7 +58,7 @@ var searchoffset := {
    { -4, +5 }
 };
 
-program plankwalk( who, plank, lastx, lasty, lastz )
+program plankwalk( who, plank, lastx, lasty, lastz, lastrealm )
     // print( "plankwalk last=(" + lastx + "," + lasty + "," + lastz + ")" );
 
     
@@ -70,15 +70,15 @@ program plankwalk( who, plank, lastx, lasty, lastz )
         // this code could just tell core to reject the walk in the first place.
         //
     if (!FindKey( who, plank ))
-        var sh := GetStandingHeight( lastx, lasty, lastz );
+        var sh := GetStandingHeight( lastx, lasty, lastz, lastrealm );
         if (!sh or !sh.multi or sh.multi.serial != plank.multi.serial)
-            MoveObjectToLocation( who, lastx, lasty, lastz, MOVEOBJECT_FORCELOCATION );
+            MoveObjectToLocation( who, lastx, lasty, lastz, lastrealm, MOVEOBJECT_FORCELOCATION );
             return;
         endif
     endif
     
-    if (ListMobilesNearLocation( plank.x, plank.y, plank.z, 0 ).size() > 1)
-        MoveObjectToLocation( who, lastx, lasty, lastz, who.realm, MOVEOBJECT_FORCELOCATION );
+    if (ListMobilesNearLocation( plank.x, plank.y, plank.z, 0, plank.realm ).size() > 1)
+        MoveObjectToLocation( who, lastx, lasty, lastz, lastrealm, MOVEOBJECT_FORCELOCATION );
         return;
     endif
 
@@ -152,7 +152,7 @@ function TryMove( who, dx, dy )
     var tryy := who.y + dy;
     // print( "Trying (" + tryx + "," + tryy + ")" );
     var h := GetStandingHeight( tryx, tryy, who.z, who.realm );
-    if (h and (not h.multi) && CheckLosBetween( who.x, who.y, h.z, tryx, tryy, h.z)) // CHECKME should check line of sight?  && CheckLosBetween( who.x, who.y, who.z, tryx, tryy, h.z )
+    if (h and (not h.multi) && CheckLosBetween( who.x, who.y, h.z, tryx, tryy, h.z, who.realm)) // CHECKME should check line of sight?  && CheckLosBetween( who.x, who.y, who.z, tryx, tryy, h.z )
         MoveObjectToLocation( who, tryx, tryy, h.z, who.realm, MOVEOBJECT_FORCELOCATION);
         res := 1;
     endif

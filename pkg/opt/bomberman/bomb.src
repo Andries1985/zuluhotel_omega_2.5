@@ -27,7 +27,7 @@ program kegBomb(who)
 	endif
 
 	if(bmPlaced < charges)
-		bomb := CreateItemAtLocation( who.x, who.y, who.z, 0x9A92 );
+		bomb := CreateItemAtLocation( who.x, who.y, who.z, 0x9A92, 1, who.realm );
 		bomb.color := GetObjProperty(who, "bmColor");
 		SetObjProperty(who, "bmPlaced", GetObjProperty(who, "bmPlaced")+1);
 	else
@@ -150,13 +150,13 @@ function powerUp(boulder)
 	if(chance > 75)
 		chance := Random(1000)+1;
 		if( chance < 300)
-			CreateItemAtLocation( boulder.x, boulder.y, boulder.z, 0x9A96 ); //Range
+			CreateItemAtLocation( boulder.x, boulder.y, boulder.z, 0x9A96, 1, boulder.realm ); //Range
 		elseif( chance < 600)
-			CreateItemAtLocation( boulder.x, boulder.y, boulder.z, 0x9A97 ); //Charges
+			CreateItemAtLocation( boulder.x, boulder.y, boulder.z, 0x9A97, 1, boulder.realm ); //Charges
 		elseif( chance < 850)
-			CreateItemAtLocation( boulder.x, boulder.y, boulder.z, 0x9A98 ); //Kick
+			CreateItemAtLocation( boulder.x, boulder.y, boulder.z, 0x9A98, 1, boulder.realm ); //Kick
 		else
-			CreateItemAtLocation( boulder.x, boulder.y, boulder.z, 0x9A99 ); //Speed
+			CreateItemAtLocation( boulder.x, boulder.y, boulder.z, 0x9A99, 1, boulder.realm ); //Speed
 		endif
 	endif
 endfunction

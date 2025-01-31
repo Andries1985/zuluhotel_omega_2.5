@@ -63,7 +63,7 @@ function StartSpell( who )
 	
 	who.graphic := 600;
 	who.frozen := 1;
-	place := CreateItemAtLocation( who.x, who.y, who.z, newitem, 1 );
+	place := CreateItemAtLocation( who.x, who.y, who.z, newitem, 1, who.realm );
 	place.movable := 0;
 	place.decay := ReadGameClock() + 30;
 

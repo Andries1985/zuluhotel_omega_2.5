@@ -207,7 +207,7 @@ function HouseFunctionSecure( house, event, num )
 			else
 				itemid := 0xE40;
 			endif
-			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1 );
+			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1, itemt.realm );
 			var inside := 0;
 			foreach item in (house.items)
 				if( box.serial == item.serial )
