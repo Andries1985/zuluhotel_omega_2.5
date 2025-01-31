@@ -267,7 +267,7 @@ endprogram
 
 function WipeIt( who, sign )
 
-	foreach item in ListItemsNearLocation( sign.x, sign.y, LIST_IGNORE_Z , 50);
+	foreach item in ListItemsNearLocation( sign.x, sign.y, LIST_IGNORE_Z , 50, sign.realm);
 		if(GetObjProperty( item, "houseserial" ) == GetObjProperty(sign, "houseserial"))
 			if( GetObjProperty( item, "HousePlate" ) )
 				DestroyItem( item );
@@ -300,7 +300,7 @@ function ChangeLocks( who , sign )
 	if( (newkey.objtype >= KEYSTART) and (newkey.objtype <= KEYEND) and (newkey.objtype != KEYRING) )
 		var lockid := AllocLockId();
 
-		foreach item in ListItemsNearLocation( sign.x,sign.y, LIST_IGNORE_Z , 75);
+		foreach item in ListItemsNearLocation( sign.x,sign.y, LIST_IGNORE_Z , 75, sign.realm);
 			if( ((item.objtype >= UOBJECT_DOORS_START) and (item.objtype <= UOBJECT_DOORS_END)) and (GetObjProperty(item, "HouseDoor") == 1))
 				if(GetObjProperty(item, "houseserial") == sign.serial )
 					SetObjProperty( item , "lockid" , lockid );

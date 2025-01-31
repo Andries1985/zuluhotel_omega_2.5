@@ -165,7 +165,7 @@ function CanMove( who, dx, dy )
     var tryx := who.x + dx;
     var tryy := who.y + dy;
     // print( "CanMove: (" + tryx + "," + tryy + ") ?" );
-    var h := GetStandingHeight( tryx, tryy, who.z );
+    var h := GetStandingHeight( tryx, tryy, who.z, who.realm );
     if (h)
         return 1;
     else

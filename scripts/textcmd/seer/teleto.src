@@ -26,7 +26,7 @@ program teleto(who)
 	SendSysmessage(who, "Move this object where?");
 	
 	var where := targetcoordinates(who);
-	var multi := GetStandingHeight( where.x, where.y, where.z ).multi;
+	var multi := GetStandingHeight( where.x, where.y, where.z, where.realm ).multi;
 	if(multi && who.cmdlevel < 5) 
 		LogCommand(who, GetProcess(GetPid()).name, what.name+" tried to teleto a NPC into a house.");
 		SendSysMessage(who, "You can't teleport NPCs inside of a multi.");

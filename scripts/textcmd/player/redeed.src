@@ -12,7 +12,7 @@ program redeed( who )
 		return;
 	endif
 	
-	var multi := GetStandingHeight( who.x, who.y, who.z ).multi;
+	var multi := GetStandingHeight( who.x, who.y, who.z, who.realm ).multi;
 	
 	if(the_item.objtype == 0x7007)
 		if (!IsCowner( who, multi ))

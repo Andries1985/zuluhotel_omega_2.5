@@ -8,7 +8,7 @@ program use_sigilviewer(who, sigilviewer)
 	if (TargetObj.serial == sigilviewer.serial)
 		var x, y;
 		SendSysMessage(who, "Scanning...");
-		foreach x in ListItemsNearLocation(who.x, who.y, who.z, 8)
+		foreach x in ListItemsNearLocation(who.x, who.y, who.z, 8, who.realm)
 			y := GetObjProperty(x, "burin");
 			if ( (!y) or (y == "") )
 				y :="";

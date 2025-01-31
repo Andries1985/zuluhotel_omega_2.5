@@ -74,7 +74,7 @@ program place_deed( who , deed )
 	var tempdist := 10;
 	var Near_Items;
 	while (tempdist > 0)
-		Near_Items := ListItemsNearLocation(start.x, start.y, start.z,tempdist);
+		Near_Items := ListItemsNearLocation(start.x, start.y, start.z,tempdist,start.realm);
 		foreach thing in Near_Items
 			if (thing.objtype == 0xf156)
 				lamp := thing;

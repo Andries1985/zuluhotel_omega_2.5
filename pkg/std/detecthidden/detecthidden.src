@@ -28,7 +28,7 @@ program detect_hidden( who )
 	endif
 	
 	var hiders := ListMobilesNearLocationEx( who.x , who.y , who.z , range , LISTEX_FLAG_HIDDEN );
-	var items  := ListItemsNearLocation( who.x , who.y , who.z , range );
+	var items  := ListItemsNearLocation( who.x , who.y , who.z , range, who.realm );
 	var count  := 0;
 	
 	if(len(hiders) > 0)

@@ -292,7 +292,7 @@ function Demolish(house, sign)
 	endif
 
 	if (house.objtype == 0x608D)
-		foreach items in ListItemsNearLocation( sign.x, sign.y, 0, 8 )
+		foreach items in ListItemsNearLocation( sign.x, sign.y, 0, 8, sign.realm )
 			if((items.objtype == 0x177d) or (items.objtype == 0xb41) or (items.objtype == 0xb42))
 				destroyitem(items);
 			endif

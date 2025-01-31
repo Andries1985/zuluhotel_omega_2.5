@@ -54,7 +54,7 @@ program firefield( parms, spell_id )
 	var y := thetarget.y;
 	var z := thetarget.z;
 
-	var houseteles := ListItemsNearLocation(x, y, z,15);
+	var houseteles := ListItemsNearLocation(x, y, z, 15, thetarget.realm);
 	foreach thing in houseteles
 		if (thing.objtype == 0xa3c8)
 			SendSysMessage(caster, "Can't wall here.");

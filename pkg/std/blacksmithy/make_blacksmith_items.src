@@ -74,7 +74,7 @@ program use_hammer( character, hammer )
 	endif
 
 	if( smith_cfg[use_on.graphic] && use_on.hp && use_on.quality)
-		var near := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+		var near := ListItemsNearLocation( character.x , character.y , character.z , 1, character.realm );
  		foreach thing in near
 	  		if ((thing.objtype == UOBJ_ANVIL1) or (thing.objtype == UOBJ_ANVIL2))
 	   			repair_item( character, use_on, SKILLID_BLACKSMITHY );
@@ -118,7 +118,7 @@ program use_hammer( character, hammer )
 		SendSysMessage( character, "You must select ingots!" );
 		return;
 	endif
-		var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+		var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1, character.realm );
  	foreach item in Near_Items
 	  	if ((item.objtype == UOBJ_ANVIL1) or (item.objtype == UOBJ_ANVIL2))
 	   		MakeBoneItems( character , use_on , bone );
@@ -138,7 +138,7 @@ program use_hammer( character, hammer )
 
 	//   **Anvil finding snippet.  Inserted by Ingot Head
  	if (IsIngot(use_on))
-		var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+		var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1, character.realm );
 		foreach item in Near_Items
 			if ((item.objtype == UOBJ_ANVIL1) or (item.objtype == UOBJ_ANVIL2))
 				MakeBlacksmithItems( character , use_on );

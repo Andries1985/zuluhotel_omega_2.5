@@ -21,7 +21,7 @@ program tryKick(who, bomb)
 					kicked := 0;
 				endif
 				if(kicked)
-					blockers := ListItemsAtLocation( bomb.x+kX, bomb.y+kY, 0 );
+					blockers := ListItemsAtLocation( bomb.x+kX, bomb.y+kY, 0, bomb.realm );
 					if(len(blockers) != 0)
 						foreach item in blockers
 							if(GetObjProperty(item, "kickBlock"))

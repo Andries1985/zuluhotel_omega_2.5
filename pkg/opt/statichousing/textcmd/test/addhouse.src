@@ -176,7 +176,7 @@ endfunction
 
 function WipeIt( who, sign )
 
-	foreach item in ListItemsNearLocation( sign.x, sign.y, LIST_IGNORE_Z, 50);
+	foreach item in ListItemsNearLocation( sign.x, sign.y, LIST_IGNORE_Z, 50, sign.realm);
 		if(GetObjProperty( item, "houseserial" ) == GetObjProperty(sign, "houseserial"))
 			if( GetObjProperty( item, "HousePlate" ) )
 				DestroyItem( item );

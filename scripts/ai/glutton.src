@@ -43,7 +43,7 @@ function CloseDistance( opponent )
 
 //Anti-Wall & Lure Code
 var Near;
-Near := ListItemsNearLocation( me.x , me.y , me.z , 5 );
+Near := ListItemsNearLocation( me.x , me.y , me.z , 5, me.realm );
 var kwall := 0;
 
 

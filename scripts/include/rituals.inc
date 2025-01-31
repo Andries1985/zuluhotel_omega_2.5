@@ -44,7 +44,7 @@ function TryToDrawCircle( who )
 	var r := who.realm;
 	var center_y := y + 5;
 
-	if( len(ListItemsNearLocation( x , center_y , z , 6 )) >= 1 )
+	if( len(ListItemsNearLocation( x , center_y , z , 6, r )) >= 1 )
 		SendSysmessage( who , "You don't have the necessary space to draw a circle there." );
 		EraseObjProperty( who , "#Casting" );
 		return 0;
@@ -916,7 +916,7 @@ function LookForTheCircle( who )
 	var magic_circle := {};
 
 	//Check if the caster want to use his personnal circle
-	foreach thing in ListItemsAtLocation( who.x , who.y , who.z );
+	foreach thing in ListItemsAtLocation( who.x , who.y , who.z, who.realm );
 		if( thing.objtype == NORTH_RUNE and GetObjProperty( thing , "PermMagicCircle" ) )
 			is_permanent := thing;
 			break;

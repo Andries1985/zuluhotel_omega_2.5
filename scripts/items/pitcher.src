@@ -33,7 +33,7 @@ program use_pitcher(character, item)
                 playsoundeffect(character, 0x11);
                 sendsysmessage(mob, character.name + " wets you down with water!");
         endforeach
-        foreach thing in listitemsnearlocation(what.x, what.y, what.z, 0)
+        foreach thing in listitemsnearlocation(what.x, what.y, what.z, 0, what.realm)
                 if (thing.objtype == UOBJ_KEG)
                         do_ferment(character, thing);
                 endif

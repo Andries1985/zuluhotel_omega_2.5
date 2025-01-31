@@ -55,7 +55,7 @@ function PlayerExplosion(range)
 	foreach part in parts
 		x := (corpse.x-range) + RandomInt((range*2+1));
 		y := (corpse.y-range) + RandomInt((range*2+1));
-		z := GetStandingHeight( x, y, corpse.z).z;
+		z := GetStandingHeight( x, y, corpse.z, corpse.realm).z;
 		part := CreateItemAtLocation(x, y, z, part, 1, corpse.realm);
 		if (!CheckLineOfSight( corpse, part))
 			MoveObjectToLocation(part, corpse.x, corpse.y, corpse.z, corpse.realm);

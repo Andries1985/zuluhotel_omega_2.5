@@ -18,7 +18,7 @@ program textcmd_door(me)
 
 	var itemdesc := ReadConfigFile( ":doors:itemdesc" );
 
-	var Doors := ListItemsNearLocation(cint(me.x), cint(me.y), cint(me.z),2);
+	var Doors := ListItemsNearLocation(cint(me.x), cint(me.y), cint(me.z), 2, me.realm);
 	var OpenDoors := {};
 	foreach door in Doors
 

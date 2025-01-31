@@ -92,8 +92,8 @@ function CreateBmArena()
 			aX := aX+1;
 			SleepMS(100);
 		endif
-		blocks := ListItemsAtLocation( aX, aY, 0 );
-		startpad := ListItemsNearLocation( aX, aY, 0, 1 );
+		blocks := ListItemsAtLocation( aX, aY, 0, "britannia" );
+		startpad := ListItemsNearLocation( aX, aY, 0, 1, "britannia" );
 		stop := 0;
 		foreach pad in startpad
 			if(GetObjProperty(pad, "bmStartPad"))

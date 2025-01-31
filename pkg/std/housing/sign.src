@@ -208,7 +208,7 @@ program textcmd_sign( who , sign )
 					endif
 				endif
 			14:
-				foreach item in ListItemsNearLocation( sign.x, sign.y, sign.z-5, 20 )
+				foreach item in ListItemsNearLocation( sign.x, sign.y, sign.z-5, 20, sign.realm )
 					if(item.getprop("outside") == house.serial)
 						SendSysMessage(who, "You need to redeed furniture outside before you can demolish your house.");
 						return;						
@@ -286,7 +286,7 @@ program textcmd_sign( who , sign )
 						endif
 
 						if (house.objtype==0x608D)
-							foreach item in ListItemsNearLocation( sign.x, sign.y, 0, 8 )
+							foreach item in ListItemsNearLocation( sign.x, sign.y, 0, 8, sign.realm )
 								if((item.objtype==0x177d) or (item.objtype==0xb41) or (item.objtype==0xb42))
 									destroyitem(item);
 								endif
@@ -295,7 +295,7 @@ program textcmd_sign( who , sign )
 
 						var z := 0;
 						repeat
-							foreach item in ListItemsNearLocation( sign.x, sign.y, z, 20 )
+							foreach item in ListItemsNearLocation( sign.x, sign.y, z, 20, sign.realm )
 								if(item.getprop("houseserial") == house.serial || item.getprop("f"))
 										destroyitem(item);
 								endif

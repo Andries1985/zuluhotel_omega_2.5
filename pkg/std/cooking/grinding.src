@@ -21,7 +21,7 @@ program mill (character, mill_part )
 
 	//We need to find the other part of the mill so that we can animate it.
 	if (mill_part.objtype == 0x1922)
-		foreach mill in ListItemsNearLocation(character.x, character.y, character.z,3)
+		foreach mill in ListItemsNearLocation(character.x, character.y, character.z, 3, character.realm)
 			if ( mill.objtype == 0x1920)
 				other_mill_part := mill;
 			endif
@@ -32,7 +32,7 @@ program mill (character, mill_part )
 		endif
 
 	elseif (mill_part.objtype == 0x192e)
-		foreach mill in ListItemsNearLocation(character.x, character.y, character.z,3)
+		foreach mill in ListItemsNearLocation(character.x, character.y, character.z, 3, character.realm)
 			if ( mill.objtype == 0x192c)
 				other_mill_part := mill;
 			endif
@@ -47,7 +47,7 @@ program mill (character, mill_part )
 	elseif (mill_part.objtype == 0x1920)
 		other_mill_part := mill_part;
 		mill_part := 0;
-		foreach mill in ListItemsNearLocation(character.x, character.y, character.z,3)
+		foreach mill in ListItemsNearLocation(character.x, character.y, character.z, 3, character.realm)
 			if ( mill.objtype == 0x1922)
 				mill_part := mill;
 			endif
@@ -60,7 +60,7 @@ program mill (character, mill_part )
 	elseif (mill_part.objtype == 0x192c)
 		other_mill_part := mill_part;
 		mill_part := 0;
-		foreach mill in ListItemsNearLocation(character.x, character.y, character.z,3)
+		foreach mill in ListItemsNearLocation(character.x, character.y, character.z, 3, character.realm)
 			if ( mill.objtype == 0x192e)
 				mill_part := mill;
 			endif

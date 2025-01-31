@@ -456,7 +456,7 @@ function grabloot()
 		setobjproperty(me, "serial", me.serial);
 	endif
 
-	var Near_Items := ListItemsNearLocation(me.x, me.y, me.z,6);
+	var Near_Items := ListItemsNearLocation(me.x, me.y, me.z, 6, me.realm);
 
      foreach item in Near_Items
 	if( CheckLineOfSight( me, item ) )

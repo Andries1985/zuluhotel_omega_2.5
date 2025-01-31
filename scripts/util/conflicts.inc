@@ -101,7 +101,7 @@ function co_eatTheDead()
 
    Hunger := Hunger + 1;
 
-   foreach body in ListItemsNearLocation( me.x, me.y, me.z, IN_RANGE )
+   foreach body in ListItemsNearLocation( me.x, me.y, me.z, IN_RANGE, me.realm )
 
       if ( ( body.objtype == UOBJECT_CORPSE ) 
        and ( GetObjProperty( body, "cut" ) != "1") )

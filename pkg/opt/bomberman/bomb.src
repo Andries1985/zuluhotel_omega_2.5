@@ -92,7 +92,7 @@ function shootFire(who, bomb, j, h)
 			stopFire := 1;
 		endif
 
-		stones := ListItemsAtLocation( bomb.x+j, bomb.y+h,  bomb.z );
+		stones := ListItemsAtLocation( bomb.x+j, bomb.y+h, bomb.z, bomb.realm );
 		foreach boulder in stones
 			if(GetObjProperty(boulder, "bmBlocker"))
 				stopFire := 1;
@@ -118,7 +118,7 @@ function shootFire(who, bomb, j, h)
 				endif
 			endforeach
 		
-			stones := ListItemsAtLocation( bomb.x+j, bomb.y+h,  bomb.z );
+			stones := ListItemsAtLocation( bomb.x+j, bomb.y+h, bomb.z, bomb.realm );
 			foreach boulder in stones
 				if(GetObjProperty(boulder, "bmStone"))
 					powerUp(boulder);

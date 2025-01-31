@@ -55,7 +55,7 @@ function grabloot()
 	izplayer := GetObjProperty( item, "npctemplate" );
 	if( CheckLineOfSight( me, item ) )
 
-	var sh := GetStandingHeight( cint(item.x), cint(item.y), cint(item.z) );
+	var sh := GetStandingHeight( cint(item.x), cint(item.y), cint(item.z), item.realm );
 	if (sh.multi || sh.multi.serial)
 		break;
 	endif

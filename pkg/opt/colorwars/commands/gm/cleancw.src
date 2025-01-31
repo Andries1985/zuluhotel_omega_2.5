@@ -39,10 +39,10 @@ program CleanArena()
 		ApplyRawDamage( mob, GetMaxHP(mob) + 3 );
 	endforeach
 	//Destroy Prize Stone and gates
-	var to_destroy := ListItemsAtLocation(6079, 1364, 50); //prize stone
-    to_destroy += ListItemsAtLocation(6067, 1394, 30); //red gate
-	to_destroy += ListItemsAtLocation(6115, 1333, 30); //blue gate
-	to_destroy += ListItemsAtLocation(6127, 1308, 15); //green gate
+	var to_destroy := ListItemsAtLocation(6079, 1364, 50, "britannia"); //prize stone
+    to_destroy += ListItemsAtLocation(6067, 1394, 30, "britannia"); //red gate
+	to_destroy += ListItemsAtLocation(6115, 1333, 30, "britannia"); //blue gate
+	to_destroy += ListItemsAtLocation(6127, 1308, 15, "britannia"); //green gate
     foreach item in to_destroy
         DestroyItem(item);
     endforeach
