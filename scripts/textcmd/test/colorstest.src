@@ -39,6 +39,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
@@ -52,6 +53,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
@@ -65,6 +67,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
@@ -78,6 +81,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
@@ -91,6 +95,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
@@ -104,6 +109,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
@@ -117,6 +123,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
@@ -130,6 +137,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
@@ -143,6 +151,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
@@ -156,6 +165,7 @@ function RainDownColors(loc, item, color)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
             newitem.name := "Color is : " + CStr(newitem.color);
+            newitem.movable := 0;
             sleepms(50);
         endif
     endfor
