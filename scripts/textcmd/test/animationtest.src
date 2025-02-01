@@ -1,0 +1,50 @@
+
+ // Test color ranges on different objects
+ //
+ //
+ //
+ //
+ //
+
+
+use os;
+use uo;
+
+program animationtest( who, text )
+	
+    if(text == "" || text == "?" || Lower(text) == "help")
+		SendSysMessage(who, "Usage is .animationtest graphicindexstart", color := 88);
+		return;
+	endif
+
+	var params := SplitWords( text );
+    var anim := CInt(params[1]);
+
+    var props := struct;
+	props.+facing := who.facing;
+
+    var loc := TargetCoordinates(who);
+
+    RainDownAnimations(props, loc, anim);
+
+endprogram
+
+
+function RainDownAnimations(props, loc, anim)
+
+    var i,tile;
+    var ianim := anim;
+
+    for (i := 0; i <= 20; i := i + 2)
+        tile := GetMapInfo(loc.x+i, loc.y-i, loc.realm);
+        if(tile)
+            var newitem := CreateNpcFromTemplate( "skeleton", loc.x+i, loc.y-i, loc.z, props, loc.realm);
+            newitem.graphic := anim + i;
+            newitem.name := "Graphic is : " + CStr(newitem.Graphic);
+            newitem.frozen := 1;
+            //newitem.movable := 0;
+            sleepms(50);
+        endif
+    endfor
+
+endfunction
