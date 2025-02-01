@@ -38,6 +38,7 @@ function RainDownColors(loc, item, color)
         if(tile)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
             sleepms(50);
         endif
     endfor
@@ -50,6 +51,7 @@ function RainDownColors(loc, item, color)
         if(tile)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
             sleepms(50);
         endif
     endfor
@@ -62,6 +64,7 @@ function RainDownColors(loc, item, color)
         if(tile)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
             sleepms(50);
         endif
     endfor
@@ -74,6 +77,7 @@ function RainDownColors(loc, item, color)
         if(tile)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
             sleepms(50);
         endif
     endfor
@@ -86,6 +90,7 @@ function RainDownColors(loc, item, color)
         if(tile)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
             sleepms(50);
         endif
     endfor
@@ -98,6 +103,59 @@ function RainDownColors(loc, item, color)
         if(tile)
             var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
             newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
+            sleepms(50);
+        endif
+    endfor
+
+    loc.y := loc.y + 1;
+    icolor := color + 60;
+    
+    for (i := 0; i <= 9; i := i + 1)
+        tile := GetMapInfo(loc.x+i, loc.y, loc.realm);
+        if(tile)
+            var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
+            newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
+            sleepms(50);
+        endif
+    endfor
+
+    loc.y := loc.y + 1;
+    icolor := color + 70;
+    
+    for (i := 0; i <= 9; i := i + 1)
+        tile := GetMapInfo(loc.x+i, loc.y, loc.realm);
+        if(tile)
+            var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
+            newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
+            sleepms(50);
+        endif
+    endfor
+
+    loc.y := loc.y + 1;
+    icolor := color + 80;
+    
+    for (i := 0; i <= 9; i := i + 1)
+        tile := GetMapInfo(loc.x+i, loc.y, loc.realm);
+        if(tile)
+            var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
+            newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
+            sleepms(50);
+        endif
+    endfor
+
+    loc.y := loc.y + 1;
+    icolor := color + 90;
+    
+    for (i := 0; i <= 9; i := i + 1)
+        tile := GetMapInfo(loc.x+i, loc.y, loc.realm);
+        if(tile)
+            var newitem := CreateItemAtLocation( loc.x+i, loc.y, loc.z+6, item, 1, loc.realm);
+            newitem.color := icolor + i;
+            newitem.name := "Color is : " + CStr(newitem.color);
             sleepms(50);
         endif
     endfor
