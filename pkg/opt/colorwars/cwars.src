@@ -595,7 +595,7 @@ function RunCWars()
 			endif
 		endforeach
 		// create powerball
-		foreach item in ListItemsNearLocation( 6082 , 1366 , 50 , 20 );
+		foreach item in ListItemsNearLocation( 6082 , 1366 , 50 , 20, "britannia" );
 			sleepms(5);
 			if(GetObjProperty(item,"iamkoth"))
 				var ball := CreateItemAtLocation(item.x, item.y, item.z, 0xc948, 1, "britannia");
@@ -728,9 +728,9 @@ function RunCWars()
 	CheckPacks();
 	sleep(60);
 	//OPEN GATES
-	var to_destroy := ListItemsAtLocation(6067, 1394, 30); //red gate
-	to_destroy += ListItemsAtLocation(6115, 1333, 30); //blue gate
-	to_destroy += ListItemsAtLocation(6127, 1308, 15); //green gate
+	var to_destroy := ListItemsAtLocation(6067, 1394, 30, "britannia"); //red gate
+	to_destroy += ListItemsAtLocation(6115, 1333, 30, "britannia"); //blue gate
+	to_destroy += ListItemsAtLocation(6127, 1308, 15, "britannia"); //green gate
 	foreach item in to_destroy
 		DestroyItem(item);
 	endforeach
@@ -749,7 +749,7 @@ function RunCWars()
 	else
 		//broadcast and uncage players
 		Broadcast( "King of the Hill has started!", FONT_BOLD,53 );
-		foreach item in ListItemsNearLocation( 6081 , 1353 ,30 , 50 );
+		foreach item in ListItemsNearLocation( 6081 , 1353 ,30 , 50, "britannia" );
 			sleepms(5);
 			if (item and GetObjProperty(item,"cwgate"))
 				DestroyItem(item);
@@ -795,7 +795,7 @@ function RunCWars()
 						if (GetObjProperty(player,"cwcolor") == "Blue") //count total players
 							cwblue := cwblue + 1;
 						endif
-						foreach item in ListItemsNearLocation( 6082 , 1366 , 50 , 10 );
+						foreach item in ListItemsNearLocation( 6082 , 1366 , 50 , 10, "britannia" );
 							sleepms(5);
 							if (GetObjProperty(item,"iamkoth"))
 								if (player.x==item.x and player.y==item.y and player.z==item.z)
@@ -906,9 +906,9 @@ function RunCWars()
 		endif
 		if ((cwblue == 0 and cwgreen == 0)or(cwblue == 0 and cwred == 0)or(cwred == 0 and cwgreen == 0))
 			//OPEN GATES
-			var to_destroy := ListItemsAtLocation(6067, 1399, 30); //red gate
-			to_destroy += ListItemsAtLocation(6118, 1329, 30); //blue gate
-			to_destroy += ListItemsAtLocation(6132, 1317, 15); //green gate
+			var to_destroy := ListItemsAtLocation(6067, 1399, 30, "britannia"); //red gate
+			to_destroy += ListItemsAtLocation(6118, 1329, 30, "britannia"); //blue gate
+			to_destroy += ListItemsAtLocation(6132, 1317, 15, "britannia"); //green gate
 			foreach item in to_destroy
 				DestroyItem(item);
 			endforeach
@@ -1088,7 +1088,7 @@ function PlaceKoth(player)
 	if (!kothnum)
 		kothnum := 1;
 	endif
-	foreach item in ListItemsNearLocation( 6081 , 1357 , 30 , 60 );
+	foreach item in ListItemsNearLocation( 6081 , 1357 , 30 , 60, "britannia" );
 		if (GetObjProperty(item, "kothtile") == kothnum)
 			MoveObjectToLocation( player, item.x, item.y, item.z, "britannia", MOVEOBJECT_FORCELOCATION);
 			found := 1;
@@ -1156,10 +1156,10 @@ function CleanArena()
 		MoveObjectToLocation( ghost, 3679+RandomInt(5), 2516+RandomInt(5), 0, "britannia", MOVEOBJECT_FORCELOCATION);
 	endforeach
 	//Destroy Prize Stone and gates
-	var to_destroy := ListItemsAtLocation(6079, 1364, 50); //prize stone
-	to_destroy += ListItemsAtLocation(6067, 1394, 30); //red gate
-	to_destroy += ListItemsAtLocation(6115, 1333, 30); //blue gate
-	to_destroy += ListItemsAtLocation(6127, 1308, 15); //green gate
+	var to_destroy := ListItemsAtLocation(6079, 1364, 50, "britannia"); //prize stone
+	to_destroy += ListItemsAtLocation(6067, 1394, 30, "britannia"); //red gate
+	to_destroy += ListItemsAtLocation(6115, 1333, 30, "britannia"); //blue gate
+	to_destroy += ListItemsAtLocation(6127, 1308, 15, "britannia"); //green gate
 	foreach item in to_destroy
 		DestroyItem(item);
 	endforeach

@@ -5,6 +5,7 @@ use cfgfile;
 
 program textcmd_guards( who, text )
 
+	
 	if( who.hidden )
 		SendSysMessage( who, "You can't call the guards while hidden." );
 	elseif( who.dead )
@@ -14,7 +15,7 @@ program textcmd_guards( who, text )
 	else
 		var nextg :=CInt(GetObjProperty(who, "nextguard"));
 		var realclock:=ReadGameClock();
-		if ( realclock < nextg)
+		if ( ( realclock < nextg ) && !who.cmdlevel)
 			SendSysMessage( who, "You have to wait " + (nextg-realclock) + " seconds to use .guards again.");
 			return;
 		endif

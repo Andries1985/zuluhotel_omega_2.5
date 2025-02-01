@@ -24,8 +24,8 @@ var colour := gatedetails[3];
 
 var i := i;
 var gate1, gate2;
-gate1 := CreateItemAtLocation(corpse.x, corpse.y, corpse.z, MOON_GATE);
-gate2 := CreateItemAtLocation(location[1], location[2], location[3], MOON_GATE);
+gate1 := CreateItemAtLocation(corpse.x, corpse.y, corpse.z, MOON_GATE, 1, corpse.realm);
+gate2 := CreateItemAtLocation(location[1], location[2], location[3], MOON_GATE, 1, location[4]);
 SetObjProperty(gate1, "IgnoreCheck", 1);
 SetObjProperty(gate2, "IgnoreCheck", 1);
 
@@ -42,10 +42,12 @@ gate1.color := colour;
 SetObjProperty(gate1, "GateDestX", gate2.x);
 SetObjProperty(gate1, "GateDestY", gate2.y);
 SetObjProperty(gate1, "GateDestZ", gate2.z);
+SetObjProperty(gate1, "GateDestRealm", gate2.realm);
 
 SetObjProperty(gate2, "GateDestX", gate1.x);
 SetObjProperty(gate2, "GateDestY", gate1.y);
 SetObjProperty(gate2, "GateDestZ", gate1.z);
+SetObjProperty(gate2, "GateDestRealm", gate1.realm);
 sleepms(100);
 
 PlaySoundEffect( gate1, SFX_SPELL_GATE_TRAVEL );

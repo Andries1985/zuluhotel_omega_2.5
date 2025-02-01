@@ -13,7 +13,7 @@ var START_MOD := 65;
 
 program do_itemid( who )
 
-//Test Shard Code Start
+/*Test Shard Code Start
 var lastid := GetObjProperty(who, "#LastID");
 
 var skill := GetEffectiveSkill( who, SKILLID_ITEMID );
@@ -34,10 +34,10 @@ elseif (skill >= START_MOD)
 		delay := CDbl((130 - START_MOD)/( 10.0+isamage )); 
 	else
 		delay := CDbl((130 - START_MOD)/10.0);
+ */   
     
-    
-/* Beta Shard Code & Test Shard Code End
-=======
+// Beta Shard Code & Test Shard Code End
+
 	var lastid := GetObjProperty(who, "#LastID");
 	var skill := GetEffectiveSkill( who, SKILLID_ITEMID );
 	var isamage := IsMage(who);
@@ -56,7 +56,7 @@ elseif (skill >= START_MOD)
 			delay := CDbl((150 - START_MOD)/10.0);
 		endif
 		delay := BASE_DELAY - CInt(temp/delay);
-*/ //Beta Shard Code End
+//Beta Shard Code End
 
 
 	endif

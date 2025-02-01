@@ -3,27 +3,27 @@ use os;
 
 program textcmd_create_townstone(who)
 
-var townnames := GetGlobalProperty("townlist");
+	var townnames := GetGlobalProperty("townlist");
 
-if(!townnames or !len(townnames))
-	townnames := { };
-endif
+	if(!townnames or !len(townnames))
+		townnames := { };
+	endif
 
-var name := SendTextEntryGump( who, "What's the Town name?" , 50);
+	var name := SendTextEntryGump( who, "What's the Town name?" , 50);
 
-if(!name)
-	SendSysMessage(who, "Canceled");
-	return;
-endif
+	if(!name)
+		SendSysMessage(who, "Canceled");
+		return;
+	endif
 
-townnames.append(name);
+	townnames.append(name);
 
-var insertpoint := townnames.size();
+	var insertpoint := townnames.size();
 
-SetGlobalProperty("townlist", townnames);
+	SetGlobalProperty("townlist", townnames);
 
-var item := createitematlocation(who.x,who.y,who.z, 0xa320, 1);
-item.name := item.name+" of "+name;
-SetObjProperty(item, "town", insertpoint);
-SetObjProperty(item, "eleicao", 1);
+	var item := createitematlocation( who.x, who.y, who.z, 0xa320, 1, who.realm );
+	item.name := item.name+" of "+name;
+	SetObjProperty(item, "town", insertpoint);
+	SetObjProperty(item, "eleicao", 1);
 endprogram

@@ -16,7 +16,7 @@ const GFX_COLOUR := 67;
 const SOUND_EFFECT := 0x1F3;
 const BASE_TIME := 15; // 15 mins
 var COUNTER := 0;
-var origx, origy, origz;
+var origx, origy, origz, origrealm;
 var breakplease := 0; // to end the script
 
 program Beastal_Bond(parms)
@@ -70,6 +70,7 @@ program Beastal_Bond(parms)
 	origx := who.x;
 	origy := who.y;
 	origz := who.z;
+	origrealm := who.realm;
 
 	// ------------- The looping main effect of the song ------------ \\
 	repeat
@@ -89,7 +90,7 @@ program Beastal_Bond(parms)
 
 			// no animal bound
 			if (!has_bond && !who.concealed)
-				foreach animal in ListMobilesNearLocation( who.x, who.y, who.z, range )
+				foreach animal in ListMobilesNearLocation( who.x, who.y, who.z, range, who.realm )
 					if (BondToAnimal(who, animal, range))
 						SendSysMessage(who, "You have established a magical bond between a creature.", 3, 67);
 						Start_Script(":versebook:Beastal_Bond_Reporting", {who, animal});
@@ -227,7 +228,7 @@ function BondToAnimal(who, animal, range)
 	override.+concealed := 1;
 	override.+frozen := 1;
 	override.+script := ":versebook:ai_beastal_bond";
-	var wisp := CreateNpcFromTemplate("wisp", 5276, 1186, 0, override, who.realm);
+	var wisp := CreateNpcFromTemplate("wisp", 5276, 1186, 0, override, "britannia");
 	SetObjProperty(wisp, "Animal", animal.serial);
 	SetObjProperty(wisp, "Master", who.serial);
 	return 1;
@@ -241,9 +242,9 @@ function BringBackToPosition(who)
 
 	EraseObjProperty(who, "#ViewingBeast");
 
-	// only move if not alreayd there
-	if (who.x != origx && who.y != origy)
-		MoveObjectToLocation(who, origx, origy, origz, who.realm, MOVEOBJECT_FORCELOCATION);
+	// only move if not already there
+	if (who.x != origx && who.y != origy && who.realm != origrealm)
+		MoveObjectToLocation(who, origx, origy, origz, origrealm, MOVEOBJECT_FORCELOCATION);
 	endif
 
 endfunction

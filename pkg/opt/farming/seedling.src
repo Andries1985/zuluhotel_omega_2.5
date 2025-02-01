@@ -16,10 +16,10 @@ program seedling(parms)
 		return;
 	endif
 
-	var checkloc := ListItemsNearLocation( x,y,z, 0 );
+	var checkloc := ListItemsNearLocation( x,y,z,0,where.realm );
 	sleep(1);
 	if(len(checkloc) == 0)
-		plantseed := createitematlocation(x, y, z, what, 1);
+		plantseed := createitematlocation(x, y, z, what, 1, where.realm);
 		SetObjProperty(plantseed, "RegrowTime", ReadGameClock() + cfg[plantseed.objtype].replenishperiod);
 		SetObjProperty(plantseed, "#amt", cfg[plantseed.objtype].maxamount);
 	endif

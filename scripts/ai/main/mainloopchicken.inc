@@ -65,7 +65,7 @@ function main_AI_loop()
 
 	if (readgameclock() > nextlay)
 		nextlay := readgameclock()+ 52000 + cint(3800*Random(2));
-		createitematlocation(me.x, me.y, me.z,"egg",1);
+		createitematlocation(me.x, me.y, me.z,"egg",1,me.realm);
 	endif
 
 	if ( readgameclock() > nextbark )

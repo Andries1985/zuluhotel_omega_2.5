@@ -11,40 +11,46 @@ include "botanik";
 
 program awake(item, PlacedBy)
 
- printtextabove(item,"*You plant a new tree*");
+    printtextabove(item,"*You plant a new tree*");
 
- var newleaves,newtree,i,tree,leaves,cfg:=readconfigfile("tree");
- if (!cfg) return; endif
+    var newleaves,newtree,i,tree,leaves,cfg:=readconfigfile("tree");
+    if (!cfg) return; endif
 
- sleep(cfg[item.objtype].awake);
+    sleep(cfg[item.objtype].awake);
 
- newleaves:=createitematlocation(cint(item.x),cint(item.y),cint(item.z),cint(cfg[item.objtype].awaketype),1);
- newleaves.movable:=0;
- newtree:=createitematlocation(cint(newleaves.x),cint(newleaves.y),cint(newleaves.z),cint(cfg[newleaves.objtype].treetype),1);
+    newleaves:=createitematlocation(cint(item.x),cint(item.y),cint(item.z),cint(cfg[item.objtype].awaketype),1, item.realm);
+    newleaves.movable:=0;
+    newtree:=createitematlocation(cint(newleaves.x),cint(newleaves.y),cint(newleaves.z),cint(cfg[newleaves.objtype].treetype),1, item.realm);
 
- printtextabove(newleaves,"*grows*");
- 
- PlacedBy := GetObjProperty(item, "PlacedBy");
- SetObjProperty(newleaves,"PlacedBy", PlacedBy);
- SetObjProperty(newtree,"PlacedBy", PlacedBy);
+    //Need to tell the tree which realm to grow in
+    newtree.realm := item.realm;
+    printtextabove(newleaves,"*grows*");
+    
+    PlacedBy := GetObjProperty(item, "PlacedBy");
+    SetObjProperty(newleaves,"PlacedBy", PlacedBy);
+    SetObjProperty(newtree,"PlacedBy", PlacedBy);
 
- destroyitem(item);
+    destroyitem(item);
 
- sleep(cfg[newleaves.objtype].awake);
+    sleep(cfg[newleaves.objtype].awake);
 
- leaves:=createitematlocation(cint(newleaves.x),cint(newleaves.y),cint(newleaves.z),cint(cfg[newleaves.objtype].awaketype),1);
- leaves.movable:=0;
- 
- PlacedBy := GetObjProperty(newleaves, "PlacedBy");
- destroyitem(newleaves);
- destroyitem(newtree);
- tree:=createitematlocation(cint(leaves.x),cint(leaves.y),cint(leaves.z), cint(cfg[leaves.objtype].treetype),1);
+    leaves:=createitematlocation(cint(newleaves.x),cint(newleaves.y),cint(newleaves.z),cint(cfg[newleaves.objtype].awaketype),1, newtree.realm);
 
- SetObjProperty(leaves,"PlacedBy", PlacedBy);
- SetObjProperty(tree,"PlacedBy", PlacedBy);
- PlacedBy := GetObjProperty(tree, "PlacedBy");
+    //Need to tell the tree which realm to grow in
+    leaves.realm := newtree.realm;
+    leaves.movable:=0;
+    
+    PlacedBy := GetObjProperty(newleaves, "PlacedBy");
+    destroyitem(newleaves);
+    destroyitem(newtree);
 
- printtextabove(leaves,"*matures*");
- fixtree(tree,cfg[tree.objtype].regrown,cfg[tree.objtype].maxamount,PlacedBy);
+    tree:=createitematlocation(cint(leaves.x),cint(leaves.y),cint(leaves.z), cint(cfg[leaves.objtype].treetype),1, leaves.realm);
+
+    SetObjProperty(leaves,"PlacedBy", PlacedBy);
+    SetObjProperty(tree,"PlacedBy", PlacedBy);
+    PlacedBy := GetObjProperty(tree, "PlacedBy");
+
+    printtextabove(leaves,"*matures*");
+    fixtree(tree,cfg[tree.objtype].regrown,cfg[tree.objtype].maxamount,PlacedBy);
 
 endprogram

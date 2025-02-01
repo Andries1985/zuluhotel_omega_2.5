@@ -10,7 +10,7 @@ program findspnm(who, input)
 
 	var i := 0;
 	SendSysMessage(who, "Spawnpoint location in "+input+" radius.");
-	foreach item in ListItemsNearLocation( who.x, who.y, who.z, input);
+	foreach item in ListItemsNearLocation( who.x, who.y, who.z, input, who.realm);
 		if(item.graphic == 8440)
 			SendSysMessage(who, "Spawnpoint"+i+": x: "+item.x+" y: "+item.y+" z: "+item.z);
 			i := i+1;

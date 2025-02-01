@@ -11,6 +11,7 @@
 use os;
 use uo;
 use cfgfile;
+
 include ":staff:include/staff";
 include ":gumps:include/gumps";
 include "include/areas";
@@ -18,7 +19,6 @@ include "include/constants/cfgfiles";
 include "include/constants/propids";
 
 var areas_cfg	:= ReadConfigfile(CFGFILE_AREAS);
-var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
 
 // Global properties stored as bits
 var guarded := GetGlobalProperty(PROPID_GLOBAL_AREAS_GUARDED);
@@ -34,7 +34,17 @@ var rparea := GetGlobalProperty(PROPID_GLOBAL_AREAS_RPAREA);
 
 set_script_option(SCRIPTOPT_NO_RUNAWAY,1);
 
-Program areas(who)
+Program areas(who, text)
+
+	if( !text )
+		SendSysMessage( who, "Usage is .areas facet (lowercase)" );
+		return 0;
+	endif
+
+	text := SplitWords(text);
+	var realm := Lower(text[1]);
+
+	var areas := GetConfigStringArray( areas_cfg[realm], "Area" );
 	// don't log changes, too big!
 	LogCommand(who, GetProcess(GetPid()).name);
 
@@ -143,7 +153,7 @@ Program areas(who)
 		SendSysMessage(who, "These options are not yet supported.");
 	endif
 
-	SetAllValues(result.keys);
+	SetAllValues(result.keys, areas);
 
 	SendSysMessage(who, "Data saved.");
 
@@ -155,7 +165,7 @@ endprogram
 // SetAllValues() - Sets all values, creates global props if don't exist etc
 //
 ////////////////////////////////////////////////////////////////////////////////////
-function SetAllValues(data)
+function SetAllValues(data, areas)
 
 	var mine := 0;
 	guarded := {};

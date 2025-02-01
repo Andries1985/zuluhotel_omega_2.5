@@ -79,7 +79,7 @@ program cast_recall( caster, spell_id )
 		SendSysmessage( caster, "This is a blank rune!") ;
 		return 0;
 		
-	elseif( IsForbiddenAreaToRecallTo( caster, tox, toy ) )
+	elseif( IsForbiddenAreaToRecallTo( caster, tox, toy, torealm ) )
 		SendSysMessage( caster, "You can't recall to this place." );
 		if( cast_on.objtype == UOBJ_RUNE || cast_on.objtype == 0x1f14)
 			DestroyItem(cast_on);
@@ -113,7 +113,7 @@ program cast_recall( caster, spell_id )
 		endif
 	endif
 	//Same check as above but for static houses
-	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz );
+	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz, torealm );
 	if(serialstatichouse)
 		var sign := SystemFindObjectBySerial(serialstatichouse);
 		if( !Iscowner( caster, sign )  )

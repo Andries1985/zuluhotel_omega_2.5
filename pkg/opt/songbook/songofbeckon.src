@@ -108,7 +108,7 @@ program cast_songofbeckon( player )
 			return;
 		endif	
 
-		var multi := GetStandingHeight( player.x, player.y, player.z ).multi;
+		var multi := GetStandingHeight( player.x, player.y, player.z, player.realm ).multi;
 		if( multi )
 			SendSysMessage(player, "Can't summon creatures inside multis.");
 			EraseObjProperty( player , "#Casting" );

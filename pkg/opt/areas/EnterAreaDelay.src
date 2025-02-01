@@ -51,4 +51,8 @@ program EnterAreaDelay(who)
 		SendSysMessage(who, "This is NOT a guarded area.", 3, 1001);
 	endif
 
+	if (IsInForbiddenArea( who ))
+		SendSysMessage(who, "This is a FORBIDDEN area.", 3, 1001);
+	endif
+
 endprogram

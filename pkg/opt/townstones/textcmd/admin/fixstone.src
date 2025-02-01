@@ -2,18 +2,18 @@ use uo;
 
 program textcmd_fixstone( who )
 
-Sendsysmessage( who , "Select townstone to clear." );
-var stone := Target( who );
+    Sendsysmessage( who , "Select townstone to clear." );
+    var stone := Target( who );
 
-eraseobjproperty (stone,"mayor");
-eraseobjproperty (stone,"mayorserial");
-eraseobjproperty (stone,"pleibicito");
-eraseobjproperty (stone,"mayorserial");
-eraseobjproperty (stone,"Pleibicito_Result");
-eraseobjproperty (stone,"timer");
-eraseobjproperty (stone,"populacao");
-eraseobjproperty (stone,"votepercent");
-eraseobjproperty (stone,"votos");
-setobjproperty (stone,"eleicao",1);
+    eraseobjproperty (stone,"mayor");
+    eraseobjproperty (stone,"mayorserial");
+    eraseobjproperty (stone,"pleibicito");
+    eraseobjproperty (stone,"mayorserial");
+    eraseobjproperty (stone,"Pleibicito_Result");
+    eraseobjproperty (stone,"timer");
+    eraseobjproperty (stone,"populacao");
+    eraseobjproperty (stone,"votepercent");
+    eraseobjproperty (stone,"votos");
+    setobjproperty (stone,"eleicao",1);
 
 endprogram

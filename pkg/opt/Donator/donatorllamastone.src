@@ -100,16 +100,16 @@ endfunction
 
 function IsInPlayerCity( who )
 
-	var items := ListItemsNearLocationOfType( who.x, who.y, 0, 250, 0x7566 );
+	var items := ListItemsNearLocationOfType( who.x, who.y, 0, 250, 0x7566, who.realm );
 	var stone;
 	var minx;
 	var maxx;
 	var miny;
 	var maxy;
 	if( !items )
-		items := ListItemsNearLocationOfType( who.x, who.y, 1, 250, 0x7566 );
+		items := ListItemsNearLocationOfType( who.x, who.y, 1, 250, 0x7566, who.realm );
 		if( !items )
-			items := ListItemsNearLocationOfType( who.x, who.y, 2, 250, 0x7566 );
+			items := ListItemsNearLocationOfType( who.x, who.y, 2, 250, 0x7566, who.realm );
 		endif
 	endif
 	foreach item in items

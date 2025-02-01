@@ -112,7 +112,7 @@ function IsForbiddenAreaFor( who, x, y )
 	endif
 	
 	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas	:= GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	if(!areas)
 		set_priority(old_prio);
 		return 0;
@@ -128,6 +128,7 @@ function IsForbiddenAreaFor( who, x, y )
 	var where := struct;
 	where.+x  := x;
 	where.+y  := y;
+	
 	for( i := 1; i <= areas.size(); i := i + 1 )
 		if( banned[i] )
 			splited := SplitWords( areas[i] );
@@ -160,9 +161,9 @@ function IsForbiddenAreaToGateFrom( byref who )
 endfunction
 
 
-function IsForbiddenAreaToGateTo( byref who, byref x, byref y )
+function IsForbiddenAreaToGateTo( byref who, byref x, byref y, byref realm )
 
-	return IsForbiddenAreaToRecallTo( who, x, y );
+	return IsForbiddenAreaToRecallTo( who, x, y, realm );
 
 endfunction
 
@@ -170,7 +171,7 @@ endfunction
 function IsForbiddenAreaToRecallFrom( byref who )
 
     var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas	:= GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	
     if( !areas )
 		return 0;
@@ -205,8 +206,8 @@ function IsForbiddenAreaToRecallFrom( byref who )
 endfunction
 
 
-function IsForbiddenAreaToRecallTo( byref who, byref x, byref y )
-	
+function IsForbiddenAreaToRecallTo( byref who, byref x, byref y, byref realm )
+		
 	if( who.cmdlevel )
 		return 0;
 	endif
@@ -248,7 +249,7 @@ function IsForbiddenAreaToRecallTo( byref who, byref x, byref y )
 	endif
 	
 	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas	:= GetConfigStringArray( areas_cfg[realm], "Area" );
 	if( !areas )
 		set_priority(old_prio);
 		return 0;
@@ -355,7 +356,7 @@ function IsInAntiLootingArea( byref who )
 	endif
 	
 	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas	:= GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	if( !areas )
 		set_priority(old_prio);
 		return 0;
@@ -405,7 +406,7 @@ function IsInAntiMagicArea( byref who )
 
 	var old_prio	:= set_priority(100);
 	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas	:= GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	if( !areas )
 		set_priority(old_prio);
 		return 0;
@@ -537,7 +538,7 @@ function IsInForbiddenArea( who )
 	endif
 	
 	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas	:= GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	if(!areas)
 		set_priority(old_prio);
 		return 0;
@@ -577,36 +578,18 @@ endfunction
 
 function IsInGuardedArea( byref who )
 
-// Ok wtf, why do we WANT a staff to always be in guarded territory?
-	//if( who.cmdlevel )
-	//	return 1;
-	//<div></div>endif
-	
 	var i;
 	var splited;
 	var old_prio	:= set_priority(100);
 	var areas_cfg	:= ReadConfigfile(CFGFILE_AREAS);
-	
-	// These are ALWAYS unguarded areas - JUST Jhelom arena atm
-	// Get rid of this probably
-	var areas	:= GetConfigStringArray( areas_cfg[2], "Area" );
-	if( areas )
-		for( i := 1; i <= areas.size(); i := i + 1 )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 0;
-			endif
-		endfor
-	endif
 
 	var guarded := GetGlobalProperty(PROPID_GLOBAL_AREAS_GUARDED);
 	if( !guarded )
 		set_priority(old_prio);
 		return 0;
 	endif
-	
-	areas := GetConfigStringArray( areas_cfg[1], "Area" );
+
+	var areas := GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	if( !areas )
 		set_priority(old_prio);
 		return 0;
@@ -637,16 +620,6 @@ function IsForbiddenAreaToMark( byref who )
 	var splited;
 	var old_prio	:= set_priority(100);
 	var areas_cfg	:= ReadConfigfile(CFGFILE_AREAS);
-	var areas	:= GetConfigStringArray( areas_cfg[2], "Area" );
-	if( areas )
-		for( i := 1; i <= areas.size(); i := i + 1 )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 0;
-			endif
-		endfor
-	endif
 
 	var guarded := GetGlobalProperty("DisabledMarkingAreas");
 	if( !guarded )
@@ -654,7 +627,7 @@ function IsForbiddenAreaToMark( byref who )
 		return 0;
 	endif
 	
-	areas := GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas := GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	if( !areas )
 		set_priority(old_prio);
 		return 0;
@@ -678,7 +651,7 @@ endfunction
 function IsInSafeArea(who)
 
    var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas	:= GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	
     if( !areas )
 		return 0;
@@ -701,7 +674,7 @@ endfunction
 function IsInNOPKArea(who)
 
    var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas	:= GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	
     if( !areas )
 		return 0;
@@ -724,7 +697,7 @@ endfunction
 function IsInRPArea(who)
 
    var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+	var areas	:= GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	
     if( !areas )
 		return 0;

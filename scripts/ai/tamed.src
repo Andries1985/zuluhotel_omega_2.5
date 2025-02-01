@@ -622,7 +622,7 @@ function OpenMyPack();
 		0x123:
 		0x124:
 			if (!me.backpack)
-				var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1);
+				var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
 				EquipItem(me, newbackpack);
 			endif
 
@@ -711,7 +711,7 @@ function OpenMyPack();
 
 			set_critical(1);
 			master.facing := me.facing;
-			var mount := CreateItemAtLocation(5288 , 1176 , 0, 0x1F021, 1);
+			var mount := CreateItemAtLocation(5288 , 1176 , 0, 0x1F021, 1, "britannia");
 			mount.color := me.color;
 			setobjproperty(mount,"petname",me.name);
 			setobjproperty(mount,"pethp",GetHP(me));
@@ -752,7 +752,7 @@ endfunction
 //				0xe4:
 //				0xc8:
 //				0xe2:
-//				0x123:	poopoo := //CreateItemAtLocation(me.x,me.y,me.z,0x0f3c,1);
+//				0x123:	poopoo := //CreateItemAtLocation(me.x,me.y,me.z,0x0f3c,1,me.realm);
 //				default: return;
 //
 //			endcase
@@ -790,7 +790,7 @@ function TakeItem(ev)
 
 	if ( (me.graphic == 0x123 ) or (me.graphic == 0x124) )
 		if (!me.backpack)
-			var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1);
+			var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
 			EquipItem(me, newbackpack);
 		endif
 		MoveItemToContainer(ev.item,me.backpack);

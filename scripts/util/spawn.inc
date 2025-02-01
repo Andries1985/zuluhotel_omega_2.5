@@ -29,7 +29,7 @@ function sp_spawn( fertility )
    endif
 
    if ( sp_template and Random( fertility * 10 + 1000 ) = 0)
-      sp_newlySpawnedDude := CreateNpcFromTemplate( sp_template, me.x, me.y, me.z, 0 );
+      sp_newlySpawnedDude := CreateNpcFromTemplate( sp_template, me.x, me.y, me.z, 0, me.realm );
 //      SetObjProperty( newDude, "spawnedBy", me.serial );
 //      print( "I don't know nothin' 'bout birthin' no baby " + template + "s!" );
       return 1;

@@ -100,7 +100,7 @@ if(!me.multi)
 		0x3e9f:
 		0x3ea0:
 		0x3ea1:
-			poopoo := CreateItemAtLocation(me.x,me.y,me.z,0x0f3c,1);
+			poopoo := CreateItemAtLocation(me.x,me.y,me.z,0x0f3c,1,me.realm);
 			poopoo.decayat := ReadGameClock() + 300;
 		endcase
 	endif

@@ -10,8 +10,11 @@
 
 use uo;
 use os;
+use cfgfile;
 
 include "include/client";
+include "include/random";
+include "include/starteqp";
 
 const DEFAULT_LOTTO_TRIGGER := 50;
 const DEFAULT_LOTTO_CHANCE := 25;
@@ -100,7 +103,7 @@ function LootLottery(who)
 		return 0;
 	endif
 	//create the self destructing bag
-	var lootbag := Createitematlocation(5288 , 1176 , 0, "lootbag");
+	var lootbag := Createitematlocation(5288 , 1176 , 0, "lootbag", 1, "britannia");
 	//get the original loot parameters
 	var npcdesc := ReadConfigFile( "::npcdesc" );
 	var elem := FindConfigElem( npcdesc, GetObjProperty( who, "npctemplate" ) );

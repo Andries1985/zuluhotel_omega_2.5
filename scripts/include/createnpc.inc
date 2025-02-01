@@ -21,9 +21,9 @@ use basic;
 // Params:  Same as CreateNpcFromTemplate() core function.
 // Returns: npc			Ref to mobile object.
 ///////////////////////////////////////////////////////////
-function CreateNpc(template, x, y, z, props := 0)
+function CreateNpc(template, x, y, z, props := 0, r)
 	//template := CreateTemplateName(template);
-	var npc := CreateNpcFromTemplate(template, x, y, z, props);
+	var npc := CreateNpcFromTemplate(template, x, y, z, props, r);
     return npc;
 endfunction
 

@@ -1,3 +1,4 @@
+
 include "include/dotempmods";
 include "include/random";
 include "include/attributes";
@@ -60,10 +61,11 @@ function send_web(opponent)
 	var x := opponent.x;
 	var y := opponent.y;
 	var z := opponent.z;
+	var r := opponent.realm;
 
 	sleep(1);
 
-	createitematlocation(x, y, z, UOBJ_SPIDERWEB,  1);
+	createitematlocation(x, y, z, UOBJ_SPIDERWEB,  1, r);
 	
 	var prot	:= GetObjProperty( opponent , "FreeAction" );
 	if(prot == 1)

@@ -46,7 +46,7 @@ function SmeltOre( character , ore , ingot , difficulty )
 	endif
 	
 	sendDiff( character , difficulty );
-	var near := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+	var near := ListItemsNearLocation( character.x , character.y , character.z , 1, character.realm );
 	foreach forge in near
 		if( ((forge.objtype >= UOBJ_FORGE_START) and (forge.objtype <= UOBJ_FORGE_END)) or (forge.objtype == UOBJ_SMALL_FORGE) )
 
@@ -57,7 +57,7 @@ function SmeltOre( character , ore , ingot , difficulty )
 
 				var ingots := CreateItemInBackpack( character , ingot , GetAmount( ore ) );
 				if (!ingots)
-					ingots := CreateItemAtLocation( character.x ,character.y, character.z, ingot , GetAmount( ore ) );
+					ingots := CreateItemAtLocation( character.x ,character.y, character.z, ingot , GetAmount( ore ), character.realm );
 					if (!ingots)
 						SendSysMessage(character, "Your backpack is too full to smelt the ore.");
 						return 0;

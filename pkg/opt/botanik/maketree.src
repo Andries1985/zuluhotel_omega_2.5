@@ -79,10 +79,11 @@ program tavernaz(user,item)
 		return; 
 	endif
 		
-	 var tree,
-	 treex:=cint(user.x),
-	 treey:=cint(user.y),
-	 treez:=cint(user.z);
+	 var tree;
+	 var treex:=cint(user.x);
+	 var treey:=cint(user.y);
+	 var treez:=cint(user.z);
+	 var treerealm := user.realm;
 
 	 var cfg:=readconfigfile("tree");
 	 if (!cfg) 
@@ -90,17 +91,17 @@ program tavernaz(user,item)
 	 endif
 
 	 if (item.objtype==0xe000)
-		tree := createitematlocation(treex,(treey-2),treez,0xd1d,1);
+		tree := createitematlocation(treex,(treey-2),treez,0xd1d,1, treerealm);
 		SetObjProperty(tree,"PlacedBy", PlacedBy);
 		fixtree(tree,cfg[tree.objtype].regrown,10,PlacedBy);
-		tree:=createitematlocation(treex,treey,treez,0xd1e,1);
+		tree:=createitematlocation(treex,treey,treez,0xd1e,1, treerealm);
 		SetObjProperty(tree,"PlacedBy", PlacedBy);
 	    fixtree(tree,cfg[tree.objtype].regrown,10,PlacedBy);
-	    tree := createitematlocation(treex,(treey+2),treez,0xd1b,1);
+	    tree := createitematlocation(treex,(treey+2),treez,0xd1b,1, treerealm);
 		SetObjProperty(tree,"PlacedBy", PlacedBy);
 	    fixtree(tree,cfg[tree.objtype].regrown,10,PlacedBy);
 	 else
-	    tree := createitematlocation(treex,treey,treez,cint(cfg[item.objtype].treetype),1);
+	    tree := createitematlocation(treex,treey,treez,cint(cfg[item.objtype].treetype),1, treerealm);
 		SetObjProperty(tree,"PlacedBy", PlacedBy);
 	    fixtree(tree,cfg[tree.objtype].regrown,cfg[item.objtype].maxamount,PlacedBy);
 	 endif

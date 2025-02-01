@@ -18,7 +18,7 @@ program cast_earth_portal( caster )
 		return;
 	endif
 
-	var gate1 := CreateItemAtLocation( caster.x , caster.y , caster.z , "moongatea" , 1 );
+	var gate1 := CreateItemAtLocation( caster.x , caster.y , caster.z , "moongatea" , 1, caster.realm );
 
 	PlaySoundEffect( caster, SFX_SPELL_ANGELIC_GATE );
 	EraseObjProperty( caster , "#Casting" );

@@ -13,13 +13,14 @@ program MagicCircleAppear( parms )
 	var x := who.x;
 	var y := who.y;
 	var z := who.z;
+	var realm := who.realm;
 
 	if( sfx )
 		PlaySoundEffect( who , sfx );
 	endif
 	
-	var wavetop1	 := CreateItemAtLocation( x , y , z+110 , 0x350b , 1 );
-	var wavetop2	 := CreateItemAtLocation( x , y , z+110 , 0x34ed , 1 );
+	var wavetop1	 := CreateItemAtLocation( x , y , z+110 , 0x350b , 1, realm );
+	var wavetop2	 := CreateItemAtLocation( x , y , z+110 , 0x34ed , 1, realm );
 	wavetop1.movable := 0;
 	wavetop2.movable := 0;
 	if( color )
@@ -33,12 +34,12 @@ program MagicCircleAppear( parms )
 	var waterfall_base	:= {};
 
 	for(i := 10; i >= 0; i := i - 1)
-		waterfall_array.append( CreateItemAtLocation( x , y , z+i*10 , 0x3517 , 1 ) );
+		waterfall_array.append( CreateItemAtLocation( x , y , z+i*10 , 0x3517 , 1, realm ) );
 		waterfall_array[len(waterfall_array)].movable := 0;
 		if( color )
 			waterfall_array[len(waterfall_array)].color := color;
 		endif
-		waterfall_array.append( CreateItemAtLocation( x , y , z+i*10 , 0x34f9 , 1 ) );
+		waterfall_array.append( CreateItemAtLocation( x , y , z+i*10 , 0x34f9 , 1, realm ) );
 		waterfall_array[len(waterfall_array)].movable := 0;
 		if( color )
 			waterfall_array[len(waterfall_array)].color := color;
@@ -46,55 +47,55 @@ program MagicCircleAppear( parms )
 		sleepms( 50 );
 	endfor
 	
-	waterfall_base.append( CreateItemAtLocation (x,   y+1, z, 0x17a1, 1) );
+	waterfall_base.append( CreateItemAtLocation (x,   y+1, z, 0x17a1, 1, realm) );
 	waterfall_base[1].movable := 0;
 	if( color )
 		waterfall_base[1].color := color;
 	endif
 	
-	waterfall_base.append( CreateItemAtLocation (x+1, y,   z, 0x179d, 1) );
+	waterfall_base.append( CreateItemAtLocation (x+1, y,   z, 0x179d, 1, realm) );
 	waterfall_base[2].movable := 0;
 	if( color )
 		waterfall_base[2].color := color;
 	endif
 	
-	waterfall_base.append( CreateItemAtLocation (x,   y-1, z, 0x179f, 1) );
+	waterfall_base.append( CreateItemAtLocation (x,   y-1, z, 0x179f, 1, realm) );
 	waterfall_base[3].movable := 0;
 	if( color )
 		waterfall_base[3].color := color;
 	endif
 	
-	waterfall_base.append( CreateItemAtLocation (x-1, y,   z, 0x17a3, 1) );
+	waterfall_base.append( CreateItemAtLocation (x-1, y,   z, 0x17a3, 1, realm) );
 	waterfall_base[4].movable := 0;
 	if( color )
 		waterfall_base[4].color := color;
 	endif
 	
-	waterfall_base.append( CreateItemAtLocation (x+1, y+1, z, 0x17a7, 1) );
+	waterfall_base.append( CreateItemAtLocation (x+1, y+1, z, 0x17a7, 1, realm) );
 	waterfall_base[5].movable := 0;
 	if( color )
 		waterfall_base[5].color := color;
 	endif
 	
-	waterfall_base.append( CreateItemAtLocation (x-1, y+1, z, 0x17a8, 1) );
+	waterfall_base.append( CreateItemAtLocation (x-1, y+1, z, 0x17a8, 1, realm) );
 	waterfall_base[6].movable := 0;
 	if( color )
 		waterfall_base[6].color := color;
 	endif
 	
-	waterfall_base.append( CreateItemAtLocation (x+1, y-1, z, 0x17a5, 1) );
+	waterfall_base.append( CreateItemAtLocation (x+1, y-1, z, 0x17a5, 1, realm) );
 	waterfall_base[7].movable := 0;
 	if( color )
 		waterfall_base[7].color := color;
 	endif
 	
-	waterfall_base.append( CreateItemAtLocation (x-1, y-1, z, 0x17a6, 1) );
+	waterfall_base.append( CreateItemAtLocation (x-1, y-1, z, 0x17a6, 1, realm) );
 	waterfall_base[8].movable := 0;
 	if( color )
 		waterfall_base[8].color := color;
 	endif
 	
-	waterfall_base.append( CreateItemAtLocation (x,   y,   z, 0x1797, 1) );
+	waterfall_base.append( CreateItemAtLocation (x,   y,   z, 0x1797, 1, realm) );
 	waterfall_base[9].movable := 0;
 	if( color )
 		waterfall_base[9].color := color;

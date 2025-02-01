@@ -77,7 +77,7 @@ program use_plant( me , plant)
 		var theroll := Random(100);
 
 		if (theroll == 0)
-			if (HarvestResource( "wood", plant.x, plant.y, 1, 1 ))
+			if (HarvestResource( "wood", plant.x, plant.y, 1, 1, plant.realm ))
 				SendSysmessage (me, "You have found some fertile dirt!");
 				CreateItemInBackpack(me, UOBJ_FERTILE_DIRT , 1);
 			endif

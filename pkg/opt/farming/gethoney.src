@@ -30,7 +30,7 @@ program harvest_honey (character, beehive)
 		SendSysmessage (character, "Do you want to destroy the beehive?");
 
 		if (YesNo(character,"Destroy?"))
-			CreateItemAtLocation (beehive.x, beehive.y, beehive.z, ITEM_SWARM, 1);
+			CreateItemAtLocation (beehive.x, beehive.y, beehive.z, ITEM_SWARM, 1, beehive.realm);
 			DestroyItem (beehive);
 			SendSysmessage (character, "You destroy the hive.  The bees are very angry.");
 			return;
@@ -54,7 +54,7 @@ program harvest_honey (character, beehive)
 			// if they fail they can still get stuff, but bees get angry :P
 			if ( !checkskill(character, SKILLID_ANIMALLORE, -1, 0) )
 				SendSysMessage (character, "The bees get angry for your intrusion!");
-				CreateItemAtLocation (beehive.x, beehive.y, beehive.z, ITEM_SWARM, 1);
+				CreateItemAtLocation (beehive.x, beehive.y, beehive.z, ITEM_SWARM, 1, beehive.realm);
 			endif
 
 			//do a skill check

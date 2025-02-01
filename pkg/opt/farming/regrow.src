@@ -34,7 +34,7 @@ function CountPlants(plant)
 	var plantcount := 0;
 	var cfg := readconfigfile("plants");
 	var restype := 0;
-	foreach item in ListItemsNearLocation(plant.x, plant.y, plant.z, 1);
+	foreach item in ListItemsNearLocation(plant.x, plant.y, plant.z, 1, plant.realm);
 		restype := cfg[item.objtype].product;
 		if (restype)
        			plantcount := plantcount +1;

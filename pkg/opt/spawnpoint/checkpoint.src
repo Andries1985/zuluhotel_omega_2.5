@@ -445,13 +445,13 @@ function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
 	
 	SetObjProperty( critter, PROPID_MOBILE_SELF_SERIAL, critter.serial );	
 	
-	var standing := GetStandingHeight( x, y, z, point.realm);
+	var standing := GetStandingHeight( x, y, z, realm);
 	var count := 1;
 	var maxcount := 10000;
 	while( count <= maxcount )
 		if( standing )
 			if( !standing.multi )
-				if( MoveObjectToLocation( critter, x, y, point.z , point.realm, MOVEOBJECT_FORCELOCATION ) )
+				if( MoveObjectToLocation( critter, x, y, point.z , realm, MOVEOBJECT_FORCELOCATION ) )
 					RestartScript(critter);
 					serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
 					if( !serials )
@@ -474,7 +474,7 @@ function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
 		if( appear )
 			x := point.x + RandomInt((appear*2)+1) - appear;
 			y := point.y + RandomInt((appear*2)+1) - appear;
-			standing := GetStandingHeight( x, y, z, point.realm);
+			standing := GetStandingHeight( x, y, z, realm);
 			count := maxcount;
 			vits := GetObjProperty(point, "NPCVits");
 			SetHP(critter, vits.hits);
@@ -570,7 +570,7 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 		if( standing )
 			if( !standing.multi )
 				if( appear > 3)
-					z := GetWorldHeight(x, y, point.realm);
+					z := GetWorldHeight(x, y, realm);
 				endif
 
 				if( MoveObjectToLocation( critter, x, y, z , realm, MOVEOBJECT_FORCELOCATION ) )

@@ -28,14 +28,15 @@ function CreateMoongates();
     // (cross-script) we have to put this into the systemmoongate.src
     // aswell.
     var moongates := { 
-	    {4467,	1283,	5},		// moonglow
-    	{1336,	1997,	5},		// britain
-    	{1499,	3771,	5},		// jehlom
-	    {771,	753,	5},		// yew
-    	{2701,	693,	5},		// minoc
-    	{1828,	2948,	-20},	// trinsic
-    	{643,	2067,	5},		// skara
-    	{3564,	2140,	34}	// magincia
+	    {4467,	1283,	5, "britannia"},		// moonglow
+    	{1336,	1997,	5, "britannia"},		// britain
+    	{1499,	3771,	5, "britannia"},		// jehlom
+	    {771,	753,	5, "britannia"},		// yew
+    	{2701,	693,	5, "britannia"},		// minoc
+    	{1828,	2948,	-20, "britannia"},	// trinsic
+    	{643,	2067,	5, "britannia"},		// skara
+    	{3564,	2140,	34, "britannia"},	// magincia
+		{752,	1254,	25, "tokuno"}	// Tokuno City
     };
 
 	var moongate;
@@ -43,7 +44,7 @@ function CreateMoongates();
     syslog( "Creating moongates." );
 
 	foreach gate in moongates
-		moongate := CreateItemAtLocation( CInt(gate[1]) , CInt(gate[2]) , CInt(gate[3]) , 0x6201 , 1 );
+		moongate := CreateItemAtLocation( CInt(gate[1]) , CInt(gate[2]) , CInt(gate[3]) , 0x6201 , 1, gate[4] );
 
       	moongate.facing := 1;
       	moongate.decayat := 0;

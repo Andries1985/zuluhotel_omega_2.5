@@ -73,7 +73,7 @@ function Buildhouse( character, deed )
     if (!where) return; endif
 
 	//var antigate := ListItemsNearLocation(where.x, where.y, where.z, 50, where.realm);
-	var antigate :=  ListObjectsInBox( where.x-25, where.y-25, where.z-25, where.x+25,where.y+25,where.z+25 );
+	var antigate :=  ListObjectsInBox( where.x-25, where.y-25, where.z-25, where.x+25,where.y+25,where.z+25, where.realm );
 	foreach item in antigate
 		if (item.objtype == 0xa3c8)
 			SendSysMessage( character, "You can't place your house this close to a dungeon." );
@@ -109,18 +109,20 @@ function Buildhouse( character, deed )
         return;
     endif
 
-	if(character.cmdlevel < 4)
-		if(where.x >= 5120)
-			if(where.x <= 7167)
-				if(where.y >= 1)
-					if(where.y <= 2299)
-						PrintTextAbovePrivate( deed, "You can't build here.", character );
-						return;
-					endif
-				endif
-			endif
-		endif
-	endif
+    if(character.realm == "britannia")
+        if(character.cmdlevel < 4)
+            if(where.x >= 5120)
+                if(where.x <= 7167)
+                    if(where.y >= 1)
+                        if(where.y <= 2299)
+                            PrintTextAbovePrivate( deed, "You can't build here.", character );
+                            return;
+                        endif
+                    endif
+                endif
+            endif
+        endif
+    endif
 	
     // try to create the house
     set_critical( 1 );
@@ -154,90 +156,90 @@ function Buildhouse( character, deed )
     endforeach
 
     if (housetype==0x6070 or housetype==0x6072) //tents
-      item :=CreateItemAtLocation( where.x, where.y+4, where.z+3, 0xbcf, 1 );
+      item :=CreateItemAtLocation( where.x, where.y+4, where.z+3, 0xbcf, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item , "lockid" , lockid );
       SetObjProperty( item, "house_serial", created.house.serial );
     endif
     if (housetype==0x6BB8) //log home
-      logdoor :=CreateItemAtLocation( where.x+4, where.y, where.z, 0x06ad, 1 );
+      logdoor :=CreateItemAtLocation( where.x+4, where.y, where.z, 0x06ad, 1, where.realm );
       SetObjProperty( created.house , "component2", logdoor.serial );
       logdoor.locked := 1;
       SetObjProperty( logdoor , "lockid" , lockid );
       SetObjProperty( logdoor, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x+5, where.y-1, where.z, UOBJECT_WOOD_SIGN, 1 );
+      item :=CreateItemAtLocation( where.x+5, where.y-1, where.z, UOBJECT_WOOD_SIGN, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item , "lockid" , lockid );
       SetObjProperty( item, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x+2, where.y-3, where.z+12, 0xA2C, 1 );
+      item :=CreateItemAtLocation( where.x+2, where.y-3, where.z+12, 0xA2C, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component3", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
     endif
    if (housetype==0x609E) // villa with light
-      item :=CreateItemAtLocation( where.x+5, where.y+5, where.z+5, 0xb22, 1 );
+      item :=CreateItemAtLocation( where.x+5, where.y+5, where.z+5, 0xb22, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
    endif
    if (housetype==0x6098) // smalltower
-      item :=CreateItemAtLocation( where.x+3, where.y-2, where.z+17, 0x8a3, 1 );
+      item :=CreateItemAtLocation( where.x+3, where.y-2, where.z+17, 0x8a3, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x-2, where.y-2, where.z+37, 0x8a0, 1 );
+      item :=CreateItemAtLocation( where.x-2, where.y-2, where.z+37, 0x8a0, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component3", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
    endif
    if (housetype==0x609A) // 2story log cabin
-      item :=CreateItemAtLocation( where.x+3, where.y-4, where.z+7, 0x8A5, 1 );
+      item :=CreateItemAtLocation( where.x+3, where.y-4, where.z+7, 0x8A5, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x+3, where.y-5, where.z+11, 0x8A5, 1 );
+      item :=CreateItemAtLocation( where.x+3, where.y-5, where.z+11, 0x8A5, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component3", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
    endif
    if (housetype==0x6096) // marblehouse
-      item :=CreateItemAtLocation( where.x-5, where.y+4, where.z+35, 0x8a3, 1 );
+      item :=CreateItemAtLocation( where.x-5, where.y+4, where.z+35, 0x8a3, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x-5, where.y+5, where.z+24, 0x8a4, 1 );
+      item :=CreateItemAtLocation( where.x-5, where.y+5, where.z+24, 0x8a4, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component3", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
    endif
    if (housetype==0x609C) // sandstonepatiohousedeed
-      item :=CreateItemAtLocation( where.x-4, where.y-2, where.z+7, 0x8a3, 1 );
+      item :=CreateItemAtLocation( where.x-4, where.y-2, where.z+7, 0x8a3, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x-4, where.y-3, where.z+15, 0x8a3, 1 );
+      item :=CreateItemAtLocation( where.x-4, where.y-3, where.z+15, 0x8a3, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component3", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
    endif
    if (housetype==0x60A0) // stoneshop
-      item :=CreateItemAtLocation( where.x-2, where.y+1, where.z+18, 0x8a3, 1 );
+      item :=CreateItemAtLocation( where.x-2, where.y+1, where.z+18, 0x8a3, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x-2, where.y+2, where.z+7, 0x8a4, 1 );
+      item :=CreateItemAtLocation( where.x-2, where.y+2, where.z+7, 0x8a4, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component3", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
    endif
    if (housetype==0x60A2) // marbleshop
-      item :=CreateItemAtLocation( where.x-2, where.y+1, where.z+14, 0x8a3, 1 );
+      item :=CreateItemAtLocation( where.x-2, where.y+1, where.z+14, 0x8a3, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x-2, where.y+2, where.z+4, 0x8a4, 1 );
+      item :=CreateItemAtLocation( where.x-2, where.y+2, where.z+4, 0x8a4, 1, where.realm );
       item.movable:=0;
       SetObjProperty( created.house , "component3", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
@@ -350,15 +352,15 @@ function Buildhouse( character, deed )
 
        while ( startx <= endx )
         while ( starty <= endy )
-           item:=CreateItemAtLocation( startx, starty, where.z+7, 0x177d, 1 );
+           item:=CreateItemAtLocation( startx, starty, where.z+7, 0x177d, 1, where.realm );
            item.movable:=0;
            starty := starty + 1;
         endwhile
         starty := where.y;
         startx := startx + 1;
 	endwhile
-	CreateItemAtLocation( where.x+2, where.y, where.z+7, 0xb41, 1 );
-	CreateItemAtLocation( where.x+2, where.y+1, where.z+7, 0xb42, 1 );
+	CreateItemAtLocation( where.x+2, where.y, where.z+7, 0xb41, 1, where.realm );
+	CreateItemAtLocation( where.x+2, where.y+1, where.z+7, 0xb42, 1, where.realm );
    endif
 
 endfunction
@@ -375,6 +377,7 @@ endfunction
 function CreatehouseKeysAndBuiltDeed( character, housetype, where, deed )
     var bankbox := FindBankBox( character );
     var x:=where.x, y:=where.y, z:=where.z;
+    var realm := where.realm;
    
     var packkey := CreateItemInBackpack( character, UOBJ_GOLD_KEY );
     if (!packkey)
@@ -390,7 +393,7 @@ function CreatehouseKeysAndBuiltDeed( character, housetype, where, deed )
     endif
 
     var builtdeed := CreateItemInContainer( bankbox, UOBJ_HOUSE_DEED1 );
-    SetName( builtdeed, deed.desc + " at " + x + ", " + y + ", " + z + " (built)" );
+    SetName( builtdeed, deed.desc + " at " + x + ", " + y + ", " + z + ", " + realm + " (built)" );
 
     if (!builtdeed)
         PrintTextAbovePrivate( character, "My bankbox is too full!", character );
@@ -399,7 +402,7 @@ function CreatehouseKeysAndBuiltDeed( character, housetype, where, deed )
         return 0;
     endif
 
-    var house := CreateMultiAtLocation( x, y, z, housetype );
+    var house := CreateMultiAtLocation( x, y, z, housetype, 0, realm );
     //var sign;
 
     SetObjProperty( house , "numlockdowns" , GetObjProperty( deed , "numlockdowns" ));

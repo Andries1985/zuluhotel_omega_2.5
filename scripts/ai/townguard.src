@@ -254,14 +254,14 @@ function SetMeUp()
 	EquipFromTemplate( me , "FullPlate" );
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75,1);
+		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
 		EquipItem(me, newbackpack);
 	endif
 
 	if (me.gender)
 		var myplate := GetEquipmentByLayer(me,LAYER_CHEST);
 		DestroyItem(myplate);
-		myplate := CreateItemAtLocation(5288 , 1176 , 0, 0x1c04,1);
+		myplate := CreateItemAtLocation(5288 , 1176 , 0, 0x1c04, 1, "britannia");
 		EquipItem(me,myplate);
 	endif
 
@@ -275,7 +275,7 @@ function SetMeUp()
 		var myshieldtype := 0x86ef; //order
 		if (guardtype == 2) myshieldtype := 0x86df; endif //chaos
 
-		var myshield := CreateItemAtLocation(5288 , 1176 , 0, myshieldtype,1);
+		var myshield := CreateItemAtLocation(5288 , 1176 , 0, myshieldtype, 1, "britannia");
 
 		var weapone := GetEquipmentByLayer(me,LAYER_HAND1);
 		if (weapone) destroyitem(weapone); endif
@@ -284,7 +284,7 @@ function SetMeUp()
 
 		EquipItem(me,myshield);
 
-		weapone:= CreateItemAtLocation(5288 , 1176 , 0, 0x0F60,1);//longsword
+		weapone:= CreateItemAtLocation(5288 , 1176 , 0, 0x0F60, 1, "britannia");//longsword
 		EquipItem(me,weapone);
 
 		var mounttype;
@@ -295,7 +295,7 @@ function SetMeUp()
 		3:	mounttype := 0x3ea1;
 		endcase
 
-		var mount := CreateItemAtLocation(5288 , 1176 , 0,0x1F021,1);
+		var mount := CreateItemAtLocation(5288 , 1176 , 0, 0x1F021, 1, "britannia");
 		mount.graphic := mounttype;
 		EquipItem(me,mount);
 

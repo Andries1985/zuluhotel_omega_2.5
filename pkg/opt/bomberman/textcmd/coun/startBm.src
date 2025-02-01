@@ -56,32 +56,32 @@ endprogram
 function CreateBmArena()
 	var i, pad;
 	for(i := 0;i<20; i:=i+1)
-		CreateItemAtLocation( 5508+i, 1674, 0, 0x9A94 );
-		CreateItemAtLocation( 5527, 1674-i, 0, 0x9A94 );
+		CreateItemAtLocation( 5508+i, 1674, 0, 0x9A94, 1, "britannia" );
+		CreateItemAtLocation( 5527, 1674-i, 0, 0x9A94, 1, "britannia" );
 
 		if(i%2 == 0)
-			CreateItemAtLocation( 5509, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5511, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5513, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5515, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5517, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5519, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5521, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5523, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5525, 1674-i, 0, 0x9A94 );
+			CreateItemAtLocation( 5509, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5511, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5513, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5515, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5517, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5519, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5521, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5523, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5525, 1674-i, 0, 0x9A94, 1, "britannia" );
 		endif
 	endfor
 	//Blue
-	pad := CreateItemAtLocation( 5508, 1673, 0, 0x9A95 );
+	pad := CreateItemAtLocation( 5508, 1673, 0, 0x9A95, 1, "britannia" );
 	pad.color := 1170;
 	//Yellow
-	pad := CreateItemAtLocation( 5508, 1655, 0, 0x9A95 );
+	pad := CreateItemAtLocation( 5508, 1655, 0, 0x9A95, 1, "britannia" );
 	pad.color := 1300;
 	//Red
-	pad := CreateItemAtLocation( 5526, 1673, 0, 0x9A95 );
+	pad := CreateItemAtLocation( 5526, 1673, 0, 0x9A95, 1, "britannia" );
 	pad.color := 1198;
 	//Green
-	pad := CreateItemAtLocation( 5526, 1655, 0, 0x9A95 );
+	pad := CreateItemAtLocation( 5526, 1655, 0, 0x9A95, 1, "britannia" );
 	pad.color := 2605;
 
 	Sleep(1);
@@ -92,8 +92,8 @@ function CreateBmArena()
 			aX := aX+1;
 			SleepMS(100);
 		endif
-		blocks := ListItemsAtLocation( aX, aY, 0 );
-		startpad := ListItemsNearLocation( aX, aY, 0, 1 );
+		blocks := ListItemsAtLocation( aX, aY, 0, "britannia" );
+		startpad := ListItemsNearLocation( aX, aY, 0, 1, "britannia" );
 		stop := 0;
 		foreach pad in startpad
 			if(GetObjProperty(pad, "bmStartPad"))
@@ -106,14 +106,14 @@ function CreateBmArena()
 					if(!GetObjProperty(item, "bmItem"))
 						chance := Random(100)+1;
 						if(chance > 25);
-							stone := CreateItemAtLocation( aX, aY, 0, 0x9A93 );
+							stone := CreateItemAtLocation( aX, aY, 0, 0x9A93, 1, "britannia" );
 						endif
 					endif
 				endforeach
 			else
 				chance := Random(100)+1;
 				if(chance > 25);
-					stone := CreateItemAtLocation( aX, aY, 0, 0x9A93 );
+					stone := CreateItemAtLocation( aX, aY, 0, 0x9A93, 1, "britannia" );
 				endif
 			endif
 		endif
@@ -253,7 +253,7 @@ function ShrinkArena()
 	var i, delay := 500, stone, ok;
 	//West side
 	for(i := 0;i<19; i:=i+1)
-			stone := CreateItemAtLocation( 5508, 1673-i, 0, 0x9A94 );	
+			stone := CreateItemAtLocation( 5508, 1673-i, 0, 0x9A94, 1, "britannia" );	
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -262,7 +262,7 @@ function ShrinkArena()
 	endfor
 	//North side
 	for(i := 0;i<18; i:=i+1)
-			stone := CreateItemAtLocation( 5509+i, 1655, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5509+i, 1655, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -271,7 +271,7 @@ function ShrinkArena()
 	endfor
 	//East side
 	for(i := 0;i<18; i:=i+1)
-			stone := CreateItemAtLocation( 5526, 1656+i, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5526, 1656+i, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -280,7 +280,7 @@ function ShrinkArena()
 	endfor
 	//South side
 	for(i := 0;i<17; i:=i+1)
-			stone := CreateItemAtLocation( 5525-i, 1673, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5525-i, 1673, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -290,7 +290,7 @@ function ShrinkArena()
 	
 	//West side
 	for(i := 0;i<17; i:=i+1)
-			stone := CreateItemAtLocation( 5509, 1672-i, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5509, 1672-i, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -299,7 +299,7 @@ function ShrinkArena()
 	endfor
 	//North side
 	for(i := 0;i<16; i:=i+1)
-			stone := CreateItemAtLocation( 5510+i, 1656, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5510+i, 1656, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -308,7 +308,7 @@ function ShrinkArena()
 	endfor
 	//East side
 	for(i := 0;i<16; i:=i+1)
-			stone := CreateItemAtLocation( 5525, 1656+i, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5525, 1656+i, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -317,7 +317,7 @@ function ShrinkArena()
 	endfor
 	//South side
 	for(i := 0;i<15; i:=i+1)
-			stone := CreateItemAtLocation( 5524-i, 1672, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5524-i, 1672, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -327,7 +327,7 @@ function ShrinkArena()
 	
 	//West side
 	for(i := 0;i<16; i:=i+1)
-			stone := CreateItemAtLocation( 5510, 1671-i, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5510, 1671-i, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -336,7 +336,7 @@ function ShrinkArena()
 	endfor
 	//North side
 	for(i := 0;i<15; i:=i+1)
-			stone := CreateItemAtLocation( 5511+i, 1657, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5511+i, 1657, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -345,7 +345,7 @@ function ShrinkArena()
 	endfor
 	//East side
 	for(i := 0;i<15; i:=i+1)
-			stone := CreateItemAtLocation( 5524, 1657+i, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5524, 1657+i, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -354,7 +354,7 @@ function ShrinkArena()
 	endfor
 	//South side
 	for(i := 0;i<14; i:=i+1)
-			stone := CreateItemAtLocation( 5523-i, 1671, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5523-i, 1671, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -364,7 +364,7 @@ function ShrinkArena()
 	
 	//West side
 	for(i := 0;i<15; i:=i+1)
-			stone := CreateItemAtLocation( 5511, 1670-i, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5511, 1670-i, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -373,7 +373,7 @@ function ShrinkArena()
 	endfor
 	//North side
 	for(i := 0;i<14; i:=i+1)
-			stone := CreateItemAtLocation( 5512+i, 1658, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5512+i, 1658, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -382,7 +382,7 @@ function ShrinkArena()
 	endfor
 	//East side
 	for(i := 0;i<14; i:=i+1)
-			stone := CreateItemAtLocation( 5523, 1658+i, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5523, 1658+i, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -391,7 +391,7 @@ function ShrinkArena()
 	endfor
 	//South side
 	for(i := 0;i<13; i:=i+1)
-			stone := CreateItemAtLocation( 5522-i, 1670, 0, 0x9A94 );
+			stone := CreateItemAtLocation( 5522-i, 1670, 0, 0x9A94, 1, "britannia" );
 			ok := checkIfEmpty(stone.x, stone.y);	
 			if(!ok)		
 				return;
@@ -426,7 +426,7 @@ function checkIfEmpty(sX, sY)
 endfunction
 
 function CleanupArena(who)
-	var trash := ListItemsNearLocation( 5515, 1664, 0, 20 );
+	var trash := ListItemsNearLocation( 5515, 1664, 0, 20, "britannia" );
 	foreach item in trash
 		if(GetObjProperty(item, "bmItem"))
 			DestroyItem(item);

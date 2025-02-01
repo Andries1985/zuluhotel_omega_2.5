@@ -10,9 +10,9 @@ function FindMultiOwner( house )
 endfunction
 
 
-function GetMultiAtLocation( x, y, z := 0 )
+function GetMultiAtLocation( x, y, z := 0, realm )
 	
-	return GetStandingHeight( cint(x), cint(y), cint(z)).multi;
+	return GetStandingHeight( cint(x), cint(y), cint(z), realm).multi;
 
 endfunction
 

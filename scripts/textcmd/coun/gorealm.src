@@ -16,14 +16,15 @@ var layout := array(      // The layout of the gump with text notes to be added 
 "page 0",
 "nodispose",
 "nomove",
-"resizepic  50   0 2600 540 405", // background
+"resizepic  50   0 2600 600 405", // background
 
 "text 120 59 300 0",
 "text 220 59 300 1",
 "text 270 59 300 2",
 "text 320 59 300 0",
 "text 420 59 300 1",
-"text 470 59 300 2"
+"text 470 59 300 2",
+"text 520 59 300 0"
 );
 
 var data := array(      // The data array that holds all the text to be displayed in the gump

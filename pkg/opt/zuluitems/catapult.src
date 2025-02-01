@@ -61,12 +61,12 @@ function fireworks(who, catapult, location)
 
    var dmg := RandomDiceRoll("10d5+40"),
        range := 2,
-       coolflame := CreateItemAtLocation( catapult.x, catapult.y, catapult.z+2, 0x3728, 1 );
+       coolflame := CreateItemAtLocation( catapult.x, catapult.y, catapult.z+2, 0x3728, 1, catapult.realm );
 
-   var explode1 := CreateItemAtLocation( locationx, locationy, location.z, 0x3728, 1 );
+   var explode1 := CreateItemAtLocation( locationx, locationy, location.z, 0x3728, 1, location.realm );
    PlaySoundEffect( location, SFX_220 );
 
-   foreach mobile in ListMobilesNearLocation( locationx , locationy , location.z , range );
+   foreach mobile in ListMobilesNearLocation( locationx , locationy , location.z , range, location.realm );
 	PlayObjectCenteredEffect( mobile, 0x36b0, 7, 7);
 	ApplyTheDamage( mobile, who, dmg );
    endforeach

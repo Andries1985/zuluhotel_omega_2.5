@@ -131,7 +131,7 @@ program cast_animate_dead( parms )
 	thecritter.color  := ANIMATE_DEAD_CORPSE_COLOR;
 	
 	if ( !thecritter.backpack )
-		var newbackpack := CreateItemAtLocation(thecritter.x , thecritter.y , thecritter.z , 0xe75 , 1 );
+		var newbackpack := CreateItemAtLocation(thecritter.x , thecritter.y , thecritter.z , 0xe75 , 1, thecritter.realm );
 		EquipItem( thecritter , newbackpack );
 	endif
 
