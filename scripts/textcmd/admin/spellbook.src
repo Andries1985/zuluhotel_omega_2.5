@@ -36,7 +36,7 @@ program textcmd_spellbook( who )
 	SetObjProperty( holybook , "Greater" , 255 );
 
 	//Verse Book
-	var versebook := CreateItemInBackpack(who, "bookofverse", 1);
+	var versebook := CreateItemInBackpack(who, 0xff96, 1);
 	SetObjProperty( versebook , "LFucker",who.serial + " - " + who.name);
 	var verses := {1,1,1,1,1,1,1,1,1,1};
 	SetObjProperty( versebook , "Verses" , verses );
