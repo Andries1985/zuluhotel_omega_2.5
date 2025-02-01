@@ -33,18 +33,20 @@ endprogram
 function RainDownAnimations(props, loc, anim)
 
     var i,tile;
+    var j := 0;
     var ianim := anim;
 
-    for (i := 0; i <= 20; i := i + 2)
+    for (i := 0; i <= 18; i := i + 2)
         tile := GetMapInfo(loc.x+i, loc.y-i, loc.realm);
         if(tile)
             var newitem := CreateNpcFromTemplate( "skeleton", loc.x+i, loc.y-i, loc.z, props, loc.realm);
-            newitem.graphic := anim + i;
+            newitem.graphic := (ianim + j);
             newitem.name := "Graphic is : " + CStr(newitem.Graphic);
             newitem.frozen := 1;
             //newitem.movable := 0;
             sleepms(50);
         endif
+        j := j + 1;
     endfor
 
 endfunction
