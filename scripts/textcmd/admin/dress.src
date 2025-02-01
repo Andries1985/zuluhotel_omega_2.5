@@ -67,7 +67,7 @@ endprogram
 function CreateAndEquip(me,item,color)
 
 	if (item)
-		var theitem := CreateItemAtLocation(me.x,me.y,me.z,item,1);
+		var theitem := CreateItemAtLocation(me.x,me.y,me.z,item,1,me.realm);
 		if (theitem)
 			if (EquipItem(me,theitem))
 				theitem.color := color;
@@ -167,7 +167,7 @@ function DressPoor(me,gender)
 	endcase
 	
 	if (item)
-		theitem := CreateItemAtLocation(me.x,me.y,me.z,item,1);
+		theitem := CreateItemAtLocation(me.x,me.y,me.z,item,1,me.realm);
 		theitem.facing := 1;
 		if( theitem.graphic == 0x0f64 )
 			theitem.graphic := 0xa12;
@@ -247,7 +247,7 @@ function DressRich(me,gender)
 	endcase
 	
 	if (item)
-		theitem := CreateItemAtLocation(me.x,me.y,me.z,item,1);
+		theitem := CreateItemAtLocation(me.x,me.y,me.z,item,1,me.realm);
 		theitem.facing := 1;
 		EquipItem(me,theitem);
 	endif

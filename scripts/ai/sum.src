@@ -74,7 +74,7 @@ function CloseDistance( opponent )
 //	return 1 if we DON'T need to move
 //	return 0 if we DO need to move
 var Near;
-Near := ListItemsNearLocation( me.x , me.y , me.z , 5 );
+Near := ListItemsNearLocation( me.x , me.y , me.z , 5, me.realm );
 var kwall := 0;
 var runaround := 0;
 foreach item in Near
@@ -171,7 +171,7 @@ endforeach
 			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5315 ,752 ,-20 ,1 , "britannia" );
 			thecritter := CreateNPCfromTemplate( "abyssalliche" ,5319 ,752 ,-20 ,1 , "britannia" );
 			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5323 ,752 ,-20 ,1 , "britannia" );
-			//övre raden
+			//ï¿½vre raden
 			thecritter := CreateNPCfromTemplate( "undeadflayer" ,5307 ,746 ,-20 ,1 , "britannia" );
 			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5311 ,746 ,-20 ,1 , "britannia" );
 			thecritter := CreateNPCfromTemplate( "umbralflicker" ,5315 ,746 ,-20 ,1 , "britannia" );
@@ -189,7 +189,7 @@ endforeach
 			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5315 ,752 ,-20 ,1 , "britannia" );
 			thecritter := CreateNPCfromTemplate( "abyssalliche" ,5319 ,752 ,-20 ,1 , "britannia" );
 			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5323 ,752 ,-20 ,1 , "britannia" );
-			//övre raden
+			//ï¿½vre raden
 			thecritter := CreateNPCfromTemplate( "undeadflayer" ,5307 ,746 ,-20 ,1 , "britannia" );
 			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5311 ,746 ,-20 ,1 , "britannia" );
 			thecritter := CreateNPCfromTemplate( "umbralflicker" ,5315 ,746 ,-20 ,1 , "britannia" );

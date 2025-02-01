@@ -53,7 +53,7 @@ function handle_speech( event, pillar )
 
 endfunction
 
-function movenewloc(x,y,who, pillar)
+function movenewloc(x, y, who, pillar)
 
 var oldlock, oldhatch, boattype, boattag, boatoff;
  x:=cint(x);
@@ -73,7 +73,7 @@ endif
 
 endforeach
 
-var newboat := CreateMultiAtLocation( x, y, -5, boattype );
+var newboat := CreateMultiAtLocation( x, y, -5, boattype, 0, who.realm );
 
 if (!newboat) return; endif
 

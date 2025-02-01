@@ -11,7 +11,7 @@ function process_combat_event(ev)
 			if (Random(10) == 1)
 			    if ( (!cint(getobjproperty(me, "guardkill"))) and
 			       (!cint(GetObjProperty(me,"killme"))) )
-				var it := createnpcfromtemplate(me.npctemplate, me.x , me.y -1, me.z);
+				var it := createnpcfromtemplate(me.npctemplate, me.x , me.y -1, me.z, 0, me.realm);
         			if (!it.errortext)
                 			printtextabove(me, me.name + " splits when struck!");
 					SetObjProperty(it,"killme",1);

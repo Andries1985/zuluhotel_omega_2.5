@@ -16,7 +16,7 @@ program set_flow(house)
        16492:
        16494:
        16484:   // box houses
-            foreach doors in ListItemsAtLocation((house.x),(house.y+3),(house.z+7))
+            foreach doors in ListItemsAtLocation( (house.x),(house.y+3),(house.z+7), house.realm )
                  if (doordesc[doors.objtype].doortype)
                       if (!GetObjProperty(doors, "Flow"))
                            SetObjProperty(doors, "Flow", "N");
@@ -26,21 +26,21 @@ program set_flow(house)
             endforeach
             break;
        16500:     // stone 3 room house
-            foreach doors in ListItemsAtLocation((house.x-3),(house.y-1),(house.z+7))
+            foreach doors in ListItemsAtLocation((house.x-3),(house.y-1),(house.z+7), house.realm )
                  if (doordesc[doors.objtype].doortype)
                       if (!GetObjProperty(doors, "Flow"))
                            SetObjProperty(doors, "Flow", "N");
                       endif
                  endif
             endforeach
-            foreach doors in ListItemsAtLocation((house.x+3),(house.y-1),(house.z+7))
+            foreach doors in ListItemsAtLocation((house.x+3),(house.y-1),(house.z+7), house.realm )
                 if (doordesc[doors.objtype].doortype)
                      if (!GetObjProperty(doors, "Flow"))
                           SetObjProperty(doors, "Flow", "N");
                      endif
                 endif
             endforeach
-            foreach doors in ListItemsAtLocation((house.x-1),(house.y+6),(house.z+7))
+            foreach doors in ListItemsAtLocation((house.x-1),(house.y+6),(house.z+7), house.realm )
                 if (doordesc[doors.objtype].doortype)
                      if (!GetObjProperty(doors, "Flow"))
                           SetObjProperty(doors, "Flow", "N");
@@ -48,7 +48,7 @@ program set_flow(house)
                      SetObjProperty(doors, "Front", 1);
                 endif
             endforeach
-            foreach doors in ListItemsAtLocation((house.x),(house.y+6),(house.z+7))
+            foreach doors in ListItemsAtLocation((house.x),(house.y+6),(house.z+7), house.realm )
                 if (doordesc[doors.objtype].doortype)
                      if (!GetObjProperty(doors, "Flow"))                   
                           SetObjProperty(doors, "Flow", "N");
@@ -59,22 +59,14 @@ program set_flow(house)
             break;
      16504:
      16502:    // 2 story
-          foreach doors in ListItemsAtLocation((house.x-3),house.y,house.z+7)
+          foreach doors in ListItemsAtLocation((house.x-3),house.y,house.z+7, house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7))
-               if (doordesc[doors.objtype].doortype)
-                    if (!GetObjProperty(doors, "Flow"))
-                         SetObjProperty(doors, "Flow", "N");
-                    endif
-                    SetObjProperty(doors, "Front", 1);
-               endif
-          endforeach
-          foreach doors in ListItemsAtLocation((house.x-2),(house.y+6),(house.z+7))
+          foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -82,7 +74,15 @@ program set_flow(house)
                     SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x-3),(house.y),(house.z+27))
+          foreach doors in ListItemsAtLocation((house.x-2),(house.y+6),(house.z+7), house.realm )
+               if (doordesc[doors.objtype].doortype)
+                    if (!GetObjProperty(doors, "Flow"))
+                         SetObjProperty(doors, "Flow", "N");
+                    endif
+                    SetObjProperty(doors, "Front", 1);
+               endif
+          endforeach
+          foreach doors in ListItemsAtLocation((house.x-3),(house.y),(house.z+27), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -91,22 +91,14 @@ program set_flow(house)
           endforeach
           break;
      16506:   // Tower
-          foreach doors in ListItemsAtLocation((house.x+3),(house.y-2),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x+3),(house.y-2),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x),(house.y+6),(house.z+6))
-               if (doordesc[doors.objtype].doortype)
-                    if (!GetObjProperty(doors, "Flow"))
-                         SetObjProperty(doors, "Flow", "N");
-                    endif
-                    SetObjProperty(doors, "Front", 1);
-               endif
-          endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y+6),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x),(house.y+6),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -114,14 +106,22 @@ program set_flow(house)
                     SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+26))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y+6),(house.z+6), house.realm )
+               if (doordesc[doors.objtype].doortype)
+                    if (!GetObjProperty(doors, "Flow"))
+                         SetObjProperty(doors, "Flow", "N");
+                    endif
+                    SetObjProperty(doors, "Front", 1);
+               endif
+          endforeach
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+26), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "E");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+46))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+46), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "E");
@@ -130,7 +130,7 @@ program set_flow(house)
           endforeach
           break;
      16508:  //  Keep
-          foreach doors in ListItemsAtLocation((house.x),(house.y+10),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x),(house.y+10),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -138,7 +138,7 @@ program set_flow(house)
                     SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y+10),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y+10),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -148,7 +148,7 @@ program set_flow(house)
           endforeach
           break;
      16510:   //  Castle
-          foreach doors in ListItemsAtLocation((house.x),(house.y+15),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x),(house.y+15),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -156,7 +156,7 @@ program set_flow(house)
                     SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y+15),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y+15),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -164,28 +164,28 @@ program set_flow(house)
                     SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x),(house.y+11),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x),(house.y+11),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y+11),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y+11),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x),(house.y+5),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x),(house.y+5),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y+5),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y+5),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -194,28 +194,28 @@ program set_flow(house)
           endforeach
           break;
      16524:   //  Patio
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y-4),(house.z+7))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y-4),(house.z+7), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "W");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+4),(house.y-1),(house.z+7))
+          foreach doors in ListItemsAtLocation((house.x+4),(house.y-1),(house.z+7), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+7))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+7), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "E");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x-4),(house.y+6),(house.z+7))
+          foreach doors in ListItemsAtLocation((house.x-4),(house.y+6),(house.z+7), house.realm )
                if (doordesc[doors.objtype].doortype)
                    if (!GetObjProperty(doors, "Flow"))
                         SetObjProperty(doors, "Flow", "N");
@@ -223,7 +223,7 @@ program set_flow(house)
                    SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7))
+          foreach doors in ListItemsAtLocation((house.x-3),(house.y+6),(house.z+7), house.realm )
                if (doordesc[doors.objtype].doortype)
                    if (!GetObjProperty(doors, "Flow"))
                         SetObjProperty(doors, "Flow", "N");
@@ -233,7 +233,7 @@ program set_flow(house)
           endforeach
           break;
      16546:   // marble shop
-          foreach doors in ListItemsAtLocation((house.x-2),(house.y),(house.z+24))
+          foreach doors in ListItemsAtLocation((house.x-2),(house.y),(house.z+24), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -243,7 +243,7 @@ program set_flow(house)
           endforeach
           break;
      16544:   // stone shop
-          foreach doors in ListItemsAtLocation((house.x-2),(house.y),(house.z+27))
+          foreach doors in ListItemsAtLocation((house.x-2),(house.y),(house.z+27), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -253,7 +253,7 @@ program set_flow(house)
           endforeach
           break;
      16536:   // small tower
-          foreach doors in ListItemsAtLocation((house.x+3),(house.y+3),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x+3),(house.y+3),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -263,7 +263,7 @@ program set_flow(house)
           endforeach
           break;
      16540:    // sandstone patio
-          foreach doors in ListItemsAtLocation((house.x-1),(house.y+3),(house.z+6))
+          foreach doors in ListItemsAtLocation((house.x-1),(house.y+3),(house.z+6), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -273,7 +273,7 @@ program set_flow(house)
           endforeach
           break;
      16538:     // log cabin
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+8))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y+4),(house.z+8), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -281,7 +281,7 @@ program set_flow(house)
                     SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y),(house.z+29))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y),(house.z+29), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "S");
@@ -290,7 +290,7 @@ program set_flow(house)
           endforeach
           break;
      16542:     // villa
-          foreach doors in ListItemsAtLocation((house.x+3),(house.y+1),(house.z+5))
+          foreach doors in ListItemsAtLocation((house.x+3),(house.y+1),(house.z+5), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -298,7 +298,7 @@ program set_flow(house)
                     SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+4),(house.y+1),(house.z+5))
+          foreach doors in ListItemsAtLocation((house.x+4),(house.y+1),(house.z+5), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -306,14 +306,14 @@ program set_flow(house)
                     SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x-3),(house.y-1),(house.z+25))
+          foreach doors in ListItemsAtLocation((house.x-3),(house.y-1),(house.z+25), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "S");
                     endif
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x+1),(house.y),(house.z+25))
+          foreach doors in ListItemsAtLocation((house.x+1),(house.y),(house.z+25), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "E");
@@ -322,7 +322,7 @@ program set_flow(house)
           endforeach
           break;
      16534:    // marble villa
-          foreach doors in ListItemsAtLocation((house.x-4),(house.y+3),(house.z+4))
+          foreach doors in ListItemsAtLocation((house.x-4),(house.y+3),(house.z+4), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");
@@ -330,7 +330,7 @@ program set_flow(house)
                     SetObjProperty(doors, "Front", 1);
                endif
           endforeach
-          foreach doors in ListItemsAtLocation((house.x-3),(house.y+3),(house.z+4))
+          foreach doors in ListItemsAtLocation((house.x-3),(house.y+3),(house.z+4), house.realm )
                if (doordesc[doors.objtype].doortype)
                     if (!GetObjProperty(doors, "Flow"))
                          SetObjProperty(doors, "Flow", "N");

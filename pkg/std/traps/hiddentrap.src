@@ -14,7 +14,7 @@ program walk_on_trap( mobile, trap )
    var poison := GetConfigInt( elem , "Poison" );
 
    PlaySoundEffect( mobile, sound );
-   var trapitem := CreateItemAtLocation( trap.x, trap.y, trap.z, effect, 1 );
+   var trapitem := CreateItemAtLocation( trap.x, trap.y, trap.z, effect, 1, trap.realm );
 
    if (poison)
 	SetPoison(mobile,Random(3)+1,"You've been poisoned!");

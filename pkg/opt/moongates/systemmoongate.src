@@ -14,14 +14,15 @@ use basic;
 
 // these are also defined in the moongates.inc.
         var moongates := { 
-        {4467,	1283,	5},		// moonglow
-    	{1336,	1997,	5},		// britain
-    	{1499,	3771,	5},		// jhelom
-        {771,	753,	5},		// yew
-    	{2701,	693,	5},		// minoc
-    	{1828,	2948,	-20},	// trinsic
-    	{643,	2067,	5},		// skara
-    	{3564,	2140,	34}	// magincia
+        {4467,	1283,	5, "britannia"},		// moonglow
+    	{1336,	1997,	5, "britannia"},		// britain
+    	{1499,	3771,	5, "britannia"},		// jhelom
+        {771,	753,	5, "britannia"},		// yew
+    	{2701,	693,	5, "britannia"},		// minoc
+    	{1828,	2948,	-20, "britannia"},	// trinsic
+    	{643,	2067,	5, "britannia"},		// skara
+    	{3564,	2140,	34, "britannia"},	// magincia
+		{752,	1254,	25, "tokuno"}	// Tokuno City
     };
 
 var layout := {
@@ -53,7 +54,10 @@ var layout := {
 	"button 165 320 247 248 1 0 14",
 
 	"text 235 360 1153 15",
-	"button 165 360 247 248 1 0 16"
+	"button 165 360 247 248 1 0 16",
+
+	"text 235 400 1153 17",
+	"button 165 400 247 248 1 0 18"
 };
 
 var data := {
@@ -73,12 +77,14 @@ var data := {
 	"Skara Brae",
 	"",
 	"Magincia",
+	"",
+	"Tokuno City",
 	""
 };
 program walk_on_moongate(mobile, moongate )
 
 
-    var toX, toY, toZ, mobface;
+    var toX, toY, toZ, toRealm, mobface;
 
 	// Stops the gump popping up every time
     if ( GetObjProperty(mobile,"#moved") )
@@ -95,6 +101,7 @@ program walk_on_moongate(mobile, moongate )
     toX := moongates[ mobface ] [ 1 ];
     toY := moongates[ mobface ] [ 2 ];
     toZ := moongates[ mobface ] [ 3 ];
+	toRealm := moongates[ mobface ] [ 4 ];
       
     SetObjProperty(mobile,"#moved", 1);
     SendGateGump(mobile, moongate);
@@ -105,6 +112,7 @@ function SendGateGump(who, moongate)
 	var x:=0;
 	var y:=0;
 	var z:=0;
+	var realm;
 	var res := SendDialogGump( who, layout, data );
 
 	Case( res[0] )
@@ -112,34 +120,47 @@ function SendGateGump(who, moongate)
 		2: x:=moongates[1][1];
                    y:=moongates[1][2];
                    z:=moongates[1][3];
+				   realm:=moongates[1][4];
 
 		4: x:=moongates[2][1];
                    y:=moongates[2][2];
                    z:=moongates[2][3];
+				   realm:=moongates[2][4];
 
 		6: x:=moongates[3][1];
                    y:=moongates[3][2];
                    z:=moongates[3][3];
+				   realm:=moongates[3][4];
 
 		8: x:=moongates[4][1];
                    y:=moongates[4][2];
                    z:=moongates[4][3]; 
+				   realm:=moongates[4][4];
 
 		10: x:=moongates[5][1];
                    y:=moongates[5][2];
                    z:=moongates[5][3]; 
+				   realm:=moongates[5][4];
 
 		12:x:=moongates[6][1];
                    y:=moongates[6][2];
                    z:=moongates[6][3]; 
+				   realm:=moongates[6][4];
 
 		14:x:=moongates[7][1];
                    y:=moongates[7][2];
                    z:=moongates[7][3]; 
+				   realm:=moongates[7][4];
 
 		16:x:=moongates[8][1];
                    y:=moongates[8][2];
-                   z:=moongates[8][3]; 
+                   z:=moongates[8][3];
+				   realm:=moongates[8][4]; 
+
+		18:x:=moongates[9][1];
+                   y:=moongates[9][2];
+                   z:=moongates[9][3];
+				   realm:=moongates[9][4]; 
 
 	EndCase
 	
@@ -153,7 +174,7 @@ function SendGateGump(who, moongate)
 		EraseObjProperty(who,"#moved");
 		return 0;
 	else
-		MoveObjectToLocation(who, x,y,z);
+		MoveObjectToLocation(who, x, y, z, realm);
 	endif
 
 

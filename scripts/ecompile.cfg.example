@@ -5,26 +5,26 @@
 #
 # ModuleDirectory: Location of *.em files
 #
-ModuleDirectory=D:\DistroDev\scripts\modules
+ModuleDirectory=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\scripts\modules
 
 #
 # IncludeDirectory: Location of *.inc files, if not found relative
 #                   or with a specified package
 #
-IncludeDirectory=D:\DistroDev\scripts
+IncludeDirectory=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\scripts
 
 #
 # PolScriptRoot: Location of "::file" includes
 #
-PolScriptRoot=D:\DistroDev\scripts
+PolScriptRoot=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\scripts
 
 #
 # PackageRoot: root directories where packages are stored
 #              This can be specified multiple times.
 #
-PackageRoot=D:\DistroDev\pkg
-PackageRoot=D:\DistroDev\optpkg
-PackageRoot=D:\DistroDev\devpkg
+PackageRoot=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\pkg
+PackageRoot=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\optpkg
+PackageRoot=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\devpkg
 
 #
 # Default ecompile options

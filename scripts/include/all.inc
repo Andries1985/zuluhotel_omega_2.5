@@ -88,7 +88,7 @@ function FindBackpack( byref mobile )
 
 	var backpack := mobile.backpack;
 	if( !backpack )
-		backpack := CreateItemAtLocation( 5283, 1184, 0, 0xe75, 1 );
+		backpack := CreateItemAtLocation( 5283, 1184, 0, 0xe75, 1, "britannia" );
 		if( backpack )
 			if( !EquipItem( mobile, backpack ) )
 				return mobile.backpack;

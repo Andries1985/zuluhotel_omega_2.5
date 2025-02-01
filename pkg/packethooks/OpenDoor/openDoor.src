@@ -45,14 +45,14 @@ exported function HandleOpenDoorMacro( character, byref packet )
  	// The only exception is while they are running, which who cares about
  	// those trying to run non-stop through a door eh? ;)
  	case(direction)
- 		0: item := ListItemsNearLocationWithFlag((character.x),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR); break;
- 		1: item := ListItemsNearLocationWithFlag((character.x+1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR); break;
- 		2: item := ListItemsNearLocationWithFlag((character.x+1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR); break;
- 		3: item := ListItemsNearLocationWithFlag((character.x+1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR); break;
- 		4: item := ListItemsNearLocationWithFlag((character.x),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR); break;
- 		5: item := ListItemsNearLocationWithFlag((character.x-1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR); break;
- 		6: item := ListItemsNearLocationWithFlag((character.x-1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR); break;
- 		7: item := ListItemsNearLocationWithFlag((character.x-1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR); break;
+ 		0: item := ListItemsNearLocationWithFlag((character.x),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR,character.realm); break;
+ 		1: item := ListItemsNearLocationWithFlag((character.x+1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR,character.realm); break;
+ 		2: item := ListItemsNearLocationWithFlag((character.x+1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR,character.realm); break;
+ 		3: item := ListItemsNearLocationWithFlag((character.x+1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR,character.realm); break;
+ 		4: item := ListItemsNearLocationWithFlag((character.x),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR,character.realm); break;
+ 		5: item := ListItemsNearLocationWithFlag((character.x-1),(character.y+1),(character.z),0,TILEDATA_FLAG_DOOR,character.realm); break;
+ 		6: item := ListItemsNearLocationWithFlag((character.x-1),(character.y),(character.z),0,TILEDATA_FLAG_DOOR,character.realm); break;
+ 		7: item := ListItemsNearLocationWithFlag((character.x-1),(character.y-1),(character.z),0,TILEDATA_FLAG_DOOR,character.realm); break;
  	endcase
  	// See if item found is a Door. Check if the player has Line Of Sight to the door. Make sure they
  	// Are ALIVE!

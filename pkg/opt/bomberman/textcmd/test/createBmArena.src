@@ -5,32 +5,32 @@ include "include/random";
 program createArena(who)
 	var i, pad;
 	for(i := 0;i<20; i:=i+1)
-		CreateItemAtLocation( 5508+i, 1674, 0, 0x9A94 );
-		CreateItemAtLocation( 5527, 1674-i, 0, 0x9A94 );
+		CreateItemAtLocation( 5508+i, 1674, 0, 0x9A94, 1, "britannia" );
+		CreateItemAtLocation( 5527, 1674-i, 0, 0x9A94, 1, "britannia" );
 
 		if(i%2 == 0)
-			CreateItemAtLocation( 5509, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5511, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5513, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5515, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5517, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5519, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5521, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5523, 1674-i, 0, 0x9A94 );
-			CreateItemAtLocation( 5525, 1674-i, 0, 0x9A94 );
+			CreateItemAtLocation( 5509, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5511, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5513, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5515, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5517, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5519, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5521, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5523, 1674-i, 0, 0x9A94, 1, "britannia" );
+			CreateItemAtLocation( 5525, 1674-i, 0, 0x9A94, 1, "britannia" );
 		endif
 	endfor
 	//Blue
-	pad := CreateItemAtLocation( 5508, 1673, 0, 0x9A95 );
+	pad := CreateItemAtLocation( 5508, 1673, 0, 0x9A95, 1, "britannia" );
 	pad.color := 1170;
 	//Yellow
-	pad := CreateItemAtLocation( 5508, 1655, 0, 0x9A95 );
+	pad := CreateItemAtLocation( 5508, 1655, 0, 0x9A95, 1, "britannia" );
 	pad.color := 1300;
 	//Red
-	pad := CreateItemAtLocation( 5526, 1673, 0, 0x9A95 );
+	pad := CreateItemAtLocation( 5526, 1673, 0, 0x9A95, 1, "britannia" );
 	pad.color := 1172;
 	//Green
-	pad := CreateItemAtLocation( 5526, 1655, 0, 0x9A95 );
+	pad := CreateItemAtLocation( 5526, 1655, 0, 0x9A95, 1, "britannia" );
 	pad.color := 0x48a;
 
 	Sleep(1);
@@ -41,8 +41,8 @@ program createArena(who)
 			aX := aX+1;
 			SleepMS(100);
 		endif
-		blocks := ListItemsAtLocation( aX, aY, 0 );
-		startpad := ListItemsNearLocation( aX, aY, 0, 1 );
+		blocks := ListItemsAtLocation( aX, aY, 0, "britannia" );
+		startpad := ListItemsNearLocation( aX, aY, 0, 1, "britannia" );
 		stop := 0;
 		foreach pad in startpad
 			if(GetObjProperty(pad, "bmStartPad"))
@@ -55,14 +55,14 @@ program createArena(who)
 					if(!GetObjProperty(item, "bmItem"))
 						chance := Random(100)+1;
 						if(chance > 25);
-							stone := CreateItemAtLocation( aX, aY, 0, 0x9A93 );
+							stone := CreateItemAtLocation( aX, aY, 0, 0x9A93, 1, "britannia" );
 						endif
 					endif
 				endforeach
 			else
 				chance := Random(100)+1;
 				if(chance > 25);
-					stone := CreateItemAtLocation( aX, aY, 0, 0x9A93 );
+					stone := CreateItemAtLocation( aX, aY, 0, 0x9A93, 1, "britannia" );
 				endif
 			endif
 		endif

@@ -17,7 +17,7 @@ program clearArena(who)
 		return;
 	endif
 
-	var trash := ListItemsNearLocation( 5515, 1664, 0, 20 );
+	var trash := ListItemsNearLocation( 5515, 1664, 0, 20, "britannia" );
 	foreach item in trash
 		if(GetObjProperty(item, "bmItem"))
 			DestroyItem(item);

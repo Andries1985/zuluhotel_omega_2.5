@@ -16,7 +16,7 @@ program Scheletrictree(info)
 
   var cfg:=readconfigfile("tree"),leaves:=info[1],treebody:=info[2],tree,leaves_obj:=leaves.objtype,deathtime:=5,newleaves;
 
-  foreach item in listitemsnearlocation(cint(leaves.x),cint(leaves.y),cint(leaves.z),1);
+  foreach item in listitemsnearlocation(cint(leaves.x),cint(leaves.y),cint(leaves.z),1, leaves.realm);
     if (item.objtype==treebody) tree:=item; endif
   endforeach
 
@@ -30,7 +30,7 @@ program Scheletrictree(info)
     destroyitem(tree);
     return;
   else
-    newleaves:=createitematlocation(cint(tree.x),cint(tree.y),cint(tree.z),leaves_obj,1);
+    newleaves:=createitematlocation(cint(tree.x),cint(tree.y),cint(tree.z),leaves_obj,1,tree.realm);
     newleaves.movable:=0;
     setobjproperty(newleaves,"amt",cfg[newleaves.objtype].maxamount);
     setobjproperty(newleaves,"death",0);

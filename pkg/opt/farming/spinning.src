@@ -96,7 +96,7 @@ endfunction
 
 function NearAWheel(me)
 
-	foreach item in ListItemsNearLocation(me.x, me.y, me.z,2)
+	foreach item in ListItemsNearLocation(me.x, me.y, me.z,2,me.realm)
 		if ( (item.objtype >= STARTWHEEL and item.objtype <= ENDWHEEL) or 
 		   (item.objtype >= 0x10a4 and item.objtype <= 0x10a6) )
 			return 1;
@@ -109,7 +109,7 @@ endfunction
 
 function NearALoom(me)
 
-	foreach item in ListItemsNearLocation(me.x, me.y, me.z,2)
+	foreach item in ListItemsNearLocation(me.x, me.y, me.z,2,me.realm)
 		if (item.objtype >= UOBJ_LOOM_START and item.objtype <= UOBJ_LOOM_END)
 			return 1;
 		endif

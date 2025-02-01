@@ -275,7 +275,7 @@ function FetchBottle(who)
 	if (good)
 	if(CheckSkill(who, SKILLID_FISHING, 135, 1000))
 		SendSysMessage(who,"You catch a sunken treasure!");
-		CreateChest( who.x, who.y, who.z);
+		CreateChest( who.x, who.y, who.z, who.realm);
 	else
 		good:=0;
 	endif
@@ -286,34 +286,34 @@ endfunction
 
 
 function FindSpot(who)
-	var spot :={0,0,0};
-	var testval :=0;
+	var spot := {0,0,0};
+	var testval := 0;
 	var i;
 
 	for(i:=1;i<9;i:=i+1)
 		case(i)
-			1:testval := GetStandingHeight( (who.x-1),(who.y-1),who.z);
+			1:testval := GetStandingHeight( (who.x-1),(who.y-1),who.z, who.realm);
 				spot[1] := who.x-1;
 				spot[2]:= who.y-1;
-			2:testval := GetStandingHeight((who.x-1),(who.y),who.z);
+			2:testval := GetStandingHeight((who.x-1),(who.y),who.z, who.realm);
 				spot[1] := who.x-1;
 				spot[2] := who.y;
-			3:testval := GetStandingHeight((who.x-1),(who.y+1),who.z);
+			3:testval := GetStandingHeight((who.x-1),(who.y+1),who.z, who.realm);
 				spot[1] := who.x-1;
 				spot[2] := who.y+1;
-			4:testval := GetStandingHeight((who.x),(who.y-1),who.z);
+			4:testval := GetStandingHeight((who.x),(who.y-1),who.z, who.realm);
 				spot[1] := who.x;
 				spot[2] := who.y-1;
-			5:testval := GetStandingHeight((who.x),(who.y+1),who.z);
+			5:testval := GetStandingHeight((who.x),(who.y+1),who.z, who.realm);
 				spot[1] := who.x;
 				spot[2] := who.y+1;
-			6:testval := GetStandingHeight((who.x+1),(who.y-1),who.z);
+			6:testval := GetStandingHeight((who.x+1),(who.y-1),who.z, who.realm);
 				spot[1] := who.x+1;
 				spot[2] := who.y-1;
-			7:testval := GetStandingHeight((who.x+1),(who.y-1),who.z);
+			7:testval := GetStandingHeight((who.x+1),(who.y-1),who.z, who.realm);
 				spot[1] := who.x+1;
 				spot[2] := who.y;
-			8:testval := GetStandingHeight((who.x+1),(who.y-1),who.z);
+			8:testval := GetStandingHeight((who.x+1),(who.y-1),who.z, who.realm);
 				spot[1] := who.x+1;
 				spot[2] := who.y+1;
 		endcase
@@ -326,8 +326,8 @@ function FindSpot(who)
 endfunction
 
 
-function CreateChest( x , y , z )
-   var chest := CreateItemAtLocation(x,y,z,UOBJECT_TREASURE_CHEST,1);
+function CreateChest( x , y , z, realm )
+   var chest := CreateItemAtLocation(x,y,z,UOBJECT_TREASURE_CHEST,1, realm);
 
  	MakeLoot( chest , Random(7), 70 , 4);
 

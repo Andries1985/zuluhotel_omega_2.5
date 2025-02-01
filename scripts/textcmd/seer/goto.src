@@ -101,7 +101,7 @@ function ShowFlame( who )
 
 	if( (who.cmdlevel<1) and (who.concealed<>1) )
 		var coolflame;
-		coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3709, 1 );
+		coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3709, 1, who.realm );
 		PlaySoundEffect(who, 0x208);
 		Sleep(3);
 		DestroyItem(coolflame);

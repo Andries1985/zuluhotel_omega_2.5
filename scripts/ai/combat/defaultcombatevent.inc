@@ -51,7 +51,7 @@ function OpenDoors(opponent)
 	var itemdesc := ReadConfigFile( ":doors:itemdesc" );
 	var doorstoopen := 0;
 	var tox, toy;
-	var Doors := ListItemsNearLocation( me.x,me.y,me.z,3 );
+	var Doors := ListItemsNearLocation( me.x,me.y,me.z,3,me.realm );
 	foreach door in Doors
 			if (itemdesc[door.objtype].doortype)
 				doorstoopen := 1;

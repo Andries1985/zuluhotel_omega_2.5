@@ -109,7 +109,7 @@ function prepare_for_fight(opponent)
  	foreach it in listequippeditems(me)
 		destroyitem(it);
 	endforeach
-	var p := createitematlocation(5288 , 1176 , 0, 0x0e75, 1);
+	var p := createitematlocation(5288 , 1176 , 0, 0x0e75, 1, "britannia");
 	if (!equipitem(me, p)) destroyitem(p); endif
 	me.criminal := 0;
 	me.graphic := opponent.graphic;

@@ -207,7 +207,7 @@ program textcmd_testgump( who )
 		return;
 
 	elseif( action == 1 ) // GOTO
-		MoveObjecttoLocation( who , client.x , client.y , client.z , who.realm, MOVEOBJECT_FORCELOCATION );
+		MoveObjecttoLocation( who , client.x , client.y , client.z , client.realm, MOVEOBJECT_FORCELOCATION );
 		ShowFlame(who);
 		return;
 
@@ -221,24 +221,24 @@ program textcmd_testgump( who )
 
 		var tempitem;
 		MoveObjectToLocation(client, who.x+1, who.y+1, who.z, who.realm, MOVEOBJECT_FORCELOCATION);
-		tempitem := CreateItemAtLocation( client.x-1,client.y, client.z, 0x821, 1 );
+		tempitem := CreateItemAtLocation( client.x-1,client.y, client.z, 0x821, 1, client.realm );
 		tempitem.decayat := ReadGameClock() + 30;
-		tempitem := CreateItemAtLocation( client.x+1,client.y, client.z, 0x821, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
-
-		tempitem := CreateItemAtLocation( client.x-1,client.y+1, client.z, 0x821, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
-		tempitem := CreateItemAtLocation( client.x+1,client.y+1, client.z, 0x821, 1 );
+		tempitem := CreateItemAtLocation( client.x+1,client.y, client.z, 0x821, 1, client.realm );
 		tempitem.decayat := ReadGameClock() + 30;
 
-		tempitem := CreateItemAtLocation( client.x,client.y-1, client.z, 0x823, 1 );
+		tempitem := CreateItemAtLocation( client.x-1,client.y+1, client.z, 0x821, 1, client.realm );
 		tempitem.decayat := ReadGameClock() + 30;
-		tempitem := CreateItemAtLocation( client.x,client.y+1, client.z, 0x823, 1 );
+		tempitem := CreateItemAtLocation( client.x+1,client.y+1, client.z, 0x821, 1, client.realm );
 		tempitem.decayat := ReadGameClock() + 30;
 
-		tempitem := CreateItemAtLocation( client.x+1,client.y-1, client.z, 0x823, 1 );
+		tempitem := CreateItemAtLocation( client.x,client.y-1, client.z, 0x823, 1, client.realm );
 		tempitem.decayat := ReadGameClock() + 30;
-		tempitem := CreateItemAtLocation( client.x+1,client.y+1, client.z, 0x823, 1 );
+		tempitem := CreateItemAtLocation( client.x,client.y+1, client.z, 0x823, 1, client.realm );
+		tempitem.decayat := ReadGameClock() + 30;
+
+		tempitem := CreateItemAtLocation( client.x+1,client.y-1, client.z, 0x823, 1, client.realm );
+		tempitem.decayat := ReadGameClock() + 30;
+		tempitem := CreateItemAtLocation( client.x+1,client.y+1, client.z, 0x823, 1, client.realm );
 		tempitem.decayat := ReadGameClock() + 30;
 		client.SetParalyzed(1);
 		ShowFlame(client);
@@ -309,7 +309,7 @@ program textcmd_testgump( who )
 		acc.setprop( "Release" , 0 );
 		SendSysMessage( client , "You have been freed.");
 		SendSysMessage( who , playername + " has been freed." );
-		MoveObjectToLocation( client , 3674 , 2507 , 0 , 0);
+		MoveObjectToLocation( client , 3674 , 2507 , 0 , "britannia", 0);
 		return;
 	
 	elseif( action == 7 ) // NOTES
@@ -435,77 +435,81 @@ endprogram
 
 function RemoveGuild(who,client)
 
-var guild_id:=getobjproperty(client,"guild_id");
-var guild:=FindGuild(guild_id);
+	var guild_id:=getobjproperty(client,"guild_id");
+	var guild:=FindGuild(guild_id);
 
-SendSysMessage(who,"Remove their guild?",3,34);
+	SendSysMessage(who,"Remove their guild?",3,34);
 
-var answer:=YesNo(who,"Remove Guild?");
+	var answer:=YesNo(who,"Remove Guild?");
 
-if (!answer)
-SendSysMessage(who,"Guild not removed.",3,34);
-return;
-endif
+	if (!answer)
+	SendSysMessage(who,"Guild not removed.",3,34);
+	return;
+	endif
 
-var gm:=findgm(guild);
+	var gm:=findgm(guild);
 
-if (client.serial==gm[2]) guild.setprop("gm",0); endif
-guild.removemember(client);
-eraseobjproperty(client,"guild_id");
-eraseobjproperty(client,"fealty");
-fixnameguild(client);
-client.title_guild:="";
-eraseobjproperty(client,"abv");
-eraseobjproperty(client,"talkchat");
-eraseobjproperty(client,"hearchat");
+	if (client.serial==gm[2]) guild.setprop("gm",0); endif
+	guild.removemember(client);
+	eraseobjproperty(client,"guild_id");
+	eraseobjproperty(client,"fealty");
+	fixnameguild(client);
+	client.title_guild:="";
+	eraseobjproperty(client,"abv");
+	eraseobjproperty(client,"talkchat");
+	eraseobjproperty(client,"hearchat");
 
-SendSysMessage(client,"You are no longer a member of "+guild.getprop("guildname")+".",3,70);
-SendSysMessage(who,"Guild has been removed.",3,70);
+	SendSysMessage(client,"You are no longer a member of "+guild.getprop("guildname")+".",3,70);
+	SendSysMessage(who,"Guild has been removed.",3,70);
 
-var i,all:=guild.members;
+	var i,all:=guild.members;
 
-if (all.size()==0)
-all:=guild.allyguilds;
+	if (all.size()==0)
+		all:=guild.allyguilds;
 
-if (all.size()<>0)
-for(i:=1;i<=all.size();i:=i+1)
-guild.removeallyguild(all[i]);
-endfor
-endif
+		if (all.size()<>0)
+			for(i:=1;i<=all.size();i:=i+1)
+				guild.removeallyguild(all[i]);
+			endfor
+		endif
 
-all:=guild.enemyguilds;
+		all:=guild.enemyguilds;
 
-if (all.size()<>0)
-for(i:=1;i<=all.size();i:=i+1)
-guild.removeenemyguild(all[i]);
-endfor
-endif
+		if (all.size()<>0)
+			for(i:=1;i<=all.size();i:=i+1)
+				guild.removeenemyguild(all[i]);
+			endfor
+		endif
 
-DestroyGuild(guild);
-SendSysMessage(who,"You will need to delete the old guildstone.",3,34);
-endif
+		DestroyGuild(guild);
+		SendSysMessage(who,"You will need to delete the old guildstone.",3,34);
+	endif
 
 endfunction
 
 
 function fixnameguild(who)
-var abv:=getobjproperty(who,"abv"),result:=find(who.name," ["+abv+"]",1),name:=who.name;
+	var abv:=getobjproperty(who,"abv"),result:=find(who.name," ["+abv+"]",1),name:=who.name;
 
-result:=result-1;
-name:=name[1,result];
-who.name:=name;
+	result:=result-1;
+	name:=name[1,result];
+	who.name:=name;
 endfunction
 
 
 function findgm(guild)
 
-var returninfo:={"In Vote","0"},i,all:=guild.members,gm:=guild.getprop("gm");
+	var returninfo:={"In Vote","0"},i,all:=guild.members,gm:=guild.getprop("gm");
 
-for(i:=1;i<=all.size();i:=i+1)
-if (all[i].serial==gm) returninfo[1]:=all[i].name; returninfo[2]:=all[i].serial; returninfo[3]:=all[i]; endif
-endfor
+	for(i:=1;i<=all.size();i:=i+1)
+		if (all[i].serial==gm) 
+			returninfo[1]:=all[i].name; 
+			returninfo[2]:=all[i].serial; 
+			returninfo[3]:=all[i]; 
+		endif
+	endfor
 
-return returninfo;
+	return returninfo;
 
 endfunction
 
@@ -620,7 +624,7 @@ function ShowFlame(who)
 	var coolflame;
 
 	if ((who.cmdlevel>3) and (who.concealed<1))
-	coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3709, 1 );
+	coolflame := CreateItemAtLocation( who.x, who.y, who.z, 0x3709, 1, who.realm );
 	playsoundeffect(who, 0x208);
 	sleep(3);
 	destroyitem(coolflame);

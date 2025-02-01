@@ -20,8 +20,11 @@ program walkOnScript( mobile, tile )
 		elseif( GetObjProperty( mobile , CLASSEID_BARD ) )
 			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Bard" );		
 			return 0;
+		elseif( GetObjProperty( mobile , CLASSEID_BLADESINGER ) )
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Bladesinger" );		
+			return 0;
 		elseif( GetObjProperty( mobile , CLASSEID_MYSTIC_ARCHER ) )
-			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Bard" );		
+			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Mystic Archer" );		
 			return 0;
 		elseif( GetObjProperty( mobile , CLASSEID_CRAFTER ) )
 			SendSysMessage( mobile, "Moongate only accessible for newbie's, you are spec Crafter" );		

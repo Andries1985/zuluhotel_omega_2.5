@@ -207,7 +207,7 @@ function HouseFunctionSecure( house, event, num )
 			else
 				itemid := 0xE40;
 			endif
-			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1 );
+			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1, itemt.realm );
 			var inside := 0;
 			foreach item in (house.items)
 				if( box.serial == item.serial )
@@ -292,7 +292,7 @@ function Demolish(house, sign)
 	endif
 
 	if (house.objtype == 0x608D)
-		foreach items in ListItemsNearLocation( sign.x, sign.y, 0, 8 )
+		foreach items in ListItemsNearLocation( sign.x, sign.y, 0, 8, sign.realm )
 			if((items.objtype == 0x177d) or (items.objtype == 0xb41) or (items.objtype == 0xb42))
 				destroyitem(items);
 			endif

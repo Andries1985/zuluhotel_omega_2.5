@@ -278,7 +278,7 @@ function CheckForStuff()
 	var itemdesc := ReadConfigFile( ":doors:itemdesc" );
 	var doorcount;
 
-	foreach wall in ListItemsNearLocation( me.x,me.y,me.z,2 ) //make this check for walls infront, not all around
+	foreach wall in ListItemsNearLocation( me.x,me.y,me.z,2,me.realm ) //make this check for walls infront, not all around
 		if ((wall.objtype = UOBJ_STONEWALL_NS) or (wall.objtype = UOBJ_STONEWALL_EW))
 			if (GetObjProperty(wall, "f") = "1")
 

@@ -89,7 +89,7 @@ function CreateMount( who, item )
 	var mount_template := GetObjProperty( item, "MountTemplate");
 	var mount_tile := GetObjProperty( item, "MountTile");
 
-	var mount := CreateItemAtLocation(5288,1176,0,0x1F021,1);
+	var mount := CreateItemAtLocation(5288,1176,0,0x1F021,1, "britannia");
 	mount.color := item.color;
 	mount.graphic := Cint(mount_tile);
 	

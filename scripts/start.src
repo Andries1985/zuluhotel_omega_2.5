@@ -29,4 +29,3 @@ find_or_create_storage("Merchant Storage");
 start_script("EquipTemplateValidation");
 
 start_script("CustomHpFix");
-

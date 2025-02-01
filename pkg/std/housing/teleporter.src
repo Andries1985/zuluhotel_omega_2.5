@@ -26,6 +26,7 @@ program walk_on_moongate( mobile , gate )
 	var x := GetObjProperty( gate, "GateDestX" );
 	var y := GetObjProperty( gate, "GateDestY" );
 	var z := GetObjProperty( gate, "GateDestZ" );
+	var realm := GetObjProperty( gate, "GateDestRealm" );
 
 	if( !x or !y )
 		return;
@@ -36,14 +37,14 @@ program walk_on_moongate( mobile , gate )
 		return;
 	endif
 
-	if( IsForbiddenAreaToRecallTo( mobile , x , y )  )
+	if( IsForbiddenAreaToRecallTo( mobile , x , y, realm )  )
 		if (!Getobjproperty(gate, "IgnoreCheck"))
 			return;
 		endif
 	endif
 
 	set_critical(1);
-	if( MoveObjectToLocation( mobile , x , y , z ) )
+	if( MoveObjectToLocation( mobile , x , y , z, realm ) )
 		SetObjProperty( mobile, "JustGated", 1 );
 	endif
 	

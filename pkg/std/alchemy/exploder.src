@@ -28,7 +28,7 @@ program exploder(parms)
 		power := 1;
 	endif
 	
-	var lookout := CreateItemAtLocation( cint(where.x), cint(where.y), cint(where.z), 0x0f0d, 1 );
+	var lookout := CreateItemAtLocation( cint(where.x), cint(where.y), cint(where.z), 0x0f0d, 1, where.realm );
 	lookout.movable := 0;
 
 	PrintTextAbove( lookout, "3");
@@ -42,7 +42,7 @@ program exploder(parms)
 	DestroyItem( lookout );
 
 	var dmg := (Random(9)+12) * power;
-	var victims := ListMobilesNearLocationEx( cint(where.x),cint(where.y),cint(where.z), power, LISTEX_FLAG_NORMAL + LISTEX_FLAG_HIDDEN );
+	var victims := ListMobilesNearLocationEx( cint(where.x),cint(where.y),cint(where.z), power, LISTEX_FLAG_NORMAL + LISTEX_FLAG_HIDDEN, where.realm );
 	
 	victims := SmartAoE(thrower, victims);
 
@@ -60,16 +60,18 @@ program exploder(parms)
 		endif
 	endforeach
 	
-	foreach item in ListItemsNearLocation( cint(where.x) , cint(where.y) , cint(where.z) , power )
+	foreach item in ListItemsNearLocation( cint(where.x) , cint(where.y) , cint(where.z) , power, where.realm )
 		if( item.objtype in explosion_potions and item.movable )
 			var parms2 := {};
 			var loc := array;
 			loc.+x;
 			loc.+y;
 			loc.+z;
+			loc.+realm;
 			loc.x := item.x;
 			loc.y := item.y;
 			loc.z := item.z;
+			loc.realm := item.realm;
 			parms2[1] := thrower;
 			parms2[2] := item;
 			parms2[3] := loc;

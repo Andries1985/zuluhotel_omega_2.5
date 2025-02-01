@@ -1343,7 +1343,7 @@ function invokegomenu( who)
     else
       Traveler := who;
     endif
-    MoveObjecttoLocation(Traveler, Dest.X, Dest.Y, GetMapInfo(Dest.X, Dest.Y).Z, dest.realm);
+    MoveObjecttoLocation(Traveler, Dest.X, Dest.Y, GetMapInfo(Dest.X, Dest.Y, Dest.realm).Z, dest.realm);
     showflame(Traveler);
     UnloadConfigFile("::golocs");
   endif

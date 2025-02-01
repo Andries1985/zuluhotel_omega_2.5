@@ -125,7 +125,7 @@ var data := array(
     "Bet:",
     "100",
     "Double Down",
-     "© 2000 Zulu Hotel"
+     "ï¿½ 2000 Zulu Hotel"
 );
 
 
@@ -136,7 +136,7 @@ case( Random(2) )
 endcase
 SetName ( me , RandomName( me ) + " the gambler");
 Habille( me, "Clothes" );
-dealmoney := createitematlocation(me.x, me.y, me.z, 0x0e75, 1);
+dealmoney := createitematlocation(me.x, me.y, me.z, 0x0e75, 1, me.realm);
 equipitem(me, dealmoney);
 CreateItemInBackpack(me, MONEY, (Random(100)+1)*300);
 endif
@@ -431,7 +431,7 @@ SendSysMessage( who, "Hand in Play!");
 return;
 endif
 
-data[33] :="© 2000 Zulu Hotel";
+data[33] :="ï¿½ 2000 Zulu Hotel";
 
 if (dd==1)
 dd :=0;

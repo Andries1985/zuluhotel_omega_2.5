@@ -93,7 +93,7 @@ function MountNPC(who, npc, mount)
 	endcase
 
 
-    var mount2 := CreateItemAtLocation( 5288, 1176, 0, 0x1F021, 1);
+    var mount2 := CreateItemAtLocation( 5288, 1176, 0, 0x1F021, 1, "britannia");
     mount2.color := mount.color;
     setobjproperty(mount2,"petname",mount.name);
     setobjproperty(mount2,"pethp",GetHP(mount));

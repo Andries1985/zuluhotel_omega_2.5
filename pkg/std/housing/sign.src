@@ -208,7 +208,7 @@ program textcmd_sign( who , sign )
 					endif
 				endif
 			14:
-				foreach item in ListItemsNearLocation( sign.x, sign.y, sign.z-5, 20 )
+				foreach item in ListItemsNearLocation( sign.x, sign.y, sign.z-5, 20, sign.realm )
 					if(item.getprop("outside") == house.serial)
 						SendSysMessage(who, "You need to redeed furniture outside before you can demolish your house.");
 						return;						
@@ -286,7 +286,7 @@ program textcmd_sign( who , sign )
 						endif
 
 						if (house.objtype==0x608D)
-							foreach item in ListItemsNearLocation( sign.x, sign.y, 0, 8 )
+							foreach item in ListItemsNearLocation( sign.x, sign.y, 0, 8, sign.realm )
 								if((item.objtype==0x177d) or (item.objtype==0xb41) or (item.objtype==0xb42))
 									destroyitem(item);
 								endif
@@ -295,7 +295,7 @@ program textcmd_sign( who , sign )
 
 						var z := 0;
 						repeat
-							foreach item in ListItemsNearLocation( sign.x, sign.y, z, 20 )
+							foreach item in ListItemsNearLocation( sign.x, sign.y, z, 20, sign.realm )
 								if(item.getprop("houseserial") == house.serial || item.getprop("f"))
 										destroyitem(item);
 								endif
@@ -1033,7 +1033,7 @@ function HouseFunctionSecure( who, house, num )
 			else
 				itemid := 0xE40;
 			endif
-			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1 );
+			var box := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, itemid, 1, itemt.realm );
 			var inside := 0;
 			foreach item in (house.items)
 				if( box.serial == item.serial )
@@ -1118,7 +1118,7 @@ function AddTeleporter( who, house, num )
 				SendSysmessage( who, "Canceled." );
 				return;
 			endif
-			var tele := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, 0xa3ce, 1 );
+			var tele := CreateItemAtLocation( itemt.x, itemt.y, itemt.z, 0xa3ce, 1, itemt.realm );
 			var inside := 0;
 			foreach item in (house.items)
 				if( tele.serial == item.serial )
@@ -1136,7 +1136,7 @@ function AddTeleporter( who, house, num )
 					SendSysmessage( who, "Canceled." );
 					return;
 				endif
-				var tele2 := CreateItemAtLocation( itemt2.x, itemt2.y, itemt2.z, 0xa3ce, 1 );
+				var tele2 := CreateItemAtLocation( itemt2.x, itemt2.y, itemt2.z, 0xa3ce, 1, itemt.realm );
 				inside := 0;
 				foreach item in (house.items)
 					if( tele2.serial == item.serial )

@@ -76,14 +76,14 @@ program spell_gate( caster, spell_id )
 	var tox := Cint(GetObjProperty( cast_on, "x" ));
 	var toy := Cint(GetObjProperty( cast_on, "y" ));
 	var toz := Cint(GetObjProperty( cast_on, "z" ));
-	var torealm := GetObjProperty( cast_on, "z" );
+	var torealm := GetObjProperty( cast_on, "realm" );
 
 	if( !tox and !toy and !toz and !torealm )
 		SendSysmessage(caster, "That is a blank rune!");
 		return;
 	endif
 
-	if( IsForbiddenAreaToGateTo( caster, tox, toy ) )
+	if( IsForbiddenAreaToGateTo( caster, tox, toy, torealm ) )
 		SendSysMessage(caster, "The destination is a magic place with protection.");
 		if( cast_on.objtype != 0x6100 )
 			DestroyItem( cast_on );
@@ -124,7 +124,7 @@ program spell_gate( caster, spell_id )
 	endif
 
 	//Same check as above but for static houses
-	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz );
+	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz, torealm );
 	if(serialstatichouse)
 		var sign := SystemFindObjectBySerial(serialstatichouse);
 		if( !Iscowner( caster, sign )  )

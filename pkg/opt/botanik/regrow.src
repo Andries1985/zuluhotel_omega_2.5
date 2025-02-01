@@ -11,31 +11,38 @@ use cfgfile;
 
 include "botanik";
 
-program regrow (parms)
+program regrow(parms)
 
-  var leaves:=parms[1],wait:=cint(parms[2]),i,restype,death;
+  var cfg:=readconfigfile("tree");
+
+  var leaves := parms[1];
+  var wait := cint(parms[2]);
+  var amount := cint(parms[3]);
+  var i;
+  var restype;
+  var death;
+
   if (!leaves) 
     return; 
   endif
 
-  var amt:=getobjproperty(leaves,"amt"),cfg:=readconfigfile("tree");
+  var amt:=GetObjProperty(leaves, "amt");
+
   setobjproperty(leaves,"#regrow",1);
-  SetObjProperty(leaves,"PlacedBy", parms[3]);
+  SetObjProperty(leaves,"PlacedBy", parms[4]);
 
   for(i:=amt;i>0;i:=i-1)
-
     if (counttree(leaves)>3)
       restype:=0;
       death:=0;
+      foreach item in listitemsnearlocation(cint(leaves.x),cint(leaves.y),cint(leaves.z),1,leaves.realm)
 
-      foreach item in listitemsnearlocation(cint(leaves.x),cint(leaves.y),cint(leaves.z),1)
-
-	      if (item.serial!=leaves.serial)
+        if (item.serial!=leaves.serial)
           restype:=cfg[item.objtype].product;
           death:=getobjproperty(leaves,"death");
         endif
               
-	      if ((restype) and (!death))
+        if ((restype) and (!death))
             setobjproperty(leaves,"death",1);
             start_script("treedeath",{leaves,cfg[leaves.objtype].treetype});
             eraseobjproperty(leaves,"#regrow");
@@ -53,6 +60,6 @@ program regrow (parms)
 
   endfor
 
-eraseobjproperty(leaves,"#regrow");
+  eraseobjproperty(leaves,"#regrow");
 
 endprogram

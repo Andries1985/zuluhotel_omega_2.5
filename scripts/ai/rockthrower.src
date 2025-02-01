@@ -237,7 +237,7 @@ function throw_stone(thetarg)
 
 if (distance(me,thetarg) > 20) return; endif
 
-PlayMovingEffectXYZ(me.x, me.y, me.z, thetarg.x, thetarg.y, thetarg.z, stone, 15);
+PlayMovingEffectXYZ(me.x, me.y, me.z, thetarg.x, thetarg.y, thetarg.z, stone, 15, 0, 0, me.realm);
 if (Random(3) == 1)
         var dmg := RandomDiceStr("5d8");
         applydamage(thetarg, dmg);
@@ -246,13 +246,11 @@ else
         sendsysmessage(thetarg, "the rock misses you!");
 endif
 
-/*
 sleepms(500);
 
-var therock := createitematlocation(thetarg.x, thetarg.y, thetarg.z, stone,1);
+var therock := createitematlocation(thetarg.x, thetarg.y, thetarg.z, stone, 1, thetarg.realm);
 therock.decayat := ReadGameClock() + 20;
-Sleep( 2 );
+Sleep( 3 );
 DestroyItem( therock );
-*/
 
 endfunction

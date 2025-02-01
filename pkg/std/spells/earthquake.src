@@ -99,7 +99,7 @@ program earthquake( parms, spell_id )
 					if(!mobile.multi.components)
 						okay:=1;
 					endif
-					Near_Items := ListItemsNearLocation(mobile.x, mobile.y, mobile.z,10);
+					Near_Items := ListItemsNearLocation(mobile.x, mobile.y, mobile.z, 10, mobile.realm);
 					foreach thing in Near_Items
 						if (thing.objtype == 0xf156)
 								okay := 0;

@@ -31,7 +31,7 @@ program cains_exploder(parms)
 		power := 1;
 	endif
 	
-	var lookout := CreateItemAtLocation( cint(where.x), cint(where.y), cint(where.z), 0x183e, 1 );
+	var lookout := CreateItemAtLocation( cint(where.x), cint(where.y), cint(where.z), 0x183e, 1, where.realm );
 	lookout.color := 1305;
 	lookout.movable := 0;
 
@@ -67,7 +67,7 @@ program cains_exploder(parms)
 		endif
 	endforeach
 	
-	foreach item in ListItemsNearLocation( cint(where.x) , cint(where.y) , cint(where.z) , power )
+	foreach item in ListItemsNearLocation( cint(where.x) , cint(where.y) , cint(where.z) , power, where.realm )
 		if( item.objtype in explosion_potions and item.movable )
 			var parms2 := {};
 			var loc := array;

@@ -27,7 +27,7 @@ endif
 	// Toadstool - 24/04/2012. Alteration to only allow bins to be placed in houses.
 	// this is a system tele, only invis item by default I can find.
 	// It can't be abused at all, worst case scenario is that itll send text to console
-	placetest := CreateItemAtLocation(where.x, where.y, where.z, 0x6200, 1);
+	placetest := CreateItemAtLocation(where.x, where.y, where.z, 0x6200, 1, where.realm);
 	ismulti := placetest.multi;
 	DestroyItem(placetest);
 
@@ -45,7 +45,7 @@ endif
 		return 0;
 	endif
 
-	place := CreateItemAtLocation( where.x, where.y, where.z, TRASH_BARREL, 1 );
+	place := CreateItemAtLocation( where.x, where.y, where.z, TRASH_BARREL, 1, where.realm );
 
     If (!place)
       SendSysMessage( who, "Your trash can has not been created");

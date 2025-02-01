@@ -112,7 +112,7 @@ function EquipItemString( who, str )
     endif
 
   if ( cint(Random(100)+1) <= cint(chance) )
-    var item := CreateItemAtLocation( who.x, who.y, who.z, objname, 1 );
+    var item := CreateItemAtLocation( who.x, who.y, who.z, objname, 1, who.realm );
     if (!item)
         var itemg := FindConfigElem( vetements, objname );
     	if (itemg)            // Si on trouve le groupe de vetements
@@ -122,7 +122,7 @@ function EquipItemString( who, str )
           if ((len(gend)<2) or 
               ((gend[2]=="m") and (who.graphic==400)) or
               ((gend[2]=="f") and (who.graphic==401)))
-            item := CreateItemAtLocation( who.x, who.y, who.z, objname, 1 );
+            item := CreateItemAtLocation( who.x, who.y, who.z, objname, 1, who.realm );
             if (!item)
               syslog( "Unable to create " + objname );
             endif

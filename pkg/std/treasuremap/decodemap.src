@@ -111,50 +111,43 @@ endfunction
 
 
 function SetTreasureCoords( map, maplevel );
-	var cfgfile;
-	//if(maplevel < 4)
-		cfgfile := ReadConfigFile( "treasure" );
-	/*else
-		cfgfile := ReadConfigFile( "dungtreasure" );
-	endif*/
+
+	var cfgfile := ReadConfigFile( "treasure" );
 	var num := GetConfigMaxIntKey( cfgfile );
-
 	var pick := (Random( num ) + 1);
-
 	var elem := FindConfigElem( cfgfile , pick );
 
 	var x := GetConfigInt( elem , "X" );
 	var y := GetConfigInt( elem , "Y" );
 	var z := GetConfigInt( elem , "Z" );
+	var r := GetConfigString ( elem , "R" );
+
+	var FacetNum := 0;
+	case( r )
+		"britannia":		FacetNum := 0;
+		"britannia_alt":	FacetNum := 1;
+		"ilshenar":			FacetNum := 2;
+		"malas":			FacetNum := 3;
+		"tokuno":			FacetNum := 4;
+		"termur":			FacetNum := 5;
+	endcase
 
 	SetObjProperty( map , "chestx" , x );
 	SetObjProperty( map , "chesty" , y );
 	SetObjProperty( map , "chestz" , z );
+	SetObjProperty( map , "chestr" , r );
 
-	/*if(maplevel > 3)
-		x := GetConfigInt( elem , "EntranceX" );
-		y := GetConfigInt( elem , "EntranceY" );
-		var FloorNumber := GetConfigInt( elem , "DungeonFloor" );
-		var Dungeon := GetConfigString( elem , "Dungeon" );
-		SetObjProperty( map , "EntranceX" , x );
-		SetObjProperty( map , "EntranceY" , y );
-		SetObjProperty( map , "DungeonFloor" , FloorNumber );
-		SetObjProperty( map , "Dungeon" , Dungeon );
-		if(FloorNumber > 1)
-			SetObjProperty( map , "Floor2X" , GetConfigInt( elem , "Floor2X" ) );
-			SetObjProperty( map , "Floor2Y" , GetConfigInt( elem , "Floor2Y" ) );
-		endif
-	endif*/
+	SetName( map , "a " + r + " treasure map lvl" + maplevel );
+	map.facetid := FacetNum;
 
-	SetName( map , "a treasure map lvl" + maplevel );
 	if( x < 265 )
 	   map.xwest := 0;
 	else
 	   map.xwest := x-265;
 	endif
-
+	
 	if( y < 260 )
-	   map.ynorth := 0;
+	   map.ynorth:= 0;
 	else
 	   map.ynorth := y-260;
 	endif
@@ -163,5 +156,6 @@ function SetTreasureCoords( map, maplevel );
 	map.ysouth := y+260;
 	map.gumpwidth := 200;
 	map.gumpheight := 200;
+	map.AppendPin(x,y);
 
 endfunction

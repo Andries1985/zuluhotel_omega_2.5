@@ -47,7 +47,7 @@ program harvest_honey (character, newbeehive)
 	//if they are sure, create a working beehive, set it's honey and wax levels to 0, destroy
 	//the unusedhive and exit
 	if ( sure )
-		var beehive := CreateItemAtLocation (newbeehive.x, newbeehive.y, newbeehive.z, 0x091a, 1);
+		var beehive := CreateItemAtLocation (newbeehive.x, newbeehive.y, newbeehive.z, 0x091a, 1, newbeehive.realm);
 		SetObjProperty (beehive, "Wax", 100);
 		SetObjProperty (beehive, "Honey", 100);
 		SetObjProperty (beehive, "PlacedBy", character.name);

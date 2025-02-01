@@ -29,6 +29,7 @@ program UseWood( character, wood )
     var x;
     var y;
     var z;
+    var realm;
 
     var thepoints := POINT_VALUE;
     var ranger := GetObjProperty( character , CLASSEID_RANGER );
@@ -56,17 +57,19 @@ program UseWood( character, wood )
         x := wood.x;
         y := wood.y;
         z := wood.z;
+        realm := wood.realm;
 		
     if (wood.container)
         x := character.x;
         y := character.y;
         z := character.z;
+        realm := character.realm;
 	endif
 	
 		SendSysMessage( character, "You manage to light the fire." );
 
         Detach();
-        var campfire := CreateItematLocation( x, y, z, UOBJ_CAMPFIRE, 1 );
+        var campfire := CreateItematLocation( x, y, z, UOBJ_CAMPFIRE, 1, realm );
     	SetObjProperty( character, "#lastcamp", ReadGameClock() );
         SubtractAmount(wood,1);
 
@@ -77,7 +80,7 @@ program UseWood( character, wood )
 
         // todo: really need to turn to embers, etc
 
-        campfire := CreateItemAtLocation(x,y,z,UOBJ_ASHES,1);
+        campfire := CreateItemAtLocation(x,y,z,UOBJ_ASHES,1, realm);
         sleep(10);
         DestroyItem(campfire);
 

@@ -41,7 +41,7 @@ if(GetObjProperty(me, "Champion"))
 endif
 
 if (!me.backpack)
-	var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75, 1);
+	var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75, 1, me.realm);
 	EquipItem(me, newbackpack);
 	if (npccfg[me.npctemplate].colorrange)
 		var parms := splitwords(npccfg[me.npctemplate].colorrange);
@@ -73,7 +73,7 @@ if (!me.backpack)
 	endif
 
 	if ( npccfg[me.npctemplate].mount )
-		var mymount := CreateItemAtLocation(5288, 1176, 0, 0x1F021, 1);
+		var mymount := CreateItemAtLocation(5288, 1176, 0, 0x1F021, 1, "britannia");
 		var mountparms := splitwords(npccfg[me.npctemplate].mount);
 		mymount.graphic := cint(mountparms[1]);
 		mymount.color := cint(mountparms[2]);

@@ -85,7 +85,7 @@ program efield( parms, spell_id )
 		default:  
 			case (Random(2))
 				0: fields:= CreateNorthSouthField(caster, UOBJ_EFIELD_NS, x, y, z, 5);
-        	  		1: fields:= CreateEastWestField(caster, UOBJ_EFIELD_EW, x, y, z, 5);
+        	  	1: fields:= CreateEastWestField(caster, UOBJ_EFIELD_EW, x, y, z, 5);
 			endcase
 	endcase
 	

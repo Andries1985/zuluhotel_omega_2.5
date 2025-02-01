@@ -126,7 +126,7 @@ function DoMerchantOnCreationSetup()
 	endif
 
 	if(!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, UOBJ_BACKPACK, 1);
+		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, UOBJ_BACKPACK, 1, "britannia");
 		EquipItem(me, newbackpack);
 	endif
 
@@ -352,7 +352,7 @@ function stockitem(byref item, byref seller)
 		var theItem;
 		Say("I'll just sell this at the same price as the others.");
 		if(newAmount <= 60000)
-			theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, newAmount );
+			theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, newAmount, "britannia" );
 			theItem.sellprice := sellPrice;
 			if(!theItem.movable)
 				theItem.movable := 1;
@@ -363,7 +363,7 @@ function stockitem(byref item, byref seller)
 			endif
 		else
 			while(newAmount > 60000)
-				theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, 60000 );
+				theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, 60000, "britannia" );
 				theItem.sellprice := sellPrice;
 				if(!theItem.movable)
 					theItem.movable := 1;
@@ -374,7 +374,7 @@ function stockitem(byref item, byref seller)
 				endif
 				newAmount := newAmount - 60000;
 			endwhile
-			theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, newAmount );
+			theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, newAmount, "britannia" );
 			theItem.sellprice := sellPrice;
 			if(!theItem.movable)
 				theItem.movable := 1;
@@ -609,7 +609,7 @@ function strip_items(byref mmaster)
 	endif
 
 	if(!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1);
+		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
 		EquipItem(me, newbackpack);
 	endif
 
@@ -1054,7 +1054,7 @@ endfunction
 
 function undress_items(byref you)
 	if(!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288, 1176, 0, UOBJ_BACKPACK, 1);
+		var newbackpack := CreateItemAtLocation(5288, 1176, 0, UOBJ_BACKPACK, 1, "britannia");
 		EquipItem(me, newbackpack);
 	endif
 
@@ -1077,7 +1077,7 @@ endfunction
 ///////////////////
 
 function CanSellAtThisLocation()
-	var signs := ListItemsNearLocationOfType(me.x, me.y, me.z, 20, 0x1E5E);
+	var signs := ListItemsNearLocationOfType(me.x, me.y, me.z, 20, 0x1E5E, me.realm);
 	if(len(signs) )
 		return 0;
 	endif

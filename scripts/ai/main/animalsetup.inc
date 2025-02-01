@@ -1,3 +1,11 @@
+use npc;
+use cfgfile;
+
+
+include "include/random";
+include "include/randname";
+include "include/anchors";
+
 var me := self();
 
 var flee_point;
@@ -12,7 +20,7 @@ if (!flee_point)
 endif
 
 if (!me.backpack)
-	var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75,1);
+	var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75, 1, me.realm);
 	EquipItem(me, newbackpack);
 	if (npccfg[me.npctemplate].colorrange)
 		var parms := splitwords(npccfg[me.npctemplate].colorrange);

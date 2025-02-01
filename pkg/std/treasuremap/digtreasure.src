@@ -57,9 +57,16 @@ program dig_treasure( character , shovel )
 	var chestx := GetObjProperty( map , "chestx" );
 	var chesty := GetObjProperty( map , "chesty" );
 	var chestz := GetObjProperty( map , "chestz" );
+	var chestr := GetObjProperty( map , "chestr" );
 
 	if( (!chestx) or (!chesty) )  //z might be 0!
 		SendSysmessage( character , "That is not a treasure map." );
+		return;
+	endif
+
+	//Realm check added
+	if( character.realm != chestr)
+		SendSysMessage( character, "You are in the wrong realm!" );
 		return;
 	endif
 
@@ -120,7 +127,7 @@ program dig_treasure( character , shovel )
 	else
 		DestroyItem( map );
 //		DestroyItem( shovel );
-		var current_items := ListItemsAtLocation( chestx , chesty , chestz );
+		var current_items := ListItemsAtLocation( chestx , chesty , chestz, chestr );
 		foreach thing in current_items
 			if( thing.objtype == UOBJECT_TREASURE_CHEST )
 				DestroyItem( thing );
@@ -146,7 +153,7 @@ program dig_treasure( character , shovel )
 					for( i := 1 ; i <= limit ; i := i + 1 )
 						rand := Random( num ) + 1;
 						template := GetConfigString( elem , ("creature" + rand) );
-						CreateGuardian( template, chestx, chesty, chestz );
+						CreateGuardian( template, chestx, chesty, chestz, chestr );
 					endfor
 				else
 				//Special spawning way for lvl 4+
@@ -159,7 +166,7 @@ program dig_treasure( character , shovel )
 					for( i := 1 ; i <= limit ; i := i + 1 )
 						rand := Random( num ) + 1;
 						template := GetConfigString( elem , ("creature" + rand) );
-						CreateGuardian( template, chestx, chesty, chestz );
+						CreateGuardian( template, chestx, chesty, chestz, chestr );
 					endfor
 
 					if(lvl > 4)
@@ -167,7 +174,7 @@ program dig_treasure( character , shovel )
 						num	:= GetConfigInt( elem,"num" );
 						rand := Random( num ) + 1;
 						template := GetConfigString( elem , ("creature" + rand) );
-						CreateGuardian( template, chestx, chesty, chestz );
+						CreateGuardian( template, chestx, chesty, chestz, chestr );
 					endif
 				endif
 			endif
@@ -187,7 +194,7 @@ program dig_treasure( character , shovel )
 		endwhile
 		
 		SendSysmessage( character , "Now that all guardians were defeated, the treasure is revealed!" );
-		var chest	 := CreateTreasureChest( lvl , chestx , chesty , chestz );
+		var chest	 := CreateTreasureChest( lvl , chestx , chesty , chestz, chestr );
 		SetObjProperty( chest , "treasurechest" , 1 );
 		chest.saveonexit := 0;
 		chest.decayat	 := Cint(ReadGameClock()) + 1010;
@@ -196,9 +203,9 @@ program dig_treasure( character , shovel )
 
 endprogram
 
-function CreateTreasureChest( lvl , x , y , z )
+function CreateTreasureChest( lvl , x , y , z, r )
 
-	var chest := CreateItemAtLocation( x , y , z , UOBJECT_TREASURE_CHEST , 1 );
+	var chest := CreateItemAtLocation( x , y , z , UOBJECT_TREASURE_CHEST , 1, r );
 	var lootgroup;
 	var magiclevelup;
 	var magicchanse;
@@ -232,9 +239,7 @@ function CreateTreasureChest( lvl , x , y , z )
 		6: magiclevelup := 9; break;		
 		default: magiclevelup := 2;
 	endcase
-	
 
-	
 	chest.movable := 0;
 	MakeLoot( chest , Cint(lootgroup), Cint(magicchanse), Cint(magiclevelup));
 
@@ -243,15 +248,15 @@ function CreateTreasureChest( lvl , x , y , z )
 endfunction
 
 
-function CreateGuardian( template, x , y , z )
+function CreateGuardian( template, x , y , z, r )
 
 	if(!z)
 		z := 1;
 	endif
 
-    var nasty := CreateNpcFromTemplate( template , x , y , z );
+    var nasty := CreateNpcFromTemplate( template, x, y, z, 0, r, MOVEOBJECT_FORCELOCATION );
 	if( !nasty )
-		CreateGuardian( template, x, y, z );
+		CreateGuardian( template, x, y, z, r );
 	else
 		guardians.append( nasty );
 		SetObjProperty( nasty, "untamable", 1 );

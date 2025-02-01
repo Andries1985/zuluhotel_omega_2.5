@@ -101,7 +101,7 @@ function co_eatTheDead()
 
    Hunger := Hunger + 1;
 
-   foreach body in ListItemsNearLocation( me.x, me.y, me.z, IN_RANGE )
+   foreach body in ListItemsNearLocation( me.x, me.y, me.z, IN_RANGE, me.realm )
 
       if ( ( body.objtype == UOBJECT_CORPSE ) 
        and ( GetObjProperty( body, "cut" ) != "1") )
@@ -122,7 +122,7 @@ function co_eatTheDead()
            // item decay handled by core, v069+
            // var parms array;  // used to also have a local var for "theblood"
            // parms[1] := body;
-           // parms[2] := CreateItemAtLocation( body.x, body.y, body.z, UOBJECT_BLOOD, 1);// theblood
+           // parms[2] := CreateItemAtLocation( body.x, body.y, body.z, UOBJECT_BLOOD, 1, body.realm);// theblood
            // start_script("decay",parms);
 
          if ( ( item1 == UOBJECT_MEAT ) or  ( item2 == UOBJECT_MEAT ) )

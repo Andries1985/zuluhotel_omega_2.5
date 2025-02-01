@@ -39,7 +39,7 @@ if (!flee_point)
 endif
 var mybow := npccfg[me.npctemplate].missileweapon;
 if (!me.backpack)
-	var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75,1);
+	var newbackpack := CreateItemAtLocation(me.x, me.y, me.z, 0xe75,1,me.realm);
 	EquipItem(me, newbackpack);
 	if (npccfg[me.npctemplate].colorrange)
 		var parms := splitwords(npccfg[me.npctemplate].colorrange);

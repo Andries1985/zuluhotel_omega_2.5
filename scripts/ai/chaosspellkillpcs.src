@@ -110,7 +110,7 @@ var runaround := 0;
 			return 0;
 		elseif (!CheckLineOfSight( me, opponent) )
 			var Near;
-			Near := ListItemsNearLocation( me.x , me.y , me.z , 5 );
+			Near := ListItemsNearLocation( me.x , me.y , me.z , 5, me.realm );
 			var kwall := 0;
 			foreach item in Near
 			if (item.objtype == 0x5f or item.objtype == 0x57 or item.objtype == 0x3946 or item.objtype == 0x3955)

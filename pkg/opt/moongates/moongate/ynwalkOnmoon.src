@@ -53,7 +53,7 @@ program walk_on_moongate( mobile , gate )
 		return;
 	endif
 
-	if( IsForbiddenAreaToRecallTo( mobile , x , y )  )
+	if( IsForbiddenAreaToRecallTo( mobile , x , y, realm )  )
 		if (!Getobjproperty(gate, "IgnoreCheck"))
 			return;
 		endif

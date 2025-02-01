@@ -15,8 +15,13 @@ program make_gate( who )
 		SendSysMessage(who, "Cancelled.");
 		return 0;
 	endif
+
+	if(where.multi)
+		SendSysMessage(who, "Can't place the gate inside of a multi!");
+		return 0;
+	endif
 	
-	gate1 := CreateItemAtLocation(where.x, where.y, where.z, 0x7010);
+	gate1 := CreateItemAtLocation(where.x, where.y, where.z, 0x7010, 1, where.realm);
 	
 	SendSysMessage(who, "Target the second location for the gate.");
 	var where2 := TargetCoordinates(who);
@@ -27,22 +32,30 @@ program make_gate( who )
 		return 0;
 	endif
 	
-	if (where.x == where2.x && where.y == where2.y)
+	if (where.x == where2.x && where.y == where2.y && where.realm == where2.realm)
 		DestroyItem(gate1);
 		SendSysMessage(who, "Location 1 and 2 are the same coordinates!");
 		return 0;
 	endif
+
+	if(where2.multi)
+		DestroyItem(gate1);
+		SendSysMessage(who, "Can't place the gate inside of a multi!");
+		return 0;
+	endif
 	
-	gate2 := CreateItemAtLocation(where2.x, where2.y, where2.z, 0x7010);
+	gate2 := CreateItemAtLocation(where2.x, where2.y, where2.z, 0x7010, 1, where2.realm);
 	
 	SetObjProperty(gate1, "GateDestX", gate2.x);
 	SetObjProperty(gate1, "GateDestY", gate2.y);
 	SetObjProperty(gate1, "GateDestZ", gate2.z);
+	SetObjProperty(gate1, "GateDestRealm", gate2.realm);
 	Setobjproperty(gate1, "IgnoreCheck", 1); // bypass banned areas, ie into dungeons
 	
 	SetObjProperty(gate2, "GateDestX", gate1.x);
 	SetObjProperty(gate2, "GateDestY", gate1.y);
 	SetObjProperty(gate2, "GateDestZ", gate1.z);
+	SetObjProperty(gate2, "GateDestRealm", gate1.realm);
 	Setobjproperty(gate2, "IgnoreCheck", 1);
 	
 	if (YesNo(who, "Save gates?"))
@@ -54,7 +67,7 @@ program make_gate( who )
 		return 0;
 	endif
 	
-    LogCommand(who, GetProcess(GetPid()).name, "Gate1: ("+gate1.x+","+gate1.y+") Gate2: ("+gate2.x+","+gate2.y+")");
+	LogCommand(who, GetProcess(GetPid()).name, "Gate1: ("+gate1.x+","+gate1.y+", "+gate1.realm+",) Gate2: ("+gate2.x+","+gate2.y+", "+gate1.realm+")");	
 	
 endprogram
 
