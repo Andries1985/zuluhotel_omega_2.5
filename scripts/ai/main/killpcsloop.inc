@@ -25,7 +25,7 @@ function main_AI_loop()
 
 	while (1)
 
-		var hiders := ListMobilesNearLocationEx( me.x , me.y , me.z , HALT_THRESHOLD , LISTEX_FLAG_HIDDEN );
+		var hiders := ListMobilesNearLocationEx( me.x , me.y , me.z , HALT_THRESHOLD , LISTEX_FLAG_HIDDEN, me.realm );
 		if(Len(hiders))
 			foreach mobile in hiders
 				var hiding := GetEffectiveSkill( mobile , SKILLID_HIDING );
@@ -114,7 +114,7 @@ function look_around()
 		endif
 	endforeach
 
-	var hiders := ListMobilesNearLocationEx( me.x , me.y , me.z , HALT_THRESHOLD , LISTEX_FLAG_HIDDEN );
+	var hiders := ListMobilesNearLocationEx( me.x , me.y , me.z , HALT_THRESHOLD , LISTEX_FLAG_HIDDEN, me.realm );
 	if( len(hiders) )
 		foreach mobile in hiders
 			var hiding := GetEffectiveSkill( mobile , SKILLID_HIDING );
@@ -151,7 +151,7 @@ function get_help( opponent )
 	ev.+type := EVID_ALL_ATTACK_CMD;
 	ev.+source := opponent;
 
-	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 4 )
+	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 4, me.realm )
 		if ( (critter.npctemplate) and (critter.script != "tamed" && !GetObjProperty(critter, "NPCAttack")) and (!critter.warmode) and
 		     (critter.serial != me.serial) )
 			SendEvent(critter, ev);

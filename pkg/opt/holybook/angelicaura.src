@@ -47,7 +47,7 @@ program cast_natures_touch( parms )
 	if (!specbonus)
 		specbonus := 0;
 	endif
-	var affected := ListMobilesNearLocation( caster.x , caster.y , caster.z , cint( (magery / 40)+specbonus ) );
+	var affected := ListMobilesNearLocation( caster.x , caster.y , caster.z , cint( (magery / 40)+specbonus ), caster.realm );
 
 	var caster_NPC := 0;
 	if (caster.npctemplate)

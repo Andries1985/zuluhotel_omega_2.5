@@ -375,7 +375,7 @@ function get_help( opponent )
 	ev.+type := EVID_ALL_ATTACK_CMD;
 	ev.+source := opponent;
 
-	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 2 )
+	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 2, me.realm )
 		if ( ( (critter.script["raid"]) and (critter.script!="raiddefendpcs") ) and (!critter.warmode) and (critter.serial != me.serial) )
 			SendEvent(critter, ev);
 		endif

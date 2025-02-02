@@ -93,7 +93,7 @@ program CastleGuard()
             SYSEVENT_ITEM_GIVEN:
                 Say( "Bah!  I have no need for " + ev.item.desc );
                 Say( "Art thou trying to bribe me?" );
-                MoveObjectToLocation( ev.item, me.x, me.y, me.z, MOVEOBJECT_FORCELOCATION );
+                MoveObjectToLocation( ev.item, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION );
                 if (ev.source)
                     Fight( ev.source );
                 endif

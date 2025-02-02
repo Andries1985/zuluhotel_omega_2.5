@@ -191,6 +191,11 @@ function RegisterSpawnPoints()
 			spawnpoints.append(object);
 		endif
 	endforeach
+	foreach object in ListObjectsInBox( 0, 0, -128, 2304, 1600, 128, "termur" )
+		if( object.objtype == UOBJ_SPAWNPOINT )
+			spawnpoints.append(object);
+		endif
+	endforeach
 
 	SysLog( "Spawnpoints registration completed, took " + (ReadGameClock()-start) +
 		" seconds to complete. " + len(spawnpoints) + " runes were registered." );

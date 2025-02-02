@@ -140,7 +140,7 @@ endfunction
 function CheckSheepAmount()
 
 	var DeathChance := -4;
-	Foreach npc in ListMobilesNearLocation(me.x, me.y, me.z, 4)
+	Foreach npc in ListMobilesNearLocation(me.x, me.y, me.z, 4, me.realm)
 		if (npc.npctemplate == "sheep")
 			deathchance := deathchance + 5;
 		endif

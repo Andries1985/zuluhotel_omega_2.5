@@ -78,7 +78,7 @@ program abyssalflame( parms )
 		return;
 	endif
 	
-	var victims := ListMobilesNearLocation( cint(cast_on.x) , cint(cast_on.y) , cint(cast_on.z) , range );
+	var victims := ListMobilesNearLocation( cint(cast_on.x) , cint(cast_on.y) , cint(cast_on.z) , range, caster.realm );
 	EraseObjProperty( caster , "#Casting" );
 	Sleepms( 500 );
 

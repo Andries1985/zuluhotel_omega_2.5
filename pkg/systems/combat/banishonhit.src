@@ -24,7 +24,7 @@ program banishonhit( parms )
     			PlayObjectCenteredEffect( attacker , FX_SPELL_MANA_VAMPIRE, 7,7);
 			PlaySoundEffect( defender , SFX_SPELL_MANA_VAMPIRE );
 			PlayStationaryEffect( attacker.x, attacker.y, attacker.z, FX_SPELL_SUMMON_CREATURE, 0xA, 0xA );
-			MoveObjectToLocation(attacker,5288 , 1176 , 0, attacker.realm, MOVEOBJECT_FORCELOCATION);
+			MoveObjectToLocation(attacker, 5288, 1176, 0, attacker.realm, MOVEOBJECT_FORCELOCATION);
 			ApplyTheDamage( attacker , defender , GetMaxHP(Attacker) + 3 , DMGID_MAGIC );
 		else
 			PlayObjectCenteredEffect( defender , FX_SPELL_MANA_VAMPIRE, 7,7);

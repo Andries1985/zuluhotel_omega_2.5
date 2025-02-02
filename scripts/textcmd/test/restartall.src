@@ -11,7 +11,7 @@ for( x := 6144 ; x > 16 ; x := x  - 32)
    SendSysMessage (You, "Restarting NPCs, X=" + x );
     for( y := 16; y < 4096; y := y + 32 )
         for( z := -60; z <= 60; z := z + 30 )
-            foreach npc in ListMobilesNearLocation( x, y, z, 32 )
+            foreach npc in ListMobilesNearLocation( x, y, z, 32, you.realm )
 		RestartScript( npc );
 		number := number + 1;
             endforeach

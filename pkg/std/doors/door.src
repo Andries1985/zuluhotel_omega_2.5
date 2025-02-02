@@ -50,7 +50,7 @@ program use_door( chr , door)
             start_script(":doors:close_door", door);
         else
             start_script(":doors:open_door", door);
-            foreach potentialdoor in ListObjectsInBox((door.x-1),(door.y-1),(door.z),(door.x+1),(door.y+1),(door.z))
+            foreach potentialdoor in ListObjectsInBox((door.x-1),(door.y-1),(door.z),(door.x+1),(door.y+1),(door.z),(door.realm))
                   if (!potentialdoor.hp)
                      var doortype := doordesc[potentialdoor.objtype].doortype;
                      if ((doortype) and (door != potentialdoor))

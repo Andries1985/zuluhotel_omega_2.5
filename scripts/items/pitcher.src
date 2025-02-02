@@ -25,7 +25,7 @@ program use_pitcher(character, item)
                 return;
         endif
         
-        foreach mob in listmobilesnearlocation(what.x, what.y, what.z, 1)
+        foreach mob in listmobilesnearlocation( what.x, what.y, what.z, 1, what.realm)
                 var ev;
                 ev.+type := SYSEVENT_ENGAGED;
                 ev.+source := character;

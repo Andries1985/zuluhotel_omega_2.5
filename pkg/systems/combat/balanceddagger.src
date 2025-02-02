@@ -15,6 +15,7 @@ endif
 var tx := targ.x;
 var ty := targ.y;
 var tz := targ.z;
+var tr := targ.realm;
 
 if (!targ)
   return 0;
@@ -88,8 +89,8 @@ endif
 
 // knife normal
 if (!GetObjProperty(dagger, "IsGMItem"))
-  if (!MoveObjectToLocation(dagger, targ.x, targ.y, targ.z))
-    MoveObjectToLocation(dagger, tx, ty, tz);   // removed knife break chance
+  if (!MoveObjectToLocation(dagger, targ.x, targ.y, targ.z, targ.realm))
+    MoveObjectToLocation(dagger, tx, ty, tz, tr);   // removed knife break chance
   endif
 else // its a gm dagger
 	

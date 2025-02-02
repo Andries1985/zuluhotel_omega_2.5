@@ -80,7 +80,7 @@ program logon( who )
 							SendSysmessage(who, "You have " + timeremaining + " day(s) "+ timerh +" hour(s) "+ timerm +" minute(s) and "+ timers +" second(s) left in jail.", FONT_NORMAL, 2595 );
 						else
 							acc.setprop("Release",0);
-		 					MoveObjectToLocation( who, 3682, 2517, 0, who.realm, MOVEOBJECT_FORCELOCATION);
+		 					MoveObjectToLocation( who, 3682, 2517, 0, "britannia", MOVEOBJECT_FORCELOCATION);
 		 					SendSysmessage(who, "You are freed.");
 							who.frozen := 0;
 		 				endif

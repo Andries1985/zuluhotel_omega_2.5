@@ -64,7 +64,7 @@ program sacrifice( parms )
 	ApplyTheDamage( cast_on , caster , GetHP(cast_on) + 3 , plane );
 	EraseObjProperty( caster , "#Casting" );
 
-	var victims	:= ListMobilesNearLocationEx( x , y , z , range , 0x03 );
+	var victims	:= ListMobilesNearLocationEx( x , y , z , range , 0x03, cast_on.realm );
 	var length	:= len( victims );
 	if( caster in victims )
 		length	:= length - 1;

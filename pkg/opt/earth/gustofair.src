@@ -87,9 +87,10 @@ program cast_gust_of_air( parms )
 	var newx	:= cast_on.x + kickbackx;
 	var newy	:= cast_on.y + kickbacky;
 	var newz	:= cast_on.z + kickbackz;
+	var newr	:= cast_on.realm;
 		
 	if( CheckLosAt( cast_on , newx , newy , newz ) )
-	//	MoveObjectToLocation( cast_on , newx , newy , newz );
+		//MoveObjectToLocation( cast_on, newx, newy, newz, newr );
 	endif
 	
 	EraseObjProperty( caster , "#Casting" );

@@ -5,7 +5,7 @@ include "include/client";
 
 function sleepmode()
 
-	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 20 ,me.realm );
+	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 20, me.realm );
 		if (!critter.npctemplate)
 			return 0;
 		endif

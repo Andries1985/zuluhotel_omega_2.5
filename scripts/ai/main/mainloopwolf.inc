@@ -110,7 +110,7 @@ function get_help( opponent )
 	ev.+type := EVID_ALL_ATTACK_CMD;
 	ev.+source := opponent;
 
-	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, HALT_THRESHOLD )
+	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, HALT_THRESHOLD, me.realm )
 		if ( (critter.npctemplate == me.npctemplate) and (critter.script != "tamed") && !GetObjProperty(ev.source, "NPCAttack") and (!critter.warmode) )
 			SendEvent(critter, ev);
 		endif

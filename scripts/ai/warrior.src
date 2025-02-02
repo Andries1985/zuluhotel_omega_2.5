@@ -226,7 +226,7 @@ function ChangeWeapons()
 	var shield := GetEquipmentByLayer(me,LAYER_HAND2);
 
 	if (weapon)
-		MoveObjectToLocation(weapon, me.x, me.y, me.z, "britannia",MOVEOBJECT_FORCELOCATION);
+		MoveObjectToLocation(weapon, me.x, me.y, me.z, "britannia", MOVEOBJECT_FORCELOCATION);
 	endif
 	if (shield)
 		MoveObjectToLocation(shield, me.x, me.y, me.z, "britannia", MOVEOBJECT_FORCELOCATION);
@@ -245,7 +245,7 @@ endfunction
 
 function sleepmode()
 
-	foreach critter in ListMobilesNearLocation( me.x,me.y,me.z, 32 )
+	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 32, me.realm )
           if (!critter.npctemplate)
 		return 0;
           endif
@@ -839,8 +839,7 @@ function Follow()
 		sleep(1);
 		chaseloop := 0;
 	elseif (( d > 10 ) or ( chaseloop > 50 ))
-		MoveObjectToLocation( me, following.x, following.y, following.z,"britannia",
-				MOVEOBJECT_FORCELOCATION );
+		MoveObjectToLocation( me, following.x, following.y, following.z, "britannia", MOVEOBJECT_FORCELOCATION );
 		chaseloop := 0;
 		sleep(1);
 	else
@@ -1094,7 +1093,7 @@ endfunction
 
 function AllCommand(evtype,what)
 
-	var mobs := ListMobilesNearLocation( master.x, master.y, master.z, 9 );
+	var mobs := ListMobilesNearLocation( master.x, master.y, master.z, 9, master.realm );
 	var eve array;
 	eve.+type := evtype;
 	eve.+source := me;
@@ -1224,7 +1223,7 @@ endfunction
 function DropEverything()
 
 	foreach item in ListRootItemsInContainer(me.backpack)
-		MoveObjectToLocation(item, me.x, me.y, me.z, 0);
+		MoveObjectToLocation(item, me.x, me.y, me.z, me.realm, 0);
 	endforeach
 
 endfunction
@@ -1282,7 +1281,7 @@ function MountHorse(horse)
 		return;
 	endif
 	if (mounttype)
-		if ( MoveObjectToLocation(me,horse.x,horse.y,horse.z,0) )
+		if ( MoveObjectToLocation(me, horse.x, horse.y, horse.z, horse.realm, 0) )
 			set_critical(1);
 			me.facing := horse.facing;
 			var mount := CreateItemAtLocation(5288 , 1176 , 0, 0x1F021, 1, "britannia");

@@ -27,7 +27,7 @@ program bard_peacemake( character )
 	var affected	:= array;
 	var max_diff	:= 0;
 
-	foreach mobile in ListMobilesNearLocation( character.x, character.y, character.z, range )
+	foreach mobile in ListMobilesNearLocation( character.x, character.y, character.z, range, character.realm )
 		if( mobile.warmode and mobile != character )
 			elem := FindConfigElem( configfile, mobile.npctemplate );
 			if( !mobile.npctemplate and !mobile.cmdlevel )

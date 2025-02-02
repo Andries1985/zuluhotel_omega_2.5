@@ -22,11 +22,12 @@ program walk_on_moongate( mobile, gate )
                 return 0;
         endif
 	
-    var x, y, z;
+    var x, y, z, r;
     x := GetObjProperty( gate, "DestX" );
     y := GetObjProperty( gate, "DestY" );
     z := GetObjProperty( gate, "DestZ" );
+    r := GetObjProperty( gate, "DestRealm" );
 	//print( "Moving " + mobile.name + " to (" + x + "," + y + "," + z + ")" );
-    MoveObjectToLocation( mobile, x, y, z );
+    MoveObjectToLocation( mobile, x, y, z, r );
 
 endprogram

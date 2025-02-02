@@ -332,9 +332,9 @@ function EditItem( item , character , result )
             	PrintTextAbovePrivate( character, "You have just created " + val + " " + item.desc + " in your backpack." , character);
             endif
             
-         2: MoveObjectToLocation( item, val, item.y, item.z , 0);
-         3: MoveObjectToLocation( item, item.x, val, item.z , 0);
-         4: MoveObjectToLocation( item, item.x, item.y, val , MOVEOBJECT_FORCELOCATION );
+         2: MoveObjectToLocation( item, val, item.y, item.z , item.realm, 0);
+         3: MoveObjectToLocation( item, item.x, val, item.z , item.realm, 0);
+         4: MoveObjectToLocation( item, item.x, item.y, val , item.realm, MOVEOBJECT_FORCELOCATION );
          5: item.hp := val;
          6: if(!item.ar)
              item.dmg_mod := val;

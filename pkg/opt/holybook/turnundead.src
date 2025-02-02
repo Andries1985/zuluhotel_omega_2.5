@@ -41,7 +41,7 @@ program cast_owlsight( parms )
 
 	var magery := GetAttribute(caster, ATTRIBUTEID_MAGERY);
 	var duration := magery * 70;
-	var affected := ListMobilesNearLocation( cast_on.x , cast_on.y , cast_on.z , cint( magery / 20 ) );
+	var affected := ListMobilesNearLocation( cast_on.x , cast_on.y , cast_on.z , cint( magery / 20 ), caster.realm );
 	var proped := array();
 	var turned := 0;
 	foreach cast_near in affected

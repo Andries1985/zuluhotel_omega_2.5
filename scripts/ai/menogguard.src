@@ -105,7 +105,7 @@ SetAnchor(me.x, me.y, 10, 20);
             SYSEVENT_ITEM_GIVEN:
                 Say( "Bah!  I have no need for " + ev.item.desc );
                 Say( "Art thou trying to bribe me?" );
-                MoveObjecttoLocation( ev.item, me.x, me.y, me.z,MOVEOBJECT_FORCELOCATION );
+                MoveObjecttoLocation( ev.item, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION );
                 if (ev.source)
                     Fight( ev.source );
                 endif

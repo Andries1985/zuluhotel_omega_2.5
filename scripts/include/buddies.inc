@@ -15,7 +15,7 @@ ev.type := EVID_BUDDYATTACKED;
 ev.source := opponent;
 ev.buddy := me;
 
-foreach critter in listmobilesnearlocation(me.x, me.y, me.z, range)
+foreach critter in listmobilesnearlocation(me.x, me.y, me.z, range, me.realm)
         if (!critter.npctemplate)
                 SendEvent(critter, ev);
         endif

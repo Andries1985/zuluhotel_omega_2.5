@@ -38,7 +38,7 @@ program cast_nightsight( parms, spell_id )
 	PlaySoundEffect(caster, SFX_SPELL_NIGHT_SIGHT );
 	var magery := GetEffectiveskill(caster, SKILLID_MAGERY);
 	var duration := magery * 60;
-	var affected := ListMobilesNearLocation( cast_on.x , cast_on.y , cast_on.z , cint(magery/15) );
+	var affected := ListMobilesNearLocation( cast_on.x , cast_on.y , cast_on.z , cint(magery/15), cast_on.realm );
 
 	affected := SmartBoost(caster, affected);
 	

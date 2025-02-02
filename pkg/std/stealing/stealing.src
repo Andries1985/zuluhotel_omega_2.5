@@ -141,7 +141,7 @@ endfunction
 
 function tellplayers(who)
 
-	var targets:=ListMobilesNearLocation(who.x, who.y, who.z, 10);
+	var targets:=ListMobilesNearLocation(who.x, who.y, who.z, 10, who.realm);
 
 	foreach mobile in targets
 		if ((mobile.serial!=who.serial) and (mobile.dead==0) and (!mobile.criminal))
@@ -155,7 +155,7 @@ endfunction
 
 function callguard(who)
 
-var postarget:=ListMobilesNearLocation(who.x, who.y, who.z, 10);
+var postarget:=ListMobilesNearLocation(who.x, who.y, who.z, 10, who.realm);
 	foreach mobile in postarget
 		if ((mobile.serial!=who.serial) and (mobile.npctemplate) and ((mobile.graphic == 400) or (mobile.graphic == 401)))
 			printtextaboveprivate(mobile, "Guards! Stop "+who.name+" you thief!", who);
@@ -167,7 +167,7 @@ endfunction
 function nearvictim(who)
 
 var close:= 0;
-var posvictim:=ListMobilesNearLocation(who.x, who.y, who.z, 2);
+var posvictim:=ListMobilesNearLocation(who.x, who.y, who.z, 2, who.realm);
 
 	foreach mobile in posvictim
 		if ((mobile.serial!=who.serial) and (mobile.npctemplate))

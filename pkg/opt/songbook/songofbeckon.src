@@ -92,7 +92,7 @@ program cast_songofbeckon( player )
 		duration := (mus/2) * (spec);
 		PlaySoundEffect( player , 0x01f8 );
 		var magic_pets := 0;
-		var mobs := ListMobilesNearLocation( player.x, player.y, player.z, 15 );
+		var mobs := ListMobilesNearLocation( player.x, player.y, player.z, 15, player.realm );
 		var masterserial := player.serial;
 		foreach mob in mobs
 			if( (mob.script == "tamed") and ( GetObjProperty( mob, "master" ) == masterserial ) )

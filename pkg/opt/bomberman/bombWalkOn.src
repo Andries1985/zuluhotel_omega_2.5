@@ -12,7 +12,7 @@ program tryKick(who, bomb)
 	endcase
 
 	if(!GetObjProperty(who, "bmKickBoost"))
-		MoveObjectToLocation( who, who.x-kX, who.y-kY, 0 );
+		MoveObjectToLocation( who, who.x-kX, who.y-kY, 0, "britannia" );
 		return;
 	else
 		while(kicked)

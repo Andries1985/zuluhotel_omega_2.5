@@ -64,10 +64,10 @@ program earthquake( parms, spell_id )
 	var chklos;
 	var victims;
 	if(parms[3])
-		victims := ListMobilesNearLocation( cint(parms[3].x), cint(parms[3].y), cint(parms[3].z), range );
+		victims := ListMobilesNearLocation( cint(parms[3].x), cint(parms[3].y), cint(parms[3].z), range, parms[3].realm );
 		chklos := parms[3];
 	else
-		victims := ListMobilesNearLocation( cint(caster.x), cint(caster.y), cint(caster.z), range );
+		victims := ListMobilesNearLocation( cint(caster.x), cint(caster.y), cint(caster.z), range, caster.realm );
 		chklos := caster;
 	endif
 
@@ -115,30 +115,30 @@ program earthquake( parms, spell_id )
 
 	PlaySoundEffect( caster, SFX_SPELL_EARTHQUAKE2 );
 
-        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_STONEWALL_NS)
+        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_STONEWALL_NS, chklos.realm)
 			if( GetObjProperty(item, "f") )
-				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
+				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD, 0, item.realm );
 				DestroyItem(item);
 			endif
         endforeach
 
-        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_STONEWALL_EW)
+        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_STONEWALL_EW, chklos.realm)
 			if( GetObjProperty(item, "f") )
-				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
+				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD, 0, item.realm );
 				DestroyItem(item);
 			endif
         endforeach
         
-		foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_EFIELD_NS)
+		foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_EFIELD_NS, chklos.realm)
 			if( GetObjProperty(item, "f") )
-				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
+				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD, 0, item.realm );
                 DestroyItem(item);
 			endif
         endforeach
 
-        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_EFIELD_EW)
+        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_EFIELD_EW, chklos.realm)
 			if( GetObjProperty(item, "f") )
-				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
+				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD, 0, item.realm );
                 DestroyItem(item);
 			endif
         endforeach

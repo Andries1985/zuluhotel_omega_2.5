@@ -70,7 +70,7 @@ function shootFire(who, bomb, j, h)
 	endif
 	
 	PlayStationaryEffectEx( bomb.x, bomb.y, bomb.z, "britannia", FX_SPELL_FLAME_STRIKE, SPEED_SPELL_FLAME_STRIKE, LOOP_SPELL_FLAME_STRIKE, GetObjProperty(who, "bmColor") );
-	victim := ListMobilesNearLocation( bomb.x, bomb.y, bomb.z, 0 );
+	victim := ListMobilesNearLocation( bomb.x, bomb.y, bomb.z, 0, "britannia" );
 	foreach mobile in victim
 		if(GetObjProperty(mobile, "bmPlayer"))
 			life := GetObjProperty(mobile, "BmLife");
@@ -101,7 +101,7 @@ function shootFire(who, bomb, j, h)
 
 		if(!stopFire)
 			PlayStationaryEffectEx( bomb.x+j, bomb.y+h, bomb.z, "britannia", FX_SPELL_FLAME_STRIKE, SPEED_SPELL_FLAME_STRIKE, LOOP_SPELL_FLAME_STRIKE, GetObjProperty(who, "bmColor") );
-			victim := ListMobilesNearLocation( bomb.x+j, bomb.y+h, bomb.z, 0 );
+			victim := ListMobilesNearLocation( bomb.x+j, bomb.y+h, bomb.z, 0, "britannia" );
 			foreach mobile in victim
 				if(GetObjProperty(mobile, "bmPlayer"))
 					life := GetObjProperty(mobile, "BmLife");

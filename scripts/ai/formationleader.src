@@ -101,7 +101,7 @@ SetObjProperty(me,"myy",me.y);
 		SetObjProperty(me,"myx",mx);
 		SetObjProperty(me,"myy",my);
 		sleep(1);
-		MoveObjectToLocation( me, mx, my, me.z, 0);
+		MoveObjectToLocation( me, mx, my, me.z, me.realm, 0);
 		if (Random(10) == 5)
 			EraseObjProperty(me,"takingdamage");
 		endif
