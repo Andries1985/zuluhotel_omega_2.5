@@ -281,9 +281,9 @@ function follow(byref mmaster)
 
 		d:= distance(mmaster, me);
 		if(d > 20)
-			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, speed:=0xA, loop:=0xA, explode:=0, realm:=me.realm );
+			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
 			MoveObjectToLocation( me, mmaster.x, mmaster.y, mmaster.z, master.realm );
-			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, speed:=0xA, loop:=0xA, explode:=0, realm:=me.realm );
+			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
 			PlaySoundEffect( mmaster, SFX_SPELL_TELEPORT );
 		elseif(d > 1)
 			runtoward(mmaster);

@@ -170,30 +170,30 @@ program cast_rising_fire( parms )
 		
 
 endforeach
-        foreach item in ListItemsNearLocationOfType (cint(caster.x), cint(caster.y), cint(caster.z), cint(range), UOBJ_STONEWALL_NS)
+        foreach item in ListItemsNearLocationOfType (cint(caster.x), cint(caster.y), cint(caster.z), cint(range), UOBJ_STONEWALL_NS, caster.realm)
 		if( GetObjProperty(item, "f") )
-			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
+			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD, 0, item.realm );
 			DestroyItem(item);
 		endif
         endforeach
 
-        foreach item in ListItemsNearLocationOfType (cint(caster.x), cint(caster.y), cint(caster.z), cint(range), UOBJ_STONEWALL_EW)
+        foreach item in ListItemsNearLocationOfType (cint(caster.x), cint(caster.y), cint(caster.z), cint(range), UOBJ_STONEWALL_EW, caster.realm)
 		if( GetObjProperty(item, "f") )
-			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
+			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD, 0, item.realm );
 			DestroyItem(item);
 		endif
         endforeach
         
-	foreach item in ListItemsNearLocationOfType (cint(caster.x), cint(caster.y), cint(caster.z), cint(range), UOBJ_EFIELD_NS)
+	foreach item in ListItemsNearLocationOfType (cint(caster.x), cint(caster.y), cint(caster.z), cint(range), UOBJ_EFIELD_NS, caster.realm)
 		if( GetObjProperty(item, "f") )
-			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
+			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD, 0, item.realm );
 			DestroyItem(item);
 		endif
         endforeach
 
-        foreach item in ListItemsNearLocationOfType (cint(caster.x), cint(caster.y), cint(caster.z), cint(range), UOBJ_EFIELD_EW)
+        foreach item in ListItemsNearLocationOfType (cint(caster.x), cint(caster.y), cint(caster.z), cint(range), UOBJ_EFIELD_EW, caster.realm)
 		if( GetObjProperty(item, "f") )
-			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
+			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD, 0, item.realm );
 			DestroyItem(item);
 		endif
         endforeach

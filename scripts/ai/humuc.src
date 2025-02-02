@@ -534,7 +534,7 @@ function Release()
 		SendSysMessage(master,"Totem released from duty!");
 		it.name := me.name;
 		PlaySoundEffect( me, SFX_SPELL_DISPEL );
-		PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA );
+		PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
 		MoveObjectToLocation(me,5288 , 1176 , 0, "britannia", MOVEOBJECT_FORCELOCATION);
 		RevokePrivilege( me, "invul" );
 		ApplyRawdamage( me , GetMaxHP(me) + 3 );

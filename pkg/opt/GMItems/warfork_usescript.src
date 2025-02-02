@@ -9,66 +9,66 @@ const USE_TIME := 30; // in minutes
 
 program WarforkofAstralStorms(who,fork)
 
-if (!fork.layer)
-	SendSysMessage(who, "You must be holding that to use it.");
-	return 0;
-endif
+	if (!fork.layer)
+		SendSysMessage(who, "You must be holding that to use it.");
+		return 0;
+	endif
 
-var last_use := GetObjProperty(fork, "LastUsed");
+	var last_use := GetObjProperty(fork, "LastUsed");
 
-if ((last_use + (USE_TIME*60)) > ReadGameClock())
-	SendSysMessage(who, "You can only harness the warforks energy once every "+USE_TIME+" minutes.");
-	return 0;
-endif
+	if ((last_use + (USE_TIME*60)) > ReadGameClock())
+		SendSysMessage(who, "You can only harness the warforks energy once every "+USE_TIME+" minutes.");
+		return 0;
+	endif
 
-SendSysMessage(who, "Select a target for the warfork to unleash its fury upon..");
-fork.color := 1461;
+	SendSysMessage(who, "Select a target for the warfork to unleash its fury upon..");
+	fork.color := 1461;
 
-var what := Target(who);
+	var what := Target(who);
 
-if (!what)
-	SendSysMessage(who, "Cancelled.");
+	if (!what)
+		SendSysMessage(who, "Cancelled.");
+		fork.color := GetObjProperty(fork, "EnchantColor");
+		return 0;
+	elseif (!what.isa(POLCLASS_MOBILE))
+		SendSysMessage(who, "You must select a mobile.");
+		fork.color := GetObjProperty(fork, "EnchantColor");
+		return 0;
+	elseif (!CheckLineOfSight( who, what ))
+		SendSysMessage(who, "You can't see that.");
+		fork.color := GetObjProperty(fork, "EnchantColor");
+		return 0;
+	endif
+
+	SetObjProperty(fork, "LastUsed", ReadGameClock());
+	PerformAction(who,0x000b);
+
+	sleep(1);
+	PlaySoundEffect(who, 0x233);
+	PlayMovingEffectEx( who, what, fork.graphic, 9, 10, 1461 );
+	EleFury(who, what);
 	fork.color := GetObjProperty(fork, "EnchantColor");
-	return 0;
-elseif (!what.isa(POLCLASS_MOBILE))
-	SendSysMessage(who, "You must select a mobile.");
-	fork.color := GetObjProperty(fork, "EnchantColor");
-	return 0;
-elseif (!CheckLineOfSight( who, what ))
-	SendSysMessage(who, "You can't see that.");
-	fork.color := GetObjProperty(fork, "EnchantColor");
-	return 0;
-endif
-
-SetObjProperty(fork, "LastUsed", ReadGameClock());
-PerformAction(who,0x000b);
-
-sleep(1);
-PlaySoundEffect(who, 0x233);
-PlayMovingEffectEx( who, what, fork.graphic, 9, 10, 1461 );
-EleFury(who, what);
-fork.color := GetObjProperty(fork, "EnchantColor");
 
 endprogram
 
 function EleFury(who, targ)
 
-var spelldmg := CalcSpellDamage( who, targ , 3 );
-//PlayMovingEffect( who , targ , FX_SPELL_FIREBALL , 5 , 1 );
-PlaySoundEffect( who , SFX_SPELL_FIREBALL );
-Sleepms( 250 );
+	var spelldmg := CalcSpellDamage( who, targ , 3 );
+	//PlayMovingEffect( who , targ , FX_SPELL_FIREBALL , 5 , 1 );
+	PlaySoundEffect( who , SFX_SPELL_FIREBALL );
+	Sleepms( 250 );
 
-spelldmg := spelldmg + CalcSpellDamage( who , targ , 3 );
-PlaySoundEffect( targ , SFX_SPELL_LIGHTNING );
-PlayLightningBoltEffect( targ );
-Sleepms( 250 );
+	spelldmg := spelldmg + CalcSpellDamage( who , targ , 3 );
+	PlaySoundEffect( targ , SFX_SPELL_LIGHTNING );
+	PlayLightningBoltEffect( targ );
+	Sleepms( 250 );
 
-spelldmg := spelldmg + CalcSpellDamage( who , targ , 3 );
-PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE1);
-PlayStationaryEffect( targ.x , targ.y , targ.z , 0x3789, speed:=30, loop:=30);
-PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE2);
+	spelldmg := spelldmg + CalcSpellDamage( who , targ , 3 );
+	PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE1);
+	PlayStationaryEffect( targ.x , targ.y , targ.z , 0x3789, 30, 30, targ.realm);
+	PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE2);
 
-spelldmg := Resisted( who , targ , 8 , spelldmg );
-ApplyTheDamage( targ , who , spelldmg , DMGID_MAGIC );
+	spelldmg := Resisted( who , targ , 8 , spelldmg );
+	ApplyTheDamage( targ , who , spelldmg , DMGID_MAGIC );
 
 endfunction

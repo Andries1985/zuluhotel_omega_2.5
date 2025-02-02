@@ -48,9 +48,7 @@ program use_explosion( character, potion )
 		return;
 	endif
 
-	PlayMovingEffectXYZ( character.x, character.y, character.z+15,
-						 where.x, where.y, where.z,
-						 MOVING_EFFECT_PURPLE_POTION, 8, 0, 0 );
+	PlayMovingEffectXYZ( character.x, character.y, character.z+15, where.x, where.y, where.z, MOVING_EFFECT_PURPLE_POTION, 8, 0, 0, where.realm );
 
 	Sleep(1);
 	

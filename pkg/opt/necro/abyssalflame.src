@@ -97,7 +97,7 @@ program abyssalflame( parms )
 				dmg := CalcSpellDamage( caster , mobile , Cint(circ / 2) , AREA_EFFECT_SPELL );
 				Send_attack( mobile , caster , SPELLID_ABYSSAL_FLAME );
 				PlaySoundEffect( mobile , SFX_SPELL_EXPLOSION );
-				PlayStationaryEffect( cint(mobile.x),cint(mobile.y),cint(mobile.z) , FX_SPELL_EXPLOSION , SPEED_SPELL_EXPLOSION , LOOP_SPELL_EXPLOSION );
+				PlayStationaryEffect( cint(mobile.x),cint(mobile.y),cint(mobile.z) , FX_SPELL_EXPLOSION , SPEED_SPELL_EXPLOSION , LOOP_SPELL_EXPLOSION, 0, mobile.realm );
 				ApplyplanarDamage( caster , mobile , circ , dmg , plane );
 			endif
 		endif
