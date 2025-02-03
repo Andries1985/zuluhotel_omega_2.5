@@ -38,7 +38,7 @@ program txtcmd_clearparty(who, range)
 		endif
 	endif
 
-	foreach player in ListMobilesNearLocation( who.x, who.y, who.z, range )
+	foreach player in ListMobilesNearLocation( who.x, who.y, who.z, range, who.realm )
 		if ((player != who) && (!player.isa(POLCLASS_NPC)))
 			var party := player.party;
 			if (!party)

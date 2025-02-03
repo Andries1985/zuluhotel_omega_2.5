@@ -138,7 +138,7 @@ function PlayCharAnim( who, anim, speed := ANIM_DEF_SPEED, dir := ANIM_DIR_FORWA
     packetString := packetString + fixPacketLength(hex(dir),1);
     packetString := packetString + "00"; //Does this animation repeat?
     packetString := packetString + fixPacketLength(hex(speed),1);
-    foreach chr in ListMobilesNearLocation( who.x, who.y, who.z, 16 );
+    foreach chr in ListMobilesNearLocation( who.x, who.y, who.z, 16, who.realm );
         SendPacket( chr, packetString );
     endforeach
 endfunction
@@ -181,7 +181,7 @@ function PlayCharAnimWithRepitition( who, anim, reptimes, speed := ANIM_DEF_SPEE
     packetString := packetString + fixPacketLength(hex(dir),1);
     packetString := packetString + "01"; //Does this animation repeat?
     packetString := packetString + fixPacketLength(hex(speed),1);
-    foreach chr in ListMobilesNearLocation( who.x, who.y, who.z, 16 );
+    foreach chr in ListMobilesNearLocation( who.x, who.y, who.z, 16, who.realm );
         SendPacket( chr, packetString );
     endforeach
 endfunction
@@ -406,127 +406,111 @@ Function DoubleWordPacket(doubleword)
 EndFunction 
 
 
-function PlayObjectCenteredEffectHuefx( center, effect, speed, 
-loop := 0, color := 0, translucent := 0, forwho:= 0 )
-var packetString := "C0";
-packetString := packetString + "03"; 
-packetString := packetString + fixPacketLength(hex
-(center.serial),4);
-packetString := packetString + fixPacketLength(hex(0),4);
-packetString := packetString + fixPacketLength(hex(effect),2);
-packetString := packetString + fixPacketLength(hex(0),10);
-packetString := packetString + fixPacketLength(hex
-(speed),1); //speed
-packetString := packetString + fixPacketLength(hex
-(loop),1); //loop
-packetString := packetString + "000000000000" ;
-packetString := packetString + fixPacketLength(hex
-(color),2); //color
-packetString := packetString + "000000";
-packetString := packetString + fixPacketLength(hex
-(translucent),1); //tran
-if (!forwho)
-foreach chr in ListMobilesNearLocation( center.x, center.y, 
-center.z, 16 );
-SendPacket( chr, packetString );
-endforeach
-else
-SendPacket( forwho, packetString );
-endif
+function PlayObjectCenteredEffectHuefx( center, effect, speed, loop := 0, color := 0, translucent := 0, forwho:= 0 )
+
+  var packetString := "C0";
+
+  packetString := packetString + "03"; 
+  packetString := packetString + fixPacketLength(hex(center.serial),4);
+  packetString := packetString + fixPacketLength(hex(0),4);
+  packetString := packetString + fixPacketLength(hex(effect),2);
+  packetString := packetString + fixPacketLength(hex(0),10);
+  packetString := packetString + fixPacketLength(hex(speed),1); //speed
+  packetString := packetString + fixPacketLength(hex(loop),1); //loop
+  packetString := packetString + "000000000000" ;
+  packetString := packetString + fixPacketLength(hex(color),2); //color
+  packetString := packetString + "000000";
+  packetString := packetString + fixPacketLength(hex(translucent),1); //tran
+
+  if (!forwho)
+    foreach chr in ListMobilesNearLocation( center.x, center.y, center.z, 16, center.realm );
+    SendPacket( chr, packetString );
+    endforeach
+  else
+    SendPacket( forwho, packetString );
+  endif
+
 endfunction
 
-function PlayMovingEffectHuefx( source, dest, effect, speed, loop := 
-0, explode := 0, color := 0, translucent := 0)
-var packetString := "C0";
-packetString := packetString + "00"; 
-packetString := packetString + fixPacketLength(hex
-(source.serial),4);
-packetString := packetString + fixPacketLength(hex
-(dest.serial),4);
-packetString := packetString + fixPacketLength(hex(effect),2);
-packetString := packetString + fixPacketLength(hex(0),10);
-packetString := packetString + fixPacketLength(hex
-(speed),1); //speed
-packetString := packetString + fixPacketLength(hex
-(loop),1); //loop
-packetString := packetString + "000000" ;
-packetString := packetString + fixPacketLength(hex
-(explode),1); //explode
-packetString := packetString + "0000";
-packetString := packetString + fixPacketLength(hex
-(color),2); //color
-packetString := packetString + "000000";
-packetString := packetString + fixPacketLength(hex
-(translucent),1); //tran
-foreach chr in ListMobilesNearLocation( source.x, source.y, 
-source.z, 16 );
-SendPacket( chr, packetString );
-endforeach
+function PlayMovingEffectHuefx( source, dest, effect, speed, loop := 0, explode := 0, color := 0, translucent := 0)
+
+  var packetString := "C0";
+
+  packetString := packetString + "00"; 
+  packetString := packetString + fixPacketLength(hex(source.serial),4);
+  packetString := packetString + fixPacketLength(hex(dest.serial),4);
+  packetString := packetString + fixPacketLength(hex(effect),2);
+  packetString := packetString + fixPacketLength(hex(0),10);
+  packetString := packetString + fixPacketLength(hex(speed),1); //speed
+  packetString := packetString + fixPacketLength(hex(loop),1); //loop
+  packetString := packetString + "000000" ;
+  packetString := packetString + fixPacketLength(hex(explode),1); //explode
+  packetString := packetString + "0000";
+  packetString := packetString + fixPacketLength(hex(color),2); //color
+  packetString := packetString + "000000";
+  packetString := packetString + fixPacketLength(hex(translucent),1); //tran
+
+  foreach chr in ListMobilesNearLocation( source.x, source.y, source.z, 16, source.realm );
+    SendPacket( chr, packetString );
+  endforeach
+
 endfunction
 
-function PlayMovingEffectXYZHuefx(source, sourcex, sourcey, sourcez, 
-destx, desty, destz, effect, speed, loop := 0, explode := 0, color := 
-0, translucent := 0)
-var packetString := "C0";
-packetString := packetString + "00"; 
-packetString := packetString + fixPacketLength(hex(0),8);
-packetString := packetString + fixPacketLength(hex(effect),2);
-packetString := packetString + fixPacketLength(hex(sourcex),2);
-packetString := packetString + fixPacketLength(hex(sourcey),2);
-packetString := packetString + fixPacketLength(hex(sourcez),1);
-packetString := packetString + fixPacketLength(hex(destx),2);
-packetString := packetString + fixPacketLength(hex(desty),2);
-packetString := packetString + fixPacketLength(hex(destz),1);
-packetString := packetString + fixPacketLength(hex
-(speed),1); //speed
-packetString := packetString + fixPacketLength(hex
-(loop),1); //loop
-packetString := packetString + "000000";
-packetString := packetString + fixPacketLength(hex
-(explode),1); //explode
-packetString := packetString + "0000";
-packetString := packetString + fixPacketLength(hex
-(color),2); //color
-packetString := packetString + "000000";
-packetString := packetString + fixPacketLength(hex
-(translucent),1); //tran
-foreach chr in ListMobilesNearLocation( source.x, source.y, 
-source.z, 16 );
-SendPacket( chr, packetString );
-endforeach
+function PlayMovingEffectXYZHuefx(source, sourcex, sourcey, sourcez, destx, desty, destz, effect, speed, loop := 0, explode := 0, color := 0, translucent := 0)
+
+  var packetString := "C0";
+
+  packetString := packetString + "00"; 
+  packetString := packetString + fixPacketLength(hex(0),8);
+  packetString := packetString + fixPacketLength(hex(effect),2);
+  packetString := packetString + fixPacketLength(hex(sourcex),2);
+  packetString := packetString + fixPacketLength(hex(sourcey),2);
+  packetString := packetString + fixPacketLength(hex(sourcez),1);
+  packetString := packetString + fixPacketLength(hex(destx),2);
+  packetString := packetString + fixPacketLength(hex(desty),2);
+  packetString := packetString + fixPacketLength(hex(destz),1);
+  packetString := packetString + fixPacketLength(hex(speed),1); //speed
+  packetString := packetString + fixPacketLength(hex(loop),1); //loop
+  packetString := packetString + "000000";
+  packetString := packetString + fixPacketLength(hex(explode),1); //explode
+  packetString := packetString + "0000";
+  packetString := packetString + fixPacketLength(hex(color),2); //color
+  packetString := packetString + "000000";
+  packetString := packetString + fixPacketLength(hex(translucent),1); //tran
+
+  foreach chr in ListMobilesNearLocation( source.x, source.y, source.z, 16, source.realm );
+    SendPacket( chr, packetString );
+  endforeach
+
 endfunction
 
-function PlayStationaryEffectHuefx( x, y, z, realm, effect, speed, loop := 
-0, explode := 0, color := 0,translucent := 0, forwho := 0)
-var packetString := "C0";
-packetString := packetString + "02"; 
-packetString := packetString + fixPacketLength(hex(0),8);
-packetString := packetString + fixPacketLength(hex(effect),2);
-packetString := packetString + fixPacketLength(hex(x),2);
-packetString := packetString + fixPacketLength(hex(y),2);
-packetString := packetString + fixPacketLength(hex(z),1);
-packetString := packetString + fixPacketLength(hex(0),5);
-packetString := packetString + fixPacketLength(hex
-(speed),1); //speed
-packetString := packetString + fixPacketLength(hex
-(loop),1); //loop
-packetString := packetString + "000000";
-packetString := packetString + fixPacketLength(hex
-(explode),1); //explode
-packetString := packetString + "0000";
-packetString := packetString + fixPacketLength(hex
-(color),2); //color
-packetString := packetString + "000000";
-packetString := packetString + fixPacketLength(hex
-(translucent),1); //tran
+function PlayStationaryEffectHuefx( x, y, z, realm, effect, speed, loop := 0, explode := 0, color := 0,translucent := 0, forwho := 0)
 
-if (forwho == 0)
-	foreach chr in ListMobilesNearLocation( x, y, z, 16, realm );
-	SendPacket( chr, packetString );
-	endforeach
-else
-	SendPacket( forwho, packetString );
-endif
+  var packetString := "C0";
+
+  packetString := packetString + "02"; 
+  packetString := packetString + fixPacketLength(hex(0),8);
+  packetString := packetString + fixPacketLength(hex(effect),2);
+  packetString := packetString + fixPacketLength(hex(x),2);
+  packetString := packetString + fixPacketLength(hex(y),2);
+  packetString := packetString + fixPacketLength(hex(z),1);
+  packetString := packetString + fixPacketLength(hex(0),5);
+  packetString := packetString + fixPacketLength(hex(speed),1); //speed
+  packetString := packetString + fixPacketLength(hex(loop),1); //loop
+  packetString := packetString + "000000";
+  packetString := packetString + fixPacketLength(hex(explode),1); //explode
+  packetString := packetString + "0000";
+  packetString := packetString + fixPacketLength(hex(color),2); //color
+  packetString := packetString + "000000";
+  packetString := packetString + fixPacketLength(hex(translucent),1); //tran
+
+  if (forwho == 0)
+    foreach chr in ListMobilesNearLocation( x, y, z, 16, realm );
+    SendPacket( chr, packetString );
+    endforeach
+  else
+    SendPacket( forwho, packetString );
+  endif
 
 endfunction
 

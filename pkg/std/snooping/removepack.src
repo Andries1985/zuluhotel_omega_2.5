@@ -44,7 +44,7 @@ program removepack(parms)
 
 	DestroyRootItemInStorageArea(storage, "temp storage of " + who.serial);
 
-	MoveObjectToLocation( who, who.x, who.y, who.z+1 );
+	MoveObjectToLocation( who, who.x, who.y, who.z+1, who.realm );
 	EraseObjProperty(who, "#snooper");
 
 endprogram

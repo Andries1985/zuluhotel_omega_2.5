@@ -57,7 +57,7 @@ program dispel_field( parms, spell_id )
 	foreach item in items
 		count := count+1;
 		if( GetObjProperty(item, "f") )
-			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
+			PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD, 0, item.realm );
                 	DestroyItem(item);
 		endif
 		if(count>100)

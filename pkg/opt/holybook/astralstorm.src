@@ -96,15 +96,15 @@ program cast_Astral_Storm( parms )
 		endif
 		BuffOn(cast_on, "paralyze", 1, CInt(duration));
 		var fxduration := CInt(duration-2);
-		PlayStationaryEffect(cast_on.x, cast_on.y, cast_on.z, 0x17bd, fxduration);
-		PlayStationaryEffect(cast_on.x-1, cast_on.y, cast_on.z, 0x17ca, fxduration);
-		PlayStationaryEffect(cast_on.x+1, cast_on.y, cast_on.z, 0x17cc, fxduration);
-		PlayStationaryEffect(cast_on.x, cast_on.y+1, cast_on.z, 0x17c9, fxduration);
-		PlayStationaryEffect(cast_on.x, cast_on.y-1, cast_on.z, 0x17cb, fxduration);
-		PlayStationaryEffect(cast_on.x-1, cast_on.y+1, cast_on.z, 0x17c8, fxduration);
-		PlayStationaryEffect(cast_on.x-1, cast_on.y-1, cast_on.z, 0x17c5, fxduration);
-		PlayStationaryEffect(cast_on.x+1, cast_on.y-1, cast_on.z, 0x17c6, fxduration);
-		PlayStationaryEffect(cast_on.x+1, cast_on.y+1, cast_on.z, 0x17c7, fxduration);
+		PlayStationaryEffect(cast_on.x, cast_on.y, cast_on.z, 0x17bd, fxduration, 0, 0, cast_on.realm);
+		PlayStationaryEffect(cast_on.x-1, cast_on.y, cast_on.z, 0x17ca, fxduration, 0, 0, cast_on.realm);
+		PlayStationaryEffect(cast_on.x+1, cast_on.y, cast_on.z, 0x17cc, fxduration, 0, 0, cast_on.realm);
+		PlayStationaryEffect(cast_on.x, cast_on.y+1, cast_on.z, 0x17c9, fxduration, 0, 0, cast_on.realm);
+		PlayStationaryEffect(cast_on.x, cast_on.y-1, cast_on.z, 0x17cb, fxduration, 0, 0, cast_on.realm);
+		PlayStationaryEffect(cast_on.x-1, cast_on.y+1, cast_on.z, 0x17c8, fxduration, 0, 0, cast_on.realm);
+		PlayStationaryEffect(cast_on.x-1, cast_on.y-1, cast_on.z, 0x17c5, fxduration, 0, 0, cast_on.realm);
+		PlayStationaryEffect(cast_on.x+1, cast_on.y-1, cast_on.z, 0x17c6, fxduration, 0, 0, cast_on.realm);
+		PlayStationaryEffect(cast_on.x+1, cast_on.y+1, cast_on.z, 0x17c7, fxduration, 0, 0, cast_on.realm);
 	else
 		SendSysMessage(caster, cast_on.name + " is protected from paralyzing effects!");
 		SendSysMessage(cast_on,  "You are protected from paralyzing effects!");

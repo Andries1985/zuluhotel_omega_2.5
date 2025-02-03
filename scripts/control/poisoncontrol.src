@@ -36,7 +36,7 @@ program poison_control( item )
 	while( item )
 		var plvl := RandomDiceStr( "1d" + power );
 		PlaySoundEffect( item , SFX_SPELL_POISON_FIELD );
-		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0 );
+		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0, item.realm );
 		victims := SmartAoE(creator, victims);
 		foreach mobile in victims
 			if( !creator )

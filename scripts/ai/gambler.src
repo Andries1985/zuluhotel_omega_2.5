@@ -216,7 +216,7 @@ function playerhere(who)
 
 var chr;
 
-foreach chr in ListMobilesNearLocation( me.x, me.y, me.z, HALT_THRESHOLD );
+foreach chr in ListMobilesNearLocation( me.x, me.y, me.z, HALT_THRESHOLD, me.realm );
   if (who.serial == chr.serial)
     return 0;
   endif

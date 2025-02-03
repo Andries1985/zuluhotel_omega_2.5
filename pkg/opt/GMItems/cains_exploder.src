@@ -51,7 +51,7 @@ program cains_exploder(parms)
 
 
 	var dmg := (Random(9)+12) * power;
-	var victims := ListMobilesNearLocationEx( cint(where.x),cint(where.y),cint(where.z), range, LISTEX_FLAG_NORMAL + LISTEX_FLAG_HIDDEN );
+	var victims := ListMobilesNearLocationEx( cint(where.x),cint(where.y),cint(where.z), range, LISTEX_FLAG_NORMAL + LISTEX_FLAG_HIDDEN, where.realm );
 	
 	victims := SmartAoE(thrower, victims);
 	

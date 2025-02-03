@@ -182,7 +182,7 @@ if (!file)
 	CreateDataFile( ":convertworld:world", DF_KEYTYPE_INTEGER);
 	file := OpenDataFile(":convertworld:world");
 endif
-var items := ListObjectsInBox( 0,0,-150, 7168,4094,150 );
+var items := ListObjectsInBox( 0,0,-150, 7168,4094,150, "britannia" );
 
 foreach item in items
 

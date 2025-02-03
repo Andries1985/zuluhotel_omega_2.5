@@ -96,9 +96,14 @@ endfunction
 function CreatePoint( byref point )
 
 	if( spawnpoints.append(point) )
-		SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",1,0,4,0,0,0,0,0,0,0,0,"",0} );
-		CheckPoint(point);
-		return len(spawnpoints);
+		if(GetObjProperty(point, "DecorateFacetsStatic") == 1)
+			CheckPoint(point);
+			return len(spawnpoints);
+		else
+			SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",1,0,4,0,0,1,1,0,0,0,0,"",0} );
+			CheckPoint(point);
+			return len(spawnpoints);
+		endif
 	else
 		var ret		:= error;
 		ret.+errortext	:= "Couldn't register the spawnpoint";
@@ -191,6 +196,11 @@ function RegisterSpawnPoints()
 			spawnpoints.append(object);
 		endif
 	endforeach
+	foreach object in ListObjectsInBox( 0, 0, -128, 2304, 1600, 128, "termur" )
+		if( object.objtype == UOBJ_SPAWNPOINT )
+			spawnpoints.append(object);
+		endif
+	endforeach
 
 	SysLog( "Spawnpoints registration completed, took " + (ReadGameClock()-start) +
 		" seconds to complete. " + len(spawnpoints) + " runes were registered." );
@@ -204,7 +214,7 @@ endfunction
 
 function ResetSpawnPoint( byref point )
 	DespawnAll(point);
-	SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",0,0,4,0,0,0,0,0,0,0,0,"",0} );
+	SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",1,0,4,0,0,1,1,0,0,0,0,"",0} );
 	EraseObjProperty( point, PROPID_SPAWNPOINT_NEXT_SPAWNING );
 	EraseObjProperty( point, PROPID_SPAWNPOINT_NEXT_VALIDATION );
 	return 1;

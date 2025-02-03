@@ -57,7 +57,7 @@ function cast_meteor( caster )
 
 	SetObjProperty(me,"#lastbreath",ReadGameClock() + cint(Random(10)+10) );
 
-	var targets := ListMobilesNearLocation(me.x,me.y,me.z, 4);
+	var targets := ListMobilesNearLocation(me.x, me.y, me.z, 4, me.realm);
 	PerformAction(me,0x0c);
 
 	var dmg := Cint( GetHP(me) / 30 ) + RandomDiceStr("1d15");

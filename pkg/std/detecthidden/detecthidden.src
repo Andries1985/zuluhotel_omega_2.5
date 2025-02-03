@@ -27,7 +27,7 @@ program detect_hidden( who )
 		range := Cint( range * ClasseBonus( who , CLASSEID_THIEF ));
 	endif
 	
-	var hiders := ListMobilesNearLocationEx( who.x , who.y , who.z , range , LISTEX_FLAG_HIDDEN );
+	var hiders := ListMobilesNearLocationEx( who.x , who.y , who.z , range , LISTEX_FLAG_HIDDEN, who.realm );
 	var items  := ListItemsNearLocation( who.x , who.y , who.z , range, who.realm );
 	var count  := 0;
 	

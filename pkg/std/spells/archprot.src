@@ -51,7 +51,7 @@ program cast_archprot( parms, spell_id )
 
 	var mod_amount := Cint( GetModAmount( caster ) / 1.5 );
 	var duration := GetModDuration( caster );
-	var affected :=ListMobilesNearLocation( thetarget.x, thetarget.y, thetarget.z, cint(magery/15) );
+	var affected :=ListMobilesNearLocation( thetarget.x, thetarget.y, thetarget.z, cint(magery/15), thetarget.realm );
 	
 	affected := SmartBoost(caster, affected);
 

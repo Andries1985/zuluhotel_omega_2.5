@@ -4,6 +4,8 @@ use file;
 use cfgfile;
 use polsys;
 
+include "include/managers";
+
 /*
  *
  * OpenDecorationCfgfile( file_name )
@@ -148,9 +150,13 @@ function CreateItemForDecoration( file_name, key, cfg_elem )
 		// Place the 'Static' CProp on the item. Now only the udestry commands can delete it.
 		SetObjProperty( item, "DecorateFacetsStatic", 0x1 );
 		SetObjProperty( item, "DecorationInfo", Struct{ "FileName":=file_name, "Key":=key } );
-	else
+	else	
 		desc.Color := cfg_elem.Color;
 		desc.Movable := 0;
+		//If its a spawnpoint add this data
+		if( cfg_elem.Objtype == 0xa300 )
+			desc.CProps.Insert( "PointData", Unpack(cfg_elem.PointData) );
+		endif
 		// Place the 'Static' CProp on the item. Now only the udestry commands can delete it.
 		desc.CProps.Insert( "DecorateFacetsStatic", 0x1 );
 		desc.CProps.Insert( "DecorationInfo", Struct{ "FileName":=file_name, "Key":=key } );
@@ -160,6 +166,7 @@ function CreateItemForDecoration( file_name, key, cfg_elem )
 	if( cfg_elem.Name != "" )
 		SetName( item, cfg_elem.Name );
 	endif
+
 endfunction
 
 /*

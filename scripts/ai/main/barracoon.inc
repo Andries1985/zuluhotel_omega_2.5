@@ -57,9 +57,9 @@ function PolymorphSelf()
   if(GetHp(me) <= GetMaxHP(me)/2 && me.graphic != 0x2d)
 	  PrintTextAbove(me, "You cannot not defeat me!");
 	  sleep(1);
-	  PlayStationaryEffect( me.x, me.y, me.z, 0x3728, 7, 0x10, 0);
+	  PlayStationaryEffect( me.x, me.y, me.z, 0x3728, 7, 0x10, 0, me.realm);
 	  sleepms(100);
-	  PlayStationaryEffect( me.x, me.y, me.z, 0x3728, 7, 0x10, 0);
+	  PlayStationaryEffect( me.x, me.y, me.z, 0x3728, 7, 0x10, 0, me.realm);
 	  me.graphic := 0x2d;
   endif
 endfunction
@@ -84,7 +84,7 @@ endfunction
 
 function SlapRandomOpponent()
   var victim, slapthat;
-  var victims := ListMobilesNearLocation(me.x, me.y, me.z, 20);
+  var victims := ListMobilesNearLocation(me.x, me.y, me.z, 20, me.realm);
   foreach v in victims
 	slapthat := 1;
     if(v == me || (v.isa(POLCLASS_NPC) && v.script != "tamed") || v.cmdlevel)
@@ -94,9 +94,9 @@ function SlapRandomOpponent()
 	if(slapthat)
 		victim := v;
 
-		PlayStationaryEffect( me.x, me.y, me.z, 0x3728, 7, 0x10, 0);
+		PlayStationaryEffect( me.x, me.y, me.z, 0x3728, 7, 0x10, 0, me.realm);
 		MoveObjectToLocation(me, victim.x, victim.y, victim.z, victim.realm, MOVEOBJECT_FORCELOCATION);
-		PlayStationaryEffect( me.x, me.y, me.z, 0x3728, 7, 0x10, 0);
+		PlayStationaryEffect( me.x, me.y, me.z, 0x3728, 7, 0x10, 0, me.realm);
 
 		PrintTextAbove(me, "*slap*");
 		ApplyRawDamage(victim, 100);

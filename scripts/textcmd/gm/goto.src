@@ -10,7 +10,7 @@ program textcmd_goto( character , whom )
 	var chr := MakeAndProcessGump( character,whom);
 	if( chr )
 		LogCommand(character, GetProcess(GetPid()).name, chr.name+"/"+chr.serial, "XYZ - "+chr.x+","+chr.y+","+chr.z);
-		MoveObjecttoLocation( character , chr.x , chr.y , chr.z , chr.realm,MOVEOBJECT_FORCELOCATION );
+		MoveObjecttoLocation( character , chr.x , chr.y , chr.z , chr.realm, MOVEOBJECT_FORCELOCATION );
 		ShowFlame( character );
 	endif
 

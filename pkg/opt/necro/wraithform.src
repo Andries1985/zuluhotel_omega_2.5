@@ -65,7 +65,7 @@ program cast_wraithform( parms )
 	
 	while( duration > 0 and !caster.dead )
 	
-		var victims := ListMobilesNearLocation( cint(caster.x) , cint(caster.y) , cint(caster.z) , cint(range) );
+		var victims := ListMobilesNearLocation( cint(caster.x) , cint(caster.y) , cint(caster.z) , cint(range), caster.realm );
 
 		victims := SmartAoE(caster, victims);
 

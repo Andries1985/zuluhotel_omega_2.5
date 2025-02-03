@@ -88,8 +88,8 @@ function clone(npc, me)
 		SetRawSkill( me, i, GetRawSkill(npc,i) );
 	endfor
 
-	MoveObjectToLocation(me,npc.x, npc.y, npc.z, "britannia", MOVEOBJECT_FORCELOCATION );	
-	MoveObjectToLocation(npc,5276, 1164, 0, "britannia", MOVEOBJECT_FORCELOCATION );
+	MoveObjectToLocation( me, npc.x, npc.y, npc.z, "britannia", MOVEOBJECT_FORCELOCATION );	
+	MoveObjectToLocation( npc, 5276, 1164, 0, "britannia", MOVEOBJECT_FORCELOCATION );
 	me.concealed := 0;
 
 	npc.hidden := 1;

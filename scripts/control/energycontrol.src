@@ -59,7 +59,7 @@ program energy_control( item )
 		var dmg := RandomDiceStr( power + "d8" );
 		PlaySoundEffect( item , SFX_SPELL_ENERGY_FIELD );
 		foreach coord in coordinates
-			var victims := ListMobilesNearLocation( coord[1] , coord[2] , coord[3] , 0 );
+			var victims := ListMobilesNearLocation( coord[1] , coord[2] , coord[3] , 0, item.realm );
 			victims := SmartAoE(creator, victims);
 			foreach mobile in victims
 				if( !creator )
@@ -68,7 +68,7 @@ program energy_control( item )
 				if(!mobile.multi)
 					PerformAction( mobile , ANIM_HIT );
 					PlayObjectCenteredEffectEx( mobile, 0x3789, 0 , 10, 496, 5);
-					ApplyElementalDamageNoResist( mobile,creator,Cint(ResistedDefinedSkillGain( creator , mobile , dmg , diff , points )),element );
+					ApplyElementalDamageNoResist( mobile, creator, Cint(ResistedDefinedSkillGain( creator , mobile , dmg , diff , points )), element );
 				endif
 			endforeach
 		endforeach

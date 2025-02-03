@@ -175,7 +175,7 @@ function MyPos(me)
 			endif
 		endwhile
 		if (gif > 9)
-			MoveObjectToLocation( me, formx, formy, me.z, 0);
+			MoveObjectToLocation( me, formx, formy, me.z, me.realm, 0);
 		endif
 	endif
 endfunction

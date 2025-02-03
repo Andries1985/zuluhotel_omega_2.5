@@ -93,7 +93,7 @@ endfunction
 
 function look_around()
 
-	foreach critter in listmobilesnearlocation(me.x, me.y, me.z, 15)
+	foreach critter in listmobilesnearlocation(me.x, me.y, me.z, 15, me.realm)
 		if ((critter.npctemplate) and (critter.script != "tamed") )
 			if (!configfile[critter.npctemplate].guardignore)
 				say("Ah ha! " + critter.name);
@@ -108,7 +108,7 @@ endfunction
 
 function sleepmode()
 
-	foreach critter in ListMobilesNearLocation( me.x,me.y,me.z, 32 )
+	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 32, me.realm )
           if (!critter.npctemplate)
 		return 0;
           endif
@@ -362,7 +362,7 @@ endfunction
 
 function killme()
 
-	MoveObjectToLocation(me, 5445,1153,0, MOVEOBJECT_FORCELOCATION);
+	MoveObjectToLocation(me, 5445, 1153, 0, "britannia", MOVEOBJECT_FORCELOCATION);
 	RevokePrivilege( me, "invul" );
 	setobjproperty(me,"guardkill",1);
 	var count := 0;

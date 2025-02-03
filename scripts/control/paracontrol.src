@@ -36,7 +36,7 @@ program para_control( item )
 	
 	while( item )
 		PlaySoundEffect( item , SFX_SPELL_PARALYZE_FIELD );
-		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0 );
+		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0, item.realm );
 		victims := SmartAoE(creator, victims);
 		foreach mobile in victims
 			if( CanMod( mobile , "p" ) )

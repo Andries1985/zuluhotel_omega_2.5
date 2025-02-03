@@ -50,7 +50,7 @@ program cast_chainlightning( parms, spell_id )
 		range := Cint( range * CLASSE_BONUS );
 	endif
 
-	var victims := ListMobilesNearLocationEx( cast_on.x , cast_on.y , cast_on.z , range , 0x03);
+	var victims := ListMobilesNearLocationEx( cast_on.x , cast_on.y , cast_on.z , range , 0x03, cast_on.realm);
 
 	victims := SmartAoE( caster, victims);	
 

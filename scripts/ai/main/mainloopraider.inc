@@ -292,7 +292,7 @@ function CheckForStuff()
 					PlaySoundEffect( me, 0x0202 );
     				foreach item in ListItemsNearLocation (me.x, me.y, me.z, 3)
 						if (GetObjProperty(item, "f") = "1")
-							PlayStationaryEffect( item.x, item.y, item.z, 0x3728, 0xA, 0xA );
+							PlayStationaryEffect( item.x, item.y, item.z, 0x3728, 0xA, 0xA, 0, item.realm );
                 			DestroyItem(item);
 						endif
 					endforeach
@@ -375,7 +375,7 @@ function get_help( opponent )
 	ev.+type := EVID_ALL_ATTACK_CMD;
 	ev.+source := opponent;
 
-	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 2 )
+	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 2, me.realm )
 		if ( ( (critter.script["raid"]) and (critter.script!="raiddefendpcs") ) and (!critter.warmode) and (critter.serial != me.serial) )
 			SendEvent(critter, ev);
 		endif

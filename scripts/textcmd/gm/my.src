@@ -1,23 +1,25 @@
 use uo;
+
 include ":staff:include/staff";
+
 program z(who, howfar)
 
-var what := Target(who, TGTOPT_NOCHECK_LOS);
+        var what := Target(who, TGTOPT_NOCHECK_LOS);
 
-if (!what)
-        return;
-endif
+        if (!what)
+                return;
+        endif
 
-var tdist;
+        var tdist;
 
-if (howfar == "")
-        tdist := 1;
-else
-        tdist := CInt(howfar);
-endif
+        if (howfar == "")
+                tdist := 1;
+        else
+                tdist := CInt(howfar);
+        endif
 
-LogCommand(who, GetProcess(GetPid()).name, what.desc+"/"+what.serial, howfar);
+        LogCommand(who, GetProcess(GetPid()).name, what.desc+"/"+what.serial, howfar);
 
-MoveObjectToLocation(what, what.x, what.y - tdist, what.z, what.realm, MOVEOBJECT_FORCELOCATION);
+        MoveObjectToLocation(what, what.x, what.y - tdist, what.z, what.realm, MOVEOBJECT_FORCELOCATION);
 
 endprogram

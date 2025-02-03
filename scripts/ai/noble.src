@@ -1,5 +1,6 @@
 use os;
 use uo;
+
 include "include/eventid";
 include "include/randname";
 include "include/utility";
@@ -9,6 +10,7 @@ include "include/client";
 include "include/vetement";
 include "include/npcbackpacks";
 include "ai/setup/modsetup";
+
 program noble ()
 
 var me := Self();

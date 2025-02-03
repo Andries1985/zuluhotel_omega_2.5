@@ -112,7 +112,7 @@ function drop()
 	SayWhat();
 	foreach myitems in enumerateitemsincontainer(mypack)
 		if (myitems.container.serial == mypack.serial)
-        		moveObjecttolocation(myitems, me.x, me.y, me.z);
+        		moveObjecttolocation(myitems, me.x, me.y, me.z, me.realm);
 			sleepms(100);
 		endif
 	endforeach
@@ -196,8 +196,7 @@ function Follow()
 		sleep(1);
 		chaseloop := 0;
 	elseif (( d > 10 ) or ( chaseloop > 50 ))
-		MoveObjectToLocation( me, following.x, following.y, following.z, master.realm,
-			MOVEOBJECT_FORCELOCATION );
+		MoveObjectToLocation( me, following.x, following.y, following.z, following.realm, MOVEOBJECT_FORCELOCATION );
 		chaseloop := 0;
 		sleep(1);
 	else
@@ -316,7 +315,7 @@ endfunction
 
 function AllCommand(evtype,what)
 
-	var mobs := ListMobilesNearLocation( master.x, master.y, master.z, 9 );
+	var mobs := ListMobilesNearLocation( master.x, master.y, master.z, 9, master.realm );
 	var eve array;
 	eve.+type := evtype;
 	eve.+source := me;
@@ -535,7 +534,7 @@ function Release()
 		SendSysMessage(master,"Totem released from duty!");
 		it.name := me.name;
 		PlaySoundEffect( me, SFX_SPELL_DISPEL );
-		PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA );
+		PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
 		MoveObjectToLocation(me,5288 , 1176 , 0, "britannia", MOVEOBJECT_FORCELOCATION);
 		RevokePrivilege( me, "invul" );
 		ApplyRawdamage( me , GetMaxHP(me) + 3 );

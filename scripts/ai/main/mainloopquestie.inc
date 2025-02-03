@@ -116,7 +116,7 @@ endfunction
 
 function look_around()
 
-	foreach critter in ListMobilesNearLocation( me.x,me.y,me.z, 10 );
+	foreach critter in ListMobilesNearLocation( me.x,me.y,me.z, 10, me.realm );
           if (!critter.npctemplate)
 		return 1;
           endif

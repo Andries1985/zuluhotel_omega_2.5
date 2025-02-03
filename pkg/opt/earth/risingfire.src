@@ -52,7 +52,7 @@ program cast_rising_fire( parms )
 	
 	var dmg;
 	var range := ModifyWithMagicEfficiency( caster , 3 );
-	var victims := ListMobilesNearLocationEx( cint(cast_on.x) , cint(cast_on.y) , cint(cast_on.z) , cint(range) , 0x03);
+	var victims := ListMobilesNearLocationEx( cint(cast_on.x) , cint(cast_on.y) , cint(cast_on.z) , cint(range) , 0x03, cast_on.realm);
 
 	victims := SmartAoE(caster, victims);
 

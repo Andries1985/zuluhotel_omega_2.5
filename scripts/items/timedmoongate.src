@@ -146,7 +146,7 @@ function SendGateGump(who)
 	endif
 
 
-	MoveObjectToLocation(who, x,y,z);
+	MoveObjectToLocation(who, x, y, z);
 
 
 endfunction

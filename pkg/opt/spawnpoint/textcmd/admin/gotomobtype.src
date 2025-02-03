@@ -78,6 +78,8 @@ function MakeAndProcessGump( character, found, realm )
 		realmname := "Tokuno";
 	elseif (realm == "ilshenar")
 		realmname := "Ilshenar";
+	elseif (realm == "termur")
+		realmname := "Termur";
 	else
 		realmname := "Error";
 	endif

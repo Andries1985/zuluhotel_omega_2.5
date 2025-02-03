@@ -39,7 +39,7 @@ function spellattack(opponent)
 
 	SetObjProperty(me,"#lastbreath",ReadGameClock() + 5);
 
-	foreach myfriend in listmobilesnearlocation(me.x, me.y, me.z, HALT_THRESHOLD)
+	foreach myfriend in listmobilesnearlocation(me.x, me.y, me.z, HALT_THRESHOLD, me.realm)
 		if (myfriend.npctemplate and myfriend.script != "tamed" && !GetObjProperty(myfriend, "NPCAttack") )
 			healerstuff(myfriend);
 		endif

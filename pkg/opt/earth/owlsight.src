@@ -38,7 +38,7 @@ program cast_owlsight( parms )
 
 	var magery := GetEffectiveSkill(caster, SKILLID_MAGERY);
 	var duration := magery * 70;
-	var affected := ListMobilesNearLocation( cast_on.x , cast_on.y , cast_on.z , cint( magery / 10 ) );
+	var affected := ListMobilesNearLocation( cast_on.x , cast_on.y , cast_on.z , cint( magery / 10 ), cast_on.realm );
 	var proped := array();
 
 	affected := SmartBoost(caster, affected);
