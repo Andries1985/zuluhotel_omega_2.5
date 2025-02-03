@@ -611,20 +611,20 @@ endfunction
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 function SellContainersWithItemsPrompt(who)
 
-Say("Hmm, a few containers with items in there...");
+	Say("Hmm, a few containers with items in there...");
 
-var gump := GFCreateGump( 15, 15, 250, 150);
-GFResizePic(gump, 15, 15, 3500, 250, 150);
-GFHTMLArea(gump, 35, 32, 220, 100, "<BASEFONT COLOR=DARKGREEN>OKAY: <BASEFONT COLOR=BLACK>Sells any container PLUS the items within it.<br><br><BASEFONT COLOR=DARKRED>CANCEL:<BASEFONT COLOR=BLACK> Doesn't sell the container, or anything within it.", 0,0 );
-GFAddButton(gump,40, 130, 2128, 2129, 1, 1); //Okay
-GFAddButton(gump,185, 130, 2119, 2120, 1, 0);
+	var gump := GFCreateGump( 15, 15, 250, 150);
+	GFResizePic(gump, 15, 15, 3500, 250, 150);
+	GFHTMLArea(gump, 35, 32, 220, 100, "<BASEFONT COLOR=DARKGREEN>OKAY: <BASEFONT COLOR=BLACK>Sells any container PLUS the items within it.<br><br><BASEFONT COLOR=DARKRED>CANCEL:<BASEFONT COLOR=BLACK> Doesn't sell the container, or anything within it.", 0,0 );
+	GFAddButton(gump,40, 130, 2128, 2129, 1, 1); //Okay
+	GFAddButton(gump,185, 130, 2119, 2120, 1, 0);
 
-var data := GFSendGump(who, gump);
+	var data := GFSendGump(who, gump);
 
-case (data[0])
-	1: return 1;
-	0: return 0;
-endcase
+	case (data[0])
+		1: return 1;
+		0: return 0;
+	endcase
 
 endfunction
 
@@ -963,158 +963,158 @@ endfunction
 ////////////////////////////////////////////////////////////////////////////////////////
 function TrainGump(who, skills)
 
-SetObjProperty(who, "#TrainGump", {GetPid(), ReadGameClock()} );
+	SetObjProperty(who, "#TrainGump", {GetPid(), ReadGameClock()} );
 
-var ysize := 120 + (skills.size()*40);
+	var ysize := 120 + (skills.size()*40);
 
-if (ysize <= 160) // 1
-	ysize := ysize + 45;
-elseif (ysize <= 200) // 2
-	ysize := ysize + 30;
-elseif (ysize <= 240) // 3
-	ysize := ysize + 25;
-endif
-
-var gump := GFCreateGump( 15, 15, 350, ysize);
-GFResizePic(gump, 15, 15, 3500, 350, ysize);
-GFHTMLArea(gump, 50, 25, 280, 40, "<BASEFONT SIZE=20><CENTER><u>"+me.name+"</u> can train you in the following skills..." , 0,0 );
-
-GFTextLine(gump, 30, 70, 55, "Skill Name:");
-GFTextLine(gump, 190, 70, 55, "Train Points:");
-GFTextLine(gump, 285, 70, 55, "Train Max:");
-var y := 95;
-var skillamt := 0;
-var skillamtdec := 0;
-
-foreach skill in skills
-	GFTextLine(gump, 30, y, 69, GetAttributeIdBySkillId(skill));
-	GFCheckBox(gump, 305, y, 2714, 2715, 0, skill+1000);
-	GFTextEntry(gump, 185, y, 25, 20, 0, "0.0", skill+2000);
-	skillamt := CDbl(CDbl((GetBaseSKillBaseValue(me, skill)/3.0)/10.0) - CDbl(GetBaseSKillBaseValue(who, skill) / 10.0));
-	skillamtdec := CStr(skillamt - CInt(skillamt));
-	if (CDbl(skillamtdec) > 0)
-		skillamtdec := skillamtdec[2]+""+skillamtdec[3];
-	else
-		skillamtdec := ".0";
-	endif
-	GFTextLine(gump, 220, y, 0, "/ "+CInt(skillamt)+""+skillamtdec);
-	y := y + 25;
-endforeach
-
-GFAddbutton(gump, 270, ysize-75, 2128, 2129, 1, 10);
-GFAddbutton(gump, 54, ysize-75, 2119, 2120, 1, 0);
-
-GFHTMLArea(gump, 46, ysize-50, 290, 60, "<BASEFONT COLOR=DARKGRAY><CENTER>The cost per .1 skill point is 1 gold piece. You can either enter a skill level to train to, or check the box to train as high as you can." , 0,0 );
-var data := GFSendGump(who, gump);
-
-// Check if 30 secs has passed
-if ( GetObjProperty(who, "#TrainGump")[2]+30 < ReadGameClock() )
-	return 0;
-elseif (Distance(me, who) > 10)
-	SendSysMessage(who, "You have moved too far away from "+me.name);
-	return 0;
-endif
-
-// Cancel/or gump closed
-if (data[0] != 10)
-	return 0;
-endif
-
-var msgsent := 0;
-var trained := 0;
-var skillgained := 0;
-
-foreach key in (data.keys)
-
-// It's train as much as we can. NOTE: This is only here if box is ticked
-if (key > 999 && key < 1999)
-	
-	skillgained := TrainMax(who, key-1000, trained);
-
-	if (skillgained < 1)
-		return 0; // This means player ran out of gold, stop it
+	if (ysize <= 160) // 1
+		ysize := ysize + 45;
+	elseif (ysize <= 200) // 2
+		ysize := ysize + 30;
+	elseif (ysize <= 240) // 3
+		ysize := ysize + 25;
 	endif
 
-// It's text entry train. NOTE: This is ALWAYS here, 0.0 is shown if not used
-elseif (key > 1999)
-	
-	skillgained := TrainEntry(who, key-2000, data, trained);
-	
-endif
+	var gump := GFCreateGump( 15, 15, 350, ysize);
+	GFResizePic(gump, 15, 15, 3500, 350, ysize);
+	GFHTMLArea(gump, 50, 25, 280, 40, "<BASEFONT SIZE=20><CENTER><u>"+me.name+"</u> can train you in the following skills..." , 0,0 );
 
-if (msgsent == 0 && skillgained)
-	say("Let me show you how it's done.");  
-	SendSysmessage( who, "Your skill increases." ); // Note increase
-	msgsent := 1;
-endif
+	GFTextLine(gump, 30, 70, 55, "Skill Name:");
+	GFTextLine(gump, 190, 70, 55, "Train Points:");
+	GFTextLine(gump, 285, 70, 55, "Train Max:");
+	var y := 95;
+	var skillamt := 0;
+	var skillamtdec := 0;
 
-skillgained := 0;
-trained := trained + 1;
+	foreach skill in skills
+		GFTextLine(gump, 30, y, 69, GetAttributeIdBySkillId(skill));
+		GFCheckBox(gump, 305, y, 2714, 2715, 0, skill+1000);
+		GFTextEntry(gump, 185, y, 25, 20, 0, "0.0", skill+2000);
+		skillamt := CDbl(CDbl((GetBaseSKillBaseValue(me, skill)/3.0)/10.0) - CDbl(GetBaseSKillBaseValue(who, skill) / 10.0));
+		skillamtdec := CStr(skillamt - CInt(skillamt));
+		if (CDbl(skillamtdec) > 0)
+			skillamtdec := skillamtdec[2]+""+skillamtdec[3];
+		else
+			skillamtdec := ".0";
+		endif
+		GFTextLine(gump, 220, y, 0, "/ "+CInt(skillamt)+""+skillamtdec);
+		y := y + 25;
+	endforeach
 
-endforeach
+	GFAddbutton(gump, 270, ysize-75, 2128, 2129, 1, 10);
+	GFAddbutton(gump, 54, ysize-75, 2119, 2120, 1, 0);
+
+	GFHTMLArea(gump, 46, ysize-50, 290, 60, "<BASEFONT COLOR=DARKGRAY><CENTER>The cost per .1 skill point is 1 gold piece. You can either enter a skill level to train to, or check the box to train as high as you can." , 0,0 );
+	var data := GFSendGump(who, gump);
+
+	// Check if 30 secs has passed
+	if ( GetObjProperty(who, "#TrainGump")[2]+30 < ReadGameClock() )
+		return 0;
+	elseif (Distance(me, who) > 10)
+		SendSysMessage(who, "You have moved too far away from "+me.name);
+		return 0;
+	endif
+
+	// Cancel/or gump closed
+	if (data[0] != 10)
+		return 0;
+	endif
+
+	var msgsent := 0;
+	var trained := 0;
+	var skillgained := 0;
+
+	foreach key in (data.keys)
+
+	// It's train as much as we can. NOTE: This is only here if box is ticked
+	if (key > 999 && key < 1999)
+		
+		skillgained := TrainMax(who, key-1000, trained);
+
+		if (skillgained < 1)
+			return 0; // This means player ran out of gold, stop it
+		endif
+
+	// It's text entry train. NOTE: This is ALWAYS here, 0.0 is shown if not used
+	elseif (key > 1999)
+		
+		skillgained := TrainEntry(who, key-2000, data, trained);
+		
+	endif
+
+	if (msgsent == 0 && skillgained)
+		say("Let me show you how it's done.");  
+		SendSysmessage( who, "Your skill increases." ); // Note increase
+		msgsent := 1;
+	endif
+
+	skillgained := 0;
+	trained := trained + 1;
+
+	endforeach
 
 endfunction
 
 function TrainMax(who, skill, trained)
 
-var skillamt := GetBaseSKillBaseValue(me, skill)/3 - GetBaseSKillBaseValue(who, skill);
+	var skillamt := GetBaseSKillBaseValue(me, skill)/3 - GetBaseSKillBaseValue(who, skill);
 
-if (who.spendgold(skillamt))
-	SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt);
-else
-	var goldamt := 0;
-	// Not enough gold for full skill, try less
-	foreach item in EnumerateItemsInContainer(who.backpack)
-		if (item.objtype == 0xeed)
-			goldamt := goldamt + item.amount;
-		endif
-	endforeach
-
-	if (goldamt > 1 && goldamt <= skillamt)
-		if (who.spendgold(goldamt))
-			SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+goldamt);
-		else
-			return 0; // SHOULD never hit here
-		endif
-	elseif (!goldamt && trained > 0)
-		Say("You don't have enough gold to train anymore");
-		return 0;
-	elseif (!goldamt)
-		Say("You don't have enough gold!");
-		return 0;
+	if (who.spendgold(skillamt))
+		SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt);
 	else
-		return 0;
-		//broadcast("woah copernicus! Check the vendors skill training!", 3, 53);
-	endif
-endif
+		var goldamt := 0;
+		// Not enough gold for full skill, try less
+		foreach item in EnumerateItemsInContainer(who.backpack)
+			if (item.objtype == 0xeed)
+				goldamt := goldamt + item.amount;
+			endif
+		endforeach
 
-return 1;
+		if (goldamt > 1 && goldamt <= skillamt)
+			if (who.spendgold(goldamt))
+				SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+goldamt);
+			else
+				return 0; // SHOULD never hit here
+			endif
+		elseif (!goldamt && trained > 0)
+			Say("You don't have enough gold to train anymore");
+			return 0;
+		elseif (!goldamt)
+			Say("You don't have enough gold!");
+			return 0;
+		else
+			return 0;
+			//broadcast("woah copernicus! Check the vendors skill training!", 3, 53);
+		endif
+	endif
+
+	return 1;
 
 endfunction
 
 function TrainEntry(who, skill, data, trained)
-trained := trained;
-// lols, add 2000 again
-var skillamt := CDbl(GFExtractData(data, skill+2000));
 
-var maxskillamt := CDbl(GetBaseSKillBaseValue(me, skill)/3 - GetBaseSKillBaseValue(who, skill))/10;
-if (skillamt > maxskillamt)
-	skillamt := maxskillamt;
-endif
+	trained := trained;
+	// lols, add 2000 again
+	var skillamt := CDbl(GFExtractData(data, skill+2000));
 
-// players didn't enter skill
-if (skillamt < 1)
+	var maxskillamt := CDbl(GetBaseSKillBaseValue(me, skill)/3 - GetBaseSKillBaseValue(who, skill))/10;
+	if (skillamt > maxskillamt)
+		skillamt := maxskillamt;
+	endif
+
+	// players didn't enter skill
+	if (skillamt < 1)
+		return 0;
+	endif
+
+	if (who.spendgold(CInt(skillamt*10)))
+		SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt*10);
+		return 1;
+	else
+		Say("You don't have enough gold to train.");
+	endif
+
 	return 0;
-endif
 
-if (who.spendgold(CInt(skillamt*10)))
-	SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt*10);
-	return 1;
-else
-	Say("You don't have enough gold to train.");
-endif
-
-return 0;
-
-	
 endfunction

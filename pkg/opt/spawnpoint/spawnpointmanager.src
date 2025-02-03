@@ -100,7 +100,7 @@ function CreatePoint( byref point )
 			CheckPoint(point);
 			return len(spawnpoints);
 		else
-			SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",1,0,4,0,0,0,0,0,0,0,0,"",0} );
+			SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",1,0,4,0,0,1,1,0,0,0,0,"",0} );
 			CheckPoint(point);
 			return len(spawnpoints);
 		endif
@@ -214,7 +214,7 @@ endfunction
 
 function ResetSpawnPoint( byref point )
 	DespawnAll(point);
-	SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",0,0,4,0,0,0,0,0,0,0,0,"",0} );
+	SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",1,0,4,0,0,1,1,0,0,0,0,"",0} );
 	EraseObjProperty( point, PROPID_SPAWNPOINT_NEXT_SPAWNING );
 	EraseObjProperty( point, PROPID_SPAWNPOINT_NEXT_VALIDATION );
 	return 1;
