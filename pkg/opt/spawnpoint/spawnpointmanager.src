@@ -96,9 +96,14 @@ endfunction
 function CreatePoint( byref point )
 
 	if( spawnpoints.append(point) )
-		//SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",1,0,4,0,0,0,0,0,0,0,0,"",0} );
-		CheckPoint(point);
-		return len(spawnpoints);
+		if(GetObjProperty(point, "DecorateFacetsStatic") == 1)
+			CheckPoint(point);
+			return len(spawnpoints);
+		else
+			SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","nil",1,0,4,0,0,0,0,0,0,0,0,"",0} );
+			CheckPoint(point);
+			return len(spawnpoints);
+		endif
 	else
 		var ret		:= error;
 		ret.+errortext	:= "Couldn't register the spawnpoint";

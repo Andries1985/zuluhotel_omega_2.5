@@ -155,7 +155,7 @@ function CreateItemForDecoration( file_name, key, cfg_elem )
 		desc.Movable := 0;
 		//If its a spawnpoint add this data
 		if( cfg_elem.Objtype == 0xa300 )
-			desc.CProps.Insert( "PointData", Cstr(cfg_elem.PointData) );
+			desc.CProps.Insert( "PointData", Unpack(cfg_elem.PointData) );
 		endif
 		// Place the 'Static' CProp on the item. Now only the udestry commands can delete it.
 		desc.CProps.Insert( "DecorateFacetsStatic", 0x1 );
@@ -165,14 +165,6 @@ function CreateItemForDecoration( file_name, key, cfg_elem )
 
 	if( cfg_elem.Name != "" )
 		SetName( item, cfg_elem.Name );
-	endif
-
-	var pt_data := Array;
-
-	if( cfg_elem.Objtype == 0xa300 )
-		var pt_data := GetObjProperty( item, PROPID_SPAWNPOINT_SETTING );
-		Print("Creating spawnpoint " + pt_data[2]);
-		SendSpawnPointEvent( EVID_SPAWNPOINT_CREATED, item );
 	endif
 
 endfunction
