@@ -36,7 +36,7 @@ function RainDownAnimations(props, loc, anim)
     var j := 0;
     var ianim := anim;
 
-    for (i := 0; i <= 18; i := i + 2)
+    for (i := 0; i <= 38; i := i + 2)
         tile := GetMapInfo(loc.x+i, loc.y-i, loc.realm);
         if(tile)
             var newitem := CreateNpcFromTemplate( "skeleton", loc.x+i, loc.y-i, loc.z, props, loc.realm);
