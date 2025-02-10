@@ -142,6 +142,7 @@ endprogram
 function setmeup()
 
 	setobjproperty(me, "serial", me.serial);
+	SetObjProperty(me, "noloot", 1);
 
 	me.gender := Random(2);
 	me.graphic := 400+me.gender;

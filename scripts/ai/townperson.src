@@ -24,14 +24,14 @@ include "ai/setup/modsetup";
 include "include/attributes";
 
 
-const HALT_THRESHOLD := 2; // how close before he barks?
+const HALT_THRESHOLD := 1; // how close before he barks?
 
 var me := Self();
 if( me.name["<random>"] )
 SetName ( me , RandomName( me ) );
 endif
 
-EquipFromTemplate( me , "Clothes" );
+//EquipFromTemplate( me , "Clothes" );
 
 var style := Random(5);;
 
@@ -50,6 +50,7 @@ var style := Random(5);;
 	set_priority( 1 );
 	//EquipFromTemplate( me , style );
     start_script("::/misc/dressme", parms);
+    //RestartScript(me);
 
 program CastleGuard()
 

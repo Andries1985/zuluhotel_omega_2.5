@@ -31,7 +31,9 @@ const HALT_THRESHOLD := 1; // how close before he barks?
 
 var me := Self();
 
-if( me.name["<random>"] )
+if( me.name["<random> the Peasant"] )
+    SetName ( me , RandomName( me ) );
+elseif( me.name["<random>"] )
     //SetName ( me , RandomName( me ) );
     var title := Random(10);
     var ttitle := "";
@@ -51,9 +53,8 @@ if( me.name["<random>"] )
     endcase
     var tname := randomname(me);
     setname(me, tname + ttitle);
-else
-    SetName ( me , RandomName( me ) );
 endif
+
 var style := Random(20);;
 case (style) 
     0: style := "mage";
@@ -89,6 +90,7 @@ program CastleGuard()
 
     drop_anchor(me);
 	SetObjProperty(me,"serial",me.serial);
+    SetObjProperty(me, "noloot", 1);
 
     EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED, HALT_THRESHOLD);
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );

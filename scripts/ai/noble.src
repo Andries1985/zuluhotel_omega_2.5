@@ -13,7 +13,7 @@ include "ai/setup/modsetup";
 include "include/anchors";
 include "ai/main/loot";
 
-const HALT_THRESHOLD := 8; // how close before he barks?
+const HALT_THRESHOLD := 1; // how close before he barks?
 
 var me := Self();
 
@@ -24,7 +24,7 @@ program noble ()
 	drop_anchor(me);
 
 	SetObjProperty(me,"serial",me.serial);
-
+	SetObjProperty(me, "noloot", 1);
     
     EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED, HALT_THRESHOLD);
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );

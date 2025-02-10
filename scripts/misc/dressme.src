@@ -21,14 +21,14 @@ program Dress (parms)
 			if (me.backpack)
 				MoveItemToContainer(thing, me.backpack);
 			else
-			       	DestroyItem(thing);
+			    DestroyItem(thing);
 			endif
 		endif
 	endforeach
 
 	var gender := me.gender;
 
-	PlaceHair(me,gender);
+	PlaceHair(me, gender);
 
 	if (text=="poor")
 		DressPoor(me,gender);
@@ -52,10 +52,11 @@ endprogram
 function CreateAndEquip(me,item,color)
 
 	if (item)
-		var theitem := CreateItemAtLocation(5288 , 1176, 0,item, 1, "britannia");
+		var theitem := CreateItemAtLocation( 5288 , 1176, 0, item, 1, "britannia" );
 		if (theitem)
 			if (EquipItem(me,theitem))
 				theitem.color := color;
+				SetObjProperty(theitem, "noloot", 1);
 			else
 				DestroyItem(theitem);
 			endif
@@ -126,19 +127,21 @@ endfunction
 
 function MakeHairColor()
 
-	return Random(46)+1102;
+	//return Random(46)+1102;
+	return Random(2999);
 
 endfunction
 
 function MakeClothColor();
 
-	case (Random(4))
-	0:	return Random(54)+301;//blue
-	1:	return Random(54)+601;//red
-	2:	return Random(47)+401;//green
-	3:	return Random(47)+701;//yellow
-	endcase
+	//case (Random(4))
+	//0:	return Random(54)+301;//blue
+	//1:	return Random(54)+601;//red
+	//2:	return Random(47)+401;//green
+	//3:	return Random(47)+701;//yellow
+	//endcase
 
+	return Random(2999);
 endfunction
 
 function DressPoor(me,gender)
@@ -204,17 +207,17 @@ function DressPoor(me,gender)
 
 	item := 0;
 	case (Random(6))
-	0:	item := 0x153B;//apron
-	1:	item := 0x153D;//fullapron
+		0:	item := 0x153B;//apron
+		1:	item := 0x153D;//fullapron
 	endcase
 
 	CreateAndEquip(me,item,makeclothcolor());
 
 	item := 0;
 	case (Random(6))
-	0:	item := 0x153F;		//Bandana
-	1:	item := 0x1543;		//Skullcap
-	2:	item := 0x1713;		//Floppy Hat
+		0:	item := 0x153F;		//Bandana
+		1:	item := 0x1543;		//Skullcap
+		2:	item := 0x1713;		//Floppy Hat
 	endcase
 
 	CreateAndEquip(me,item,makeclothcolor());
@@ -239,9 +242,9 @@ function DressRich(me,gender)
 
 	item := 0;
 	case (Random(3))
-	0:	item := 0x170F;//Shoes
-	1:	item := 0x170B;//LeatherBoots
-	2:	item := 0x1711;//Thighboots
+		0:	item := 0x170F;//Shoes
+		1:	item := 0x170B;//LeatherBoots
+		2:	item := 0x1711;//Thighboots
 	endcase
 	CreateAndEquip(me,item,makeclothcolor());
 
@@ -523,9 +526,9 @@ function DressMage(me, gender)
 
 	var item := 0;
 	case (Random(3))
-	0:	item := 0x170F;//Shoes
-	1:	item := 0x170B;//LeatherBoots
-	2:	item := 0x1711;//Thighboots
+		0:	item := 0x170F;//Shoes
+		1:	item := 0x170B;//LeatherBoots
+		2:	item := 0x1711;//Thighboots
 	endcase
 	CreateAndEquip(me,item,makeclothcolor());
 
@@ -547,8 +550,6 @@ function DressMage(me, gender)
 		default: item := 0;
 	endcase
 	CreateAndEquip(me,item,0);
-
-
 
 endfunction
 
