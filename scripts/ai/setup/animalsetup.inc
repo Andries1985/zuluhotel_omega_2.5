@@ -4,7 +4,7 @@ include ":spawnpoint:customnpc";
 	set_critical(0);
 	var me := self();
 	var flee_point := 10;
-	drop_anchor();
+	drop_anchor(me);
 
 	if (!me.backpack)
 		var npccfg := readconfigfile("npcdesc");

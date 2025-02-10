@@ -1,5 +1,5 @@
 var me := self();
-drop_anchor();
+drop_anchor(me);
 var questtype := 0;
 var npccfg := readconfigfile("npcdesc");
 var speechelem := npccfg[me.npctemplate];

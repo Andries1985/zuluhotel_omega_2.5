@@ -6,7 +6,7 @@ var me := self();
 
 var flee_point;
 
-drop_anchor();
+drop_anchor(me);
 
 flee_point := 10;
 
