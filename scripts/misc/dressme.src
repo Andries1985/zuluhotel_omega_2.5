@@ -128,7 +128,7 @@ endfunction
 function MakeHairColor()
 
 	//return Random(46)+1102;
-	return Random(2999);
+	return Random(3000);
 
 endfunction
 
@@ -141,7 +141,7 @@ function MakeClothColor();
 	//3:	return Random(47)+701;//yellow
 	//endcase
 
-	return Random(2999);
+	return Random(3000);
 endfunction
 
 function DressPoor(me,gender)
