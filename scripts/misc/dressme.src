@@ -369,14 +369,19 @@ function DressWar(me,gender)
 		22: hidecolor := 0;
 	endcase
 
-	case (Random(2))
-		0:	item := 0x170B;		//LeatherBoots
-		1:	item := 0x1711;		//ThighBoots
-	endcase
-	CreateAndEquip(me,item,makeclothcolor());
+	//case (Random(2))
+	//	0:	item := 0x170B;		//LeatherBoots
+	//	1:	item := 0x1711;		//ThighBoots
+	//endcase
+	//CreateAndEquip(me,item,CInt(hidecolor));
 
 	case (Random(5))
 	0:
+		case (Random(2))
+			0:	item := 0x170B;		//LeatherBoots
+			1:	item := 0x1711;		//ThighBoots
+		endcase
+		CreateAndEquip(me,item,CInt(hidecolor));
 		//leather
 		if (GetStrength(me) < 60)
 			SetBaseStrength(me, 60);
@@ -414,6 +419,11 @@ function DressWar(me,gender)
 			CreateAndEquip( me, item, CInt(hidecolor) );
 		endif
 	1:
+		case (Random(2))
+			0:	item := 0x170B;		//LeatherBoots
+			1:	item := 0x1711;		//ThighBoots
+		endcase
+		CreateAndEquip(me,item,CInt(hidecolor));
 		//studded
 		if (GetStrength(me) < 70)
 			SetBaseStrength(me, 70);
@@ -456,6 +466,11 @@ function DressWar(me,gender)
 		CreateAndEquip(me,item,CInt(hidecolor));
 		endif
 	2:
+		case (Random(2))
+			0:	item := 0x170B;		//LeatherBoots
+			1:	item := 0x1711;		//ThighBoots
+		endcase
+		CreateAndEquip(me,item,CInt(orecolor));
 		//ring
 		if (GetStrength(me) < 80)
 			SetBaseStrength(me,80);
@@ -486,6 +501,11 @@ function DressWar(me,gender)
 		CreateAndEquip(me,item,CInt(orecolor));
 
 	3:
+		case (Random(2))
+			0:	item := 0x170B;		//LeatherBoots
+			1:	item := 0x1711;		//ThighBoots
+		endcase
+		CreateAndEquip(me,item,CInt(orecolor));
 		//chain
 		if (GetStrength(me) < 90)
 			SetBaseStrength(me,90);
@@ -507,6 +527,11 @@ function DressWar(me,gender)
 		endif
 
 	4:
+		case (Random(2))
+			0:	item := 0x170B;		//LeatherBoots
+			1:	item := 0x1711;		//ThighBoots
+		endcase
+		CreateAndEquip(me,item,CInt(orecolor));
 		//plate
 		SetBaseStrength(me, 100);
 		item := 0x1410;		//PlatemailArms
@@ -673,10 +698,10 @@ function DressLeather(me,gender)
 	endcase
 
 	case (Random(2))
-	0:	item := 0x170B;		//LeatherBoots
-	1:	item := 0x1711;		//ThighBoots
+		0:	item := 0x170B;		//LeatherBoots
+		1:	item := 0x1711;		//ThighBoots
 	endcase
-	CreateAndEquip(me,item,makeclothcolor());
+	CreateAndEquip(me,item,CInt(hidecolor));
 
 	//leather
 	item := 0x13C7;		//LeatherGorget
