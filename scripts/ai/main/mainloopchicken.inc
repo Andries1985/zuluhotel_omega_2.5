@@ -57,7 +57,7 @@ function main_AI_loop()
 			mydestx := ev.x;
 			mydesty := ev.y;
 			steps := 0;
-			drop_anchor();
+			drop_anchor(me);
 			WalkTowardLocation(mydestx, mydesty);
             endcase
         until (! (ev := os::wait_for_event(5)) );

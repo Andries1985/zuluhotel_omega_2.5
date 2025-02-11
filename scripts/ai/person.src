@@ -31,12 +31,67 @@ const HALT_THRESHOLD := 1; // how close before he barks?
 
 var me := Self();
 
+if( me.name["<random> the Peasant"] )
+    SetName ( me , RandomName( me ) );
+elseif( me.name["<random>"] )
+    //SetName ( me , RandomName( me ) );
+    var title := Random(10);
+    var ttitle := "";
+
+    case (title) 
+            0: ttitle := "";
+            1: ttitle := " the townsperson";
+            2: ttitle := " the farmer";
+            3: ttitle := " the sailor";
+            4: ttitle := " the drunkard";
+            5: ttitle := " the wanderer";
+            6: ttitle := " the villager";
+            7: ttitle := " the gypsie";
+            8: ttitle := " the vagabond";
+            9: ttitle := " the laborer";
+            default: ttitle := "";
+    endcase
+    var tname := randomname(me);
+    setname(me, tname + ttitle);
+endif
+
+var style := Random(20);;
+case (style) 
+    0: style := "mage";
+    1: style := "warrior";
+    2: style := "rich";
+    3: style := "poor";
+    4: style := "poor";
+    5: style := "zulu2";
+    6: style := "zulu3";
+    7: style := "zulu";
+    8: style := "fisherman";
+    9: style := "farmer";
+    10: style := "merchant";
+    11: style := "AnimalTrainer";
+    12: style := "barber";
+    13: style := "innstaff";
+    14: style := "Clothes";
+    15: style := "ranger";
+    16: style := "Gardener";
+    17: style := "Blacksmith";
+    18: style := "Tailor";
+    19: style := "LeatherWorker";
+    default: style := "poor";
+endcase
+
+var parms := {};
+parms[1]:= me;
+parms[2]:= style;
+set_priority( 1 );
+EquipFromTemplate( me , style );
+
 program CastleGuard()
-drop_anchor();
 
+    drop_anchor(me);
 	SetObjProperty(me,"serial",me.serial);
+    SetObjProperty(me, "noloot", 1);
 
-    var next_wander := ReadGameClock() + 10;
     EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED, HALT_THRESHOLD);
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
     EnableEvents( SYSEVENT_OPPONENT_MOVED );
@@ -48,57 +103,22 @@ drop_anchor();
     SetWarMode( 0 );
     set_priority(10);
 
-if( me.name["<random>"] )
-   SetName ( me , RandomName( me ) );
-   
-var title := Random(10);
-var ttitle := "";
-
-case (title) 
-        0: ttitle := "";
-        1: ttitle := " the townsperson";
-        2: ttitle := " the farmer";
-        3: ttitle := " the sailor";
-        4: ttitle := " the drunkard";
-        5: ttitle := " the wanderer";
-        6: ttitle := " the villager";
-        7: ttitle := " the gypsie";
-        8: ttitle := " the vagabond";
-        9: ttitle := " the laborer";
-        default: ttitle := "";
-endcase
-
-
-
-var tname := randomname(me);
-
-
-setname(me, tname + ttitle);
-
-UnloadConfigFile( "equip" );
-cfg := readconfigfile("equip");
-var maxelem := GetConfigMaxIntKey(cfg );
-
-
-var thistempl := Random(maxelem) + 1;
-
-equipfromtemplate(me, cstr(thistempl));
-endif
     var ev;
     var looter := GetObjProperty( me, "looter" );
+    var next_wander := ReadGameClock() + 30;
     while (1)
         wander();
         ev := os::wait_for_event( 120 );
         // print( "event type: " + ev.type );
         case (ev.type)
             SYSEVENT_SPEECH:
-               var tspeech := process_text(ev.text, "default","default");
-               if (tspeech)
-                        say(tspeech);
-               endif
+                var tspeech := process_text(ev.text, "default", "default");
+                if (tspeech)
+                    say(tspeech);
+                endif
                 
             SYSEVENT_ENGAGED:
-		say("Aaahhh! Help! Help!  I'm being oppressed!");
+                say("Aaahhh! Help! Help!  I'm being oppressed!");
                 Run( ev.source );
 
             SYSEVENT_DAMAGED:
@@ -109,20 +129,20 @@ endif
                 else
                     say( "What sinister force is this!" );
                 endif
-           default: wander();
+        default: wander();
 
         endcase
         if (ReadGameClock() >= next_wander)
-                wander();
-		if (looter)
-			grabloot();
-		endif
-                next_wander := ReadGameClock() + 10;
+            wander();
+            if (looter)
+                grabloot();
+            endif
+            next_wander := ReadGameClock() + 30;
         endif
         
         // TODO: ReturnToPost();
     endwhile
-     UnloadConfigFile( "equip" );
+
 endprogram
 
 

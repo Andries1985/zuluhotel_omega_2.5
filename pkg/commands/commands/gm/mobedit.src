@@ -301,7 +301,7 @@ function gump_mobedit(who)
 	GFTextRight(mobedit, 402, 101, TEXT_COLOR, "Fencing");
 	GFTextRight(mobedit, 402, 124, TEXT_COLOR, "Healing");
 	GFTextRight(mobedit, 402, 147, TEXT_COLOR, "Mace Fighting");
-	GFTextRight(mobedit, 402, 169, TEXT_COLOR, "Parrying");
+	GFTextRight(mobedit, 402, 169, TEXT_COLOR, "Parry");
 	GFTextRight(mobedit, 402, 192, TEXT_COLOR, "Swordsmanship");
 	GFTextRight(mobedit, 402, 215, TEXT_COLOR, "Tactics");
 	GFTextRight(mobedit, 402, 236, TEXT_COLOR, "Wrestling");

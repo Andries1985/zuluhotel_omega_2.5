@@ -9,7 +9,7 @@ var theammo;
 var spells := {};
 var me := self();
 
-drop_anchor();
+drop_anchor(me);
 
 var npccfg := readconfigfile("npcdesc");
 var speechelem := npccfg[me.npctemplate];

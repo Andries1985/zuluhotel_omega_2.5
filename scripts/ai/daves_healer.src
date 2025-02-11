@@ -57,7 +57,7 @@ program HealerAI()
 		me.frozen := 1;
 	endif
 
-	drop_anchor();
+	drop_anchor(me);
 	SetAnchor( me.x, me.y, 5, 20 );
 	var next_wander := ReadGameClock() + 10;
 

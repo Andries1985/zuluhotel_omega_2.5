@@ -78,7 +78,7 @@ function EquipItemString( who, str )
     if ( CInt(params[2]) )
         color := CInt( params[2] );
     else
-	color := 0;
+	      color := 0;
         if((params[2] == "lastcolor") or (params[2] == "lastcolour"))
             color := lastcolor;
         else

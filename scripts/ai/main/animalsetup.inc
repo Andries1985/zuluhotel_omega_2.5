@@ -10,7 +10,7 @@ var me := self();
 
 var flee_point;
 
-drop_anchor();
+drop_anchor(me);
 
 var npccfg := readconfigfile("npcdesc");
 var speechelem := npccfg[me.npctemplate];

@@ -22,7 +22,7 @@ var will_cast;
 var will_breathe;
 var flee_point;
 
-	drop_anchor();
+	drop_anchor(me);
 
 var npccfg := readconfigfile("npcdesc");
 var speechelem := npccfg[me.npctemplate];
