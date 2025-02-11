@@ -48,9 +48,7 @@ var style := Random(5);;
 	parms[1]:= me;
 	parms[2]:= style;
 	set_priority( 1 );
-	//EquipFromTemplate( me , style );
     start_script("::/misc/dressme", parms);
-    //RestartScript(me);
 
 program CastleGuard()
 
