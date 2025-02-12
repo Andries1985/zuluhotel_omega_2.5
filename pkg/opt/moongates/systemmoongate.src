@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////// 
 ////////////////////////////////////////////////
 //  SYSTEMMOONGATE.SRC - walkonscript for system moongates.
 //
@@ -12,79 +12,34 @@ use os;
 use uo;
 use basic;
 
+include ":gumps:gumps";
+include ":gumps:gumps_ex";
+
+const TEXT_COLOR_TITLE := 1086;
+const TEXT_COLOR_GATE := 1764;
+
 // these are also defined in the moongates.inc.
         var moongates := { 
-        {4467,	1283,	5, "britannia"},		// moonglow
-    	{1336,	1997,	5, "britannia"},		// britain
-    	{1499,	3771,	5, "britannia"},		// jhelom
-        {771,	753,	5, "britannia"},		// yew
-    	{2701,	693,	5, "britannia"},		// minoc
-    	{1828,	2948,	-20, "britannia"},	// trinsic
-    	{643,	2067,	5, "britannia"},		// skara
-    	{3564,	2140,	34, "britannia"},	// magincia
-		{752,	1254,	25, "tokuno"}	// Tokuno City
+        {4467,	1283,	5,		"britannia"},		// moonglow
+    	{1336,	1997,	5,		"britannia"},		// britain
+    	{1499,	3771,	5,		"britannia"},		// jhelom
+        {771,	753,	5,		"britannia"},		// yew
+    	{2701,	693,	5,		"britannia"},		// minoc
+    	{1828,	2948,	-20,	"britannia"},		// trinsic
+    	{643,	2067,	5,		"britannia"},		// skara
+    	{3564,	2140,	34,		"britannia"},		// magincia
+		{633,	1189,	25,		"tokuno"},			// Zento City
+		{2264, 	1574,	-28,	"ilshenar"}			//Vitures Gate System
     };
 
-var layout := {
-	"page 0",
-	"",
-	"nomove",
-	"nodispose",
-	"gumppic 30 30 5528",
-	"text 150 40 1153 0",
-	"text 235 80 1153 1",
-	"button 165 80 247 248 1 0 2",
-
-	"text 235 120 1153 3",
-	"button 165 120 247 248 1 0 4",
-
-	"text 235 160 1153 5",
-	"button 165 160 247 248 1 0 6",
-
-	"text 235 200 1153 7",
-	"button 165 200 247 248 1 0 8",
-
-	"text 235 240 1153 9",
-	"button 165 240 247 248 1 0 10",
-
-	"text 235 280 1153 11",
-	"button 165 280 247 248 1 0 12",
-
-	"text 235 320 1153 13",
-	"button 165 320 247 248 1 0 14",
-
-	"text 235 360 1153 15",
-	"button 165 360 247 248 1 0 16",
-
-	"text 235 400 1153 17",
-	"button 165 400 247 248 1 0 18"
-};
-
-var data := {
-	"Choose your destination",
-	"Moonglow",
-	"",
-	"Britain",
-	"",
-	"Jhelom",
-	"",
-	"Yew",
-	"",
-	"Minoc",
-	"",
-	"Trinsic",
-	"",
-	"Skara Brae",
-	"",
-	"Magincia",
-	"",
-	"Tokuno City",
-	""
-};
-program walk_on_moongate(mobile, moongate )
+program walk_on_moongate(mobile, moongate)
 
 
     var toX, toY, toZ, toRealm, mobface;
+	var x:= 0;
+	var y:= 0;
+	var z:= 0;
+	var realm;
 
 	// Stops the gump popping up every time
     if ( GetObjProperty(mobile,"#moved") )
@@ -103,79 +58,218 @@ program walk_on_moongate(mobile, moongate )
     toZ := moongates[ mobface ] [ 3 ];
 	toRealm := moongates[ mobface ] [ 4 ];
       
-    SetObjProperty(mobile,"#moved", 1);
-    SendGateGump(mobile, moongate);
+    SetObjProperty(mobile, "#moved", 1);
+
+    var res := GFCreateGump(mobile, res);
+	
+	res.nodispose := 1;
+	res.nomove := 1;
+
+	GFResizePic(res, 50, 50, 336, 640, 400);
+	GFTextLine(res, 235, 85, TEXT_COLOR_TITLE, "Select Your Destination");
+	GFTextLine(res, 135, 175, TEXT_COLOR_TITLE, "Felucca");
+	GFTextLine(res, 265, 175, TEXT_COLOR_TITLE, "Trammel");
+	GFTextLine(res, 395, 175, TEXT_COLOR_TITLE, "Ilshenar");
+	GFTextLine(res, 555, 175, TEXT_COLOR_TITLE, "Malas");
+	GFTextLine(res, 395, 275, TEXT_COLOR_TITLE, "Tokuno");
+	GFTextLine(res, 555, 275, TEXT_COLOR_TITLE, "Termur");
+	
+
+	//Teleport Buttons for Trammel
+	GFTextLine(res, 135, 200, TEXT_COLOR_GATE, "Moonglow");
+	GFAddButton(res, 215, 205, 2360, 2361, GF_CLOSE_BTN, 2);
+	GFTextLine(res, 135, 225, TEXT_COLOR_GATE, "Britain");
+	GFAddButton(res, 215, 230, 2360, 2361, GF_CLOSE_BTN, 4);
+	GFTextLine(res, 135, 250, TEXT_COLOR_GATE, "Jhelom");
+	GFAddButton(res, 215, 255, 2360, 2361, GF_CLOSE_BTN, 6);
+	GFTextLine(res, 135, 275, TEXT_COLOR_GATE, "Yew");
+	GFAddButton(res, 215, 280, 2360, 2361, GF_CLOSE_BTN, 8);
+	GFTextLine(res, 135, 300, TEXT_COLOR_GATE, "Minoc");
+	GFAddButton(res, 215, 305, 2360, 2361, GF_CLOSE_BTN, 10);
+	GFTextLine(res, 135, 325, TEXT_COLOR_GATE, "Trinsic");
+	GFAddButton(res, 215, 330, 2360, 2361, GF_CLOSE_BTN, 12);
+	GFTextLine(res, 135, 350, TEXT_COLOR_GATE, "Skara Brae");
+	GFAddButton(res, 215, 355, 2360, 2361, GF_CLOSE_BTN, 14);
+	GFTextLine(res, 135, 375, TEXT_COLOR_GATE, "Magincia");
+	GFAddButton(res, 215, 380, 2360, 2361, GF_CLOSE_BTN, 16);
+
+	//Teleport Buttons for Felucca
+	GFTextLine(res, 265, 200, TEXT_COLOR_GATE, "Main City");
+	GFAddButton(res, 345, 205, 2360, 2361, GF_CLOSE_BTN, 2);
+
+	//Teleport Buttons for Ilshenar
+	GFTextLine(res, 395, 200, TEXT_COLOR_GATE, "Virtues");
+	GFAddButton(res, 475, 205, 2360, 2361, GF_CLOSE_BTN, 20);
+
+	//Teleport Buttons for Tokuno
+	GFTextLine(res, 395, 300, TEXT_COLOR_GATE, "Zento");
+	GFAddButton(res, 475, 305, 2360, 2361, GF_CLOSE_BTN, 18);
+
+	//Teleport Buttons for Malas
+	GFTextLine(res, 555, 200, TEXT_COLOR_GATE, "Main City");
+	GFAddButton(res, 635, 205, 2360, 2361, GF_CLOSE_BTN, 2);
+
+	//Teleport Buttons for Termur
+	GFTextLine(res, 555, 300, TEXT_COLOR_GATE, "Main City");
+	GFAddButton(res, 635, 305, 2360, 2361, GF_CLOSE_BTN, 2);
+	var data := GFSendGump(mobile, res);
+
+	case( data[0] )
+
+		2: 
+			x:=moongates[1][1];
+			y:=moongates[1][2];
+			z:=moongates[1][3];
+			realm:=moongates[1][4];
+		4: 
+			x:=moongates[2][1];
+			y:=moongates[2][2];
+			z:=moongates[2][3];
+			realm:=moongates[2][4];
+		6: 
+			x:=moongates[3][1];
+			y:=moongates[3][2];
+			z:=moongates[3][3];
+			realm:=moongates[3][4];
+		8: 
+			x:=moongates[4][1];
+			y:=moongates[4][2];
+			z:=moongates[4][3]; 
+			realm:=moongates[4][4];
+		10: 
+			x:=moongates[5][1];
+			y:=moongates[5][2];
+			z:=moongates[5][3]; 
+			realm:=moongates[5][4];
+		12:
+			x:=moongates[6][1];
+			y:=moongates[6][2];
+			z:=moongates[6][3]; 
+			realm:=moongates[6][4];
+		14:
+			x:=moongates[7][1];
+			y:=moongates[7][2];
+			z:=moongates[7][3]; 
+			realm:=moongates[7][4];
+		16:
+			x:=moongates[8][1];
+			y:=moongates[8][2];
+			z:=moongates[8][3];
+			realm:=moongates[8][4]; 
+		18:
+			x:=moongates[9][1];
+			y:=moongates[9][2];
+			z:=moongates[9][3];
+			realm:=moongates[9][4]; 
+		20:
+			x:=moongates[10][1];
+			y:=moongates[10][2];
+			z:=moongates[10][3];
+			realm:=moongates[10][4]; 
+
+	endcase
+
+	if((x==0) and (y==0) and (z==0))
+		EraseObjProperty(mobile,"#moved");
+		return 0;
+	endif
+
+	if (mobile.x != moongate.x || mobile.y != moongate.y)
+		SendSysMessage(mobile, "Cancelled, you moved");
+		EraseObjProperty(mobile,"#moved");
+		return 0;
+	else
+		MoveObjectToLocation(mobile, x, y, z, realm);
+	endif
 
 endprogram    
 
-function SendGateGump(who, moongate)
-	var x:=0;
-	var y:=0;
-	var z:=0;
-	var realm;
-	var res := SendDialogGump( who, layout, data );
+function SendGateGump(mobile)
 
+	var res := GFCreateGump();
+	
+	GFPage(res, 0);
+	res.nodispose := 1;
+	res.nomove := 1;
+
+	GFResizePic(res, 50, 50, 336, 720, 400);
+	GFTextLine(res, 235, 85, TEXT_COLOR, "Select Your Destination");
+	GFTextLine(res, 120, 175, TEXT_COLOR, "Felucca");
+	GFTextLine(res, 220, 175, TEXT_COLOR, "Trammel");
+	GFTextLine(res, 320, 175, TEXT_COLOR, "Ilshenar");
+	GFTextLine(res, 420, 175, TEXT_COLOR, "Malas");
+	GFTextLine(res, 520, 175, TEXT_COLOR, "Tokuno");
+	GFTextLine(res, 620, 175, TEXT_COLOR, "Termur");
+	
+
+	//Teleport Buttons	
+	GFTextLine(res, 120, 175, TEXT_COLOR, "Felucca");
+	GFAddButton(res, 120, 175, 247, 249, GF_CLOSE_BTN, 2);
+	
+	
+	
+	return GFSendGump(mobile, res);
+	/*
 	Case( res[0] )
 
-		2: x:=moongates[1][1];
-                   y:=moongates[1][2];
-                   z:=moongates[1][3];
-				   realm:=moongates[1][4];
+		2: 
+			x:=moongates[1][1];
+			y:=moongates[1][2];
+			z:=moongates[1][3];
+			realm:=moongates[1][4];
 
-		4: x:=moongates[2][1];
-                   y:=moongates[2][2];
-                   z:=moongates[2][3];
-				   realm:=moongates[2][4];
+		4: 
+			x:=moongates[2][1];
+			y:=moongates[2][2];
+			z:=moongates[2][3];
+			realm:=moongates[2][4];
 
-		6: x:=moongates[3][1];
-                   y:=moongates[3][2];
-                   z:=moongates[3][3];
-				   realm:=moongates[3][4];
+		6: 
+			x:=moongates[3][1];
+			y:=moongates[3][2];
+			z:=moongates[3][3];
+			realm:=moongates[3][4];
 
-		8: x:=moongates[4][1];
-                   y:=moongates[4][2];
-                   z:=moongates[4][3]; 
-				   realm:=moongates[4][4];
+		8: 
+			x:=moongates[4][1];
+			y:=moongates[4][2];
+			z:=moongates[4][3]; 
+			realm:=moongates[4][4];
 
-		10: x:=moongates[5][1];
-                   y:=moongates[5][2];
-                   z:=moongates[5][3]; 
-				   realm:=moongates[5][4];
+		10: 
+			x:=moongates[5][1];
+			y:=moongates[5][2];
+			z:=moongates[5][3]; 
+			realm:=moongates[5][4];
 
-		12:x:=moongates[6][1];
-                   y:=moongates[6][2];
-                   z:=moongates[6][3]; 
-				   realm:=moongates[6][4];
+		12:
+			x:=moongates[6][1];
+			y:=moongates[6][2];
+			z:=moongates[6][3]; 
+			realm:=moongates[6][4];
 
-		14:x:=moongates[7][1];
-                   y:=moongates[7][2];
-                   z:=moongates[7][3]; 
-				   realm:=moongates[7][4];
+		14:
+			x:=moongates[7][1];
+			y:=moongates[7][2];
+			z:=moongates[7][3]; 
+			realm:=moongates[7][4];
 
-		16:x:=moongates[8][1];
-                   y:=moongates[8][2];
-                   z:=moongates[8][3];
-				   realm:=moongates[8][4]; 
+		16:
+			x:=moongates[8][1];
+			y:=moongates[8][2];
+			z:=moongates[8][3];
+			realm:=moongates[8][4]; 
 
-		18:x:=moongates[9][1];
-                   y:=moongates[9][2];
-                   z:=moongates[9][3];
-				   realm:=moongates[9][4]; 
+		18:
+			x:=moongates[9][1];
+			y:=moongates[9][2];
+			z:=moongates[9][3];
+			realm:=moongates[9][4]; 
 
 	EndCase
+	*/
 	
-	if((x==0) and (y==0) and (z==0))
-		EraseObjProperty(who,"#moved");
-		return 0;
-	endif
 
-	if (who.x != moongate.x || who.y != moongate.y)
-		SendSysMessage(who, "Cancelled, you moved");
-		EraseObjProperty(who,"#moved");
-		return 0;
-	else
-		MoveObjectToLocation(who, x, y, z, realm);
-	endif
 
 
 endfunction
