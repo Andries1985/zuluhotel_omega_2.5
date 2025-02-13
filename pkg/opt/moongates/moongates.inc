@@ -37,7 +37,7 @@ function CreateMoongates();
     	{643,	2067,	5,		"britannia"},		// skara
     	{3564,	2140,	34,		"britannia"},		// magincia
 		{633,	1189,	25,		"tokuno"},			// Zento City
-		{2264, 	1574,	-28,	"ilshenar"}			//Vitures Gate System
+		{2264, 	1574,	-28,	"ilshenar"}			// Vitures Gate System
     };
 
 	var moongate;
