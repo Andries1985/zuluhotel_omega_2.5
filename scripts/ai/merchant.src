@@ -156,8 +156,6 @@ function setmeup()
 		style:="mage";
 	elseif ((lower(merchant_type) == "weaponsmith") or (lower(merchant_type) == "armorer"))
 		style:="warrior";
-	elseif ((lower(merchant_type) == "blacksmith") or (lower(merchant_type) == "miner"))
-		style:="warrior";
 	elseif ((lower(merchant_type) == "tinker") or (lower(merchant_type) == "leatherworker"))
 		style:="weakwarrior";
 	elseif ((lower(merchant_type) == "bowyer") or (lower(merchant_type) == "thief"))
