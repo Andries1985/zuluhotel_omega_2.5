@@ -473,7 +473,7 @@ function CreateTeleporters()
 
         // check -255.
         if ( fromZ == -255 )
-            fromZ := GetWorldHeight( fromx, fromy );
+            fromZ := GetWorldHeight( fromx, fromy, fromR );
         endif
 
         toX := cint(tele[4]);

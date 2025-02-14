@@ -5,16 +5,21 @@
 use os;
 use uo;
 use cfgfile;
+
+include ":gumps:gumps";
+include ":gumps:gumps_ex";
 include ":staff:include/staff";
 include "include/math"; // Used for Mod
 
 const TEXTSTARTLOCY :=  70;  // The location of the top of the gump
+const TEXT_COLOR_TITLE := 1764;
+const TEXT_COLOR_GATE := 1764;
 
 var layout := array(      // The layout of the gump with text notes to be added later
 "page 0",
 "nodispose",
 "nomove",
-"resizepic  50   0 2600 540 405", // background
+"resizepic 50 50 2600 540 405", // background
 
 "text 120 59 300 0",
 "text 220 59 300 1",
@@ -30,56 +35,98 @@ var data := array(      // The data array that holds all the text to be displaye
        "Send"
 );
 
-program textcmd_go( who, text )
+program textcmd_go( who )
 
+  var locs;
   // Test to see if the user sent a location via command text.  if not show gump, else attempt travel to that location
-  if(!text)
+  //if(!text)
+  //  return;
+  //else
+    var res := GFCreateGump(50, 50, 320, 400);
+  	GFMovable(res, 0);
 
-    // The name of the current user of this command
-    var tname := lower(who.name);
+    GFGumpPic(res, 50, 50, 1250);
+    GFTextLine(res, 175, 100, TEXT_COLOR_TITLE, "Select Your Facet");
+    GFTextLine(res, 125, 125, TEXT_COLOR_TITLE, "Felucca");
+    GFAddButton(res, 225, 130, 2360, 2361, GF_CLOSE_BTN, 2);
+    GFTextLine(res, 125, 150, TEXT_COLOR_TITLE, "Trammel");
+    GFAddButton(res, 225, 155, 2360, 2361, GF_CLOSE_BTN, 4);
+    GFTextLine(res, 125, 175, TEXT_COLOR_TITLE, "Malas");
+    GFAddButton(res, 225, 180, 2360, 2361, GF_CLOSE_BTN, 6);
+    GFTextLine(res, 125, 200, TEXT_COLOR_TITLE, "Ilshenar");
+    GFAddButton(res, 225, 205, 2360, 2361, GF_CLOSE_BTN, 8);
+    GFTextLine(res, 125, 225, TEXT_COLOR_TITLE, "Tokuno");
+    GFAddButton(res, 225, 230, 2360, 2361, GF_CLOSE_BTN, 10);
+    GFTextLine(res, 125, 250, TEXT_COLOR_TITLE, "Termur");
+    GFAddButton(res, 225, 255, 2360, 2361, GF_CLOSE_BTN, 12);
+    
+    var datas := GFSendGump(who, res);
+    
+    case( datas[0] )
 
-    // Create the Array
-    FillInArrays( tname );
+      2: 
+        locs  := readconfigfile("golocsfelucca");
+      4: 
+        locs  := readconfigfile("golocstrammel");
+      6: 
+        locs  := readconfigfile("golocsmalas");
+      8: 
+        locs  := readconfigfile("golocsilshenar");
+      10: 
+        locs  := readconfigfile("golocstokuno");
+      12:
+        locs  := readconfigfile("golocstermur");
+      default:
+        return;
+    endcase
+  //endif
 
-    // Display the array and receive a responce from the player
-    var result := SendDialogGump( who, layout, data );
+  // The name of the current user of this command
+  var tname := lower(who.name);
 
-    // If the user canceled, quit
-    if (result[0] == 0)
-      return;
-    endif
+  // Create the Array
+  FillInArrays( tname, locs );
 
-    // Open files and set veriables
-    var locs    := readconfigfile("golocs");
-    var MaxLocs := GetConfigMaxIntKey(locs);
-    var Dest    := locs[mod(result[0], MaxLocs)];
-    var Traveler;
+  // Display the array and receive a responce from the player
+  var result := SendDialogGump( who, layout, data );
 
-    // Determine if we are teleporting ourselves or someone other and set the traveler variable
-    if ( result[0] > MaxLocs ) // teleporting someone else
-       SendSysmessage( who , "Select a MOBILE." );
-       Traveler :=  Target( who , TGTOPT_NOCHECK_LOS );
+  // If the user canceled, quit
+  if (result[0] == 0)
+    return;
+  endif
 
-       if(!Traveler)
-         SendSysmessage( who , "Invalid selection." );
-         return;
-       endif
-		if(result[0] == MaxLocs*2)
-			Dest    := locs[MaxLocs];
-		endif
-    else
-      // Teleporting ourself
-      Traveler := who;
-    endif
+  // Open files and set veriables
+  //var locs    := readconfigfile("golocs");
+  var MaxLocs := GetConfigMaxIntKey(locs);
+  var Dest    := locs[mod(result[0], MaxLocs)];
+  var Traveler;
+
+  // Determine if we are teleporting ourselves or someone other and set the traveler variable
+  if ( result[0] > MaxLocs ) // teleporting someone else
+      SendSysmessage( who , "Select a MOBILE." );
+      Traveler :=  Target( who , TGTOPT_NOCHECK_LOS );
+
+      if(!Traveler)
+        SendSysmessage( who , "Invalid selection." );
+        return;
+      endif
+  if(result[0] == MaxLocs*2)
+    Dest    := locs[MaxLocs];
+  endif
+  else
+    // Teleporting ourself
+    Traveler := who;
+  endif
 	if(result[0] == MaxLocs)
 		Dest    := locs[mod(result[0], MaxLocs+1)];
 	endif
 	LogCommand(who, GetProcess(GetPid()).name, traveler.name+"/"+traveler.serial, "Sent TO "+dest.x+" "+dest.y+" "+GetMapInfo(Dest.X, Dest.Y).Z);
     // Teleport moble
-    var move := MoveObjecttoLocation(Traveler, Dest.X, Dest.Y, Dest.Z, Dest.R ,MOVEOBJECT_FORCELOCATION );
+  var move := MoveObjecttoLocation(Traveler, Dest.X, Dest.Y, Dest.Z, Dest.R ,MOVEOBJECT_FORCELOCATION );
 	if(!move)
         SendSysMessage( who, "Unable to go there: " + move.errortext );
 	endif
+  /*
   else
 	var params := SplitWords( text );
     if (len(params) < 3) // didn't pass Z
@@ -91,13 +138,14 @@ program textcmd_go( who, text )
     if (!res)
         SendSysMessage( who, "Unable to go there: " + res.errortext );
     endif
-
+  
   endif
+  */
 
 endprogram
 
-function FillInArrays( tname )
-    var telelocations := readconfigfile("::golocs");
+function FillInArrays( tname, locs )
+    var telelocations := locs;
     var datalen;
     var layoutlen;
     var prev_y := cint(TEXTSTARTLOCY);
@@ -114,9 +162,9 @@ function FillInArrays( tname )
         // Store Name
         datindx := datalen+1;
         data[datindx] := CurrLoc.Name;
-        if (mod(locationscount, 19) == 1)
+        if (mod(locationscount, 23) == 1)
           // Pointer Down
-          if (locationscount >= 18)
+          if (locationscount >= 22)
             rowloc :=320;
           endif
           prev_y := TEXTSTARTLOCY;
@@ -139,4 +187,3 @@ endfunction
 function GetgoDataLength();
     return (len(data));
 endfunction
-

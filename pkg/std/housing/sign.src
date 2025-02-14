@@ -228,6 +228,7 @@ program textcmd_sign( who , sign )
 								return;
 							endif
 						endif
+
 						case (house.objtype)
 							0x6064: CreateItemInBackpack( who, 0x6019, 1 );
 							0x6066: CreateItemInBackpack( who, 0x601A, 1 );
@@ -291,17 +292,17 @@ program textcmd_sign( who , sign )
 									destroyitem(item);
 								endif
 							endforeach
-						endif			
+						endif
 
 						var z := 0;
 						repeat
 							foreach item in ListItemsNearLocation( sign.x, sign.y, z, 20, sign.realm )
-								if(item.getprop("houseserial") == house.serial || item.getprop("f"))
+								if(item.getprop("houseserial") == house.serial || item.getprop("f") || item.objtype == 0xA3CE)
 										destroyitem(item);
 								endif
 							endforeach
-							z := z+20;
-						until(z >= 60);
+							z := z+1;
+						until(z >= 80);
 
 						if(GetObjProperty( house , "ownerserial") == who.serial)
 							RemoveHouseFromCharacter(who, house.serial);
@@ -1154,9 +1155,11 @@ function AddTeleporter( who, house, num )
 					SetObjProperty( tele2, "GateDestX", itemt.x );
 					SetObjProperty( tele2, "GateDestY", itemt.y );
 					SetObjProperty( tele2, "GateDestZ", itemt.z );
+					SetObjProperty( tele2, "GateDestRealm", itemt.realm );
 					SetObjProperty( tele, "GateDestX", itemt2.x );
 					SetObjProperty( tele, "GateDestY", itemt2.y );
 					SetObjProperty( tele, "GateDestZ", itemt2.z );
+					SetObjProperty( tele, "GateDestRealm", itemt2.realm );
 				else
 					DestroyItem(tele);
 					DestroyItem(tele2);
