@@ -73,10 +73,18 @@ function Buildhouse( character, deed )
     if (!where) return; endif
 
 	//var antigate := ListItemsNearLocation(where.x, where.y, where.z, 50, where.realm);
-	var antigate :=  ListObjectsInBox( where.x-25, where.y-25, where.z-25, where.x+25,where.y+25,where.z+25, where.realm );
-	foreach item in antigate
+	var antihouse :=  ListObjectsInBox( where.x-25, where.y-25, where.z-25, where.x+25,where.y+25,where.z+25, where.realm );
+	foreach item in antihouse
 		if (item.objtype == 0xa3c8)
-			SendSysMessage( character, "You can't place your house this close to a dungeon." );
+			SendSysMessage( character, "Anti-House Nearby." );
+			return;
+		endif
+	endforeach
+
+    var systele :=  ListObjectsInBox( where.x-25, where.y-25, where.z-25, where.x+25,where.y+25,where.z+25, where.realm );
+	foreach item in systele
+		if (item.objtype == 0x6200)
+			SendSysMessage( character, "System Teleporter nearby, no house allowed." );
 			return;
 		endif
 	endforeach
@@ -412,8 +420,8 @@ function CreatehouseKeysAndBuiltDeed( character, housetype, where, deed )
     SetObjProperty( house , "builtdeed" , builtdeed.serial );
     SetObjProperty( house , "Friends" , {} ); // Toadstool - New friends function 
     if (housetype==0x6BB8 or housetype==0x6070 or housetype==0x6072)
-	house.movable:=0;
-	house.visible:=1;
+        house.movable:=0;
+        house.visible:=1;
     endif
 
     if (!house)

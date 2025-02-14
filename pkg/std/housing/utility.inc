@@ -1,3 +1,6 @@
+use uo;
+use os;
+
 include "setup";
 
 const VIEW_SECURE := 2;
@@ -81,8 +84,8 @@ function UpgradeSecure(who, container, boxo)
 	foreach item in EnumerateItemsInContainer(container)
 		if (item.serial != boxo.serial)
 			if (item.container.serial == boxo.serial) // Moving top level items only
-				if (!MoveItemToContainer(item, container))
-					MoveItemToLocation(item, who.x, who.y, who.z, MOVEITEM_FORCELOCATION);
+				if (!MoveObjectToLocation(item, container.x, container.y, container.z, container.realm))
+					MoveObjectToLocation(item, who.x, who.y, who.z, who.realm, MOVEOBJECT_FORCELOCATION);
 					SendSysMessage(who, item.desc+" placed at your feet as the secure is full.", 3, 67);
 				endif
 			endif
@@ -336,32 +339,32 @@ endfunction
 /////////////////////////////////////////////////////////////////////////////////////////////
 function RemoveHouseFromCharacter(who, hserial)
 
-var houses := GetObjProperty(who, "Houses");
-var houses2 := houses;
+	var houses := GetObjProperty(who, "Houses");
+	var houses2 := houses;
 
-if (!houses)
-	syslog("Error, player SHOULD have a house to remove, but doesn't");
-	return 0;
-endif
-
-foreach house in houses
-	if (house == hserial)
-		houses2.erase(_house_iter);
+	if (!houses)
+		syslog("Error, player SHOULD have a house to remove, but doesn't");
+		return 0;
 	endif
-endforeach
 
-if (houses2.size() < 1)
-	EraseObjProperty(who, "Houses");
-else
-	SetObjProperty(who, "Houses", houses2);
-endif
+	foreach house in houses
+		if (house == hserial)
+			houses2.erase(_house_iter);
+		endif
+	endforeach
 
-endfunction
+	if (houses2.size() < 1)
+		EraseObjProperty(who, "Houses");
+	else
+		SetObjProperty(who, "Houses", houses2);
+	endif
 
-function RegisterHouseType(deed, house)
+	endfunction
 
-var name := StrReplace(deed.desc, "a deed to a ", "");
+	function RegisterHouseType(deed, house)
 
-SetObjProperty(house, "MultiType", name);
+	var name := StrReplace(deed.desc, "a deed to a ", "");
+
+	SetObjProperty(house, "MultiType", name);
 
 endfunction
