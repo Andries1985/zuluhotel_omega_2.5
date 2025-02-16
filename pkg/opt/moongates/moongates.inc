@@ -20,8 +20,6 @@ use os;
 // This should be a var variable since other scripts need it
 // to cycle the moongates via the index variable.
 
-
-
 function CreateMoongates();
 
     // since the language don't have truely var variables
@@ -36,8 +34,13 @@ function CreateMoongates();
     	{1828,	2948,	-20,	"britannia"},		// trinsic
     	{643,	2067,	5,		"britannia"},		// skara
     	{3564,	2140,	34,		"britannia"},		// magincia
-		{633,	1189,	25,		"tokuno"},			// Zento City
-		{2264, 	1574,	-28,	"ilshenar"}			// Vitures Gate System
+		{802,	1204,	25,		"tokuno"},			// Zento City
+		{1169,	998,	41,		"tokuno"},			// Isamu-Jima Island
+		{270,	628,	15,		"tokuno"},			// Homare-Jima Island
+		{2264, 	1574,	-28,	"ilshenar"},		//Vitures Gate System
+		{1015,	527,	-65,	"malas"},			//Luna
+		{1997,	1386,	-85,	"malas"},			//Umbra
+		{851,	3525,	-38,	"termur"}			//Royal City
     };
 
 	var moongate;
