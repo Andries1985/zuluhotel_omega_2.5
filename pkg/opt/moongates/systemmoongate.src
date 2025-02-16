@@ -28,8 +28,13 @@ const TEXT_COLOR_GATE := 1764;
     	{1828,	2948,	-20,	"britannia"},		// trinsic
     	{643,	2067,	5,		"britannia"},		// skara
     	{3564,	2140,	34,		"britannia"},		// magincia
-		{633,	1189,	25,		"tokuno"},			// Zento City
-		{2264, 	1574,	-28,	"ilshenar"}			//Vitures Gate System
+		{802,	1204,	25,		"tokuno"},			// Zento City
+		{1169,	998,	41,		"tokuno"},			// Isamu-Jima Island
+		{270,	628,	15,		"tokuno"},			// Homare-Jima Island
+		{2264, 	1574,	-28,	"ilshenar"},		//Vitures Gate System
+		{1015,	527,	-65,	"malas"},			//Luna
+		{1997,	1386,	-85,	"malas"},			//Umbra
+		{851,	3525,	-38,	"termur"}			//Royal City
     };
 
 program walk_on_moongate(mobile, moongate)
@@ -97,19 +102,25 @@ program walk_on_moongate(mobile, moongate)
 
 	//Teleport Buttons for Ilshenar
 	GFTextLine(res, 395, 200, TEXT_COLOR_GATE, "Virtues");
-	GFAddButton(res, 475, 205, 2360, 2361, GF_CLOSE_BTN, 20);
+	GFAddButton(res, 475, 205, 2360, 2361, GF_CLOSE_BTN, 24);
 
 	//Teleport Buttons for Tokuno
-	GFTextLine(res, 395, 300, TEXT_COLOR_GATE, "Zento");
+	GFTextLine(res, 395, 300, TEXT_COLOR_GATE, "Zento City");
 	GFAddButton(res, 475, 305, 2360, 2361, GF_CLOSE_BTN, 18);
+	GFTextLine(res, 395, 325, TEXT_COLOR_GATE, "Isamu-Jima");
+	GFAddButton(res, 475, 330, 2360, 2361, GF_CLOSE_BTN, 20);
+	GFTextLine(res, 395, 350, TEXT_COLOR_GATE, "Homare-Jima");
+	GFAddButton(res, 475, 355, 2360, 2361, GF_CLOSE_BTN, 22);
 
 	//Teleport Buttons for Malas
-	GFTextLine(res, 555, 200, TEXT_COLOR_GATE, "Main City");
-	GFAddButton(res, 635, 205, 2360, 2361, GF_CLOSE_BTN, 2);
+	GFTextLine(res, 555, 200, TEXT_COLOR_GATE, "Luna");
+	GFAddButton(res, 635, 205, 2360, 2361, GF_CLOSE_BTN, 26);
+	GFTextLine(res, 555, 225, TEXT_COLOR_GATE, "Umbra");
+	GFAddButton(res, 635, 230, 2360, 2361, GF_CLOSE_BTN, 28);
 
 	//Teleport Buttons for Termur
-	GFTextLine(res, 555, 300, TEXT_COLOR_GATE, "Main City");
-	GFAddButton(res, 635, 305, 2360, 2361, GF_CLOSE_BTN, 2);
+	GFTextLine(res, 555, 300, TEXT_COLOR_GATE, "Royal City");
+	GFAddButton(res, 635, 305, 2360, 2361, GF_CLOSE_BTN, 30);
 	var data := GFSendGump(mobile, res);
 
 	case( data[0] )
@@ -153,17 +164,42 @@ program walk_on_moongate(mobile, moongate)
 			x:=moongates[8][1];
 			y:=moongates[8][2];
 			z:=moongates[8][3];
-			realm:=moongates[8][4]; 
+			realm:=moongates[8][4];
 		18:
 			x:=moongates[9][1];
 			y:=moongates[9][2];
 			z:=moongates[9][3];
-			realm:=moongates[9][4]; 
+			realm:=moongates[9][4];
 		20:
 			x:=moongates[10][1];
 			y:=moongates[10][2];
 			z:=moongates[10][3];
-			realm:=moongates[10][4]; 
+			realm:=moongates[10][4];
+		22:
+			x:=moongates[11][1];
+			y:=moongates[11][2];
+			z:=moongates[11][3];
+			realm:=moongates[11][4];
+		24:
+			x:=moongates[12][1];
+			y:=moongates[12][2];
+			z:=moongates[12][3];
+			realm:=moongates[12][4];
+		26:
+			x:=moongates[13][1];
+			y:=moongates[13][2];
+			z:=moongates[13][3];
+			realm:=moongates[13][4];
+		28:
+			x:=moongates[14][1];
+			y:=moongates[14][2];
+			z:=moongates[14][3];
+			realm:=moongates[14][4];
+		30:
+			x:=moongates[15][1];
+			y:=moongates[15][2];
+			z:=moongates[15][3];
+			realm:=moongates[15][4];
 
 	endcase
 

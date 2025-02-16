@@ -21,12 +21,12 @@ var layout := array(      // The layout of the gump with text notes to be added 
 "nomove",
 "resizepic 50 50 2600 540 405", // background
 
-"text 120 59 300 0",
+"text 75 59 300 0",
 "text 220 59 300 1",
 "text 270 59 300 2",
 "text 320 59 300 0",
-"text 420 59 300 1",
-"text 470 59 300 2"
+"text 465 59 300 1",
+"text 515 59 300 2"
 );
 
 var data := array(      // The data array that holds all the text to be displayed in the gump
@@ -151,7 +151,7 @@ function FillInArrays( tname, locs )
     var prev_y := cint(TEXTSTARTLOCY);
     var datindx := 2;
     var buttonret := 1;
-    var i, CurrLoc, rowloc:=120, locationscount := 0;
+    var i, CurrLoc, rowloc:=75, locationscount := 0;
     var numlocations := GetConfigMaxIntKey(telelocations);
     for( i := 1 ; i <= numlocations; i := i + 1  )
       CurrLoc := telelocations[i];
@@ -170,8 +170,8 @@ function FillInArrays( tname, locs )
           prev_y := TEXTSTARTLOCY;
         endif
         layout[GetgoLayoutLength()+1] := ("text " + rowloc +" "+ cstr(prev_y + 20) + " 995 " + datalen);
-        layout[GetgoLayoutLength()+1] := ("button " + (rowloc+110) +" "+cstr(prev_y + 25) + " 2103 2104 1 0 " + ((buttonret+1) / 2)); // Go Button
-        layout[GetgoLayoutLength()+1] := ("button " + (rowloc+160) +" "+cstr(prev_y + 25) + " 2103 2104 1 0 " + (((buttonret+1) / 2) + numlocations)); // Send Button
+        layout[GetgoLayoutLength()+1] := ("button " + (rowloc+150) +" "+cstr(prev_y + 25) + " 2103 2104 1 0 " + ((buttonret+1) / 2)); // Go Button
+        layout[GetgoLayoutLength()+1] := ("button " + (rowloc+200) +" "+cstr(prev_y + 25) + " 2103 2104 1 0 " + (((buttonret+1) / 2) + numlocations)); // Send Button
         prev_y := prev_y + 15;
       endif
       buttonret := buttonret + 2;
