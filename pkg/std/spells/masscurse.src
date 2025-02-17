@@ -48,7 +48,7 @@ program cast_curse( parms, spell_id )
 	detach();
 
 	var duration := GetModDuration( caster );
-	var victims := ListMobilesNearLocation( cint(thetarget.x), cint(thetarget.y), cint(thetarget.z), ModifyWithMagicEfficiency( caster , 4 ) );
+	var victims := ListMobilesNearLocation( cint(thetarget.x), cint(thetarget.y), cint(thetarget.z), ModifyWithMagicEfficiency( caster , 4 ), thetarget.realm );
 
 	victims := SmartAoE( caster, victims);
 

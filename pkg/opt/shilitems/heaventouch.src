@@ -28,7 +28,7 @@ program item_lifestream( who, item )
 	SetObjProperty( item, "charges", charges - 1 );
 
 	Detach();
-	var affected := ListMobilesNearLocation( who.x, who.y, who.z, 10 );
+	var affected := ListMobilesNearLocation( who.x, who.y, who.z, 10, who.realm );
 
 	affected := SmartBoost( who, affected);
 

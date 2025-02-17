@@ -47,7 +47,7 @@ program trielementalonhit( parms )
 		Sleepms( 250 );
 
 		PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE1);
-		PlayStationaryEffect( targ.x , targ.y , targ.z , 0x3789, speed:=30, loop:=30);
+		PlayStationaryEffect( targ.x , targ.y , targ.z , 0x3789, 0, 30, 0, targ.realm);
 		PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE2);
 
 		ApplyElementalDamage( targ , defender ,1, spelldmg , DMGID_WATER );

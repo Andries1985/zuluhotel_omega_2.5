@@ -15,7 +15,7 @@ endif
 
 var i;
 for ( i := 1; i <= tcount; i := i + 1)
-foreach critter in listmobilesnearlocation(who.x, who.y, who.z, 15)
+foreach critter in listmobilesnearlocation(who.x, who.y, who.z, 15, who.realm)
 
         if (critter.graphic in {0x190, 0x191} and !critter.cmdlevel)
                 PerformAction( critter, ACTION_BOW );

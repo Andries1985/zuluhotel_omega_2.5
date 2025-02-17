@@ -10,7 +10,7 @@ if(!ReserveItem(crystal)) return; endif
 
 SendSysmessage( character , "You smash the magic crystal!" );
 
-var affected := ListMobilesNearLocation( character.x, character.y, character.z, 15 );
+var affected := ListMobilesNearLocation( character.x, character.y, character.z, 15, character.realm );
 
 foreach cast_near in affected
 	PlayObjectCenteredEffect( cast_near, FX_BLESS_EFFECT, 10,10);

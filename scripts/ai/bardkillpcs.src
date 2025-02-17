@@ -39,7 +39,7 @@ function CloseDistance( opponent )
 	var ev := struct;
 	ev.+type;
 	ev.type := EVID_PEACEMADE;
-	foreach mobile in ListMobilesNearLocation( me.x, me.y, me.z, 15 ) 
+	foreach mobile in ListMobilesNearLocation( me.x, me.y, me.z, 15, me.realm ) 
 		if (CheckLineOfSight( me, mobile ) and mobile.npctemplate and mobile != opponent and mobile != me)
 			if (mobile.warmode == 0 and (GetObjProperty(mobile,"Karma") < (-500)) )	
 				helper := mobile;
@@ -81,7 +81,7 @@ function CloseDistance( opponent )
 	var argh;
 	var closest := 10;
 	if (me.hp < lasthp)
-		foreach mobile in ListMobilesNearLocation( me.x, me.y, me.z, 9)
+		foreach mobile in ListMobilesNearLocation( me.x, me.y, me.z, 9, me.realm)
 			if (CheckLineOfSight( me, mobile ) and mobile.warmode and mobile != me )	
 				if (distance(me,mobile) < closest)
 					argh := mobile;

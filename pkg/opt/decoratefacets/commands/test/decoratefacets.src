@@ -64,14 +64,14 @@ program DecorateFacets(who, text)
 									PlaceDecorations(facet);
 								endif
 								SetGlobalProperty("britannia_Decorated", 1);
-			"britannia_alt":	if(Post_SA == 1)
-									facet := facet + "/postSA";
-									PlaceDecorations(facet);
-								else
-									PlaceDecorations(facet + "/preSA");
-									facet := facet + "/preSA/oldMagincia";
-									PlaceDecorations(facet);
-								endif
+			"britannia_alt":	//if(Post_SA == 1)
+								//	facet := facet + "/postSA";
+								PlaceDecorations(facet);
+								//else
+								//	PlaceDecorations(facet + "/preSA");
+								//	facet := facet + "/preSA/oldMagincia";
+								//	PlaceDecorations(facet);
+								//endif
 								SetGlobalProperty("britannia_alt_Decorated", 1);
 			"ilshenar":			PlaceDecorations(facet);
 								SetGlobalProperty("ilshenar_Decorated", 1);

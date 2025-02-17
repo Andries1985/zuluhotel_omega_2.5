@@ -59,7 +59,7 @@ function MoveBackpackToCorpse(container)
          if( GetObjProperty( container , "summoned" ) )
                 foreach thingie in EnumerateItemsInContainer(mypack)
 			if (distance(thingie,container) != 0)
-			        moveObjecttolocation(thingie, container.x, container.y, container.z,0);
+			        moveObjecttolocation(thingie, container.x, container.y, container.z, container.realm, 0);
 			endif
                 endforeach
                 return 0;

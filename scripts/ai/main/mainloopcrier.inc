@@ -123,6 +123,6 @@ endfunction
 function ReturnHome()
 
 	var myhome := GetObjProperty(me,"myhome");
-	MoveObjectToLocation(me,myhome[1],myhome[2],myhome[3],MOVEOBJECT_FORCELOCATION);
+	MoveObjectToLocation(me,myhome[1],myhome[2],myhome[3], me.realm, MOVEOBJECT_FORCELOCATION);
 
 endfunction

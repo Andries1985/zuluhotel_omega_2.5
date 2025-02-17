@@ -24,23 +24,15 @@ include "include/time";
 // Max numbers of characters an account can have.
 CONST ACCT_MAX_CHARACTERS	:= 5;
 
-function CreateNewAccount( username, password, signup_ip, email:="", cmdlevel:=0, expansion:="" )
+function CreateNewAccount( username, password, signup_ip, expansion:="" )
 
 	var account := CreateAccount( username, password, 1 );
 	if( account.errortext )
 		return account;
 	endif
 
-	if( cmdlevel )
-		account.SetDefaultCmdLevel( CInt( cmdlevel ));
-	endif
-
 	if( expansion )
 		account.Set_UO_Expansion( expansion );
-	endif
-
-	if( email )
-		account.SetProp( "EMail", email );
 	endif
 	
 	account.SetProp( "CreatedAt", NowString());

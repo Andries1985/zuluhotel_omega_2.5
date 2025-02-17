@@ -197,7 +197,7 @@ function PlayArcheryAnimation(attacker, defender, attackerweaponType)
 		animation := 0x183e;
 	endif
 
-	PlayMovingEffectXYZEx( attacker.x, attacker.y, attacker.z+9, defender.x, defender.y, defender.z+5,  defender.realm, animation, 2, 0, color);
+	PlayMovingEffectXYZEx( attacker.x, attacker.y, attacker.z+9, defender.x, defender.y, defender.z+5, defender.realm, animation, 2, 0, color);
 endfunction
 
 function CombatAdvancement( attacker, weapon, defender )

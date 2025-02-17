@@ -51,7 +51,7 @@ program wraithbreath( parms )
 	var range	:= ModifyWithMagicEfficiency( caster , Cint( magery / 30 ) );
 	var maxduration	:= ModifyWithMagicEfficiency( caster , 7 );
 	EraseObjProperty( caster , "#Casting" );
-	var targets	:= ListMobilesNearLocationEx( cint(cast_on.x), cint(cast_on.y), cint(cast_on.z), range, 0x03);
+	var targets	:= ListMobilesNearLocationEx( cint(cast_on.x), cint(cast_on.y), cint(cast_on.z), range, 0x03, cast_on.realm);
 	var victims	:= array;
 	var duration;
 

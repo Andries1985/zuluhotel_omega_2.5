@@ -56,22 +56,26 @@ program CustomItemDye (who, omegadye)
 	endif
 
 	var old_color := item.color;
-	item.color := new_color;
-	charges -= 1;
-	SetObjProperty(omegadye, "charges", charges);
+	//item.color := new_color;
+	//charges -= 1;
+	//SetObjProperty(omegadye, "charges", charges);
 
 	if (YesNo(who, "Are you sure about the color change?"))
 		if (charges)
 			SendSysMessage(who, "You use some of the Omega Dye's power, there's still "+charges+" charges left.", color:= 814);
+			item.color := new_color;
+			charges -= 1;
+			SetObjProperty(omegadye, "charges", charges);
 		else
 			SendSysMessage(who, "You use the last of the Omega Dye's power and it disintegrates in your hands!", color:= 814);
 			DestroyItem(omegadye);
 		endif
 		PlayObjectCenteredEffectEX( who, 0x377A, 1, 15, omegadye.color, 3);
 	else
-		charges += 1;
-		SetObjProperty(omegadye, "charges", charges);
-		item.color := old_color;
+		//charges += 1;
+		//SetObjProperty(omegadye, "charges", charges);
+		//item.color := old_color;
+		SendSysMessage(who, "You do not use the Omega Dye's power, there's still "+charges+" charges left.", color:= 814);
 	endif
 	IncRevision(omegadye);
 	Releaseitem(omegadye);

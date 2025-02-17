@@ -625,7 +625,7 @@ function ProcessRitual( who , item , byref magic_circle , the_ritual , keep_circ
 		endif
 	endif
 
-	foreach mobile in ListMobilesNearLocation( who.x , who.y , who.z , 10 );
+	foreach mobile in ListMobilesNearLocation( who.x , who.y , who.z , 10, who.realm );
 		mobile.setlightlevel( 0 , 600 );
 	endforeach
 
@@ -954,7 +954,7 @@ function LookForTheCircle( who )
 		EnableEvents( SYSEVENT_SPEECH , 6 );
 
 		PrintTextAbove( who , "*The sky darken*" );
-		foreach mobile in ListMobilesNearLocation( who.x , who.y , who.z , 10 );
+		foreach mobile in ListMobilesNearLocation( who.x , who.y , who.z , 10, who.realm );
 			mobile.setlightlevel( 24 , 600 );
 		endforeach
 

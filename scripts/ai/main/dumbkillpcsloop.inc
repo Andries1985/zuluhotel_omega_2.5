@@ -68,7 +68,7 @@ function main_AI_loop()
 			mydestx := ev.x;
 			mydesty := ev.y;
 			steps := 0;
-			drop_anchor();
+			drop_anchor(me);
 			WalkTowardLocation(mydestx, mydesty);
             endcase
 	  until (!(ev := os::wait_for_event(2)));
@@ -108,7 +108,7 @@ function get_help( opponent )
 	ev.+type := EVID_ALL_ATTACK_CMD;
 	ev.+source := opponent;
 
-	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 4 )
+	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 4, me.realm )
 		if ( (critter.npctemplate) and (critter.script != "tamed") and (!critter.warmode) and
 		     (critter.serial != me.serial) )
 			SendEvent(critter, ev);

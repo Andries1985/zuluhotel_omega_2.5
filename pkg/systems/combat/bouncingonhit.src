@@ -14,12 +14,12 @@ include "include/damages";
 include "include/random";
 program bouncingonhit(parms)
 
-	var attacker 	 := parms[1];
-	var defender 	 := parms[2];
-	var weapon 	 := parms[3];
-	var armor 	 := parms[4];
-	var basedamage := parms[5];
-	var rawdamage	 := parms[6];
+	var attacker	:= parms[1];
+	var defender	:= parms[2];
+	var weapon 	 	:= parms[3];
+	var armor		:= parms[4];
+	var basedamage	:= parms[5];
+	var rawdamage	:= parms[6];
 	
 	var chance 	 := GetObjProperty( armor , "ChanceofEffect" );
 
@@ -35,9 +35,10 @@ program bouncingonhit(parms)
 		var newx	:= attacker.x + kickbackx;
 		var newy	:= attacker.y + kickbacky;
 		var newz	:= attacker.z + kickbackz;
+		var newr	:= attacker.realm;
 		
 		if( CheckLosAt( attacker , newx , newy , newz ) )
-			MoveObjectToLocation( attacker , newx , newy , newz );
+			MoveObjectToLocation( attacker , newx , newy , newz, newr );
 		endif
 	endif
 				 	 

@@ -15,6 +15,7 @@ program close_door(door)
     var newx := (door.x - xmod);
     var newy := (door.y - ymod);
     var newz := (door.z);
+    var newr := door.realm;
 
     var closesound;
     var opensound;
@@ -43,14 +44,14 @@ program close_door(door)
            return;
       endif
       
-      people := len(ListMobilesNearLocation( newx, newy, newz, 0));
-      hidden := len(ListMobilesNearLocationEx( newx, newy, newz, 0, LISTEX_FLAG_HIDDEN));
+      people := len(ListMobilesNearLocation( newx, newy, newz, 0, newr));
+      hidden := len(ListMobilesNearLocationEx( newx, newy, newz, 0, LISTEX_FLAG_HIDDEN, newr));
       if((people == 0) and (hidden == 0));
 
         PlaySoundEffect( door, closesound );
         door.graphic := door.objtype;
         door.movable := 1;
-        MoveObjectToLocation (door, newx, newy, newz, door.realm,MOVEOBJECT_FORCELOCATION);
+        MoveObjectToLocation (door, newx, newy, newz, newr, MOVEOBJECT_FORCELOCATION);
         door.movable := 0;
         EraseObjProperty( door, "WhenOpened" );
         set_critical(0);

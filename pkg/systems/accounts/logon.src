@@ -17,22 +17,21 @@ program Logon( who )
 var stafflevel := who.cmdlevel;
 
 	ACCT_SetLastLogin( who.acct );
- 
- 
-        if( !CheckForMaxClientsOnline( who ))
-				if (!who.cmdlevel)
-				SysLog( "LoginAccount() Error: trying to login too many accounts." );
-                DisconnectClient( who );
-                return 0;
-				endif
-				if (stafflevel == 0)
-				SysLog( "LoginAccount() Error: trying to login too many accounts." );
-                DisconnectClient( who );
-                return 0;
-				endif
-        endif
-        
-        VerifyStaffOnline( who );
+
+    if( !CheckForMaxClientsOnline( who ))
+    if (!who.cmdlevel)
+    SysLog( "LoginAccount() Error: trying to login too many accounts." );
+            DisconnectClient( who );
+            return 0;
+    endif
+    if (stafflevel == 0)
+    SysLog( "LoginAccount() Error: trying to login too many accounts." );
+            DisconnectClient( who );
+            return 0;
+    endif
+    endif
+    
+    VerifyStaffOnline( who );
         
 	return 1;
 endprogram

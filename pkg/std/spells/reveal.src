@@ -49,7 +49,7 @@ program reveal_hider ( parms, spell_id )
 		range := 10;
 	endif
 
-	var hiders := ListMobilesNearLocationEx( caster.x , caster.y , caster.z , range , LISTEX_FLAG_HIDDEN );
+	var hiders := ListMobilesNearLocationEx( caster.x , caster.y , caster.z , range , LISTEX_FLAG_HIDDEN, caster.realm );
 	var numfound := 0;
 
 	hiders := SmartAoE(caster, hiders);

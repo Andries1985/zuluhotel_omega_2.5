@@ -554,7 +554,7 @@ function cast_meteor( caster, cast_loc )
 
     var parms := array;
    
-    var targets := ListMobilesNearLocation(cast_loc.x,cast_loc.y,cast_loc.z,4); 
+    var targets := ListMobilesNearLocation( cast_loc.x, cast_loc.y, cast_loc.z, 4, cast_loc.realm ); 
     if (saywords)
     SpeakPowerWords( me, 55);
     endif
@@ -830,7 +830,7 @@ function cast_chainlightning( caster , cast_loc)
     if (saywords)
         SpeakPowerWords( me, 49);
     endif
-    var targets := ListMobilesNearLocation(cast_loc.x,cast_loc.y,cast_loc.z,4); 
+    var targets := ListMobilesNearLocation( cast_loc.x, cast_loc.y, cast_loc.z, 4, cast_loc.realm ); 
 
     foreach mobile in targets
 	    if( (mobile.serial != caster.serial) and (mobile.dead = 0) and (CheckLineOfSight( caster, mobile )) )
@@ -1046,7 +1046,7 @@ function  cast_paralyze( caster, cast_on)
         SpeakPowerWords( me, 38);	
     endif
     if (!checkskill(cast_on, SKILLID_MAGICRESISTANCE, -1, 50))
-        PlayStationaryEffect( cast_on.x , cast_on.y , cast_on.z , FX_CURSE_EFFECT , 10);
+        PlayStationaryEffect( cast_on.x , cast_on.y , cast_on.z , FX_CURSE_EFFECT , 10, cast_on.realm );
         PlaySoundEffect( cast_on , SFX_SPELL_PARALYZE );
         cast_on.paralyzed := 1;
         do_temp_mod(cast_on, "p", 1, 15);
@@ -1062,7 +1062,7 @@ function cast_masscurse( caster, cast_on )
 	
     PlaySoundEffect(caster, SFX_SPELL_MASS_CURSE);
         
-    var targets := ListMobilesNearLocation( cast_on.x, cast_on.y, cast_on.z, 4 );
+    var targets := ListMobilesNearLocation( cast_on.x, cast_on.y, cast_on.z, 4, cast_on.realm );
 
     var magery := GetSkill(caster, SKILLID_MAGERY);
     var die_string := Cstr( magery /15 ) + "d3+2";

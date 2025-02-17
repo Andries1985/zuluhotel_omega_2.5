@@ -113,7 +113,7 @@ function Closedistance()
 		0: return 1;
 		default:
 			PlayStationaryEffect( cint(me.x), cint(me.y), cint(me.z), FX_SMOKE, 0xA, 0xA, 0, me.realm );
-			MoveObjectToLocation(me, cint(targ.x), cint(targ.y), cint(targ.z), me.realm);
+			MoveObjectToLocation(me, cint(targ.x), cint(targ.y), cint(targ.z), targ.realm);
 			PlayStationaryEffect( cint(me.x), cint(me.y), cint(me.z), FX_SMOKE, 0xA, 0xA, 0, me.realm );
 			return 0;
 	endcase

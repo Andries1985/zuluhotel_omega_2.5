@@ -19,12 +19,13 @@ program walk_on_moongate( mobile, gate )
                 return 0;
         endif
 	
-    var x, y, z;
+    var x, y, z, r;
     x := GetObjProperty( gate, "DestX" );
     y := GetObjProperty( gate, "DestY" );
     z := GetObjProperty( gate, "DestZ" );
+    r := GetObjProperty( gate, "DestRealm" );
 	//print( "Moving " + mobile.name + " to (" + x + "," + y + "," + z + ")" );
-    var move := MoveObjectToLocation( mobile, x, y, z, mobile.realm , MOVEOBJECT_FORCELOCATION );
+    var move := MoveObjectToLocation( mobile, x, y, z, r , MOVEOBJECT_FORCELOCATION );
 	if(!move and mobile.cmdlevel)
 		SendSysMessage(mobile, "Something seems wrong, make sure i got DestX, DestY and DestZ props."); 
 	endif

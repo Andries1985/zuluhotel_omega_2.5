@@ -108,7 +108,7 @@ flags := GetFlags(flags);
 var aux;
 
 case(type)
-	1: foreach npc in ListMobilesNearLocation( item.x, item.y, item.z, dist );
+	1: foreach npc in ListMobilesNearLocation( item.x, item.y, item.z, dist, item.realm );
 		Aux:=cint( GetObjProperty( npc, "spawnnet" ));
 		if (Aux == SpawnNet)
 			if (flag == 1)
@@ -137,7 +137,7 @@ case(type)
 			EraseObjProperty(aux, "spawnnet");
 		endif
  	   else
-		list := ListObjectsInBox( (item.x-dist), (item.y-dist), -127, (item.x+dist), (item.y+dist), 127 );
+		list := ListObjectsInBox( (item.x-dist), (item.y-dist), -127, (item.x+dist), (item.y+dist), 127, item.realm );
 	   endif
 	   foreach it in list
 		if(it.amount)

@@ -664,7 +664,7 @@ function MakeLord(me, mergewith)
 	me.hidden := 1;
 	mergewith.hidden :=1;
 	ShowFlame2(mergewith);
-	MoveObjectToLocation( mergewith, 5376, 1081, 0, 0);
+	MoveObjectToLocation( mergewith, 5376, 1081, 0, 0, "britannia");
 	RevokePrivilege( mergewith, "invul" );
 	setobjproperty( mergewith, "guardkill", 1);
 	ApplyRawDamage( mergewith, Cint(GetMAXHP(mergewith)+3) );

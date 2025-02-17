@@ -26,7 +26,7 @@ program slayerscript(attacker, defender, weapon, armor, basedamage, rawdamage)
 	endif
 
 	if(slaytype == "WhoKnows")
-		case(RandomInt(16))
+		case(RandomInt(17))
 			0:	slaytype := "Slime";
 			1:	slaytype := "Ratkin";
 			2:	slaytype := "Plant";
@@ -43,6 +43,7 @@ program slayerscript(attacker, defender, weapon, armor, basedamage, rawdamage)
 			13:	slaytype := "Undead";
 			14:	slaytype := "Daemon";
 			15:	slaytype := "Dragonkin";
+			16: slaytype := "Human";
 		endcase
 	endif
 
@@ -54,7 +55,7 @@ program slayerscript(attacker, defender, weapon, armor, basedamage, rawdamage)
 			istype := 1;
 			break;
 		elseif ((creature == "Human") and !defender.npctemplate )
-			multiplier := 1.5;
+			multiplier := 1;
 			istype := 1;
 			break;
 		endif

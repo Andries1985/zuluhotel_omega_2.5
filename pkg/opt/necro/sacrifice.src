@@ -64,7 +64,7 @@ program sacrifice( parms )
 	ApplyTheDamage( cast_on , caster , GetHP(cast_on) + 3 , plane );
 	EraseObjProperty( caster , "#Casting" );
 
-	var victims	:= ListMobilesNearLocationEx( x , y , z , range , 0x03 );
+	var victims	:= ListMobilesNearLocationEx( x , y , z , range , 0x03, cast_on.realm );
 	var length	:= len( victims );
 	if( caster in victims )
 		length	:= length - 1;
@@ -98,7 +98,7 @@ program sacrifice( parms )
 
 				Send_attack( mobile , caster , SPELLID_SACRIFICE );
 				PlaySoundEffect( mobile , SFX_SPELL_SACRIFICE );
-				PlayStationaryEffect( mobile.x,mobile.y,mobile.z , FX_SPELL_SACRIFICE , SPEED_SPELL_SACRIFICE , LOOP_SPELL_SACRIFICE );
+				PlayStationaryEffect( mobile.x, mobile.y, mobile.z , FX_SPELL_SACRIFICE , SPEED_SPELL_SACRIFICE , LOOP_SPELL_SACRIFICE, 0, mobile.realm );
 				if( mobile.npctemplate )
 					ApplyplanarDamage( caster , mobile , circ , dmg , plane );
 				else

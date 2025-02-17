@@ -13,12 +13,13 @@ program mazegates( mobile , gate )
 	var x := GetObjProperty( gate, "GateDestX" );
 	var y := GetObjProperty( gate, "GateDestY" );
 	var z := GetObjProperty( gate, "GateDestZ" );
+	var r := GetObjProperty( gate, "GateDestRealm" );
 
 	if( !x or !y )
 		return;
 	endif
 
-	var move := MoveObjectToLocation( mobile , CInt(x) , CInt(y) , CInt(z) , mobile.realm , MOVEOBJECT_FORCELOCATION );
+	var move := MoveObjectToLocation( mobile , CInt(x) , CInt(y) , CInt(z) , r , MOVEOBJECT_FORCELOCATION );
 	if(!move)
 		Print(mobile.name+" somehow didn't teleport on maze gate");
 		Print("Move error msg: "+move);

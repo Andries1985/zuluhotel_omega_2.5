@@ -56,12 +56,7 @@ program cast_gust_of_air( parms )
 		detach();
 		cast_on := Reflected( caster , cast_on , circle );
 	endif
-		PlayStationaryEffect( cast_on.x,
-				      cast_on.y,
-				      cast_on.z,
-				      SPELL_EFFECT_ID,
-				      SPELL_EFFECT_SPEED,
-				      SPELL_EFFECT_LOOP );
+		PlayStationaryEffect( cast_on.x, cast_on.y, cast_on.z, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP, 0, cast_on.realm );
 	
 	PlaySoundEffect( cast_on , SFX_SPELL_GUST_OF_AIR1 );
 	PlaySoundEffect( cast_on , SFX_SPELL_GUST_OF_AIR2 );
@@ -87,9 +82,10 @@ program cast_gust_of_air( parms )
 	var newx	:= cast_on.x + kickbackx;
 	var newy	:= cast_on.y + kickbacky;
 	var newz	:= cast_on.z + kickbackz;
+	var newr	:= cast_on.realm;
 		
 	if( CheckLosAt( cast_on , newx , newy , newz ) )
-	//	MoveObjectToLocation( cast_on , newx , newy , newz );
+		//MoveObjectToLocation( cast_on, newx, newy, newz, newr );
 	endif
 	
 	EraseObjProperty( caster , "#Casting" );

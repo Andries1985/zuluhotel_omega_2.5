@@ -38,7 +38,7 @@ endif
 
 
 program Aloof()
-drop_anchor();
+    drop_anchor(me);
     EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED,HALT_THRESHOLD);
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
     EnableEvents( SYSEVENT_OPPONENT_MOVED );

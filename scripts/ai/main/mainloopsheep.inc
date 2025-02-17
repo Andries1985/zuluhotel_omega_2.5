@@ -56,7 +56,7 @@ function main_AI_loop()
 			mydestx := ev.x;
 			mydesty := ev.y;
 			steps := 0;
-			drop_anchor();
+			drop_anchor(me);
 			WalkTowardLocation(mydestx, mydesty);
             endcase
         until (! (ev := os::wait_for_event(1)) );
@@ -140,7 +140,7 @@ endfunction
 function CheckSheepAmount()
 
 	var DeathChance := -4;
-	Foreach npc in ListMobilesNearLocation(me.x, me.y, me.z, 4)
+	Foreach npc in ListMobilesNearLocation(me.x, me.y, me.z, 4, me.realm)
 		if (npc.npctemplate == "sheep")
 			deathchance := deathchance + 5;
 		endif

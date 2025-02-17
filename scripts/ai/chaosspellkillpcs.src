@@ -137,10 +137,9 @@ var runaround := 0;
 				endif
 			endif
 			SetObjProperty(me,"lastnolos",opponent.name);
-			foreach mobile in ListMobilesNearLocation( me.x, me.y, me.z, 9 )
+			foreach mobile in ListMobilesNearLocation( me.x, me.y, me.z, 9, me.realm )
 				if (CheckLineOfSight( me, mobile ) and !mobile.npctemplate )
 					opponent := mobile;
-		
 				endif
 			endforeach
 			var choice := Random (4) + 1;

@@ -39,7 +39,7 @@ function CreateNorthSouthField( caster , fieldtype , x , y , z := 0 , length := 
 	
 	for ( i := x - 2; i <= x - 2 + length; i := i + 1)
 	count := count+1;
-		if( !len(ListMobilesNearLocation( i , y , z , 0 )) )
+		if( !len(ListMobilesNearLocation( i , y , z , 0, caster.realm )) )
 			counter := counter  + 1;
 			fires[counter] := CreateItemAtLocation( i , y , z , fieldtype , 1, caster.realm );
 			SetObjProperty( fires[counter] , "Creator" , caster.serial );
@@ -67,7 +67,7 @@ function CreateEastWestField( caster , fieldtype , x , y , z := 0, length := 5 )
 	
 	for ( i := y - 2; i <= y - 2 + length; i := i + 1)
 	count := count+1;
-		if( !len(ListMobilesNearLocation( x , i , z , 0 )) )
+		if( !len(ListMobilesNearLocation( x , i , z , 0, caster.realm )) )
 			counter := counter  + 1;
 			fires[counter] := CreateItemAtLocation( x , i , z , fieldtype , 1, caster.realm );
 			SetObjProperty( fires[counter] , "Creator" , caster.serial );

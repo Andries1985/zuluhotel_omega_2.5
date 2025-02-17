@@ -22,8 +22,7 @@ include "include/time";
 program oncreate(who,skillids)
 
     Print( "Character created: "+who.name );
-	// enable aos features
-    who.acct.set_uo_expansion("AOS");
+
 	// Set light level for 5 minutes. Green acres is dark!
     who.setlightlevel(0, 300);	
     CreateStartingEquipment(who,skillids);

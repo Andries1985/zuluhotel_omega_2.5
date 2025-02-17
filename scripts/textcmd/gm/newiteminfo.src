@@ -1477,15 +1477,15 @@ function EditItemInt( who , item , result )
 	
 	case( result )
 		1:	//x value
-			MoveObjectToLocation( item , val , item.y , item.z , MOVEOBJECT_FORCELOCATION );
+			MoveObjectToLocation( item , val , item.y , item.z , item.realm, MOVEOBJECT_FORCELOCATION );
 			break;
 			
 		2:	//y value
-			MoveObjectToLocation( item , item.x , val , item.z , MOVEOBJECT_FORCELOCATION );
+			MoveObjectToLocation( item , item.x , val , item.z , item.realm, MOVEOBJECT_FORCELOCATION );
 			break;
 			
 		3:	//z value
-			MoveObjectToLocation( item , item.x , item.y , val , MOVEOBJECT_FORCELOCATION );
+			MoveObjectToLocation( item , item.x , item.y , val , item.realm, MOVEOBJECT_FORCELOCATION );
 			break;
 			
 		4:	//graphic number

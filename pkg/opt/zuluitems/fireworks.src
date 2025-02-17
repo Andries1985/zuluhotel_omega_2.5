@@ -9,18 +9,18 @@ program fireworks(who, item)
     var rndnum := Cint(RandomDiceRoll("1d20+20"));
 
 	SendSysMessage(who, "You shoot some fireworks into the air!", FONT_NORMAL, 2601 );
-    PlayStationaryEffect( who.x, who.y, rndnum, FX_BLESS_EFFECT, 5, 20 );
+    PlayStationaryEffect( who.x, who.y, rndnum, FX_BLESS_EFFECT, 5, 20, 0, who.realm );
     PlaySoundEffect (who,SFX_SPELL_FIREBALL);
     sleep(1);
     rndnum := Cint(RandomDiceRoll("1d20+20"));
-    PlayStationaryEffect( who.x, who.y, rndnum, FX_CURSE_EFFECT, 5, 20 );
+    PlayStationaryEffect( who.x, who.y, rndnum, FX_CURSE_EFFECT, 5, 20, 0, who.realm );
     sleep(1);
     rndnum := Cint(RandomDiceRoll("1d20+20"));
-    PlayStationaryEffect( who.x, who.y, rndnum, FX_BLESS_EFFECT, 5, 20 );
+    PlayStationaryEffect( who.x, who.y, rndnum, FX_BLESS_EFFECT, 5, 20, 0, who.realm );
     PlaySoundEffect (who,SFX_SPELL_EXPLOSION);
     sleep(1);
     rndnum := Cint(RandomDiceRoll("1d20+20"));
-    PlayStationaryEffect( who.x, who.y, rndnum, FX_CURSE_EFFECT, 5, 20 );
+    PlayStationaryEffect( who.x, who.y, rndnum, FX_CURSE_EFFECT, 5, 20, 0, who.realm );
 
 	subtractamount(item,1);
 

@@ -53,7 +53,7 @@ program cast_plague( parms )
 	var plvl	:= ModifyWithMagicEfficiency( caster , Cint( magery / 50 ) + 2 );
 
 	EraseObjProperty( caster , "#Casting" );
-	var victims := ListMobilesNearLocationEx( cast_on.x , cast_on.y , cast_on.z , range , 0x03 );
+	var victims := ListMobilesNearLocationEx( cast_on.x , cast_on.y , cast_on.z , range , 0x03, cast_on.realm );
 
 	victims := SmartAoE(caster, victims);
 

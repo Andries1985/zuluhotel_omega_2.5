@@ -15,7 +15,7 @@ program use_darkcloak(who, cloak)
 
 	charges := charges - 1;
 
-	var victims := ListMobilesNearLocation(who.x, who.y, who.z, 5);
+	var victims := ListMobilesNearLocation(who.x, who.y, who.z, 5, who.realm);
 
 	victims := SmartAoE(who, victims);
 

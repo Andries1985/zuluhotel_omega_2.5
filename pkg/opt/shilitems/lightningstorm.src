@@ -36,7 +36,7 @@ program item_lightningstorm( who, item )
 	endif
 
 	Detach();
-	var victims := ListMobilesNearLocationEx( who.x, who.y, who.z, 10, 0x03 );
+	var victims := ListMobilesNearLocationEx( who.x, who.y, who.z, 10, 0x03, who.realm );
 
 	victims := SmartAoE(who, victims);
 

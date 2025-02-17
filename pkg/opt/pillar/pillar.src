@@ -109,7 +109,7 @@ foreach item in EnumerateItemsInContainer( oldhatch );
 endforeach
 
 foreach mob in (boattag.mobiles)
-MoveObjectToLocation(mob, cint((mob.x-boattag.x)+newboat.x), cint((mob.y-boattag.y)+newboat.y), -2,  MOVEOBJECT_FORCELOCATION );
+    MoveObjectToLocation(mob, cint((mob.x-boattag.x)+newboat.x), cint((mob.y-boattag.y)+newboat.y), -2, newboat.realm, MOVEOBJECT_FORCELOCATION );
 endforeach
 
 //if (boatoff.has_offline_mobiles)
@@ -117,7 +117,7 @@ boatoff.move_offline_mobiles( cint(boattag.x+1), cint(boattag.y), -2 );
 //endif
 
 foreach mob in (boattag.items)
-MoveObjectToLocation(mob, cint((mob.x-boattag.x)+newboat.x), cint((mob.y-boattag.y)+newboat.y), -2,MOVEOBJECT_FORCELOCATION  );
+MoveObjectToLocation(mob, cint((mob.x-boattag.x)+newboat.x), cint((mob.y-boattag.y)+newboat.y), -2, newboat.realm, MOVEOBJECT_FORCELOCATION );
 endforeach
 
 PrintTextAbove( talkman, "Whew, what a ride!" );

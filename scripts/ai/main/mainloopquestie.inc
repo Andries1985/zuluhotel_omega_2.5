@@ -104,7 +104,7 @@ function main_AI_loop()
 			mydestx := ev.x;
 			mydesty := ev.y;
 			steps := 0;
-			drop_anchor();
+			drop_anchor(me);
 			WalkTowardLocation(mydestx, mydesty);
             endcase
         until (! (ev := os::wait_for_event(2)) );
@@ -116,7 +116,7 @@ endfunction
 
 function look_around()
 
-	foreach critter in ListMobilesNearLocation( me.x,me.y,me.z, 10 );
+	foreach critter in ListMobilesNearLocation( me.x,me.y,me.z, 10, me.realm );
           if (!critter.npctemplate)
 		return 1;
           endif

@@ -211,6 +211,8 @@ program snoop(who)
 		var x := who.x;
 		var y := who.y;
 		var z := who.z;
+		var r := who.realm;
+
 		detach();
 		sleep(60);
 
@@ -222,8 +224,8 @@ program snoop(who)
 			DestroyRootItemInStorageArea(storage, "temp " + who.serial);
 
 			eraseobjproperty(who, "snooping");
-			MoveObjectToLocation(who, who.x, who.y, who.z);
-			if (who.x == x && who.y == y && who.z == z)
+			MoveObjectToLocation(who, who.x, who.y, who.z, who.realm);
+			if (who.x == x && who.y == y && who.z == z && who.realm == r)
 				SendSysMessage(who, "The opportunity for stealing from "+victim.name+" elapses..");
 			endif
 		endif

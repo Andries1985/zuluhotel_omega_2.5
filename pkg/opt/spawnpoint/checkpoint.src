@@ -528,7 +528,7 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 	var x		:= Cint(point.x);
 	var y		:= Cint(point.y);
 	var z		:= Cint(point.z);
-	var realm 	:= Cint(point.realm);
+	var realm 	:= point.realm;
 	var range	:= Cint(pt_data[5]);
 	var critter;
 	

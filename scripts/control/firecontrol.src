@@ -32,12 +32,12 @@ program field_control( item )
 		endif
 	endif
 
-	var itemx:=cint(item.x), itemy:=cint(itemy), itemz:=cint(item.z);
+	//var itemx:=cint(item.x), itemy:=cint(itemy), itemz:=cint(item.z);
 
 	while(item.x)
 		var dmg := RandomDiceStr( power + "d8" );
 		PlaySoundEffect( item , SFX_SPELL_FIRE_FIELD );
-		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0 );
+		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0 , item.realm );
 		victims := SmartAoE(creator, victims);
 		foreach mobile in victims
 			if(!creator) 

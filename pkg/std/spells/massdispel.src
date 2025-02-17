@@ -55,7 +55,7 @@ program mass_dispel ( parms, spell_id )
 	if(range > 10)
 		range := 10;
 	endif
-	var victims	:= ListMobilesNearLocation( cint(cast_on.x), cint(cast_on.y) , cint(cast_on.z) , range );
+	var victims	:= ListMobilesNearLocation( cint(cast_on.x), cint(cast_on.y) , cint(cast_on.z) , range, cast_on.realm );
 
 	victims := SmartAoE( caster, victims);
 
@@ -65,10 +65,7 @@ program mass_dispel ( parms, spell_id )
 			Send_Attack( mobile, caster, SPELLID_MASS_DISPEL );
 			var summoned := GetObjProperty( mobile, "summoned" );
 			var animated := GetObjProperty( mobile, "animated" );
-			PlayObjectCenteredEffect(mobile, 
-                                         SPELL_EFFECT_ID,
-                                         SPELL_EFFECT_SPEED,
-                                         SPELL_EFFECT_LOOP);
+			PlayObjectCenteredEffect(mobile, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 		
 			if( summoned )
 				var immunity := IsProtected( caster, mobile, circle );
@@ -86,7 +83,7 @@ program mass_dispel ( parms, spell_id )
 		
 				if( !CheckSkill( mobile, SKILLID_MAGICRESISTANCE, magery, 50 ))
 					PlaySoundEffect( mobile, SFX_SPELL_DISPEL );
-					MoveObjectToLocation(mobile,0,0,0,MOVEOBJECT_FORCELOCATION);
+					MoveObjectToLocation(mobile, 0, 0, 0, MOVEOBJECT_FORCELOCATION, "britannia");
 					ApplyTheDamage( mobile, caster, GetMaxHP(mobile)+3, DMGID_MAGIC );
 				endif
 

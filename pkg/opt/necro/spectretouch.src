@@ -55,7 +55,7 @@ program cast_spectretouch( parms )
 		
 	var dmg;
 	var range := ModifyWithMagicEfficiency( caster , Cint( GetEffectiveSkill( caster , SKILLID_MAGERY ) / 30 ) );
-	var victims := ListMobilesNearLocation( cint(cast_on.x) , cint(cast_on.y) , cint(cast_on.z) , range );
+	var victims := ListMobilesNearLocation( cint(cast_on.x) , cint(cast_on.y) , cint(cast_on.z) , range, cast_on.realm );
 	EraseObjProperty( caster , "#Casting" );
 	
 	victims := SmartAoE(caster, victims);
@@ -73,7 +73,7 @@ program cast_spectretouch( parms )
 				dmg := CalcSpellDamage( caster , mobile , circ , AREA_EFFECT_SPELL );
 				Send_attack( mobile , caster , SPELLID_SPECTER_TOUCH );
 				PlaySoundEffect( mobile , SFX_SPELL_SPECTER_TOUCH );
-				PlayStationaryEffect( cint(mobile.x), cint(mobile.y), cint(mobile.z) , FX_SPELL_SPECTER_TOUCH , SPEED_SPELL_SPECTER_TOUCH , LOOP_SPELL_SPECTER_TOUCH );
+				PlayStationaryEffect( cint(mobile.x), cint(mobile.y), cint(mobile.z) , FX_SPELL_SPECTER_TOUCH , SPEED_SPELL_SPECTER_TOUCH , LOOP_SPELL_SPECTER_TOUCH, 0, mobile.realm );
 				ApplyplanarDamage( caster , mobile , circ , dmg , plane );
 			endif
 		endif

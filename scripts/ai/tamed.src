@@ -1241,7 +1241,7 @@ function flee(opponent)
 				sleep(30);
 				return;
 			else
-				MoveObjectToLocation(me,5288,1176,0, "britannia",MOVEOBJECT_FORCELOCATION);
+				MoveObjectToLocation(me, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
 				RevokePrivilege( me, "invul" );
 				SetObjProperty(me,"guardkill",1);
 				ApplyRawdamage( me, GetMaxHP(me)+3 );

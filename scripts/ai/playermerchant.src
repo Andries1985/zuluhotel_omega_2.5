@@ -281,9 +281,9 @@ function follow(byref mmaster)
 
 		d:= distance(mmaster, me);
 		if(d > 20)
-			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, speed:=0xA, loop:=0xA );
-			MoveObjectToLocation( me, mmaster.x, mmaster.y, mmaster.z );
-			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, speed:=0xA, loop:=0xA );
+			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
+			MoveObjectToLocation( me, mmaster.x, mmaster.y, mmaster.z, master.realm );
+			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
 			PlaySoundEffect( mmaster, SFX_SPELL_TELEPORT );
 		elseif(d > 1)
 			runtoward(mmaster);
@@ -553,7 +553,7 @@ function getpay()
 		SetObjProperty(me, "pastdue",pastdue);
 		if(pastdue > 2)
 			me.hidden := 1;
-			MoveOBJECTToLocation(me, 5288, 1176, 0, me.realm,  MOVEOBJECT_FORCELOCATION);
+			MoveOBJECTToLocation(me, 5288, 1176, 0, "britannia",  MOVEOBJECT_FORCELOCATION);
 			RevokePrivilege( me, "invul" );
 			setobjproperty(me, "guardkill", 1);
 			var count := 0;
@@ -649,7 +649,7 @@ function fireme(byref ev)
 	Say("Kal Ort Por");
 	sleep(2);
 	PlaySoundEffect(ev.source, SFX_SPELL_RECALL);
-	MoveOBJECTToLocation(me, 5288, 1176, 0, me.realm,  MOVEOBJECT_FORCELOCATION);
+	MoveOBJECTToLocation(me, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
 	RevokePrivilege(me, "invul");
 	setobjproperty(me, "guardkill", 1);
 	var count := 0;

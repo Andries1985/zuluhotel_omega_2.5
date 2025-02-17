@@ -22,7 +22,7 @@ program CleanArena()
 	foreach guy in EnumerateOnlineCharacters()
 		EraseObjProperty(guy,"cwarring");
 	endforeach
-	foreach mob in ListMobilesNearLocation( 6080, 1356, LIST_IGNORE_Z, 100 )
+	foreach mob in ListMobilesNearLocation( 6080, 1356, LIST_IGNORE_Z, 100, "britannia" )
 		EraseObjProperty(mob,"cwarring");
 		EraseObjProperty(mob,"cwcolor");
 		EraseObjProperty(mob,"cwprize");
