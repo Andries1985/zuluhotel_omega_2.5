@@ -25,14 +25,6 @@ program logon( who )
 		SetObjProperty( who, "hunger", 1 );
 	endif
 
-	//This is a reset of karma and fame, can be removed after wipe.
-	var resetFameKarma := GetObjProperty(who, "RFK");
-	if(!who.cmdlevel && !resetFameKarma)
-		SetKarma(who, 0);
-		SetFame(who, 0);
-		SetObjProperty(who, "RFK", 1);
-	endif
-
 	RemoveLogoff( who );
 
 	// for whatever reason I didn't use # tag for this. 
@@ -40,7 +32,7 @@ program logon( who )
 	
 	// Kick if IP banned
 	CheckIPBan(who);
-        who.acct.set_uo_expansion("AOS");
+
 	var acc:=who.acct;
 	if(acc.getprop("acctjail"))
 		MoveObjectToLocation( who, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, "britannia", MOVEOBJECT_FORCELOCATION);
@@ -83,53 +75,55 @@ program logon( who )
 		SetObjProperty(who, "DaysOld", time);
 	endif
 
+	Broadcast( "Player " + who.name + " has arrived!");
+
 endprogram
 
 
 // Check data file for banned ip and kick
 function CheckIPBan(who)
 
-// open banned datafile
-var ipdfile := OpenDataFile( BANNED_IPS );
+	// open banned datafile
+	var ipdfile := OpenDataFile( BANNED_IPS );
 
-// open element
-var bannedele := ipdfile.FindElement("BannedIPS");
-var strip := CStr(who.ip);
+	// open element
+	var bannedele := ipdfile.FindElement("BannedIPS");
+	var strip := CStr(who.ip);
 
-UnloadDataFile( BANNED_IPS );
+	UnloadDataFile( BANNED_IPS );
 
-var iplist := bannedele.PropNames();
+	var iplist := bannedele.PropNames();
 
-var i := 1;
-var stop;
+	var i := 1;
+	var stop;
 
-foreach ip in iplist	
-	if (ip[i] == strip[i]) // If first number is the same, check the whole thing
+	foreach ip in iplist	
+		if (ip[i] == strip[i]) // If first number is the same, check the whole thing
 
-		repeat
-			// even if this is the first one, it means entire world ban
-			if (CInt(ip[i]) == 2 && CInt(ip[(i+1)]) == 5 && CInt(ip[(i+2)]) == 5)
-				stop := 1;
-				
-				foreach person in EnumerateOnlineCharacters()
-					if (person.cmdlevel > 1)
-						SendSysMessage(person, "Account: "+who.acctname, 3, 53);
-						SendSysMessage(person, "Character: "+who.name, 3, 53);
-						SendSysMessage(person, "Tried logging in but is IP banned. Consider account ban?", 3, 43);
-					endif
-				endforeach
-				DisconnectClient( who );
+			repeat
+				// even if this is the first one, it means entire world ban
+				if (CInt(ip[i]) == 2 && CInt(ip[(i+1)]) == 5 && CInt(ip[(i+2)]) == 5)
+					stop := 1;
+					
+					foreach person in EnumerateOnlineCharacters()
+						if (person.cmdlevel > 1)
+							SendSysMessage(person, "Account: "+who.acctname, 3, 53);
+							SendSysMessage(person, "Character: "+who.name, 3, 53);
+							SendSysMessage(person, "Tried logging in but is IP banned. Consider account ban?", 3, 43);
+						endif
+					endforeach
+					DisconnectClient( who );
 
-			elseif (strip[i] == ip[i])
-				i := i + 1;
-			else
-				stop := 1;
-			endif
-		until (stop || i > 100); //failsafe
-		stop := 0;
-		i := 1;	
-	endif
-endforeach
+				elseif (strip[i] == ip[i])
+					i := i + 1;
+				else
+					stop := 1;
+				endif
+			until (stop || i > 100); //failsafe
+			stop := 0;
+			i := 1;	
+		endif
+	endforeach
 
 endfunction
 

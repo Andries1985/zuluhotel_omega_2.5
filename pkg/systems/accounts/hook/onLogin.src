@@ -81,6 +81,7 @@ exported function LoginHook( connection, byref packet )
 	endcase
 
 	var settings := ACCT_GetSettingsCfgElem( "Settings" );
+	
 	if( !settings.AllowAutoAccounts )
 		// Automatic account creation is disabled.
 		return 0;
@@ -121,7 +122,10 @@ exported function LoginHook( connection, byref packet )
                 return 0;
         endif
 
-	var account := CreateNewAccount( username, password, 0, settings.DefaultExpansion );
+	var account := CreateNewAccount( username, password, connection.ip, settings.DefaultExpansion );
+
+	account.Set_UO_Expansion( settings.DefaultExpansion );
+	//Print(settings.DefaultExpansion);
 
 	// In theory this should only return an error saying "Invalid parameter type".
 	// Should never return "Account already exists" because we already looked for the

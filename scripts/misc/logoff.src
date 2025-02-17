@@ -112,7 +112,7 @@ program logoff(who)
 			SetIntelligenceMod(who, GetIntelligencemod(who)-int_modulation);
 	endif
 
-	// Broadcast( "Player " + who.name + " has departed");
+	Broadcast( "Player " + who.name + " has departed");
 
 endprogram
 
