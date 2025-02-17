@@ -8,6 +8,8 @@ include ":areas:include/areafunctions";
 include ":karmafame:karmafame";
 include "include/constants/locations";
 include "include/client";
+include ":accounts:accounts";
+include ":accounts:settings";
 
 // Toadstool ADD
 const BANNED_IPS := ":ipban:bannedips";
@@ -33,6 +35,8 @@ program logon( who )
 	// Kick if IP banned
 	CheckIPBan(who);
 
+
+
 	var acc:=who.acct;
 	if(acc.getprop("acctjail"))
 		MoveObjectToLocation( who, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, "britannia", MOVEOBJECT_FORCELOCATION);
@@ -45,6 +49,8 @@ program logon( who )
 	Print( "logon: " + who.name );
 	Start_Script( "::playermanager", who );
 	
+	var settings := ACCT_GetSettingsCfgElem( "Settings" );
+	acc.set_uo_expansion(settings.DefaultExpansion);
 
     GrantPrivilege( who, "seeghosts" );
 	who.Enable( "seeghosts" );
