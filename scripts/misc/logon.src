@@ -15,6 +15,7 @@ include ":accounts:settings";
 const BANNED_IPS := ":ipban:bannedips";
 
 program logon( who )
+	//Print("I am using scripts misc logon.src");
 
 	var stafflevel := who.cmdlevel;
 
@@ -34,8 +35,6 @@ program logon( who )
 	
 	// Kick if IP banned
 	CheckIPBan(who);
-
-
 
 	var acc:=who.acct;
 	if(acc.getprop("acctjail"))
@@ -81,7 +80,13 @@ program logon( who )
 		SetObjProperty(who, "DaysOld", time);
 	endif
 
-	Broadcast( "Player " + who.name + " has arrived!");
+	if (stafflevel == 0)		
+		who.concealed := 0;
+		Broadcast( who.name + " has arrived!");
+	else
+		Broadcast( who.name + "has come online and is here to help!", font := 4, color := 1176);
+	endif
+	
 
 endprogram
 
