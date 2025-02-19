@@ -2,39 +2,47 @@ use uo;
 use os;
 
 include "include/time";
+include ":accounts:accounts";
+include ":accounts:settings";
 
 program mkaccount(who, text)
 
 	if ( !text)
-		SendSysMessage( who, ".mkaccount <accountname> <password> <email>" );
+		SendSysMessage( who, ".mkaccount <accountname> <temppassword> <discordID> <email> <pin>" );
 		return;
 	endif
 
 	var params := SplitWords( text );
 
-	if (Len(params)<>3)
-		SendSysMessage( who, ".mkaccount <accountname> <password> <email>" );
+	if (Len(params)<>5)
+		SendSysMessage( who, ".mkaccount <accountname> <temppassword> <discordID> <email> <pin>" );
 		return;
 	endif
 
-	var UserName     := params[1];
-	var UserPassword := params[2];
-	var UserEmail    := params[3];
+	var UserName		:= params[1];
+	var UserPassword	:= params[2];
+	var DiscordID		:= params[3];
+	var UserEmail		:= params[4];
+	var Pin				:= Cint(params[5]);
 	var account;
 
-	var ret := CreateAccount( UserName, UserPassword, 1 );
+	//var ret := CreateNewAccount( UserName, UserPassword, 1 );
+
+	var settings := ACCT_GetSettingsCfgElem( "Settings" );
+
+	var ret := CreateNewAccount( username, UserPassword, DiscordID, UserEmail, Pin, settings.DefaultExpansion );
 
 	if( ret == error )
 		SendSysMessage( who, "Sorry, account creation failed.");
 		SendSysMessage( who, "Error: " + ret.errortext );
 		return;
 	else
-		account := FindAccount(UserName);
-		account.setprop("Email", UserEmail);
-		account.setprop("IP", who.ip);
-		account.setprop("Login ", NowString());
-		account.setprop("Notes", "<none>");
-		account.setprop("Release", 0);
+		//account := FindAccount(UserName);
+		//account.setprop("Email", UserEmail);
+		//account.setprop("IP", who.ip);
+		//account.setprop("Login ", NowString());
+		//account.setprop("Notes", "<none>");
+		//account.setprop("Release", 0);
 		SendSysMessage( who, "The account has been created." );
 	endif
 

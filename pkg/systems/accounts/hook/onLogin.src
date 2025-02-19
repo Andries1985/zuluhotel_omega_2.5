@@ -35,6 +35,7 @@ enum THEFT_LEVELS
 	ACCT_LOGIN_OKAY		:= 1,
 	ACCT_LOGIN_FAIL		:= 2,
 	ACCT_LOGIN_HACK		:= 3,
+	ACCT_NO_DISCORDID	:= 4,
 endenum
 
 program Install()
@@ -49,6 +50,7 @@ exported function LoginHook( connection, byref packet )
 	// RemoveSpaces() will also remove null values
 	var username := packet.GetString( OFFSET_ACCOUNT_NAME, INFO_LEN );
 	var password := packet.GetString( OFFSET_ACCOUNT_PASS, INFO_LEN );
+	var discordID, email, pin;
 	
 	if( username == error )
 		return 0;
@@ -78,6 +80,10 @@ exported function LoginHook( connection, byref packet )
 		ACCT_LOGIN_HACK: // Too many invalid logins for this IP. Leave user hanging.
 			return 0;
 			break;
+		ACCT_NO_DISCORDID:
+			DeniedMSG( connection, 8);
+			return 0;
+			break;
 	endcase
 
 	var settings := ACCT_GetSettingsCfgElem( "Settings" );
@@ -85,44 +91,44 @@ exported function LoginHook( connection, byref packet )
 	if( !settings.AllowAutoAccounts )
 		// Automatic account creation is disabled.
 		return 0;
-        endif
+    endif
 
-        var creation := ACCT_GetSettingsCfgElem( "AccountCreation" ),
-            min_pass := CInt( creation.MinLengthPass ),
-            min_account := CInt( creation.MinLengthAccount ),
-            max_pass := CInt( creation.MaxLengthPass ),
-            max_account := CInt( creation.MaxLengthAccount ),
-            len_name := Len( username ),
-            len_pass := Len( password );
+	var creation := ACCT_GetSettingsCfgElem( "AccountCreation" ),
+		min_pass := CInt( creation.MinLengthPass ),
+		min_account := CInt( creation.MinLengthAccount ),
+		max_pass := CInt( creation.MaxLengthPass ),
+		max_account := CInt( creation.MaxLengthAccount ),
+		len_name := Len( username ),
+		len_pass := Len( password );
 
-        if( len_name < min_account )
-                SysLog( "CreateAccount() Error: Username too short." );
-				DeniedMSG( connection, 1);
-				//DisconnectClient(connection);
-                return 0;
-        elseif( len_pass < min_pass )
-                SysLog( "CreateAccount() Error: Password too short." );
-				DeniedMSG( connection, 1);
-                return 0;
-        elseif( len_name > max_account )
-                SysLog( "CreateAccount() Error: Username too long." );
-				DeniedMSG( connection, 1);
-                return 0;
-        elseif( len_pass > max_pass )
-                SysLog( "CreateAccount() Error: Password too long." );
-				DeniedMSG( connection, 1);
-                return 0;
-        elseif( !Check_ValidChar( username ))
-                SysLog( "CreateAccount() Error: Invalid Username." );
-				DeniedMSG( connection, 1);
-                return 0;
-        elseif( !Check_ValidChar( password ))
-                SysLog( "CreateAccount() Error: Invalid Password." );
-				DeniedMSG( connection, 1);
-                return 0;
-        endif
+	if( len_name < min_account )
+			SysLog( "CreateAccount() Error: Username too short." );
+			DeniedMSG( connection, 1);
+			//DisconnectClient(connection);
+			return 0;
+	elseif( len_pass < min_pass )
+			SysLog( "CreateAccount() Error: Password too short." );
+			DeniedMSG( connection, 1);
+			return 0;
+	elseif( len_name > max_account )
+			SysLog( "CreateAccount() Error: Username too long." );
+			DeniedMSG( connection, 1);
+			return 0;
+	elseif( len_pass > max_pass )
+			SysLog( "CreateAccount() Error: Password too long." );
+			DeniedMSG( connection, 1);
+			return 0;
+	elseif( !Check_ValidChar( username ))
+			SysLog( "CreateAccount() Error: Invalid Username." );
+			DeniedMSG( connection, 1);
+			return 0;
+	elseif( !Check_ValidChar( password ))
+			SysLog( "CreateAccount() Error: Invalid Password." );
+			DeniedMSG( connection, 1);
+			return 0;
+	endif
 
-	var account := CreateNewAccount( username, password, connection.ip, settings.DefaultExpansion );
+	var account := CreateNewAccount( username, password, discordID, email, pin, settings.DefaultExpansion );
 
 	account.Set_UO_Expansion( settings.DefaultExpansion );
 	//Print(settings.DefaultExpansion);
@@ -139,7 +145,7 @@ exported function LoginHook( connection, byref packet )
 	endif
 
 	ReportText( "AutoAccount Created:"+username+" IP: "+connection.ip, REPORT_CONSOLE+REPORT_SYSLOG );
-        NotifyStaffOnline( "AutoAccount", "Created:"+CStr( username )+" IP: "+connection.ip );
+    NotifyStaffOnline( "AutoAccount", "Created:"+CStr( username )+" IP: "+connection.ip );
         
 	return 0;
 endfunction
@@ -178,24 +184,24 @@ function AcctHackChecks( username, password, ip )
 			var disable_grace := GetConfigInt( settings, "DisableGrace" ) * 60;
 
 			if( failed_login[ip][1] >= max_failures && ( failed_login[ip][2] >= POLCore().systime ))
-		  	        // Too many failure attempts. Leave the user hanging at login for the next
-		  	        // disable_length minutes if disable timer is greater than disable_grace.
+		  	    // Too many failure attempts. Leave the user hanging at login for the next
+		  	    // disable_length minutes if disable timer is greater than disable_grace.
 		 		failed_login[ip][1] += 1;
 		 		if( failed_login[ip][2] > disable_grace )
 					failed_login[ip][2] := POLCore().systime+disable_length;
 					ReportText( "Disabling account ["+username+"] - IP ["+ip+"] for "+disable_length+" seconds. Invalid logins >= "+max_failures+"." , REPORT_SYSLOG );
 		 		endif
 				account.SetProp( "#FailedLogin", failed_login );
-	  		        return ACCT_LOGIN_HACK; // Leave user hanging.
+	  		    return ACCT_LOGIN_HACK; // Leave user hanging.
 		 	elseif( failed_login[ip][1] >= max_failures && ( failed_login[ip][2] <= POLCore().systime ))
-		  	        // User attempted to login with the wrong password after disable_length minutes.
+		  	    // User attempted to login with the wrong password after disable_length minutes.
 		 		// Reset user's wait time.
 		 		ReportText( "Resetting disable timer on account ["+username+"] - IP ["+ip+"]", REPORT_SYSLOG );
 		 		failed_login.Erase( ip );
 		 		account.SetProp( "#FailedLogin", failed_login );
-		  	        return ACCT_LOGIN_FAIL;
+		  	    return ACCT_LOGIN_FAIL;
 		 	elseif( failed_login[ip][1] <= max_failures )
-		  	        ReportText( "Invalid login credentials for account: "+username+" IP: "+ip, REPORT_SYSLOG );
+		  	    ReportText( "Invalid login credentials for account: "+username+" IP: "+ip, REPORT_SYSLOG );
 
 		 		if( failed_login[ip][2] >= POLCore().systime )
 					failed_login[ip][1] += 1;
@@ -205,8 +211,13 @@ function AcctHackChecks( username, password, ip )
 
 				failed_login[ip][2] := POLCore().systime+failure_interval;
 				account.SetProp( "#FailedLogin", failed_login );
-		  	        return ACCT_LOGIN_FAIL;
-		 	endif
+		  	    return ACCT_LOGIN_FAIL;
+		 	elseif( !account.GetProp.DiscordID )
+				//No Discord ID
+				ReportText( "No Discord ID for account: "+username+" IP: "+ip, REPORT_SYSLOG );
+		  	    return ACCT_NO_DISCORDID;
+
+			endif
 		endif
 	endif
 
