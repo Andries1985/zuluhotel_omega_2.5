@@ -31,6 +31,7 @@ program oncreate(who,skillids)
     SetObjProperty(who, "CreatedAt", ReadGameClock());
     SetObjProperty(who, "CreatedDateTime", NowString());
     SetObjProperty(who, "OrgName", who.name);
+    SetObjProperty(who, "DiscordID", who.acct.getprop("DiscordID"));
     // The starting area
 
 	var move := MoveObjectToLocation( who, 6119, 616, 5, "britannia", MOVEOBJECT_FORCELOCATION);

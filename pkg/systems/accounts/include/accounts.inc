@@ -22,21 +22,29 @@ include ":accounts:settings";
 include "include/time";
 
 // Max numbers of characters an account can have.
-CONST ACCT_MAX_CHARACTERS	:= 5;
+CONST ACCT_MAX_CHARACTERS	:= 7;
 
-function CreateNewAccount( username, password, signup_ip, expansion:="" )
+function CreateNewAccount( username, password, discordID, email, pin, expansion:="" )
 
 	var account := CreateAccount( username, password, 1 );
 	if( account.errortext )
 		return account;
 	endif
 
+	account := FindAccount(UserName);
+	account.setprop("DiscordID", discordID);
+	account.setprop("Email", email);
+	account.setprop("Pin", CInt(pin));
+	account.setprop("Login ", NowString());
+	account.setprop("Notes", "<none>");
+	account.setprop("Release", 0);
+	account.SetProp( "CreatedAt", NowString());
+
 	if( expansion )
 		account.Set_UO_Expansion( expansion );
 	endif
 	
-	account.SetProp( "CreatedAt", NowString());
-	account.SetProp( "SignupIP", signup_ip );
+	//account.SetProp( "SignupIP", signup_ip );
 	ACCT_SetLastLogin( account );
 
 	return account;
@@ -54,7 +62,7 @@ function ACCT_SetLastLogin( account, time:=0 )
 	if( !time )
 		time := POLCore().systime;
 	endif
-        
+    
 	return account.SetProp( "LastLogin", time );
 endfunction
 
@@ -148,35 +156,6 @@ function ACCT_DeleteAccount( account )
 	return account.Delete();
 endfunction
 
-function CheckForMaxClientsOnline( who )
-
-	var settings := ACCT_GetSettingsCfgElem( "Settings" );
-	var IpsOnline := GetConfigInt( settings, "MaxIpsOnline" );
-        if( !IpsOnline )
-		return 1;
-	endif
-
-        var ini_ip := who.ip;
-        var ips := 0;
-        foreach player in EnumerateOnlineCharacters()
-            if( player.ip == ini_ip )
-				if(player.cmdlevel == 0)
-				var acc := FindAccount(player.acctname);
-					if(!acc.getprop("ExtraClient"))
-                        ips += 1;
-					endif
-				endif
-            endif
-		SleepMS(10);
-	endforeach
-
-        if( ips > IpsOnline )
-                return 0;
-        endif
-
-        return 1;
-endfunction
-
 function VerifyStaffOnline( who )
 
         foreach player in EnumerateOnlineCharacters()
@@ -196,4 +175,121 @@ function VerifyStaffOnline( who )
         endforeach
 
         return 1;
+endfunction
+
+function CheckForMaxClientsOnline(who)
+    var settings := ACCT_GetSettingsCfgElem("Settings");
+    var MaxIpsOnline := GetConfigInt(settings, "MaxIpsOnline");
+    var MaxDiscordsOnline := GetConfigInt(settings, "MaxDiscordsOnline");
+    var MaxCharsOnline := GetConfigInt(settings, "MaxCharsOnline");
+    var MaxCharsPerIP := GetConfigInt(settings, "MaxCharsPerIP");
+
+    if (!MaxIpsOnline || !MaxDiscordsOnline || !MaxCharsOnline || !MaxCharsPerIP)
+        return 1; // Allow login if no limits are set
+    endif
+
+    var ini_ip := who.ip;
+    var ini_discordID := who.acct.getprop("DiscordID");
+    var ini_character := who.name;
+    var ini_extraclient := (who.acct.getprop("ExtraClient") == 1) ? 1 : 0;
+
+    var playerData := dictionary;
+
+    // Step 1: Populate playerData dictionary
+    foreach player in EnumerateOnlineCharacters()
+        if (player.cmdlevel == 0)
+            var player_ip := player.ip;
+            var player_discordID := player.acct.getprop("DiscordID");
+            var player_character := player.name;
+            var player_extraclient := (player.acct.getprop("ExtraClient") == 1) ? 1 : 0;
+
+            if (!playerData.exists(player_ip))
+                playerData.insert(player_ip, dictionary {});
+            endif
+
+            var ipData := playerData[player_ip];
+
+            if (!ipData.exists(player_discordID))
+                ipData.insert(player_discordID, dictionary {
+                    "Characters" -> array,
+                    "ExtraClient" -> player_extraclient
+                });
+            endif
+
+            var discordData := ipData[player_discordID];
+
+            if (!discordData["Characters"].contains(player_character))
+                discordData["Characters"].append(player_character);
+            endif
+
+            discordData["ExtraClient"] := player_extraclient;
+            ipData.insert(player_discordID, discordData);
+            playerData.insert(player_ip, ipData);
+		endif
+        
+		SleepMS(10);
+    
+	endforeach
+
+    // Step 2: Enforcement Checks
+    foreach ip in playerData
+		Print(playerData);
+        var ipData := playerData[ip]; // Retrieve the dictionary for this IP
+        var totalCharsPerIP := 0;
+
+        foreach discordID in ipData
+            var discordData := ipData[discordID];
+            var characterList := discordData["Characters"];
+            var extraClient := discordData["ExtraClient"];
+
+            // Check 1: Prevent multiple IPs on a single Discord ID
+            var ipCount := 0;
+            foreach checkIP in playerData
+                var checkData := playerData[checkIP];
+                if (checkData.exists(discordID))
+                    ipCount += 1;
+                endif
+            endforeach
+
+            if (ipCount > 1)
+                Print("Disconnecting: Discord ID " + discordID + " is logging in from multiple IPs.");
+                return 0;
+            endif
+
+            // Check 2: Prevent multiple Discord IDs per IP (unless ExtraClient is enabled)
+            var discordCount := ipData.size(); // Count Discord IDs under this IP
+            if (discordCount > 1 && extraClient == 0)
+                Print("Disconnecting: Multiple Discord IDs from the same IP without ExtraClient.");
+                return 0;
+            endif
+
+            // Check 3: Prevent more than 2 characters per Discord ID (unless ExtraClient is enabled)
+            if (characterList.size() > 2 && extraClient == 0)
+                Print("Disconnecting: Too many characters under Discord ID " + discordID);
+                return 0;
+            endif
+
+            // Check 4: ExtraClient Rules
+            if (extraClient == 1)
+                if (discordCount > 2)
+                    Print("Disconnecting: ExtraClient limit exceeded - More than 2 Discord IDs from a single IP.");
+                    return 0;
+                endif
+				if (characterList.size() > 2)
+                    Print("Disconnecting: ExtraClient limit exceeded - More than 2 characters per Discord ID.");
+                    return 0;
+				endif
+
+            totalCharsPerIP += characterList.size();
+			endif
+        endforeach
+
+        // Check 5: Total character limit per IP
+        if (totalCharsPerIP > 4)
+            Print("Disconnecting: Too many total characters from a single IP.");
+            return 0;
+		endif
+    endforeach
+
+    return 1;
 endfunction
