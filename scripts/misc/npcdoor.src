@@ -33,8 +33,8 @@ program textcmd_door(me)
 				opensound := SFX_OPEN_METAL_DOOR;
 				closesound := SFX_CLOSE_METAL_DOOR;
 				default:
-		        	"wood": 
-                		opensound := SFX_OPEN_WOODEN_DOOR;
+		        "wood": 
+                opensound := SFX_OPEN_WOODEN_DOOR;
 				closesound := SFX_CLOSE_WOODEN_DOOR;
 			endcase
 
@@ -65,7 +65,7 @@ program textcmd_door(me)
 				"metal": 
 				closesound := SFX_CLOSE_METAL_DOOR;
 				default:
-		        	"wood": 
+		        "wood": 
 				closesound := SFX_CLOSE_WOODEN_DOOR;
 			endcase
 
