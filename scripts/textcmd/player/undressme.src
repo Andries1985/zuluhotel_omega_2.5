@@ -1,0 +1,22 @@
+use uo;
+use os;
+
+include "include/client";
+include "include/myutil";
+
+program textcmd_disarm(me)
+
+	set_critical(1);
+
+	if (me.dead)
+		return;
+	endif
+
+	foreach thing in ListEquippedItems(me)
+		if(!Cint( GetObjProperty( thing , "Cursed" ) ) )
+			MoveItemToContainer(thing, me.backpack);
+			sleepms(1);
+		endif
+	endforeach
+
+endprogram
