@@ -225,7 +225,9 @@ function CalcSpellDamage( caster, cast_on, circle, area_spell := SINGLE_TARGET_S
 
 	dmg := ModifyWithMagicEfficiency( caster, dmg );
 
-	if( !cast_on.npctemplate ) dmg := CInt(dmg / SPELL_DAMAGES_ON_PLAYER_DIVIDER); endif
+	if( !cast_on.npctemplate ) 
+		dmg := CInt(dmg / SPELL_DAMAGES_ON_PLAYER_DIVIDER);
+	endif
 	if(cast_on.npctemplate) 
 		dmg := CInt(dmg*1.5);
 	endif
@@ -885,6 +887,7 @@ endfunction
 
 function Resisted( caster , cast_on , circle , dmg )
 
+	Print("In the resist function");
 	if( cast_on.dead ) return 0; endif
 	if( caster.dead ) return 0; endif
 
@@ -921,7 +924,7 @@ function Resisted( caster , cast_on , circle , dmg )
 		resist := Cint( resist * bonus );
 	endif
 
-	if( resist < 25 )
+	if( resist < 35 )
 		AwardSkillPoints( cast_on , SKILLID_MAGICRESISTANCE , Cint( points / 3 ) );
 	endif
 

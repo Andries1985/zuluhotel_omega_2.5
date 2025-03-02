@@ -57,16 +57,16 @@ function cast_meteor( caster )
 
 	SetObjProperty(me,"#lastbreath",ReadGameClock() + cint(Random(10)+10) );
 
-	var targets := ListMobilesNearLocation(me.x,me.y,me.z, 4);
-	PerformAction(me,0x0c);
+	var targets := ListMobilesNearLocation(me.x, me.y, me.z, 4, me.realm);
+	PerformAction(me, 0x0c);
 
 	var dmg := Cint( GetHP(me) / 30 ) + RandomDiceStr("1d15");
 		
 	foreach mobile in targets
 		if ( (mobile) and (!mobile.npctemplate or mobile.script == "tamed" || GetObjProperty(mobile, "NPCAttack")) and (!mobile.cmdlevel))
 			if(CheckLineOfSight( mobile, caster ))
-				PlayMovingEffect(caster, mobile ,MOVING_EFFECT_FIREBALL, 10,1,1);
-				ApplyElementalDamageNoResist( mobile , caster , dmg , FIRE );
+				PlayMovingEffect(caster, mobile, MOVING_EFFECT_FIREBALL, 10, 1, 1);
+				ApplyElementalDamage( caster, mobile, 6, dmg, FIRE );
 			endif
 		endif
 	endforeach

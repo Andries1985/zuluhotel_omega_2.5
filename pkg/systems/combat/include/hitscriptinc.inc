@@ -479,6 +479,11 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 		var parry_roll := ( RandomInt( 750 ) + 1 );
 		
 		parry_chance := CInt( parry_chance * ClasseBonusByLevel( defender_level ) );
+
+		if( ( parry_chance < 35 ) && shield_defender.IsA( POLCLASS_ARMOR ) )
+			AwardSkillPoints( defender, SKILLID_PARRY, 7 );
+		endif
+		
 		if( parry_roll <= parry_chance )
 			var absorbed := 0;
 			if( shield_defender.IsA( POLCLASS_ARMOR ) )
