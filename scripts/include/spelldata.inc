@@ -221,15 +221,23 @@ function CalcSpellDamage( caster, cast_on, circle, area_spell := SINGLE_TARGET_S
 		 CInt( GetEffectiveSkill(caster, SKILLID_MAGERY) / SPELL_DAMAGES_MAGERY_DIVIDER )
 	) ;
 
-	if( dmg > CInt(circle * (13 + circle)) ) dmg := CInt(circle * (13 + circle)); endif
+	if( dmg > CInt(circle * (13 + circle)) )
+		dmg := CInt(circle * (13 + circle));
+	endif
 
 	dmg := ModifyWithMagicEfficiency( caster, dmg );
 
 	if( !cast_on.npctemplate ) 
 		dmg := CInt(dmg / SPELL_DAMAGES_ON_PLAYER_DIVIDER);
+		if( dmg < 1)
+			dmg := 1;
+		endif
 	endif
 	if(cast_on.npctemplate) 
 		dmg := CInt(dmg*1.5);
+		if( dmg < 1)
+			dmg := 1;
+		endif
 	endif
 
 	return dmg;
