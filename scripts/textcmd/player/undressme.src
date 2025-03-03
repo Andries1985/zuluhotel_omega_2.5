@@ -1,0 +1,171 @@
+use uo;
+use os;
+
+include "include/client";
+include "include/myutil";
+
+program textcmd_undressme(me)
+
+	set_critical(1);
+
+	if (me.dead)
+		return;
+	endif
+
+	var mypack := me.backpack;
+
+	var weaponone := GetEquipmentByLayer( me,  LAYER_HAND1 );
+	var weapontwo := GetEquipmentByLayer( me,  LAYER_HAND2 );
+	var shoes := GetEquipmentByLayer( me,  LAYER_SHOES );
+	var pants := GetEquipmentByLayer( me,  LAYER_PANTS );
+	var shirt := GetEquipmentByLayer( me,  LAYER_SHIRT );
+	var helm := GetEquipmentByLayer( me,  LAYER_HELM );
+	var gloves := GetEquipmentByLayer( me,  LAYER_GLOVES );
+	var ring := GetEquipmentByLayer( me,  LAYER_RING );
+	var necklace := GetEquipmentByLayer( me,  LAYER_NECK );
+	var waist := GetEquipmentByLayer( me,  LAYER_WAIST );
+	var chest := GetEquipmentByLayer( me,  LAYER_CHEST );
+	var wrist := GetEquipmentByLayer( me,  LAYER_WRIST );
+	var tunic := GetEquipmentByLayer( me,  LAYER_TUNIC );
+	var earrings := GetEquipmentByLayer( me,  LAYER_EARS );
+	var arms := GetEquipmentByLayer( me,  LAYER_ARMS );
+	var cape := GetEquipmentByLayer( me,  LAYER_CAPE );
+	var robe := GetEquipmentByLayer( me,  LAYER_ROBE );
+	var skirt := GetEquipmentByLayer( me,  LAYER_SKIRT );
+	var legs := GetEquipmentByLayer( me,  LAYER_LEGS );
+
+	var wonecurse := Cint( GetObjProperty( weaponone , "Cursed" ) );
+	var wtwocurse := Cint( GetObjProperty( weaponone , "Cursed" ) );
+	var shoescurse := Cint( GetObjProperty( shoes , "Cursed" ) );
+	var pantscurse := Cint( GetObjProperty( pants , "Cursed" ) );
+	var shirtcurse := Cint( GetObjProperty( shirt , "Cursed" ) );
+	var helmcurse := Cint( GetObjProperty( helm , "Cursed" ) );
+	var glovescurse := Cint( GetObjProperty( gloves , "Cursed" ) );
+	var ringcurse := Cint( GetObjProperty( ring , "Cursed" ) );
+	var necklacecurse := Cint( GetObjProperty( necklace , "Cursed" ) );
+	var waistcurse := Cint( GetObjProperty( waist , "Cursed" ) );
+	var chestcurse := Cint( GetObjProperty( chest , "Cursed" ) );
+	var wristcurse := Cint( GetObjProperty( wrist , "Cursed" ) );
+	var tuniccurse := Cint( GetObjProperty( tunic , "Cursed" ) );
+	var earringscurse := Cint( GetObjProperty( earrings , "Cursed" ) );
+	var armscurse := Cint( GetObjProperty( arms , "Cursed" ) );
+	var capecurse := Cint( GetObjProperty( cape , "Cursed" ) );
+	var robecurse := Cint( GetObjProperty( robe , "Cursed" ) );
+	var skirtcurse := Cint( GetObjProperty( skirt , "Cursed" ) );
+	var legscurse := Cint( GetObjProperty( legs , "Cursed" ) );
+
+	if( weaponone )
+		if( !wonecurse or wonecurse == 3 )
+			MoveItemToContainer(weaponone, mypack );
+		endif
+	endif
+	
+	if( weapontwo )
+		if( !wtwocurse or wtwocurse == 3 )
+			MoveItemToContainer(weapontwo, mypack );
+		endif
+	endif
+
+	if( shoes )
+		if( !shoescurse or shoescurse == 3 )
+			MoveItemToContainer(shoes, mypack );
+		endif
+	endif
+	
+	if( pants )
+		if( !pantscurse or pantscurse == 3 )
+			MoveItemToContainer(pants, mypack );
+		endif
+	endif
+
+	if( shirt )
+		if( !shirtcurse or shirtcurse == 3 )
+			MoveItemToContainer(shirt, mypack );
+		endif
+	endif
+	
+	if( helm )
+		if( !helmcurse or helmcurse == 3 )
+			MoveItemToContainer(helm, mypack );
+		endif
+	endif
+
+	if( gloves )
+		if( !glovescurse or glovescurse == 3 )
+			MoveItemToContainer(gloves, mypack );
+		endif
+	endif
+	
+	if( ring )
+		if( !ringcurse or ringcurse == 3 )
+			MoveItemToContainer(ring, mypack );
+		endif
+	endif
+
+	if( necklace )
+		if( !necklacecurse or necklacecurse == 3 )
+			MoveItemToContainer(necklace, mypack );
+		endif
+	endif
+	
+	if( waist )
+		if( !waistcurse or waistcurse == 3 )
+			MoveItemToContainer(waist, mypack );
+		endif
+	endif
+
+	if( chest )
+		if( !chestcurse or chestcurse == 3 )
+			MoveItemToContainer(chest, mypack );
+		endif
+	endif
+	
+	if( wrist )
+		if( !wristcurse or wristcurse == 3 )
+			MoveItemToContainer(wrist, mypack );
+		endif
+	endif
+
+	if( tunic )
+		if( !tuniccurse or tuniccurse == 3 )
+			MoveItemToContainer(tunic, mypack );
+		endif
+	endif
+	
+	if( earrings )
+		if( !earringscurse or earringscurse == 3 )
+			MoveItemToContainer(earrings, mypack );
+		endif
+	endif
+
+	if( arms )
+		if( !armscurse or armscurse == 3 )
+			MoveItemToContainer(arms, mypack );
+		endif
+	endif
+	
+	if( cape )
+		if( !capecurse or capecurse == 3 )
+			MoveItemToContainer(cape, mypack );
+		endif
+	endif
+
+	if( robe )
+		if( !robecurse or robecurse == 3 )
+			MoveItemToContainer(robe, mypack );
+		endif
+	endif
+
+	if( skirt )
+		if( !skirtcurse or skirtcurse == 3 )
+			MoveItemToContainer(skirt, mypack );
+		endif
+	endif
+	
+	if( legs )
+		if( !legscurse or legscurse == 3 )
+			MoveItemToContainer(legs, mypack );
+		endif
+	endif
+
+endprogram

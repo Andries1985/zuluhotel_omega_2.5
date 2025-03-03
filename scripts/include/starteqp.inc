@@ -245,23 +245,23 @@ function CreateFromItemString( who, str )
 	endif
 
 	// It's a chance drop
-    	if ( CInt(params[2]) )
-        	chance := CInt( params[2] );
-			var killer;
-			if(GetObjProperty(who, "KilledBySerial"))
-				killer := SystemFindObjectBySerial(GetObjProperty(who, "KilledBySerial"),SYSFIND_SEARCH_OFFLINE_MOBILES );
+	if ( CInt(params[2]) )
+		chance := CInt( params[2] );
+		var killer;
+		if(GetObjProperty(who, "KilledBySerial"))
+			killer := SystemFindObjectBySerial(GetObjProperty(who, "KilledBySerial"),SYSFIND_SEARCH_OFFLINE_MOBILES );
+		endif
+		if(GetGlobalProperty("PHH") || GetObjProperty(killer, "#PPHH"))
+			chance := chance*2;
+			if(chance > 100)
+				chance := 100;
 			endif
-			if(GetGlobalProperty("PHH") || GetObjProperty(killer, "#PPHH"))
-				chance := chance*2;
-				if(chance > 100)
-					chance := 100;
-				endif
-			endif
-    	else
+		endif
+	else
 
-	// It's a definite drop
-        	chance := 100;
-    	endif
+// It's a definite drop
+		chance := 100;
+	endif
 
 	// count is only ever higher than 1 when items have a prefix of 'Item'. 
 	// And if they are run through this function from the main loot group.
@@ -366,18 +366,18 @@ endfunction
 
 function RegisterItem(who, item)
 
-if (IsStackable(item, item))
-	return 0;
-endif
+	if (IsStackable(item, item))
+		return 0;
+	endif
 
-// Loot is from a slayed npc
-if (corpsetype)
-	SetObjProperty(item, "FromLoot", {corpsetype, ReadGameClock()});
-else
-	// Could be from treasure chest/sos/anything that generates loot that didnt have a corpse
+	// Loot is from a slayed npc
+	if (corpsetype)
+		SetObjProperty(item, "FromLoot", {corpsetype, ReadGameClock()});
+	else
+		// Could be from treasure chest/sos/anything that generates loot that didnt have a corpse
 
-	SetObjProperty(item, "FromLoot", {who.desc, ReadGameClock(), baselevel, lootgroupglob});
-endif
+		SetObjProperty(item, "FromLoot", {who.desc, ReadGameClock(), baselevel, lootgroupglob});
+	endif
 
 endfunction
 
@@ -390,198 +390,198 @@ endfunction
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ApplyWeaponModNew(who, item)
 
-/* This is the OLD way
-Min lvl 1 - 26		Max lvl 1 - 100
-Min lvl 2 - 52		Max lvl 2 - 200
-Min lvl 3 - 52		Max lvl 3 - 200
-Min lvl 4 - 78		Max lvl 4 - 300
-Min lvl 5 - 78		Max lvl 5 - 300 <----- Both these values got +51 after, bandaid solution
-Min lvl 6 - 104		Max lvl 6 - 400
-Min lvl 7 - 104		Max lvl 7 - 400
-Min lvl 8 - 130		Max lvl 8 - 500
-Min lvl 9 - 130		Max lvl 9 - 500
-Min lvl 10 - 156	Max lvl 10 - 600
+	/* This is the OLD way
+	Min lvl 1 - 26		Max lvl 1 - 100
+	Min lvl 2 - 52		Max lvl 2 - 200
+	Min lvl 3 - 52		Max lvl 3 - 200
+	Min lvl 4 - 78		Max lvl 4 - 300
+	Min lvl 5 - 78		Max lvl 5 - 300 <----- Both these values got +51 after, bandaid solution
+	Min lvl 6 - 104		Max lvl 6 - 400
+	Min lvl 7 - 104		Max lvl 7 - 400
+	Min lvl 8 - 130		Max lvl 8 - 500
+	Min lvl 9 - 130		Max lvl 9 - 500
+	Min lvl 10 - 156	Max lvl 10 - 600
 
-if(enchant < 50)
-	ApplyHPMod( item ); // Impossible for 2+ (durable broadsword) no other chance of mods in function
+	if(enchant < 50)
+		ApplyHPMod( item ); // Impossible for 2+ (durable broadsword) no other chance of mods in function
 
-elseif(enchant < 60)
-	ApplyWeapSkillMod( item ); // impossible for 4+ (arms masters broadsword) gets a chance of obtaining applyhpmod at end (arms master durable broadsword)
+	elseif(enchant < 60)
+		ApplyWeapSkillMod( item ); // impossible for 4+ (arms masters broadsword) gets a chance of obtaining applyhpmod at end (arms master durable broadsword)
 
-elseif(enchant < 485)
-	ApplyDmgMod ( item ); // Any lootgroup (+dmg!) gets chance of above mods, 25% more chance of HPmod though (arms masters broadsword of power) or (durable broadsword of power)
+	elseif(enchant < 485)
+		ApplyDmgMod ( item ); // Any lootgroup (+dmg!) gets chance of above mods, 25% more chance of HPmod though (arms masters broadsword of power) or (durable broadsword of power)
 
-else
-	ApplyWeapHitscript ( who , item ); //lvl 8+ // No chance of other mods - this used to be lvl 5+.....
-endif
-AddName( item );
-*/
-
-// No need for anything higher
-var chance := RandomInt(10000);
-
-if (magiclevel == 0)
-	return 0;
-
-// Level 1 loot
-elseif (magiclevel == 1)
-	
-	// 30% chance 
-	if (chance < 3000)
-		ApplyHPMod( item ); 
-	// 10% chance
-	elseif (chance < 4000)
-		ApplyWeapSkillMod( item ); 
-	// 59.9% chance
-	elseif (chance < 9990)
-		ApplyDmgMod( item );
-	// .1% chance
 	else
-		ApplyWeapHitscript( who , item );
+		ApplyWeapHitscript ( who , item ); //lvl 8+ // No chance of other mods - this used to be lvl 5+.....
+	endif
+	AddName( item );
+	*/
+
+	// No need for anything higher
+	var chance := RandomInt(10000);
+
+	if (magiclevel == 0)
+		return 0;
+
+	// Level 1 loot
+	elseif (magiclevel == 1)
+		
+		// 30% chance 
+		if (chance < 3000)
+			ApplyHPMod( item ); 
+		// 10% chance
+		elseif (chance < 4000)
+			ApplyWeapSkillMod( item ); 
+		// 59.9% chance
+		elseif (chance < 9990)
+			ApplyDmgMod( item );
+		// .1% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 2 loot
+	elseif (magiclevel == 2)
+		
+		// 2% chance 
+		if (chance < 200)
+			ApplyHPMod( item ); 
+		// 5% chance
+		elseif (chance < 700)
+			ApplyWeapSkillMod( item ); 
+		// 92.5% chance
+		elseif (chance < 9950)
+			ApplyDmgMod( item );
+		// .5% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 3 loot
+	elseif (magiclevel == 3)
+		
+		// 1% chance 
+		if (chance < 100)
+			ApplyHPMod( item ); 
+		// 2% chance
+		elseif (chance < 300)
+			ApplyWeapSkillMod( item ); 
+		// 96% chance
+		elseif (chance < 9900)
+			ApplyDmgMod( item );
+		// 1% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 4 loot
+	elseif (magiclevel == 4)
+		
+		// .5% chance 
+		if (chance < 50)
+			ApplyHPMod( item ); 
+		// 1% chance
+		elseif (chance < 150)
+			ApplyWeapSkillMod( item ); 
+		// 93.5% chance
+		elseif (chance < 9500)
+			ApplyDmgMod( item );
+		// 5% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 5 loot
+	elseif (magiclevel == 5)
+		
+		// .2% chance 
+		if (chance < 20)
+			ApplyHPMod( item ); 
+		// .5% chance
+		elseif (chance < 70)
+			ApplyWeapSkillMod( item ); 
+		// 92.3% chance
+		elseif (chance < 9000)
+			ApplyDmgMod( item );
+		// 7% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 6 loot
+	elseif (magiclevel == 6)
+		
+		// .1% chance 
+		if (chance < 10)
+			ApplyHPMod( item ); 
+		// .2% chance
+		elseif (chance < 30)
+			ApplyWeapSkillMod( item ); 
+		// 79.7% chance
+		elseif (chance < 8500)
+			ApplyDmgMod( item );
+		// 20% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 7 loot
+	elseif (magiclevel == 7)
+		
+		// 77%
+		if (chance < 8500)
+			ApplyDmgMod( item );
+		// 23% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 8 loot
+	elseif (magiclevel == 8)
+		
+		// 74%
+		if (chance < 8200)
+			ApplyDmgMod( item );
+		// 26% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 9 loot
+	elseif (magiclevel == 9)
+		
+		// 71%
+		if (chance < 7900)
+			ApplyDmgMod( item );
+		// 29% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 10 loot
+	elseif (magiclevel == 10)
+		
+		// 68%
+		if (chance < 9000)
+			ApplyDmgMod( item );
+		// 32% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+		
+	else
+
+		// 65%
+		if (chance < 9000)
+			ApplyDmgMod( item );
+		// 35% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+		
 	endif
 
-// Level 2 loot
-elseif (magiclevel == 2)
-	
-	// 2% chance 
-	if (chance < 200)
-		ApplyHPMod( item ); 
-	// 5% chance
-	elseif (chance < 700)
-		ApplyWeapSkillMod( item ); 
-	// 92.5% chance
-	elseif (chance < 9950)
-		ApplyDmgMod( item );
-	// .5% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 3 loot
-elseif (magiclevel == 3)
-	
-	// 1% chance 
-	if (chance < 100)
-		ApplyHPMod( item ); 
-	// 2% chance
-	elseif (chance < 300)
-		ApplyWeapSkillMod( item ); 
-	// 96% chance
-	elseif (chance < 9900)
-		ApplyDmgMod( item );
-	// 1% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 4 loot
-elseif (magiclevel == 4)
-	
-	// .5% chance 
-	if (chance < 50)
-		ApplyHPMod( item ); 
-	// 1% chance
-	elseif (chance < 150)
-		ApplyWeapSkillMod( item ); 
-	// 93.5% chance
-	elseif (chance < 9500)
-		ApplyDmgMod( item );
-	// 5% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 5 loot
-elseif (magiclevel == 5)
-	
-	// .2% chance 
-	if (chance < 20)
-		ApplyHPMod( item ); 
-	// .5% chance
-	elseif (chance < 70)
-		ApplyWeapSkillMod( item ); 
-	// 92.3% chance
-	elseif (chance < 9000)
-		ApplyDmgMod( item );
-	// 7% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 6 loot
-elseif (magiclevel == 6)
-	
-	// .1% chance 
-	if (chance < 10)
-		ApplyHPMod( item ); 
-	// .2% chance
-	elseif (chance < 30)
-		ApplyWeapSkillMod( item ); 
-	// 79.7% chance
-	elseif (chance < 8500)
-		ApplyDmgMod( item );
-	// 20% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 7 loot
-elseif (magiclevel == 7)
-	
-	// 77%
-	if (chance < 8500)
-		ApplyDmgMod( item );
-	// 23% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 8 loot
-elseif (magiclevel == 8)
-	
-	// 74%
-	if (chance < 8200)
-		ApplyDmgMod( item );
-	// 26% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 9 loot
-elseif (magiclevel == 9)
-	
-	// 71%
-	if (chance < 7900)
-		ApplyDmgMod( item );
-	// 29% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 10 loot
-elseif (magiclevel == 10)
-	
-	// 68%
-	if (chance < 9000)
-		ApplyDmgMod( item );
-	// 32% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-	
-else
-
-	// 65%
-	if (chance < 9000)
-		ApplyDmgMod( item );
-	// 35% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-	
-endif
-
-AddName( item );
+	AddName( item );
 
 endfunction
 
