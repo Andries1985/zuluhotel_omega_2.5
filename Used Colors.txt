@@ -1,0 +1,7034 @@
+Item
+{
+	Name		IronOre
+    Color       0x0
+}
+Item
+{
+	Name		BronzeOre
+    Color       0x45e
+}
+Item
+{
+	Name		DullCopperOre
+    Color       0x3ea
+}
+Item
+{
+	Name		CopperOre
+    Color       0x602
+}
+Item
+{
+	Name		OnyxOre
+    Color       0x455
+}
+Item
+{
+	Name		PyriteOre
+    Color       0x6b8
+}
+Item
+{
+	Name		MalachiteOre
+    Color       1159
+}
+Item
+{
+	Name		AzuriteOre
+    Color       0x4df
+}
+Item
+{
+	Name		PlatinumOre
+    Color       1111
+}
+Item
+{
+	Name		LavarockOre
+    Color       1158
+}
+Item
+{
+	Name		MysticOre
+    Color       383
+}
+Item
+{
+	Name		NewZuluOre
+    Color       1765
+}
+Item
+{
+	Name		SpikeOre
+    Color       1223
+}
+Item
+{
+	Name		FruityOre
+    Color       1134
+}
+Item
+{
+	Name		IcerockOre
+    Color       1152
+}
+Item
+{
+	Name		SilverrockOre
+    Color       1001
+}
+Item
+{
+	Name		SpectralOre
+    Color       1155
+}
+Item
+{
+	Name		UndeadOre
+    Color       633
+}
+Item
+{
+	Name		DarkpaganOre
+    Color       1131
+}
+Item
+{
+	Name		OldbritainOre
+    Color       0x852
+}
+Item
+{
+	Name		VirginityOre
+    Color       1154
+}
+Item
+{
+	Name		BlackdwarfOre
+    Color       1105
+}
+Item
+{
+	Name		RedelvenOre
+    Color       1209
+}
+Item
+{
+	Name		DripstoneOre
+    Color       0x049e
+}
+Item
+{
+	Name		ExecutorOre
+    Color       0x0499
+}
+Item
+{
+	Name		PeachBlueOre
+    Color       0x049c
+}
+Item
+{
+	Name		DestructionOre
+    Color       0x0500
+}
+Item
+{
+	Name		AnraOre
+    Color       0x048b
+}
+Item
+{
+	Name		GoddessOre
+    Color       0x0501
+}
+Item
+{
+	Name		CrystalOre
+    Color       0x0492
+}
+Item
+{
+	Name		DoomOre
+    Color       0x049f
+}
+Item
+{
+	Name		EbonSapphire
+    Color       1184
+}
+Item
+{
+	Name		DarkRuby
+    Color       1172
+}
+Item
+{
+	Name		RadiantDiamond
+    Color       1176
+}
+Item
+{
+	Name		IronIngot
+    Color       0x0
+}
+Item
+{
+	Name		BronzeIngot
+    Color       0x45e
+}
+Item
+{
+	Name		DullCopperIngot
+    Color       0x3ea
+}
+Item
+{
+	Name		CopperIngot
+    Color       0x602
+}
+Item
+{
+	Name		OnyxIngot
+    Color       0x455
+}
+Item
+{
+	Name		PyriteIngot
+    Color       0x6b8
+}
+Item
+{
+	Name		MalachiteIngot
+    Color       1159
+}
+Item
+{
+	Name		AzuriteIngot
+    Color       0x4df
+}
+Item
+{
+	Name		PlatinumIngot
+    Color       1111
+}
+Item
+{
+	Name		LavarockIngot
+    Color       1158
+}
+Item
+{
+	Name		MysticIngot
+    Color       383
+}
+Item
+{
+	Name		NewZuluIngot
+    Color       1765
+}
+Item
+{
+	Name		SpikeIngot
+    Color       1223
+}
+Item
+{
+	Name		FruityIngot
+    Color       1134
+}
+Item
+{
+	Name		IceRock
+    Color       1152
+}
+Item
+{
+	Name		SilverrockIngot
+    Color       1001
+}
+Item
+{
+	Name		SpectralIngot
+    Color       1155
+}
+Item
+{
+	Name		UndeadIngot
+    Color       633
+}
+Item
+{
+	Name		DarkpaganIngot
+    Color       1131
+}
+Item
+{
+	Name		OldbritainIngot
+    Color       0x852
+}
+Item
+{
+	Name		VirginityIngot
+    Color       1154
+}
+Item
+{
+	Name		BlackdwarfIngot
+    Color       1105
+}
+Item
+{
+	Name		RedelvenIngot
+    Color       1209
+}
+Item
+{
+	Name		DripstoneIngot
+    Color       0x049e
+}
+Item
+{
+	Name		ExecutorIngot
+    Color       0x0499
+}
+Item
+{
+	Name		PeachBlueIngot
+    Color       0x049c
+}
+Item
+{
+	Name		DestructionIngot
+    Color       0x0500
+}
+Item
+{
+	Name		AnraIngot
+    Color       0x048b
+}
+Item
+{
+	Name		GoddessIngot
+    Color       0x0501
+}
+Item
+{
+	Name		CrystalIngot
+    Color       0x0492
+}
+Item
+{
+	Name		DoomIngot
+    Color       0x049f
+}
+Item
+{
+	Name		EbonIngot
+    Color       1184
+}
+Item
+{
+	Name		DarkRuby1
+    Color       1172
+}
+Item
+{
+	Name		RadiantDiamond1
+    Color       1176
+}
+Item
+{
+	Name		clay
+    Color       0x0609
+}
+Item
+{
+	Name		SylvianStuddedGorget
+    Color       411
+}
+Item
+{
+	Name		SylvianStuddedGloves
+    Color       411
+}
+Item
+{
+	Name		SylvianStuddedSleeves
+    Color       411
+}
+Item
+{
+	Name		SylvianStuddedLeggings
+    Color       411
+}
+Item
+{
+	Name		SylvianStuddedTunic
+    Color       411
+}
+Item
+{
+	Name		SylvianFemaleStudded
+    Color       411
+}
+Item
+{
+	Name		SylvianLeatherCap
+    Color       411
+}
+Item
+{
+	Name		SagesRobe
+    Color       1184
+}
+Item
+{
+	Name		Rank1Robe
+    Color       1165
+}
+Item
+{
+	Name		Rank2Robe
+    Color       1301
+}
+Item
+{
+	Name		Rank3Robe
+    Color       1174
+}
+Item
+{
+	Name		Rank4Robe
+    Color       1172
+}
+Item
+{
+	Name		Rank5Robe
+    Color       1184
+}
+Item
+{
+	Name		leathergorgetofwater
+    Color       1555
+}
+Item
+{
+	Name		leatherarmsofwater
+    Color       1555
+}
+Item
+{
+	Name		leatherglovesofwater
+    Color       1555
+}
+Item
+{
+	Name		maskofwater
+    Color       1555
+}
+Item
+{
+	Name		leatherlegsofwater
+    Color       1555
+}
+Item
+{
+	Name		leathertunicofwater
+    Color       1555
+}
+Item
+{
+	Name		LeatherGorgetofearth
+    Color       1134
+}
+Item
+{
+	Name		LeatherGlovesofearth
+    Color       1134
+}
+Item
+{
+	Name		leatherarmsofearth
+    Color       1134
+}
+Item
+{
+	Name		leatherLegsofearth
+    Color       1134
+}
+Item
+{
+	Name		leatherTunicofearth
+    Color       1134
+}
+Item
+{
+	Name		maskofearth
+    Color       1134
+}
+Item
+{
+	Name		LeatherGorgetofair
+    Color       1655
+}
+Item
+{
+	Name		LeatherGlovesofair
+    Color       1655
+}
+Item
+{
+	Name		leatherarmsofair
+    Color       1655
+}
+Item
+{
+	Name		leatherLegsofair
+    Color       1655
+}
+Item
+{
+	Name		leatherTunicofair
+    Color       1655
+}
+Item
+{
+	Name		maskofair
+    Color       1655
+}
+Item
+{
+	Name		LeatherGorgetoffire
+    Color       1172
+}
+Item
+{
+	Name		LeatherGlovesoffire
+    Color       1172
+}
+Item
+{
+	Name		leatherarmsoffire
+    Color       1172
+}
+Item
+{
+	Name		leatherLegsoffire
+    Color       1172
+}
+Item
+{
+	Name		leatherTunicoffire
+    Color       1172
+}
+Item
+{
+	Name		maskoffire
+    Color       1172
+}
+Item
+{
+	Name		LeatherGorgetofshadow
+    Color       1157
+}
+Item
+{
+	Name		LeatherGlovesofshadow
+    Color       1157
+}
+Item
+{
+	Name		leatherarmsofshadow
+    Color       1157
+}
+Item
+{
+	Name		leatherLegsofshadow
+    Color       1157
+}
+Item
+{
+	Name		leatherTunicofshadow
+    Color       1157
+}
+Item
+{
+	Name		maskcofshadow
+    Color       1157
+}
+Item
+{
+	Name		LeatherGorgetofHoly
+    Color       1153
+}
+Item
+{
+	Name		LeatherGlovesofHoly
+    Color       1153
+}
+Item
+{
+	Name		leatherarmsofHoly
+    Color       1153
+}
+Item
+{
+	Name		leatherLegsofHoly
+    Color       1153
+}
+Item
+{
+	Name		leatherTunicofHoly
+    Color       1153
+}
+Item
+{
+	Name		maskofHoly
+    Color       1153
+}
+Item
+{
+	Name		LeatherGorgetofpoison
+    Color       264
+}
+Item
+{
+	Name		LeatherGlovesofpoison
+    Color       264
+}
+Item
+{
+	Name		leatherarmsofpoison
+    Color       264
+}
+Item
+{
+	Name		leatherLegsofpoison
+    Color       264
+}
+Item
+{
+	Name		leatherTunicofpoison
+    Color       264
+}
+Item
+{
+	Name		maskofpoison
+    Color       264
+}
+Item
+{
+	Name		StygianRobe
+    Color       1174
+}
+Item
+{
+	Name		rathide
+    Color       0x07e2
+}
+Item
+{
+	Name		dragonhide
+    Color       0x0494
+}
+Item
+{
+	Name		trollhide
+    Color       0x054a
+}
+Item
+{
+	Name		lizardhide
+    Color       0x0852
+}
+Item
+{
+	Name		serpenthide
+    Color       0x08fd
+}
+Item
+{
+	Name		ostardhide
+    Color       0x415
+}
+Item
+{
+	Name		balronhide
+    Color       1157
+}
+Item
+{
+	Name		lavahide
+    Color       0x486
+}
+Item
+{
+	Name		necromancerhide
+    Color       84
+}
+Item
+{
+	Name		lichehide
+    Color       0x0496
+}
+Item
+{
+	Name		daemonhide
+    Color       1645
+}
+Item
+{
+	Name		wyrmhide
+    Color       1159
+}
+Item
+{
+	Name		golddragonhide
+    Color       48
+}
+Item
+{
+	Name		wolfhide
+    Color       1102
+}
+Item
+{
+	Name		bearhide
+    Color       44
+}
+Item
+{
+	Name		icecrystalhide
+    Color       0x0492
+}
+Item
+{
+	Name		balroghide
+    Color       1765
+}
+Item
+{
+	Name		terathanhide
+    Color       1285
+}
+Item
+{
+	Name		orchide
+    Color       1054
+}
+Item
+{
+	Name		Angelhide
+    Color       1165
+}
+Item
+{
+	Name		SilverDragonhide
+    Color       1154
+}
+Item
+{
+	Name		Dreamhide
+    Color       1281
+}
+Item
+{
+	Name		CloakofLettenhove
+    Color       1162
+}
+Item
+{
+	Name		glass
+	Color		0x0973
+}
+Item
+{
+	Name		sand
+	Color		0x083b
+}
+Item
+{
+    Name        GMFishingPole
+    Color       1172
+}
+Item
+{
+    Name        fishingnet
+    Color       300
+}
+Item
+{
+    Name        fishshell1
+    Color       0x504
+}
+Item
+{
+    Name        fishshell2
+    Color       0x519
+}
+Item
+{
+    Name        fishshell3
+    Color       0x606
+}
+Item
+{
+    Name        fishshell4
+    Color       0x505
+}
+Item
+{
+    Name        fishshell5
+    Color       0x501
+}
+Item
+{
+    Name        fishshell6
+    Color       0x499
+}
+Item
+{
+    Name        fishshell7
+    Color       0x48D
+}
+Item
+{
+    Name        fishshell8
+    Color       0x489
+}
+Item
+{
+    Name        fishshell9
+    Color       0x496
+}
+Item
+{
+    Name        magicfish2
+    Color       41
+}
+Item
+{
+    Name        magicfish3
+    Color       51
+}
+Item
+{
+    Name        magicfish4
+    Color       61
+}
+Item
+{
+    Name        magicfish5
+    Color       91
+}
+Item
+{
+    Name        magicfish6
+    Color       9
+}
+Item
+{
+    Name        magicfish7
+    Color       1001
+}
+Item
+{
+    Name        magicfish8
+    Color       21
+}
+Item
+{
+    Name        magicfish9
+    Color       1160
+}
+Item
+{
+	Name		pinetreelog
+	Color		1132
+}
+Item
+{
+	Name		cherrylog
+	Color		1620
+}
+Item
+{
+	Name		oaklog
+	Color		1045
+}
+Item
+{
+	Name		purplepassionlog
+	Color		515
+}
+Item
+{
+	Name		goldenreflectionslog
+	Color		48
+}
+Item
+{
+	Name		jadelog
+	Color		1162
+}
+Item
+{
+	Name		darkwoodlog
+	Color		1109
+}
+Item
+{
+	Name		stonewoodlog
+	Color		1154
+}
+Item
+{
+	Name		sunlog
+	Color		1176
+}
+Item
+{
+	Name		swamplog
+	Color		1177
+}
+Item
+{
+	Name		stardustlog
+	Color		1655
+}
+Item
+{
+	Name		silverleaflog
+	Color		2301
+}
+Item
+{
+	Name		stormteallog
+	Color		1346
+}
+Item
+{
+	Name		emeraldlog
+	Color		1159
+}
+Item
+{
+	Name		bloodlog
+	Color		1645
+}
+Item
+{
+	Name		crystallog
+	Color		1170
+}
+Item
+{
+	Name		doomlog
+	Color		1183
+}
+Item
+{
+	Name		goddesslog
+	Color		1281
+}
+Item
+{
+	Name		zululog
+	Color		1765
+}
+Item
+{
+	Name		hardrangerlog
+	Color		1285
+}
+Item
+{
+	Name		gauntletlog
+	Color		1284
+}
+Item
+{
+	Name		bloodhorselog
+	Color		1287
+}
+Item
+{
+	Name		darknesslog
+	Color		1157
+}
+Item
+{
+	Name		elvenlog
+	Color		1165
+}
+Item
+{
+	Name		cookbook
+	Color       300
+}
+Item
+{
+	Name		rawsausage
+	Color		0x29
+}
+Item
+{
+	Name		cornmeal
+	Color		0x31
+}
+Item
+{
+	Name		pizzacrust
+	Color		150
+}
+Item
+{
+	Name		piecrust
+	Color		250
+}
+Item
+{
+	Name		ballofdough
+	Color		351
+}
+Item
+{
+	Name		garlicbread
+	Color		0x224
+}
+Item
+{
+	Name		pancakes
+	Color		449
+}
+Item
+{
+	Name		honeybakedham
+	Color		45
+}
+Item
+{
+	Name		sushi
+	Color		1172
+}
+Item
+{
+	Name		carrotcake
+	Color		50
+}
+Item
+{
+	Name		applecake
+	Color		41
+}
+Item
+{
+	Name		limecake
+	Color		66
+}
+Item
+{
+	Name		lemoncake
+	Color		56
+}
+Item
+{
+	Name		coconutcake
+	Color		0x481
+}
+Item
+{
+	Name		onionrings
+	Color		544
+}
+Item
+{
+    Name        Lesser Mego Invulnerability potion
+    Color       654
+}
+Item
+{
+    Name        Mego Invulnerability potion
+    Color       154
+}
+Item
+{
+    Name        Grand Mage Refresh Elixir
+    Color       0x486
+}
+Item
+{
+    Name        Homeric Might potion
+    Color       133
+}
+Item
+{
+    Name        Greater Homeric Might potion
+    Color       0
+}
+Item
+{
+    Name        Tamla Heal potion
+    Color       155
+}
+Item
+{
+    Name        Taint's Minor Transmutation
+    Color       155
+}
+Item
+{
+    Name        Taint's Major Transmutation
+    Color       0
+}
+Item
+{
+    Name        Totem
+    Color       746
+}
+Item
+{
+    Name        Elixer
+    Color       0
+}
+Item
+{
+    Name        Dispel Potion
+    Color       1282
+}
+Item
+{
+    Name        Rebirth Potion
+    Color       2453
+}
+Item
+{
+    Name        grapevinesseed
+    Color       515
+}
+Item
+{
+    Name        appletreeseed
+    Color       435
+}
+Item
+{
+    Name        peachtreeseed
+    Color       544
+}
+Item
+{
+    Name        peartreeseed
+    Color       859
+}
+Item
+{
+    Name        bananatreeseed
+    Color       654
+}
+Item
+{
+    Name        botanicscissor
+    Color       1159
+}
+Item
+{
+    Name        appletree
+    Color       435
+}
+Item
+{
+    Name        peartree
+    Color       859
+}
+Item
+{
+    Name        peachtree
+    Color       544
+}
+Item
+{
+    Name        champaltar
+    Color       0x7AD
+}
+Item
+{
+    Name        championskull
+    Color       1945
+}
+Item
+{
+    Name        savagekinpaint
+    Color       0x1822
+}
+Item
+{
+	Name		CWStone
+	Color		1627
+}
+Item
+{
+	Name		CWPStone
+	Color		1172
+}
+Item
+{
+	Name		kothtile
+	Color		0x095D
+}
+Item
+{
+	Name		CWReadyStone
+	Color		1765
+}
+Item
+{
+	Name	GankBall
+	Color	1300
+}
+Item
+{
+    Name        BookoftheEarth
+    Color       1162
+}
+Item
+{
+    Name        Antidotescroll
+    Color       0x48a
+}
+Item
+{
+    Name        Owlsightscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Shiftingearthscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Summonmammalsscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Calllightningscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Earthblessingscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Earthportalscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Naturestouchscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Gustofairscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Risingfirescroll
+    Color       0x48a
+}
+Item
+{
+    Name        Shapeshiftscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Icestrikescroll
+    Color       0x48a
+}
+Item
+{
+    Name        Earthspiritscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Flamespiritscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Stormspiritscroll
+    Color       0x48a
+}
+Item
+{
+    Name        Waterspiritscroll
+    Color       0x48a
+}
+Item
+{
+    Name        flaxseed
+    Color       700
+}
+Item
+{
+    Name        cottonseed
+    Color       1176
+}
+Item
+{
+    Name        wheatseed
+    Color       150
+}
+Item
+{
+    Name        onionbulb
+    Color       1153
+}
+Item
+{
+    Name        cornear
+    Color       1300
+}
+Item
+{
+    Name        turnipbulb
+    Color       1163
+}
+Item
+{
+    Name        hopseed
+    Color       1159
+}
+Item
+{
+    Name        mandrakeseed
+    Color       1131
+}
+Item
+{
+    Name        nightshadeseed
+    Color       1170
+}
+Item
+{
+    Name        ginsengseed
+    Color       648
+}
+Item
+{
+	Name 		MassShuriken
+    Color       1169
+}
+Item
+{
+    Name        holyscroll1
+    Color       1956
+}
+Item
+{
+    Name        holyscroll2
+    Color       1956
+}
+Item
+{
+    Name        holyscroll3
+    Color       1956
+}
+Item
+{
+    Name        holyscroll4
+    Color       1956
+}
+Item
+{
+    Name        holyscroll5
+    Color       1956
+}
+Item
+{
+    Name        holyscroll6
+    Color       1956
+}
+Item
+{
+    Name        holyscroll7
+    Color       1956
+}
+Item
+{
+    Name        holyscroll8
+    Color       1956
+}
+Item
+{
+    Name        holyscroll9
+    Color       1956
+}
+Item
+{
+    Name        holyscroll10
+    Color       1956
+}
+Item
+{
+    Name        holyscroll11
+    Color       1956
+}
+Item
+{
+    Name        holyscroll12
+    Color       1956
+}
+Item
+{
+    Name        holyscroll13
+    Color       1956
+}
+Item
+{
+    Name        holyscroll14
+    Color       1956
+}
+Item
+{
+    Name        holyscroll15
+    Color       1956
+}
+Item
+{
+    Name        holyscroll16
+    Color       1956
+}
+Item
+{
+	Name        lootbag
+	Color       1170
+}
+Item
+{
+    Name        CodexDamnorum
+    Color       1645
+}
+Item
+{
+    Name        ControlUndeadScroll
+    Color       0x66D
+}
+Item
+{
+    Name        DarknessScroll
+    Color       0x66D
+}
+Item
+{
+    Name        DecayingRayScroll
+    Color       0x66D
+}
+Item
+{
+    Name        SpectresTouchScroll
+    Color       0x66D
+}
+Item
+{
+    Name        AbyssalFlameScroll
+    Color       0x66D
+}
+Item
+{
+    Name        AnimateDeadScroll
+    Color       0x66D
+}
+Item
+{
+    Name        SacrificeScroll
+    Color       0x66D
+}
+Item
+{
+    Name        WraithsBreathScroll
+    Color       0x66D
+}
+Item
+{
+    Name        SorcerersBaneScroll
+    Color       0x66D
+}
+Item
+{
+    Name        SummonSpiritScroll
+    Color       0x66D
+}
+Item
+{
+    Name        WraithformScroll
+    Color       0x66D
+}
+Item
+{
+    Name        WyvernStrikeScroll
+    Color       0x66D
+}
+Item
+{
+    Name        KillScroll
+    Color       0x66D
+}
+Item
+{
+    Name        LicheScroll
+    Color       0x66D
+}
+Item
+{
+    Name        PlagueScroll
+    Color       0x66D
+}
+Item
+{
+    Name        SpellbindScroll
+    Color       0x66D
+}
+Item
+{
+	Name 		RPerstone
+	Color 		1953
+}
+Item
+{
+	Name		RperGate
+	Color		2567
+}
+Item
+{
+	Name		RandorinGate
+	Color		1945
+}
+Item
+{
+	Name	BagOfInfiniteReagents
+	Color	1170
+}
+Item
+{
+	Name		WordOfPowerTeleporter
+	Color		0x01b5
+}
+Item
+{
+	Name		TrashCanOfWonders
+	Color		0x512
+}
+Item
+{
+	Name		shrunknpc
+	Color		1305
+}
+Item
+{
+    Name        SongBook
+    Color       1165
+}
+Item
+{
+    Name        songscroll1
+    Color       1165
+}
+Item
+{
+    Name        songscroll2
+    Color       1165
+}
+Item
+{
+    Name        songscroll3
+    Color       1165
+}
+Item
+{
+    Name        songscroll4
+    Color       1165
+}
+Item
+{
+    Name        songscroll5
+    Color       1165
+}
+Item
+{
+    Name        songscroll6
+    Color       1165
+}
+Item
+{
+    Name        songscroll7
+    Color       1165
+}
+Item
+{
+    Name        songscroll8
+    Color       1165
+}
+Item
+{
+    Name        songscroll9
+    Color       1165
+}
+Item
+{
+    Name        songscroll10
+    Color       1165
+}
+Item
+{
+    Name        songscroll11
+    Color       1165
+}
+Item
+{
+    Name        songscroll12
+    Color       1165
+}
+Item
+{
+    Name        songscroll13
+    Color       1165
+}
+Item
+{
+    Name        songscroll14
+    Color       1165
+}
+Item
+{
+    Name        songscroll15
+    Color       1165
+}
+Item
+{
+    Name        songscroll16
+    Color       1165
+}
+Item
+{
+	Name        SpawnPoint
+	Color       946
+}
+Item
+{
+    Name        ritualbook1
+    Color       1174
+}
+Item
+{
+    Name        ritualbook2
+    Color       1174
+}
+Item
+{
+    Name        ritualbook3
+    Color       1174
+}
+Item
+{
+    Name        ritualbook4
+    Color       1174
+}
+Item
+{
+    Name        ritualbook5
+    Color       1174
+}
+Item
+{
+    Name        ritualbook6
+    Color       1174
+}
+Item
+{
+    Name        ritualbook7
+    Color       1174
+}
+Item
+{
+    Name        ritualbook8
+    Color       1174
+}
+Item
+{
+    Name        ritualbook9
+    Color       1247
+}
+Item
+{
+    Name        ritualbook10
+    Color       1247
+}
+Item
+{
+    Name        ritualbook11
+    Color       1247
+}
+Item
+{
+    Name        ritualbook12
+    Color       1247
+}
+Item
+{
+    Name        ritualbook13
+    Color       1247
+}
+Item
+{
+    Name        ritualbook14
+    Color       1247
+}
+Item
+{
+    Name        ritualbook15
+    Color       1247
+}
+Item
+{
+    Name        ritualbook16
+    Color       1247
+}
+Item
+{
+    Name        ritualbook17
+    Color       1154
+}
+Item
+{
+    Name        ritualbook18
+    Color       1154
+}
+Item
+{
+    Name        ritualbook19
+    Color       1154
+}
+Item
+{
+    Name        ritualbook20
+    Color       1154
+}
+Item
+{
+    Name        ritualbook21
+    Color       1154
+}
+Item
+{
+    Name        ritualbook22
+    Color       1154
+}
+Item
+{
+    Name        ritualbook23
+    Color       1154
+}
+Item
+{
+    Name        ritualbook24
+    Color       1154
+}
+Item
+{
+    Name        ritualbook25
+    Color       1177
+}
+Item
+{
+    Name        ritualbook26
+    Color       1177
+}
+Item
+{
+    Name        ritualbook27
+    Color       1177
+}
+Item
+{
+    Name        ritualbook28
+    Color       1177
+}
+Item
+{
+    Name        ritualbook29
+    Color       1177
+}
+Item
+{
+    Name        ritualbook30
+    Color       1177
+}
+Item
+{
+    Name        ritualbook31
+    Color       1177
+}
+Item
+{
+    Name        ritualbook32
+    Color       1177
+}
+Item
+{
+    Name        ritualbook33
+    Color       83
+}
+Item
+{
+    Name		townstone
+    Color		1765
+}
+
+Item 0xa321
+{
+    Name        voterune
+    Color		120
+}
+Item
+{
+    Name        runicdyetub
+    Color       746
+}
+Item
+{
+    Name        omegadye
+    Color       0x0B75
+}
+Item
+{
+    Name        soulpen
+    Color       1475
+}
+Item
+{
+    Name        bookofverse
+    Color       1177
+}
+Item
+{
+    Name        verseofsonicdisturbance
+    Color       1288
+}
+Item
+{
+    Name        verseoflesserhealing
+    Color       1288
+}
+Item
+{
+    Name        verseofshadows
+    Color       1288
+}
+Item
+{
+    Name        verseofcorpsedistention
+    Color       1288
+}
+Item
+{
+    Name        verseofspiritflock
+    Color       1288
+}
+Item
+{
+    Name        verseofdragonskin
+    Color       1288
+}
+Item
+{
+    Name        verseoflifebalance
+    Color       1288
+}
+Item
+{
+    Name        verseofbardicboulders
+    Color       1288
+}
+Item
+{
+    Name        verseofbeastalbond
+    Color       1288
+}
+Item
+{
+    Name        verseofnotimplemented
+    Color       1288
+}
+Item
+{
+    Name        trashcan
+    Color       1346
+}
+Item
+{
+    Name        DragonEgg
+    Color       33
+}
+Item
+{
+    Name        OstardEgg
+    Color       1102
+}
+Item
+{
+    Name        FrenziedEgg
+    Color       0x494
+}
+Item
+{
+    Name        waterpent1
+    Color       1555
+}
+Item
+{
+    Name        waterpent2
+    Color       1555
+}
+Item
+{
+    Name        waterpent3
+    Color       1555
+}
+Item
+{
+    Name        waterpent4
+    Color       1555
+}
+Item
+{
+    Name        waterpent5
+    Color       1555
+}
+Item
+{
+    Name        waterpent6
+    Color       1555
+}
+Item
+{
+    Name        waterpent7
+    Color       1555
+}
+Item
+{
+    Name        waterpent8
+    Color       1555
+}
+Item
+{
+    Name        waterpent9
+    Color       1555
+}
+Item
+{
+    Name        brown bear
+    Color       0x02E6
+}
+Item
+{
+    Name        Earthpent1
+    Color       1134
+}
+Item
+{
+    Name        Earthpent2
+    Color       1134
+}
+Item
+{
+    Name        Earthpent3
+    Color       1134
+}
+Item
+{
+    Name        Earthpent4
+    Color       1134
+}
+Item
+{
+    Name        Earthpent5
+    Color       1134
+}
+Item
+{
+    Name        Earthpent6
+    Color       1134
+}
+Item
+{
+    Name        Earthpent7
+    Color       1134
+}
+Item
+{
+    Name        Earthpent8
+    Color       1134
+}
+Item
+{
+    Name        Earthpent9
+    Color       1134
+}
+Item
+{
+    Name        Airpent1
+    Color       1346
+}
+Item
+{
+    Name        Airpent2
+    Color       1346
+}
+Item
+{
+    Name        Airpent3
+    Color       1346
+}
+Item
+{
+    Name        Airpent4
+    Color       1346
+}
+Item
+{
+    Name        Airpent5
+    Color       1346
+}
+Item
+{
+    Name        Airpent6
+    Color       1346
+}
+Item
+{
+    Name        Airpent7
+    Color       1346
+}
+Item
+{
+    Name        Airpent8
+    Color       1346
+}
+Item
+{
+    Name        Airpent9
+    Color       1346
+}
+Item
+{
+    Name        Firepent1
+    Color       1172
+}
+Item
+{
+    Name        Firepent2
+    Color       1172
+}
+Item
+{
+    Name        Firepent3
+    Color       1172
+}
+Item
+{
+    Name        Firepent4
+    Color       1172
+}
+Item
+{
+    Name        Firepent5
+    Color       1172
+}
+Item
+{
+    Name        Firepent6
+    Color       1172
+}
+Item
+{
+    Name        Firepent7
+    Color       1172
+}
+Item
+{
+    Name        Firepent8
+    Color       1172
+}
+Item
+{
+    Name        Firepent9
+    Color       1172
+}
+Item
+{
+    Name        Shadowpent1
+    Color       1157
+}
+Item
+{
+    Name        Shadowpent2
+    Color       1157
+}
+Item
+{
+    Name        Shadowpent3
+    Color       1157
+}
+Item
+{
+    Name        Shadowpent4
+    Color       1157
+}
+Item
+{
+    Name        Shadowpent5
+    Color       1157
+}
+Item
+{
+    Name        Shadowpent6
+    Color       1157
+}
+Item
+{
+    Name        shadowpent7
+    Color       1157
+}
+Item
+{
+    Name        Shadowpent8
+    Color       1157
+}
+Item
+{
+    Name        Shadowpent9
+    Color       1157
+}
+Item
+{
+    Name        Poisonpent1
+    Color       264
+}
+Item
+{
+    Name        Poisonpent2
+    Color       264
+}
+Item
+{
+    Name        Poisonpent3
+    Color       264
+}
+Item
+{
+    Name        Poisonpent4
+    Color       264
+}
+Item
+{
+    Name        Poisonpent5
+    Color       264
+}
+Item
+{
+    Name        Poisonpent6
+    Color       264
+}
+Item
+{
+    Name        Poisonpent7
+    Color       264
+}
+Item
+{
+    Name        Poisonpent8
+    Color       264
+}
+Item
+{
+    Name        Poisonpent9
+    Color       264
+}
+Item
+{
+    Name        Holypent1
+    Color       1153
+}
+Item
+{
+    Name        Holypent2
+    Color       1153
+}
+Item
+{
+    Name        Holypent3
+    Color       1153
+}
+Item
+{
+    Name        Holypent4
+    Color       1153
+}
+Item
+{
+    Name        Holypent5
+    Color       1153
+}
+Item
+{
+    Name        Holypent6
+    Color       1153
+}
+Item
+{
+    Name        Holypent7
+    Color       1153
+}
+Item
+{
+    Name        Holypent8
+    Color       1153
+}
+Item
+{
+    Name        Holypent9
+    Color       1153
+}
+Item
+{
+    Name        TestBoostStone
+    Color       1766
+}
+Item
+{
+    Name        TestClassBoostStone
+    Color       2198
+}
+Item
+{
+    Name        bag renamer tool
+    Color       2164
+}
+Item
+{
+    Name        fireworks
+    Color       2164
+}
+Item
+{
+    Name        icearrow
+    Color       0x0492
+}
+Item
+{
+    Name        firearrow
+    Color       0x0494
+}
+Item
+{
+    Name        thunderbolt
+    Color       0x0502
+}
+Item
+{
+    Name        blackheart
+    Color       0x0455
+}
+Item
+{
+    Name        burin
+    Color       0x480
+}
+Item
+{
+    Name        sigilviewer
+    Color       0x480
+}
+Item
+{
+    Name        wordofpowergate
+    Color       0x8021
+}
+Item
+{
+    Name        RasRadiance
+    Color       1152
+}
+Item
+{
+    Name        PvPStone
+    Color       51
+}
+Item
+{
+    Name        QuestToken
+    Color       1181
+}
+Item
+{
+    Name        QuestStone
+    Color       1765
+}
+Item
+{
+    Name        QuestPrizeStone
+    Color       1765
+}
+Item
+{
+    Name        warriorforhiredeed
+    Color       1765
+}
+Item
+{
+    Name        PvPStone2vs2
+    Color       1170
+}
+Item
+{
+    Name        JoustStone
+    Color       1170
+}
+Item
+{
+    Name        MagePvPStone
+    Color       1170
+}
+Item
+{
+    Name        silmaril
+    Color       1765
+}
+Item
+{
+    Name        antigate
+    Color       1765
+}
+Item
+{
+    Name        antihouse
+    Color       1176
+}
+Item
+{
+    Name        mazeTile
+    Color       1172
+}
+Item
+{
+    Name        a Spawn of the Earth
+    Color       2021
+}
+Item
+{
+    Name        a Spawn of the Storm
+    Color       1182
+}
+Item
+{
+    Name        a Spawn of the Fire
+    Color       1258
+}
+Item
+{
+    Name        a Spawn of the Water
+    Color       1262
+}
+Item
+{
+    Name        a Polar Bear
+    Color       33784
+}
+Item
+{
+    Name        a Donator Ostard
+    Color       1850
+}
+Item
+{
+    Name        a Donator Horse
+    Color       33784
+}
+Item
+{
+    Name        a Donator Llama
+    Color       33784
+}
+Item
+{
+    Name        <random> the Banker
+    Color       33784
+}
+Item
+{
+    Name        <random> the Treasure Hunter
+    Color       33784
+}
+Item
+{
+    Name        <random> the Gardener
+    Color       33784
+}
+Item
+{
+    Name        <random> the Florist
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random> the Referee
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random> the Merchant
+    Color       33784
+}
+Item
+{
+    Name        <random> the Barber
+    Color       33784
+}
+Item
+{
+    Name        <random> the Actor
+    Color       33784
+}
+Item
+{
+    Name        <random> the Architect
+    Color       33784
+}
+Item
+{
+    Name        <random> the Artist
+    Color       33784
+}
+Item
+{
+    Name        <random> the Baker
+    Color       33784
+}
+Item
+{
+    Name        <random> the Banker
+    Color       33784
+}
+Item
+{
+    Name        <random> the Beekeeper
+    Color       33784
+}
+Item
+{
+    Name        <random> the Butcher
+    Color       33784
+}
+Item
+{
+    Name        <random> the Carpenter
+    Color       33784
+}
+Item
+{
+    Name        <random> the Cobbler
+    Color       33784
+}
+Item
+{
+    Name        <random> the Farmer
+    Color       33784
+}
+Item
+{
+    Name        <random> the Fisherman
+    Color       33784
+}
+Item
+{
+    Name        <random> the Armorer
+    Color       33784
+}
+Item
+{
+    Name        <random> the Barkeeper
+    Color       33784
+}
+Item
+{
+    Name        <random> the Innkeeper
+    Color       33784
+}
+Item
+{
+    Name        <random> the Tinker
+    Color       33784
+}
+Item
+{
+    Name        <random> the Bard
+    Color       33784
+}
+Item
+{
+    Name        <random> the Wandering Minstrel
+    Color       33784
+}
+Item
+{
+    Name        <random> the Musician
+    Color       33784
+}
+Item
+{
+    Name        <random> the Jeweler
+    Color       33784
+}
+Item
+{
+    Name        <random> the Mage
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random> the Blacksmith
+    Color       33784
+}
+Item
+{
+    Name        <random> the Miner
+    Color       33784
+}
+Item
+{
+    Name        <random>, Spellbook Purveyor
+    Color       33784
+}
+Item
+{
+    Name        <random>, Ring Armorer
+    Color       33784
+}
+Item
+{
+    Name        <random>, Weapons Procurement
+    Color       33784
+}
+Item
+{
+    Name        <random> the Towncrier
+    Color       33784
+}
+Item
+{
+    Name        Thou Shalt Pay
+    Color       33784
+}
+Item
+{
+    Name        <random> the Ranger
+    Color       33784
+}
+Item
+{
+    Name        <random> the Thief
+    Color       33784
+}
+Item
+{
+    Name        <random> the Skill Title Master
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random> the Peasant
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random> the Noble Lord
+    Color       33784
+}
+Item
+{
+    Name        <random> the Noble Lady
+    Color       33784
+}
+Item
+{
+    Name        <random> the Waiter
+    Color       33784
+}
+Item
+{
+    Name        <random> the Waitress
+    Color       33784
+}
+Item
+{
+    Name        <random> the Vegetable Seller
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random> the Decorator
+    Color       33784
+}
+Item
+{
+    Name        <random> the Warrior
+    Color       33784
+}
+Item
+{
+    Name        <random> the Peacekeeper
+    Color       33784
+}
+Item
+{
+    Name        <random> the Shady Vendor
+    Color       33784
+}
+Item
+{
+    Name        <random> the Vanity Item Vendor
+    Color       33784
+}
+Item
+{
+    Name        <random> the Alchemist
+    Color       33784
+}
+Item
+{
+    Name        <random>, Healer of Amberyl
+    Color       33784
+}
+Item
+{
+    Name        <random> the Tailor
+    Color       33784
+}
+Item
+{
+    Name        <random> the Tanner
+    Color       33784
+}
+Item
+{
+    Name        <random> the Provisioner
+    Color       33784
+}
+Item
+{
+    Name        <random> the Bowyer
+    Color       33784
+}
+Item
+{
+    Name        <random> the Scribe
+    Color       33784
+}
+Item
+{
+    Name        <random> the Shipwright
+    Color       33784
+}
+Item
+{
+    Name        <random> the Mapmaker
+    Color       33784
+}
+Item
+{
+    Name        a Finch
+    Color       25125
+}
+Item
+{
+    Name        the Water Element Shrine Lord
+    Color       1181
+}
+Item
+{
+    Name        the Earth Element Shrine Lord
+    Color       1134
+}
+Item
+{
+    Name        the Air Element Shrine Lord
+    Color       1655
+}
+Item
+{
+    Name        the Fire Element Shrine Lord
+    Color       1172
+}
+Item
+{
+    Name        the Shadow Element Shrine Lord
+    Color       1157
+}
+Item
+{
+    Name        the Poison Element Shrine Lord
+    Color       264
+}
+Item
+{
+    Name        the Holy Element Shrine Lord
+    Color       1153
+}
+Item
+{
+    Name        a Tainted Water Shrine
+    Color       2158
+}
+Item
+{
+    Name        a Tainted Shadow Shrine
+    Color       2158
+}
+Item
+{
+    Name        a Tainted Fire Shrine
+    Color       2158
+}
+Item
+{
+    Name        a Tainted Air Shrine
+    Color       2158
+}
+Item
+{
+    Name        a Tainted Earth Shrine
+    Color       1078
+}
+Item
+{
+    Name        a Tainted Poison Shrine
+    Color       2158
+}
+Item
+{
+    Name        a razz
+    Color       1109
+}
+Item
+{
+    Name        a Black Slime
+    Color       0x0455
+}
+Item
+{
+    Name        a Green Slime
+    Color       0x07D1
+}
+Item
+{
+    Name        a Darkling Slime
+    Color       25125
+}
+Item
+{
+    Name        <random> the Ratmage
+    Color       1109
+}
+Item
+{
+    Name        the Horned Rat
+    Color       1947
+}
+Item
+{
+    Name        a Kappa
+    Color       33784
+}
+Item
+{
+    Name        a Dark Strangler
+    Color       1285
+}
+Item
+{
+    Name        a Twisted Bramble
+    Color       1282
+}
+Item
+{
+    Name        a Pack Horse
+    Color       33784
+}
+Item
+{
+    Name        a Horse
+    Color       33784
+}
+Item
+{
+    Name        a Swamp Dragonling
+    Color       1159
+}
+Item
+{
+    Name        an Armored Swamp Dragonling
+    Color       1943
+}
+Item
+{
+    Name        an Omega Llama
+    Color       2164
+}
+Item
+{
+    Name        an Omega Horse
+    Color       2164
+}
+Item
+{
+    Name        a Silver Steed
+    Color       1154
+}
+Item
+{
+    Name        an Ethereal Horse
+    Color       16385
+}
+Item
+{
+    Name        a Raptor
+    Color       0x0455
+}
+Item
+{
+    Name        a Rabbit
+    Color       33784
+}
+Item
+{
+    Name        an Eagle
+    Color       33784
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        a Gorilla
+    Color       33784
+}
+Item
+{
+    Name        a Giant Toad
+    Color       33784
+}
+Item
+{
+    Name        a Bull Frog
+    Color       1162
+}
+Item
+{
+    Name        a Cat
+    Color       33784
+}
+Item
+{
+    Name        an Alligator
+    Color       33784
+}
+Item
+{
+    Name        a Pig
+    Color       33784
+}
+Item
+{
+    Name        a Rabbit
+    Color       33784
+}
+Item
+{
+    Name        a Sheep
+    Color       33784
+}
+Item
+{
+    Name        a Chicken
+    Color       33784
+}
+Item
+{
+    Name        a Goat
+    Color       33784
+}
+Item
+{
+    Name        a Brown Bear
+    Color       33784
+}
+Item
+{
+    Name        a Black Bear
+    Color       0x02E6
+}
+Item
+{
+    Name        a Grizzly Bear
+    Color       33784
+}
+Item
+{
+    Name        a Panther
+    Color       0x901
+}
+Item
+{
+    Name        a Cow
+    Color       33784
+}
+Item
+{
+    Name        a Dog
+    Color       2301
+}
+Item
+{
+    Name        a Sheep
+    Color       33784
+}
+Item
+{
+    Name        a Sheep
+    Color       33784
+}
+Item
+{
+    Name        a Timber Wolf
+    Color       33784
+}
+Item
+{
+    Name        a Cow
+    Color       33784
+}
+Item
+{
+    Name        a Bull
+    Color       33784
+}
+Item
+{
+    Name        a Bull
+    Color       33784
+}
+Item
+{
+    Name        a Hart
+    Color       33784
+}
+Item
+{
+    Name        a Hind
+    Color       33784
+}
+Item
+{
+    Name        a Rat
+    Color       33784
+}
+Item
+{
+    Name        a Cougar
+    Color       33784
+}
+Item
+{
+    Name        a Sea Monster
+    Color       33784
+}
+Item
+{
+    Name        a Giant Rock Scorpion
+    Color       1118
+}
+Item
+{
+    Name        a Hildisvini
+    Color       448
+}
+Item
+{
+    Name        a Swamp Boar
+    Color       0x07d6
+}
+Item
+{
+    Name        a War Dog
+    Color       33784
+}
+Item
+{
+    Name        a Bird Dog
+    Color       33784
+}
+Item
+{
+    Name        a Hunting Dog
+    Color       33784
+}
+Item
+{
+    Name        a Guard Dog
+    Color       33784
+}
+Item
+{
+    Name        a Golden Hawk
+    Color       1127
+}
+Item
+{
+    Name        a Giant Rat
+    Color       33784
+}
+Item
+{
+    Name        a Plagued Rat
+    Color       33784
+}
+Item
+{
+    Name        a Mongrel Dog
+    Color       1109
+}
+Item
+{
+    Name        a Bat
+    Color       5555
+}
+Item
+{
+    Name        a Rabid Rabbit
+    Color       1154
+}
+Item
+{
+    Name        a Dire Wolf
+    Color       0x0455
+}
+Item
+{
+    Name        a Storm Wolf
+    Color       1346
+}
+Item
+{
+    Name        a Stygian Constrictor
+    Color       1157
+}
+Item
+{
+    Name        a Fire Serpent
+    Color       1158
+}
+Item
+{
+    Name        a Silver Serpent
+    Color       1282
+}
+Item
+{
+    Name        a Giant Sand Worm
+    Color       351
+}
+Item
+{
+    Name        a Frost Wolf
+    Color       0x0482
+}
+Item
+{
+    Name        a Rabid Dog
+    Color       33784
+}
+Item
+{
+    Name        a Rabid Cat
+    Color       33784
+}
+Item
+{
+    Name        a Raven
+    Color       0x0455
+}
+Item
+{
+    Name        a Firecrow
+    Color       0x0455
+}
+Item
+{
+    Name        a Giant Rock Spider
+    Color       1118
+}
+Item
+{
+    Name        a Giant Frost Spider
+    Color       1154
+}
+Item
+{
+    Name        a Giant Flaming Spider
+    Color       232
+}
+Item
+{
+    Name        a Grave Spider
+    Color       1282
+}
+Item
+{
+    Name        a Phase Spider
+    Color       25125
+}
+Item
+{
+    Name        a Dire Weaver
+    Color       1409
+}
+Item
+{
+    Name        a Dire Weaver
+    Color       1409
+}
+Item
+{
+    Name        a Jungle Ostard
+    Color       1162
+}
+Item
+{
+    Name        a Forest Ostard
+    Color       1850
+}
+Item
+{
+    Name        a Golden Ostard
+    Color       48
+}
+Item
+{
+    Name        a Plains Ostard
+    Color       53
+}
+Item
+{
+    Name        a Mountain Ostard
+    Color       1765
+}
+Item
+{
+    Name        a Swamp Ostard
+    Color       2001
+}
+Item
+{
+    Name        a Highland Ostard
+    Color       1325
+}
+Item
+{
+    Name        a Shadow Ostard
+    Color       1904
+}
+Item
+{
+    Name        a Valley Ostard
+    Color       1301
+}
+Item
+{
+    Name        a Stone Ostard
+    Color       1154
+}
+Item
+{
+    Name        an Emerald Ostard
+    Color       1159
+}
+Item
+{
+    Name        a Ruby Ostard
+    Color       1645
+}
+Item
+{
+    Name        a Tropical Ostard
+    Color       1155
+}
+Item
+{
+    Name        a Snow Ostard
+    Color       1156
+}
+Item
+{
+    Name        an Ice Ostard
+    Color       1152
+}
+Item
+{
+    Name        a Fire Ostard
+    Color       1158
+}
+Item
+{
+    Name        a Heavenly Ostard
+    Color       1181
+}
+Item
+{
+    Name        an Amethyst Ostard
+    Color       1174
+}
+Item
+{
+    Name        a Sapphire Ostard
+    Color       1170
+}
+Item
+{
+    Name        a Mist Ostard
+    Color       90
+}
+Item
+{
+    Name        an Earth Ostard
+    Color       1183
+}
+Item
+{
+    Name        a Necro Ostard
+    Color       1282
+}
+Item
+{
+    Name        a Terror Ostard
+    Color       1280
+}
+Item
+{
+    Name        a Phased Ostard
+    Color       16385
+}
+Item
+{
+    Name        a Blood Ostard
+    Color       38
+}
+Item
+{
+    Name        a Plum Ostard
+    Color       1163
+}
+Item
+{
+    Name        a Wind Ostard
+    Color       1173
+}
+Item
+{
+    Name        a Water Ostard
+    Color       1283
+}
+Item
+{
+    Name        an Obsidian Ostard
+    Color       1109
+}
+Item
+{
+    Name        an Omega Ostard
+    Color       2164
+}
+Item
+{
+    Name        an Infernal Ostard
+    Color       2077
+}
+Item
+{
+    Name        an Undead Ostard
+    Color       1093
+}
+Item
+{
+    Name        a rainbow ostard
+    Color       2716
+}
+Item
+{
+    Name        a Frenzied Ostard
+    Color       1435
+}
+Item
+{
+    Name        a rainbow frenzied ostard
+    Color       2716
+}
+Item
+{
+    Name        an Undead Frenzied Ostard
+    Color       1093
+}
+Item
+{
+    Name        an Infernal Frenzied Ostard
+    Color       2077
+}
+Item
+{
+    Name        an Omega Frenzied Ostard
+    Color       2164
+}
+Item
+{
+    Name        an Obsidian Frenzied Ostard
+    Color       1109
+}
+Item
+{
+    Name        a Water Frenzied Ostard
+    Color       1283
+}
+Item
+{
+    Name        a Jungle Frenzied Ostard
+    Color       1162
+}
+Item
+{
+    Name        a Terror Frenzied Ostard
+    Color       1280
+}
+Item
+{
+    Name        a Phased Frenzied Ostard
+    Color       16385
+}
+Item
+{
+    Name        a Blood Frenzied Ostard
+    Color       38
+}
+Item
+{
+    Name        a Plum Frenzied Ostard
+    Color       1163
+}
+Item
+{
+    Name        a Wind Frenzied Ostard
+    Color       1173
+}
+Item
+{
+    Name        a Mist Frenzied Ostard
+    Color       90
+}
+Item
+{
+    Name        an Earth Frenzied Ostard
+    Color       1183
+}
+Item
+{
+    Name        a Necro Frenzied Ostard
+    Color       1282
+}
+Item
+{
+    Name        an Amethyst Frenzied Ostard
+    Color       1174
+}
+Item
+{
+    Name        a Golden Frenzied Ostard
+    Color       48
+}
+Item
+{
+    Name        a Plains Frenzied Ostard
+    Color       53
+}
+Item
+{
+    Name        a Mountain Frenzied Ostard
+    Color       1765
+}
+Item
+{
+    Name        a Swamp Frenzied Ostard
+    Color       2001
+}
+Item
+{
+    Name        a Highland Frenzied Ostard
+    Color       1325
+}
+Item
+{
+    Name        a Shadow Frenzied Ostard
+    Color       1904
+}
+Item
+{
+    Name        a Valley Frenzied Ostard
+    Color       1301
+}
+Item
+{
+    Name        a Stone Frenzied Ostard
+    Color       1154
+}
+Item
+{
+    Name        an Emerald Frenzied Ostard
+    Color       1159
+}
+Item
+{
+    Name        a Ruby Frenzied Ostard
+    Color       1645
+}
+Item
+{
+    Name        a Tropical Frenzied Ostard
+    Color       1155
+}
+Item
+{
+    Name        a Snow Frenzied Ostard
+    Color       1156
+}
+Item
+{
+    Name        an Ice Frenzied Ostard
+    Color       1152
+}
+Item
+{
+    Name        a Fire Frenzied Ostard
+    Color       1158
+}
+Item
+{
+    Name        a Heavenly Frenzied Ostard
+    Color       1181
+}
+Item
+{
+    Name        a Sapphire Frenzied Ostard
+    Color       1170
+}
+Item
+{
+    Name        a Greater Basilisk
+    Color       1282
+}
+Item
+{
+    Name        a Wizard Bullfrog
+    Color       2143
+}
+Item
+{
+    Name        a Blama
+    Color       1172
+}
+Item
+{
+    Name        a Tarantula
+    Color       1556
+}
+Item
+{
+    Name        a Frigid Eye
+    Color       1154
+}
+Item
+{
+    Name        a Beholder
+    Color       0x8455
+}
+Item
+{
+    Name        <random> the Orcmage
+    Color       201
+}
+Item
+{
+    Name        an Orcish Necromancer
+    Color       1109
+}
+Item
+{
+    Name        <random> the Orc Captain
+    Color       33784
+}
+Item
+{
+    Name        <random> the Orcish Cleric
+    Color       0x0579
+}
+Item
+{
+    Name        <random> the Orc Master Mage
+    Color       0x0612
+}
+Item
+{
+    Name        <random> the Orc Dragon Defender
+    Color       0x0455
+}
+Item
+{
+    Name        <random> the Orcish Lord
+    Color       33784
+}
+Item
+{
+    Name        <random> the Orcish King
+    Color       0x0465
+}
+Item
+{
+    Name        <random> the Snow Orc
+    Color       1154
+}
+Item
+{
+    Name        <random> the Snow Orc Archer
+    Color       1154
+}
+Item
+{
+    Name        <random> the Snow Orc Lord
+    Color       1154
+}
+Item
+{
+    Name        <random> the Snow Orc
+    Color       1154
+}
+Item
+{
+    Name        <random> the Snow Orc Warrior
+    Color       1154
+}
+Item
+{
+    Name        a Kobold Elite Warrior
+    Color       2130
+}
+Item
+{
+    Name        a Kobold
+    Color       2130
+}
+Item
+{
+    Name        a Kobold
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Archer
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Marksman
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Warlock
+    Color       466
+}
+Item
+{
+    Name        a Kobold General
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Warrior
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Warrior
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Soldier
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Captain
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Priest
+    Color       466
+}
+Item
+{
+    Name        a Kobold Mercenary
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Enchanter
+    Color       466
+}
+Item
+{
+    Name        a Kobold Underlord
+    Color       466
+}
+Item
+{
+    Name        a Kobold Cavalry
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Elite Cavalry
+    Color       2130
+}
+Item
+{
+    Name        a Kobold Horseman
+    Color       2130
+}
+Item
+{
+    Name        a Terathan Voidmage
+    Color       1945
+}
+Item
+{
+    Name        a Terathan Mage
+    Color       1949
+}
+Item
+{
+    Name        a Terathan Priest
+    Color       1956
+}
+Item
+{
+    Name        a Corrupted Terathan
+    Color       1304
+}
+Item
+{
+    Name        a Terathan Elder Matriarch
+    Color       1953
+}
+Item
+{
+    Name        a Terathan Broodlord
+    Color       16385
+}
+Item
+{
+    Name        a Solen Defender
+    Color       1109
+}
+Item
+{
+    Name        a Solen Archmage
+    Color       1947
+}
+Item
+{
+    Name        a Solen Hivemind
+    Color       1953
+}
+Item
+{
+    Name        a Solen Destroyer
+    Color       16385
+}
+Item
+{
+    Name        an Evil Spellbook
+    Color       0x486
+}
+Item
+{
+    Name        a Stone Harpy
+    Color       1154
+}
+Item
+{
+    Name        a Stone Gargoyle
+    Color       1154
+}
+Item
+{
+    Name        a Flaming Gargoyle
+    Color       232
+}
+Item
+{
+    Name        a Frost Gargoyle
+    Color       1154
+}
+Item
+{
+    Name        a Troll
+    Color       33784
+}
+Item
+{
+    Name        a Troll
+    Color       33784
+}
+Item
+{
+    Name        a Troll
+    Color       33784
+}
+Item
+{
+    Name        a Troll Lord
+    Color       33784
+}
+Item
+{
+    Name        an Ice Troll
+    Color       1154
+}
+Item
+{
+    Name        a Troll Archer
+    Color       33784
+}
+Item
+{
+    Name        a Troll Archer
+    Color       33784
+}
+Item
+{
+    Name        an Elite Troll Archer
+    Color       33784
+}
+Item
+{
+    Name        a Troll Marksman
+    Color       33784
+}
+Item
+{
+    Name        a Troll Marksman
+    Color       33784
+}
+Item
+{
+    Name        a Troll Warrior
+    Color       33784
+}
+Item
+{
+    Name        an Elite Troll Warrior
+    Color       33784
+}
+Item
+{
+    Name        a Troll General
+    Color       33784
+}
+Item
+{
+    Name        a Troll Warlord
+    Color       0x0455
+}
+Item
+{
+    Name        a Troll Chieftan
+    Color       0x0465
+}
+Item
+{
+    Name        a Troll Shaman
+    Color       0x0220
+}
+Item
+{
+    Name        a Finntroll
+    Color       1176
+}
+Item
+{
+    Name        an Omega Troll
+    Color       2164
+}
+Item
+{
+    Name        <random>
+    Color       33784
+}
+Item
+{
+    Name        <random> the Ogre Rockthrower
+    Color       33784
+}
+Item
+{
+    Name        an Ettin
+    Color       33784
+}
+Item
+{
+    Name        an Ettin
+    Color       33784
+}
+Item
+{
+    Name        a Cyclops
+    Color       33784
+}
+Item
+{
+    Name        the Hulk
+    Color       2160
+}
+Item
+{
+    Name        a Vortex Beast
+    Color       1945
+}
+Item
+{
+    Name        a Vortex Minion
+    Color       1172
+}
+Item
+{
+    Name        a Vortex Minion
+    Color       1169
+}
+Item
+{
+    Name        a Vortex Minion
+    Color       2149
+}
+Item
+{
+    Name        a Vortex Minion
+    Color       2167
+}
+Item
+{
+    Name        Scourge Gladiator
+    Color       2150
+}
+Item
+{
+    Name        Scourge Commander
+    Color       2159
+}
+Item
+{
+    Name        Titan Warmaster
+    Color       2159
+}
+Item
+{
+    Name        an Air Elemental
+    Color       33784
+}
+Item
+{
+    Name        an Earth Elemental
+    Color       33784
+}
+Item
+{
+    Name        a Fire Elemental
+    Color       33784
+}
+Item
+{
+    Name        a Water Elemental
+    Color       33784
+}
+Item
+{
+    Name        a Blood Elemental
+    Color       0x04b9
+}
+Item
+{
+    Name        a Poison Elemental
+    Color       0x07d6
+}
+Item
+{
+    Name        a Shadow Elemental
+    Color       16385
+}
+Item
+{
+    Name        an Air Elemental Lord
+    Color       1050
+}
+Item
+{
+    Name        an Earth Elemental Lord
+    Color       1538
+}
+Item
+{
+    Name        a Fire Elemental Lord
+    Color       137
+}
+Item
+{
+    Name        a Water Elemental Lord
+    Color       102
+}
+Item
+{
+    Name        an Ice Elemental Lord
+    Color       1154
+}
+Item
+{
+    Name        a Snow Elemental Lord
+    Color       1956
+}
+Item
+{
+    Name        an Energy Vortex
+    Color       205
+}
+Item
+{
+    Name        an Energy Vortex
+    Color       205
+}
+Item
+{
+    Name        an Efreet
+    Color       93
+}
+Item
+{
+    Name        a Djinn
+    Color       1209
+}
+Item
+{
+    Name        a Blade Spirit
+    Color       33784
+}
+Item
+{
+    Name        a Twisted Animation
+    Color       49408
+}
+Item
+{
+    Name        a Radiant Wisp
+    Color       1154
+}
+Item
+{
+    Name        a Mountain Wisp
+    Color       0x0465
+}
+Item
+{
+    Name        a Holy Wisp
+    Color       1153
+}
+Item
+{
+    Name        a Golden Wisp
+    Color       48
+}
+Item
+{
+    Name        an Infernal Wisp
+    Color       232
+}
+Item
+{
+    Name        an Inferno Wisp
+    Color       1158
+}
+Item
+{
+    Name        a Black Wisp
+    Color       0x0455
+}
+Item
+{
+    Name        an Umbral Flicker
+    Color       25125
+}
+Item
+{
+    Name        a Magusbane
+    Color       1170
+}
+Item
+{
+    Name        a Mage Hunter
+    Color       1170
+}
+Item
+{
+    Name        a Thing
+    Color       746
+}
+Item
+{
+    Name        a Tempest
+    Color       1170
+}
+Item
+{
+    Name        a Phoenix
+    Color       1645
+}
+Item
+{
+    Name        a Lesser Shadow
+    Color       1
+}
+Item
+{
+    Name        a Greater Shadow
+    Color       1
+}
+Item
+{
+    Name        a Shadow Lord
+    Color       1
+}
+Item
+{
+    Name        a Corrupted Shadow
+    Color       1304
+}
+Item
+{
+    Name        a Dark Rider
+    Color       1109
+}
+Item
+{
+    Name        a Jade Golem
+    Color       1162
+}
+Item
+{
+    Name        an Onyx Golem
+    Color       1157
+}
+Item
+{
+    Name        a Sewage Golem
+    Color       2001
+}
+Item
+{
+    Name        a Shadow Golem
+    Color       16385
+}
+Item
+{
+    Name        a Steel Golem
+    Color       1309
+}
+Item
+{
+    Name        a Stone Golem
+    Color       1157
+}
+Item
+{
+    Name        Elder Guardian Hyperion
+    Color       2321
+}
+Item
+{
+    Name        Elder Guardian Buran
+    Color       2323
+}
+Item
+{
+    Name        the Stomp
+    Color       1280
+}
+Item
+{
+    Name        the Stamp
+    Color       1183
+}
+Item
+{
+    Name        a Behemoth
+    Color       0x488
+}
+Item
+{
+    Name        a Terramental
+    Color       1172
+}
+Item
+{
+    Name        a Magma Lord
+    Color       2164
+}
+Item
+{
+    Name        a Bloodliche
+    Color       0x04b9
+}
+Item
+{
+    Name        an Undead Flayer
+    Color       1172
+}
+Item
+{
+    Name        a Liche Lord
+    Color       0x4631
+}
+Item
+{
+    Name        an Occult Liche
+    Color       0x0579
+}
+Item
+{
+    Name        a Spectre
+    Color       25125
+}
+Item
+{
+    Name        a Noonwraith
+    Color       25125
+}
+Item
+{
+    Name        a Shade
+    Color       17969
+}
+Item
+{
+    Name        an Undead Lizard
+    Color       0x4631
+}
+Item
+{
+    Name        a Frankenstein
+    Color       0x599
+}
+Item
+{
+    Name        a Revenant
+    Color       1285
+}
+Item
+{
+    Name        an Eviscerated Carcass
+    Color       1290
+}
+Item
+{
+    Name        a Void
+    Color       1157
+}
+Item
+{
+    Name        an Undead mare
+    Color       1292
+}
+Item
+{
+    Name        an Undead mare
+    Color       1292
+}
+Item
+{
+    Name        an Armored Undead Dragonling
+    Color       1093
+}
+Item
+{
+    Name        an Undead Horse
+    Color       1093
+}
+Item
+{
+    Name        an Undead Llama
+    Color       1093
+}
+Item
+{
+    Name        a Skeleton
+    Color       33784
+}
+Item
+{
+    Name        a Skeleton
+    Color       33784
+}
+Item
+{
+    Name        a Skeleton
+    Color       33784
+}
+Item
+{
+    Name        a Skeleton Archer
+    Color       33784
+}
+Item
+{
+    Name        a Bone Knight
+    Color       33784
+}
+Item
+{
+    Name        a Flaming Skeleton
+    Color       0x04b1
+}
+Item
+{
+    Name        an Ice Skeleton
+    Color       1154
+}
+Item
+{
+    Name        a Skeletal Assassin
+    Color       0x4631
+}
+Item
+{
+    Name        a Skeletal Warrior
+    Color       1127
+}
+Item
+{
+    Name        a Skeleton Protector
+    Color       1170
+}
+Item
+{
+    Name        a Nullmag
+    Color       0x04b9
+}
+Item
+{
+    Name        a Watermag
+    Color       102
+}
+Item
+{
+    Name        a Firemag
+    Color       137
+}
+Item
+{
+    Name        an Earthmag
+    Color       1765
+}
+Item
+{
+    Name        an Airmag
+    Color       0x07d6
+}
+Item
+{
+    Name        a Deathmag
+    Color       0x4631
+}
+Item
+{
+    Name        <random> the Daemon
+    Color       33784
+}
+Item
+{
+    Name        <random> the Daemon Knight
+    Color       33784
+}
+Item
+{
+    Name        a Daemon Lieutenant
+    Color       0x04b9
+}
+Item
+{
+    Name        a Darkspawn
+    Color       0x0455
+}
+Item
+{
+    Name        a Daemon Spawn
+    Color       0x0455
+}
+Item
+{
+    Name        an Imp
+    Color       0x23
+}
+Item
+{
+    Name        a Minor Daemon
+    Color       0x23
+}
+Item
+{
+    Name        a Gremlin
+    Color       0x07D1
+}
+Item
+{
+    Name        a Valkerie
+    Color       148
+}
+Item
+{
+    Name        a Hell Hound
+    Color       232
+}
+Item
+{
+    Name        a Winged Avenger
+    Color       0x0455
+}
+Item
+{
+    Name        a Nightmare
+    Color       1109
+}
+Item
+{
+    Name        <random> the Ice Fiend
+    Color       1170
+}
+Item
+{
+    Name        an Ebony Horror
+    Color       0x0455
+}
+Item
+{
+    Name        a Poisonmare
+    Color       1169
+}
+Item
+{
+    Name        a Glutton
+    Color       1765
+}
+Item
+{
+    Name        a Gluttons
+    Color       1172
+}
+Item
+{
+    Name        a Gluttons
+    Color       1169
+}
+Item
+{
+    Name        a Dementor
+    Color       1664
+}
+Item
+{
+    Name        <random> the Fallen Angel
+    Color       1182
+}
+Item
+{
+    Name        a Balron
+    Color       0x4001
+}
+Item
+{
+    Name        a Balrog
+    Color       1953
+}
+Item
+{
+    Name        a Banehorn
+    Color       1282
+}
+Item
+{
+    Name        a Flaming Balron
+    Color       1694
+}
+Item
+{
+    Name        a Sea Serpent
+    Color       33784
+}
+Item
+{
+    Name        an Infernal Horse
+    Color       2077
+}
+Item
+{
+    Name        an Infernal Llama
+    Color       2077
+}
+Item
+{
+    Name        a Rock Lizard
+    Color       0x060a
+}
+Item
+{
+    Name        a Fire Lizard
+    Color       0x075a
+}
+Item
+{
+    Name        <random> the Lizard Shaman
+    Color       0x04C2
+}
+Item
+{
+    Name        <random> the Warlock
+    Color       0x04B1
+}
+Item
+{
+    Name        <random> the Lizardman King
+    Color       0x0465
+}
+Item
+{
+    Name        <random> the Defender
+    Color       0x05AE
+}
+Item
+{
+    Name        a Drake
+    Color       1109
+}
+Item
+{
+    Name        a Frost Drake
+    Color       1154
+}
+Item
+{
+    Name        a Spectral Drake
+    Color       0x4631
+}
+Item
+{
+    Name        a Fire Drake
+    Color       1158
+}
+Item
+{
+    Name        a Water Drake
+    Color       1165
+}
+Item
+{
+    Name        an Earth Drake
+    Color       1134
+}
+Item
+{
+    Name        an Air Drake
+    Color       1170
+}
+Item
+{
+    Name        a Poison Drake
+    Color       264
+}
+Item
+{
+    Name        an Undead Drake
+    Color       1109
+}
+Item
+{
+    Name        a Heavenly Drake
+    Color       1181
+}
+Item
+{
+    Name        a Silver Drake
+    Color       2301
+}
+Item
+{
+    Name        a Golden Drake
+    Color       48
+}
+Item
+{
+    Name        a Tidal Drake
+    Color       1165
+}
+Item
+{
+    Name        an Inferno Drake
+    Color       1172
+}
+Item
+{
+    Name        a Sand Drake
+    Color       2107
+}
+Item
+{
+    Name        a Cave Drake
+    Color       1177
+}
+Item
+{
+    Name        a Celestial Drake
+    Color       1301
+}
+Item
+{
+    Name        a Rock Drake
+    Color       1765
+}
+Item
+{
+    Name        a Storm Drake
+    Color       1966
+}
+Item
+{
+    Name        an Earth Wyrm
+    Color       1538
+}
+Item
+{
+    Name        a Wyrm
+    Color       1159
+}
+Item
+{
+    Name        a Cave Dragon
+    Color       1177
+}
+Item
+{
+    Name        a Poison Dragon
+    Color       1159
+}
+Item
+{
+    Name        an Inferno Dragon
+    Color       1172
+}
+Item
+{
+    Name        a Frost Dragon
+    Color       1176
+}
+Item
+{
+    Name        a Tidal Dragon
+    Color       1165
+}
+Item
+{
+    Name        a Rock Dragon
+    Color       1765
+}
+Item
+{
+    Name        a Storm Dragon
+    Color       1170
+}
+Item
+{
+    Name        a Shadow Dragon
+    Color       17969
+}
+Item
+{
+    Name        a Celestial Dragon
+    Color       1301
+}
+Item
+{
+    Name        a Sand Dragon
+    Color       2107
+}
+Item
+{
+    Name        a Golden Dragon
+    Color       48
+}
+Item
+{
+    Name        a Silver Dragon
+    Color       2301
+}
+Item
+{
+    Name        a Great Wyrm
+    Color       1159
+}
+Item
+{
+    Name        a Great Earth Wyrm
+    Color       1538
+}
+Item
+{
+    Name        a Scourge Wyrm
+    Color       2125
+}
+Item
+{
+    Name        an Ancient Wyrm
+    Color       1175
+}
+Item
+{
+    Name        a Dark Knight
+    Color       17969
+}
+Item
+{
+    Name        a Dark Bard
+    Color       1109
+}
+Item
+{
+    Name        a Shabooli Assassin
+    Color       1102
+}
+Item
+{
+    Name        a Rogue Knight
+    Color       33784
+}
+Item
+{
+    Name        <random> the Bewitched Peasant
+    Color       33784
+}
+Item
+{
+    Name        a Dark Elf Mage
+    Color       0x0455
+}
+Item
+{
+    Name        a Dark Elf Archer
+    Color       0x0455
+}
+Item
+{
+    Name        a Doppelganger
+    Color       33784
+}
+Item
+{
+    Name        <random> the Pirate
+    Color       33784
+}
+Item
+{
+    Name        <random> the Tainted One
+    Color       1157
+}
+Item
+{
+    Name        <random> the Tainted One
+    Color       1
+}
+Item
+{
+    Name        <random> the Tainted One
+    Color       1302
+}
+Item
+{
+    Name        <random> the Tainted One
+    Color       1302
+}
+Item
+{
+    Name        a Mage Stalker
+    Color       0x0455
+}
+Item
+{
+    Name        a Dark Ranger
+    Color       1109
+}
+Item
+{
+    Name        a Dark Mage
+    Color       1109
+}
+Item
+{
+    Name        a Dark Warrior
+    Color       1109
+}
+Item
+{
+    Name        a Dark Thief
+    Color       1109
+}
+Item
+{
+    Name        <random> the Beserker
+    Color       33784
+}
+Item
+{
+    Name        <random> the Summoner
+    Color       1109
+}
+Item
+{
+    Name        Master of the Earth
+    Color       1765
+}
+Item
+{
+    Name        a Bringer of Death
+    Color       1157
+}
+Item
+{
+    Name        a Bane
+    Color       1282
+}
+Item
+{
+    Name        <random> the Archangel
+    Color       1765
+}
+Item
+{
+    Name        a Nemesis
+    Color       1765
+}
+Item
+{
+    Name        Gin the Legendary Hunter
+    Color       1157
+}
+Item
+{
+    Name        Scourge Terminator
+    Color       1
+}
+Item
+{
+    Name        Plague
+    Color       1160
+}
+Item
+{
+    Name        Pestilence
+    Color       1157
+}
+Item
+{
+    Name        Scourge Infiltrator
+    Color       1160
+}
+Item
+{
+    Name        Scourge Battlemaster
+    Color       1160
+}
+Item
+{
+    Name        a Test Weapon Wyrm
+    Color       1151
+}
+Item
+{
+    Name        a Test Weapon Wyrm
+    Color       1766
+}
+Item
+{
+    Name        a Test Armor Wyrm
+    Color       1764
+}
+Item
+{
+    Name        Barracoon the piper
+    Color       33784
+}
+Item
+{
+    Name        Erebus the Chaos God
+    Color       1183
+}
+Item
+{
+    Name        Nyx the Chaos Goddess
+    Color       1183
+}
+Item
+{
+    Name        Ordershieldguard
+    Color       1183
+}
+Item
+{
+    Name        Chaosshieldguard
+    Color       1177
+}
+Item
+{
+    Name        FemalePlateofJaana
+    Color       1568
+}
+Item
+{
+    Name        PlateHelmofJaana
+    Color       1568
+}
+Item
+{
+    Name        PlateArmsofJaana
+    Color       1568
+}
+Item
+{
+    Name        PlateLeggingsofJaana
+    Color       1568
+}
+Item
+{
+    Name        PlateGlovesofJaana
+    Color       1568
+}
+Item
+{
+    Name        PlateGorgetofJaana
+    Color       1568
+}
+Item
+{
+    Name        PlatemailofJaana
+    Color       1568
+}
+Item
+{
+    Name        FemalePlateofDupre
+    Color       1484
+}
+Item
+{
+    Name        PlateHelmofDupre
+    Color       1484
+}
+Item
+{
+    Name        PlateArmsofDupre
+    Color       1484
+}
+Item
+{
+    Name        PlateLeggingsofDupre
+    Color       1484
+}
+Item
+{
+    Name        PlateGlovesofDupre
+    Color       1484
+}
+Item
+{
+    Name        PlateGorgetofDupre
+    Color       1484
+}
+Item
+{
+    Name        PlatemailofDupre
+    Color       1484
+}
+Item
+{
+    Name        FemalePlateoftheCimmerian
+    Color       1
+}
+Item
+{
+    Name        PlateHelmoftheCimmerian
+    Color       1
+}
+Item
+{
+    Name        PlateArmsoftheCimmerian
+    Color       1
+}
+Item
+{
+    Name        PlateLeggingsoftheCimmerian
+    Color       1
+}
+Item
+{
+    Name        PlateGlovesoftheCimmerian
+    Color       1
+}
+Item
+{
+    Name        PlateGorgetoftheCimmerian
+    Color       1
+}
+Item
+{
+    Name        PlatemailoftheCimmerian
+    Color       1
+}
+Item
+{
+    Name        SparksFemalePlate
+    Color       1306
+}
+Item
+{
+    Name        SparksPlateHelm
+    Color       1306
+}
+Item
+{
+    Name        SparksPlateArms
+    Color       1306
+}
+Item
+{
+    Name        SparksPlateLeggings
+    Color       1306
+}
+Item
+{
+    Name        SparksPlateGloves
+    Color       1306
+}
+Item
+{
+    Name        SparksPlateGorget
+    Color       1306
+}
+Item
+{
+    Name        SparksPlatemail
+    Color       1306
+}
+Item
+{
+    Name        BoneHelmofHell
+    Color       1377
+}
+Item
+{
+    Name        BoneArmsofHell
+    Color       1377
+}
+Item
+{
+    Name        BoneLegsofHell
+    Color       1377
+}
+Item
+{
+    Name        BoneGlovesofHell
+    Color       1377
+}
+Item
+{
+    Name        BoneTunicofHell
+    Color       1377
+}
+Item
+{
+    Name        SandalsofHell
+    Color       1377
+}
+Item
+{
+    Name        ZephyrChainmailCoif
+    Color       1328
+}
+Item
+{
+    Name        ZephyrChainmailLeggings
+    Color       1328
+}
+Item
+{
+    Name        ZephyrChainmailTunic
+    Color       1328
+}
+Item
+{
+    Name        InfernalRingmailTunic
+    Color       1141
+}
+Item
+{
+    Name        InfernalRingmailSleeves
+    Color       1141
+}
+Item
+{
+    Name        InfernalRingmailLeggings
+    Color       1141
+}
+Item
+{
+    Name        InfernalRingmailGloves
+    Color       1141
+}
+Item
+{
+    Name        HydraLeatherLeggings
+    Color       1469
+}
+Item
+{
+    Name        HydraLeatherSleeves
+    Color       1469
+}
+Item
+{
+    Name        HydraLeatherTunic
+    Color       1469
+}
+Item
+{
+    Name        HydraLeatherGloves
+    Color       1469
+}
+Item
+{
+    Name        HydraLeatherCap
+    Color       1469
+}
+Item
+{
+    Name        ShieldofAlryc
+    Color       1568
+}
+Item
+{
+    Name        ShieldofDupre
+    Color       1484
+}
+Item
+{
+    Name        ShieldoftheCimmerian
+    Color       1
+}
+Item
+{
+    Name        SparksShield
+    Color       1306
+}
+Item
+{
+    Name        ShieldofHell
+    Color       1377
+}
+Item
+{
+    Name        waterfork
+    Color       1555
+}
+Item
+{
+    Name        breastofwater
+    Color       1555
+}
+Item
+{
+    Name        legsofwater
+    Color       1555
+}
+Item
+{
+    Name        helmofwater
+    Color       1555
+}
+Item
+{
+    Name        gorgetofwater
+    Color       1555
+}
+Item
+{
+    Name        armsofwater
+    Color       1555
+}
+Item
+{
+    Name        glovesofwater
+    Color       1555
+}
+Item
+{
+    Name        WarHammerofearth
+    Color       1134
+}
+Item
+{
+    Name        breastofearth
+    Color       1134
+}
+Item
+{
+    Name        legsofearth
+    Color       1134
+}
+Item
+{
+    Name        helmofearth
+    Color       1134
+}
+Item
+{
+    Name        gorgetofearth
+    Color       1134
+}
+Item
+{
+    Name        armsofearth
+    Color       1134
+}
+Item
+{
+    Name        glovesofearth
+    Color       1134
+}
+Item
+{
+    Name        SBlackStaff
+    Color       621
+}
+Item
+{
+    Name        SGnarledStaff
+    Color       621
+}
+Item
+{
+    Name        SQuarterstaff
+    Color       621
+}
+Item
+{
+    Name        SShepherdsCrook
+    Color       621
+}
+Item
+{
+    Name        MBlackStaff
+    Color       6
+}
+Item
+{
+    Name        MGnarledStaff
+    Color       6
+}
+Item
+{
+    Name        MQuarterstaff
+    Color       6
+}
+Item
+{
+    Name        MShepherdsCrook
+    Color       6
+}
+Item
+{
+    Name        StygianBlackStaff
+    Color       1174
+}
+Item
+{
+    Name        StygianGnarledStaff
+    Color       1174
+}
+Item
+{
+    Name        StygianQuarterstaff
+    Color       1174
+}
+Item
+{
+    Name        StygianShepherdsCrook
+    Color       1174
+}
+Item
+{
+    Name        bowofair
+    Color       1655
+}
+Item
+{
+    Name        breastofair
+    Color       1655
+}
+Item
+{
+    Name        legsofair
+    Color       1655
+}
+Item
+{
+    Name        helmofair
+    Color       1655
+}
+Item
+{
+    Name        gorgetofair
+    Color       1655
+}
+Item
+{
+    Name        armsofair
+    Color       1655
+}
+Item
+{
+    Name        glovesofair
+    Color       1655
+}
+Item
+{
+    Name        Katanaoffire
+    Color       1172
+}
+Item
+{
+    Name        breastoffire
+    Color       1172
+}
+Item
+{
+    Name        legsoffire
+    Color       1172
+}
+Item
+{
+    Name        helmoffire
+    Color       1172
+}
+Item
+{
+    Name        gorgetoffire
+    Color       1172
+}
+Item
+{
+    Name        armsoffire
+    Color       1172
+}
+Item
+{
+    Name        glovesoffire
+    Color       1172
+}
+Item
+{
+    Name        Pitchforkofshadow
+    Color       1157
+}
+Item
+{
+    Name        breastofshadow
+    Color       1157
+}
+Item
+{
+    Name        legsofshadow
+    Color       1157
+}
+Item
+{
+    Name        helmofshadow
+    Color       1157
+}
+Item
+{
+    Name        gorgetofshadow
+    Color       1157
+}
+Item
+{
+    Name        armsofshadow
+    Color       1157
+}
+Item
+{
+    Name        glovesofshadow
+    Color       1157
+}
+Item
+{
+    Name        Kryssofpoison
+    Color       264
+}
+Item
+{
+    Name        breastofpoison
+    Color       264
+}
+Item
+{
+    Name        legsofpoison
+    Color       264
+}
+Item
+{
+    Name        helmofpoison
+    Color       264
+}
+Item
+{
+    Name        gorgetofpoison
+    Color       264
+}
+Item
+{
+    Name        armsofpoison
+    Color       264
+}
+Item
+{
+    Name        glovesofpoison
+    Color       264
+}
+Item
+{
+    Name        CoifOfWonders
+    Color       1298
+}
+Item
+{
+    Name        TunicOfWonders
+    Color       1298
+}
+Item
+{
+    Name        SleevesOfWonders
+    Color       1298
+}
+Item
+{
+    Name        LeggingsOfWonders
+    Color       1298
+}
+Item
+{
+    Name        GlovesOfWonders
+    Color       1298
+}
+Item
+{
+    Name        BootsOfWonders
+    Color       1298
+}
+Item
+{
+    Name        ShieldOfWonders
+    Color       1298
+}
+Item
+{
+    Name        WandOfWonders
+    Color       1298
+}
+Item
+{
+    Name        Icebow
+    Color       1170
+}
+Item
+{
+    Name        firebow
+    Color       1172
+}
+Item
+{
+    Name        SLongsword
+    Color       621
+}
+Item
+{
+    Name        SWarAxe
+    Color       621
+}
+Item
+{
+    Name        SIcebow
+    Color       1170
+}
+Item
+{
+    Name        SBow
+    Color       621
+}
+Item
+{
+    Name        Sfirebow
+    Color       1172
+}
+Item
+{
+    Name        SCrossbow
+    Color       621
+}
+Item
+{
+    Name        SHeavyCrossbow
+    Color       621
+}
+Item
+{
+    Name        SThunderCrossbow
+    Color       1282
+}
+Item
+{
+    Name        SAxe
+    Color       621
+}
+Item
+{
+    Name        SBattleAxe
+    Color       621
+}
+Item
+{
+    Name        SDoubleAxe
+    Color       621
+}
+Item
+{
+    Name        SExecutionersAxe
+    Color       621
+}
+Item
+{
+    Name        SLargeBattleAxe
+    Color       621
+}
+Item
+{
+    Name        STwoHandedAxe
+    Color       621
+}
+Item
+{
+    Name        SHammerPick
+    Color       621
+}
+Item
+{
+    Name        SMace
+    Color       621
+}
+Item
+{
+    Name        SMaul
+    Color       621
+}
+Item
+{
+    Name        SWarHammer
+    Color       621
+}
+Item
+{
+    Name        SWarMace
+    Color       621
+}
+Item
+{
+    Name        SBardiche
+    Color       621
+}
+Item
+{
+    Name        SHalberd
+    Color       621
+}
+Item
+{
+    Name        SShortSpear
+    Color       621
+}
+Item
+{
+    Name        SSpear
+    Color       621
+}
+Item
+{
+    Name        SWarFork
+    Color       621
+}
+Item
+{
+    Name        SBroadSword
+    Color       621
+}
+Item
+{
+    Name        SCutlass
+    Color       621
+}
+Item
+{
+    Name        SDagger
+    Color       621
+}
+Item
+{
+    Name        SKatana
+    Color       621
+}
+Item
+{
+    Name        SKryss
+    Color       621
+}
+Item
+{
+    Name        SScimitar
+    Color       621
+}
+Item
+{
+    Name        SVikingSword
+    Color       621
+}
+Item
+{
+    Name        SHatchet
+    Color       621
+}
+Item
+{
+    Name        SButcherKnife
+    Color       621
+}
+Item
+{
+    Name        SCleaver
+    Color       621
+}
+Item
+{
+    Name        SSkinningKnife
+    Color       621
+}
+Item
+{
+    Name        SClub
+    Color       621
+}
+Item
+{
+    Name        SPitchfork
+    Color       621
+}
+Item
+{
+    Name        MLongsword
+    Color       6
+}
+Item
+{
+    Name        MWarAxe
+    Color       6
+}
+Item
+{
+    Name        MIcebow
+    Color       1170
+    Color       6
+}
+Item
+{
+    Name        MBow
+    Color       6
+}
+Item
+{
+    Name        Mfirebow
+    Color       1172
+    Color       6
+}
+Item
+{
+    Name        MCrossbow
+    Color       6
+}
+Item
+{
+    Name        MHeavyCrossbow
+    Color       6
+}
+Item
+{
+    Name        MThunderCrossbow
+    Color       1282
+    Color       6
+}
+Item
+{
+    Name        MAxe
+    Color       6
+}
+Item
+{
+    Name        MBattleAxe
+    Color       6
+}
+Item
+{
+    Name        MDoubleAxe
+    Color       6
+}
+Item
+{
+    Name        MExecutionersAxe
+    Color       6
+}
+Item
+{
+    Name        MLargeBattleAxe
+    Color       6
+}
+Item
+{
+    Name        MTwoHandedAxe
+    Color       6
+}
+Item
+{
+    Name        MHammerPick
+    Color       6
+}
+Item
+{
+    Name        MMace
+    Color       6
+}
+Item
+{
+    Name        MMaul
+    Color       6
+}
+Item
+{
+    Name        MWarHammer
+    Color       6
+}
+Item
+{
+    Name        MWarMace
+    Color       6
+}
+Item
+{
+    Name        MBardiche
+    Color       6
+}
+Item
+{
+    Name        MHalberd
+    Color       6
+}
+Item
+{
+    Name        MShortSpear
+    Color       6
+}
+Item
+{
+    Name        MSpear
+    Color       6
+}
+Item
+{
+    Name        MWarFork
+    Color       6
+}
+Item
+{
+    Name        MBroadSword
+    Color       6
+}
+Item
+{
+    Name        MCutlass
+    Color       6
+}
+Item
+{
+    Name        MDagger
+    Color       6
+}
+Item
+{
+    Name        MKatana
+    Color       6
+}
+Item
+{
+    Name        MKryss
+    Color       6
+}
+Item
+{
+    Name        MScimitar
+    Color       6
+}
+Item
+{
+    Name        MVikingSword
+    Color       6
+}
+Item
+{
+    Name        MHatchet
+    Color       6
+}
+Item
+{
+    Name        MButcherKnife
+    Color       6
+}
+Item
+{
+    Name        MCleaver
+    Color       6
+}
+Item
+{
+    Name        MSkinningKnife
+    Color       6
+}
+Item
+{
+    Name        MClub
+    Color       6
+}
+Item
+{
+    Name        MPitchfork
+    Color       6
+}
+Item
+{
+    Name        StygianLongsword
+    Color       1174
+}
+Item
+{
+    Name        StygianWarAxe
+    Color       1174
+}
+Item
+{
+    Name        StygianIcebow
+    Color       1170
+    Color       1174
+}
+Item
+{
+    Name        StygianBow
+    Color       1174
+}
+Item
+{
+    Name        Stygianfirebow
+    Color       1172
+    Color       1174
+}
+Item
+{
+    Name        StygianCrossbow
+    Color       1174
+}
+Item
+{
+    Name        StygianHeavyCrossbow
+    Color       1174
+}
+Item
+{
+    Name        StygianThunderCrossbow
+    Color       1282
+    Color       1174
+}
+Item
+{
+    Name        StygianAxe
+    Color       1174
+}
+Item
+{
+    Name        StygianBattleAxe
+    Color       1174
+}
+Item
+{
+    Name        StygianDoubleAxe
+    Color       1174
+}
+Item
+{
+    Name        StygianExecutionersAxe
+    Color       1174
+}
+Item
+{
+    Name        StygianLargeBattleAxe
+    Color       1174
+}
+Item
+{
+    Name        StygianTwoHandedAxe
+    Color       1174
+}
+Item
+{
+    Name        StygianHammerPick
+    Color       1174
+}
+Item
+{
+    Name        StygianMace
+    Color       1174
+}
+Item
+{
+    Name        StygianMaul
+    Color       1174
+}
+Item
+{
+    Name        StygianWarHammer
+    Color       1174
+}
+Item
+{
+    Name        StygianWarMace
+    Color       1174
+}
+Item
+{
+    Name        StygianBardiche
+    Color       1174
+}
+Item
+{
+    Name        StygianHalberd
+    Color       1174
+}
+Item
+{
+    Name        StygianShortSpear
+    Color       1174
+}
+Item
+{
+    Name        StygianSpear
+    Color       1174
+}
+Item
+{
+    Name        StygianWarFork
+    Color       1174
+}
+Item
+{
+    Name        StygianBroadSword
+    Color       1174
+}
+Item
+{
+    Name        StygianCutlass
+    Color       1174
+}
+Item
+{
+    Name        StygianDagger
+    Color       1174
+}
+Item
+{
+    Name        StygianKatana
+    Color       1174
+}
+Item
+{
+    Name        StygianKryss
+    Color       1174
+}
+Item
+{
+    Name        StygianScimitar
+    Color       1174
+}
+Item
+{
+    Name        StygianVikingSword
+    Color       1174
+}
+Item
+{
+    Name        StygianHatchet
+    Color       1174
+}
+Item
+{
+    Name        StygianButcherKnife
+    Color       1174
+}
+Item
+{
+    Name        StygianCleaver
+    Color       1174
+}
+Item
+{
+    Name        StygianSkinningKnife
+    Color       1174
+}
+Item
+{
+    Name        StygianClub
+    Color       1174
+}
+Item
+{
+    Name        StygianPitchfork
+    Color       1174
+}
+Item
+{
+    Name        BaneoftheUndead
+    Color       2159
+}
+Item
+{
+    Name        TjaldursStaffofHaste
+    Color       1555
+}
+Item
+{
+    Name        Balthazaarschillingscimitar
+    Color       1655
+}
+Item
+{
+    Name        GrarkShep
+    Color       2232
+}
+Item
+{
+    Name        AnubissMaceOfDeath
+    Color       1172
+}
+Item
+{
+    Name        WaraxeofThanatos
+    Color       1645
+}
+Item
+{
+    Name        ScalpelofTrevize
+    Color       1176
+}
+Item
+{
+    Name        AxeofAnias
+    Color       1158
+}
+Item
+{
+    Name        KatanaOfKieri
+    Color       33931
+}
+Item
+{
+    Name        TekagiOmega
+    Color       1765
+}
+Item
+{
+    Name        DreamsBow
+    Color       1293
+}
+Item
+{
+    Name        LanceOfLothian
+    Color       1184
+}
+Item
+{
+    Name        BardicheofLynx
+    Color       1293
+}
+Item
+{
+    Name        DekeronsThunder
+    Color       1282
+}
+Item
+{
+    Name        OmerosPickaxe
+    Color       1301
+}
+Item
+{
+    Name        XarafaxsAxe
+    Color       1162
+}
+Item
+{
+    Name        WarMaceofErik
+    Color       33928
+}
+Item
+{
+    Name        HalberdOfAlcatraz
+    Color       1284
+}
+Item
+{
+    Name        weaponofzulu
+    Color       1165
+}
+Item
+{
+    Name        SpearofRenah
+    Color       1181
+}
+Item
+{
+    Name        vampiricvengeance
+    Color       1948
+}
+Item
+{
+    Name        Redbonehelm
+    Color       1172
+}
+Item
+{
+    Name        Greenbonehelm
+    Color       1169
+}
+Item
+{
+    Name        Bluebonehelm
+    Color       1170
+}
+Item
+{
+    Name        Armor30Shroud
+    Color       1302
+}
+Item
+{
+    Name        Blackgloves
+    Color       1
+}
+Item
+{
+    Name        Blackboots
+    Color       1
+}
+Item
+{
+    Name        DarkBlueGloves
+    Color       1302
+}
+Item
+{
+    Name        BlackPants
+    Color       1157
+}
+Item
+{
+    Name        DarkBlueStuddedTunic
+    Color       1302
+}
+Item
+{
+    Name        DarkBlueBoneArms
+    Color       1302
+}
+Item
+{
+    Name        DarkBlueBoneHelm
+    Color       1302
+}
+Item
+{
+    Name        DarkBlueBoneGloves
+    Color       1302
+}
+Item
+{
+    Name        DarkBlueBoneLeggings
+    Color       1302
+}
+Item
+{
+    Name        DarkBlueBoneTunic
+    Color       1302
+}
+Item
+{
+    Name        Redbonegloves
+    Color       1172
+}
+Item
+{
+    Name        Greenbonegloves
+    Color       1169
+}
+Item
+{
+    Name        Bluebonegloves
+    Color       1170
+}
+Item
+{
+    Name        LessershadowWeapon
+    Color       1
+}
+Item
+{
+    Name        Greatershadowweapon
+    Color       1
+}
+Item
+{
+    Name        Shadowlordweapon
+    Color       1
+}
+Item
+{
+    Name        BonearmsofTerror
+    Color       1181
+}
+Item
+{
+    Name        BonetunicofTerror
+    Color       1181
+}
+Item
+{
+    Name        BoneglovesofTerror
+    Color       1181
+}
+Item
+{
+    Name        BonehelmofTerror
+    Color       1181
+}
+Item
+{
+    Name        BonelegsofTerror
+    Color       1181
+}
+Item
+{
+    Name        DartthrowerofTerror
+    Color       1181
+}
+Item
+{
+    Name        Darkstranglerweapon
+    Color       1171
+}
+Item
+{
+    Name        TaintedMageStaff
+    Color       1157
+}
+Item
+{
+    Name        TaintedWarriorHalberd
+    Color       1283
+}
+Item
+{
+    Name        TaintedWarriorSword
+    Color       1283
+}
+Item
+{
+    Name        Twistedanimationweapon
+    Color       33870
+}
+Item
+{
+    Name        Taintedrangerweapon
+    Color       1171
+}
+Item
+{
+    Name        ThunderCrossbow
+    Color       1282
+}
+Item
+{
+    Name        magestalkerweapon
+    Color       1171
+}
+Item
+{
+    Name        Corruptcouncyshroud
+    Color       1170
+}
+Item
+{
+    Name        corruptcouncystaff
+    Color       1153
+}
+Item
+{
+    Name        KoboldIcebow
+    Color       1170
+    Color       1109
+}
+Item
+{
+    Name        KoboldOrchelm
+    Color       1109
+}
+Item
+{
+    Name        KoboldRingmailTunic
+    Color       2130
+}
+Item
+{
+    Name        KoboldRingmailSleeves
+    Color       2130
+}
+Item
+{
+    Name        KoboldRingmailLeggings
+    Color       2130
+}
+Item
+{
+    Name        KoboldRingmailGloves
+    Color       2130
+}
+Item
+{
+    Name        KoboldCloak
+    Color       1109
+}
+Item
+{
+    Name        KoboldThighboots
+    Color       1109
+}
+Item
+{
+    Name        holyshield
+    Color       1153
+}
+Item
+{
+    Name        breastofholy
+    Color       1153
+}
+Item
+{
+    Name        legsofholy
+    Color       1153
+}
+Item
+{
+    Name        helmofholy
+    Color       1153
+}
+Item
+{
+    Name        gorgetofholy
+    Color       1153
+}
+Item
+{
+    Name        armsofholy
+    Color       1153
+}
+Item
+{
+    Name        glovesofholy
+    Color       1153
+}
+Item
+{
+    Name        EnchantedBladeOfThieves
+    Color       1693
+}
+Item
+{
+    Name        nagashstaffofsorcery
+    Color       1950
+}
+Item
+{
+    Name        taintedbowofshadows
+    Color       1386
+}
+Item
+{
+    Name        CrookofRejuvenation
+    Color       1583
+}
+Item
+{
+    Name        warforkofastralstorms
+    Color       1689
+}
+Item
+{
+    Name        lanceofthejouster
+    Color       1157
+}
+Item
+{
+    Name        draugrsfang
+    Color       1305
+}
+Item
+{
+    Name        daemonsbane
+    Color       1476
+}
+Item
+{
+    Name        crossbowoffulmination
+    Color       1300
+}
+Item
+{
+    Name        kryssofobliteration
+    Color       1471
+}
+Item
+{
+    Name        iolostriplefirecrossbow
+    Color       1676
+}
+Item
+{
+    Name        FemalePlateofDrakon
+    Color       1162
+}
+Item
+{
+    Name        PlateHelmofDrakon
+    Color       1162
+}
+Item
+{
+    Name        PlateArmsofDrakon
+    Color       1162
+}
+Item
+{
+    Name        PlateLeggingsofDrakon
+    Color       1162
+}
+Item
+{
+    Name        PlateGlovesofDrakon
+    Color       1162
+}
+Item
+{
+    Name        PlateGorgetofDrakon
+    Color       1162
+}
+Item
+{
+    Name        PlatemailofDrakon
+    Color       1162
+}
+Item
+{
+    Name        FemalePlateofRyous
+    Color       1413
+}
+Item
+{
+    Name        PlateHelmofRyous
+    Color       1413
+}
+Item
+{
+    Name        PlateArmsofRyous
+    Color       1413
+}
+Item
+{
+    Name        PlateLeggingsofRyous
+    Color       1413
+}
+Item
+{
+    Name        PlateGlovesofRyous
+    Color       1413
+}
+Item
+{
+    Name        PlateGorgetofRyous
+    Color       1413
+}
+Item
+{
+    Name        PlatemailofRyous
+    Color       1413
+}
+Item
+{
+    Name        FemalePlateofDarkness
+    Color       1157
+}
+Item
+{
+    Name        PlateHelmofDarkness
+    Color       1157
+}
+Item
+{
+    Name        PlateArmsofDarkness
+    Color       1157
+}
+Item
+{
+    Name        PlateLeggingsofDarkness
+    Color       1157
+}
+Item
+{
+    Name        PlateGlovesofDarkness
+    Color       1157
+}
+Item
+{
+    Name        PlateGorgetofDarkness
+    Color       1157
+}
+Item
+{
+    Name        PlatemailofDarkness
+    Color       1157
+}
+Item
+{
+    Name        ElvenFemalePlate
+    Color       1165
+}
+Item
+{
+    Name        ElvenPlateHelm
+    Color       1165
+}
+Item
+{
+    Name        ElvenPlateArms
+    Color       1165
+}
+Item
+{
+    Name        ElvenPlateLeggings
+    Color       1165
+}
+Item
+{
+    Name        ElvenPlateGloves
+    Color       1165
+}
+Item
+{
+    Name        ElvenPlateGorget
+    Color       1165
+}
+Item
+{
+    Name        ElvenPlatemail
+    Color       1165
+}
+Item
+{
+    Name        Shieldofdrakon
+    Color       1162
+}
+Item
+{
+    Name        Shieldofryous
+    Color       1413
+}
+Item
+{
+    Name        Shieldofdarkness
+    Color       1157
+}
+Item
+{
+    Name        ElvenShield
+    Color       1165
+}
+Item
+{
+    Name        NavarBloodyBarrier
+    Color       1305
+}
+Item
+{
+    Name        moonedge
+    Color       1918
+}
+Item
+{
+    Name        lightnecromancy
+    Color       1955
+}
+Item
+{
+    Name        solidchaos
+    Color       1986
+}
+Item
+{
+    Name        TourneyShield
+    Color       1183
+}
+Item
+{
+    Name        legendaryhunterweapon
+    Color       1171
+}
+Item
+{
+    Name        thorbowweapon
+    Color       1171
+}
+Item
+{
+    Name        kappaweapon
+    Color       1171
+}
+Item
+{
+    Name        vortexbowweapon
+    Color       1171
+}
+Item
+{
+    Name        krakenbowweapon
+    Color       1171
+}
+Item
+{
+    Name        lokebowweapon
+    Color       1171
+}
+Item
+{
+    Name        nagashrangerweapon
+    Color       1171
+}
+Item
+{
+    Name        ebardhelm
+    Color       1940
+}
+Item
+{
+    Name        ebardshield
+    Color       1940
+}
+Item
+{
+    Name        ebardPlatemailGorget
+    Color       1940
+}
+Item
+{
+    Name        ebardPlatemailLegs
+    Color       1940
+}
+Item
+{
+    Name        ebardPlatemailGloves
+    Color       1940
+}
+Item
+{
+    Name        ebardStygianScimitar
+    Color       1940
+    Color       1174
+}
+Item
+{
+    Name        refwep
+    Color       1172
+}
+Item
+{
+    Name        refarm
+    Color       1
+}
+Item
+{
+    Name        MCrescentBlade
+    Color       6
+}
+Item
+{
+    Name        SCrescentBlade
+    Color       621
+}
+Item
+{
+    Name        StygianCrescentBlade
+    Color       1174
+}
+Item
+{
+    Name        MPaladinSword
+    Color       6
+}
+Item
+{
+    Name        SPaladinSword
+    Color       621
+}
+Item
+{
+    Name        StygianPaladinSword
+    Color       1174
+}
+Item
+{
+    Name        MNo-Dachi
+    Color       6
+}
+Item
+{
+    Name        SNo-Dachi
+    Color       621
+}
+Item
+{
+    Name        StygianNo-Dachi
+    Color       1174
+}
+Item
+{
+    Name        MBokuto
+    Color       6
+}
+Item
+{
+    Name        SBokuto
+    Color       621
+}
+Item
+{
+    Name        StygianBokuto
+    Color       1174
+}
+Item
+{
+    Name        MCompositeBow
+    Color       6
+}
+Item
+{
+    Name        SCompositeBow
+    Color       621
+}
+Item
+{
+    Name        StygianCompositeBow
+    Color       1174
+}
+Item
+{
+    Name        MYumi
+    Color       6
+}
+Item
+{
+    Name        SYumi
+    Color       621
+}
+Item
+{
+    Name        StygianYumi
+    Color       1174
+}
+Item
+{
+    Name        MSai
+    Color       6
+}
+Item
+{
+    Name        SSai
+    Color       621
+}
+Item
+{
+    Name        StygianSai
+    Color       1174
+}
+Item
+{
+    Name        MTetsubo
+    Color       6
+}
+Item
+{
+    Name        STetsubo
+    Color       621
+}
+Item
+{
+    Name        StygianTetsubo
+    Color       1174
+}
+Item
+{
+    Name        MDaisho
+    Color       6
+}
+Item
+{
+    Name        SDaisho
+    Color       621
+}
+Item
+{
+    Name        StygianDaisho
+    Color       1174
+}
+Item
+{
+    Name        MLajatang
+    Color       6
+}
+Item
+{
+    Name        SLajatang
+    Color       621
+}
+Item
+{
+    Name        StygianLajatang
+    Color       1174
+}
+Item
+{
+    Name        MRepeatingCrossbow
+    Color       6
+}
+Item
+{
+    Name        SRepeatingCrossbow
+    Color       621
+}
+Item
+{
+    Name        StygianRepeatingCrossbow
+    Color       1174
+}
+Item
+{
+    Name        System Name Coloring
+	Color		90
+	Color		1
+	Color		68
+	Color		2
+	Color		905
+	Color		3
+	Color		905
+	Color		4
+	Color		44
+	Color		5
+	Color		38
+	Color		6
+	Color		53
+	Color	    1
+	Color       2591
+	Color		5
+	Color       1975
+	Color       5
+	Color       1917
+	Color		5
+	Color       23
+	Color       6
+}
+Item
+{
+    Name        Guild Colors
+    Color       1152
+    Color       1153
+    Color       1154
+    Color       1155
+    Color       1156
+    Color       1157
+    Color       1158
+    Color       1159
+    Color       1765
+    Color       1655
+    Color       1162
+    Color       1163
+    Color       1164
+    Color       1165
+    Color       1166
+    Color       1555
+    Color       1168
+    Color       1169
+    Color       1170
+    Color       1184
+    Color       1172
+    Color       1173
+    Color       1174
+    Color       1175
+    Color       1176
+    Color       1177
+    Color       1178
+    Color       1179
+    Color       1180
+    Color       1181
+    Color       1182
+    Color       1183
+    Color       1185
+    Color       1260
+    Color       1261
+    Color       1262
+    Color       1263
+    Color       1264
+    Color       1265
+    Color       1266
+    Color       1267
+    Color       1268
+    Color       1269
+    Color       1271
+    Color       1272
+    Color       1280
+    Color       1281
+    Color       1282
+    Color       1283
+    Color       1284
+    Color       1285
+    Color       1286
+    Color       1287
+    Color       1288
+    Color       1289
+    Color       1291
+    Color       1292
+    Color       1293
+    Color       1294
+    Color       1295
+    Color       1296
+    Color       1297
+    Color       1298
+    Color       1299
+    Color       1300
+    Color       1301
+    Color       1302
+    Color       1303
+    Color       1305
+    Color       1306
+    Color       1362
+    Color       1364
+    Color       1368
+    Color       1371
+    Color       1372
+    Color       1375
+    Color       1377
+    Color       1380
+    Color       1383
+    Color       1384
+    Color       1385
+    Color       1386
+    Color       1387
+    Color       1388
+    Color       1389
+    Color       1390
+    Color       1391
+    Color       1392
+    Color       1393
+    Color       1394
+    Color       1397
+    Color       1399
+    Color       1400
+    Color       1467
+    Color       1472
+    Color       1476
+    Color       1481
+    Color       1482
+    Color       1483
+    Color       1484
+    Color       1485
+    Color       1486
+    Color       1487
+    Color       1488
+    Color       1491
+    Color       1493
+    Color       1497
+    Color       1500
+    Color       2706
+    Color       2707
+    Color       2708
+    Color       2709
+    Color       2710
+    Color       2711
+    Color       2712
+    Color       2713
+    Color       2714
+    Color       2715
+    Color       2716
+    Color       2717
+    Color       2718
+    Color       2719
+    Color       2720
+    Color       2721
+    Color       2722
+    Color       2724
+    Color       2725
+    Color       2726
+    Color       2728
+    Color       2729
+    Color       2730
+    Color       2732
+    Color       2733
+    Color       2735
+    Color       2736
+    Color       2738
+    Color       2743
+    Color       2745
+    Color       2746
+    Color       2747
+    Color       2748
+    Color       2749
+    Color       2750
+    Color       2751
+    Color       2752
+    Color       2753
+    Color       2754
+    Color       2755
+    Color       2928
+    Color       2955
+}

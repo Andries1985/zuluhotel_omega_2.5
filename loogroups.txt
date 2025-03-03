@@ -1,0 +1,1131 @@
+lootgroup 1
+{
+   Random   1   NormalArmor   30
+   Random   1   NormalWeapons   40
+   Random   1d2   Junk   50
+   Stack   10d5   GoldCoin
+   Random   1d2   Ammo   15
+}
+
+lootgroup 2
+{
+   Item   1   Club
+   Random   1   NormalArmor   30
+   Random   1   NormalWeapons   40
+   Random   1d2   Junk   50
+   Stack   10d4   GoldCoin
+}
+
+lootgroup 3
+{
+   Stack   10d4   GoldCoin
+   Random   1d2   Junk   50
+   Random   1d2   Ammo   10
+}
+
+lootgroup 4
+{
+   Random   1   NormalArmor   30
+   Random   1   NormalWeapons   40
+   Random   1d2   Junk   50
+   Item   1   Axe
+   Stack   10d4   GoldCoin
+}
+
+lootgroup 5
+{
+   Random   1d6   Reagents
+   Random   1d3   PaganReagents
+   Random   1d3   Gems
+   Random   1d2   Ammo
+   Random   1d3   NormalWeapons
+   Random   1d3   NormalArmor
+   Random   1d2   Clothes
+   Random   1d2   Jewelry
+   Stack   1d300+250   GoldCoin
+}
+
+lootgroup 6
+{
+   Random   2d6   Reagents
+   Random   2d3   PaganReagents
+   Random   1d5   Gems
+   Random   1d4   Ammo
+   Random   1d3   NormalWeapons   
+   Random   1d3   NormalArmor
+   Random   1d2   MagicWeapon   50
+   Random   1d1   Clothes
+   Random   1d2   Jewelry
+   Stack   1d500+250   GoldCoin
+}
+
+lootgroup 7
+{
+   Random   1d1   Circle5Scrolls   50
+   Random   1d1   Circle6Scrolls
+   Random   1d1   Circle7Scrolls   20
+   Random   4d6   Reagents
+   Random   3d4   PaganReagents   
+   Random   1d2   Ammo
+   Random   2d2   NormalWeapons
+   Random   2d2   NormalArmor
+   Random   1d2   MagicWeapons   80
+   Random   1   MagicWeapons   10
+   Random   1d3   Clothes
+   Random   1d2   Jewelry
+   Random   1d1   Pentagrams   10
+   Stack   1d1000+500   GoldCoin
+
+}
+
+lootgroup 8
+{
+   Random   1d2   Circle7Scrolls
+   Random   1d2   Circle8Scrolls   20
+   Random   3d4   Reagents
+   Random   2d5   PaganReagents
+   Random   1d5+3   Gems
+   Random   1   Eggs   5   
+   Random   2   Ammo
+   Random   1d3   NormalWeapons   
+   Random   1d3   NormalArmor   
+   Random   1d3   MagicWeapons   50
+   Random   1d2   Clothes
+   Random   2d2   Jewelry   
+   Random   1d2   PaganMagicScrolls   10
+   Stack   1d400+500   GoldCoin
+}
+
+lootgroup 9
+{
+   Random   1d3   Circle7Scrolls
+   Random   1d2   Circle8Scrolls   
+   Random   3d6   Reagents
+   Random   3d6   PaganReagents
+   Random   3d8   Ammo
+   Random   1d5+3   Gems
+   Random   1d2   PaganMagicScrolls   35
+   Random   1d2   Eggs   35
+   Random   1d3   NormalWeapons   
+   Random   1d3   NormalArmor   
+   Random   2d2   MagicWeapons   
+   Random   1d2   Clothes
+   Random   5d5   Jewelry   
+   Random   1d1   Pentagrams   10
+   Random   1d1   Books   3
+   Random   1d1   GMArmor   5
+   Random   1d1   GMWeapon   5
+   Item   1d1   PowerTome   2
+   Item   1d1   TranscendScroll   4
+   Item   1d1   TranscendScroll   4
+   Item   1d1   vanitytoken   4
+   Item   1d1   vanitytoken   4
+   Item   1d1   vanitytoken   1
+   Stack   2d1000+2500   GoldCoin
+}
+
+lootgroup 10
+{
+   Random   2d4   Circle7Scrolls
+   Random   2d3   Circle8Scrolls   
+   Random   6d8   Reagents
+   Random   6d8   PaganReagents   
+   Random   5d8   Ammo
+   Random   1d5+3   Gems
+   Random   1d3   Eggs   80
+   Random   2d4   PaganMagicScrolls   80
+   Random   2d6   NormalWeapons
+   Random   2d6   NormalArmor   
+   Random   2d4   MagicWeapons   
+   Random   1d6   Clothes
+   Random   2d4   Jewelry   
+   Random   2d3   Pentagrams   85
+   Random   1d1   Books   5
+   Random   1d1   GMArmor   10
+   Random   1d1   GMArmor   2
+   Random   1d1   GMWeapon   10
+   Random   1d1   GMWeapon   2
+   Item   1d1   PowerTome   4
+   Item   1d1   TranscendScroll   8
+   Item   1d1   TranscendScroll   8
+   Item   1d1   vanitytoken   8
+   Item   1d1   vanitytoken   8
+   Item   1d1   vanitytoken   4
+   Item   1d1   vanitytoken   1
+   Random   1d1   Presents   1
+   Stack   2d2000+7500   GoldCoin
+}
+
+lootgroup 11
+{
+   Random   1   NormalArmor   30
+   Random   1   NormalWeapons   40
+   Random   1d2   Junk   50
+   Item   1   WarMace
+   Stack   10d4   GoldCoin
+}
+
+lootgroup 12
+{
+   Random   1   NormalArmor   30
+   Random   1   NormalWeapons   40
+   Random   1d2   Junk   50
+   Item   1   ShortSpear
+   Stack   10d4   GoldCoin
+}
+
+lootgroup 13
+{
+   Random   1   NormalArmor   30
+   Random   1   NormalWeapons   40
+   Random   1d2   Junk   50
+   Item   1   Orchelm
+   Item   1   level2map   5
+   Item   1   level3map   2
+   Random   3   Gems
+   Stack   10d10+150   GoldCoin
+}
+
+lootgroup 14
+{
+   Random   1   NormalArmor   40
+   Random   1   NormalArmor   40
+   Item   1   level1map   1
+   Random   1d2   Junk   50
+   Random   1   Gems
+   Random   1   NormalWeapons   75
+   Stack   10d10+75   GoldCoin
+}
+
+lootgroup 15
+{
+   Random   1   BoneArmor
+   Stack   3d20+5   GoldCoin
+   Random   1d2   Ammo   20
+}
+
+lootgroup 16
+{
+   Item   1   Scimitar   50
+   Item   1   Metalshield   50
+   Item   1   level1map   5
+   Item   1   level2map   1
+   Random   1   BoneArmor
+   Random   1   Gems
+   Stack   1d80+40   GoldCoin
+}
+
+lootgroup 17
+{
+   Random   1   NormalArmor   30
+   Random   1   NormalWeapons   40
+   Item   1   Battleaxe
+   Item   1   level1map   1
+   Random   1d2   Junk   50
+   Random   2   Gems
+   Stack   10d10+75   GoldCoin
+}
+
+lootgroup 19
+{
+   Random   1   NormalArmor   
+   Random   1   NormalWeapons   
+   Item   1   level2map   5
+   Item   1   level3map   2
+   Random   1d2   Junk   50
+   Random   3   Gems
+   Stack   15d10+100   GoldCoin
+}
+
+lootgroup 20
+{
+   Item   1   level2map   2
+   Item   1   level3map   1
+   Random   2   Reagents
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   10
+   Random   1d4   Gems
+   Stack   15d25   GoldCoin
+}
+
+lootgroup 21
+{
+   Item   1   level2map   2
+   Item   1   level3map   1
+   Random   8   Ores
+   Random   2d3   Gems
+   Stack   3   FertileDirt
+   Stack   1d10+30   GoldCoin
+}
+
+lootgroup 22
+{   
+   Item   1   level3map   12
+   Item   1   Level4map   3
+   Random   1d2   NormalWeapons   
+   Random   1d2   NormalArmor   
+   Random   1d1   MagicWeapons   60
+   Random   1d1   Jewelry   5
+   Random   1   PaganMagicScrolls   3
+   Random   1d1   Circle5Scrolls   50
+   Random   1d3   Circle6Scrolls   55
+   Random   1d2   Circle7Scrolls   25
+   Random   3   Reagents   
+   Random   2d2   PaganReagents   50
+   Random   2   Gems   
+   Random   1   LowChance   1   
+   Stack   10d45+150   GoldCoin
+}
+
+lootgroup 23
+{   
+   Item   1d1   Level1map   1
+   Item   1d1   level2map   1
+   Random   1d2   Circle4Scrolls   50
+   Random   1d1   Circle5Scrolls   50
+   Random   1d2   Circle6Scrolls   40
+   Random   1d1   Circle7Scrolls   10
+   Random   3d3   Reagents
+   Random   1d2   PaganReagents   10
+   Random   1d3   Gems
+   Random   1d1   NormalWeapons   40
+   Random   1d1   NormalArmor   40
+   Random   1d1   Jewelry   3
+   Random   1d1   Clothes   6
+   Stack   10d10+50   GoldCoin
+}
+
+lootgroup 25
+{
+   Item   1   level2map   2
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   30
+   Random   1   Gems   50
+   Random   1   Reagents
+   Stack   10d15+50   GoldCoin
+}
+
+lootgroup 27
+{
+   Random   1   NormalArmor   50
+   Random   1   NormalWeapons   50
+   Item   1   Vikingsword
+   Item   1   level1map   5
+   Item   1   level2map   2
+   Random   4   Gems
+   Stack   10d25+50   GoldCoin
+   Stack   3   smallwedgeofcheese
+}
+
+lootgroup 29
+{
+   Stack   10d10+40   GoldCoin
+}
+
+lootgroup 31
+{
+   Random   1   NormalArmor   50
+   Random   1   NormalWeapons   50
+   Item   1   Level1map   1
+   Random   1d1   Circle4Scrolls   50
+   Random   1d1   Circle5Scrolls   50
+   Random   1d2   Circle6Scrolls   40
+   Random   1d1   Circle7Scrolls   10
+   Random   3d3   Reagents
+   Random   2   Gems
+   Stack   5d10+50   GoldCoin
+}
+
+lootgroup 34
+{
+   Stack   10d15+100   GoldCoin
+   Random   1   PaganReagents
+   Stack   2d5   deadwood
+}
+
+lootgroup 35
+{
+   Item   1   level4map   5
+   Random   5d2   Gems
+   Random   1d1   Circle5Scrolls   50
+   Random   1d2   Circle6Scrolls   80
+   Random   1d1   Circle7Scrolls   50
+   Random   1d1   Circle8Scrolls   20
+   Random   3   Ammo
+   Random   1d2   NormalWeapons   
+   Random   1d3   NormalArmor   
+   Random   1d4   MagicWeapons   20
+   Random   1d2   Jewelry   20
+   Random   1d1   Eggs   5
+   Random   2d3   PaganReagents
+   Random   1d2   PaganMagicScrolls   1
+   Random   1   LowChance   1
+   Stack   4d100+500   GoldCoin
+}
+
+lootgroup 36
+{
+   Item   1   level2map   5
+   Item   1   level3map   2
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   40
+   Random   2   Circle7Scrolls   20
+   Random   3   Reagents
+   Random   4   Ammo
+   Random   1d1   Eggs   5
+   Random   2   Gems
+   Stack   3d50+100   GoldCoin
+}
+
+lootgroup 37
+{
+   Item   1   level4map   5
+   Item   1   level5map   1
+   Random   2   Circle7Scrolls   40
+   Random   1   Circle8Scrolls   10
+   Random   3d3   Gems
+   Random   4   Ammo
+   Random   1d2   NormalWeapons   
+   Random   1d2   NormalArmor   
+   Random   1d2   MagicWeapons   25
+   Random   1d1   Jewelry   15
+   Random   1d2   Eggs   5
+   Random   2d3   PaganReagents
+   Random   1d4   Reagents
+   Random   1   PaganMagicScrolls   1
+   Random   1   LowChance   1
+   Stack   4d100+250   GoldCoin
+}
+
+lootgroup 38
+{
+   Item   1   level1map   2
+   Item   1   level2map   1
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   30
+   Random   1   Gems
+   Random   3   NormalWeapons   50
+   Random   2   NormalArmor   50
+   Stack   3d20+100   GoldCoin
+}
+
+lootgroup 39
+{
+   Item   1   level1map   1
+   Item   1   level2map   1
+   Random   1d1   Circle1Scrolls   50
+   Random   1d1   Circle2Scrolls   50
+   Random   1d1   Circle3Scrolls   50
+   Random   1d1   Circle4Scrolls   40
+   Random   1   Gems   50
+   Random   1d3   Reagents
+   Random   1d3   PaganReagents   20
+   Stack   1d50+100   GoldCoin
+}
+
+lootgroup 40
+{
+   Random   1d1   NormalWeapons   30
+   Item   1   level2map   2
+   Item   1   level3map   1
+   Random   2   Gems
+   Stack   10d10+100   GoldCoin
+}   
+
+lootgroup 41
+{
+   Item   1   level1map   1
+   Random   1d2   Junk   50
+   Random   1d2   NormalWeapons   60
+   Random   2   NormalArmor   50
+   Random   2   Gems
+   Random   1d3   Ammo
+   Random   1   LowChance   1
+   Stack   10d10+75   GoldCoin
+}
+
+lootgroup 42
+{
+   Random   1d1   NormalWeapons   
+   Random   1d1   NormalArmor   
+   Random   1d1   Clothes   5
+   Random   1d2   Junk   50
+   Random   2   Gems
+   Stack   10d10+75   GoldCoin
+}
+
+lootgroup 43
+{
+   Random   1d1   NormalWeapons   50
+   Random   1d1   NormalArmor   50
+   Item   1   level1map   1
+   Random   1d2   Junk   50
+   Random   2   Gems
+   Stack   10d10+75   GoldCoin
+}
+
+lootgroup 46
+{   
+   Random   1d1   Circle5Scrolls   50
+   Random   2   Circle6Scrolls   25
+   Random   1   Circle7Scrolls   10
+   Random   2d3   Reagents
+   Random   2d3   PaganReagents   1
+   Item   1   Level3map   2
+   Item   1   level2map   3
+   Random   1d3   Gems   5
+   Stack   10d10+150   GoldCoin
+}
+
+lootgroup 47
+{   
+   Random   1d1   NormalWeapons   50
+   Random   1d1   NormalArmor   50
+   Random   1d2   Junk   50
+   Stack   10d5+50   GoldCoin
+   Random   1d3   Gems   5
+}
+
+lootgroup 50
+{
+   Stack   3d20+10   GoldCoin
+   Random   2   Junk   15
+}
+
+lootgroup 52
+{
+   Random   1d1   NormalWeapons   50
+   Random   1d1   NormalArmor   50
+   Random   1d2   Junk   50
+   Stack   2d15+10   GoldCoin
+   Random   1   Ammo
+}
+
+lootgroup 54
+{
+   Stack   5d15+50   GoldCoin
+   Random   1d1   Circle1Scrolls   50
+   Random   1d1   Circle2Scrolls   50
+   Random   1d1   Circle3Scrolls   50
+   Random   1d1   Circle4Scrolls   40
+   Random   1d1   Circle5Scrolls   30
+   Random   1   Circle6Scrolls   20
+   Random   1   Circle7Scrolls   5
+   Random   1   Gems   5
+   Random   1d2   Junk   50
+   Random   1   Reagents
+   Item   1   level2map   2
+}
+
+lootgroup 56
+{
+   Random   1d1   NormalWeapons   60
+   Random   1d1   NormalArmor   60
+   Random   1d2   Junk   50
+   Stack   10d15+150   GoldCoin
+   Random   1d3   Gems   5
+   Item   1   level2map   5
+}
+
+lootgroup 57
+{
+   Random   1d1   Circle3Scrolls   50
+   Random   1d1   Circle4Scrolls   50
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   20
+   Random   1   Circle7Scrolls   10
+   Stack   10d5+50   GoldCoin
+   Random   2d3   Reagents
+   Random   1d2   PaganReagents   10
+   Random   1   Gems   50
+}
+
+lootgroup 59
+{
+   Stack   3d50+200   GoldCoin
+   Random   2   Gems
+   Random   1d2   NormalArmor
+   Random   1d2   NormalWeapons
+   Random   1d2   Junk   50
+   Item   1   level2map   5
+   Item   1   level3map   10
+}
+
+lootgroup 60
+{
+   Stack   1d200+100   GoldCoin
+   Random   1   NormalArmor
+   Random   1   NormalWeapons
+   Random   1d2   Junk   50
+   Random   3   Gems
+   Random   4   Ammo
+   Item   1   level3map   4
+}   
+
+lootgroup 61
+{
+   Stack   2d20+80   GoldCoin
+   Item   2   Brimstone   40
+}
+
+lootgroup 63
+{
+   Stack   1d80+80   GoldCoin
+   Random   2   Gems
+   Item   1   level1map   5
+   Item   1   level2map   1
+}
+
+lootgroup 64
+{
+   Stack   4d5+10   GoldCoin
+   Stack   5   bread
+}
+
+lootgroup 65
+{
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   20
+   Random   1   Circle7Scrolls   10
+   Random   1   NormalArmor
+   Random   1   NormalWeapons
+   Stack   25d10+100   GoldCoin
+   Item   1   level3map   5
+   Item   1   level4map   2
+   Random   1   PaganMagicScrolls   10
+   Random   4   Gems
+}
+
+lootgroup 66
+{
+   Stack   10d20   GoldCoin
+   Random   2   Reagents
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   10
+   Random   1   Circle7Scrolls   5
+   Random   1   NormalArmor
+   Random   1   NormalWeapons
+   Random   1   Gems
+   Item   1   level2map   5
+   Item   1   level3map   2
+}
+
+lootgroup 67
+{
+   Stack   10d10+100   GoldCoin
+   Random   3   Gems
+   Random   1   NormalArmor
+   Random   1   NormalWeapons
+   Item   1   level1map   5
+   Item   1   level2map   2
+}
+
+lootgroup 68
+{
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   20
+   Random   1   Circle7Scrolls   5
+   Random   1   NormalArmor
+   Random   1   NormalWeapons
+   Stack   3d20+150   GoldCoin
+   Item   1   level3map   2
+}
+
+lootgroup 69
+{
+   Stack   10d20   GoldCoin
+   Random   2   Reagents
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   20
+   Random   1   Circle7Scrolls   5
+   Random   1   NormalArmor
+   Random   1   NormalWeapons
+   Random   1   Gems
+   Item   1   level2map   15
+   Item   1   level3map   10
+   Item   1   Level4map   5
+}
+
+lootgroup 70
+{
+   Stack   10d20   GoldCoin
+   Random   1d3   Gems
+   Random   1   NormalArmor
+   Random   1   NormalWeapons
+   Item   1   level1map   5
+   Item   1   level2map   2
+   Random   1d2   Junk   50
+}
+
+lootgroup 71
+{
+   Stack   3d20+150   GoldCoin
+   Random   1   PaganMagicScrolls   1
+   Item   1   level3map   4
+   Random   2   Gems
+}
+
+lootgroup 72
+{
+   Random   1   NormalArmor
+   Random   1   NormalWeapons
+   Stack   10d5+50   GoldCoin
+   Random   2   Ammo
+   Item   1   level1map   1
+}
+
+lootgroup 73
+{
+   Item   1   Level3map   4
+   Item   1   Level4map   1
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   30
+   Random   1   Circle7Scrolls   20
+   Random   1   Circle8Scrolls   15
+   Random   2d3   Reagents
+   Random   3   Gems
+   Random   1d2   Junk   10
+   Stack   10d10+100   GoldCoin
+}
+
+lootgroup 74
+{
+   Item   1   level4map   3
+   Random   15   Ores
+   Random   3d3   Gems
+   Stack   6   FertileDirt
+   Stack   10d20+100   GoldCoin
+}
+
+lootgroup 75
+{
+   Random   1d1   Circle5Scrolls   50
+   Random   2   Circle6Scrolls   20
+   Random   2   Circle7Scrolls   10
+   Random   1   Circle8Scrolls   5
+   Stack   10d50+100   GoldCoin
+   Random   2d3   Reagents
+   Random   2d3   PaganReagents
+   Item   1   level3map   2
+   Random   2d3   Gems
+   Random   1d1   Jewelry   10
+   Random   1d1   NormalWeapon   10
+}
+
+lootgroup 76
+{
+   Stack   10d20   GoldCoin
+   Random   2d3   Reagents
+   Random   1   Gems
+   Item   1   level1map   5
+   Item   1   level2map   2
+   Random   1d1   Circle5Scrolls   50
+   Random   1   Circle6Scrolls   15
+}
+
+lootgroup 77
+{   
+   Stack   10d50+100   GoldCoin
+   Random   2d3   PaganReagents
+   Items   1   DarkRuby   15
+   Item   1   EbonSapphire   10
+   Item   1   Level4map   1
+   Item   1   level3map   2
+   Random   2d3   Gems
+   Random   1   PaganMagicScrolls   2
+   Random   1   Junk
+   Random   1   NormalArmor   50
+   Random   1   NormalWeapon   30
+}
+
+lootgroup 78
+{   
+   Stack   10d50+200   GoldCoin
+   Random   2d3   PaganReagents
+   Items   1   DarkRuby   30
+   Item   1   EbonSapphire   25
+   Item   1   level4map   2
+   Random   3d3   Gems
+   Random   1   PaganMagicScrolls   4
+   Random   1   Junk
+   Random   1   NormalArmor   50
+   Random   1   NormalWeapon   35
+   Random   1   Jewelry   25
+}
+
+lootgroup 79
+{   
+   Stack   10d50+250   GoldCoin
+   Random   2d3   PaganReagents
+   Item   1   RadiantDiamond   25
+   Item   1   level4map   3
+   Item   1   Level5map   1
+   Random   4d3   Gems
+   Random   1   PaganMagicScrolls   6
+   Random   1d3   Junk
+   Random   1   NormalArmor   55
+   Random   1   NormalWeapon   40
+   Random   1   Jewelry   20
+}
+
+lootgroup 80
+{
+   Item   1   RadiantDiamond   10
+   Random   1d6   Reagents
+   Random   1d4   PaganReagents
+   Random   1   Jewelry   20
+}
+
+lootgroup 102
+{
+   Random   1d1   Circle5Scrolls   50
+   Random   1d3   Circle6Scrolls
+   Random   1d2   Circle7Scrolls
+   Random   1d2   Circle8Scrolls   5
+   Random   2d3   Reagents
+   Random   1   Eggs   3   
+   Random   1d3   Ammo
+   Random   1d2   NormalWeapons   
+   Random   1d2   NormalArmor   
+   Random   1d1   MagicWeapons   20
+   Random   1d2   Clothes
+   Random   1d2   Jewelry   
+   Random   1d2   PaganMagicScrolls   5
+   Item   1   Level4map   10
+   Item   1   Level3map   20
+   Item   1   Level5map   3
+   Random   1   LowChance   1
+   Stack   1d200+100   GoldCoin
+}
+
+lootgroup 103
+{
+   Random   1d1   Circle5Scrolls   50
+   Random   1d2   Circle6Scrolls
+   Random   1d2   Circle7Scrolls
+   Random   1d2   Circle8Scrolls   15
+   Random   2d3   Reagents
+   Random   1d1   Eggs   5   
+   Random   1d3   Ammo
+   Random   1d2   NormalWeapons   
+   Random   1d3   NormalArmor   
+   Random   1d1   MagicWeapons   20
+   Random   1d2   Clothes
+   Random   1d2   Jewelry   
+   Random   1d2   PaganMagicScrolls   10
+   Item   1   Level4map   15
+   Item   1   Level5map   5
+   Random   1d1   GMArmor   1
+   Random   1d1   GMWeapon   1
+   Random   1   LowChance   1
+   Stack   1d300+300   GoldCoin
+}
+
+lootgroup 104
+{
+   Random   1d2   Circle7Scrolls
+   Random   1d2   Circle8Scrolls   20
+   Random   3d3   Reagents
+   Random   2d4   PaganReagents
+   Random   1d5+3   Gems
+   Random   1   Eggs   5   
+   Random   2   Ammo
+   Random   1d2   NormalWeapons   
+   Random   1d2   NormalArmor   
+   Random   1d1   MagicWeapons   50
+   Random   1d2   Clothes
+   Random   1d2   Jewelry   
+   Random   1d2   PaganMagicScrolls   10
+   Item   1   Level4map   15
+   Item   1   Level5map   5
+   Stack   1d400+500   GoldCoin
+}
+
+lootgroup 105
+{
+   Item   1   Level5map   25
+   Item   1d1   level6map   6
+   Random   5d8   PaganReagents
+   Random   5d8   Ammo
+   Random   1d5+3   Gems
+   Random   1d2   PaganMagicScrolls   35
+   Random   1d2   Eggs   35
+   Random   1d3   NormalWeapons   
+   Random   1d3   NormalArmor   
+   Random   1d3   MagicWeapons   
+   Random   1d3   Clothes
+   Random   1d3   Jewelry   
+   Random   1d1   Pentagrams   10
+   Random   1d1   Books   5
+   Random   1d1   GMArmor   7
+   Random   1d1   GMWeapon   7
+   Random   1d1   Wonder   Items   1
+   Item   1d1   PowerTome   3
+   Item   1d1   TranscendScroll   7
+   Item   1d1   TranscendScroll   3
+   Item   1d1   vanitytoken   7
+   Item   1d1   vanitytoken   3
+   Item   1d1   vanitytoken   1
+   Stack   2d1000+2500   GoldCoin
+}
+
+lootgroup 106
+{
+   Item   1d4   Level5map   75
+   Item   1d2   level6map   25
+   Random   8d8   PaganReagents   
+   Random   7d8   Ammo
+   Random   1d5+3   Gems
+   Random   1d3   Eggs   80
+   Random   2d4   PaganMagicScrolls   80
+   Random   2d6   NormalWeapons
+   Random   2d6   NormalArmor   
+   Random   2d5   MagicWeapons   
+   Random   2d4   Clothes
+   Random   2d3   Jewelry   
+   Random   2d3   Pentagrams   85
+   Random   1d1   Books   7
+   Random   1d1   GMArmor   12
+   Random   1d1   GMArmor   3
+   Random   1d1   GMWeapon   12
+   Random   1d1   GMWeapon   3
+   Random   1d1   Wonder   Items   1
+   Item   1d1   PowerTome   5
+   Item   1d1   TranscendScroll   10
+   Item   1d1   TranscendScroll   7
+   Item   1d1   TranscendScroll   1
+   Item   1d1   vanitytoken   10
+   Item   1d1   vanitytoken   7
+   Item   1d1   vanitytoken   3
+   Item   1d1   vanitytoken   1
+   Random   1d1   Presents   1
+   Stack   2d2000+7500   GoldCoin
+}
+
+lootgroup 107
+{
+   Item   1   Level5map   10
+   Random   1d3   Circle7Scrolls
+   Random   1d2   Circle8Scrolls   
+   Random   3d6   Reagents
+   Random   5d6   PaganReagents
+   Random   3d8   Ammo
+   Random   1d5+3   Gems
+   Random   1d2   PaganMagicScrolls   35
+   Random   1   Eggs   5
+   Random   1d2   NormalWeapons   
+   Random   1d2   NormalArmor   
+   Random   1d2   NormalWeapons   20
+   Random   1d2   NormalArmor   20
+   Random   1d2   MagicWeapons   
+   Random   1d2   MagicWeapons   20
+   Random   1   Clothes
+   Random   1   Clothes   20
+   Random   1   Jewelry   
+   Random   1   Jewelry   20
+   Random   1   Pentagrams   10
+   Random   1   GMArmor   2
+   Random   1   GMWeapon   2
+   Item   1   PowerTome   1
+   Item   1   TranscendScroll   3
+   Item   1   TranscendScroll   1
+   Item   1   vanitytoken   3
+   Item   1   vanitytoken   1
+   Item   1   vanitytoken   1
+   Stack   2d1000+500   GoldCoin
+}
+
+lootgroup 109
+{
+   Random   2d3   Pentagrams
+}
+
+lootgroup 121
+{
+   Random   1d1   NormalWeapons   10
+   Stack   1d50+20   GoldCoin
+   Random   1d6   gems   10
+   Random   1d2   Junk   10
+}
+
+lootgroup 123
+{
+   Item   1   level1map   1
+   Random   1   Gems
+   Random   1   NormalWeapons   75
+   Random   1   NormalArmor   50
+   Random   1d2   Junk   50
+   Stack   10d10+15   GoldCoin
+}
+
+lootgroup 124
+{
+   Stack   3d5   SulphurousAsh
+   Stack   2d4   VolcanicAsh
+}
+
+lootgroup 125
+{
+   Random   1d6   Reagents
+   Random   1d4   PaganReagents
+   Random   1d3+1   Gems
+}
+
+lootgroup 127
+{
+   Random   1d3+1   Gems
+   Random   2d3   PaganReagents
+   Random   1   NormalWeapons   50
+   Stack   1d400+100   GoldCoin
+}
+
+lootgroup 128
+{
+   Random   2d3   PaganReagents
+   Random   2d5+2   Reagents
+   Random   1   PaganMagicScrolls   5
+}
+
+lootgroup 129
+{
+   Random   2d5   PaganReagents
+   Random   1d1   NormalArmor   
+   Random   1d1   NormalWeapons   
+   Random   1d1   Clothes   25
+   Stack   1d200+20   GoldCoin
+}
+
+lootgroup 131
+{
+   Random   1d2   NormalWeapons   
+   Random   1d2   NormalArmor
+   Random   1   PaganMagicScrolls   15
+   Item   1   Level3map   8
+   Item   1   Level4map   4
+   Random   1   Jewelry   35
+   Random   3   Gems
+   Stack   1d300   GoldCoin
+}
+
+lootgroup 132
+{
+   Random   1   MagicWeapons   65
+   Random   1   NormalWeapons
+   Random   1   PaganMagicScrolls   30
+   Random   3   Gems
+   Item   1   Level3map   8
+   Item   1   Level4map   4
+   Stack   1d550   GoldCoin
+}
+
+lootgroup 133
+{
+   Random   1   Eggs   10
+   Random   1d2   NormalWeapons   80
+   Random   1d2   NormalArmor   80
+   Random   1d2   MagicWeapons   50
+   Item   1   Level4map   15
+   Item   1   Level5map   4   
+   Random   1d2   Clothes   
+   Random   1d3   Jewelry   
+   Random   1d2   PaganMagicScrolls   50
+   Stack   1d200+500   GoldCoin
+}
+
+lootgroup 150
+{
+   Random   100d8   Reagents
+   Random   100d8   PaganReagents   
+   Random   100d8   Ammo
+   Random   100d5+3   Gems
+   Random   1d4   Eggs   
+   Random   2d4   PaganMagicScrolls   
+   Random   2d6   NormalWeapons
+   Random   2d6   NormalArmor   
+   Random   2d5   MagicWeapons   
+   Random   2d4   Clothes
+   Random   2d3   Jewelry
+   Random   2d3   Pentagrams   
+   Random   1d1   Books   10
+   Random   1d1   GMArmor   20
+   Random   1d1   GMArmor   5
+   Random   1d1   GMWeapon   20
+   Random   1d1   GMWeapon   5
+   Random   1d10   Wonder   Items   1
+   Item   3   PowerTome   
+   Item   7   TranscendScroll   
+   Item   7   vanitytoken
+   Item   5   StatPotion
+   Stack   30000   GoldCoin
+   Stack   30000   GoldCoin
+   Random   1d3   ChampionPresents   75
+}
+
+lootgroup 151
+{
+   Random   100d8   Reagents
+   Random   100d8   PaganReagents   
+   Random   100d8   Ammo
+   Random   100d5+3   Gems
+   Random   1d6   Eggs   
+   Random   2d4   PaganMagicScrolls   
+   Random   2d7   NormalWeapons
+   Random   2d7   NormalArmor   
+   Random   2d6   MagicWeapons   
+   Random   2d5   Clothes
+   Random   2d4   Jewelry
+   Random   2d3   Pentagrams   
+   Random   1d1   Books   10
+   Random   1d1   GMArmor   20
+   Random   1d1   GMArmor   5
+   Random   1d1   GMWeapon   20
+   Random   1d1   GMWeapon   5
+   Item   4   PowerTome   
+   Item   10   TranscendScroll   
+   Item   10   vanitytoken
+   Item   6   StatPotion
+   Stack   30000   GoldCoin
+   Stack   30000   GoldCoin
+   Stack   30000   GoldCoin
+   Stack   30000   GoldCoin
+}
+
+lootgroup 180
+{
+   Item   1   Questtoken
+}
+
+lootgroup 181
+{
+   Item   2   Questtoken
+}
+
+lootgroup 182
+{
+   Item   1d3   Questtoken
+}
+
+lootgroup 183
+{
+   Item   1d5   Questtoken
+}
+
+lootgroup 184
+{
+   Item   2d3   Questtoken
+}
+
+lootgroup 198
+{
+   Random   10d1   NormalArmor   100   
+   Random   20d1   Clothes   100
+   Random   20d1   Jewelry   100
+   Random   1d10   GMArmor   100
+}
+
+lootgroup 199
+{
+   Random   40d1   MagicWeapons   100
+   Random   2d10   GMWeapon   100
+   Random   5d1   Pentagrams   50
+}

@@ -10,19 +10,19 @@ include "include/housecheck";
 include "include/jailcheck";
 
 program logofftest( character )
-    // print( "logofftest: " + character.name );
+    //Print( "logofftest: " + character.name );
     if (character.cmdlevel)
-        return 0;
+      return 0;
     elseif (Inncheck(character))
-        return 0;
+      return 0;
     elseif (Housecheck(character))
-		return 0;
+		  return 0;
     elseif (Jailcheck(character))
-		return 0;
+		  return 0;
     elseif (CInt(GetObjProperty(character, "camped"))== 1)
-        EraseObjProperty(character, "camped");
-		return 1;
+      EraseObjProperty(character, "camped");
+		  return 1;
     else
-        return 150;
+      return 150;
     endif
 endprogram

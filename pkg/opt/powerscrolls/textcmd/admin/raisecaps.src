@@ -1,0 +1,99 @@
+use uo;
+
+include "include/attributes";
+include ":gumps:include/gumps";
+include "include/itemutil";
+
+Program tss( who ) 
+
+	var mobile := target(who);
+	if (!mobile)
+		SendSysMessage(who, "Canceled", FONT_NORMAL, 43);
+		return 0;
+	endif
+	
+	if(!GetObjProperty(mobile, "pScrollMatrix"))
+		var newMatrix := {}, i;
+		for(i:=0; i<49; i:=i+1)
+			newMatrix.append(0);
+		endfor
+		SetObjProperty(mobile, "pScrollMatrix", newMatrix);
+	endif
+
+	var matrix := GetObjProperty(mobile, "pScrollMatrix");
+	var gump := GFCreateGump(20, 20, 2, 530);
+
+	// The main gump screen
+	GFResizePic(gump, 20, 20, 9250,720, 530);
+	GFResizePic(gump, 30, 30, 9350, 700, 510);
+	GFResizePic(gump, 260, 20, 9250,240, 40);
+	GFResizePic(gump, 270, 30, 9350, 220, 20);
+	GFTextLine(gump, 310, 30, 43, "Raise Caps on Skills Menu");
+	var y := 70;
+	var line := 17;
+	var i := 0;
+	var x := 100;
+	var name;
+	var colour := 999;
+	var count := 1;
+	var skill;
+	repeat
+	if(count != 49)
+		name := GetAttributeIdBySkillId( count );
+		skill := GetSkillIdByAttributeId( name );
+		skill := CDbl(GetBaseSkillBaseValue( mobile, skill )/10.0);
+	endif
+	if (count == 49)
+		name := ATTRIBUTEID_ALCHEMY;
+		skill := CDbl(GetBaseSkillBaseValue( mobile, SKILLID_ALCHEMY )/10.0);
+	endif
+
+	if (i >= line)
+		x := x + 230;
+		i := 0;
+		y := 70;
+	endif
+
+	colour := 67;
+	GFAddButton(gump, x-40, y, 9026, 9027, 1, count); 
+
+	GFTextLine(gump, x, y, colour, 130+matrix[count]);
+	GFTextLine(gump, x+45, y, colour, name);
+	y := y + 26;
+	i := i + 1;
+	count := count + 1;
+	until (count >= SKILLID_MAX+1);
+
+	GFResizePic(gump, 470, 460, 9350, 260, 90);
+	GFTextLine(gump, 485, 460, 43, "Which skill do you want to raise caps for?");
+
+	var result := GFSendGump(who, gump);
+	var counter := 0, amount;
+	if(counter == 0)
+
+		if(result[0] == 0)	
+			SendSysMessage(who, "Cancelled.");
+			return;
+		endif
+
+		if(result[0] != 0 and result[0] != 100 and result[0] != 999 )
+			var skillName := GetAttributeIdBySkillId(result[0]);
+			SendSysMessage(who, "Your "+skillName+" skill cap is increased by 5, type .showcaps to see your current skillcaps.");
+			
+			matrix[result[0]] := matrix[result[0]]+5;
+			if(matrix[result[0]] > 20)
+				matrix[result[0]] := 20;
+			endif
+			SetObjProperty(mobile, "pScrollMatrix", matrix);
+			
+			PlayObjectCenteredEffectEx(mobile, 0x33EA, 0x1, 10);
+			PlayObjectCenteredEffectEx(mobile, 0x373A, 0x1, 10);
+			PlaySoundEffect(mobile, 0x5C1);
+		endif
+
+
+		counter := 1;
+	endif
+
+
+endprogram

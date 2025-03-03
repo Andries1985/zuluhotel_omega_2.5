@@ -46,7 +46,7 @@ program field_control( item )
 			if(!mobile.multi)
 				PerformAction( mobile , ANIM_HIT );
 				PlayObjectCenteredEffectEx( mobile, 0x371A, 0 , 10, 0, 5);
-				ApplyElementalDamageNoResist( mobile, creator, Cint(ResistedDefinedSkillGain( creator , mobile , dmg , diff , points )), element );
+				ApplyElementalDamage( creator, mobile, 4, dmg, element );
 			endif
 		endforeach
 		Sleepms( DELAY_BETWEEN_HITS_MS );
