@@ -680,8 +680,6 @@ function IsProhibitedByClasse( who , item )
 	elseif( GetObjProperty( who , CLASSEID_CRAFTER ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_CRAFTER ) )
 			ret := 1;
-		//elseif( GetObjProperty( item , "str" ) )
-			//ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_CRAFTER ) )
 			ret := 1;
 		endif
@@ -690,10 +688,10 @@ function IsProhibitedByClasse( who , item )
 			ret := 1;
 		elseif( GetObjProperty( item , "str" ) )
 			ret := 1;
-		//elseif( GetObjProperty( item , "dex" ) )
-		//	ret := 1;
-		//elseif( GetObjProperty( item , "ArBonus" ) )
-			//ret := 1;
+		elseif( GetObjProperty( item , "dex" ) )
+			ret := 1;
+		elseif( GetObjProperty( item , "ArBonus" ) )
+			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MAGE ) )
 			ret := 1;
 		endif
@@ -702,8 +700,8 @@ function IsProhibitedByClasse( who , item )
 			ret := 1;
 		elseif( GetObjProperty( item , "str" ) )
 			ret := 1;
-		//elseif( GetObjProperty( item , "ArBonus" ) )
-			//ret := 1;
+		elseif( GetObjProperty( item , "ArBonus" ) )
+			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MYSTIC_ARCHER ) )
 			ret := 1;
 		endif
@@ -714,7 +712,9 @@ function IsProhibitedByClasse( who , item )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_PALADIN ) )
 			ret := 1;
-		endif
+		elseif( item.objtype == 0x75b2)
+			ret :=1;
+		endif 
 	elseif( GetObjProperty( who , CLASSEID_RANGER ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_RANGER ) )
 			ret := 1;
