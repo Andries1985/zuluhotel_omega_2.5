@@ -47,9 +47,6 @@ program switchguildleader(who)
 		GFAddBUtton(gump, 50, 330, 2128, 2129, 1, 1000);
 		GFAddBUtton(gump, 335, 330, 2119, 2120, 1, 0);
 
-		GFTextline(gump, 100, 80, 0, "Choose a member at random");
-		GFRadiobutton(gump, 60, 80, 210, 211, 1, 999); 
-
 		var y := 120;
 		var maxpage := 7;
 		var count := 0;
@@ -82,12 +79,6 @@ program switchguildleader(who)
 			// selected a member
 			if (data.keys[2] != 999)
 				newmaster := guild.members[data.keys[2]];
-
-			// selected random member
-			elseif (data.keys[2] > 1)
-				repeat
-				newmaster := guild.members[RandomInt(guild.members.size())+1];
-				until (newmaster.serial != who.serial);			
 			endif
 
 			guild.setprop("GuildMaster", newmaster.serial);
