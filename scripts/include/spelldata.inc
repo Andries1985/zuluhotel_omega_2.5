@@ -895,7 +895,6 @@ endfunction
 
 function Resisted( caster , cast_on , circle , dmg )
 
-	Print("In the resist function");
 	if( cast_on.dead ) return 0; endif
 	if( caster.dead ) return 0; endif
 
