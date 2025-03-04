@@ -9,9 +9,11 @@ const BASE_SPELLID := 181;
 
 program SongBook( who, book )
 	
-	if(!GetObjProperty(who,"IsBard") && !GetObjProperty(who, "IsBladesinger"))	
-		SendSysMessage(who,"Only Bards or Bladesingers can use this!");
-		return;
+	if(!who.cmdlevel)
+		if(!GetObjProperty(who,"IsBard") && !GetObjProperty(who, "IsBladesinger"))	
+			SendSysMessage(who,"Only Bards or Bladesingers can use this!");
+			return;
+		endif
 	endif
 	
 	if( (book.container).IsA(POLCLASS_CORPSE) )
