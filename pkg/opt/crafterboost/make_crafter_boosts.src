@@ -130,14 +130,14 @@ function MakeUpgrade(character, start_material, smithyretort)
 		sendDiff( character , final_diff );
 
 		PlaySoundEffect(character, SFX_1C9);
-		PlayStationaryEffectEX(smithyretort.x, smithyretort.y, smithyretort.z-1,"britannia", 0x33F6, 2, 10, mat2_color, 3);
+		PlayStationaryEffectEX(smithyretort.x, smithyretort.y, smithyretort.z-1, smithyretort.realm, 0x33F6, 2, 10, mat2_color, 3);
 		Sleep(2);
 		PlaySoundEffect(character, SFX_1C9);
-		PlayStationaryEffectEX(smithyretort.x, smithyretort.y, smithyretort.z-1,"britannia", 0x33F6, 2, 10, mat2_color, 3);
+		PlayStationaryEffectEX(smithyretort.x, smithyretort.y, smithyretort.z-1, smithyretort.realm, 0x33F6, 2, 10, mat2_color, 3);
 		Sleep(2);
 		if( !GetObjProperty( character, CLASSEID_CRAFTER ))
 			PlaySoundEffect(character, SFX_1C9);
-			PlayStationaryEffectEX(smithyretort.x, smithyretort.y, smithyretort.z,"britannia", 0x33F6, 2, 10, mat2_color, 3);
+			PlayStationaryEffectEX(smithyretort.x, smithyretort.y, smithyretort.z, smithyretort.realm, 0x33F6, 2, 10, mat2_color, 3);
 			Sleep(2);
 		endif
 

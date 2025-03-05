@@ -27,8 +27,8 @@ program crithit(attacker, defender, weapon, armor, basedamage, rawdamage)
 	var warrior := GetObjProperty(attacker, "IsWarrior");
 	var crithit := 0;
 	if(warrior)
-		var critchance := 5*warrior;
-		if((Random(100)+1) <= critchance)
+		var critchance := 5 * warrior;
+		if((Random(100) + 1) <= critchance)
 			crithit := 1;
 		endif
 	endif
@@ -36,7 +36,7 @@ program crithit(attacker, defender, weapon, armor, basedamage, rawdamage)
 	rawdamage := RecalcDmg( attacker , defender , weapon , armor , basedamage );
 	
 	if(crithit)
-		rawdamage := CInt(rawdamage * 1.50);
+		rawdamage := CInt(rawdamage * 2);
 		PrintTextAbovePrivate( attacker, "Critical hit!", attacker, _DEFAULT_TEXT_FONT, 1172 );
 	endif
 
