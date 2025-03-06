@@ -714,7 +714,7 @@ function CheckEquipmentDamage(who, item);
 		equip_elem := combat_settingscfg["Armor"];
 	endif
 
-	if (RandomInt(100) < equip_elem.WearChance )
+	if (RandomInt(800) < equip_elem.WearChance )
 		item.hp -= 1;
 		IncRevision(item);
 		if ( item.hp <= 1 )
