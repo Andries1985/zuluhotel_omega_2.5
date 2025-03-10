@@ -14,7 +14,7 @@ var fishtype;
 if (thisone<50 )
 	fishtype := Random(UOBJ_FISH_END - UOBJ_FISH_START);
 	fishtype := UOBJ_FISH_START + fishtype;
-elseif (thisone<120)
+elseif (thisone<100)
 	fishtype := Random(UOBJ_SFISH_END - UOBJ_SFISH_START);
 	fishtype := UOBJ_SFISH_START + fishtype;
 elseif (thisone<130)
