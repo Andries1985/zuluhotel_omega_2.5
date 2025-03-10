@@ -14,7 +14,7 @@ var fishtype;
 if (thisone<50 )
 	fishtype := Random(UOBJ_FISH_END - UOBJ_FISH_START);
 	fishtype := UOBJ_FISH_START + fishtype;
-elseif (thisone<120)
+elseif (thisone<100)
 	fishtype := Random(UOBJ_SFISH_END - UOBJ_SFISH_START);
 	fishtype := UOBJ_SFISH_START + fishtype;
 elseif (thisone<130)
@@ -24,7 +24,6 @@ return fishtype;
 endfunction
 
 function createfish( who,fish,fish_amount, equipped )
-
 
 	if (equipped==1 or fish == 0xA368 or fish == 0xA369 or fish == 0xA36A or fish == 0xA36B or fish == 0xA36C or fish == 0xA36D or fish == 0xA36E or fish == 0xA36F or fish == 0xA370 )
 		CreateItemInBackpack(who, cint(fish), cint(fish_amount));
