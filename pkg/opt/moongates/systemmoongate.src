@@ -15,8 +15,8 @@ use basic;
 include ":gumps:gumps";
 include ":gumps:gumps_ex";
 
-const TEXT_COLOR_TITLE := 1086;
-const TEXT_COLOR_GATE := 1764;
+const TEXT_COLOR_TITLE := 52;
+const TEXT_COLOR_GATE := 1086;
 
 // these are also defined in the moongates.inc.
         var moongates := { 
