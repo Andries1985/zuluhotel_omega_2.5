@@ -12,8 +12,8 @@ include ":staff:include/staff";
 include "include/math"; // Used for Mod
 
 const TEXTSTARTLOCY :=  70;  // The location of the top of the gump
-const TEXT_COLOR_TITLE := 1764;
-const TEXT_COLOR_GATE := 1764;
+const TEXT_COLOR_TITLE := 52;
+const TEXT_COLOR_GATE := 1086;
 
 var layout := array(      // The layout of the gump with text notes to be added later
 "page 0",
@@ -47,17 +47,17 @@ program textcmd_go( who )
 
     GFGumpPic(res, 50, 50, 1250);
     GFTextLine(res, 175, 100, TEXT_COLOR_TITLE, "Select Your Facet");
-    GFTextLine(res, 125, 125, TEXT_COLOR_TITLE, "Felucca");
+    GFTextLine(res, 125, 125, TEXT_COLOR_GATE, "Felucca");
     GFAddButton(res, 225, 130, 2360, 2361, GF_CLOSE_BTN, 2);
-    GFTextLine(res, 125, 150, TEXT_COLOR_TITLE, "Trammel");
+    GFTextLine(res, 125, 150, TEXT_COLOR_GATE, "Trammel");
     GFAddButton(res, 225, 155, 2360, 2361, GF_CLOSE_BTN, 4);
-    GFTextLine(res, 125, 175, TEXT_COLOR_TITLE, "Malas");
+    GFTextLine(res, 125, 175, TEXT_COLOR_GATE, "Malas");
     GFAddButton(res, 225, 180, 2360, 2361, GF_CLOSE_BTN, 6);
-    GFTextLine(res, 125, 200, TEXT_COLOR_TITLE, "Ilshenar");
+    GFTextLine(res, 125, 200, TEXT_COLOR_GATE, "Ilshenar");
     GFAddButton(res, 225, 205, 2360, 2361, GF_CLOSE_BTN, 8);
-    GFTextLine(res, 125, 225, TEXT_COLOR_TITLE, "Tokuno");
+    GFTextLine(res, 125, 225, TEXT_COLOR_GATE, "Tokuno");
     GFAddButton(res, 225, 230, 2360, 2361, GF_CLOSE_BTN, 10);
-    GFTextLine(res, 125, 250, TEXT_COLOR_TITLE, "Termur");
+    GFTextLine(res, 125, 250, TEXT_COLOR_GATE, "Termur");
     GFAddButton(res, 225, 255, 2360, 2361, GF_CLOSE_BTN, 12);
     
     var datas := GFSendGump(who, res);
