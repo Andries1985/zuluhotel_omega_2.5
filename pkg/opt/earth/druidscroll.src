@@ -6,11 +6,14 @@ include "include/spelldata";
 
 program use_scroll( who , scroll )
 
-	if (GetObjProperty(who, CLASSEID_MAGE))
-	elseif (GetObjProperty(who, CLASSEID_POWERPLAYER))
-	else
-		SendSysMessage(who,"Only Mages and Powerplayers can use this!");
-		return;
+	if(!who.cmdlevel)
+		if (GetObjProperty(who, CLASSEID_MAGE))
+		elseif (GetObjProperty(who, CLASSEID_POWERPLAYER))
+		elseif (GetObjProperty(who, CLASSEID_MYSTIC_ARCHER))
+		else
+			SendSysMessage(who,"Only Mages, Powerplayers or Mystic Archers can use this!");
+			return;
+		endif
 	endif
 	
 	if (!ReserveItem(scroll))

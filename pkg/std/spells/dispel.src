@@ -59,11 +59,11 @@ program dispel ( parms, spell_id )
 	endif
 
 	var magery := ModifyWithMagicEfficiency( caster , GetEffectiveSkill(caster, SKILLID_MAGERY) );
-	//if( !fromhit )
+	if( !fromhit )
 		//Print($"Checking Immunities");
-	//	detach();
-	//	cast_on := Reflected( caster , cast_on , circle );
-	//endif
+		detach();
+		cast_on := Reflected( caster , cast_on , circle );
+	endif
 	PlayObjectCenteredEffect(cast_on, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 	
 	var summoned := GetObjProperty( cast_on, "summoned" );
@@ -131,13 +131,9 @@ program dispel ( parms, spell_id )
 		endif
 	else
 		if( !fromhit )
-			if( caster == cast_on )
-
-			else
-				var immunity := IsProtected( caster, cast_on, circle );
-				if( immunity == IMMUNED )
-					return;
-				endif
+			var immunity := IsProtected( caster, cast_on, circle );
+			if( immunity == IMMUNED )
+				return;
 			endif
 		endif
 		WipeMods( cast_on );

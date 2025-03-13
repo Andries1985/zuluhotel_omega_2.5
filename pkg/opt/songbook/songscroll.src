@@ -5,9 +5,11 @@ include "include/spelldata";
 
 program use_scroll( who , scroll )
 
-	if(!GetObjProperty(who,"IsBard") && !GetObjProperty(who,"IsBladesinger") )	
-		SendSysMessage(who,"Only Bards can use this!");
-		return;
+	if(!who.cmdlevel)
+		if(!GetObjProperty(who,"IsBard") && !GetObjProperty(who,"IsBladesinger") )	
+			SendSysMessage(who,"Only Bards or Bladesingers can use this!");
+			return;
+		endif
 	endif
 
 	if (!GetObjProperty(who,"cwarring") and GetObjProperty(scroll, "CW"))

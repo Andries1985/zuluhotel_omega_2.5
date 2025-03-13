@@ -1,0 +1,101 @@
+use uo;           // For basic Ultima Online functions
+use os;           // For operating system-related functions like SplitWords
+use guilds;       // Assuming a guilds package exists for guild management
+
+include "include/client";
+include ":gumps:include/gumps";
+include ":guilds:guildconstants";
+
+program switchguildleader(who)
+
+    // Check if the executor has sufficient staff privileges (e.g., command level 3 or higher)
+    if(who.cmdlevel < 5)
+        SendSysMessage(who, "You do not have permission to use this command.");
+        return 0;
+    endif
+
+    var mobile := target(who);
+
+	if (!mobile)
+		SendSysMessage(who, "Canceled", FONT_NORMAL, 43);
+		return 0;
+	endif
+
+	var guild := mobile.guild;
+
+	if (!mobile.connected)
+		guild.setprop("GuildMaster", guild.members[1].serial);
+
+		foreach member in (guild.members)
+			if (member.serial != mobile.serial)
+				SendSysMessage(member, member.name+" is now the Guild Master!", 3, 53);
+			else
+				SendSysMessage(member, "You are now the Guild Master!", 3, 53);
+			endif
+		endforeach
+		return 1;
+	else
+		var gump := GFCreateGump(20, 20, 400, 350);
+		GFResizePic(gump, 20, 20, 9260, 400, 350);
+		GFResizePic(gump, 30, 30, 9350, 380, 290);
+		GFResizePic(gump, 30, 321, 9350, 380, 39);
+
+		GFResizePic(gump, 118, 35, 9200, 200, 25);
+		GFTextLine(gump, 135, 37, 53, "Choose the new Guild Leader");
+
+		GFTextLine(gump, 140, 330, 0, "Hand over guild leadership?");
+		GFAddBUtton(gump, 50, 330, 2128, 2129, 1, 1000);
+		GFAddBUtton(gump, 335, 330, 2119, 2120, 1, 0);
+
+		var y := 120;
+		var maxpage := 7;
+		var count := 0;
+		var page := 2;
+		GFPage(gump, 1);
+		GFTextLine(gump, 200, 295, 53, "Page 1");
+		foreach person in (guild.members)
+			if (count >= maxpage)
+				GFAddButton(gump, 260, 296, 5601, 5605, 0, page);
+				GFPage(gump, page);
+				page := page + 1;
+				GFTextLine(gump, 200, 295, 53, "Page "+(page-1));
+				GFAddButton(gump, 163, 296, 5603, 5607, 0, page-2);
+				y := 120;
+			endif
+
+			if (person != who)
+				GFTextline(gump, 100, y, 0, person.name);
+				GFRadiobutton(gump, 60, y, 210, 211, 0, _person_iter); 
+				y := y + 25;
+				count := count + 1;
+			endif
+		endforeach
+
+		var data := GFSendGump(who, gump);
+
+		if (data[0] == 1000)
+
+			var newmaster;
+			// selected a member
+			if (data.keys[2] != 999)
+				newmaster := guild.members[data.keys[2]];
+			endif
+
+			guild.setprop("GuildMaster", newmaster.serial);
+			SendSysMessage(who, newmaster.name+" is now the Guild Master.", 3, 43);
+
+			foreach member in (guild.members)
+				if (member.serial != who.serial && member.serial != newmaster.serial )
+					SendSysMessage(member, newmaster.name+" is now the Guild Master!", 3, 53);
+				endif
+				if (member.serial == newmaster.serial)	
+					SendSysMessage(member, "You are now the Guild Master!", 3, 53);
+				endif
+			endforeach
+			return 1;
+		endif
+	endif
+
+	return 0; 
+
+endprogram

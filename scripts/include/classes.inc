@@ -256,14 +256,14 @@ function GetClasseSkills( classeid )
 						 SKILLID_MEDITATION	};
 
 		CLASSEID_PALADIN:
-				return { SKILLID_SWORDSMANSHIP	,
-						 SKILLID_PARRY	,
-						 SKILLID_TACTICS	,
+				return { SKILLID_MACEFIGHTING, 
+						 SKILLID_PARRY, 
+						 SKILLID_SWORDSMANSHIP,
+						 SKILLID_TACTICS ,
 						 SKILLID_MAGERY	,
-						 SKILLID_EVALINT		,
+						 SKILLID_EVALINT ,
 						 SKILLID_MEDITATION	,
-						 SKILLID_MAGICRESISTANCE,
-						 SKILLID_HIDING	};
+						 SKILLID_MAGICRESISTANCE};
 
 		CLASSEID_RANGER:		
 				return { SKILLID_ANIMALLORE	,
@@ -714,6 +714,8 @@ function IsProhibitedByClasse( who , item )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_PALADIN ) )
 			ret := 1;
+		elseif( item.objtype == 0x75b2)
+			ret :=1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_RANGER ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_RANGER ) )

@@ -90,11 +90,13 @@ var GreaterSpellData := {
 
 program codexdamnorum(who, tome)
 
-	if (GetObjProperty(who, CLASSEID_MAGE))
-	elseif (GetObjProperty(who, CLASSEID_POWERPLAYER))
-	else
-		SendSysMessage(who,"Only Mages and Powerplayers can use this!");
-		return;
+	if(!who.cmdlevel)
+		if (GetObjProperty(who, CLASSEID_MAGE))
+		elseif (GetObjProperty(who, CLASSEID_POWERPLAYER))
+		else
+			SendSysMessage(who,"Only Mages and Powerplayers can use this!");
+			return;
+		endif
 	endif
 	
 	Set_script_option( SCRIPTOPT_NO_RUNAWAY , 1 );

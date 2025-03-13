@@ -349,7 +349,7 @@ program set_player_multiplierss( who )
 	GFTextLine( 50, 90 , 0  , "Fencing" 	);
 	GFTextLine( 50, 110, 0  , "Healing"	);
 	GFTextLine( 50, 130, 0  , "Mace Fighting"	);
-	GFTextLine( 50, 150, 0  , "Parrying"	);
+	GFTextLine( 50, 150, 0  , "Parry"	);
 	GFTextLine( 50, 170, 0  , "Swordsmanship"	);
 	GFTextLine( 50, 190, 0  , "Tactics"	);
 	GFTextLine( 50, 210, 0  , "Wrestling"	);

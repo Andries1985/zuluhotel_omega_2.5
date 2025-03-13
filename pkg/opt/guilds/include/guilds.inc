@@ -1,4 +1,5 @@
 use util;
+use guilds;
 
 include ":gumps:include/gumps";
 include "guildconstants";

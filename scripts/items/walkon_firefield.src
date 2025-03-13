@@ -75,7 +75,7 @@ program walkon_firefield( who, item )
 		while ((who.x == item.x) && (who.y == item.y))
 			var dmg := RandomDiceStr( power + "d8" );
 			PerformAction( who , ANIM_HIT );
-			ApplyElementalDamageNoResist( who,creator,Cint(ResistedDefinedSkillGain( creator , who , dmg , diff , points )),element );
+			ApplyElementalDamageNoResist( who, creator, Cint(ResistedDefinedSkillGain( creator , who , dmg , diff , points )), element );
 			sleepms(500);
 		endwhile
 	endif

@@ -388,10 +388,12 @@ else
 	GFTextLine(gump, 120, 280, 78, "Purchase Guild Uniform");
 	GFAddButton(gump, 90, 280, 9026, 9027, 1, 40);
 		
+
 	if (who.guild.getprop("GuildMaster") == who.serial)
 		GFTextLine(gump, 360, 100, 78, "Guild Master Functions");
 		GFAddButton(gump, 330, 100, 9026, 9027, 1, 45);
 	endif
+
 
 	GFHTMLArea(gump, 90, 320, 420, 150, info ,1,1 );
 	
