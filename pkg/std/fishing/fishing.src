@@ -49,10 +49,11 @@ program use_fishpole( character , pole )
 		return 0;
 	endif
 
-	if(character.multi)
-		SendSysMessage(character, "You can't fish from a house.");
-		return 0;
-	endif	
+	//Cant sell raw fish, fish are cheap, allowing fishing from houses again.
+	// if(character.multi)
+	// 	SendSysMessage(character, "You can't fish from a house.");
+	// 	return 0;
+	// endif	
 
 	if( !CheckLosAt(character, use_on.x, use_on.y, use_on.z) )
 		SendSysMessage(character, "You can't see that.");
