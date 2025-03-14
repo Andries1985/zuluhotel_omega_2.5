@@ -43,7 +43,7 @@ program textcmd_go( who )
   //  return;
   //else
     var res := GFCreateGump(50, 50, 320, 400);
-  	GFMovable(res, 0);
+  	GFMovable(res, 1);
 
     GFGumpPic(res, 50, 50, 1250);
     GFTextLine(res, 175, 100, TEXT_COLOR_TITLE, "Select Your Facet");
