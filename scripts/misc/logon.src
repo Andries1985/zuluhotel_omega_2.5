@@ -84,7 +84,7 @@ program logon( who )
 		who.concealed := 0;
 		Broadcast( who.name + " has arrived!");
 	else
-		Broadcast( who.name + "has come online and is here to help!");
+		Broadcast( who.name + " has come online and is here to help!");
 	endif
 	
 

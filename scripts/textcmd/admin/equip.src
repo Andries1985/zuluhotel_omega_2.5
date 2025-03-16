@@ -37,59 +37,75 @@ function MountNPC(who, npc, mount)
 	var mounttype := 0;
 
 	case (mount.graphic)
-		0xcc: //dark brown/horse
-			mounttype := 0x3ea2;
-		0xc8: //lightbrown/horse2
-			mounttype := 0x3e9f;
-		0xe2: //light grey/horse3
-			mounttype := 0x3ea0;
-		0xe4: //greybrown/horse4
-			mounttype := 0x3ea1;
-		0xdc: //Llama:
-			mounttype := 0x3ea6;
-		0xd2: //desert
-			mounttype := 0x3ea3;
-		0xda: //frenzied
-			mounttype := 0x3ea4;
-		0xdb: //forest
-			mounttype := 0x3ea5;
+		0xcc:	mounttype := 0x3ea2;	//dark brown/horse
+		0xc8:	mounttype := 0x3e9f;	//lightbrown/horse2
+		0xe2:	mounttype := 0x3ea0;	//light grey/horse3
+		0xe4: 	mounttype := 0x3ea1;	//greybrown/horse4
+		0xdc: 	mounttype := 0x3ea6;	//Llama
+		0xd5:	mounttype := 0x3ec5;	//Polar Bear
+		0xd2: 	mounttype := 0x3ea3;	//desert
+		0xda: 	mounttype := 0x3ea4;	//frenzied
+		0xdb:	mounttype := 0x3ea5;	// Forest Ostard
+		0x75: 	mounttype := 0x3ea8;	// Silver Steed
+		0x74:	mounttype := 0x3EA7;	// Nightmare 1 - Lightest
+		0xB1:	mounttype := 0x3EA7;	// Nightmare 2 - Darker
+		0xB2:	mounttype := 0x3EB6;	// Nightmare 3 - Darker
+		0xB3:	mounttype := 0x3EB7;	// Nightmare 4 - Darkest
+		0x72:	mounttype := 0x3EA9;	// Dark Steed
+		0xBE:	mounttype := 0x3e9e;	// Fire Steed
+		0x73:	mounttype := 0x3eaa;	// Ethereal Horse
+		0xAA:	mounttype := 0x3eab;	// Ethereal Llama
+		0xAB:	mounttype := 0x3eac;	// Ethereal Ostard
+		0xC3:	mounttype := 0x3e97;	// Ethereal Giant Beetle
+		0xC2:	mounttype := 0x3e98;	// Ethereal Swamp Dragon
+		0xC1:	mounttype := 0x3e9a;	// Ethereal Ridgeback
+		0xBF:	mounttype := 0x3E9C;	// Ethereal Kirin
+		0xC0:	mounttype := 0x3E9D;	// Ethereal Unicorn
+		//0x78:	mounttype := 0x3eaf;	// War Horse (Blood Red)		- No Corresponding Mount in NPCDESC.cfg
+		//0x79:	mounttype := 0x3eb0;	// War Horse (Light Green)		- No Corresponding Mount in NPCDESC.cfg
+		//0x77:	mounttype := 0x3eb1;	// War Horse (Light Blue)		- No Corresponding Mount in NPCDESC.cfg
+		//0x90:	mounttype := 0x3eb3;	// Sea Horse (Medium Blue)		- No Corresponding Mount in NPCDESC.cfg
+		0x84:	mounttype := 0x3ead;	// Kirin
+		//0x76:	mounttype := 0x3eb2;	// War Horse (Purple)			- No Corresponding Mount in NPCDESC.cfg
+		0x7A:	mounttype := 0x3eb4;	// Unicorn
+		0xBB:	mounttype := 0x3eb8;	// Ridgeback
+		0xBC:	mounttype := 0x3eba;	// Ridgeback, Savage
 
-		0x23d: //vortex
-			mounttype := 0x3ea7;
-		0xd5:  //polar
-			mounttype := 0x03f0f;
-		0x3c: //drake1
-			mounttype := 0x03f0e;
-        177:  mounttype := 0x3ea7;  // Nightmare
-        117:  mounttype := 0x3ea8;  // Silver Steed
-        114:  mounttype := 0x3ea9;  // Nightmare
-        115:  mounttype := 0x3eaa;  // Ethereal Horse
-        170:  mounttype := 0x3eab;  // Ethereal Llama
-        171:  mounttype := 0x3eac;  // Ethereal Ostard
-        0xC3:  mounttype := 0x3e97;  // Ethereal Giant Beetle
-        0xC2:  mounttype := 0x3e98;  // Ethereal Swamp Dragon
-        0xC1:  mounttype := 0x3e9a;  // Ethereal Ridgeback
-        0xBE:  mounttype := 0x3e9e;  // Firesteed
-        0xBF:  mounttype := 0x3e9c;  // Ethereal Kirin
-        0xC0:  mounttype := 0x3e9d;  // Ethereal Unicorn
-        //0xC8:  mounttype := 0x3e9f;  // Light Brown horse
-        120:  mounttype := 0x3eaf;  // War Horse (Blood Red)
-        121:  mounttype := 0x3eb0;  // War Horse (Light Green)
-        119:  mounttype := 0x3eb1;  // War Horse (Light Blue)
-        144:  mounttype := 0x3eb3;  // Sea Horse (Medium Blue)
-        116:  mounttype := 0x3eb5;  // Nightmare
-        178:  mounttype := 0x3eb6;  // Nightmare 4
-        132:  mounttype := 0x3ead;  // Kirin
-        118:  mounttype := 0x3eb2;  // War Horse (Purple)
-        122:  mounttype := 0x3eb4;  // Unicorn
-        //116:  mounttype := 0x3eb5;  // Nightmare
-        179:  mounttype := 0x3eb7;  // Dark Steed
-        187:  mounttype := 0x3eb8;  // Ridgeback
-        188:  mounttype := 0x3eba;  // Ridgeback, Savage
-        793:  mounttype := 0x3ebb;  // Skeletal Mount
-        791:  mounttype := 0x3ebc;  // Beetle
-        794:  mounttype := 0x3ebd;  // SwampDragon
-        799:  mounttype := 0x3ebe;  // Armored Swamp Dragon
+		0xF3:	mounttype := 0x3e94;	// Hai Riyo
+		0x114:	mounttype := 0x3e90;	// Raptalon
+		0x115:	mounttype := 0x3e91;	// CuShidhe aka Storm Wolf
+		0x11C:	mounttype := 0x3e92;	// Mondain's Steed
+		0x319:	mounttype := 0x3ebb;	// Skeletal Mount
+		0xA9:	mounttype := 0x3e95;	// Giant Beetle
+		//0x317:	mounttype := 0x3ebc;	// Giant Beetle 2			- No Corresponding Mount in NPCDESC.cfg (Same graphic as other beetle)
+		0x31A:	mounttype := 0x3ebd;	// SwampDragon
+		0x31F:	mounttype := 0x3ebe;	// Armored Swamp Dragon
+		
+		0x1B0:	mounttype := 0x3EC6;	// Boura
+		0x4E6:	mounttype := 0x3EC7;	// Tiger
+		0x4E7:	mounttype := 0x3EC8;	// Ethereal Tiger
+		0x42D:	mounttype := 0x3EC9;	// Hell Hound
+		//0x579:	mounttype := 0x3ECA;	// Tarantula				- No Corresponding Mount in NPCDESC.cfg (No Graphic)
+		0x57F:	mounttype := 0x3ECB;	// Lasher - a rainbow highlighted unicorn.
+		0x580:	mounttype := 0x3ECD;	// Palomino
+		0x582:	mounttype := 0x3ECC;	// Windrunner
+		//0x59A:	mounttype := 0x3ECE;	// Serpentine Dragon		- No Corresponding Mount in NPCDESC.cfg (No Graphic)
+		0x5A0:	mounttype := 0x3ECF;	// Peacock
+		0x5A1:	mounttype := 0x3ED0;	// Skeletal Hound
+		0x5E6:	mounttype := 0x3ED1;	// Coconut Crab
+		0x5F6:	mounttype := 0x3ED2;	// War Boar
+		0x5F7:	mounttype := 0x3ED3;	// Capybara
+		0x60A:	mounttype := 0x3ED4;	// Newfoundland
+		0x60B:	mounttype := 0x3ED5;	// Malamute
+		0x60C:	mounttype := 0x3ED6;	// Great Dane
+		0x60D:	mounttype := 0x3ED7;	// Saint Bernard
+		0x60F:	mounttype := 0x3ED8;	// Russian Terrier
+		0x610:	mounttype := 0x3ED9;	// Rottweiler
+		//0x590:	mounttype := 0x3EDA;	// Frost Mite				- No Corresponding Mount in NPCDESC.cfg (Converts to horse when ridden)
+	
+		//0x9:	mounttype := 0x3f6f;	// Demon (looks awful)			- No idea where this comes from
+		//0x3E9B	- Set as mounts, but no corresponding graphics
+		//0x3EB5	- Set as mounts, but no corresponding graphics
 	endcase
 
 

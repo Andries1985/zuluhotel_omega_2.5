@@ -15,7 +15,6 @@ const TEXTSTARTLOCY :=  70;  // The location of the top of the gump
 var layout := array(      // The layout of the gump with text notes to be added later
 "page 0",
 "nodispose",
-"nomove",
 "gumppic 50 0 1250", // background
 
 "text 120 59 300 0",
