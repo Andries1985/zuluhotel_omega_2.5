@@ -5,10 +5,11 @@ include "include/client";
 include ":gumps:include/gumps";
 include ":gumps:include/gumps_ex";
 include "include/spelldata";
+include ":versebook:include/versefunctions";
 
 var earth, fire, water, air, necro, poison, physical, freeaction, holy;
 var healing, magicefficiency;
-var magicimmunity, magicreflection, tempmagicimmunity, tempmagicreflection, temppoisonimmunity;
+var magicimmunity, magicreflection, tempmagicimmunity, tempmagicreflection, temppoisonimmunity, bardicefficiency;
 
 program Prots(who)
 
@@ -44,6 +45,8 @@ GFTextLine(gump, 40, 215, 0,  "Magic Efficiency");
 GFTextLine(gump, 200, 215, GetTextColourPercent(magicefficiency),magicefficiency+"%");
 GFTextLine(gump, 270, 190, 0,  "Free Action");
 GFTextLine(gump, 430, 190, GetTextColourOnOff(freeaction),freeaction);
+GFTextLine(gump, 270, 215, 0,  "Bardic Efficiency");
+GFTextLine(gump, 430, 215, GetTextColourPercent(bardicefficiency),bardicefficiency+"%");
 
 GFResizePic(gump, 35, 255, 9350, 470, 130);
 GFTextLine(gump, 40, 260, 0,  "Permanent Magic Immnunity (Blackrock)");
@@ -77,6 +80,7 @@ function CalculateImmunities(who)
 
 	healing := CInt(GetObjProperty(who, "HealingIncrease"));
 	magicefficiency := GetMagicEfficiencyPenalty( who );
+	bardicefficiency := GetBardicEfficiencyProts( who );
 
 	if (magicefficiency < 0)
 		magicefficiency := abs(magicefficiency);
