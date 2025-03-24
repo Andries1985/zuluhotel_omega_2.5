@@ -118,6 +118,9 @@ function HitWithBoulder(who, targ, damage, range)
 			PlayMovingEffectXYZEx( targ.x-10, targ.y-10, targ.z+10, targ.x, targ.y, targ.z, targ.realm, GFX_EFFECT, 6, 10);
 			sleep(1);
 			PlaySoundEffect(targ, SOUND_EFFECT);
+			if(!targ.isA(POLCLASS_NPC))
+				damage := (damage/2);
+			endif
 			ApplyBardicDamage(who, targ, element, damage);
 			var rock := CreateItemAtLocation( targ.x, targ.y, targ.z, GFX_EFFECT, 1, targ.realm );
 			var z := rock.z;
