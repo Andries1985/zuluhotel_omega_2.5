@@ -46,6 +46,11 @@ program magiclock( parms, spell_id )
 			return;
 		endif
 	endif
+	
+	if( PROPID_CHEST_SPAWNPOINT_CHEST )
+		SendSysMessage(caster,"You cannot lock that!");
+		return;
+	endif
 
 	if( !cast_on.isa( POLCLASS_LOCKABLE ) )
 		SendSysMessage( caster , "That can't be locked." );

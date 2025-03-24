@@ -106,7 +106,7 @@ program CheckPoint( point )
 			"Container":	ret := CreateSpawnPointContainer( point, pt_data );
 			"Custom NPC":   ret := CreateSpawnPointNpc( point, pt_data[2], pt_data );
 		endcase
-	
+		
 		if( ret == error )
 			if( ret.errortext["Invalid spawning location."] )
 				pt_data[7] := 1;
@@ -228,6 +228,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 	endif
 	
 	SetObjProperty( chest, PROPID_CHEST_TREASURE_CHEST, 1 );
+	SetObjProperty( chest, PROPID_CHEST_SPAWNPOINT_CHEST, 1 );
 	
 	var lootdata	:= SplitWords(pt_data[5]);
 	var lootgroup	:= Cint(lootdata[1]);
@@ -257,6 +258,8 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 	if( !magic_chance )
 		magic_level := 0;
 	endif
+	//Print("Creating loot for chest: "+chest.serial);
+	//Print("Lootgroup: "+lootgroup+" Magic Chance: "+magic_chance+" Magic Level: "+magic_level);
 	
 	MakeLoot( chest, lootgroup, magic_chance, magic_level );
 	
@@ -283,19 +286,22 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 			x := point.x + RandomInt((appear*2)+1) - appear;
 			y := point.y + RandomInt((appear*2)+1) - appear;
 		endif
-		
+
 		count := count + 1;
 	endwhile
 	
 	if( count > 10 )
 		DestroyItem(chest);
+
 		return 0;
 	endif
 	
 	chest.movable := 0;
 	chest.locked := 1;
+	
 	SetObjProperty( chest, PROPID_CHEST_LOCK_DIFFICULTY, RandomInt(101)+50 );
-	if( !RandomInt(10) )
+
+	if( PROPID_CHEST_SPAWNPOINT_CHEST )
 		SetObjProperty( chest, PROPID_CHEST_TRAP_TYPE, RandomInt(3)+1 );
 		SetObjProperty( chest, PROPID_CHEST_TRAP_STRENGTH, RandomInt(8)+1 );
 		chest.usescript := USESCRIPTID_TRAPPED_CONTAINER;
@@ -306,7 +312,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 	SetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS, serials );
 	
 	return chest;
-	
+
 endfunction
 
 
