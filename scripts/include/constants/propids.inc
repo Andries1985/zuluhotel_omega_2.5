@@ -59,10 +59,11 @@ const PROPID_CHEST_LOCK_DIFFICULTY			:= "LockDifficulty";
 const PROPID_CHEST_NEVER_SPAWN				:= "NeverSpawn";
 const PROPID_CHEST_SPAWN_LEVEL				:= "SpawnChestLevel";
 const PROPID_CHEST_PERMANENTLY_TRAPPED		:= "PermanentlyTrapped";
-const PROPID_CHEST_TRAP_STRENGTH			:= "TrapStrength";
-const PROPID_CHEST_TRAP_TYPE				:= "TrapType";
-const PROPID_CHEST_TRAPPED_BY				:= "TrappedBy";
+const PROPID_CHEST_TRAP_STRENGTH			:= "Trap_Strength";
+const PROPID_CHEST_TRAP_TYPE				:= "Trap_Type";
+const PROPID_CHEST_TRAPPED_BY				:= "Trapped_By";
 const PROPID_CHEST_TREASURE_CHEST			:= "TreasureChest";
+const PROPID_CHEST_SPAWNPOINT_CHEST			:= "SpawnPointChest";
 
 
 // PropIDs for corpses

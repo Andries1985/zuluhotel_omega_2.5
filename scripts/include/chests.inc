@@ -1,13 +1,15 @@
 // Locking Spawning Chest system  version .1
 // by Zulu (zulu@zuluhotel.com)   July 5, 2000
+use cfgfile;
+
 
 include "util/key";
 include "include/random";
+include "include/constants";
 
 function lockem(chest)
 
 	var level;
-	
 	if( GetObjProperty( chest , "treasurechest" ) )
 		level := Random(5) + 1;
 		set_critical(1);
@@ -39,12 +41,12 @@ endfunction
 
 function finddiff(chest)
 
-	var diff := getobjproperty(chest, "LockDifficulty");
+	var diff := GetObjProperty(chest, "LockDifficulty");
 	if( diff )
 		return diff;
 	endif
 
-	var cfg := readconfigfile( ":*:lockpicking" );
+	var cfg := ReadConfigFile( CFGFILE_LOCK_DIFFICULTIES );
 	if( !cfg )
 		return 0;
 	endif

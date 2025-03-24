@@ -46,6 +46,11 @@ program cast_strength( parms, spell_id )
 		endif
 	endif
 
+	if( PROPID_CHEST_SPAWNPOINT_CHEST )
+		SendSysMessage(caster,"You are not a thief!");
+		return;
+	endif
+	
 	if (!cast_on.locked)
 		SendSysMessage(caster,"That is not locked!");
 		return;
@@ -72,6 +77,7 @@ program cast_strength( parms, spell_id )
 	endif
 
 	if ( LockPickTheThing( caster , cast_on , lvl ) )
+		//Doesnt seem to ever get past here
 		if (TypeOf(GetObjProperty(cast_on,"spawnchest"))=="Integer")
 			SpawnTheChest(cast_on);
 		endif
@@ -85,8 +91,8 @@ function SpawnTheChest(chest)
 	var level:=Cint(GetObjProperty(chest,"spawnchest"));
 
 	if(level)
-	  MakeLoot(chest,level+108);
-	  addchest(chest);
+		MakeLoot(chest,level+108);
+		addchest(chest);
 	endif
 
 endfunction
