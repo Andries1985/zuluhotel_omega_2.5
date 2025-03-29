@@ -12,7 +12,7 @@ include "include/client";
 include "include/chests";
 include "include/attributes";
 
-program cast_strength( parms, spell_id )
+program cast_unlock( parms, spell_id )
 
 	var circle := 3;
 	var caster;

@@ -72,7 +72,7 @@ program pick( me, lockpick )
 endprogram
 
 function SpawnTheChest(chest)
-return 0;
+	//return 0;
 	var level:=Cint(GetObjProperty(chest,"spawnchest"));
 
 	if(level)
