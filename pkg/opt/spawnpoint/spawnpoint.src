@@ -55,14 +55,14 @@ program SpawnPoint( who, point )
 			  "resizepic "	+ (REF_X+0)   + " " + (REF_Y+0)   + " " + GUMPID_BKGND_STONESLAB + " 330 370",
 			  "tilepic "	+ (REF_X+0)   + " " + (REF_Y+0)   + " 8440",
 			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+70)  + " " + GUMPID_TEXTAREA_MARBLE_MEDIUM,
-			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+90)  + " " + GUMPID_TEXTAREA_MARBLE_SHORT_DARK,
-			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+110) + " " + GUMPID_TEXTAREA_MARBLE_SHORT_DARK,
-			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+130) + " " + GUMPID_TEXTAREA_MARBLE_SHORT_DARK,
-			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+150) + " " + GUMPID_TEXTAREA_MARBLE_SHORT_DARK,
-			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+170) + " " + GUMPID_TEXTAREA_MARBLE_SHORT_DARK,
-			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+190) + " " + GUMPID_TEXTAREA_MARBLE_SHORT_DARK,
-			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+210) + " " + GUMPID_TEXTAREA_MARBLE_SHORT_DARK,
-			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+230) + " " + GUMPID_TEXTAREA_MARBLE_SHORT_DARK,
+			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+90)  + " " + GUMPID_TEXTAREA_MARBLE_MEDIUM,
+			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+110) + " " + GUMPID_TEXTAREA_MARBLE_MEDIUM,
+			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+130) + " " + GUMPID_TEXTAREA_MARBLE_MEDIUM,
+			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+150) + " " + GUMPID_TEXTAREA_MARBLE_MEDIUM,
+			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+170) + " " + GUMPID_TEXTAREA_MARBLE_MEDIUM,
+			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+190) + " " + GUMPID_TEXTAREA_MARBLE_MEDIUM,
+			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+210) + " " + GUMPID_TEXTAREA_MARBLE_MEDIUM,
+			  "gumppic "	+ (REF_X+130) + " " + (REF_Y+230) + " " + GUMPID_TEXTAREA_MARBLE_MEDIUM,
 			  "gumppic "	+ (REF_X+55)  + " " + (REF_Y+250) + " " + GUMPID_TEXTAREA_GOLDTRIM_LONG,	  
 			  "text "	+ (REF_X+30)  + " " + (REF_Y+5)   + " " + Cint(COLOR_YELLOW)      + " 0",
 			  "text "	+ (REF_X+260) + " " + (REF_Y+8)   + " " + Cint(COLOR_YELLOW)      + " 1",
@@ -71,31 +71,31 @@ program SpawnPoint( who, point )
 			  "text "	+ (REF_X+150) + " " + (REF_Y+50)  + " " + Cint(COLOR_GREEN_LIGHT) + " 4",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+70)  + " " + Cint(COLOR_BLUE_LIGHT)  + " 5",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+90)  + " " + Cint(COLOR_BLUE_LIGHT)  + " 6",
-			  "text "	+ (REF_X+195) + " " + (REF_Y+90)  + " " + Cint(COLOR_BLUE_LIGHT)  + " 7",
+			  "text "	+ (REF_X+245) + " " + (REF_Y+90)  + " " + Cint(COLOR_BLUE_LIGHT)  + " 7",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+110) + " " + Cint(COLOR_BLUE_LIGHT)  + " 8",
-			  "text "	+ (REF_X+195) + " " + (REF_Y+110) + " " + Cint(COLOR_BLUE_LIGHT)  + " 9",
+			  "text "	+ (REF_X+245) + " " + (REF_Y+110) + " " + Cint(COLOR_BLUE_LIGHT)  + " 9",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+130) + " " + Cint(COLOR_BLUE_LIGHT)  + " 10",
-			  "text "	+ (REF_X+195) + " " + (REF_Y+130) + " " + Cint(COLOR_BLUE_LIGHT)  + " 11",
+			  "text "	+ (REF_X+245) + " " + (REF_Y+130) + " " + Cint(COLOR_BLUE_LIGHT)  + " 11",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+150) + " " + Cint(COLOR_BLUE_LIGHT)  + " 12",
-			  "text "	+ (REF_X+195) + " " + (REF_Y+150) + " " + Cint(COLOR_BLUE_LIGHT)  + " 13",
+			  "text "	+ (REF_X+245) + " " + (REF_Y+150) + " " + Cint(COLOR_BLUE_LIGHT)  + " 13",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+170) + " " + Cint(COLOR_BLUE_LIGHT)  + " 14",
-			  "text "	+ (REF_X+195) + " " + (REF_Y+170) + " " + Cint(COLOR_BLUE_LIGHT)  + " 15",
+			  "text "	+ (REF_X+245) + " " + (REF_Y+170) + " " + Cint(COLOR_BLUE_LIGHT)  + " 15",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+190) + " " + Cint(COLOR_BLUE_LIGHT)  + " 16",
-			  "text "	+ (REF_X+195) + " " + (REF_Y+190) + " " + Cint(COLOR_BLUE_LIGHT)  + " 17",
+			  "text "	+ (REF_X+245) + " " + (REF_Y+190) + " " + Cint(COLOR_BLUE_LIGHT)  + " 17",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+210) + " " + Cint(COLOR_BLUE_LIGHT)  + " 18",
-			  "text "	+ (REF_X+195) + " " + (REF_Y+210) + " " + Cint(COLOR_BLUE_LIGHT)  + " 19",
+			  "text "	+ (REF_X+245) + " " + (REF_Y+210) + " " + Cint(COLOR_BLUE_LIGHT)  + " 19",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+230) + " " + Cint(COLOR_BLUE_LIGHT)  + " 20",
-			  "text "	+ (REF_X+195) + " " + (REF_Y+230) + " " + Cint(COLOR_BLUE_LIGHT)  + " 19",
+			  "text "	+ (REF_X+245) + " " + (REF_Y+230) + " " + Cint(COLOR_BLUE_LIGHT)  + " 19",
 			  "text "	+ (REF_X+20)  + " " + (REF_Y+250) + " " + Cint(COLOR_BLUE_LIGHT)  + " 21",
 			  "textentry "	+ (REF_X+137) + " " + (REF_Y+72)  + " 95  20 " + Cint(COLOR_GREEN) + " 100 29",
-			  "textentry "	+ (REF_X+137) + " " + (REF_Y+92)  + " 45  20 " + Cint(COLOR_GREEN) + " 101 30",
-			  "textentry "	+ (REF_X+137) + " " + (REF_Y+112) + " 45  20 " + Cint(COLOR_GREEN) + " 102 31",
-			  "textentry "	+ (REF_X+137) + " " + (REF_Y+132) + " 45  20 " + Cint(COLOR_GREEN) + " 103 32",
-			  "textentry "	+ (REF_X+137) + " " + (REF_Y+152) + " 45  20 " + Cint(COLOR_GREEN) + " 104 33",
-			  "textentry "	+ (REF_X+137) + " " + (REF_Y+172) + " 45  20 " + Cint(COLOR_GREEN) + " 105 34",
-			  "textentry "	+ (REF_X+137) + " " + (REF_Y+192) + " 45  20 " + Cint(COLOR_GREEN) + " 106 35",
-			  "textentry "	+ (REF_X+137) + " " + (REF_Y+212) + " 45  20 " + Cint(COLOR_GREEN) + " 107 36",
-			  "textentry "	+ (REF_X+137) + " " + (REF_Y+232) + " 45  20 " + Cint(COLOR_GREEN) + " 108 37",
+			  "textentry "	+ (REF_X+137) + " " + (REF_Y+92)  + " 95  20 " + Cint(COLOR_GREEN) + " 101 30",
+			  "textentry "	+ (REF_X+137) + " " + (REF_Y+112) + " 95  20 " + Cint(COLOR_GREEN) + " 102 31",
+			  "textentry "	+ (REF_X+137) + " " + (REF_Y+132) + " 95  20 " + Cint(COLOR_GREEN) + " 103 32",
+			  "textentry "	+ (REF_X+137) + " " + (REF_Y+152) + " 95  20 " + Cint(COLOR_GREEN) + " 104 33",
+			  "textentry "	+ (REF_X+137) + " " + (REF_Y+172) + " 95  20 " + Cint(COLOR_GREEN) + " 105 34",
+			  "textentry "	+ (REF_X+137) + " " + (REF_Y+192) + " 95  20 " + Cint(COLOR_GREEN) + " 106 35",
+			  "textentry "	+ (REF_X+137) + " " + (REF_Y+212) + " 95  20 " + Cint(COLOR_GREEN) + " 107 36",
+			  "textentry "	+ (REF_X+137) + " " + (REF_Y+232) + " 95  20 " + Cint(COLOR_GREEN) + " 108 37",
 			  "textentry "	+ (REF_X+62)  + " " + (REF_Y+252) + " 250 20 " + Cint(COLOR_GREEN) + " 109 38",
 			  "button "	+ (REF_X+130) + " " + (REF_Y+50)  + " " + GUMPID_BUTTON_CIRCLE_GRAY_0 + " " + GUMPID_BUTTON_CIRCLE_GRAY_1 + " 0 2",
 			  "button "	+ (REF_X+230) + " " + (REF_Y+5)   + " " + GUMPID_BUTTON_DIAMOND_RED_0 + " " + GUMPID_BUTTON_DIAMOND_RED_1 + " 1 0 " + KEYRETURN_RESET,
@@ -455,6 +455,7 @@ function IsValidTemplate( who, type, template )
 				break;
 					
 		"Item":		
+
 		"Container":	cfg := ReadConfigFile(CFGFILE_ITEMS_ALL);
 				key := Cint(template);
 				if( !key )
@@ -463,6 +464,7 @@ function IsValidTemplate( who, type, template )
 				break;
 
 		default:	return 1;
+		
 	endcase
 	
 	if( !key )

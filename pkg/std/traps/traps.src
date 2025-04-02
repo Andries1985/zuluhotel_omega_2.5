@@ -34,9 +34,11 @@ program open_trapped_item( character , item )
 			DestroyItem(item);
 			return;
 		endif
-		var traptype		:= GetObjProperty(item,"trap_type");
-		var trapstrength	:= GetObjProperty(item,"trap_strength");
-		var trapcrafter	:= GetObjProperty(item,"trapped_by" );
+		
+		var traptype		:= GetObjProperty( item, "Trap_Type" );
+		var trapstrength	:= GetObjProperty( item, "Trap_Strength" );
+		var trapcrafter		:= GetObjProperty( item, "Trapped_By" );
+		
 		if( trapcrafter )
 			var trapper	:= SystemFindObjectBySerial( trapcrafter );
 			if( !trapper )
@@ -55,24 +57,25 @@ program open_trapped_item( character , item )
 
 
 		case( traptype )
-			"1" :   	PlaySoundEffect( character , SFX_225 );
-					var dmg := (Random(15)+1) * Cint(trapstrength) * 2;
-					SendSysmessage( character , "You set off a needle trap!");
-					ApplyDamage( character , dmg );
-			"2" :		PlaySoundEffect(character, SFX_206);
-					PlayObjectCenteredEffect( character, FX_CURSE_EFFECT, 10,10);
-					SetPoison( character , Cint(trapstrength) , "You have been poisoned!" );
-			"3" :		SendSysmessage (character, "You set off a trap!");
-					var dmg := (Random(15)+1) * Cint(trapstrength) * 2;
-					ApplyDamage( character , dmg );
+			1 :   	PlaySoundEffect( character , SFX_225 );
+						var dmg := (Random(15)+1) * Cint(trapstrength) * 2;
+						SendSysmessage( character , "You set off a needle trap!");
+						ApplyDamage( character , dmg );
+			2 :		PlaySoundEffect(character, SFX_206);
+						PlayObjectCenteredEffect( character, FX_CURSE_EFFECT, 10,10);
+						SetPoison( character , Cint(trapstrength) , "You have been poisoned!" );
+			3 :		SendSysmessage (character, "You set off a trap!");
+						var dmg := (Random(15)+1) * Cint(trapstrength) * 2;
+						ApplyDamage( character , dmg );
 						PlayObjectCenteredEffect( character, FX_EXPLODE_3, 10,10);
 						PlaySoundEffect(character, SFX_208);
 						ApplyElementalDamageNoResist( character , character , dmg , FIRE );
 			default:	SendSysmessage( character , "You narrowly avoid the trap!" );
 		endcase
 
-		EraseObjProperty( item, "trap_type" );
-		EraseObjProperty( item, "trap_strength" );
+		EraseObjProperty( item, "Trap_Type" );
+		EraseObjProperty( item, "Trap_Strength" );
+		EraseObjProperty( item, "Trapped_By" );
 
 		if( !GetObjProperty( item , "keep" ) ) item.usescript := ""; endif
 

@@ -5,6 +5,7 @@ include "include/client";
 include "include/namingbyenchant";
 include "include/skillpoints";
 include "include/itemutil";
+include "include/chests";
 
 function SelectItemToID( who, delay )
 
@@ -72,6 +73,16 @@ function SelectItemToID( who, delay )
 	if( !the_item.IsA(POLCLASS_ITEM) )
 		SendSysMessage( who , "That's not an item!" );
 		return 1;
+	endif
+
+	if( GetObjProperty( the_item , PROPID_CHEST_SPAWNPOINT_CHEST ) )
+		if( GetObjProperty( the_item , PROPID_CHEST_TRAP_TYPE ))
+			SendSysMessage( who, "You cannot identify a trapped chest!" );
+			return;
+		elseif( !GetObjProperty( the_item, "L" ) )
+			SendSysMessage(who,"You cannot identify a locked chest!" );
+			return;
+		endif
 	endif
 
 	if (the_item.isa(POLCLASS_CONTAINER))

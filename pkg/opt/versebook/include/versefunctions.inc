@@ -359,6 +359,22 @@ function GetBardicEfficiency(who)
 
 endfunction
 
+function GetBardicEfficiencyProts(who)
+
+	var bonus := 0.0;
+
+	foreach item in ListEquippedItems(who)
+		if (GetObjProperty(item, "BardicEfficiency"));
+			bonus += GetObjProperty(item, "BardicEfficiency");
+		endif
+	endforeach
+
+	//bonus := 1 + (CDbl(bonus) * 0.05);
+
+	return bonus;
+
+endfunction
+
 //////////////////////////////////////////////////////////////////////////////////////
 //
 // GetVerseRange() - You know
