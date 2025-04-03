@@ -15,7 +15,7 @@ program spell_gate( caster, spell_id )
 	
 		// For scrolls, StartSpellScript isn't working >:(
 		if (TypeOf(caster) == "Array")
-					spell_id := caster[2];
+			spell_id := caster[2];
 			caster := caster[1];
 		endif
 
@@ -59,8 +59,11 @@ program spell_gate( caster, spell_id )
 		EraseObjProperty(caster, "#Casting");
 		return 0;
 	endif
+
 	SendSysmessage( caster, "Select a rune to gate from." );
+
 	var cast_on := CanTargetThing(caster, circle, TGTOPT_CHECK_LOS );
+
 	if (!cast_on)
 		return;
 	elseif( !Accessible( caster, cast_on ) )
@@ -90,6 +93,7 @@ program spell_gate( caster, spell_id )
 		endif
 		return;
 	endif
+
 	var owner;
 	var lamp;
 	var Near_Items := ListItemsNearLocation(tox, toy, toz, 10, torealm);
@@ -113,6 +117,7 @@ program spell_gate( caster, spell_id )
 			return;
 		endif
 	endforeach
+
 	multi := GetStandingHeight( tox, toy, toz, torealm ).multi;
 	if( multi )
 		if( !Iscowner( caster, multi )  )
