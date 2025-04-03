@@ -71,14 +71,14 @@ program walk_on_moongate(mobile, moongate)
 	GFGumpPic(res, 50, 50, 336);
 	GFTextLine(res, 235, 85, TEXT_COLOR_TITLE, "Select Your Destination");
 	GFTextLine(res, 135, 175, TEXT_COLOR_TITLE, "Felucca");
-	GFTextLine(res, 265, 175, TEXT_COLOR_TITLE, "Trammel");
+	GFTextLine(res, 265, 175, TEXT_COLOR_TITLE, "Sosaria");
 	GFTextLine(res, 395, 175, TEXT_COLOR_TITLE, "Ilshenar");
 	GFTextLine(res, 555, 175, TEXT_COLOR_TITLE, "Malas");
 	GFTextLine(res, 395, 275, TEXT_COLOR_TITLE, "Tokuno");
 	GFTextLine(res, 555, 275, TEXT_COLOR_TITLE, "Termur");
 	
 
-	//Teleport Buttons for Trammel
+	//Teleport Buttons for Felucca
 	GFTextLine(res, 135, 200, TEXT_COLOR_GATE, "Moonglow");
 	GFAddButton(res, 215, 205, 2360, 2361, GF_CLOSE_BTN, 2);
 	GFTextLine(res, 135, 225, TEXT_COLOR_GATE, "Britain");
@@ -96,7 +96,7 @@ program walk_on_moongate(mobile, moongate)
 	GFTextLine(res, 135, 375, TEXT_COLOR_GATE, "Magincia");
 	GFAddButton(res, 215, 380, 2360, 2361, GF_CLOSE_BTN, 16);
 
-	//Teleport Buttons for Felucca
+	//Teleport Buttons for Sosaria
 	GFTextLine(res, 265, 200, TEXT_COLOR_GATE, "Main City");
 	GFAddButton(res, 345, 205, 2360, 2361, GF_CLOSE_BTN, 2);
 
@@ -229,7 +229,7 @@ endprogram
 // 	GFResizePic(res, 50, 50, 336, 720, 400);
 // 	GFTextLine(res, 235, 85, TEXT_COLOR, "Select Your Destination");
 // 	GFTextLine(res, 120, 175, TEXT_COLOR, "Felucca");
-// 	GFTextLine(res, 220, 175, TEXT_COLOR, "Trammel");
+// 	GFTextLine(res, 220, 175, TEXT_COLOR, "Sosaria");
 // 	GFTextLine(res, 320, 175, TEXT_COLOR, "Ilshenar");
 // 	GFTextLine(res, 420, 175, TEXT_COLOR, "Malas");
 // 	GFTextLine(res, 520, 175, TEXT_COLOR, "Tokuno");
