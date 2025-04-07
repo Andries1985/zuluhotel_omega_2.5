@@ -713,7 +713,7 @@ function SetTrap( character , chest )
 	sendDiff( character , skill );
 
 	if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
-		var permanent;
+		//var permanent;
 		var tinkering := GetEffectiveSkill( character , SKILLID_TINKERING );
 		if( tinkering < 40 )
 			strength := strength - 1;
@@ -740,11 +740,11 @@ function SetTrap( character , chest )
 		SetObjProperty( chest , "trap_type" , cstr( trap_type ) );
 		SetObjProperty( chest , "trap_strength" , strength );
 		SetObjProperty( chest , "trapped_by" , character.serial );
-		if( permanent )
-			SendSysmessage( character , "You made the trap permanent!" );
-		else
+		//if( permanent )
+		//	SendSysmessage( character , "You made the trap permanent!" );
+		//else
 			SendSysmessage( character , "The trap is set successfully" );
-		endif
+		//endif
 		chest.usescript := ":traps:traps";
 	else
 		var results := Random(5) + 1;

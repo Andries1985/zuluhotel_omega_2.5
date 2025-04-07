@@ -2,10 +2,10 @@ use uo;
 
 program spyglass(who);
 
-	var TPhase := GetGlobalProperty("TrammelPhase");
+	var TPhase := GetGlobalProperty("SosariaPhase");
 	var FPhase := GetGlobalProperty("FeluccaPhase");
 
-	var outputText := "You gaze at the heavens, and note that Trammel ";
+	var outputText := "You gaze at the heavens, and note that Sosaria ";
 
 	case (TPhase)
 		0:

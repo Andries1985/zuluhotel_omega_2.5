@@ -6,18 +6,14 @@ include "include/recalling";
 include "include/objtype";
 include "include/client";
 include ":housing:utility";
+include ":statichousing:recallgatehelp";
 include "include/attributes";
 
 program cast_earth_portal( caster )
 
+	//var circle := 10;
 	var circle := GetCircle( SPELLID_EARTH_PORTAL );
-	var duration := Cint(GetEffectiveSkill( caster , SKILLID_MAGERY ) / 2);
 
-
- 	if( TryToCast( caster, SPELLID_EARTH_PORTAL ) != SUCCESS )
-		return;
-	endif
-	
 	if( IsForbiddenAreaToGateFrom( caster ) )
 		SendSysMessage( caster, "You can't gate from there." );
 		return 0;
@@ -41,13 +37,24 @@ program cast_earth_portal( caster )
 			endif
 		endif
 	endif
-	
-	if( !CheckPoz( caster.x , caster.y ) )
-		SendSysMessage( caster , "You can't gate out of this place.");
-		EraseObjProperty( caster , "#Casting" );
-		return;
+	// Same check as above for static houses
+	var serialstatichouse := StaticHouseSerial( caster );
+	if(serialstatichouse)
+		var sign := SystemFindObjectBySerial(serialstatichouse);
+		if( !Iscowner( caster, sign )  )
+			if( !IsFriend( caster, sign, GATE_FROM) )
+				SendSysMessage( caster, "You can't gate from this house." );
+				return;
+			endif
+		endif
 	endif
 	
+	if (TryToCast( caster, SPELLID_EARTH_PORTAL ) != SUCCESS);
+		Print("Cannot cast spell!");
+		EraseObjProperty(caster, "#Casting");
+		return 0;
+	endif
+
 	SendSysmessage( caster, "Select a rune to gate from." );
 	
 	var cast_on := CanTargetThing( caster , circle , TGTOPT_CHECK_LOS );
@@ -59,43 +66,32 @@ program cast_earth_portal( caster )
 		SendSysMessage( caster, "You can't reach that." );
 		EraseObjProperty( caster , "#Casting" );
 		return 0;
-	elseif( cast_on.objtype != UOBJ_RUNE )
-		SendSysmessage( caster, "You can only cast that on a recall rune!" );
+	elseif( cast_on.objtype != UOBJ_RUNE && cast_on.objtype != 0x6100 )
+		SendSysmessage( caster, "You can only cast that on a recall rune or a runebook!" );
 		EraseObjProperty( caster , "#Casting" );
 		return 0;
 	elseif( !ReserveItem( cast_on ) )
 		return 0;
 	endif
 
-	if( !Accessible( caster , cast_on ) )
-		SendSysmessage( caster , "You can't reach that!" );
-		EraseObjProperty( caster , "#Casting" );
-		return;
-	endif
-
-	if( cast_on.objtype != UOBJ_RUNE )
-		SendSysmessage( caster , "You can only cast that on a recall rune!" );
-		EraseObjProperty( caster , "#Casting" );
-		return;
-	endif
-
-	if( !ReserveItem(cast_on) )
-		EraseObjProperty( caster , "#Casting" );
-		return;
-	endif
-
 	var tox := Cint(GetObjProperty( cast_on, "x" ));
 	var toy := Cint(GetObjProperty( cast_on, "y" ));
 	var toz := Cint(GetObjProperty( cast_on, "z" ));
-	var torealm := Cint(GetObjProperty( cast_on, "realm" ));
+	var torealm := GetObjProperty( cast_on, "realm" );
 
-
-	if( !tox and !toy and !toz )
+	if( !tox and !toy and !toz and !torealm )
 		SendSysmessage(caster, "That is a blank rune!");
-		EraseObjProperty( caster , "#Casting" );
 		return;
 	endif
 	
+	if( IsForbiddenAreaToGateTo( caster, tox, toy, torealm ) )
+		SendSysMessage(caster, "The destination is a magic place with protection.");
+		if( cast_on.objtype != 0x6100 )
+			DestroyItem( cast_on );
+		endif
+		return;
+	endif
+
 	var owner;
 	var lamp;
 	var Near_Items := ListItemsNearLocation(tox, toy, toz, 10, torealm);
@@ -112,21 +108,6 @@ program cast_earth_portal( caster )
 		endif
 	endif
 
-	if( !CheckPoz( tox , toy ) )
-		SendSysMessage( caster , "The destination is a magic place with protection.");
-		DestroyItem( cast_on );
-		EraseObjProperty( caster , "#Casting" );
-		return;
-	endif
-	
-	if( IsForbiddenAreaToGateTo( caster, tox, toy, torealm ) )
-		SendSysMessage(caster, "The destination is a magic place with protection.");
-		if( cast_on.objtype != 0x6100 )
-			DestroyItem( cast_on );
-		endif
-		return;
-	endif
-	
 	var antigate2 := ListItemsNearLocation(tox, toy, toz, 10, torealm);
 	foreach item in antigate2
 		if (item.objtype == 0xa3c9)
@@ -145,24 +126,35 @@ program cast_earth_portal( caster )
 			endif
 		endif
 	endif
-	Set_critical( 1 );
-	
-	var gate1 := CreateItemAtLocation( caster.x , caster.y , caster.z , UOBJ_BLACK_MOONGATE , 1, caster.realm );
-	var gate2 := CreateItemAtLocation( tox , toy , toz , UOBJ_BLACK_MOONGATE , 1, torealm );
-	
-	
-	if( !gate1 )
-		DestroyItem( gate2 );
-		EraseObjProperty( caster , "#Casting" );
-        	return;
+
+	//Same check as above but for static houses
+	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz, torealm );
+	if(serialstatichouse)
+		var sign := SystemFindObjectBySerial(serialstatichouse);
+		if( !Iscowner( caster, sign )  )
+			if( !IsFriend( caster, sign, GATE_FROM) )
+				SendSysMessage( caster, "You can't gate to this house." );
+				return;
+			endif
+		endif
 	endif
-	
-	if( !gate2 )
-		DestroyItem( gate1 );
+
+	Set_critical( 1 );
+
+	if( !caster )
 		EraseObjProperty( caster , "#Casting" );
 		return;
 	endif
 	
+	var gate1 := CreateItemAtLocation( caster.x, caster.y, caster.z, UOBJ_BLACK_MOONGATE, 1, caster.realm );
+	var gate2 := CreateItemAtLocation( tox, toy, toz, UOBJ_BLACK_MOONGATE2, 1, torealm );	
+
+	if( !gate1 || !gate2 || !caster )
+		DestroyItem(gate1);
+		DestroyItem(gate2);
+        return;
+	endif
+
 	SetObjProperty( gate1 , "GateDestX" , gate2.x );
 	SetObjProperty( gate1 , "GateDestY" , gate2.y );
 	SetObjProperty( gate1 , "GateDestZ" , gate2.z );
@@ -172,6 +164,7 @@ program cast_earth_portal( caster )
 	SetObjProperty( gate2 , "GateDestZ" , gate1.z );
 	SetObjProperty( gate2 , "GateDestRealm" , gate1.realm );
 
+	ReleaseItem(cast_on);
 	Detach();
 
 	set_critical( 0 );
@@ -179,7 +172,7 @@ program cast_earth_portal( caster )
 	PlaySoundEffect( caster, SFX_SPELL_EARTH_PORTAL );
 	EraseObjProperty( caster , "#Casting" );
 
-	Sleep( duration );
+	Sleep( 60 );
     
 	set_critical( 1 );
 	
