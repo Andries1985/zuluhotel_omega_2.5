@@ -4,7 +4,7 @@ use uo;
 
 program moonphase()
 
-   SetGlobalProperty("TrammelPhase", 0);
+   SetGlobalProperty("SosariaPhase", 0);
    SetGlobalProperty("FeluccaPhase", 0);
    var TPhase := 0;
    var FPhase := 0;
@@ -34,6 +34,6 @@ program moonphase()
 		TPhase := 0;
 	endif
 	SetGlobalProperty("FeluccaPhase", FPhase);
-	SetGlobalProperty("TrammelPhase", TPhase);
+	SetGlobalProperty("SosariaPhase", TPhase);
    endwhile
 endprogram

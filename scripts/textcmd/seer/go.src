@@ -49,7 +49,7 @@ program textcmd_go( who )
     GFTextLine(res, 175, 100, TEXT_COLOR_TITLE, "Select Your Facet");
     GFTextLine(res, 125, 125, TEXT_COLOR_GATE, "Felucca");
     GFAddButton(res, 225, 130, 2360, 2361, GF_CLOSE_BTN, 2);
-    GFTextLine(res, 125, 150, TEXT_COLOR_GATE, "Trammel");
+    GFTextLine(res, 125, 150, TEXT_COLOR_GATE, "Sosaria");
     GFAddButton(res, 225, 155, 2360, 2361, GF_CLOSE_BTN, 4);
     GFTextLine(res, 125, 175, TEXT_COLOR_GATE, "Malas");
     GFAddButton(res, 225, 180, 2360, 2361, GF_CLOSE_BTN, 6);
@@ -67,7 +67,7 @@ program textcmd_go( who )
       2: 
         locs  := readconfigfile("golocsfelucca");
       4: 
-        locs  := readconfigfile("golocstrammel");
+        locs  := readconfigfile("golocssosaria");
       6: 
         locs  := readconfigfile("golocsmalas");
       8: 

@@ -1,15 +1,3 @@
-//Decor 0
-//{}
-//	Name				wooden door
-//	Objtype				0x6A5
-//	Amount				1
-//	Color				0x0
-//	X					611
-//	Y					823
-//	Z					0
-//	Realm				britannia_alt
-//}
-
 Decor 0
 {
 	Name Door

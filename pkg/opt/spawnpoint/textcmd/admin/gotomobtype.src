@@ -23,7 +23,7 @@ program textcmd_gotomobtype( character , text )
 
 	if (realm == "felucca")
 		realm := "britannia";
-	elseif (realm == "trammel")
+	elseif (realm == "sosaria")
 		realm := "britannia_alt";
 	endif
 
@@ -71,7 +71,7 @@ function MakeAndProcessGump( character, found, realm )
 	if (realm == "britannia")
 		realmname := "Felucca";
 	elseif (realm == "britannia_alt")
-		realmname := "Trammel";
+		realmname := "Sosaria";
 	elseif (realm == "malas")
 		realmname := "Malas";
 	elseif (realm == "tokuno")
