@@ -245,23 +245,23 @@ function CreateFromItemString( who, str )
 	endif
 
 	// It's a chance drop
-    	if ( CInt(params[2]) )
-        	chance := CInt( params[2] );
-			var killer;
-			if(GetObjProperty(who, "KilledBySerial"))
-				killer := SystemFindObjectBySerial(GetObjProperty(who, "KilledBySerial"),SYSFIND_SEARCH_OFFLINE_MOBILES );
+	if ( CInt(params[2]) )
+		chance := CInt( params[2] );
+		var killer;
+		if(GetObjProperty(who, "KilledBySerial"))
+			killer := SystemFindObjectBySerial(GetObjProperty(who, "KilledBySerial"),SYSFIND_SEARCH_OFFLINE_MOBILES );
+		endif
+		if(GetGlobalProperty("PHH") || GetObjProperty(killer, "#PPHH"))
+			chance := chance*2;
+			if(chance > 100)
+				chance := 100;
 			endif
-			if(GetGlobalProperty("PHH") || GetObjProperty(killer, "#PPHH"))
-				chance := chance*2;
-				if(chance > 100)
-					chance := 100;
-				endif
-			endif
-    	else
+		endif
+	else
 
-	// It's a definite drop
-        	chance := 100;
-    	endif
+// It's a definite drop
+		chance := 100;
+	endif
 
 	// count is only ever higher than 1 when items have a prefix of 'Item'. 
 	// And if they are run through this function from the main loot group.
@@ -277,14 +277,14 @@ function CreateFromItemString( who, str )
 	// Item	1 	Level5map	15
 
   		if( Random(100) < chance )
-        		var item := CreateItemInContainer( who, objname );
-        		var ismagic;
-				if (GetObjProperty(item, "IsGMItem"))
-					AddName(item);
-				endif
+			var item := CreateItemInContainer( who, objname );
+			var ismagic;
+			if (GetObjProperty(item, "IsGMItem"))
+				AddName(item);
+			endif
 			if ( CInt(params[3]) )
-        			item.color := CInt( params[3] );
-    			endif
+        		item.color := CInt( params[3] );
+    		endif
 
 
 			// Is it a magic item? if this isn't caught then it will be a normal item
@@ -306,54 +306,54 @@ function CreateFromItemString( who, str )
 				endif
 			endwhile
 			
-      			if( ismagic )
-        			var canbemagic := MagicAllowedandType( objname ); //for magic items!
+			if( ismagic )
+				var canbemagic := MagicAllowedandType( objname ); //for magic items!
 
-				// OLD WAY
-				// enchant type is based on magical level again. look into it
-				// Example: level 6
-				// 		between 26-100			4 = max of 300	5 = max of 351 (with below addition) 6 = max of 400
-				//
-				//var enchant := Random(75)+26) * magiclevel/2 + 1;
-				//
-				//
-				// lvl 5 loot gets a bonus.
-				//if (magiclevel == 5)
-				//	enchant := enchant + 51;
-				//endif
+			// OLD WAY
+			// enchant type is based on magical level again. look into it
+			// Example: level 6
+			// 		between 26-100			4 = max of 300	5 = max of 351 (with below addition) 6 = max of 400
+			//
+			//var enchant := Random(75)+26) * magiclevel/2 + 1;
+			//
+			//
+			// lvl 5 loot gets a bonus.
+			//if (magiclevel == 5)
+			//	enchant := enchant + 51;
+			//endif
 
 
-        			case (canbemagic)
-           				WEAPON: 
-						ApplyWeaponModNew(who, item);	
-						break;
-						
-           				ARMOR: 
-						ApplyArmourModNew(who, item);	
-						break;
-	 
-	 				SHIELD:
-						ApplyShieldModNew(who, item);	
-						break;
-						
-					CLOTHING:
-						ApplyClothingModNew(who, item);	
-						break;
-
-					MISC:
-						ApplyMiscModNew(who, item);	
-						break;
-
-					PROF:
-						// For PROF every loot group goes into here, alter this!
-						ApplyMiscSkillMod( item ); 
-						AddName( item );
-						break;
-
-	           			default:
+				case (canbemagic)
+					WEAPON: 
+					ApplyWeaponModNew(who, item);	
+					break;
+					
+					ARMOR: 
+					ApplyArmourModNew(who, item);	
+					break;
 	
-	        		endcase
-      			endif
+				SHIELD:
+					ApplyShieldModNew(who, item);	
+					break;
+					
+				CLOTHING:
+					ApplyClothingModNew(who, item);	
+					break;
+
+				MISC:
+					ApplyMiscModNew(who, item);	
+					break;
+
+				PROF:
+					// For PROF every loot group goes into here, alter this!
+					ApplyMiscSkillMod( item ); 
+					AddName( item );
+					break;
+
+					default:
+
+				endcase
+			endif
 		RegisterItem(who,item);
 		endif
 		count := count - 1;
@@ -366,18 +366,18 @@ endfunction
 
 function RegisterItem(who, item)
 
-if (IsStackable(item, item))
-	return 0;
-endif
+	if (IsStackable(item, item))
+		return 0;
+	endif
 
-// Loot is from a slayed npc
-if (corpsetype)
-	SetObjProperty(item, "FromLoot", {corpsetype, ReadGameClock()});
-else
-	// Could be from treasure chest/sos/anything that generates loot that didnt have a corpse
+	// Loot is from a slayed npc
+	if (corpsetype)
+		SetObjProperty(item, "FromLoot", {corpsetype, ReadGameClock()});
+	else
+		// Could be from treasure chest/sos/anything that generates loot that didnt have a corpse
 
-	SetObjProperty(item, "FromLoot", {who.desc, ReadGameClock(), baselevel, lootgroupglob});
-endif
+		SetObjProperty(item, "FromLoot", {who.desc, ReadGameClock(), baselevel, lootgroupglob});
+	endif
 
 endfunction
 
@@ -390,198 +390,198 @@ endfunction
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ApplyWeaponModNew(who, item)
 
-/* This is the OLD way
-Min lvl 1 - 26		Max lvl 1 - 100
-Min lvl 2 - 52		Max lvl 2 - 200
-Min lvl 3 - 52		Max lvl 3 - 200
-Min lvl 4 - 78		Max lvl 4 - 300
-Min lvl 5 - 78		Max lvl 5 - 300 <----- Both these values got +51 after, bandaid solution
-Min lvl 6 - 104		Max lvl 6 - 400
-Min lvl 7 - 104		Max lvl 7 - 400
-Min lvl 8 - 130		Max lvl 8 - 500
-Min lvl 9 - 130		Max lvl 9 - 500
-Min lvl 10 - 156	Max lvl 10 - 600
+	/* This is the OLD way
+	Min lvl 1 - 26		Max lvl 1 - 100
+	Min lvl 2 - 52		Max lvl 2 - 200
+	Min lvl 3 - 52		Max lvl 3 - 200
+	Min lvl 4 - 78		Max lvl 4 - 300
+	Min lvl 5 - 78		Max lvl 5 - 300 <----- Both these values got +51 after, bandaid solution
+	Min lvl 6 - 104		Max lvl 6 - 400
+	Min lvl 7 - 104		Max lvl 7 - 400
+	Min lvl 8 - 130		Max lvl 8 - 500
+	Min lvl 9 - 130		Max lvl 9 - 500
+	Min lvl 10 - 156	Max lvl 10 - 600
 
-if(enchant < 50)
-	ApplyHPMod( item ); // Impossible for 2+ (durable broadsword) no other chance of mods in function
+	if(enchant < 50)
+		ApplyHPMod( item ); // Impossible for 2+ (durable broadsword) no other chance of mods in function
 
-elseif(enchant < 60)
-	ApplyWeapSkillMod( item ); // impossible for 4+ (arms masters broadsword) gets a chance of obtaining applyhpmod at end (arms master durable broadsword)
+	elseif(enchant < 60)
+		ApplyWeapSkillMod( item ); // impossible for 4+ (arms masters broadsword) gets a chance of obtaining applyhpmod at end (arms master durable broadsword)
 
-elseif(enchant < 485)
-	ApplyDmgMod ( item ); // Any lootgroup (+dmg!) gets chance of above mods, 25% more chance of HPmod though (arms masters broadsword of power) or (durable broadsword of power)
+	elseif(enchant < 485)
+		ApplyDmgMod ( item ); // Any lootgroup (+dmg!) gets chance of above mods, 25% more chance of HPmod though (arms masters broadsword of power) or (durable broadsword of power)
 
-else
-	ApplyWeapHitscript ( who , item ); //lvl 8+ // No chance of other mods - this used to be lvl 5+.....
-endif
-AddName( item );
-*/
-
-// No need for anything higher
-var chance := RandomInt(10000);
-
-if (magiclevel == 0)
-	return 0;
-
-// Level 1 loot
-elseif (magiclevel == 1)
-	
-	// 30% chance 
-	if (chance < 3000)
-		ApplyHPMod( item ); 
-	// 10% chance
-	elseif (chance < 4000)
-		ApplyWeapSkillMod( item ); 
-	// 59.9% chance
-	elseif (chance < 9990)
-		ApplyDmgMod( item );
-	// .1% chance
 	else
-		ApplyWeapHitscript( who , item );
+		ApplyWeapHitscript ( who , item ); //lvl 8+ // No chance of other mods - this used to be lvl 5+.....
+	endif
+	AddName( item );
+	*/
+
+	// No need for anything higher
+	var chance := RandomInt(10000);
+
+	if (magiclevel == 0)
+		return 0;
+
+	// Level 1 loot
+	elseif (magiclevel == 1)
+		
+		// 30% chance 
+		if (chance < 3000)
+			ApplyHPMod( item ); 
+		// 10% chance
+		elseif (chance < 4000)
+			ApplyWeapSkillMod( item ); 
+		// 59.9% chance
+		elseif (chance < 9990)
+			ApplyDmgMod( item );
+		// .1% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 2 loot
+	elseif (magiclevel == 2)
+		
+		// 2% chance 
+		if (chance < 200)
+			ApplyHPMod( item ); 
+		// 5% chance
+		elseif (chance < 700)
+			ApplyWeapSkillMod( item ); 
+		// 92.5% chance
+		elseif (chance < 9950)
+			ApplyDmgMod( item );
+		// .5% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 3 loot
+	elseif (magiclevel == 3)
+		
+		// 1% chance 
+		if (chance < 100)
+			ApplyHPMod( item ); 
+		// 2% chance
+		elseif (chance < 300)
+			ApplyWeapSkillMod( item ); 
+		// 96% chance
+		elseif (chance < 9900)
+			ApplyDmgMod( item );
+		// 1% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 4 loot
+	elseif (magiclevel == 4)
+		
+		// .5% chance 
+		if (chance < 50)
+			ApplyHPMod( item ); 
+		// 1% chance
+		elseif (chance < 150)
+			ApplyWeapSkillMod( item ); 
+		// 93.5% chance
+		elseif (chance < 9500)
+			ApplyDmgMod( item );
+		// 5% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 5 loot
+	elseif (magiclevel == 5)
+		
+		// .2% chance 
+		if (chance < 20)
+			ApplyHPMod( item ); 
+		// .5% chance
+		elseif (chance < 70)
+			ApplyWeapSkillMod( item ); 
+		// 92.3% chance
+		elseif (chance < 9000)
+			ApplyDmgMod( item );
+		// 7% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 6 loot
+	elseif (magiclevel == 6)
+		
+		// .1% chance 
+		if (chance < 10)
+			ApplyHPMod( item ); 
+		// .2% chance
+		elseif (chance < 30)
+			ApplyWeapSkillMod( item ); 
+		// 79.7% chance
+		elseif (chance < 8500)
+			ApplyDmgMod( item );
+		// 20% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 7 loot
+	elseif (magiclevel == 7)
+		
+		// 77%
+		if (chance < 8500)
+			ApplyDmgMod( item );
+		// 23% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 8 loot
+	elseif (magiclevel == 8)
+		
+		// 74%
+		if (chance < 8200)
+			ApplyDmgMod( item );
+		// 26% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 9 loot
+	elseif (magiclevel == 9)
+		
+		// 71%
+		if (chance < 7900)
+			ApplyDmgMod( item );
+		// 29% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+
+	// Level 10 loot
+	elseif (magiclevel == 10)
+		
+		// 68%
+		if (chance < 9000)
+			ApplyDmgMod( item );
+		// 32% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+		
+	else
+
+		// 65%
+		if (chance < 9000)
+			ApplyDmgMod( item );
+		// 35% chance
+		else
+			ApplyWeapHitscript( who , item );
+		endif
+		
 	endif
 
-// Level 2 loot
-elseif (magiclevel == 2)
-	
-	// 2% chance 
-	if (chance < 200)
-		ApplyHPMod( item ); 
-	// 5% chance
-	elseif (chance < 700)
-		ApplyWeapSkillMod( item ); 
-	// 92.5% chance
-	elseif (chance < 9950)
-		ApplyDmgMod( item );
-	// .5% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 3 loot
-elseif (magiclevel == 3)
-	
-	// 1% chance 
-	if (chance < 100)
-		ApplyHPMod( item ); 
-	// 2% chance
-	elseif (chance < 300)
-		ApplyWeapSkillMod( item ); 
-	// 96% chance
-	elseif (chance < 9900)
-		ApplyDmgMod( item );
-	// 1% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 4 loot
-elseif (magiclevel == 4)
-	
-	// .5% chance 
-	if (chance < 50)
-		ApplyHPMod( item ); 
-	// 1% chance
-	elseif (chance < 150)
-		ApplyWeapSkillMod( item ); 
-	// 93.5% chance
-	elseif (chance < 9500)
-		ApplyDmgMod( item );
-	// 5% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 5 loot
-elseif (magiclevel == 5)
-	
-	// .2% chance 
-	if (chance < 20)
-		ApplyHPMod( item ); 
-	// .5% chance
-	elseif (chance < 70)
-		ApplyWeapSkillMod( item ); 
-	// 92.3% chance
-	elseif (chance < 9000)
-		ApplyDmgMod( item );
-	// 7% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 6 loot
-elseif (magiclevel == 6)
-	
-	// .1% chance 
-	if (chance < 10)
-		ApplyHPMod( item ); 
-	// .2% chance
-	elseif (chance < 30)
-		ApplyWeapSkillMod( item ); 
-	// 79.7% chance
-	elseif (chance < 8500)
-		ApplyDmgMod( item );
-	// 20% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 7 loot
-elseif (magiclevel == 7)
-	
-	// 77%
-	if (chance < 8500)
-		ApplyDmgMod( item );
-	// 23% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 8 loot
-elseif (magiclevel == 8)
-	
-	// 74%
-	if (chance < 8200)
-		ApplyDmgMod( item );
-	// 26% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 9 loot
-elseif (magiclevel == 9)
-	
-	// 71%
-	if (chance < 7900)
-		ApplyDmgMod( item );
-	// 29% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-
-// Level 10 loot
-elseif (magiclevel == 10)
-	
-	// 68%
-	if (chance < 9000)
-		ApplyDmgMod( item );
-	// 32% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-	
-else
-
-	// 65%
-	if (chance < 9000)
-		ApplyDmgMod( item );
-	// 35% chance
-	else
-		ApplyWeapHitscript( who , item );
-	endif
-	
-endif
-
-AddName( item );
+	AddName( item );
 
 endfunction
 
@@ -972,158 +972,158 @@ endfunction
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function ApplyClothingModNew(who, item)
 
-/* This is the OLD way
-Min lvl 1 - 26		Max lvl 1 - 100
-Min lvl 2 - 52		Max lvl 2 - 200
-Min lvl 3 - 52		Max lvl 3 - 200
-Min lvl 4 - 78		Max lvl 4 - 300
-Min lvl 5 - 78		Max lvl 5 - 300 <----- Both these values got +51 after, bandaid solution
-Min lvl 6 - 104		Max lvl 6 - 400
-Min lvl 7 - 104		Max lvl 7 - 400
-Min lvl 8 - 130		Max lvl 8 - 500
-Min lvl 9 - 130		Max lvl 9 - 500
-Min lvl 10 - 156	Max lvl 10 - 600
+	/* This is the OLD way
+	Min lvl 1 - 26		Max lvl 1 - 100
+	Min lvl 2 - 52		Max lvl 2 - 200
+	Min lvl 3 - 52		Max lvl 3 - 200
+	Min lvl 4 - 78		Max lvl 4 - 300
+	Min lvl 5 - 78		Max lvl 5 - 300 <----- Both these values got +51 after, bandaid solution
+	Min lvl 6 - 104		Max lvl 6 - 400
+	Min lvl 7 - 104		Max lvl 7 - 400
+	Min lvl 8 - 130		Max lvl 8 - 500
+	Min lvl 9 - 130		Max lvl 9 - 500
+	Min lvl 10 - 156	Max lvl 10 - 600
 
-if(enchant < 300)
-	ApplyMiscSkillMod( item );  // applies a skill and has a chance to add a stat mod
-else
-	ApplyMiscArMod ( item ); // was only lvl 5+ loot. just adds armour to clothing, but has a chance of running the above function for skill/stats
-endif
-AddName( item );
-AddRandomColor( item );
-*/
+	if(enchant < 300)
+		ApplyMiscSkillMod( item );  // applies a skill and has a chance to add a stat mod
+	else
+		ApplyMiscArMod ( item ); // was only lvl 5+ loot. just adds armour to clothing, but has a chance of running the above function for skill/stats
+	endif
+	AddName( item );
+	AddRandomColor( item );
+	*/
 
-// No need for anything higher
-var chance := RandomInt(10000);
+	// No need for anything higher
+	var chance := RandomInt(10000);
 
-if (magiclevel == 0)
-	return 0;
+	if (magiclevel == 0)
+		return 0;
 
-// Level 1 loot
-elseif (magiclevel == 1)
-	
-	// 95% chance 
-	if (chance < 9500)
-		ApplyMiscSkillMod( item );
-	// 5% chance
+	// Level 1 loot
+	elseif (magiclevel == 1)
+		
+		// 95% chance 
+		if (chance < 9500)
+			ApplyMiscSkillMod( item );
+		// 5% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+	// Level 2 loot
+	elseif (magiclevel == 2)
+		
+		// 93% chance 
+		if (chance < 9300)
+			ApplyMiscSkillMod( item );
+		// 7% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+
+	// Level 3 loot
+	elseif (magiclevel == 3)
+		
+		// 90% chance 
+		if (chance < 9000)
+			ApplyMiscSkillMod( item );
+		// 10% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+	// Level 4 loot
+	elseif (magiclevel == 4)
+		
+		// 85% chance 
+		if (chance < 8500)
+			ApplyMiscSkillMod( item );
+		// 15% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+	// Level 5 loot
+	elseif (magiclevel == 5)
+		
+		// 80% chance 
+		if (chance < 8000)
+			ApplyMiscSkillMod( item );
+		// 20% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+	// Level 6 loot
+	elseif (magiclevel == 6)
+		
+		// 70% chance 
+		if (chance < 7000)
+			ApplyMiscSkillMod( item );
+		// 30% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+	// Level 7 loot
+	elseif (magiclevel == 7)
+		
+		// 60% chance 
+		if (chance < 6000)
+			ApplyMiscSkillMod( item );
+		// 40% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+	// Level 8 loot
+	elseif (magiclevel == 8)
+		
+		// 50% chance 
+		if (chance < 5000)
+			ApplyMiscSkillMod( item );
+		// 50% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+	// Level 9 loot
+	elseif (magiclevel == 9)
+		
+		// 40% chance 
+		if (chance < 4000)
+			ApplyMiscSkillMod( item );
+		// 60% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+	// Level 10 loot
+	elseif (magiclevel == 10)
+		
+		// 30% chance 
+		if (chance < 3000)
+			ApplyMiscSkillMod( item );
+		// 70% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
+	// Level ?? loot
 	else 
-		ApplyMiscArMod( item );
+		// 20% chance 
+		if (chance < 2000)
+			ApplyMiscSkillMod( item );
+		// 80% chance
+		else 
+			ApplyMiscArMod( item );
+		endif
+
 	endif
 
-// Level 2 loot
-elseif (magiclevel == 2)
-	
-	// 93% chance 
-	if (chance < 9300)
-		ApplyMiscSkillMod( item );
-	// 7% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-
-// Level 3 loot
-elseif (magiclevel == 3)
-	
-	// 90% chance 
-	if (chance < 9000)
-		ApplyMiscSkillMod( item );
-	// 10% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-// Level 4 loot
-elseif (magiclevel == 4)
-	
-	// 85% chance 
-	if (chance < 8500)
-		ApplyMiscSkillMod( item );
-	// 15% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-// Level 5 loot
-elseif (magiclevel == 5)
-	
-	// 80% chance 
-	if (chance < 8000)
-		ApplyMiscSkillMod( item );
-	// 20% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-// Level 6 loot
-elseif (magiclevel == 6)
-	
-	// 70% chance 
-	if (chance < 7000)
-		ApplyMiscSkillMod( item );
-	// 30% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-// Level 7 loot
-elseif (magiclevel == 7)
-	
-	// 60% chance 
-	if (chance < 6000)
-		ApplyMiscSkillMod( item );
-	// 40% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-// Level 8 loot
-elseif (magiclevel == 8)
-	
-	// 50% chance 
-	if (chance < 5000)
-		ApplyMiscSkillMod( item );
-	// 50% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-// Level 9 loot
-elseif (magiclevel == 9)
-	
-	// 40% chance 
-	if (chance < 4000)
-		ApplyMiscSkillMod( item );
-	// 60% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-// Level 10 loot
-elseif (magiclevel == 10)
-	
-	// 30% chance 
-	if (chance < 3000)
-		ApplyMiscSkillMod( item );
-	// 70% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-// Level ?? loot
-else 
-	// 20% chance 
-	if (chance < 2000)
-		ApplyMiscSkillMod( item );
-	// 80% chance
-	else 
-		ApplyMiscArMod( item );
-	endif
-
-endif
-
-AddName( item );
-AddRandomColor( item );
+	AddName( item );
+	AddRandomColor( item );
 
 endfunction
 
@@ -2131,11 +2131,11 @@ var n;
 	elseif (magiclevel == 10)
 		
 		// 0% chance of durable
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of substantial
-		elseif (power < 2500)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of massive
@@ -2147,7 +2147,7 @@ var n;
 			n := 20;
 
 		// 70% chance of tempered
-		elseif (power < 96000)
+		elseif (power < 86000)
 			n := 25;
 		// 17% chance of indestructible
 		else
@@ -2158,23 +2158,23 @@ var n;
 	else
 		
 		// 0% chance of durable
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of substantial
-		elseif (power < 9900)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of massive
-		elseif (power < 7000)
+		elseif (power < 15000)
 			n := 15;
 		
 		// 5% chance of fortified
-		elseif (power < 5000)
+		elseif (power < 50000)
 			n := 20;
 
 		// 75% chance of tempered
-		elseif (power < 80000)
+		elseif (power < 70000)
 			n := 25;
 		// 20% chance of indestructible
 		else
@@ -2420,11 +2420,11 @@ var n;
 	elseif (magiclevel == 10)
 		
 		// 0% chance of defence
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of guarding
-		elseif (power < 2500)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of hardening
@@ -2447,19 +2447,19 @@ var n;
 	else
 		
 		// 0% chance of defence
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of guarding
-		elseif (power < 9900)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of hardening
-		elseif (power < 7000)
+		elseif (power < 15000)
 			n := 15;
 		
 		// 5% chance of fortification
-		elseif (power < 5000)
+		elseif (power < 50000)
 			n := 20;
 
 		// 75% chance of invulnerability
@@ -2565,7 +2565,6 @@ var n;
 		// 9.499% chance of met steel
 		else
 			n := 15;		
-
 		endif
 
 	elseif (magiclevel == 4)
@@ -2713,11 +2712,11 @@ var n;
 	elseif (magiclevel == 10)
 		
 		// 0% chance of iron
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of steel
-		elseif (power < 999999999)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of met steel
@@ -2740,7 +2739,7 @@ var n;
 	else
 		
 		// 0% chance of iron
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of steel
@@ -2748,11 +2747,11 @@ var n;
 			n := 10;
 
 		// 0% chance of met steel
-		elseif (power < 0)
+		elseif (power < 15000)
 			n := 15;
 		
 		// 5% chance of obsidian
-		elseif (power < 5000)
+		elseif (power < 50000)
 			n := 20;
 
 		// 75% chance of onynx
@@ -3003,7 +3002,7 @@ function ApplyWeapHitscript( who , item )
 			ApplySlayerHitscript( item ); // slayer weapons
 
 		// 26% chance effect
-		elseif (power < 99000)
+		elseif (power < 98000)
 			ApplyEffectHitscript( item ); // blinding/stam,mana, life drain/pzn/banish/piercing
 			SetObjProperty(item, "isRare", 1);
 
@@ -3017,15 +3016,15 @@ function ApplyWeapHitscript( who , item )
 	else
 		
 		// 32% chance of spell
-		if (power < 32000)
+		if (power < 30000)
 			ApplySpellHitscript( item ); // Spell on hit
 
 		// 32% chance slayer
-		elseif (power < 64000)
+		elseif (power < 60000)
 			ApplySlayerHitscript( item ); // slayer weapons
 
 		// 29% chance effect
-		elseif (power < 99000)
+		elseif (power < 97000)
 			ApplyEffectHitscript( item ); // blinding/stam,mana, life drain/pzn/banish/piercing
 			SetObjProperty(item, "isRare", 1);
 
@@ -3279,12 +3278,52 @@ function ApplySpellHitscript( item )
 	elseif (magiclevel == 10)
 		
 		//0% 1st circle
-		if (rand < 999999999)
+		if (rand < 0)
 		
 			ascircle := 1;
 	
 		//0% 2nd circle
-		elseif (rand < 2500)
+		elseif (rand < 0)
+
+			ascircle := 2;
+
+		//0% 3rd circle
+		elseif (rand < 26000)
+			ascircle := 3;
+
+		//10% 4th circle
+		elseif (rand < 61000)
+			ascircle := 4;
+
+		//40% 5th circle
+		elseif (rand < 70000)
+			ascircle := 5;
+
+		//35% 6th circle
+		elseif (rand < 85000)
+			ascircle := 6;
+
+		//15% 7th circle
+		elseif (rand < 95000)
+			ascircle := 7;
+
+		//15% 7th circle
+		elseif (rand < 97000)
+			ascircle := 8;
+
+		else 
+			ascircle := 9;
+		endif
+
+	elseif (magiclevel > 10)
+		
+		//0% 1st circle
+		if (rand < 0)
+		
+			ascircle := 1;
+	
+		//0% 2nd circle
+		elseif (rand < 0)
 
 			ascircle := 2;
 
@@ -3292,55 +3331,34 @@ function ApplySpellHitscript( item )
 		elseif (rand < 20000)
 			ascircle := 3;
 
-		//0% 4th circle
-		elseif (rand < 60000)
+		//10% 4th circle
+		elseif (rand < 55000)
 			ascircle := 4;
 
-		//30% 5th circle
-		elseif (rand < 96000)
+		//40% 5th circle
+		elseif (rand < 65000)
 			ascircle := 5;
 
-		//50% 6th circle
-		elseif (rand < 99000)
+		//35% 6th circle
+		elseif (rand < 80000)
 			ascircle := 6;
 
-		//20% 7th circle
-		else
+		//15% 7th circle
+		elseif (rand < 92000)
 			ascircle := 7;
+
+		//15% 7th circle
+		elseif (rand < 95000)
+			ascircle := 8;
+
+		//15% 7th circle
+		elseif (rand < 97000)
+			ascircle := 9;
+
+		else 
+			ascircle := 10;
 		endif
 
-	elseif (magiclevel > 10)
-		
-		//0% 1st circle
-		if (rand < 999999999)
-		
-			ascircle := 1;
-	
-		//0% 2nd circle
-		elseif (rand < 0)
-
-			ascircle := 2;
-
-		//0% 3rd circle
-		elseif (rand < 0)
-			ascircle := 3;
-
-		//0% 4th circle
-		elseif (rand < 0)
-			ascircle := 4;
-
-		//10% 5th circle
-		elseif (rand < 10000)
-			ascircle := 5;
-
-		//50% 6th circle
-		elseif (rand < 60000)
-			ascircle := 6;
-
-		//40% 7th circle
-		else
-			ascircle := 7;
-		endif
 	endif
 	
 	if ((ascircle > 6) || (n==10))
@@ -3356,7 +3374,9 @@ function ApplySpellHitscript( item )
 	
 	// cap max effect to 95
 	if (chanceofeffect <= 0)
-		chanceofeffect := 4;
+		chanceofeffect := 5;
+	elseif (chanceofeffect > 80)
+		chanceofeffect := 80;
 	endif
 
 	SetObjProperty( item , "ChanceOfEffect" , chanceofeffect );
@@ -3402,29 +3422,31 @@ function ApplySlayerHitscript( item )
 		n := 28;
 	elseif (power < 255)  // Giant
 		n := 30;
-	elseif (power < 305)  // Troll
+	elseif (power < 280)  // Troll
 		n := 29;
-	elseif (power < 355)  // Ophidian
+	elseif (power < 305)  // Ophidian
 		n := 26;
-	elseif (power < 380)  // Elemental
+	elseif (power < 330)  // Elemental
 		n := 31;
-	elseif (power < 405)  // Terathan
+	elseif (power < 355)  // Terathan
 		n := 25;
-	elseif (power < 430)  // Orc
+	elseif (power < 400)  // Orc
 		n := 24;
-	elseif (power < 455) // Daemon
+	elseif (power < 420) // Daemon
 		n := 33;
-	elseif (power < 480)  // Rat
+	elseif (power < 445)  // Rat
 		n := 20;
-	elseif (power < 493) // Dragon
+	elseif (power < 470) // Dragon
 		n := 34;
-	else // Undead
+	elseif (power < 490) // Undead
 		n := 32;
+	else				 // Bounty
+		n := 35;
 	endif
 
 	//n := 35; // Bounty (removed cause we don't use the assassin slayertype.)
 
-	if(n==34 || n==32 || n==10)
+	if(n==34 || n==32 || n==10 || n==35)
 		SetObjProperty(item, "isRare", 1);
 	elseif(n==14 || n==7 || n==9 || n==17 || n==20 || n==33 || n==24)
 		SetObjProperty(item, "isUncommon", 1);
@@ -3694,11 +3716,11 @@ function ApplyWeapSkillMod( item )
 	elseif (magiclevel == 10)
 		
 		// 0% chance of defence
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of guarding
-		elseif (power < 2500)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of hardening
@@ -3721,19 +3743,19 @@ function ApplyWeapSkillMod( item )
 	else
 		
 		// 0% chance of defence
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of guarding
-		elseif (power < 9900)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of hardening
-		elseif (power < 7000)
+		elseif (power < 15000)
 			n := 15;
 		
 		// 5% chance of fortification
-		elseif (power < 5000)
+		elseif (power < 50000)
 			n := 20;
 
 		// 75% chance of invulnerability
@@ -4010,11 +4032,11 @@ var n;
 	elseif (magiclevel == 10)
 		
 		// 0% chance of defence
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of guarding
-		elseif (power < 2500)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of hardening
@@ -4037,19 +4059,19 @@ var n;
 	else
 		
 		// 0% chance of defence
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of guarding
-		elseif (power < 9900)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of hardening
-		elseif (power < 7000)
+		elseif (power < 15000)
 			n := 15;
 		
 		// 5% chance of fortification
-		elseif (power < 5000)
+		elseif (power < 50000)
 			n := 20;
 
 		// 75% chance of invulnerability
@@ -4305,10 +4327,9 @@ function ApplyMiscSkillMod( item )
 		elseif (power < 90000)
 			n := 25;
 		// 11% chance of invincibility
-		elseif (power < 99750)
-			n := 30;
 		else
-			n := 50;
+			n := 30;
+
 		endif
 
 	elseif (magiclevel == 9)
@@ -4333,20 +4354,19 @@ function ApplyMiscSkillMod( item )
 		elseif (power < 85000)
 			n := 25;
 		// 14% chance of invincibility
-		elseif (power < 99750)
-			n := 30;
 		else
-			n := 50;
+			n := 30;
+
 		endif
 
 	elseif (magiclevel == 10)
 		
 		// 0% chance of defence
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of guarding
-		elseif (power < 2500)
+		elseif (power < 0)
 			n := 10;
 
 		// 0% chance of hardening
@@ -4360,16 +4380,17 @@ function ApplyMiscSkillMod( item )
 		// 70% chance of invulnerability
 		elseif (power < 96000)
 			n := 25;
-		// 17% chance of invincibility
+
+		// 14% chance of invincibility
 		else
 			n := 30;
-		endif
 
+		endif
 	// Higher than 10
 	else
 		
 		// 0% chance of defence
-		if (power < 999999999)
+		if (power < 0)
 			n := 5;
 
 		// 0% chance of guarding
@@ -4377,22 +4398,24 @@ function ApplyMiscSkillMod( item )
 			n := 10;
 
 		// 0% chance of hardening
-		elseif (power < 7000)
+		elseif (power < 15000)
 			n := 15;
 		
 		// 5% chance of fortification
-		elseif (power < 5000)
+		elseif (power < 50000)
 			n := 20;
 
 		// 75% chance of invulnerability
 		elseif (power < 80000)
 			n := 25;
-		// 20% chance of invincibility
-		elseif (power < 90000)
-			n := 30;
-		endif
-	endif
 
+		// 14% chance of invincibility
+		else
+			n := 30;
+
+		endif
+
+	endif
 
 	if(n == 25)
 		SetObjProperty(item, "isUncommon", 1);
@@ -4417,13 +4440,11 @@ function ApplyMiscSkillMod( item )
 	SetObjProperty( item , "skilladv" , skillid );
 	SetObjProperty( item , "skilladvamount" , amount );
 
-
-
-if(n == 50)
-	if(skillid == SKILLID_ALCHEMY or skillid == SKILLID_MAGERY or skillid == SKILLID_ITEMID or skillid == SKILLID_EVALINT or skillid == SKILLID_INSCRIPTION or skillid == SKILLID_MAGICRESISTANCE or skillid == SKILLID_MEDITATION or skillid == SKILLID_SPIRITSPEAK)
-		EraseObjProperty( item , "ArBonus");
-	endif
-endif
+//if(n == 50)
+//	if(skillid == SKILLID_ALCHEMY or skillid == SKILLID_MAGERY or skillid == SKILLID_ITEMID or skillid == SKILLID_EVALINT or skillid == SKILLID_INSCRIPTION or skillid == SKILLID_MAGICRESISTANCE or skillid == SKILLID_MEDITATION or skillid == SKILLID_SPIRITSPEAK)
+//		EraseObjProperty( item , "ArBonus");
+//	endif
+//endif
 
 endfunction
 
@@ -4749,7 +4770,6 @@ function ApplySpellOnHitscript( item )
 			ascircle := 6;
 		endif
 	
-
 	elseif (magiclevel == 7)
 		
 		//0% 1st circle
@@ -4792,28 +4812,24 @@ function ApplySpellOnHitscript( item )
 			ascircle := 2;
 
 		//5% 3rd circle
-		elseif (rand < 0)
+		elseif (rand < 61000)
 			ascircle := 3;
 
 		//15% 4th circle
-		elseif (rand < 61000)
+		elseif (rand < 70000)
 			ascircle := 4;
 
 		//40% 5th circle
-		elseif (rand < 75000)
+		elseif (rand < 85000)
 			ascircle := 5;
 
 		//30% 6th circle
-		elseif (rand < 85000)
-			ascircle := 6;
-			
-		//30% 6th circle
 		elseif (rand < 95000)
-			ascircle := 7;
+			ascircle := 6;
 
-		//10% 7th circle
+		//30% 6th circle
 		else
-			ascircle := 8;
+			ascircle := 7;
 		endif
 
 	elseif (magiclevel == 9)
@@ -4829,7 +4845,7 @@ function ApplySpellOnHitscript( item )
 			ascircle := 2;
 
 		//0% 3rd circle
-		elseif (rand < 0)
+		elseif (rand < 26000)
 			ascircle := 3;
 
 		//10% 4th circle
@@ -4837,14 +4853,14 @@ function ApplySpellOnHitscript( item )
 			ascircle := 4;
 
 		//40% 5th circle
-		elseif (rand < 75000)
+		elseif (rand < 70000)
 			ascircle := 5;
 
 		//35% 6th circle
 		elseif (rand < 85000)
 			ascircle := 6;
-			
-		//35% 6th circle
+
+		//15% 7th circle
 		elseif (rand < 95000)
 			ascircle := 7;
 
@@ -4856,12 +4872,52 @@ function ApplySpellOnHitscript( item )
 	elseif (magiclevel == 10)
 		
 		//0% 1st circle
-		if (rand < 999999999)
+		if (rand < 0)
 		
 			ascircle := 1;
 	
 		//0% 2nd circle
-		elseif (rand < 2500)
+		elseif (rand < 0)
+
+			ascircle := 2;
+
+		//0% 3rd circle
+		elseif (rand < 26000)
+			ascircle := 3;
+
+		//10% 4th circle
+		elseif (rand < 61000)
+			ascircle := 4;
+
+		//40% 5th circle
+		elseif (rand < 70000)
+			ascircle := 5;
+
+		//35% 6th circle
+		elseif (rand < 85000)
+			ascircle := 6;
+
+		//15% 7th circle
+		elseif (rand < 95000)
+			ascircle := 7;
+
+		//15% 7th circle
+		elseif (rand < 97000)
+			ascircle := 8;
+
+		else 
+			ascircle := 9;
+		endif
+
+	elseif (magiclevel > 10)
+		
+		//0% 1st circle
+		if (rand < 0)
+		
+			ascircle := 1;
+	
+		//0% 2nd circle
+		elseif (rand < 0)
 
 			ascircle := 2;
 
@@ -4869,55 +4925,34 @@ function ApplySpellOnHitscript( item )
 		elseif (rand < 20000)
 			ascircle := 3;
 
-		//0% 4th circle
-		elseif (rand < 60000)
+		//10% 4th circle
+		elseif (rand < 55000)
 			ascircle := 4;
 
-		//30% 5th circle
-		elseif (rand < 96000)
+		//40% 5th circle
+		elseif (rand < 65000)
 			ascircle := 5;
 
-		//50% 6th circle
-		elseif (rand < 98500)
+		//35% 6th circle
+		elseif (rand < 80000)
 			ascircle := 6;
 
-		//20% 7th circle
-		else
+		//15% 7th circle
+		elseif (rand < 92000)
 			ascircle := 7;
+
+		//15% 7th circle
+		elseif (rand < 95000)
+			ascircle := 8;
+
+		//15% 7th circle
+		elseif (rand < 97000)
+			ascircle := 9;
+
+		else 
+			ascircle := 10;
 		endif
 
-	elseif (magiclevel > 10)
-		
-		//0% 1st circle
-		if (rand < 999999999)
-		
-			ascircle := 1;
-	
-		//0% 2nd circle
-		elseif (rand < 0)
-
-			ascircle := 2;
-
-		//0% 3rd circle
-		elseif (rand < 0)
-			ascircle := 3;
-
-		//0% 4th circle
-		elseif (rand < 0)
-			ascircle := 4;
-
-		//10% 5th circle
-		elseif (rand < 10000)
-			ascircle := 5;
-
-		//50% 6th circle
-		elseif (rand < 60000)
-			ascircle := 6;
-
-		//40% 7th circle
-		else
-			ascircle := 7;
-		endif
 	endif
 
 	var ascirclemod := onhitcfg[n].AsCircleMod;
@@ -4937,7 +4972,9 @@ function ApplySpellOnHitscript( item )
 	var chanceofeffect := RandomDiceStr("1d11") * magiclevel;
 	
 	if (chanceofeffect <= 0)
-		chanceofeffect := 4;
+		chanceofeffect := 5;
+	elseif (chanceofeffect > 80)
+		chanceofeffect := 80;
 	endif
 
 	SetObjProperty( item , "ChanceOfEffect" , chanceofeffect );
@@ -4989,16 +5026,14 @@ function ApplyResistantOnHitscript( item )
 		n := 30;
 	elseif (power < 780)
 		n := 31;
-	elseif (power < 840)
+	elseif (power < 820)
 		n := 32;
-	elseif (power < 900)
+	elseif (power < 860)
 		n := 33;
-	else
+	elseif (power < 900)
 		n := 34;
-/*
 	else
 		n := 35;
-*/
 	endif
 
 	if(n > 15)
@@ -5602,23 +5637,23 @@ function DetermineImmunityLevel(item, isimmun := 0, modifier := 0)
 	elseif (magiclevel > 9) 
 
 		// 0% chance of level 1
-		if (power < 999999999)
+		if (power < 0)
 			n := 1;
 
 		// 0% chance of level 2
-		elseif (power < 19000)
+		elseif (power < 0)
 			n := 2;
 
 		// 20% chance of level 3
-		elseif (power < 59000)
+		elseif (power < 30000)
 			n := 3;
 		
 		// 50% chance of level 4
-		elseif (power < 79000)
+		elseif (power < 60000)
 			n := 4;
 
 		// 20% chance of level 5
-		elseif (power < 95000)
+		elseif (power < 80000)
 			n := 5;			
 		
 		// 10% chance of level 6
@@ -5648,12 +5683,12 @@ function ApplyProtection( item )
 	
 
 	case (num)
-		1: charges := 5;
-		2: charges := 10;
-		3: charges := 15;
-		4: charges := 20;
-		5: charges := 25;
-		6: charges := 30;
+		1: charges := 15;
+		2: charges := 20;
+		3: charges := 25;
+		4: charges := 30;
+		5: charges := 35;
+		6: charges := 40;
 	endcase
    	
 
@@ -6039,4 +6074,4 @@ function SetOnHitscript( item , n , multiplier )
 	
 	set_critical( 0 );
 
-endfunction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+endfunction
