@@ -1634,7 +1634,7 @@ var n;
 	if (magiclevel <= 0)
 			n := 1;
 	elseif (magiclevel == 1)
-		
+
 		// 98% chance of ruin
 		if (power < 98000)
 			n := 1;
@@ -3375,8 +3375,8 @@ function ApplySpellHitscript( item )
 	// cap max effect to 95
 	if (chanceofeffect <= 0)
 		chanceofeffect := 5;
-	elseif (chanceofeffect > 80)
-		chanceofeffect := 80;
+	//elseif (chanceofeffect > 80)
+	//	chanceofeffect := 80;
 	endif
 
 	SetObjProperty( item , "ChanceOfEffect" , chanceofeffect );
@@ -4973,8 +4973,8 @@ function ApplySpellOnHitscript( item )
 	
 	if (chanceofeffect <= 0)
 		chanceofeffect := 5;
-	elseif (chanceofeffect > 80)
-		chanceofeffect := 80;
+	//elseif (chanceofeffect > 80)
+	//	chanceofeffect := 80;
 	endif
 
 	SetObjProperty( item , "ChanceOfEffect" , chanceofeffect );
