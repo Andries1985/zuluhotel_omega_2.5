@@ -230,48 +230,120 @@ program textcmd_sign( who , sign )
 						endif
 
 						case (house.objtype)
-							0x6064: CreateItemInBackpack( who, 0x6019, 1 );
-							0x6066: CreateItemInBackpack( who, 0x601A, 1 );
-							0x6068: CreateItemInBackpack( who, 0x6231, 1 );
-							0x606A: CreateItemInBackpack( who, 0x601B, 1 );
-							0x606C: CreateItemInBackpack( who, 0x601C, 1 );
-							0x606E: CreateItemInBackpack( who, 0x601D, 1 );
-							0x6070: CreateItemInBackpack( who, 0x601E, 1 );
-							0x6072: CreateItemInBackpack( who, 0x601F, 1 );
-							0x6074: CreateItemInBackpack( who, 0x6020, 1 );
-							0x6076: CreateItemInBackpack( who, 0x6021, 1 );
-							0x6078: CreateItemInBackpack( who, 0x6022, 1 );
-							0x607A: CreateItemInBackpack( who, 0x6023, 1 );
-							0x607C: CreateItemInBackpack( who, 0x6024, 1 );
-							0x607E: CreateItemInBackpack( who, 0x6025, 1 );
-							0x608C: CreateItemInBackpack( who, 0x6026, 1 );
-							0x608D: CreateItemInBackpack( who, 0x6230, 1 );
-							0x60A0: CreateItemInBackpack( who, 0x6227, 1 );
-							0x60A2: CreateItemInBackpack( who, 0x6228, 1 );
-							0x6098: CreateItemInBackpack( who, 0x6229, 1 );
-							0x609C: CreateItemInBackpack( who, 0x622A, 1 );
-							0x609A: CreateItemInBackpack( who, 0x622B, 1 );
-							0x609E: CreateItemInBackpack( who, 0x622C, 1 );
-							0x6096: CreateItemInBackpack( who, 0x622D, 1 );
-							0x6388: CreateItemInBackpack( who, 0x622E, 1 );
-							0x6BB8: CreateItemInBackpack( who, 0x622F, 1 );
-							0xA3E0: CreateItemInBackpack( who, 0x6233, 1 );
-							0xA3E1: CreateItemInBackpack( who, 0x6234, 1 );
-							0xA3E2: CreateItemInBackpack( who, 0x6235, 1 );
-							0xA3E3: CreateItemInBackpack( who, 0x6236, 1 );
-							0xA3E4: CreateItemInBackpack( who, 0x6237, 1 );
-							0xA3E5: CreateItemInBackpack( who, 0x6238, 1 );
-							0xA3E6: CreateItemInBackpack( who, 0x6239, 1 );
-							0xA3E7: CreateItemInBackpack( who, 0x623D, 1 );
-							0xA3E8: CreateItemInBackpack( who, 0x623E, 1 );
-							0xA3E9: CreateItemInBackpack( who, 0x623F, 1 );
-							0xA3EA: CreateItemInBackpack( who, 0x6240, 1 );
-							0xA3EB: CreateItemInBackpack( who, 0x6241, 1 );
-							0xA3EC: CreateItemInBackpack( who, 0x6243, 1 );
-							0xA3ED: CreateItemInBackpack( who, 0x6244, 1 );
-							0xA3EE: CreateItemInBackpack( who, 0x6245, 1 );
-							0xA3EF: CreateItemInBackpack( who, 0x6246, 1 );
-							0xA3F0: CreateItemInBackpack( who, 0x6247, 1 );
+							0x6064: CreateItemInBackpack( who, 0x6019, 1 ); // smallstoneandplasterhouse
+							0x6066: CreateItemInBackpack( who, 0x601A, 1 ); // smallstonehouse
+							0x6068: CreateItemInBackpack( who, 0x6231, 1 ); // smallstonehouse2
+							0x606A: CreateItemInBackpack( who, 0x601B, 1 ); // smallwoodenhouse
+							0x606C: CreateItemInBackpack( who, 0x601C, 1 ); // smallplasterhouse
+							0x606E: CreateItemInBackpack( who, 0x601D, 1 ); // smallwoodandstrawhouse
+							0x6070: CreateItemInBackpack( who, 0x601E, 1 ); // bluetent
+							0x6072: CreateItemInBackpack( who, 0x601F, 1 ); // greentent
+							0x6074: CreateItemInBackpack( who, 0x6020, 1 ); // largebrickhouse
+							0x6076: CreateItemInBackpack( who, 0x6021, 1 ); // twostorywoodandplasterhouse
+							0x6078: CreateItemInBackpack( who, 0x6022, 1 ); // twostorystoneandplasterhouse
+							0x607A: CreateItemInBackpack( who, 0x6023, 1 ); // tower
+							0x607C: CreateItemInBackpack( who, 0x6024, 1 ); // keep
+							0x607E: CreateItemInBackpack( who, 0x6025, 1 ); // castle
+							0x608C: CreateItemInBackpack( who, 0x6026, 1 ); // largepatiohouse
+							0x608D: CreateItemInBackpack( who, 0x6230, 1 ); // largeranchpatio
+							0x60A0: CreateItemInBackpack( who, 0x6227, 1 ); // smallstoneshop
+							0x60A2: CreateItemInBackpack( who, 0x6228, 1 ); // smallmarbleshop
+							0x6098: CreateItemInBackpack( who, 0x6229, 1 ); // smalltower
+							0x609C: CreateItemInBackpack( who, 0x622A, 1 ); // sandstonepatiohouse
+							0x609A: CreateItemInBackpack( who, 0x622B, 1 ); // twostorylogcabin
+							0x609E: CreateItemInBackpack( who, 0x622C, 1 ); // twostoryvilla
+							0x6096: CreateItemInBackpack( who, 0x622D, 1 ); // largemarblepatiohouse
+							// 0x6388: CreateItemInBackpack( who, 0x622E, 1 ); // Minax Castle (not used)
+							0x6BB8: CreateItemInBackpack( who, 0x622F, 1 ); // logcabin
+							// Zuluhotel Omega Custom Additions start here.
+							// 0xA3DE: CreateItemInBackpack( who, 0x60D2, 1 ); // caveentrance
+							// 0xA3DF: CreateItemInBackpack( who, 0x60D3, 1 ); // elventree
+							// Zuluhotel Omega Custom Houses start here.
+							0xA3E0: CreateItemInBackpack( who, 0x60D4, 1 ); // twostorybrickhouse
+							0xA3E1: CreateItemInBackpack( who, 0x60D5, 1 ); // twostorybrickvilla
+							0xA3E2: CreateItemInBackpack( who, 0x60D6, 1 ); // twostorylargelogcabin
+							0xA3E3: CreateItemInBackpack( who, 0x60D7, 1 ); // twostoryplastermanor
+							0xA3E4: CreateItemInBackpack( who, 0x60D8, 1 ); // twostorythatchedmanor
+							0xA3E5: CreateItemInBackpack( who, 0x60D9, 1 ); // fourstorystoneandplasterhouse
+							0xA3E6: CreateItemInBackpack( who, 0x60DA, 1 ); // threestorystonehouse
+							0xA3E7: CreateItemInBackpack( who, 0x60DB, 1 ); // largestonemanor
+							0xA3E8: CreateItemInBackpack( who, 0x60DC, 1 ); // fourstorystonehouse
+							0xA3E9: CreateItemInBackpack( who, 0x60DD, 1 ); // threestorydoublehouse
+							0xA3EA: CreateItemInBackpack( who, 0x60DE, 1 ); // threestorylargeplastermanor
+							0xA3EB: CreateItemInBackpack( who, 0x60DF, 1 ); // threestorystonevilla
+							0xA3EC: CreateItemInBackpack( who, 0x60E0, 1 ); // marbletower
+							0xA3ED: CreateItemInBackpack( who, 0x60E1, 1 ); // threestoryvilla
+							0xA3EE: CreateItemInBackpack( who, 0x60E2, 1 ); // threestoryorientalhouse
+							0xA3EF: CreateItemInBackpack( who, 0x60E3, 1 ); // mediumtower
+							0xA3F0: CreateItemInBackpack( who, 0x60E4, 1 ); // squareplasterhouse
+							0xA3F1: CreateItemInBackpack( who, 0x60E5, 1 ); // customhouse1
+							0xA3F2: CreateItemInBackpack( who, 0x60E6, 1 ); // customhouse2
+							0xA3F3: CreateItemInBackpack( who, 0x60E7, 1 ); // customhouse3
+							0xA3F4: CreateItemInBackpack( who, 0x60E8, 1 ); // customhouse4
+							0xA3F5: CreateItemInBackpack( who, 0x60E9, 1 ); // customhouse5
+							0xA3F6: CreateItemInBackpack( who, 0x60EA, 1 ); // customhouse6
+							0xA3F7: CreateItemInBackpack( who, 0x60EB, 1 ); // customhouse7
+							0xA3F8: CreateItemInBackpack( who, 0x60EC, 1 ); // customhouse8
+							0xA3F9: CreateItemInBackpack( who, 0x60ED, 1 ); // customhouse9
+							0xA3FA: CreateItemInBackpack( who, 0x60EE, 1 ); // customhouse10
+							0xA3FB: CreateItemInBackpack( who, 0x60F0, 1 ); // customhouse11
+							0xA3FC: CreateItemInBackpack( who, 0x60F1, 1 ); // customhouse12
+							0xA3FD: CreateItemInBackpack( who, 0x60F2, 1 ); // customhouse13
+							0xA3FE: CreateItemInBackpack( who, 0x60F3, 1 ); // customhouse14
+							0xA3FF: CreateItemInBackpack( who, 0x60F4, 1 ); // customhouse15
+							0xA400: CreateItemInBackpack( who, 0x60F5, 1 ); // customhouse16
+							0xA401: CreateItemInBackpack( who, 0x60FB, 1 ); // customhouse17
+							0xA402: CreateItemInBackpack( who, 0x60FC, 1 ); // customhouse18
+							0xA403: CreateItemInBackpack( who, 0x60FD, 1 ); // customhouse19
+							0xA404: CreateItemInBackpack( who, 0x60FE, 1 ); // customhouse20
+							0xA405: CreateItemInBackpack( who, 0x60FF, 1 ); // customhouse21
+							0xA406: CreateItemInBackpack( who, 0x6100, 1 ); // customhouse22
+							0xA407: CreateItemInBackpack( who, 0x6101, 1 ); // customhouse23
+							0xA408: CreateItemInBackpack( who, 0x6102, 1 ); // customhouse24
+							0xA409: CreateItemInBackpack( who, 0x6105, 1 ); // customhouse25
+							0xA40A: CreateItemInBackpack( who, 0x6107, 1 ); // customhouse26
+							0xA40B: CreateItemInBackpack( who, 0x6108, 1 ); // customhouse27
+							0xA40C: CreateItemInBackpack( who, 0x6109, 1 ); // customhouse28
+							0xA40D: CreateItemInBackpack( who, 0x610A, 1 ); // customhouse29
+							0xA40E: CreateItemInBackpack( who, 0x610C, 1 ); // customhouse30
+							0xA40F: CreateItemInBackpack( who, 0x610D, 1 ); // customhouse31
+							0xA410: CreateItemInBackpack( who, 0x610E, 1 ); // customhouse32
+							0xA411: CreateItemInBackpack( who, 0x610F, 1 ); // customhouse33
+							0xA412: CreateItemInBackpack( who, 0x6110, 1 ); // customhouse34
+							0xA413: CreateItemInBackpack( who, 0x6111, 1 ); // customhouse35
+							0xA414: CreateItemInBackpack( who, 0x6112, 1 ); // customhouse36
+							0xA415: CreateItemInBackpack( who, 0x6115, 1 ); // customhouse37
+							0xA416: CreateItemInBackpack( who, 0x6116, 1 ); // customhouse38
+							0xA417: CreateItemInBackpack( who, 0x6117, 1 ); // customhouse39
+							0xA418: CreateItemInBackpack( who, 0x6118, 1 ); // customhouse40
+							0xA419: CreateItemInBackpack( who, 0x6119, 1 ); // customhouse41
+							0xA41A: CreateItemInBackpack( who, 0x611A, 1 ); // customhouse42
+							0xA41B: CreateItemInBackpack( who, 0x611B, 1 ); // customhouse43
+							0xA41C: CreateItemInBackpack( who, 0x611E, 1 ); // customhouse44
+							0xA41D: CreateItemInBackpack( who, 0x611F, 1 ); // customhouse45
+							0xA41E: CreateItemInBackpack( who, 0x6120, 1 ); // customhouse46
+							0xA41F: CreateItemInBackpack( who, 0x6121, 1 ); // customhouse47
+							0xA420: CreateItemInBackpack( who, 0x6122, 1 ); // customhouse48
+							0xA421: CreateItemInBackpack( who, 0x6123, 1 ); // customhouse49
+							0xA422: CreateItemInBackpack( who, 0x6124, 1 ); // customhouse50
+							0xA423: CreateItemInBackpack( who, 0x6125, 1 ); // customhouse51
+							0xA424: CreateItemInBackpack( who, 0x6126, 1 ); // customhouse52
+							0xA425: CreateItemInBackpack( who, 0x6127, 1 ); // customhouse53
+							0xA426: CreateItemInBackpack( who, 0x6128, 1 ); // customhouse54
+							0xA427: CreateItemInBackpack( who, 0x6129, 1 ); // customhouse55
+							0xA428: CreateItemInBackpack( who, 0x612A, 1 ); // customhouse56
+							0xA429: CreateItemInBackpack( who, 0x612B, 1 ); // customhouse57
+							0xA42A: CreateItemInBackpack( who, 0x6141, 1 ); // customhouse58
+							0xA42B: CreateItemInBackpack( who, 0x6142, 1 ); // customhouse59
+							0xA42C: CreateItemInBackpack( who, 0x6143, 1 ); // customhouse60
+							0xA42D: CreateItemInBackpack( who, 0x6144, 1 ); // customhouse61
+							0xA42E: CreateItemInBackpack( who, 0x6145, 1 ); // customhouse62
+							0xA42F: CreateItemInBackpack( who, 0x6148, 1 ); // customhouse63
+							0xA430: CreateItemInBackpack( who, 0x614E, 1 ); // customhouse64
+							0xA431: CreateItemInBackpack( who, 0x614F, 1 ); // customhouse65
+							0xA432: CreateItemInBackpack( who, 0x6150, 1 ); // customhouse66
+							0xA433: CreateItemInBackpack( who, 0x6151, 1 ); // customhouse67
+							0xA434: CreateItemInBackpack( who, 0x6153, 1 ); // customhouse68
 						endcase
 						addonitem := CInt(GetObjProperty( house, "component1" ));
 						if (addonitem) destroyitem(systemfindobjectbyserial(addonitem)); endif
@@ -501,6 +573,139 @@ function AssignDefaultContainers( house )
 		        SetObjProperty( house , "numsecure" , 8 );
 		0xA3F0: SetObjProperty( house , "numlockdowns" , 1300 );
 		        SetObjProperty( house , "numsecure" , 13 );
+		0xA3F1: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );
+		0xA3F2: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );		
+		0xA3F3: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3F4: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3F5: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3F6: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3F7: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3F8: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3F9: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3FA: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3FB: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3FC: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3FD: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3FE: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA3FF: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA400: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA401: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA402: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA403: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA404: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA405: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA406: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA407: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA408: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA409: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA40A: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA40B: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA40C: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA40E: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA40F: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA411: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA412: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA413: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA414: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA415: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA416: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA417: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA418: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA419: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA41A: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA41B: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA41C: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA41D: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA41E: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA41F: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA420: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA421: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA422: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA423: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA424: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA425: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA426: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA427: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA428: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA429: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA42A: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA42B: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA42C: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA42D: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA42E: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA42F: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA430: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA431: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA432: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA433: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+		0xA434: SetObjProperty( house , "numlockdowns" , 1300 );
+		        SetObjProperty( house , "numsecure" , 13 );				
+	
 	endcase
 
 endfunction
@@ -1531,6 +1736,138 @@ function GetMaxProps( house )
 		        SetObjProperty( house , "maxnumsecure" , 8 );
 		0xA3F0: SetObjProperty( house , "maxnumlockdowns" , 1300 );
 		        SetObjProperty( house , "maxnumsecure" , 13 );
+		0xA3F1: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );
+		0xA3F2: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3F3: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3F4: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3F5: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3F6: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3F7: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3F8: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3F9: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3FA: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3FB: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3FC: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3FD: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3FE: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA3FF: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA400: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA401: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA402: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA403: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA404: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA405: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA406: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA407: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA408: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA409: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA40A: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA40B: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA40C: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA40E: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA40F: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA411: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA412: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA413: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA414: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA415: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA416: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA417: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA418: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA419: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA41A: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA41B: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA41C: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA41D: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA41E: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA41F: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA420: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA421: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA422: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA423: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA424: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA425: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA426: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA427: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA428: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA429: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA42A: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA42B: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA42C: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA42D: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA42E: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA42F: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA430: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA431: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA432: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA433: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
+		0xA434: SetObjProperty( house , "maxnumlockdowns" , 1300 );
+		        SetObjProperty( house , "maxnumsecure" , 13 );				
 	endcase
 
 endfunction

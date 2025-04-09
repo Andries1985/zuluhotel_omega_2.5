@@ -117,6 +117,7 @@ function Buildhouse( character, deed )
         return;
     endif
 
+    // TODO: Add the restrictions for the other facets.
     if(character.realm == "britannia")
         if(character.cmdlevel < 4)
             if(where.x >= 5120)
@@ -349,6 +350,414 @@ function Buildhouse( character, deed )
       SetObjProperty( item, "house_serial", created.house.serial );
    endif
    if (housetype==0xA3F0) // squareplasterhouse
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3F1) // customhouse1
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3F2) // customhouse2
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif   
+   if (housetype==0xA3F3) // customhouse3
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3F4) // customhouse4
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3F5) // customhouse5
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3F6) // customhouse6
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3F7) // customhouse7
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3F8) // customhouse8
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3F9) // customhouse9
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3FA) // customhouse10
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3FB) // customhouse11
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3FC) // customhouse12
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3FD) // customhouse13
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3FE) // customhouse14
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA3FF) // customhouse15
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA400) // customhouse16
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA401) // customhouse17
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA402) // customhouse18
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA403) // customhouse19
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA404) // customhouse20
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA405) // customhouse21
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA406) // customhouse22
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA407) // customhouse23
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA408) // customhouse24
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA409) // customhouse25
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA40A) // customhouse26
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA40B) // customhouse27
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA40C) // customhouse28
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA40D) // customhouse29
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA40E) // customhouse30
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA40F) // customhouse31
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA410) // customhouse32
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA411) // customhouse33
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA412) // customhouse34
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA413) // customhouse35
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA414) // customhouse36
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA415) // customhouse37
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA416) // customhouse38
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA417) // customhouse39
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA418) // customhouse40
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA419) // customhouse41
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA41A) // customhouse42
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA41B) // customhouse43
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA41C) // customhouse44
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA41D) // customhouse45
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA41E) // customhouse46
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA41F) // customhouse47
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA420) // customhouse48
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA421) // customhouse49
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA422) // customhouse50
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA423) // customhouse51
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA424) // customhouse52
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA425) // customhouse53
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA426) // customhouse54
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA427) // customhouse55
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA428) // customhouse56
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA429) // customhouse57
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA42A) // customhouse58
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA42B) // customhouse59
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA42C) // customhouse60
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA42D) // customhouse61
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA42E) // customhouse62
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA42F) // customhouse63
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA430) // customhouse64
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA431) // customhouse65
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA432) // customhouse66
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA433) // customhouse67
+      SetObjProperty( created.house , "component1", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+      SetObjProperty( created.house , "component3", item.serial );
+      SetObjProperty( item, "house_serial", created.house.serial );
+   endif
+   if (housetype==0xA434) // customhouse68
       SetObjProperty( created.house , "component1", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
       SetObjProperty( created.house , "component3", item.serial );

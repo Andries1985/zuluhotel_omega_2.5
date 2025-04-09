@@ -52,9 +52,9 @@ Installation
 		
 	Replace it with either, depanding if you use objtype.inc or not :
 	
-		if( cast_on.objtype != UOBJ_RUNE and cast_on.objtype != 0x6100 )
+		if( cast_on.objtype != UOBJ_RUNE and cast_on.objtype != 0x7100 )
 		or
-		if( cast_on.objtype != 0x1F14 and cast_on.objtype != 0x6100 )
+		if( cast_on.objtype != 0x1F14 and cast_on.objtype != 0x7100 )
 		
 
 	You're ready to go :)
