@@ -1,0 +1,403 @@
+use uo;
+use os;
+use npc;
+use vitals;
+
+include "ai/setup/modsetup";
+include "include/eventid";
+include "include/client";
+include "include/random";
+include "include/starteqp";
+
+var me:= self();
+
+var layout := {
+   "page 0",
+   "nodispose",
+   "resizepic 0 0 3600 640 480",
+   "text 80 15 550 0",
+   "text 20 70 600 1",
+   "button 150 70 210 211 2 2 2",
+   "tilepic 20 100 5121",
+   "text 20 190 600 2",
+   //"button 150 190 210 211 3 3 3",
+   //"text 20 300 600 3",
+   //"button 150 300 210 211 4 4 4",
+   //"tilepic 20 230 5073",
+   //"tilepic 20 340 5142",
+   "text 170 100 600 4", //shield hammer desc
+   "text 170 115 600 5", //shield hammer desc cont..
+   "text 170 215 600 6", //leather desc
+   "text 170 230 600 7", // cont..
+   "text 170 245 600 8", // cont..
+   "text 170 340 600 9", //Plate
+   "text 170 355 600 10", //cont...
+   "text 170 370 600 11", //cont..
+   "page 1"
+};
+
+var data := {
+
+   "Welcome to the Stygian Prize Choosing",
+   "Random Stygian Item",
+   " ",
+   " ",
+   "The shrine will grant a Stygian Weapon",
+   "or Robe, if the gods so choose.",
+   " ",
+   " ",
+   " ",
+   " ",
+   " ",
+   " ",
+   " "
+};
+
+var layout2 := {
+   "page 0",
+   "nodispose",
+   "resizepic 0 0 3600 640 480",
+   "text 90 15 550 0",
+   "text 20 70 600 1",
+   "text 20 100 600 2",
+   "text 20 120 600 3",
+   "text 20 140 600 4",
+   "text 20 180 600 5",
+   "text 20 220 600 6",
+   "text 20 240 600 7",
+   "text 20 260 600 8",
+   "text 200 370 600 9",
+   "tilepic 170 350 2852",
+   "tilepic 400 350 2852",
+   "page 1"
+};
+
+
+
+var data2 := {
+   "Welcome to the Element Help System", //0
+   "What to do with all 9 Stygian Pentagram pieces?", //1
+   "  Bring them to me and drop them on me.", //2
+   "  You do not have to bring them all at the same time or", //3 
+   "  in any particular order.", //4
+   "Where can you find the 9 Stygian Pentagram pieces?", //5
+   "  Pentagram pieces can be found on stronger monsters.", //6
+   "  ",//7
+   "  ", //8
+   "  Good Luck Brave Traveler" //9
+};
+
+program stygianshrine()
+
+   EnableEvents( SYSEVENT_ITEM_GIVEN);
+   EnableEvents( SYSEVENT_SPEECH,2);
+   EnableEvents(SYSEVENT_DAMAGED + SYSEVENT_ENGAGED);
+
+   while (1)
+      var ev := wait_for_event( 30 );
+      if (ev)
+         case(ev.type)
+            SYSEVENT_SPEECH:
+            TurnToward( ev.source );
+            if (ev.text["hello"] or ev.text["help"]) help(ev.source); endif
+            // Added by Terence 07-08-2002
+
+            if (ev.text["claim"]) claim(ev.source); endif	
+
+            // End added 
+            SYSEVENT_ITEM_GIVEN: ProcessItem(ev.source, ev.item);
+            SYSEVENT_DAMAGED: 
+            SYSEVENT_ENGAGED:  say("guards!!!");
+         endcase
+      endif
+   endwhile
+
+endprogram
+
+function ProcessItem(who, item)
+
+   var gotitem;
+
+   if(item.objtype == 0x366) 
+      if (getobjproperty(who, "stygianpent1")==1)
+         say("You've already given me that piece.");
+         MoveItemToContainer(item, who.backpack);
+         return;
+      else
+         setitems(who,1);
+         DestroyItem(item);
+      endif
+   endif
+
+   if(item.objtype == 0x367) 
+      if (getobjproperty(who, "stygianpent2")==1)
+         say("You've already given me that piece.");
+         MoveItemToContainer(item, who.backpack);
+         return;
+      else
+         setitems(who,2);
+         DestroyItem(item);
+      endif
+   endif
+
+
+   if(item.objtype == 0x368) 
+      if (getobjproperty(who, "stygianpent3")==1)
+         say("You've already given me that piece.");
+         MoveItemToContainer(item, who.backpack);
+         return;
+      else
+         setitems(who,3);
+         DestroyItem(item);
+      endif
+   endif
+
+
+   if(item.objtype == 0x369) 
+      if (getobjproperty(who, "stygianpent4")==1)
+         say("You've already given me that piece.");
+         MoveItemToContainer(item, who.backpack);
+         return;
+      else
+         setitems(who,4);
+         DestroyItem(item);
+      endif
+   endif
+
+
+   if(item.objtype == 0x36A) 
+      if (getobjproperty(who, "stygianpent5")==1)
+         say("You've already given me that piece.");
+         MoveItemToContainer(item, who.backpack);
+         return;
+      else
+         setitems(who,5);
+         DestroyItem(item);
+      endif
+   endif
+
+
+   if(item.objtype == 0x36B) 
+      if (getobjproperty(who, "stygianpent6")==1)
+         say("You've already given me that piece.");
+         MoveItemToContainer(item, who.backpack);
+         return;
+      else
+         setitems(who,6);
+         DestroyItem(item);
+      endif
+   endif
+
+
+   if(item.objtype == 0x36C) 
+      if (getobjproperty(who, "stygianpent7")==1)
+         say("You've already given me that piece.");
+         MoveItemToContainer(item, who.backpack);
+         return;
+      else
+         setitems(who,7);
+         DestroyItem(item);
+      endif
+   endif
+
+
+   if(item.objtype == 0x36D) 
+      if (getobjproperty(who, "stygianpent8")==1)
+         say("You've already given me that piece.");
+         MoveItemToContainer(item, who.backpack);
+         return;
+      else
+         setitems(who,8);
+         DestroyItem(item);
+      endif
+   endif
+
+
+   if(item.objtype == 0x36E) 
+      if (getobjproperty(who, "stygianpent9")==1)
+         say("You've already given me that piece.");
+         MoveItemToContainer(item, who.backpack);
+         return;
+      else
+         setitems(who,9);
+         DestroyItem(item);
+      endif
+   endif
+
+   if(item)
+      say("I don't want that!");
+      MoveItemToContainer(item, who.backpack);
+      return;
+   endif
+
+   if( checkforall(who)==1 )
+      gotitem :=BuildPrizeGump( who );
+      if ( gotitem > 1 && gotitem < 5 ) 
+         clearitems(who);
+      endif
+   endif
+
+endfunction
+
+// Added by Terence 07-08-2002
+function claim(who)
+
+   var gotitem;
+   if(checkforall(who)==1)
+      gotitem :=BuildPrizeGump(who);
+      if (gotitem>1 && gotitem<5) 
+         clearitems(who); 
+      endif
+   endif
+
+endfunction
+
+function help(who)
+
+   var res := SendDialogGump( who, layout2, data2 );
+   var title:="";
+
+   if (who.title_prefix)
+      title:=who.title_prefix;
+   endif
+
+   if (res[0]==0)
+      say ("Good luck " + title );
+      return;
+   endif
+
+endfunction
+
+
+function checkforall(who)
+
+   if ((getobjproperty (who, "stygianpent1")==1) && (getobjproperty (who, "stygianpent2")==1) && (getobjproperty (who, "stygianpent3")==1) && (getobjproperty (who, "stygianpent4")==1) && (getobjproperty (who, "stygianpent5")==1) && (getobjproperty (who, "stygianpent6")==1) && (getobjproperty (who, "stygianpent7")==1) && (getobjproperty (who, "stygianpent8")==1) && (getobjproperty (who, "stygianpent9")==1))
+      return 1;
+   else
+      return 0;
+   endif
+
+endfunction
+
+function clearitems(who)
+
+   eraseobjproperty (who, "stygianpent1");
+   eraseobjproperty (who, "stygianpent2");
+   eraseobjproperty (who, "stygianpent3");
+   eraseobjproperty (who, "stygianpent4");
+   eraseobjproperty (who, "stygianpent5");
+   eraseobjproperty (who, "stygianpent6");
+   eraseobjproperty (who, "stygianpent7");
+   eraseobjproperty (who, "stygianpent8");
+   eraseobjproperty (who, "stygianpent9");
+
+endfunction
+
+function setitems(who,i)
+
+   setobjproperty (who, "stygianpent"+i, 1);
+   say("You found Pentagram piece " + i + " of 9.");
+
+endfunction
+
+function BuildPrizeGump(who)
+
+   say("Congratulations, you found all 9 Pentagram pieces.");
+   
+   sleep(2);
+
+   var res := SendDialogGump( who, layout, data );
+
+   case (res[0])
+      2: MakeWeapon(who);
+   endcase
+
+   if (res[0]==0)
+      say ("Good luck Sire.");
+      return;
+   endif
+
+   return res[0];
+
+endfunction
+
+
+function MakeWeapon(who)
+
+   var item;
+   say( "I will create your items."); 
+   sleep(1);
+   PerformAction( me, ANIM_CAST_DIR );	
+   say("Vas An Santo Do Air Vas Santo Mani Corp Santo An Vas Santo");
+   PlaySoundEffect( me, 0x0012 );
+   PerformAction( me, ANIM_CAST_DIR );	
+   PlaySoundEffect( me, 0x0014);
+   SendSysMessage( who,  "The Ground Begins to Rumble");
+   PlaySoundEffect( me, 0x0029);
+
+   var bag := CreateItemInBackpack( who, 0x0E76 );
+	bag.name := "an Stygian Shrine Reward Bag";
+	var cd := Random(3000);
+	bag.color := cd;
+   //var chest := CreateItemAtLocation(me.x + 1, me.y +1, me.z, 0x0E76, 1, me.realm);
+
+ 	//MakeLoot( chest , 200, 99 , 9);
+
+   MakeLoot( bag, 200, RandomInt(100), RandomInt(10) );
+   MakeLoot( bag, 200, RandomInt(100), RandomInt(10) );
+   MakeLoot( bag, 200, RandomInt(100), RandomInt(10) );
+
+endfunction
+
+
+function MakeArmor(who)
+
+   var item;
+   say( "I will create your items."); sleep(1);
+   PerformAction( me, ANIM_CAST_DIR );	
+   say("Vas An Santo Do Air Vas Santo Mani Corp Santo An Vas Santo");
+   PlaySoundEffect( me, 0x0012 );
+   PerformAction( me, ANIM_CAST_DIR );
+   PlaySoundEffect( me, 0x0014);
+   SendSysMessage( who,  "The Ground Begins to Rumble");
+   PlaySoundEffect( me, 0x0029);
+   PerformAction( me, ANIM_CAST_DIR );	
+   item :=CreateItemInContainer( who.backpack, 0x34b, 1);
+   PlaySoundEffect( me, 0x0014); sleep(1);
+   item :=CreateItemInContainer( who.backpack, 0x34d, 1 );
+   PlaySoundEffect( me, 0x0014); sleep(1); 
+   item :=CreateItemInContainer( who.backpack, 0x34f, 1 );
+   PlaySoundEffect( me, 0x0014); sleep(1);
+   item :=CreateItemInContainer( who.backpack, 0x351, 1 );
+   PlaySoundEffect( me, 0x0014); sleep(1);
+   item :=CreateItemInContainer( who.backpack, 0x353, 1 );
+   PlaySoundEffect( me, 0x0014); sleep(1);
+   item :=CreateItemInContainer( who.backpack, 0x355, 1 );
+
+endfunction
+
+function MakePlate(who)
+
+   var item;
+   say( "I will create your items."); sleep(1);
+   PerformAction( me, ANIM_CAST_DIR );	
+   say("Vas An Santo Do Air Vas Santo Mani Corp Santo An Vas Santo");
+   PlaySoundEffect( me, 0x0012 );
+   PerformAction( me, ANIM_CAST_DIR );	
+   PlaySoundEffect( me, 0x0014);
+   SendSysMessage( who,  "The Ground Begins to Rumble");
+   PlaySoundEffect( me, 0x0029);
+   PerformAction( me, ANIM_CAST_DIR );	
+   item :=CreateItemInContainer( who.backpack, 0x33f, 1 );
+   PlaySoundEffect( me, 0x0014); sleep(1);
+   item :=CreateItemInContainer( who.backpack, 0x341, 1 );
+   PlaySoundEffect( me, 0x0014); sleep(1); 
+   item :=CreateItemInContainer( who.backpack, 0x343, 1 );
+   PlaySoundEffect( me, 0x0014); sleep(1);
+   item :=CreateItemInContainer( who.backpack, 0x345, 1 );
+   PlaySoundEffect( me, 0x0014); sleep(1);
+   item :=CreateItemInContainer( who.backpack, 0x347, 1 );
+   PlaySoundEffect( me, 0x0014); sleep(1);
+   item :=CreateItemInContainer( who.backpack, 0x349, 1 );
+
+endfunction
