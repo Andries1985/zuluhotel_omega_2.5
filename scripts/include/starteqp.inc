@@ -1819,7 +1819,7 @@ var n;
 	elseif (magiclevel == 10)
 		
 		// 0% chance of ruin
-		if (power < 999999999)
+		if (power < 0)
 			n := 1;
 
 		// 0% chance of might
@@ -1827,15 +1827,15 @@ var n;
 			n := 2;
 
 		// 0% chance of force
-		elseif (power < 25000)
+		elseif (power < 10000)
 			n := 3;
 		
 		// 40% chance of power
-		elseif (power < 65000)
+		elseif (power < 50000)
 			n := 4;
 
 		// 50% chance of vanq
-		elseif (power < 85000)
+		elseif (power < 80000)
 			n := 5;
 		// 10% chance of dev
 		else
@@ -1846,7 +1846,7 @@ var n;
 	else
 		
 		// 0% chance of ruin
-		if (power < 999999999)
+		if (power < 0)
 			n := 1;
 
 		// 0% chance of might
@@ -1862,7 +1862,7 @@ var n;
 			n := 4;
 
 		// 60% chance of vanq
-		elseif (power < 85000)
+		elseif (power < 75000)
 			n := 5;
 		// 15% chance of dev
 		else
@@ -5317,7 +5317,7 @@ function ApplyStatMod ( item )
 	elseif (magiclevel > 9) 
 
 		// 0% chance of level 1
-		if (power < 999999999)
+		if (power < 0)
 			n := 1;
 
 		// 0% chance of level 2
@@ -5333,7 +5333,7 @@ function ApplyStatMod ( item )
 			n := 4;
 
 		// 20% chance of level 5
-		elseif (power < 90000)
+		elseif (power < 80000)
 			n := 5;			
 		
 		// 10% chance of level 6
