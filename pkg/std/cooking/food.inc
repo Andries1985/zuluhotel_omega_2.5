@@ -2,6 +2,10 @@
 //  This function returns a dictionary of all foodstuffs used in cooking.  the dictionary is used to look
 //  up the objtypes of names given to food.  it's used to make defining recipes easier.
 ///////////////////
+use uo;
+use cfgfile;
+
+var food_dictionary := define_food_dictionary();
 
 function define_food_dictionary ()
 	var food := dictionary;

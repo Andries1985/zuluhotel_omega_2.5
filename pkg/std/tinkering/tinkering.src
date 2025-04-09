@@ -460,176 +460,176 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 	AutoLoop_init( character );
 	while( AutoLoop_more() && ressource.amount >= material && NOT character.dead)
 
-	//refreshing some stuff ;)
-	itemname := element.Name;
-	skill 	 := element.Skill;
-	excep_ch := 0;
+		//refreshing some stuff ;)
+		itemname := element.Name;
+		skill 	 := element.Skill;
+		excep_ch := 0;
 
-	if( to_make_objtype in { 0x1085 , 0x1086 , 0x1087 , 0x1088 , 0x1089 , 0x108a , 0x1535 } )
-		SendSysmessage( character , "Select a gem for this item." );
-		var thegem := Target( character , TGTOPT_CHECK_LOS );
-		if( !thegem )
-			return;
+		if( to_make_objtype in { 0x1085 , 0x1086 , 0x1087 , 0x1088 , 0x1089 , 0x108a , 0x1535 } )
+			SendSysmessage( character , "Select a gem for this item." );
+			var thegem := Target( character , TGTOPT_CHECK_LOS );
+			if( !thegem )
+				return;
+			endif
+
+			if( (thegem.objtype > 0xf30) or (thegem.objtype < 0xf0f) )
+				SendSysmessage( character , "That is not a gem!" );
+				return;
+			endif
+
+			if( !Accessible( character , thegem ) )
+				SendSysmessage( character , "You can't reach that!" );
+				return;
+			endif
+
+			var item_cfg := ReadConfigFile( ":*:itemdesc" );
+			itemname := item_cfg[thegem.objtype].Name + " " + itemname;
+			SubtractAmount( thegem , 1 );
 		endif
 
-		if( (thegem.objtype > 0xf30) or (thegem.objtype < 0xf0f) )
-			SendSysmessage( character , "That is not a gem!" );
-			return;
+		_Play_Sound( character , sfx );
+
+		skill := skill + Cint( ressource_diff / DIVIDER );
+
+		if( skill < 1 )
+			skill := 1;
+		elseif( skill > 130 )
+			skill := 130;
 		endif
 
-		if( !Accessible( character , thegem ) )
-			SendSysmessage( character , "You can't reach that!" );
-			return;
-		endif
+		points	:= Cint( (skill + Cint(element.Material / 3)) * POINTS_MULTIPLIER );
 
-		var item_cfg := ReadConfigFile( ":*:itemdesc" );
-		itemname := item_cfg[thegem.objtype].Name + " " + itemname;
-		SubtractAmount( thegem , 1 );
-	endif
+		SendSysmessage( character , "Difficulty: "+skill );
 
-	_Play_Sound( character , sfx );
+		if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
 
-	skill := skill + Cint( ressource_diff / DIVIDER );
+			var theitem := CreateItemInBackpack( character , to_make_objtype );
+			if( theitem )
 
-	if( skill < 1 )
-		skill := 1;
-	elseif( skill > 130 )
-		skill := 130;
-	endif
+				theitem.movable := 1;
+				excep_ch := 10;
 
-	points	:= Cint( (skill + Cint(element.Material / 3)) * POINTS_MULTIPLIER );
-
-	SendSysmessage( character , "Difficulty: "+skill );
-
-	if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
-
-		var theitem := CreateItemInBackpack( character , to_make_objtype );
-		if( theitem )
-
-			theitem.movable := 1;
-			excep_ch := 10;
-
-			if( ressource_name )
-				itemname := ressource_name + " " + itemname;
-			endif
-
-			if( theitem.quality and ressource_qual )
-				theitem.quality := ressource_qual;
-			endif
-
-  			if( GetObjProperty( character , CLASSEID_CRAFTER ) )
-				excep_ch	:= Cint( excep_ch * ClasseBonus( character , CLASSEID_CRAFTER ) );
-			else
-				skill		:= skill + 10;
-			endif
-
-			if( skill < 90 )
-				skill := 90;
-			endif
-
-			if( element.Exceptional and (Random(100) < excep_ch) and CheckSkill( character , SKILLID_TINKERING , skill , 0 ) )
-
-				if( theitem.quality )
-					//Made something Exceptional
-					var armslore := GetEffectiveSkill( character , SKILLID_ARMSLORE );
-					var multiplier := 5 + Cint( armslore / 10 );
-
-					if( GetObjProperty( character , CLASSEID_CRAFTER ) )
-						multiplier := Cint( multiplier * ClasseBonus( character , CLASSEID_CRAFTER ) );
-					endif
-
-					multiplier	:= 100 + multiplier;
-					var newquality := Cint(theitem.quality * multiplier);
-					newquality := Cdbl(newquality);
-					newquality := newquality / 100;
-					theitem.quality := newquality;
+				if( ressource_name )
+					itemname := ressource_name + " " + itemname;
 				endif
 
-				itemname := "Exceptional " + itemname;
-				if(GetObjProperty(character, "ToggleBuildMark"))
-					if( YesNo( character , "Add Builder Mark?" ) )
+				if( theitem.quality and ressource_qual )
+					theitem.quality := ressource_qual;
+				endif
+
+				if( GetObjProperty( character , CLASSEID_CRAFTER ) )
+					excep_ch	:= Cint( excep_ch * ClasseBonus( character , CLASSEID_CRAFTER ) );
+				else
+					skill		:= skill + 10;
+				endif
+
+				if( skill < 90 )
+					skill := 90;
+				endif
+
+				if( element.Exceptional and (Random(100) < excep_ch) and CheckSkill( character , SKILLID_TINKERING , skill , 0 ) )
+
+					if( theitem.quality )
+						//Made something Exceptional
+						var armslore := GetEffectiveSkill( character , SKILLID_ARMSLORE );
+						var multiplier := 5 + Cint( armslore / 10 );
+
+						if( GetObjProperty( character , CLASSEID_CRAFTER ) )
+							multiplier := Cint( multiplier * ClasseBonus( character , CLASSEID_CRAFTER ) );
+						endif
+
+						multiplier	:= 100 + multiplier;
+						var newquality := Cint(theitem.quality * multiplier);
+						newquality := Cdbl(newquality);
+						newquality := newquality / 100;
+						theitem.quality := newquality;
+					endif
+
+					itemname := "Exceptional " + itemname;
+					if(GetObjProperty(character, "ToggleBuildMark"))
+						if( YesNo( character , "Add Builder Mark?" ) )
+							SetObjProperty( theitem , "CraftedBy" , character.name );
+						endif
+					else
 						SetObjProperty( theitem , "CraftedBy" , character.name );
 					endif
-				else
-					SetObjProperty( theitem , "CraftedBy" , character.name );
-				endif
 
-				SendSysmessage( character , "You make an exceptional item and put it in your pack" );
-				SetObjProperty( theitem , "IsExceptional" , 1 );
-				if( skill >= 130 )
-					SendSysmessage( character , "This masterpiece will make you famous around the world." );
-					AwardFame( character , FAME_BONUS );
-				elseif( GetObjProperty( character , CLASSEID_CRAFTER ) and skill >= 110 )
-					SendSysmessage( character , "This masterpiece will make you famous around the world." );
-					AwardFame( character , FAME_BONUS );
-				endif
-			else
-
-				//Made a normal item
-				SendSysmessage( character , "You create the item and place it in your pack." );
-			endif
-
-			if( ressource.objtype != UOBJ_GLASS and ressource.objtype != UOBJ_CLAY )
-				if( ressource.objtype == UOBJ_GOLD_INGOT and !undyeable )
-					theitem.color := GOLD_COLOR;
-				elseif( !undyeable )
-					theitem.color := ressource.color;
-				endif
-			endif
-
-			/* Not Needed since price calculated in vendor AI based on quality
-			if( theitem.sellprice )
-				if( theitem.quality )
-					theitem.sellprice := Cint( Pow( theitem.sellprice , theitem.quality ) );
-				elseif( ressource_qual )
-					theitem.sellprice := Cint( Pow( theitem.sellprice , ressource_qual ) );
-				endif
-			endif
-			*/
-
-			theitem.hp := theitem.maxhp;
-			SetObjProperty( theitem , "BaseName" , itemname );
-			SetName( theitem , itemname );
-
-			if( theitem.isa(POLCLASS_LOCKABLE) )
-			  if( theitem.objtype <> 0x0EFA )
-					SetObjProperty(theitem, "lockable", 1);
-					var lockid := AllocLockId();
-					theitem.locked := 1;
-					var thekey := CreateItemInBackpack( character, UOBJ_COPPER_KEY );
-					SetObjProperty( thekey ,  "lockid" , lockid );
-					SetObjProperty( theitem , "lockid" , lockid );
-					var tinkering := GetEffectiveSkill( character , SKILLID_TINKERING );
-					var lockdiff := finddiff(theitem);
-					if(lockdiff)
-						Setobjproperty( theitem , "LockDifficulty", lockdiff );
-					else
-						Setobjproperty( theitem , "LockDifficulty", tinkering );
+					SendSysmessage( character , "You make an exceptional item and put it in your pack" );
+					SetObjProperty( theitem , "IsExceptional" , 1 );
+					if( skill >= 130 )
+						SendSysmessage( character , "This masterpiece will make you famous around the world." );
+						AwardFame( character , FAME_BONUS );
+					elseif( GetObjProperty( character , CLASSEID_CRAFTER ) and skill >= 110 )
+						SendSysmessage( character , "This masterpiece will make you famous around the world." );
+						AwardFame( character , FAME_BONUS );
 					endif
-					SendSysmessage( character , "You will find the key in your backpack.");
-			  endif
+				else
+
+					//Made a normal item
+					SendSysmessage( character , "You create the item and place it in your pack." );
+				endif
+
+				if( ressource.objtype != UOBJ_GLASS and ressource.objtype != UOBJ_CLAY )
+					if( ressource.objtype == UOBJ_GOLD_INGOT and !undyeable )
+						theitem.color := GOLD_COLOR;
+					elseif( !undyeable )
+						theitem.color := ressource.color;
+					endif
+				endif
+
+				/* Not Needed since price calculated in vendor AI based on quality
+				if( theitem.sellprice )
+					if( theitem.quality )
+						theitem.sellprice := Cint( Pow( theitem.sellprice , theitem.quality ) );
+					elseif( ressource_qual )
+						theitem.sellprice := Cint( Pow( theitem.sellprice , ressource_qual ) );
+					endif
+				endif
+				*/
+
+				theitem.hp := theitem.maxhp;
+				SetObjProperty( theitem , "BaseName" , itemname );
+				SetName( theitem , itemname );
+
+				if( theitem.isa(POLCLASS_LOCKABLE) )
+				if( theitem.objtype <> 0x0EFA )
+						SetObjProperty(theitem, "lockable", 1);
+						var lockid := AllocLockId();
+						theitem.locked := 1;
+						var thekey := CreateItemInBackpack( character, UOBJ_COPPER_KEY );
+						SetObjProperty( thekey ,  "lockid" , lockid );
+						SetObjProperty( theitem , "lockid" , lockid );
+						var tinkering := GetEffectiveSkill( character , SKILLID_TINKERING );
+						var lockdiff := finddiff(theitem);
+						if(lockdiff)
+							Setobjproperty( theitem , "LockDifficulty", lockdiff );
+						else
+							Setobjproperty( theitem , "LockDifficulty", tinkering );
+						endif
+						SendSysmessage( character , "You will find the key in your backpack.");
+				endif
+				endif
 			endif
-		endif
-		SubtractAmount( ressource , material );
-	else
-		var tink := GetEffectiveSkill( character , SKILLID_TINKERING );
-		var destroy := 75 - Cint( tink / 2 );
-		if( GetObjProperty( character , CLASSEID_CRAFTER ) )
-			destroy := Cint( destroy / ClasseBonus( character , CLASSEID_CRAFTER ) );
-		endif
+			SubtractAmount( ressource , material );
+		else
+			var tink := GetEffectiveSkill( character , SKILLID_TINKERING );
+			var destroy := 75 - Cint( tink / 2 );
+			if( GetObjProperty( character , CLASSEID_CRAFTER ) )
+				destroy := Cint( destroy / ClasseBonus( character , CLASSEID_CRAFTER ) );
+			endif
 
-		if( destroy > 50 )
-			destroy	:= 50;
-		endif
+			if( destroy > 50 )
+				destroy	:= 50;
+			endif
 
-		destroy	:= Cint( material * destroy / 100 );
-		if( destroy < 1 )
-			destroy	:= 1;
+			destroy	:= Cint( material * destroy / 100 );
+			if( destroy < 1 )
+				destroy	:= 1;
+			endif
+			
+			SubtractAmount( ressource , destroy );
+			SendSysmessage( character , "You destroyed " + destroy + " " + GetRessourceName( ressource ) + "." );
 		endif
-		
-		SubtractAmount( ressource , destroy );
-		SendSysmessage( character , "You destroyed " + destroy + " " + GetRessourceName( ressource ) + "." );
-	endif
 
 	endwhile
 	AutoLoop_finish();

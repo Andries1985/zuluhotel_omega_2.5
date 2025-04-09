@@ -19,7 +19,7 @@ include "include/autoloop";
 include "include/difficulty";
 
 //load the food dictionary.  This makes the recipe definitions in cooking.cfg much more understandable
-var food_dictionary := define_food_dictionary();
+food_dictionary := define_food_dictionary();
 
 //this is used to make sure that all recipes presented use the ingredient that was originally selected
 var original_ingredient_objtype := 0;

@@ -1,8 +1,10 @@
 // Locking Spawning Chest system  version .1
 // by Zulu (zulu@zuluhotel.com)   July 5, 2000
+use cfgfile;
 
 include "util/key";
 include "include/random";
+include "include/constants/cfgfiles";
 
 function lockem(chest)
 
@@ -44,7 +46,7 @@ function finddiff(chest)
 		return diff;
 	endif
 
-	var cfg := readconfigfile( ":*:lockpicking" );
+	var cfg := ReadConfigFile( CFGFILE_LOCK_DIFFICULTIES );
 	if( !cfg )
 		return 0;
 	endif
@@ -67,15 +69,15 @@ endfunction
 
 function addchest(chest)
 
-set_critical(1);
+	set_critical(1);
 
-var chests:=getglobalproperty("unlockedchests"),csize:=chests.size();
+	var chests:=getglobalproperty("unlockedchests"),csize:=chests.size();
 
-if (chests[1]=="NONE") csize:=0; endif
+	if (chests[1]=="NONE") csize:=0; endif
 
-chests[csize+1]:=chest.serial;
+	chests[csize+1]:=chest.serial;
 
-setglobalproperty("unlockedchests",chests);
-set_critical(0);
+	setglobalproperty("unlockedchests",chests);
+	set_critical(0);
 
 endfunction
