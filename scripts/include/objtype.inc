@@ -204,7 +204,7 @@ const UOBJ_RECALL_SCROLL	:= 0x1f4c;
 const UOBJ_CODEX_DAMNORUM	:= 0xa100;
 const UOBJ_EARTH_BOOK		:= 0xb100;
 const UOBJ_TOME_OF_ENCHANTMENT	:= 0xc100;
-const UOBJ_RUNEBOOK		:= 0x6100;
+const UOBJ_RUNEBOOK		:= 0x7100;
 
 const UOBJ_CORPSE       := 0x2006;
 

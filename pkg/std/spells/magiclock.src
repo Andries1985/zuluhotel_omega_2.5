@@ -58,7 +58,7 @@ program magiclock( parms, spell_id )
 		return;
 	endif
 	
-	if (cast_on.objtype == 0x6100 or cast_on.objtype == 0xefa)
+	if (cast_on.objtype == 0x7100 or cast_on.objtype == 0xefa)
 		SendSysMessage(caster, "That can't be locked.");
 			EraseObjProperty(caster, "#Casting");
 		return;

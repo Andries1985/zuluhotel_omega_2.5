@@ -44,17 +44,17 @@ Function CheckCity(item)
         return 1; // Wind
       endif
   elseif(item.realm == "britannia_alt")
-    return 1;
+    return 0; // TODO: Add town regions and set return to 1 again.
   elseif(item.realm == "malas")
-    return 1;
+    return 0; // TODO: Add town regions and set return to 1 again.
   elseif(item.realm == "ilshenar")
-    return 1;
+    return 0; // TODO: Add town regions and set return to 1 again.
   elseif(item.realm == "tokuno")
     if(item.x >= 624 and item.y >= 1160 and item.x <= 863 and item.y <= 1447)
       return 1;
     endif
   elseif(item.realm == "termur")
-    return 1;
+    return 0; // TODO: Add town regions and set return to 1 again.
   endif
 
   return 0;
