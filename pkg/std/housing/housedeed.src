@@ -31,9 +31,9 @@ include "utility";
 
 Const UOBJECT_DOORS_START := 0x0675;
 Const UOBJECT_DOORS_END   := 0x06f4;
-Const UOBJECT_BRASS_SIGN := 0x0bd2;
+Const UOBJECT_BRASS_SIGN := 0x0BD2;
 Const UOBJECT_BRASS_SIGN_TWO := 0x0BD1;
-Const UOBJECT_WOOD_SIGN := 0x0bd0;
+Const UOBJECT_WOOD_SIGN := 0x0BD0;
 Const UOBJECT_WOOD_SIGN_TWO := 0x0BCF;
 Const UOBJECT_TENT_CHEST := 0x0E43;
 
@@ -117,6 +117,7 @@ function Buildhouse( character, deed )
         return;
     endif
 
+    // TODO: Add the restrictions for the other facets.
     if(character.realm == "britannia")
         if(character.cmdlevel < 4)
             if(where.x >= 5120)
@@ -163,29 +164,29 @@ function Buildhouse( character, deed )
         endif
     endforeach
 
-    if (housetype==0x6070 or housetype==0x6072) //tents
-      item :=CreateItemAtLocation( where.x, where.y+4, where.z+3, 0xbcf, 1, where.realm );
-      item.movable:=0;
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item , "lockid" , lockid );
-      SetObjProperty( item, "house_serial", created.house.serial );
-    endif
-    if (housetype==0x6BB8) //log home
-      logdoor :=CreateItemAtLocation( where.x+4, where.y, where.z, 0x06ad, 1, where.realm );
-      SetObjProperty( created.house , "component2", logdoor.serial );
-      logdoor.locked := 1;
-      SetObjProperty( logdoor , "lockid" , lockid );
-      SetObjProperty( logdoor, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x+5, where.y-1, where.z, UOBJECT_WOOD_SIGN, 1, where.realm );
-      item.movable:=0;
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item , "lockid" , lockid );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      item :=CreateItemAtLocation( where.x+2, where.y-3, where.z+12, 0xA2C, 1, where.realm );
-      item.movable:=0;
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-    endif
+   //  if (housetype==0x6070 or housetype==0x6072) //tents
+   //    item :=CreateItemAtLocation( where.x, where.y+4, where.z+3, 0xbcf, 1, where.realm );
+   //    item.movable:=0;
+   //    SetObjProperty( created.house , "component1", item.serial );
+   //    SetObjProperty( item , "lockid" , lockid );
+   //    SetObjProperty( item, "house_serial", created.house.serial );
+   //  endif
+   //  if (housetype==0x6BB8) //log home
+   //    logdoor :=CreateItemAtLocation( where.x+4, where.y, where.z, 0x06ad, 1, where.realm );
+   //    SetObjProperty( created.house , "component2", logdoor.serial );
+   //    logdoor.locked := 1;
+   //    SetObjProperty( logdoor , "lockid" , lockid );
+   //    SetObjProperty( logdoor, "house_serial", created.house.serial );
+   //    item :=CreateItemAtLocation( where.x+5, where.y-1, where.z, UOBJECT_WOOD_SIGN, 1, where.realm );
+   //    item.movable:=0;
+   //    SetObjProperty( created.house , "component1", item.serial );
+   //    SetObjProperty( item , "lockid" , lockid );
+   //    SetObjProperty( item, "house_serial", created.house.serial );
+   //    item :=CreateItemAtLocation( where.x+2, where.y-3, where.z+12, 0xA2C, 1, where.realm );
+   //    item.movable:=0;
+   //    SetObjProperty( created.house , "component3", item.serial );
+   //    SetObjProperty( item, "house_serial", created.house.serial );
+   //  endif
    if (housetype==0x609E) // villa with light
       item :=CreateItemAtLocation( where.x+5, where.y+5, where.z+5, 0xb22, 1, where.realm );
       item.movable:=0;
@@ -249,108 +250,6 @@ function Buildhouse( character, deed )
       SetObjProperty( item, "house_serial", created.house.serial );
       item :=CreateItemAtLocation( where.x-2, where.y+2, where.z+4, 0x8a4, 1, where.realm );
       item.movable:=0;
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E0) // two-story-brickhouse
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E1) // two-story-brickvilla
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E2) // two-story-largelogcabin
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E3) // two-story-plastermanor
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E4) // two-story-thatchedmanor
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E5) // four-story-stoneandplasterhouse
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E6) // three-story-stonehouse
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E7) // largestonemanor
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E8) // four-story-stonehouse
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3E9) // four-story-doublehouse
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3EA) // three-story-villa
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3EB) // three-story-stonevilla
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3EC) // marbletower
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3ED) // three-story-largeplastermanor
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3EE) // three-story-orientalhouse
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3EF) // smalltower
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-      SetObjProperty( created.house , "component3", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
-   endif
-   if (housetype==0xA3F0) // squareplasterhouse
-      SetObjProperty( created.house , "component1", item.serial );
-      SetObjProperty( item, "house_serial", created.house.serial );
       SetObjProperty( created.house , "component3", item.serial );
       SetObjProperty( item, "house_serial", created.house.serial );
    endif
@@ -419,10 +318,10 @@ function CreatehouseKeysAndBuiltDeed( character, housetype, where, deed )
     SetObjProperty( house , "owneracct" , character.acctname );
     SetObjProperty( house , "builtdeed" , builtdeed.serial );
     SetObjProperty( house , "Friends" , {} ); // Toadstool - New friends function 
-    if (housetype==0x6BB8 or housetype==0x6070 or housetype==0x6072)
-        house.movable:=0;
-        house.visible:=1;
-    endif
+   //  if (housetype==0x6BB8 or housetype==0x6070 or housetype==0x6072)
+   //      house.movable:=0;
+   //      house.visible:=1;
+   //  endif
 
     if (!house)
         PrintTextAbovePrivate( character, "I can't place the house there.", character );
