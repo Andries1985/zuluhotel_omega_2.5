@@ -1,4 +1,88 @@
 -- POL100.2.0 --
+04-13-2025 Kevin:
+    Added: uoconvert now supports reading MultiCollection.uop
+    Added: uoconvert.cfg now allows multiple entries for the Boats properties in the MultiTypes element
+    Added: uoconvert.cfg now allows multiple entries for the Tiles property in the Mounts element
+  Removed: uoconvert.cfg no longer requires House or Stairs properties inside the MultiTypes element, and will be ignored if present.
+03-05-2025 AsYlum:
+  Changed: Multi elements will check raw graphic instead of using itemdesc graphic definition
+02-26-2025 Kevin:
+    Fixed: Hair and beard layers no longer appear on ground of human corpses at death
+02-23-2025 Turley:
+    Added: Modulus (% and %=) for doubles. Meaning that eg 4%1.5==1.0 or 3.3%1.1==0
+02-20-2025 Turley:
+    Fixed: saving datafiles if the folderstructure is no longer existing
+  Changed: start of the core now fails if the datastore.txt contains a datafile which no longer exists.
+           This can happen if datafiles where manually removed without updating the datastore.txt
+02-19-2025 Kevin:
+    Added: Support for spread operator in dictionary and struct initializers. For example:
+
+             var first := dictionary{ 1 -> "one" };
+             var second := dictionary{ 2 -> "two" };
+             var joined := dictionary{ first..., second.... };
+
+             print( joined );   // dict{ 1 -> "one", 2 -> "two" }
+
+           See the Racalac Escript Guide for additional details.
+    Added: ecompile.cfg option FormatterEllipsisSpacing (default 0) to add space before ellipsis (...), eg `a ...` vs `a...`.
+02-16-2025 Kevin:
+    Added: Escript support for sequence and index binding statements, for example:
+
+             var [ first, second, third ] := array{ "one", 2, "three" };
+             print( first );   // "one"
+             print( second );  // 2
+             print( third );   // "three"
+
+             var { name, color } := who;
+             print( name );   // who.name
+             print( color );  // who.color
+
+           See the Racalac Escript Guide for additional details.
+    Added: Iterator support for more objects: ConfigFileRef, SQLResultSet, SQLRow, String. These objects
+           can now be used in `foreach` loops, `...` spread operator, and the new binding statement.
+    Added: ConfigElemRef members can now be accessed via element index access, eg. `cfgelem["key"]`.
+02-17-2025 AsYlum:
+    Fixed: Saving banned state of an account
+02-07-2025 Turley:
+    Fixed: B9 feature flag was used from ssopt DefaultExpansion instead of the account expansion. Bug added with 02-04 changes
+02-06-2025 Turley:
+ Improved: world save performance
+02-04-2025 Turley:
+    Added: ssopt.cfg DefaultExpansion defines the default expansion for accounts. Supported values are T2A (default),LBR,AOS,SE,ML,KR,SA,HSA,TOL
+    Fixed: HSA (and TOL) expansion did not activate gothic and rustic tiles for customhouses
+    Fixed: save/load of npc/item hitchance
+02-04-2025 AsYlum:
+    Fixed: ecompile -A could on Windows compile same files multiple times
+02-01-2025 Kevin:
+    Fixed: Invisible items will now send the "hidden" flag if the character can see invisible items.
+01-30-2025 AsYlum:
+    Fixed: Missing attack range properties defaults in itemdesc.
+
+           The implementation of new properties for min/max attack range increase added on 11-02-2024 contained a bug. You should check if your save files contain MinAttackRangeIncreaseMod, MinAttackRangeIncrease and MaxAttackRangeIncrease properties with suspiciously looking values like for example:
+
+           MinAttackRangeIncreaseMod    -24931
+           MinAttackRangeIncrease    -1120
+           MaxAttackRangeIncrease    32602
+
+           To fix your save files you need to remove offending lines. If you need help or guidance how to do this feel free to contact POL dev team for assistance.
+01-28-2025 Turley:
+    Fixed: Performance regression of world save
+01-20-2025 Kevin:
+    Added: util::RandomDiceRoll() new parameter `allow_negatives` (default: `0`). If `1`, a negative dice roll will be returned _as-is_, and
+           will not be capped at `0`.
+     Note: Since this change introduces a new parameter to a module function, you **MUST** recompile all your scripts!
+01-19-2025 Turley:
+    Fixed: overflow/underflow errors when modifying several object members
+01-17-2025 Turley:
+  Changed: uo::SaveWorldState if possible (eg no critical script) script gets suspended until both the critical and non-critical part of the save is over.
+           Returning in this case also a struct-member "ElapsedMillisecondsTotal" as the total time worldsave took.
+           Or error if any part of the worldsave failed.
+    Fixed: overflow/underflow error when modifying item.hp (min 0, max 0xFFFF)
+01-14-2025 Turley:
+    Fixed: crash when disk is full during worldsave
+    Added: PolCore().worldsaved_at returns game clock time of last successful world save
+01-04-2025 Kevin:
+    Added: Script object script method `stacktrace( options? )`
 11-13-2024 Turley:
     Added: regions.cfg ItemsDecay setting, if deactivated items will not decay in this area.
     Added: multi.items_decay r/w member, defaults to also added itemdesc.cfg entry ItemsDecay (1/0 default 0). If set to 1 items in this multi will decay.
@@ -6,9 +90,9 @@
 11-09-2024 Kukkino:
     Added: Added GetRealmDecay(realm) and SetRealmDecay(realm, has_decay) allowing to manipulate whether items decay on the ground in given realms.
 11-02-2024 DevGIB:
-    Added: MinAttackRangeIncrease(min_attack_range_increase) and MinAttackRangeIncreaseMod(min_attack_range_increase_mod) to Mobiles and Items allowing people to have a dynamic modifier to the adjust a mobiles minimum attack range.<br/>
+    Added: MinAttackRangeIncrease(min_attack_range_increase) and MinAttackRangeIncreaseMod(min_attack_range_increase_mod) to Mobiles and Items allowing people to have a dynamic modifier to the adjust a mobiles minimum attack range.
            Min Attack Range Increase is used as a numeric modifier to the minimum range of a weapon, e.g. Base min Weapon range of 1 + attack range increase of 1 would make the minimum attack range 2.
-    Added: MaxAttackRangeIncrease(max_attack_range_increase) and MaxAttackRangeIncreaseMod(max_attack_range_increase_mod) to Mobiles and Items allowing people to have a dynamic modifier to the adjust a mobiles maximum attack range.<br/>
+    Added: MaxAttackRangeIncrease(max_attack_range_increase) and MaxAttackRangeIncreaseMod(max_attack_range_increase_mod) to Mobiles and Items allowing people to have a dynamic modifier to the adjust a mobiles maximum attack range.
            Max Attack Range Increase is used as a numeric modifier to the maximum range of a weapon, e.g. Base max Weapon range of 3 + attack range increase of 2 would make the maximum attack range 5.
 11-01-2024 Turley:
     Added: servspecopt.cfg AllowVisualRangeModification 0/1 default 0

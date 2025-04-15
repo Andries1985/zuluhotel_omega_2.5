@@ -5,26 +5,26 @@
 #
 # ModuleDirectory: Location of *.em files
 #
-ModuleDirectory=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\scripts\modules
+ModuleDirectory=D:\DistroDev\scripts\modules
 
 #
 # IncludeDirectory: Location of *.inc files, if not found relative
 #                   or with a specified package
 #
-IncludeDirectory=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\scripts
+IncludeDirectory=D:\DistroDev\scripts
 
 #
 # PolScriptRoot: Location of "::file" includes
 #
-PolScriptRoot=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\scripts
+PolScriptRoot=D:\DistroDev\scripts
 
 #
 # PackageRoot: root directories where packages are stored
 #              This can be specified multiple times.
 #
-PackageRoot=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\pkg
-PackageRoot=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\optpkg
-PackageRoot=D:\ZHO\Beta-Shard\zuluhotel_omega_2.5\devpkg
+PackageRoot=D:\DistroDev\pkg
+PackageRoot=D:\DistroDev\optpkg
+PackageRoot=D:\DistroDev\devpkg
 
 #
 # Default ecompile options
@@ -237,6 +237,11 @@ ErrorOnFileCaseMissmatch=0
 # eg a == 1 vs a==1
 # Default 1
 #FormatterComparisonSpacing=1
+
+# add space before ellipsis (...)
+# eg a := 1; vs a:=1;
+# Default 1
+#FormatterEllipsisSpacing=1
 
 # add space around operations
 # eg a + 1 vs a+1
