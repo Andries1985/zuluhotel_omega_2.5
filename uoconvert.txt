@@ -39,3 +39,7 @@ uoconvert maptile realm=malas
 uoconvert map     realm=tokuno mapid=4 usedif=1 width=1448 height=1448
 uoconvert statics realm=tokuno
 uoconvert maptile realm=tokuno
+
+uoconvert map     realm=termur mapid=5 usedif=1 width=1280 height=4096
+uoconvert statics realm=termur
+uoconvert maptile realm=termur
