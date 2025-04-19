@@ -470,9 +470,9 @@ function EquipStaffRobe( who, item )
 			return 0;
 			
 		1:	if( GetObjProperty( who, "head" ) )
-				item.color := 0x078D;
+				item.color := 0x0796;
 			else
-				item.color := 0x0799;
+				item.color := 0x07AB;
 			endif
 			SetBaseStrength(who, 100);
 			SetBaseDexterity(who, 100);
@@ -485,7 +485,7 @@ function EquipStaffRobe( who, item )
 		2:	if( GetObjProperty( who, "head" ) )
 				item.color := 0x078A;
 			else
-				item.color := 0x0798;
+				item.color := 0x0795;
 			endif
 			SetBaseStrength(who, 100);
 			SetBaseDexterity(who, 100);
@@ -496,9 +496,9 @@ function EquipStaffRobe( who, item )
 			return 1;
 			
 		3:	if( GetObjProperty( who, "head" ) )
-				item.color := 0x0783;
+				item.color := 0x079E;
 			else
-				item.color := 0x079C;
+				item.color := 0x0799;
 			endif
 			SetBaseStrength(who, 100);
 			SetBaseDexterity(who, 100);
@@ -509,9 +509,9 @@ function EquipStaffRobe( who, item )
 			return 1;
 			
 		4:	if( GetObjProperty( who, "head" ) )
-				item.color := 0x07A4;
+				item.color := 0x07A1;
 			else
-				item.color := 0x07CF;
+				item.color := 0x0485;
 			endif
 			SetBaseStrength(who, 6000);
 			SetBaseDexterity(who, 6000);
@@ -519,9 +519,9 @@ function EquipStaffRobe( who, item )
 			return 1;
 
 		5:	if( GetObjProperty( who, "head" ) )
-				item.color := 0x079E;
+				item.color := 0x079B;
 			else
-				item.color := 0x07C4;
+				item.color := 0x0496;
 			endif
 			SetBaseStrength(who, 6000);
 			SetBaseDexterity(who, 6000);
