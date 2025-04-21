@@ -82,41 +82,41 @@ endfunction
 
 function CreateGump()
 
-	gump := GFCreateGump(20,20);
+	gump := GFCreateGump(500,200);
 	//GFClosable(gump, 1);
 	GFPage(gump, 0);
 	
 	//Top
-	GFGumpPic(gump, 0, 0, 280);
-	GFGumpPic(gump, 114, 0, 281);
-	GFGumpPic(gump, 171, 0, 281);
-	GFGumpPic(gump, 228, 0, 281);
-	GFGumpPic(gump, 285, 0, 282);
+	GFGumpPic(gump, 0, 0, 150);
+	GFGumpPic(gump, 114, 0, 151);
+	GFGumpPic(gump, 171, 0, 151);
+	GFGumpPic(gump, 228, 0, 151);
+	GFGumpPic(gump, 285, 0, 152);
 	//mid 1
-	GFGumpPic(gump, 0, 140, 283);
-	GFGumpPic(gump, 114, 140, 284);
-	GFGumpPic(gump, 171, 140, 284);
-	GFGumpPic(gump, 228, 140, 284);
-	GFGumpPic(gump, 285, 140, 285);
+	GFGumpPic(gump, 0, 140, 153);
+	GFGumpPic(gump, 114, 140, 154);
+	GFGumpPic(gump, 171, 140, 154);
+	GFGumpPic(gump, 228, 140, 154);
+	GFGumpPic(gump, 285, 140, 155);
 	//mid 2
-	GFGumpPic(gump, 0, 182, 283);
-	GFGumpPic(gump, 114, 182, 284);
-	GFGumpPic(gump, 171, 182, 284);
-	GFGumpPic(gump, 228, 182, 284);
-	GFGumpPic(gump, 285, 182, 285);
+	GFGumpPic(gump, 0, 182, 153);
+	GFGumpPic(gump, 114, 182, 154);
+	GFGumpPic(gump, 171, 182, 154);
+	GFGumpPic(gump, 228, 182, 154);
+	GFGumpPic(gump, 285, 182, 155);
 	//mid 3
-	GFGumpPic(gump, 0, 224, 283);
-	GFGumpPic(gump, 114, 224, 284);
-	GFGumpPic(gump, 171, 224, 284);
-	GFGumpPic(gump, 228, 224, 284);
-	GFGumpPic(gump, 285, 224, 285);
+	GFGumpPic(gump, 0, 224, 153);
+	GFGumpPic(gump, 114, 224, 154);
+	GFGumpPic(gump, 171, 224, 154);
+	GFGumpPic(gump, 228, 224, 154);
+	GFGumpPic(gump, 285, 224, 155);
 
 	//bottom
-	GFGumpPic(gump, 0, 266, 286);
-	GFGumpPic(gump, 114, 266, 287);
-	GFGumpPic(gump, 171, 266, 287);
-	GFGumpPic(gump, 228, 266, 287);
-	GFGumpPic(gump, 285, 266, 288);
+	GFGumpPic(gump, 0, 266, 156);
+	GFGumpPic(gump, 114, 266, 157);
+	GFGumpPic(gump, 171, 266, 157);
+	GFGumpPic(gump, 228, 266, 157);
+	GFGumpPic(gump, 285, 266, 158);
 
 	GFTextLine(gump, 107, 7, 51, "Welcome to the Omega Vanity Shop!");
 	GFTextLine(gump, 62, 39, 50, "Select what you'd like to purchase:");

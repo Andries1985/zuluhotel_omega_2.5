@@ -34,5 +34,12 @@ program Logon( who )
 
         VerifyStaffOnline( who );
 
+	var speed_walk := GetObjProperty( who, "SpeedWalk" );
+	if( who.cmdlevel >= 2 )
+		if( !speed_walk.errortext )
+			who.SpeedWalk( speed_walk );
+		endif
+	endif
+        
         return 1;
 endprogram
