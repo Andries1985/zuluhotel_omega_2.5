@@ -2,6 +2,8 @@
 // FindMyPack, OpenTamedStorageAreas, and code to search through backpacks for keys
 // by Dundee. Most of the rest by Madman Across the Water.
 use storage;
+use uo;
+use os;
 
 
 include "include/client";
