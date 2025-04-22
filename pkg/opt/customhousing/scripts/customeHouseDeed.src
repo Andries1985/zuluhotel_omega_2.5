@@ -50,6 +50,7 @@ program usehousedeed (character, deed)
 	Broadcast("ht:"+housetype);
 	multiid := housetype - 0x10000;
 	dims := GetMultiDimensions (multiid);
+	Print(dims);
 	extracharges := ((3+dims.xmax-dims.xmin)*(1+dims.ymax-dims.ymin)-3)*500;
 
 	var where := TargetMultiPlacement (character, housetype);
@@ -93,7 +94,7 @@ program usehousedeed (character, deed)
 
 	//now we add some special stuff based on what kind of a house it is
 	var item, sign, component := array { };
-	if (housetype >= 0x113ec && housetype <= 0x1147b) // custom houses
+	if (housetype >= 0x113ec && housetype <= 0x1147d) // custom houses
 		created.house.setcustom(1);
 		sign :=CreateItemAtLocation( where.x+dims.xmin, where.y+dims.ymax+1, where.z+7, 0xfbd2, 1, where.realm );
 		SetObjProperty(sign, "house_serial", created.house.serial);
@@ -329,7 +330,7 @@ function BuildThreeStoryGump( )
 
 	var y_pos := 60;
 	var page := 2;
-	var widths := array { "9-11", "12-13", 14, 15, 16, 17, 18 };
+	var widths := array { "24-31", "9-11", "12-13", 14, 15, 16, 17, 18 };
 	foreach housewidth in widths
 		GFAddButton( gump, 30, y_pos+3, 2117, 2118, GF_PAGE_BTN, page );
 		GFTextLine( gump, 50, y_pos, 1720, housewidth + " tiles wide" );
@@ -342,6 +343,14 @@ function BuildThreeStoryGump( )
 	var heights := array { 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 };
 
 	page := 2;
+	GFPage( gump, page );
+	GFRadioButton( gump, 150, 60, 210, 211, 0, 0x1147c );
+	GFTextLine( gump, 173, 60, 2100, "24x24 at 75500 gold");
+
+	GFRadioButton( gump, 150, 80, 210, 211, 0, 0x1147d );
+	GFTextLine( gump, 173, 80, 2100, "31x31 at 96500 gold");
+
+	page := 4;
 	GFPage( gump, page );
 	GFRadioButton( gump, 150, 60, 210, 211, 0, 0x1140b );
 	GFTextLine( gump, 173, 60, 2100, "9x14 at 75500 gold");
@@ -361,7 +370,7 @@ function BuildThreeStoryGump( )
 	GFRadioButton( gump, 150, 160, 210, 211, 0, 0x11425 );
 	GFTextLine( gump, 173, 160, 2100, "11x16 at 102500 gold");
 
-	page := 4;
+	page := 6;
 	GFPage( gump, page );
 	GFRadioButton( gump, 150, 60, 210, 211, 0, 0x1142f );
 	GFTextLine( gump, 173, 60, 2100, "12x14 at 96500 gold");
@@ -393,7 +402,7 @@ function BuildThreeStoryGump( )
 
 	var btn_id := 0x11442;
 	var offsetstep := 3;
-	page := 6;
+	page := 8;
 	foreach housewidth in widths
 		y_pos := 60;
 
