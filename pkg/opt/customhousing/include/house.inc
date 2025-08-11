@@ -182,16 +182,16 @@ endfunction
 
 function GetHouseValueOfSign (sign)
 	//static houses:
-	if (sign.objtype == 0x17060)
-		if (GetObjProperty (sign, "housevalue"))
-			return CINT (GetObjProperty (sign, "housevalue"));
-		endif
-		return 1;
-	endif
+	// if (sign.objtype == 0x17060)
+	// 	if (GetObjProperty (sign, "housevalue"))
+	// 		return CINT (GetObjProperty (sign, "housevalue"));
+	// 	endif
+	// 	return 1;
+	// endif
 
-	if (GetObjProperty (sign, "housevalue"))
-		return CINT (GetObjProperty (sign, "housevalue"));
-	endif
+	// if (GetObjProperty (sign, "housevalue"))
+	// 	return CINT (GetObjProperty (sign, "housevalue"));
+	// endif
 	//deed-placed houses:
 	var house := SystemFindObjectBySerial (GetObjProperty (sign, "house_serial"));
 	var deed := GetDeedType (house);
@@ -240,7 +240,7 @@ function GetDeedType (house)
 		deed := 0x16231;
 	elseif (house.objtype >= 0x11435 and house.objtype <= 0x1143a)
 		deed := 0x16231;
-	elseif (house.objtype >= 0x1140b and house.objtype <= 0x1147b)
+	elseif (house.objtype >= 0x1140b and house.objtype <= 0x1147d)
 		deed := 0x16230;
 	endif
 	return deed;
