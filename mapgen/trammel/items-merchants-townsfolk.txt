@@ -1,0 +1,10141 @@
+# 
+#  ITEMS.TXT: Item data
+# 
+#  This file also contains ship and house components (doors, planks etc)
+# 
+
+Item
+{
+	Name	SpawnPoint [1 beekeeper] 
+	Serial	0x4000277c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4205
+	Y	310
+	Z	7
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735612
+	CProp	PointData a15:S3:NPCS9:beekeeperi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i537
+	DecayAt	611445
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x400027ce
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4189
+	Y	312
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i7
+	DecayAt	611541
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter] 
+	Serial	0x40005650
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4197
+	Y	297
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735540
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i538
+	DecayAt	231736073
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker] 
+	Serial	0x4000569b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4612
+	Y	307
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735641
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i540
+	DecayAt	231736176
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman] 
+	Serial	0x400056c3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4622
+	Y	286
+	Z	3
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735651
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i541
+	DecayAt	231736186
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x40002789
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4179
+	Y	344
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i8
+	DecayAt	611498
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x400027b2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4181
+	Y	325
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i9
+	DecayAt	611520
+}
+
+Item
+{
+	Name	SpawnPoint [1 weaponsalesman]
+	Serial	0x400027dd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4194
+	Y	330
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS14:weaponsalesmani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i10
+	DecayAt	611826
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith] 
+	Serial	0x4000566b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4199
+	Y	331
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735563
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:1i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i539
+	DecayAt	231736095
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright] 
+	Serial	0x400056f6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4598
+	Y	325
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735682
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i543
+	DecayAt	231736217
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher] 
+	Serial	0x400056dc
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4612
+	Y	321
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735668
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i542
+	DecayAt	231736199
+}
+
+Item
+{
+	Name	SpawnPoint [1 ranger] 
+	Serial	0x4000570b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4608
+	Y	335
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735690
+	CProp	PointData a15:S3:NPCS6:rangeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i544
+	DecayAt	231736226
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer] 
+	Serial	0x40005725
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4612
+	Y	335
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735695
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i545
+	DecayAt	231736231
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x40005749
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4614
+	Y	346
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735705
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i546
+	DecayAt	231736239
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker] 
+	Serial	0x40005752
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4627
+	Y	342
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735717
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i547
+	DecayAt	231736252
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter] 
+	Serial	0x40005771
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4627
+	Y	334
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735726
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i548
+	DecayAt	231736261
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker] 
+	Serial	0x4000578c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4630
+	Y	321
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i0i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i549
+	DecayAt	231736272
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper] 
+	Serial	0x400057a5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4640
+	Y	324
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735751
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i550
+	DecayAt	231736283
+}
+
+Item
+{
+	Name	SpawnPoint [1 tanner] 
+	Serial	0x400057cb
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4644
+	Y	335
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735761
+	CProp	PointData a15:S3:NPCS6:tanneri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i551
+	DecayAt	231736295
+}
+
+Item
+{
+	Name	SpawnPoint [1 weaponsalesman] 
+	Serial	0x400057ed
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4656
+	Y	334
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735777
+	CProp	PointData a15:S3:NPCS14:weaponsalesmani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i552
+	DecayAt	231736309
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x400025bb
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4375
+	Y	440
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i11
+	DecayAt	610513
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x400025c4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4393
+	Y	433
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i12
+	DecayAt	610541
+}
+
+Item
+{
+	Name	SpawnPoint [1 barber]
+	Serial	0x400025f3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4404
+	Y	433
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:barberi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i13
+	DecayAt	610598
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40002615
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4410
+	Y	419
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i14
+	DecayAt	610651
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40002616
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4410
+	Y	421
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i15
+	DecayAt	610652
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40002647
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4400
+	Y	405
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i16
+	DecayAt	610737
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x40002678
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4392
+	Y	400
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i17
+	DecayAt	610992
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x400026a9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4362
+	Y	419
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i18
+	DecayAt	611030
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x400026d2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4362
+	Y	434
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i19
+	DecayAt	611052
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress]
+	Serial	0x400026e2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4365
+	Y	432
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i20
+	DecayAt	611067
+}
+
+Item
+{
+	Name	SpawnPoint [1 jeweler]
+	Serial	0x40002707
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4377
+	Y	432
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:jeweleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i21
+	DecayAt	611104
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer]
+	Serial	0x40002724
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4392
+	Y	419
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i22
+	DecayAt	611143
+}
+
+Item
+{
+	Name	SpawnPoint [1 provisioner]
+	Serial	0x40002742
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4378
+	Y	419
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:provisioneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i23
+	DecayAt	611181
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x40002764
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4371
+	Y	403
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i24
+	DecayAt	611237
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe] 
+	Serial	0x400055d2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4381
+	Y	403
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735492
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i535
+	DecayAt	231736027
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner] 
+	Serial	0x40005601
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4387
+	Y	391
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735500
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i536
+	DecayAt	231736035
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x4000262f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4422
+	Y	410
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i25
+	DecayAt	610692
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale]
+	Serial	0x40001058
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1064
+	Y	496
+	Z	9
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i26
+	DecayAt	568984
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale]
+	Serial	0x40001059
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1066
+	Y	496
+	Z	9
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i27
+	DecayAt	568985
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard]
+	Serial	0x4000106e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1047
+	Y	498
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i28
+	DecayAt	569029
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale]
+	Serial	0x40001084
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1061
+	Y	498
+	Z	55
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i29
+	DecayAt	569060
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale]
+	Serial	0x40001091
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1081
+	Y	500
+	Z	55
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i30
+	DecayAt	569075
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x400010a2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1082
+	Y	497
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i31
+	DecayAt	569150
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40001e7f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1839
+	Y	504
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i32
+	DecayAt	586037
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker]
+	Serial	0x40002215
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1839
+	Y	486
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i33
+	DecayAt	586855
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40002233
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1854
+	Y	502
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i34
+	DecayAt	586978
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x4000224f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1830
+	Y	488
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i35
+	DecayAt	587122
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x400020e6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1902
+	Y	502
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i36
+	DecayAt	586566
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x40002119
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1906
+	Y	502
+	Z	31
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i37
+	DecayAt	586585
+}
+
+Item
+{
+	Name	SpawnPoint [1 provisioner]
+	Serial	0x40002149
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1906
+	Y	486
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:provisioneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i38
+	DecayAt	586629
+}
+
+Item
+{
+	Name	SpawnPoint [1 gardener]
+	Serial	0x40002169
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1873
+	Y	496
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:gardeneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i39
+	DecayAt	586710
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x4000217d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1871
+	Y	463
+	Z	31
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i40
+	DecayAt	586741
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x4000219a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1872
+	Y	460
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i41
+	DecayAt	586796
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x400021c9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1875
+	Y	467
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i42
+	DecayAt	586811
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x40000f2b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	953
+	Y	562
+	Z	24
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i43
+	DecayAt	568385
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x40000f57
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	933
+	Y	554
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i44
+	DecayAt	568433
+}
+
+Item
+{
+	Name	SpawnPoint [1 ranger]
+	Serial	0x40000f70
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	918
+	Y	561
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:rangeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i45
+	DecayAt	568477
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x40000f15
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	971
+	Y	565
+	Z	30
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i46
+	DecayAt	568339
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40000f8f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	996
+	Y	565
+	Z	30
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i47
+	DecayAt	568566
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40000fcd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1002
+	Y	564
+	Z	30
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i48
+	DecayAt	568585
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale]
+	Serial	0x4000100a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1001
+	Y	562
+	Z	5
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i49
+	DecayAt	568601
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40001017
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	994
+	Y	567
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i50
+	DecayAt	568628
+}
+
+Item
+{
+	Name	SpawnPoint [1 highpriest]
+	Serial	0x40001037
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1013
+	Y	523
+	Z	49
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:highpriesti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i51
+	DecayAt	568771
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x4000103d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1008
+	Y	531
+	Z	39
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i52
+	DecayAt	568788
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40001046
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1022
+	Y	523
+	Z	39
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i53
+	DecayAt	568838
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x4000104f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1001
+	Y	518
+	Z	39
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i54
+	DecayAt	568917
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x4000109a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1045
+	Y	527
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i55
+	DecayAt	569118
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40001ead
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1840
+	Y	527
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i56
+	DecayAt	586078
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x40001eb6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1842
+	Y	546
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i57
+	DecayAt	586103
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x4000223d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1832
+	Y	538
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i58
+	DecayAt	586998
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001ece
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1856
+	Y	545
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i59
+	DecayAt	586124
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001ecf
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1856
+	Y	548
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i60
+	DecayAt	586125
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard]
+	Serial	0x40001ee8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1857
+	Y	528
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i61
+	DecayAt	586156
+}
+
+Item
+{
+	Name	SpawnPoint [1 barber]
+	Serial	0x40001efc
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1861
+	Y	527
+	Z	31
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:barberi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i62
+	DecayAt	586176
+}
+
+Item
+{
+	Name	SpawnPoint [1 jeweler]
+	Serial	0x40001f1f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1858
+	Y	546
+	Z	31
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:jeweleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i63
+	DecayAt	586196
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x40001f3c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1884
+	Y	540
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i64
+	DecayAt	586243
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40001f5a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1885
+	Y	533
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i65
+	DecayAt	586270
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x40001f97
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1885
+	Y	533
+	Z	31
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i66
+	DecayAt	586288
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x40001fae
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1886
+	Y	543
+	Z	31
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i67
+	DecayAt	586301
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x40001fcd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1895
+	Y	562
+	Z	4
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i68
+	DecayAt	586354
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40001fe4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1866
+	Y	574
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i69
+	DecayAt	586375
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x40002000
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1903
+	Y	553
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i70
+	DecayAt	586409
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x40002029
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1906
+	Y	546
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i71
+	DecayAt	586430
+}
+
+Item
+{
+	Name	SpawnPoint [1 waiter]
+	Serial	0x4000203b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1906
+	Y	558
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:waiteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i72
+	DecayAt	586454
+}
+
+Item
+{
+	Name	SpawnPoint [1 decorator]
+	Serial	0x40002077
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1905
+	Y	529
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:decoratori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i73
+	DecayAt	586522
+}
+
+Item
+{
+	Name	SpawnPoint [1 decorator]
+	Serial	0x400020ad
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1904
+	Y	530
+	Z	31
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:decoratori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i74
+	DecayAt	586537
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40002246
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1874
+	Y	558
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i75
+	DecayAt	587015
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x4000205f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1924
+	Y	538
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i76
+	DecayAt	586502
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40000efb
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	954
+	Y	595
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i77
+	DecayAt	568269
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x40000f42
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	941
+	Y	577
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i78
+	DecayAt	568412
+}
+
+Item
+{
+	Name	SpawnPoint [1 thief]
+	Serial	0x4000110f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	956
+	Y	608
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:thiefi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i79
+	DecayAt	569363
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x40000d4f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	967
+	Y	619
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i80
+	DecayAt	567660
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker]
+	Serial	0x40000d6d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	978
+	Y	639
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i81
+	DecayAt	567723
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x40000dde
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	994
+	Y	635
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i82
+	DecayAt	567886
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x40000df6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1008
+	Y	636
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i83
+	DecayAt	567948
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40000ef2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	977
+	Y	610
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i84
+	DecayAt	568246
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x4000101d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	992
+	Y	589
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i85
+	DecayAt	568671
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x4000102a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1009
+	Y	588
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i86
+	DecayAt	568685
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x40000d94
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	983
+	Y	655
+	Z	5
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i87
+	DecayAt	567772
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40000dae
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	992
+	Y	653
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i88
+	DecayAt	567843
+}
+
+Item
+{
+	Name	SpawnPoint [1 tanner]
+	Serial	0x40000e28
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1010
+	Y	655
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tanneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i89
+	DecayAt	567973
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40000ecf
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1016
+	Y	667
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i90
+	DecayAt	568100
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x40000ed8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1009
+	Y	678
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i91
+	DecayAt	568123
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40000ee9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1015
+	Y	688
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i92
+	DecayAt	568168
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x40000e4a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1060
+	Y	640
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i93
+	DecayAt	568012
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x40000e7a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1039
+	Y	646
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i94
+	DecayAt	568025
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x40000eaa
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1032
+	Y	662
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i95
+	DecayAt	568068
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x40001279
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1017
+	Y	881
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i96
+	DecayAt	576457
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x40001291
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	998
+	Y	883
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i97
+	DecayAt	576481
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x400012bb
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1012
+	Y	886
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i98
+	DecayAt	576573
+}
+
+Item
+{
+	Name	SpawnPoint [1 waiter]
+	Serial	0x400012ca
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1008
+	Y	882
+	Z	24
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:waiteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i99
+	DecayAt	576595
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x400012f8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1047
+	Y	888
+	Z	35
+	Revision	6
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i100
+	DecayAt	577588
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001307
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1043
+	Y	890
+	Z	55
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i101
+	DecayAt	577670
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40001124
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	955
+	Y	945
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i102
+	DecayAt	576181
+}
+
+Item
+{
+	Name	SpawnPoint [1 ranger]
+	Serial	0x40001150
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	958
+	Y	934
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:rangeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i103
+	DecayAt	576196
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x40001189
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	948
+	Y	914
+	Z	6
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i104
+	DecayAt	576248
+}
+
+Item
+{
+	Name	SpawnPoint [1 tanner]
+	Serial	0x400011ba
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	946
+	Y	914
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tanneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i105
+	DecayAt	576264
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x4000116f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	973
+	Y	920
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i106
+	DecayAt	576228
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x400011dc
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1020
+	Y	935
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i107
+	DecayAt	576309
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40001260
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1000
+	Y	922
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i108
+	DecayAt	576424
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x400012ee
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	993
+	Y	912
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i109
+	DecayAt	576707
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x400011f5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1055
+	Y	921
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i110
+	DecayAt	576342
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker]
+	Serial	0x4000120b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1051
+	Y	912
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i111
+	DecayAt	576384
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker]
+	Serial	0x40001234
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1043
+	Y	911
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i112
+	DecayAt	576402
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor] 
+	Serial	0x40004f52
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5486
+	Y	1078
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733983
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i478
+	DecayAt	231734517
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor] 
+	Serial	0x40004f77
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5493
+	Y	1077
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733990
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i479
+	DecayAt	231734525
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x40004f41
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5595
+	Y	1076
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733956
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i476
+	DecayAt	231734491
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x40004f49
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5585
+	Y	1074
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733965
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i477
+	DecayAt	231734499
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith] 
+	Serial	0x40004fb5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5488
+	Y	1133
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734002
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i480
+	DecayAt	231734536
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith] 
+	Serial	0x40004fe4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5482
+	Y	1141
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734010
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i481
+	DecayAt	231734545
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner] 
+	Serial	0x40005012
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5494
+	Y	1138
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734018
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i482
+	DecayAt	231734553
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner] 
+	Serial	0x40005036
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5490
+	Y	1130
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734025
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i483
+	DecayAt	231734560
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer] 
+	Serial	0x40004d71
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5543
+	Y	1144
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733738
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i460
+	DecayAt	231734271
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker] 
+	Serial	0x40004dbd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5565
+	Y	1132
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733767
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i463
+	DecayAt	231734302
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist] 
+	Serial	0x40004dd5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5552
+	Y	1125
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733785
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i464
+	DecayAt	231734315
+}
+
+Item
+{
+	Name	SpawnPoint [1 weaponsalesman] 
+	Serial	0x40004df4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5552
+	Y	1131
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733800
+	CProp	PointData a15:S3:NPCS14:weaponsalesmani1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i465
+	DecayAt	231734330
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor] 
+	Serial	0x40004e1f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5552
+	Y	1110
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733815
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i466
+	DecayAt	231734345
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x40004ea6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5540
+	Y	1125
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733882
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i470
+	DecayAt	231734415
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x40004eb3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5537
+	Y	1121
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733893
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i471
+	DecayAt	231734424
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x40004ec0
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5537
+	Y	1116
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733904
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i472
+	DecayAt	231734435
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe] 
+	Serial	0x40004ecd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5539
+	Y	1110
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733917
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i473
+	DecayAt	231734451
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist] 
+	Serial	0x40004ef0
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5542
+	Y	1108
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733928
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i474
+	DecayAt	231734460
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage] 
+	Serial	0x40004f26
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5540
+	Y	1104
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733936
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i475
+	DecayAt	231734470
+}
+
+Item
+{
+	Name	SpawnPoint [1 armorer] 
+	Serial	0x40005072
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5509
+	Y	1145
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734039
+	CProp	PointData a15:S3:NPCS7:armoreri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i484
+	DecayAt	231734573
+}
+
+Item
+{
+	Name	SpawnPoint [1 weaponsalesman] 
+	Serial	0x4000509d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5505
+	Y	1124
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734060
+	CProp	PointData a15:S3:NPCS14:weaponsalesmani1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i485
+	DecayAt	231734590
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper] 
+	Serial	0x400050d6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5512
+	Y	1099
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734135
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i488
+	DecayAt	231734670
+}
+
+Item
+{
+	Name	SpawnPoint [1 waiter] 
+	Serial	0x400050e5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5517
+	Y	1102
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734146
+	CProp	PointData a15:S3:NPCS6:waiteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i489
+	DecayAt	231734681
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress] 
+	Serial	0x4000510c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5513
+	Y	1107
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734159
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i490
+	DecayAt	231734690
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper] 
+	Serial	0x40005131
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5516
+	Y	1097
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734170
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i491
+	DecayAt	231734703
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher] 
+	Serial	0x40004d89
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5570
+	Y	1147
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733749
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i461
+	DecayAt	231734284
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker] 
+	Serial	0x40004da3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5569
+	Y	1138
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733759
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i462
+	DecayAt	231734294
+}
+
+Item
+{
+	Name	SpawnPoint [1 provisioner] 
+	Serial	0x40004e4d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5570
+	Y	1100
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733829
+	CProp	PointData a15:S3:NPCS11:provisioneri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i467
+	DecayAt	231734360
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker] 
+	Serial	0x40004e6d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5569
+	Y	1108
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733843
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i468
+	DecayAt	231734376
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter] 
+	Serial	0x40004e8c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5569
+	Y	1094
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733859
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i469
+	DecayAt	231734390
+}
+
+Item
+{
+	Name	SpawnPoint [1 highpriest] 
+	Serial	0x400050c8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5522
+	Y	1167
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734076
+	CProp	PointData a15:S3:NPCS10:highpriesti1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i486
+	DecayAt	231734609
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x400050cd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5512
+	Y	1166
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734087
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i487
+	DecayAt	231734619
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner] 
+	Serial	0x400051a3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5500
+	Y	1248
+	Z	42
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734211
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i494
+	DecayAt	231734747
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner] 
+	Serial	0x40005141
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5551
+	Y	1223
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734188
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i492
+	DecayAt	231734723
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner] 
+	Serial	0x40005172
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5591
+	Y	1267
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734199
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i493
+	DecayAt	231734735
+}
+
+Item
+{
+	Name	SpawnPoint [1 ranger]
+	Serial	0x400009ea
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	963
+	Y	1403
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:rangeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i113
+	DecayAt	517240
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x400013db
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	187
+	Y	1436
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i114
+	DecayAt	578089
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x400013b1
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	224
+	Y	1415
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i115
+	DecayAt	578068
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker] 
+	Serial	0x400044a6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	234
+	Y	1467
+	Z	4
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731354
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i372
+	DecayAt	231731889
+}
+
+Item
+{
+	Name	SpawnPoint [1 vegseller]
+	Serial	0x4000139b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	265
+	Y	1455
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:vegselleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i116
+	DecayAt	578040
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40000a09
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	944
+	Y	1420
+	Z	67
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i117
+	DecayAt	517279
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40000a12
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	945
+	Y	1421
+	Z	47
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i118
+	DecayAt	517311
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x40000a1f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	966
+	Y	1428
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i119
+	DecayAt	517344
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40000ce8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	960
+	Y	1415
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i120
+	DecayAt	567242
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x40000cf0
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	973
+	Y	1427
+	Z	61
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i121
+	DecayAt	567280
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith] 
+	Serial	0x4000474b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3541
+	Y	1455
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732321
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i397
+	DecayAt	231732850
+}
+
+Item
+{
+	Name	SpawnPoint [1 weaponsalesman] 
+	Serial	0x40004776
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3532
+	Y	1460
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732332
+	CProp	PointData a15:S3:NPCS14:weaponsalesmani1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i398
+	DecayAt	231732864
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner] 
+	Serial	0x400047a6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3556
+	Y	1458
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732345
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i399
+	DecayAt	231732880
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe] 
+	Serial	0x400045c0
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3639
+	Y	1458
+	Z	21
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732021
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i385
+	DecayAt	231732555
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe] 
+	Serial	0x400045e2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3637
+	Y	1453
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732029
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i386
+	DecayAt	231732563
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard] 
+	Serial	0x4000463e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3667
+	Y	1439
+	Z	21
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732050
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i387
+	DecayAt	231732585
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage] 
+	Serial	0x40004650
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3687
+	Y	1441
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732092
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i388
+	DecayAt	231732624
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist] 
+	Serial	0x40004669
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3683
+	Y	1438
+	Z	61
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732126
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i389
+	DecayAt	231732656
+}
+
+Item
+{
+	Name	SpawnPoint [1 artist] 
+	Serial	0x40004688
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3667
+	Y	1438
+	Z	60
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732154
+	CProp	PointData a15:S3:NPCS6:artisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i390
+	DecayAt	231732688
+}
+
+Item
+{
+	Name	SpawnPoint [1 tanner] 
+	Serial	0x40004691
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3684
+	Y	1461
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732177
+	CProp	PointData a15:S3:NPCS6:tanneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i391
+	DecayAt	231732711
+}
+
+Item
+{
+	Name	SpawnPoint [1 vegseller] 
+	Serial	0x400046b4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3687
+	Y	1462
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732196
+	CProp	PointData a15:S3:NPCS9:vegselleri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i392
+	DecayAt	231732725
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker] 
+	Serial	0x400046c9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3686
+	Y	1460
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732208
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i393
+	DecayAt	231732741
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker]
+	Serial	0x4000136d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	235
+	Y	1519
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i122
+	DecayAt	577942
+}
+
+Item
+{
+	Name	SpawnPoint [1 beekeeper]
+	Serial	0x4000138b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	221
+	Y	1514
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:beekeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i123
+	DecayAt	577967
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker] 
+	Serial	0x400044c0
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	231
+	Y	1475
+	Z	4
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731368
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i373
+	DecayAt	231731899
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40001320
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	263
+	Y	1499
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i124
+	DecayAt	577827
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x40000a2e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	815
+	Y	1486
+	Z	12
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i125
+	DecayAt	517401
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40000a5e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	817
+	Y	1505
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i126
+	DecayAt	517426
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40000a8c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	818
+	Y	1516
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i127
+	DecayAt	517444
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40000d09
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	953
+	Y	1483
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i128
+	DecayAt	567422
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x40000d37
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	991
+	Y	1487
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i129
+	DecayAt	567556
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor] 
+	Serial	0x40004701
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3582
+	Y	1532
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732270
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i395
+	DecayAt	231732802
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter] 
+	Serial	0x40004732
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3583
+	Y	1520
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732287
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i396
+	DecayAt	231732817
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale] 
+	Serial	0x400047f5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3541
+	Y	1500
+	Z	81
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732442
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i401
+	DecayAt	231732974
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale] 
+	Serial	0x40004802
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3541
+	Y	1501
+	Z	81
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732467
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i402
+	DecayAt	231732985
+}
+
+Item
+{
+	Name	SpawnPoint [1 jeweler] 
+	Serial	0x4000480b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3569
+	Y	1494
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732492
+	CProp	PointData a15:S3:NPCS7:jeweleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i403
+	DecayAt	231733025
+}
+
+Item
+{
+	Name	SpawnPoint [1 ranger] 
+	Serial	0x400048ef
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3582
+	Y	1523
+	Z	21
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732715
+	CProp	PointData a15:S3:NPCS6:rangeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i412
+	DecayAt	231733250
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x4000456a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3607
+	Y	1491
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731903
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i380
+	DecayAt	231732421
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x40004577
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3617
+	Y	1491
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731923
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i381
+	DecayAt	231732448
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper] 
+	Serial	0x40004584
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3624
+	Y	1498
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731963
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i382
+	DecayAt	231732493
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress] 
+	Serial	0x40004593
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3631
+	Y	1492
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731978
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i383
+	DecayAt	231732509
+}
+
+Item
+{
+	Name	SpawnPoint [1 barber] 
+	Serial	0x400046e0
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3584
+	Y	1533
+	Z	21
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732255
+	CProp	PointData a15:S3:NPCS6:barberi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i394
+	DecayAt	231732782
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer] 
+	Serial	0x400048cf
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3585
+	Y	1521
+	Z	21
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732704
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i411
+	DecayAt	231733229
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x400045b7
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3654
+	Y	1501
+	Z	42
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731994
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i384
+	DecayAt	231732529
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x40001355
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	264
+	Y	1553
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i130
+	DecayAt	577872
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker] 
+	Serial	0x400047d6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3511
+	Y	1537
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732370
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i400
+	DecayAt	231732903
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x4000482a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3514
+	Y	1566
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732522
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i404
+	DecayAt	231733056
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard] 
+	Serial	0x4000488d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3488
+	Y	1566
+	Z	61
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732603
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i408
+	DecayAt	231733134
+}
+
+Item
+{
+	Name	SpawnPoint [1 artist] 
+	Serial	0x400048a3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3491
+	Y	1567
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732625
+	CProp	PointData a15:S3:NPCS6:artisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i409
+	DecayAt	231733160
+}
+
+Item
+{
+	Name	SpawnPoint [1 provisioner] 
+	Serial	0x400048ad
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3512
+	Y	1539
+	Z	21
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732659
+	CProp	PointData a15:S3:NPCS11:provisioneri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i410
+	DecayAt	231733191
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer] 
+	Serial	0x40004833
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3532
+	Y	1564
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732537
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i405
+	DecayAt	231733071
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker] 
+	Serial	0x4000484b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3556
+	Y	1555
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732557
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i406
+	DecayAt	231733084
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman] 
+	Serial	0x40004873
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3575
+	Y	1560
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231732570
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i407
+	DecayAt	231733101
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001406
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	672
+	Y	1789
+	Z	18
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i131
+	DecayAt	578830
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001413
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	686
+	Y	1788
+	Z	18
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i132
+	DecayAt	578869
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress]
+	Serial	0x40001430
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	701
+	Y	1780
+	Z	9
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i133
+	DecayAt	578921
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x40001503
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	662
+	Y	1775
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i134
+	DecayAt	579215
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x40001420
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	712
+	Y	1786
+	Z	9
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i135
+	DecayAt	578907
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x40001453
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	726
+	Y	1771
+	Z	0
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i136
+	DecayAt	578958
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x400014c5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	716
+	Y	1741
+	Z	8
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i137
+	DecayAt	579163
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale]
+	Serial	0x40000644
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1304
+	Y	1768
+	Z	37
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i138
+	DecayAt	515463
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale]
+	Serial	0x40000645
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1304
+	Y	1767
+	Z	37
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i139
+	DecayAt	515465
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard]
+	Serial	0x4000065a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1343
+	Y	1758
+	Z	27
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i140
+	DecayAt	515535
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x400005f8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1407
+	Y	1756
+	Z	27
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i141
+	DecayAt	515305
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x40000615
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1375
+	Y	1758
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i142
+	DecayAt	515402
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher]
+	Serial	0x4000062c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1352
+	Y	1774
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i143
+	DecayAt	515426
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale]
+	Serial	0x40000671
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1360
+	Y	1764
+	Z	27
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i144
+	DecayAt	515555
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale]
+	Serial	0x40000608
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1414
+	Y	1769
+	Z	27
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i145
+	DecayAt	515352
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker]
+	Serial	0x40000695
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1463
+	Y	1728
+	Z	11
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i146
+	DecayAt	515800
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher]
+	Serial	0x4000067b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1476
+	Y	1734
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i147
+	DecayAt	515728
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x40000721
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1532
+	Y	1790
+	Z	6
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i148
+	DecayAt	516119
+}
+
+Item
+{
+	Name	SpawnPoint [1 waiter]
+	Serial	0x40000733
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1526
+	Y	1786
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:waiteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i149
+	DecayAt	516141
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x400006ef
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1578
+	Y	1784
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i150
+	DecayAt	516052
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x40000708
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1542
+	Y	1757
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i151
+	DecayAt	516083
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x400006d7
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1625
+	Y	1764
+	Z	6
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i152
+	DecayAt	516000
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x4000152d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	632
+	Y	1830
+	Z	67
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i153
+	DecayAt	579248
+}
+
+Item
+{
+	Name	SpawnPoint [1 vegseller]
+	Serial	0x40001549
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	602
+	Y	1819
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:vegselleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i154
+	DecayAt	579273
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x4000146b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	757
+	Y	1798
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i155
+	DecayAt	579001
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x40001492
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	729
+	Y	1805
+	Z	8
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i156
+	DecayAt	579025
+}
+
+Item
+{
+	Name	SpawnPoint [1 vegseller]
+	Serial	0x400014ad
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	708
+	Y	1832
+	Z	9
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:vegselleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i157
+	DecayAt	579128
+}
+
+Item
+{
+	Name	SpawnPoint [1 gardener]
+	Serial	0x400005df
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1341
+	Y	1836
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:gardeneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i158
+	DecayAt	515153
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40000c4f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1317
+	Y	1833
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i159
+	DecayAt	566672
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40000c56
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1355
+	Y	1831
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i160
+	DecayAt	566698
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe] 
+	Serial	0x40004437
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1395
+	Y	1811
+	Z	60
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231729614
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i369
+	DecayAt	231730139
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher] 
+	Serial	0x40004476
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1406
+	Y	1805
+	Z	60
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231729638
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i370
+	DecayAt	231730172
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x4000025f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1465
+	Y	1844
+	Z	37
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i161
+	DecayAt	512517
+}
+
+Item
+{
+	Name	SpawnPoint [1 jeweler]
+	Serial	0x40000290
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1456
+	Y	1843
+	Z	37
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:jeweleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i162
+	DecayAt	512558
+}
+
+Item
+{
+	Name	SpawnPoint [1 barber]
+	Serial	0x400002b2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1463
+	Y	1843
+	Z	57
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:barberi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i163
+	DecayAt	512615
+}
+
+Item
+{
+	Name	SpawnPoint [1 tanner]
+	Serial	0x400002d6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1455
+	Y	1846
+	Z	77
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tanneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i164
+	DecayAt	512682
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x40000334
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1450
+	Y	1848
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i165
+	DecayAt	512848
+}
+
+Item
+{
+	Name	SpawnPoint [1 provisioner]
+	Serial	0x4000034e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1443
+	Y	1836
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:provisioneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i166
+	DecayAt	512895
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x4000036f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1436
+	Y	1842
+	Z	53
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i167
+	DecayAt	512934
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer]
+	Serial	0x4000039e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1437
+	Y	1835
+	Z	53
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i168
+	DecayAt	512962
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x400003bc
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1445
+	Y	1845
+	Z	53
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i169
+	DecayAt	513018
+}
+
+Item
+{
+	Name	SpawnPoint [1 weaponsalesman]
+	Serial	0x400003d8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1428
+	Y	1835
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS14:weaponsalesmani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i170
+	DecayAt	513247
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x40000403
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1408
+	Y	1837
+	Z	32
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i171
+	DecayAt	513286
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40000420
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1414
+	Y	1839
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i172
+	DecayAt	513315
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x4000045d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1412
+	Y	1841
+	Z	53
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i173
+	DecayAt	513341
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x40000473
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1413
+	Y	1834
+	Z	53
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i174
+	DecayAt	513374
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40000b44
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1426
+	Y	1850
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i175
+	DecayAt	565970
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40000b7d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1464
+	Y	1803
+	Z	39
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i176
+	DecayAt	566133
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40000bbc
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1462
+	Y	1798
+	Z	39
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i177
+	DecayAt	566153
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40000bf9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1461
+	Y	1797
+	Z	59
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i178
+	DecayAt	566170
+}
+
+Item
+{
+	Name	SpawnPoint [1 highpriest]
+	Serial	0x40000c37
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1430
+	Y	1803
+	Z	32
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:highpriesti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i179
+	DecayAt	566214
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40000c3c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1439
+	Y	1798
+	Z	32
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i180
+	DecayAt	566234
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40000c45
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1432
+	Y	1807
+	Z	53
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i181
+	DecayAt	566253
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard]
+	Serial	0x4000024a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1477
+	Y	1847
+	Z	37
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i182
+	DecayAt	512476
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress]
+	Serial	0x4000075a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1524
+	Y	1794
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i183
+	DecayAt	516154
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x40000781
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1527
+	Y	1850
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i184
+	DecayAt	516276
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x40000b55
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1480
+	Y	1799
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i185
+	DecayAt	566029
+}
+
+Item
+{
+	Name	SpawnPoint [1 florist]
+	Serial	0x40000b6c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1477
+	Y	1802
+	Z	59
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:floristi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i186
+	DecayAt	566084
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman] 
+	Serial	0x4000448e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1559
+	Y	1802
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231729775
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i371
+	DecayAt	231730309
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x400006be
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1616
+	Y	1802
+	Z	1
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i187
+	DecayAt	515898
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher]
+	Serial	0x40001868
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	670
+	Y	1904
+	Z	55
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i188
+	DecayAt	580441
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale]
+	Serial	0x40001880
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	695
+	Y	1907
+	Z	56
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i189
+	DecayAt	580472
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x40001850
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	725
+	Y	1896
+	Z	55
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i190
+	DecayAt	580409
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x4000006d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1406
+	Y	1859
+	Z	32
+	Revision	9
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i191
+	DecayAt	499554
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x4000008a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1406
+	Y	1863
+	Z	32
+	Revision	11
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i192
+	DecayAt	501125
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x400000a8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1405
+	Y	1858
+	Z	54
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i193
+	DecayAt	506299
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x400000c2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1404
+	Y	1870
+	Z	53
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i194
+	DecayAt	506762
+}
+
+Item
+{
+	Name	SpawnPoint [1 jeweler]
+	Serial	0x400000cf
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1406
+	Y	1888
+	Z	53
+	Revision	7
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:jeweleri1i0S1:2i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i195
+	DecayAt	506891
+}
+
+Item
+{
+	Name	SpawnPoint [1 decorator]
+	Serial	0x400004c8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1404
+	Y	1888
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:decoratori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i196
+	DecayAt	513991
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40000588
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1347
+	Y	1919
+	Z	47
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i197
+	DecayAt	514831
+}
+
+Item
+{
+	Name	SpawnPoint [1 armorer]
+	Serial	0x400005b6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1346
+	Y	1910
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:armoreri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i198
+	DecayAt	514852
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x400000b5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1409
+	Y	1858
+	Z	54
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i199
+	DecayAt	506469
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x400000ee
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1431
+	Y	1878
+	Z	53
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i200
+	DecayAt	507744
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard]
+	Serial	0x4000013a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1448
+	Y	1885
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i201
+	DecayAt	509788
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x4000014d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1435
+	Y	1887
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i202
+	DecayAt	509952
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress]
+	Serial	0x400001fe
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1437
+	Y	1886
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i203
+	DecayAt	511541
+}
+
+Item
+{
+	Name	SpawnPoint [1 waiter]
+	Serial	0x40000224
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1439
+	Y	1888
+	Z	32
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:waiteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i204
+	DecayAt	511891
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker]
+	Serial	0x400002f8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1447
+	Y	1860
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i205
+	DecayAt	512775
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker]
+	Serial	0x40000316
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1444
+	Y	1860
+	Z	53
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i206
+	DecayAt	512808
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x40000797
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1527
+	Y	1893
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i207
+	DecayAt	516321
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40000b4d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1472
+	Y	1862
+	Z	32
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i208
+	DecayAt	565998
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x40000c5b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1489
+	Y	1883
+	Z	32
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i209
+	DecayAt	566817
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer]
+	Serial	0x400007c6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1539
+	Y	1908
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i210
+	DecayAt	516350
+}
+
+Item
+{
+	Name	SpawnPoint [1 jeweler]
+	Serial	0x400007e5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1557
+	Y	1907
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:jeweleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i211
+	DecayAt	516376
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40000803
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1573
+	Y	1907
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i212
+	DecayAt	516403
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40000810
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1579
+	Y	1907
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i213
+	DecayAt	516420
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x4000081d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1599
+	Y	1882
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i214
+	DecayAt	516452
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x40000851
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1598
+	Y	1866
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i215
+	DecayAt	516509
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x40000877
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1591
+	Y	1863
+	Z	41
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i216
+	DecayAt	516531
+}
+
+Item
+{
+	Name	SpawnPoint [1 thief]
+	Serial	0x40002254
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1595
+	Y	1860
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:thiefi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i217
+	DecayAt	587221
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x40000836
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1625
+	Y	1856
+	Z	11
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i218
+	DecayAt	516479
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x40000889
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1623
+	Y	1863
+	Z	11
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i219
+	DecayAt	516613
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x400008a4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1625
+	Y	1863
+	Z	31
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i220
+	DecayAt	516632
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker]
+	Serial	0x40002265
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1646
+	Y	1896
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i221
+	DecayAt	587277
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x400008bd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1713
+	Y	1875
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i222
+	DecayAt	516731
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x400008da
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1716
+	Y	1868
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i223
+	DecayAt	516794
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x4000090b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1731
+	Y	1867
+	Z	-1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i224
+	DecayAt	516828
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale]
+	Serial	0x40001889
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	608
+	Y	1956
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i225
+	DecayAt	580589
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale]
+	Serial	0x40001896
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	609
+	Y	1966
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i226
+	DecayAt	580608
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x400018b3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	583
+	Y	1968
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i227
+	DecayAt	580722
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40001831
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	691
+	Y	1957
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i228
+	DecayAt	580211
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale]
+	Serial	0x4000183a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	669
+	Y	1922
+	Z	77
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i229
+	DecayAt	580274
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale]
+	Serial	0x40001847
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	680
+	Y	1923
+	Z	77
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i230
+	DecayAt	580288
+}
+
+Item
+{
+	Name	SpawnPoint [1 gardener]
+	Serial	0x4000189f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	651
+	Y	1966
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:gardeneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i231
+	DecayAt	580651
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40000503
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1393
+	Y	1959
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i232
+	DecayAt	514426
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40000510
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1399
+	Y	1959
+	Z	27
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i233
+	DecayAt	514454
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker]
+	Serial	0x4000051d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1406
+	Y	1980
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i234
+	DecayAt	514516
+}
+
+Item
+{
+	Name	SpawnPoint [1 architect]
+	Serial	0x4000053c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1388
+	Y	1979
+	Z	7
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:architecti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i235
+	DecayAt	514565
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x40000570
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1374
+	Y	1954
+	Z	6
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i236
+	DecayAt	514701
+}
+
+Item
+{
+	Name	SpawnPoint [1 performer]
+	Serial	0x400004fe
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1440
+	Y	1927
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:performeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i237
+	DecayAt	514303
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x40001de8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2103
+	Y	1976
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i238
+	DecayAt	584689
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40001e2d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2063
+	Y	1945
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i239
+	DecayAt	585849
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper] 
+	Serial	0x40004995
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5300
+	Y	1982
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733152
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i428
+	DecayAt	231733682
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x40004967
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5323
+	Y	1966
+	Z	50
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733063
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i425
+	DecayAt	231733591
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x40004974
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5327
+	Y	1966
+	Z	50
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733074
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i426
+	DecayAt	231733605
+}
+
+Item
+{
+	Name	SpawnPoint [1 highpriest] 
+	Serial	0x40004d6c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5374
+	Y	1932
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733686
+	CProp	PointData a15:S3:NPCS10:highpriesti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i459
+	DecayAt	231734220
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard]
+	Serial	0x4000160d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	617
+	Y	1997
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i240
+	DecayAt	579625
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher]
+	Serial	0x40001620
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	615
+	Y	2014
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i241
+	DecayAt	579647
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x4000163d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	605
+	Y	2038
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i242
+	DecayAt	579671
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x4000163e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	619
+	Y	2039
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i243
+	DecayAt	579674
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x400016cf
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	589
+	Y	2042
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i244
+	DecayAt	579783
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x400018e6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	591
+	Y	2016
+	Z	25
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i245
+	DecayAt	580773
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001560
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	679
+	Y	2019
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i246
+	DecayAt	579414
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x4000156d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	679
+	Y	2016
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i247
+	DecayAt	579441
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker]
+	Serial	0x4000157a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	702
+	Y	1995
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i248
+	DecayAt	579523
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer]
+	Serial	0x400015a4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	677
+	Y	1991
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i249
+	DecayAt	579554
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker]
+	Serial	0x400015c2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	664
+	Y	2006
+	Z	27
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i250
+	DecayAt	579576
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x400015df
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	650
+	Y	1999
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i251
+	DecayAt	579601
+}
+
+Item
+{
+	Name	SpawnPoint [1 jeweler]
+	Serial	0x400016d8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	641
+	Y	2034
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:jeweleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i252
+	DecayAt	579817
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x40001712
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	660
+	Y	2047
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i253
+	DecayAt	579864
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x4000177b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	694
+	Y	2036
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i254
+	DecayAt	580036
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001788
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	694
+	Y	2033
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i255
+	DecayAt	580048
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x400018fe
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	660
+	Y	2027
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i256
+	DecayAt	580980
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x4000192d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	640
+	Y	2006
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i257
+	DecayAt	581012
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x4000195a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	651
+	Y	2040
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i258
+	DecayAt	581158
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x40001795
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	737
+	Y	2031
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i259
+	DecayAt	580081
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard]
+	Serial	0x400017a7
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	712
+	Y	2028
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i260
+	DecayAt	580098
+}
+
+Item
+{
+	Name	SpawnPoint [1 waiter]
+	Serial	0x400017bd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	732
+	Y	2037
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:waiteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i261
+	DecayAt	580113
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress]
+	Serial	0x400017e1
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	717
+	Y	2031
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i262
+	DecayAt	580128
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40000560
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1385
+	Y	2011
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i263
+	DecayAt	514599
+}
+
+Item
+{
+	Name	SpawnPoint [1 provisioner]
+	Serial	0x40001d39
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2000
+	Y	2014
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:provisioneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i264
+	DecayAt	584242
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x40001d5a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1994
+	Y	2032
+	Z	8
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i265
+	DecayAt	584265
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40001d9c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1994
+	Y	1998
+	Z	1
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i266
+	DecayAt	584516
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x40001db7
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2017
+	Y	1991
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i267
+	DecayAt	584557
+}
+
+Item
+{
+	Name	SpawnPoint [1 beekeeper]
+	Serial	0x40001dcd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2048
+	Y	2023
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:beekeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i268
+	DecayAt	584578
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40001ddf
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2066
+	Y	2001
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i269
+	DecayAt	584605
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x40001e04
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2059
+	Y	2021
+	Z	8
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i270
+	DecayAt	585810
+}
+
+Item
+{
+	Name	SpawnPoint [1 decorator]
+	Serial	0x40001e47
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2080
+	Y	1988
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:decoratori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i271
+	DecayAt	585901
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor] 
+	Serial	0x40004c3e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5244
+	Y	2031
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733486
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i450
+	DecayAt	231734021
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper] 
+	Serial	0x40004d05
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5203
+	Y	2019
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733609
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i457
+	DecayAt	231734143
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher] 
+	Serial	0x4000494b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5251
+	Y	2002
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733030
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i424
+	DecayAt	231733565
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper] 
+	Serial	0x40004982
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5293
+	Y	1993
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733127
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i427
+	DecayAt	231733658
+}
+
+Item
+{
+	Name	SpawnPoint [1 waiter] 
+	Serial	0x400049a7
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5298
+	Y	1990
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733170
+	CProp	PointData a15:S3:NPCS6:waiteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i429
+	DecayAt	231733702
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress] 
+	Serial	0x400049cf
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5300
+	Y	1993
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733180
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i430
+	DecayAt	231733715
+}
+
+Item
+{
+	Name	SpawnPoint [1 jeweler] 
+	Serial	0x40004bb9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5270
+	Y	2046
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733431
+	CProp	PointData a15:S3:NPCS7:jeweleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i445
+	DecayAt	231733964
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker] 
+	Serial	0x40004c23
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5264
+	Y	2022
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733477
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i449
+	DecayAt	231734012
+}
+
+Item
+{
+	Name	SpawnPoint [1 artist] 
+	Serial	0x400049f4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5331
+	Y	1987
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733206
+	CProp	PointData a15:S3:NPCS6:artisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i431
+	DecayAt	231733741
+}
+
+Item
+{
+	Name	SpawnPoint [1 tanner] 
+	Serial	0x400049fd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5351
+	Y	1989
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733215
+	CProp	PointData a15:S3:NPCS6:tanneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i432
+	DecayAt	231733750
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor] 
+	Serial	0x40004a1f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5360
+	Y	1989
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733232
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i433
+	DecayAt	231733765
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor] 
+	Serial	0x40004a43
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5359
+	Y	1997
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733240
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i434
+	DecayAt	231733774
+}
+
+Item
+{
+	Name	SpawnPoint [1 weaponsalesman] 
+	Serial	0x40004a82
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5365
+	Y	1992
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733257
+	CProp	PointData a15:S3:NPCS14:weaponsalesmani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i435
+	DecayAt	231733786
+}
+
+Item
+{
+	Name	SpawnPoint [1 tinker] 
+	Serial	0x40004aad
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5357
+	Y	1999
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733268
+	CProp	PointData a15:S3:NPCS6:tinkeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i436
+	DecayAt	231733801
+}
+
+Item
+{
+	Name	SpawnPoint [1 armorer] 
+	Serial	0x40004acb
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5367
+	Y	1992
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733290
+	CProp	PointData a15:S3:NPCS7:armoreri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i437
+	DecayAt	231733823
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter] 
+	Serial	0x40004af6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5375
+	Y	1998
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733305
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i438
+	DecayAt	231733838
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x40001672
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	610
+	Y	2060
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i272
+	DecayAt	579706
+}
+
+Item
+{
+	Name	SpawnPoint [1 thief]
+	Serial	0x40001688
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	637
+	Y	2085
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:thiefi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i273
+	DecayAt	579736
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40001698
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	614
+	Y	2072
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i274
+	DecayAt	579753
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x400016b3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	588
+	Y	2073
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i275
+	DecayAt	579767
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x400016f4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	643
+	Y	2057
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i276
+	DecayAt	579846
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x4000173d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	667
+	Y	2057
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i277
+	DecayAt	580007
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x4000182c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	699
+	Y	2058
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i278
+	DecayAt	580180
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x40001804
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	733
+	Y	2049
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i279
+	DecayAt	580150
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x40000c67
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1451
+	Y	2092
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i280
+	DecayAt	567031
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x40000c80
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1454
+	Y	2094
+	Z	27
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i281
+	DecayAt	567046
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x40000c97
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1446
+	Y	2073
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i282
+	DecayAt	567064
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x4000094c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1513
+	Y	2084
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i283
+	DecayAt	516931
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x40000964
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1494
+	Y	2105
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i284
+	DecayAt	517015
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x40000cc1
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1484
+	Y	2059
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i285
+	DecayAt	567108
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x40001d84
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1996
+	Y	2054
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i286
+	DecayAt	584354
+}
+
+Item
+{
+	Serial	0x400025ba
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4264
+	Y	2098
+	Z	0
+	Revision	1
+	Realm	britannia_alt
+	CProp	PointData a15:S3:NPCS3:nili1i0i4i0i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a0:
+	DecayAt	610440
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x4000542d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4261
+	Y	2110
+	Z	3
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735065
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i521
+	DecayAt	231735598
+}
+
+Item
+{
+	Name	SpawnPoint [1 provisioner] 
+	Serial	0x40005550
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4254
+	Y	2095
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735373
+	CProp	PointData a15:S3:NPCS11:provisioneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i531
+	DecayAt	231735907
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer] 
+	Serial	0x400053f5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4338
+	Y	2093
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735017
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i519
+	DecayAt	231735551
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer] 
+	Serial	0x4000540d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4288
+	Y	2104
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735028
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i520
+	DecayAt	231735563
+}
+
+Item
+{
+	Serial	0x40004ce5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5152
+	Y	2069
+	Z	20
+	Revision	1
+	Realm	britannia_alt
+	CProp	PointData a15:S3:NPCS3:nili1i0i4i0i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a0:
+	DecayAt	231734114
+}
+
+Item
+{
+	Name	SpawnPoint [1 thief] 
+	Serial	0x40004ce6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5152
+	Y	2069
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733580
+	CProp	PointData a15:S3:NPCS5:thiefi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i455
+	DecayAt	231734114
+}
+
+Item
+{
+	Name	SpawnPoint [1 thief] 
+	Serial	0x40004cf6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5148
+	Y	2068
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733590
+	CProp	PointData a15:S3:NPCS5:thiefi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i456
+	DecayAt	231734125
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard] 
+	Serial	0x40004c6d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5235
+	Y	2049
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733504
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i451
+	DecayAt	231734034
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage] 
+	Serial	0x40004c81
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5234
+	Y	2068
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733513
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i452
+	DecayAt	231734048
+}
+
+Item
+{
+	Name	SpawnPoint [1 barber] 
+	Serial	0x40004c98
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5213
+	Y	2078
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733529
+	CProp	PointData a15:S3:NPCS6:barberi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i453
+	DecayAt	231734064
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker] 
+	Serial	0x40004cba
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5205
+	Y	2095
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733550
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i454
+	DecayAt	231734085
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith] 
+	Serial	0x40004b41
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5291
+	Y	2110
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733383
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i442
+	DecayAt	231733917
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist] 
+	Serial	0x40004b9c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5273
+	Y	2080
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733416
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i444
+	DecayAt	231733950
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer] 
+	Serial	0x40004bd9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5260
+	Y	2050
+	Z	21
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733441
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i446
+	DecayAt	231733976
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x40004bf9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5254
+	Y	2064
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733452
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i447
+	DecayAt	231733986
+}
+
+Item
+{
+	Name	SpawnPoint [1 provisioner] 
+	Serial	0x40004c02
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5261
+	Y	2049
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733467
+	CProp	PointData a15:S3:NPCS11:provisioneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i448
+	DecayAt	231734001
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe] 
+	Serial	0x40004d2e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5257
+	Y	2077
+	Z	40
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733639
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i458
+	DecayAt	231734162
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer] 
+	Serial	0x40004b0f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5353
+	Y	2077
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733340
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i439
+	DecayAt	231733872
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x40004b27
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5349
+	Y	2082
+	Z	21
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733352
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i440
+	DecayAt	231733884
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x40004b34
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5352
+	Y	2082
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733363
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i441
+	DecayAt	231733894
+}
+
+Item
+{
+	Name	SpawnPoint [1 vegseller]
+	Serial	0x4000097e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1463
+	Y	2146
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:vegselleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i287
+	DecayAt	517078
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x400009c3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1471
+	Y	2149
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i288
+	DecayAt	517142
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer]
+	Serial	0x40000923
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1513
+	Y	2120
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i289
+	DecayAt	516908
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale] 
+	Serial	0x40005470
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4215
+	Y	2115
+	Z	26
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735201
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i525
+	DecayAt	231735713
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale] 
+	Serial	0x40005471
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4214
+	Y	2115
+	Z	26
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735191
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i524
+	DecayAt	231735713
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper] 
+	Serial	0x40005486
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4283
+	Y	2166
+	Z	0
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735366
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i528
+	DecayAt	231735805
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer] 
+	Serial	0x4000551e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4250
+	Y	2166
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735334
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i530
+	DecayAt	231735869
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage] 
+	Serial	0x4000558b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4260
+	Y	2142
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735420
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i533
+	DecayAt	231735957
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x40005468
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4322
+	Y	2161
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735145
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i523
+	DecayAt	231735680
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter] 
+	Serial	0x40005572
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4310
+	Y	2117
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735387
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i532
+	DecayAt	231735922
+}
+
+Item
+{
+	Name	SpawnPoint [1 armorer] 
+	Serial	0x40004b70
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	5291
+	Y	2115
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231733398
+	CProp	PointData a15:S3:NPCS7:armoreri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i443
+	DecayAt	231733929
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith] 
+	Serial	0x4000543a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4249
+	Y	2205
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735124
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i522
+	DecayAt	231735657
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe] 
+	Serial	0x400054e7
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4257
+	Y	2188
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735324
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i529
+	DecayAt	231735857
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner] 
+	Serial	0x400055a2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4251
+	Y	2208
+	Z	5
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231735459
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i534
+	DecayAt	231735990
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x400024e4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4690
+	Y	2364
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i290
+	DecayAt	609190
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x4000250d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4708
+	Y	2366
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i291
+	DecayAt	609262
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x4000252c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4693
+	Y	2333
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i292
+	DecayAt	609356
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x40002555
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4694
+	Y	2350
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i293
+	DecayAt	609370
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x4000258c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4677
+	Y	2353
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i294
+	DecayAt	609388
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale]
+	Serial	0x40002516
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4778
+	Y	2349
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i295
+	DecayAt	609287
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale]
+	Serial	0x40002517
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4780
+	Y	2349
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i296
+	DecayAt	609288
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x400024d7
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	4685
+	Y	2386
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i297
+	DecayAt	609161
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x40001c6a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2285
+	Y	2543
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i298
+	DecayAt	583936
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress]
+	Serial	0x40001c7a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2288
+	Y	2540
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i299
+	DecayAt	583950
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001c9e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2300
+	Y	2541
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i300
+	DecayAt	583981
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40001c2f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2349
+	Y	2554
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i301
+	DecayAt	583869
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x40001cab
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2313
+	Y	2544
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i302
+	DecayAt	584001
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x40001cf2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2338
+	Y	2542
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i303
+	DecayAt	584125
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x400019f1
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	309
+	Y	2564
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i304
+	DecayAt	581929
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40001a21
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	283
+	Y	2607
+	Z	6
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i305
+	DecayAt	581952
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer] 
+	Serial	0x40004503
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	282
+	Y	2572
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731529
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i375
+	DecayAt	231732061
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x400019ad
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	330
+	Y	2609
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i306
+	DecayAt	581821
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x400019db
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	326
+	Y	2597
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i307
+	DecayAt	581847
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x400019e8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	367
+	Y	2589
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i308
+	DecayAt	581885
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x4000451b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	326
+	Y	2618
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731584
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i376
+	DecayAt	231732118
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer] 
+	Serial	0x400044da
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	408
+	Y	2615
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731479
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i374
+	DecayAt	231732014
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x40001c52
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2297
+	Y	2562
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i309
+	DecayAt	583910
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer] 
+	Serial	0x40004552
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2298
+	Y	2574
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731752
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i379
+	DecayAt	231732286
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40001c38
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2325
+	Y	2562
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i310
+	DecayAt	583891
+}
+
+Item
+{
+	Name	SpawnPoint [1 mapmaker]
+	Serial	0x40001cc9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2331
+	Y	2578
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:mapmakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i311
+	DecayAt	584065
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40001d0a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2343
+	Y	2567
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i312
+	DecayAt	584143
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x40001963
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	337
+	Y	2678
+	Z	8
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i313
+	DecayAt	581551
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress]
+	Serial	0x40001974
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	336
+	Y	2667
+	Z	8
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i314
+	DecayAt	581723
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright]
+	Serial	0x40001997
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	346
+	Y	2637
+	Z	1
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i315
+	DecayAt	581778
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x40001c09
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2062
+	Y	2684
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i316
+	DecayAt	583695
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer]
+	Serial	0x40001c11
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2078
+	Y	2674
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i317
+	DecayAt	583726
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x40002445
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2940
+	Y	2685
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i318
+	DecayAt	592364
+}
+
+Item
+{
+	Name	SpawnPoint [1 mage]
+	Serial	0x4000245d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2941
+	Y	2667
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:magei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i319
+	DecayAt	592385
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x400024c3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2923
+	Y	2666
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i320
+	DecayAt	592594
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x4000228f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2961
+	Y	2666
+	Z	10
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i321
+	DecayAt	591558
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer]
+	Serial	0x4000229c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2963
+	Y	2651
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i322
+	DecayAt	591576
+}
+
+Item
+{
+	Name	SpawnPoint [1 armorer]
+	Serial	0x400022a4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2973
+	Y	2666
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:armoreri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i323
+	DecayAt	591598
+}
+
+Item
+{
+	Name	SpawnPoint [1 vegseller]
+	Serial	0x400022cd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2972
+	Y	2687
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:vegselleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i324
+	DecayAt	591674
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard]
+	Serial	0x40002386
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2984
+	Y	2686
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i325
+	DecayAt	591941
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x4000239a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2985
+	Y	2651
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i326
+	DecayAt	591981
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x400023d8
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2976
+	Y	2652
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i327
+	DecayAt	592077
+}
+
+Item
+{
+	Name	SpawnPoint [1 jeweler]
+	Serial	0x400023f6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2948
+	Y	2637
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:jeweleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i328
+	DecayAt	592284
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40002416
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2948
+	Y	2647
+	Z	21
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i329
+	DecayAt	592306
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x40002474
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2951
+	Y	2657
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i330
+	DecayAt	592404
+}
+
+Item
+{
+	Name	SpawnPoint [1 tanner]
+	Serial	0x40001b8e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2037
+	Y	2717
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tanneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i331
+	DecayAt	583415
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40001bc9
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2037
+	Y	2703
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i332
+	DecayAt	583526
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter]
+	Serial	0x40001b74
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2056
+	Y	2729
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i333
+	DecayAt	583308
+}
+
+Item
+{
+	Name	SpawnPoint [1 provisioner] 
+	Serial	0x40001bb1
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2055
+	Y	2718
+	Z	2
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731779
+	CProp	PointData a15:S3:NPCS11:provisioneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i378
+	DecayAt	583458
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001be2
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2051
+	Y	2695
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i335
+	DecayAt	583585
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001bef
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2051
+	Y	2700
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i336
+	DecayAt	583599
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001bfc
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2058
+	Y	2691
+	Z	2
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i337
+	DecayAt	583613
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher]
+	Serial	0x400022e3
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2959
+	Y	2690
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i338
+	DecayAt	591732
+}
+
+Item
+{
+	Name	SpawnPoint [1 tanner]
+	Serial	0x400022fe
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2952
+	Y	2694
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tanneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i339
+	DecayAt	591819
+}
+
+Item
+{
+	Name	SpawnPoint [1 blacksmith]
+	Serial	0x40002322
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2951
+	Y	2706
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:blacksmithi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i340
+	DecayAt	591838
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer]
+	Serial	0x40002350
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2955
+	Y	2706
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i341
+	DecayAt	591869
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x4000236e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2977
+	Y	2706
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i342
+	DecayAt	591919
+}
+
+Item
+{
+	Name	SpawnPoint [1 tanner] 
+	Serial	0x40005237
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3755
+	Y	3248
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734399
+	CProp	PointData a15:S3:NPCS6:tanneri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i499
+	DecayAt	231734933
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer] 
+	Serial	0x400051d4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3817
+	Y	3215
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734321
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i495
+	DecayAt	231734854
+}
+
+Item
+{
+	Name	SpawnPoint [1 highpriest] 
+	Serial	0x400053ef
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3779
+	Y	3221
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734933
+	CProp	PointData a15:S3:NPCS10:highpriesti1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i518
+	DecayAt	231735464
+}
+
+Item
+{
+	Name	SpawnPoint [1 miner]
+	Serial	0x400029cf
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3861
+	Y	3255
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:mineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i343
+	DecayAt	612891
+}
+
+Item
+{
+	Name	SpawnPoint [1 farmer] 
+	Serial	0x400051ec
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3718
+	Y	3296
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734350
+	CProp	PointData a15:S3:NPCS6:farmeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i496
+	DecayAt	231734884
+}
+
+Item
+{
+	Name	SpawnPoint [1 bowyer] 
+	Serial	0x40005215
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3727
+	Y	3291
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734362
+	CProp	PointData a15:S3:NPCS6:bowyeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i497
+	DecayAt	231734897
+}
+
+Item
+{
+	Name	SpawnPoint [1 artist] 
+	Serial	0x40005233
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3731
+	Y	3274
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	PointData a15:S3:NPCS6:artisti1i0S1:4i0i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i498
+	DecayAt	231734908
+}
+
+Item
+{
+	Name	SpawnPoint [1 bard] 
+	Serial	0x4000525a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3773
+	Y	3284
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734420
+	CProp	PointData a15:S3:NPCS4:bardi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i500
+	DecayAt	231734954
+}
+
+Item
+{
+	Name	SpawnPoint [1 butcher] 
+	Serial	0x4000526d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3762
+	Y	3325
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734450
+	CProp	PointData a15:S3:NPCS7:butcheri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i501
+	DecayAt	231734980
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer] 
+	Serial	0x40005289
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3752
+	Y	3323
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734460
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i502
+	DecayAt	231734995
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x40002823
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3862
+	Y	3313
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i344
+	DecayAt	612228
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40002852
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3875
+	Y	3309
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i345
+	DecayAt	612307
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x4000288f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3886
+	Y	3309
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i346
+	DecayAt	612328
+}
+
+Item
+{
+	Name	SpawnPoint [1 carpenter] 
+	Serial	0x40005375
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3894
+	Y	3308
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734718
+	CProp	PointData a15:S3:NPCS9:carpenteri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i513
+	DecayAt	231735249
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist] 
+	Serial	0x4000538f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3863
+	Y	3322
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734742
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i514
+	DecayAt	231735275
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper] 
+	Serial	0x400053ad
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3900
+	Y	3314
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734812
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i515
+	DecayAt	231735339
+}
+
+Item
+{
+	Name	SpawnPoint [1 waitress] 
+	Serial	0x400053c0
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3900
+	Y	3320
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734826
+	CProp	PointData a15:S3:NPCS8:waitressi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i516
+	DecayAt	231735361
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblemale] 
+	Serial	0x40005352
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3956
+	Y	3299
+	Z	14
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734657
+	CProp	PointData a15:S3:NPCS9:noblemalei1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i510
+	DecayAt	231735189
+}
+
+Item
+{
+	Name	SpawnPoint [1 noblefemale] 
+	Serial	0x4000535f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3957
+	Y	3299
+	Z	14
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734665
+	CProp	PointData a15:S3:NPCS11:noblefemalei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i511
+	DecayAt	231735199
+}
+
+Item
+{
+	Name	SpawnPoint [1 alchemist]
+	Serial	0x40002806
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3865
+	Y	3333
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:alchemisti1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i348
+	DecayAt	612124
+}
+
+Item
+{
+	Name	SpawnPoint [1 florist]
+	Serial	0x400028c5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3899
+	Y	3340
+	Z	5
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS7:floristi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i349
+	DecayAt	612566
+}
+
+Item
+{
+	Name	SpawnPoint [1 decorator]
+	Serial	0x400028d6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3889
+	Y	3345
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:decoratori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i350
+	DecayAt	612642
+}
+
+Item
+{
+	Name	SpawnPoint [1 weaponsalesman]
+	Serial	0x40002926
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3892
+	Y	3366
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS14:weaponsalesmani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i351
+	DecayAt	612746
+}
+
+Item
+{
+	Name	SpawnPoint [1 baker]
+	Serial	0x4000294f
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3865
+	Y	3372
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:bakeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i352
+	DecayAt	612775
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper]
+	Serial	0x4000296a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3869
+	Y	3378
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i353
+	DecayAt	612788
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper]
+	Serial	0x40002979
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3872
+	Y	3367
+	Z	6
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i354
+	DecayAt	612809
+}
+
+Item
+{
+	Name	SpawnPoint [1 waiter]
+	Serial	0x40002998
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3876
+	Y	3378
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:waiteri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i355
+	DecayAt	612821
+}
+
+Item
+{
+	Name	SpawnPoint [1 townperson]
+	Serial	0x400029c6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3869
+	Y	3354
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS10:townpersoni1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i356
+	DecayAt	612835
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman] 
+	Serial	0x4000530d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3903
+	Y	3388
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734606
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i507
+	DecayAt	231735138
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker] 
+	Serial	0x40005368
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3899
+	Y	3334
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734694
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i512
+	DecayAt	231735228
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x400053e6
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3883
+	Y	3328
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734884
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i517
+	DecayAt	231735418
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x4000290e
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3909
+	Y	3362
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i357
+	DecayAt	612711
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright] 
+	Serial	0x40005325
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3925
+	Y	3374
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734624
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i508
+	DecayAt	231735154
+}
+
+Item
+{
+	Name	SpawnPoint [1 shipwright] 
+	Serial	0x4000533a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3932
+	Y	3367
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734634
+	CProp	PointData a15:S3:NPCS10:shipwrighti1i0S1:0i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i509
+	DecayAt	231735168
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40002a00
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3835
+	Y	3397
+	Z	1
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i358
+	DecayAt	613011
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman] 
+	Serial	0x400052a1
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3867
+	Y	3431
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734505
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i503
+	DecayAt	231735039
+}
+
+Item
+{
+	Name	SpawnPoint [1 beekeeper] 
+	Serial	0x400052bb
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3879
+	Y	3426
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734515
+	CProp	PointData a15:S3:NPCS9:beekeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i504
+	DecayAt	231735049
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper] 
+	Serial	0x400052cd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3865
+	Y	3398
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734557
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i505
+	DecayAt	231735090
+}
+
+Item
+{
+	Name	SpawnPoint [1 vegseller] 
+	Serial	0x400052f4
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	3891
+	Y	3396
+	Z	5
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231734594
+	CProp	PointData a15:S3:NPCS9:vegselleri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i506
+	DecayAt	231735127
+}
+
+Item
+{
+	Name	SpawnPoint [1 barkeeper] 
+	Serial	0x40001ae7
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1828
+	Y	3706
+	Z	30
+	Revision	7
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729570
+	CProp	PointData a15:S3:NPCS9:barkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i359
+	DecayAt	582962
+}
+
+Item
+{
+	Name	SpawnPoint [1 tailor]
+	Serial	0x40001b1d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1824
+	Y	3656
+	Z	25
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:tailori1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i360
+	DecayAt	583094
+}
+
+Item
+{
+	Serial	0x4000440c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1831
+	Y	3712
+	Z	10
+	Revision	1
+	Realm	britannia_alt
+	CProp	PointData a15:S3:NPCS3:nili1i0i4i0i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a0:
+	DecayAt	231730086
+}
+
+Item
+{
+	Name	SpawnPoint [1 innkeeper] 
+	Serial	0x4000440d
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1831
+	Y	3712
+	Z	10
+	Revision	9
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231729659
+	CProp	PointData a15:S3:NPCS9:innkeeperi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i368
+	DecayAt	231730087
+}
+
+Item
+{
+	Name	SpawnPoint [1 healer] 
+	Serial	0x40004524
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1887
+	Y	3737
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Nagash
+	CProp	NextSpawn i231731651
+	CProp	PointData a15:S3:NPCS6:healeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i377
+	DecayAt	231732185
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40001a3a
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1960
+	Y	3741
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i361
+	DecayAt	582468
+}
+
+Item
+{
+	Name	SpawnPoint [1 scribe]
+	Serial	0x40001a77
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1968
+	Y	3739
+	Z	0
+	Revision	5
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:scribei1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i362
+	DecayAt	582492
+}
+
+Item
+{
+	Name	SpawnPoint [1 thief]
+	Serial	0x40001b4c
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2019
+	Y	3738
+	Z	15
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS5:thiefi1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i363
+	DecayAt	583188
+}
+
+Item
+{
+	Name	SpawnPoint [1 animaltrainer]
+	Serial	0x40001ab5
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1877
+	Y	3776
+	Z	0
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS13:animaltraineri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i364
+	DecayAt	582579
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001acd
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1876
+	Y	3787
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i365
+	DecayAt	582605
+}
+
+Item
+{
+	Name	SpawnPoint [1 banker]
+	Serial	0x40001ada
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	1879
+	Y	3787
+	Z	20
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS6:bankeri1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i366
+	DecayAt	582620
+}
+
+Item
+{
+	Name	SpawnPoint [1 fisherman]
+	Serial	0x40001b5b
+	ObjType	0xa300
+	Graphic	0x20f8
+	Color	0x3b2
+	X	2020
+	Y	3778
+	Z	15
+	Revision	3
+	Realm	britannia_alt
+	CProp	LFucker s2 - Ettie
+	CProp	NextSpawn i231729230
+	CProp	PointData a15:S3:NPCS9:fishermani1i0S1:4i1i0i1i1i0i0i0i0S0:i0
+	CProp	Serials a1:i367
+	DecayAt	583208
+}
+
