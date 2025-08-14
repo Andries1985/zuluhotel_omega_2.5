@@ -131,9 +131,6 @@ function BankFunctions( you, byref text )
                 CountItems( you );
 	endif
 
-
-
-
 endfunction
 
 
