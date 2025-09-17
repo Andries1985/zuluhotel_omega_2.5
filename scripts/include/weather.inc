@@ -3,6 +3,7 @@ use os;
 
 function StartWeather()
 
+	/*
 	const OUTDOORS := "outdoors";
 	const ICEISLAND := "IceIsland";
 	const THUNDER := 0x29;
@@ -52,5 +53,6 @@ function StartWeather()
 		endif
 
 	endwhile
-
+	*/
+	
 endfunction

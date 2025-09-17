@@ -305,7 +305,8 @@ endfunction
 
 function IsInACity( byref what )
 			// 		min_x	max_x	min_y	max_y	name
-	var cities := {		{	1361,	1589,	1536,	1765,	AREAID_BRITAIN		},	// Britain
+	var cities := {		
+				{	1361,	1589,	1536,	1765,	AREAID_BRITAIN		},	// Britain
 				{	1295,	1360,	1558,	1765,	AREAID_BRITISH_CASTLE	},	// British Castle
 				{	1500,	1545,	1400,	1490,	AREAID_BLACKTHORN_CASTLE},	// Blackthorn Castle
 				{	2592,	2783,	2080,	2271,	AREAID_BUCCANEERS_DEN	},	// Buccanner's Den
@@ -594,10 +595,11 @@ function IsInGuardedArea( byref who )
 		set_priority(old_prio);
 		return 0;
 	endif
-	
+
 	for( i := 1; i <= areas.size(); i := i + 1 )
 		if( guarded[i] )
 			splited := SplitWords( areas[i] );
+
 			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
 				set_priority(old_prio);
 				return 1;
@@ -650,7 +652,7 @@ endfunction
 
 function IsInSafeArea(who)
 
-   var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
+	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
 	var areas	:= GetConfigStringArray( areas_cfg[who.realm], "Area" );
 	
     if( !areas )

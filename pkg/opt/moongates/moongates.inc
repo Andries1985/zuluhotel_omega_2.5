@@ -33,14 +33,22 @@ function CreateMoongates();
     	{2701,	693,	5,		"britannia"},		// minoc
     	{1828,	2948,	-20,	"britannia"},		// trinsic
     	{643,	2067,	5,		"britannia"},		// skara
-    	{3564,	2140,	34,		"britannia"},		// magincia
+    	{3564,	2140,	31,		"britannia"},		// magincia
 		{802,	1204,	25,		"tokuno"},			// Zento City
 		{1169,	998,	41,		"tokuno"},			// Isamu-Jima Island
 		{270,	628,	15,		"tokuno"},			// Homare-Jima Island
 		{2264, 	1574,	-28,	"ilshenar"},		//Vitures Gate System
 		{1015,	527,	-65,	"malas"},			//Luna
 		{1997,	1386,	-85,	"malas"},			//Umbra
-		{851,	3525,	-38,	"termur"}			//Royal City
+		{851,	3525,	-38,	"termur"},			//Royal City
+		{611,	1016,	-8,		"britannia_alt"},	//Winterwyn
+		{1675,	2005,	0,		"britannia_alt"},	//Shandalaar
+		{2082,	3205,	-8,		"britannia_alt"},	//Kromwell
+		{3720,	1476,	20,		"britannia_alt"},	//Faymoor
+		{3825,	3338,	0,		"britannia_alt"},	//Hathor
+		{4426,	427,	2,		"britannia_alt"},	//Ice Isle
+		{3074,	2672,	0,		"britannia_alt"},	//Janacres
+		{1874,	501,	7,		"britannia_alt"}	//Arcanus
     };
 
 	var moongate;

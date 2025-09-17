@@ -451,22 +451,162 @@ var teleporters := {
 
 //Ilshenar  { fromX, fromY, fromZ, toX, toY, ToZ, fromR, toR }
 //Shrine Room
-    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 1
-    {2264,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 2
-    {2249,  1558,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 1
-    {2249,  1559,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 2
-    {2249,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},        //Honor 1
-    {2250,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},        //Honor 2
-    {2256,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},        //Honesty 1
-    {2257,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},        //Honesty 2
-    {2263,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},        //Humility 1
-    {2264,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},        //Humility 2
-    {2271,  1542,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},        //Justice 1
-    {2271,  1543,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},        //Justice 2
-    {2278,  1548,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 1
-    {2278,  1549,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 2
-    {2278,  1558,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 1
-    {2278,  1559,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"}         //Sacrifice 2
+    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",         "ilshenar"},     
+    {2264,  1562,   -28,    1527,   1340,   -3,     "ilshenar",         "ilshenar"},        //Spirituality 2
+    {2249,  1558,   -28,    1216,   468,    -13,    "ilshenar",         "ilshenar"},        //Compassion 1
+    {2249,  1559,   -28,    1216,   468,    -13,    "ilshenar",         "ilshenar"},        //Compassion 2
+    {2249,  1548,   -28,    747,    730,    -29,    "ilshenar",         "ilshenar"},        //Honor 1
+    {2250,  1548,   -28,    747,    730,    -29,    "ilshenar",         "ilshenar"},        //Honor 2
+    {2256,  1542,   -28,    723,    1355,   -61,    "ilshenar",         "ilshenar"},        //Honesty 1
+    {2257,  1542,   -28,    723,    1355,   -61,    "ilshenar",         "ilshenar"},        //Honesty 2
+    {2263,  1540,   -28,    286,    1018,   0,      "ilshenar",         "ilshenar"},        //Humility 1
+    {2264,  1540,   -28,    286,    1018,   0,      "ilshenar",         "ilshenar"},        //Humility 2
+    {2271,  1542,   -28,    987,    1001,   -36,    "ilshenar",         "ilshenar"},        //Justice 1
+    {2271,  1543,   -28,    987,    1001,   -36,    "ilshenar",         "ilshenar"},        //Justice 2
+    {2278,  1548,   -28,    528,    211,    -42,    "ilshenar",         "ilshenar"},        //Valor 1
+    {2278,  1549,   -28,    528,    211,    -42,    "ilshenar",         "ilshenar"},        //Valor 2
+    {2278,  1558,   -28,    1171,   1287,   -30,    "ilshenar",         "ilshenar"},        //Sacrifice 1
+    {2278,  1559,   -28,    1171,   1287,   -30,    "ilshenar",         "ilshenar"},        //Sacrifice 2
+
+//Sosaria
+//Cities Teleporters
+    {2546,  1766,   -13,    5552,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 1
+    {2547,  1766,  -13,     5552,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 2
+    {2548,  1766,  -13,     5553,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 3
+    {2549,  1766,  -13,     5554,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 4
+    {2550,  1766,  -13,     5555,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 5
+    {2551,  1766,  -13,     5556,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 6
+    {2552,  1766,  -13,     5557,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 7
+    {2553,  1766,  -13,     5558,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 8
+    {2554,  1766,  -13,     5558,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 9
+    {5552,  1170,  22,      2546,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 1
+    {5553,  1170,  22,      2547,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 2
+    {5554,  1170,  22,      2548,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 3
+    {5555,  1170,  22,      2549,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 4
+    {5556,  1170,  22,      2550,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 5
+    {5557,  1170,  22,      2551,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 6
+    {5558,  1170,  22,      2552,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 1
+    {5476,  1175,   0,      5550,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5477,  1175,   0,      5551,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5478,  1175,   0,      5552,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5479,  1175,   0,      5553,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5480,  1175,   0,      5554,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5550,  1193,   0,      5476,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5551,  1193,   0,      5477,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5552,  1193,   0,      5478,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5553,  1193,   0,      5479,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5554,  1193,   0,      5480,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+
+    {1396,  1866,   10,     5135,  157,     11,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Bank Basement
+    {1397,  1866,   10,     5136,  157,     11,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Bank Basement
+    {5135,  158,    11,     1396,  1867,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Bank Basement
+    {5136,  158,    11,     1397,  1867,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Bank Basement
+    {1307,  1810,   27,     1310,  1811,    32,     "britannia_alt",    "britannia_alt"},   //Shandalaar Wall Fix
+    {1309,  1811,   34,     1306,  1810,    27,     "britannia_alt",    "britannia_alt"},   //Shandalaar Wall Fix
+    {1311,  1996,   -27,    5424,  486,     10,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers West City Entrance
+    {1328,  2129,   0,      5401,  704,     -24,    "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers Graveyard Entrance
+    {1328,  2128,   0,      5401,  703,     -24,    "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers Graveyard Entrance
+    {1489,  1800,   5,      5430,  407,     10,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers North City Entrance
+    {5429,  407,    15,     1489,  1801,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to North City Entrance
+    {5423,  486,    15,     1311,  1997,    -20,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to West City Entrance
+    {5423,  486,    15,     1311,  1997,    -20,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to West City Entrance
+    {5402,  702,    -25,    1329,  2128,    0,      "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to Graveyard Entrance
+    {5402,  703,    -25,    1329,  2129,    0,      "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to Graveyard Entrance
+    {5402,  704,    -25,    1329,  2129,    0,      "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to Graveyard Entrance
+    {1363,  1884,  0,       5172,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1364,  1884,  0,       5173,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1365,  1884,  0,       5174,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1366,  1884,  0,       5175,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1367,  1884,  0,       5176,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5172,  368,  0,        1363,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5173,  368,  0,        1364,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5174,  368,  0,        1365,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5175,  368,  0,        1366,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5176,  368,  0,        1367,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1796,  1870,   30,     1835,   1858,   30,     "britannia_alt",    "britannia_alt"},   //Shandalaar Water Passage Tower
+    {1834,  1858,   30,     1795,   1870,   30,     "britannia_alt",    "britannia_alt"},   //Shandalaar Water Passage Tower
+
+    {572,  1973,  0,  6120,  1499,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {572,  1974,  0,  6120,  1500,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {572,  1975,  0,  6120,  1501,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {572,  1976,  0,  6120,  1502,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {6121,  1499,  0,  573,  1973,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {6121,  1500,  0,  573,  1974,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {6121,  1501,  0,  573,  1975,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {6121,  1502,  0,  573,  1976,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+
+    {3552,  1453,  20,  5843,  1857,  0,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
+    {3553,  1453,  20,  5844,  1857,  0,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
+    {5843,  1858,  0,  3552,  1454,  20,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
+    {5844,  1858,  0,  3553,  1454,  20,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
+
+    {1068,  629,  20,  5183,  1160,  0,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
+    {1069,  629,  20,  5183,  1160,  0,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
+    {5183,  1161,  0,  1068,  630,  20,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
+    {5184,  1161,  0,  1069,  630,  20,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
+
+//Sosaria Dungeon Teleporters
+    {5742,  3307,  0,       5373,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
+    {5743,  3307,  0,       5374,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
+    {5744,  3307,  0,       5375,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
+    {5745,  3307,  0,       5376,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
+    {5373,  2121,  0,       5742,  3308,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Southeast Entrance
+    {5374,  2121,  0,       5743,  3308,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Southeast Entrance
+    {5375,  2121,  0,       5744,  3308,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Southeast Entrance
+    {5376,  2121,  0,       5745,  3308,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Southeast Entrance
+    
+    {5680,  2444,  18,      5604,   1118,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 1
+    {5680,  2445,  18,      5604,   1119,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 2
+    {5680,  2446,  18,      5604,   1120,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 3
+    {5680,  2447,  18,      5604,   1121,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 4
+    {5680,  2448,  18,      5604,   1122,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 5
+    {5680,  2449,  18,      5604,   1123,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 6
+    {5680,  2450,  18,      5604,   1124,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 7
+    {5605,  1118,  -8,      5681,   2444,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 1
+    {5605,  1119,  -8,      5681,   2445,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 2
+    {5605,  1120,  -8,      5681,   2446,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 3
+    {5605,  1121,  -8,      5681,   2447,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 4
+    {5605,  1122,  -8,      5681,   2448,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 5
+    {5605,  1123,  -8,      5681,   2449,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 6
+    {5605,  1124,  -8,      5681,   2450,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 7
+
+    {1248,  1794,   -38,    5414,  1473,    2,      "britannia_alt",    "britannia_alt"},   //To Shandalaar Dungeon
+    {1248,  1795,   -38,    5414,  1474,    2,      "britannia_alt",    "britannia_alt"},   //To Shandalaar Dungeon
+    {1248,  1796,   -38,    5414,  1475,    2,      "britannia_alt",    "britannia_alt"},   //To Shandalaar Dungeon
+    {5415,  1473,   7,      1249,  1794,    -33,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Dungeon
+    {5415,  1474,   7,      1249,  1795,    -33,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Dungeon
+    {5415,  1475,   7,      1249,  1796,    -33,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Dungeon
+
+    {820,  573,  -35,  5484,  892,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {820,  574,  -35,  5484,  893,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {820,  575,  -35,  5484,  894,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {5485,  892,  77,  821,  573,  -30,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {5485,  893,  77,  821,  574,  -30,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {5485,  894,  77,  821,  575,  -30,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+
+    {391,   2790,   -6,     6328,   416,    85,     "britannia_alt",    "britannia_alt"},   //Rebellion Island Dungeon To Level 1
+    {6328,  415,    96,     391,    2789,   -1,     "britannia_alt",    "britannia_alt"},   //Rebellion Island Dungeon To Entrance
+    {6383,  535,    0,      6650,   80,     11,     "britannia_alt",    "britannia_alt"},   //To Rebellion Island To Level 2
+    {6384,  535,    0,      6651,   80,     11,     "britannia_alt",    "britannia_alt"},   //To Rebellion Island To Level 2
+    {6650,  79,     11,     6383,   534,    0,      "britannia_alt",    "britannia_alt"},   //To Rebellion Island From Level 2 to Level 1
+    {6651,  79,     11,     6384,   534,    0,      "britannia_alt",    "britannia_alt"},   //To Rebellion Island From Level 2 to Level 1
+    {6652,  79,     11,     6385,   534,    0,      "britannia_alt",    "britannia_alt"},   //To Rebellion Island From Level 2 to Level 1
+
+    {5927,  288,    1,      5918,  549,     5,      "britannia_alt",    "britannia_alt"},   //Random Dungeon
+    {5927,  289,    1,      5918,  550,     3,      "britannia_alt",    "britannia_alt"},   //Random Dungeon
+    {5919,  550,    4,      5928,  288,     1,      "britannia_alt",    "britannia_alt"},   //Random Dungeon
+    {5919,  549,    4,      5928,  289,     2,      "britannia_alt",    "britannia_alt"},   //Random Dungeon
+
+    {5933,  397,  -14,  5717,  450,  11,     "britannia_alt",    "britannia_alt"}, //Random Dungeon Level 1 to 2
+    {5933,  398,  -14,  5717,  451,  11,     "britannia_alt",    "britannia_alt"}, //Random Dungeon Level 1 to 2
+    {5933,  399,  -14,  5717,  452,  11,     "britannia_alt",    "britannia_alt"}, //Random Dungeon Level 1 to 2
+    {5718,  450,  16,  5934,  397,  -9,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 1
+    {5718,  451,  16,  5934,  398,  -9,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 1
+    {5718,  452,  16,  5934,  399,  -9,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 1
+    {5691,  496,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
+    {5691,  497,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
+    {5691,  498,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"}  //Random Dungeon Level 2 to 3
+
 };	
 
 function CreateTeleporters()
