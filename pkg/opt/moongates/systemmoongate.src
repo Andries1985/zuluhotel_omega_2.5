@@ -18,7 +18,7 @@ include ":gumps:gumps_ex";
 const TEXT_COLOR_TITLE := 52;
 const TEXT_COLOR_GATE := 1086;
 
-// these are also defined in the moongates.inc.
+// these are also defined in the moongates.inc.  These must be the same.
         var moongates := { 
         {4467,	1283,	5,		"britannia"},		// moonglow
     	{1336,	1997,	5,		"britannia"},		// britain

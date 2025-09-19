@@ -25,6 +25,7 @@ function CreateMoongates();
     // since the language don't have truely var variables
     // (cross-script) we have to put this into the systemmoongate.src
     // aswell.
+	//Must be the same as systemmoongate.src
         var moongates := { 
         {4467,	1283,	5,		"britannia"},		// moonglow
     	{1336,	1997,	5,		"britannia"},		// britain
