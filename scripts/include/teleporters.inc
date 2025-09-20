@@ -449,9 +449,9 @@ var teleporters := {
 	{5185, 	1942, 	0, 		2398, 	199, 	0,	    "britannia",	"britannia"},       // mine_near_minoc_1_0
 	{5186, 	1942, 	0, 		2399, 	199, 	0,  	"britannia",	"britannia"},       // mine_near_minoc_1_0
 
-//Ilshenar  { fromX, fromY, fromZ, toX, toY, ToZ, fromR, toR }
+//ilshenar  { fromX, fromY, fromZ, toX, toY, ToZ, fromR, toR }
 //Shrine Room
-    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 1
+    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},     
     {2264,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 2
     {2249,  1558,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 1
     {2249,  1559,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 2
@@ -466,7 +466,691 @@ var teleporters := {
     {2278,  1548,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 1
     {2278,  1549,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 2
     {2278,  1558,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 1
-    {2278,  1559,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"}         //Sacrifice 2
+    {2278,  1559,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 2
+
+    ////////////////////////////////
+    ////////////////////////////////
+    // Sosaria
+    // City Teleporters
+    ///////////////////////////////
+    ///////////////////////////////
+
+    {2546,  1766,   -13,    5552,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 1
+    {2547,  1766,  -13,     5552,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 2
+    {2548,  1766,  -13,     5553,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 3
+    {2549,  1766,  -13,     5554,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 4
+    {2550,  1766,  -13,     5555,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 5
+    {2551,  1766,  -13,     5556,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 6
+    {2552,  1766,  -13,     5557,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 7
+    {2553,  1766,  -13,     5558,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 8
+    {2554,  1766,  -13,     5558,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance 9
+    {5552,  1170,  22,      2546,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 1
+    {5553,  1170,  22,      2547,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 2
+    {5554,  1170,  22,      2548,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 3
+    {5555,  1170,  22,      2549,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 4
+    {5556,  1170,  22,      2550,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 5
+    {5557,  1170,  22,      2551,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 6
+    {5558,  1170,  22,      2552,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance 1
+    {5476,  1175,   0,      5550,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5477,  1175,   0,      5551,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5478,  1175,   0,      5552,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5479,  1175,   0,      5553,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5480,  1175,   0,      5554,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5550,  1193,   0,      5476,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5551,  1193,   0,      5477,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5552,  1193,   0,      5478,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5553,  1193,   0,      5479,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5554,  1193,   0,      5480,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+
+    {1396,  1866,   10,     5135,  157,     11,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Bank Basement
+    {1397,  1866,   10,     5136,  157,     11,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Bank Basement
+    {5135,  158,    11,     1396,  1867,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Bank Basement
+    {5136,  158,    11,     1397,  1867,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Bank Basement
+    {1307,  1810,   27,     1310,  1811,    32,     "britannia_alt",    "britannia_alt"},   //Shandalaar Wall Fix
+    {1309,  1811,   34,     1306,  1810,    27,     "britannia_alt",    "britannia_alt"},   //Shandalaar Wall Fix
+    {1311,  1996,   -27,    5424,  486,     10,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers West City Entrance
+    {1328,  2129,   0,      5401,  704,     -24,    "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers Graveyard Entrance
+    {1328,  2128,   0,      5401,  703,     -24,    "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers Graveyard Entrance
+    {1489,  1800,   5,      5430,  407,     10,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers North City Entrance
+    {5429,  407,    15,     1489,  1801,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to North City Entrance
+    {5423,  486,    15,     1311,  1997,    -20,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to West City Entrance
+    {5423,  486,    15,     1311,  1997,    -20,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to West City Entrance
+    {5402,  702,    -25,    1329,  2128,    0,      "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to Graveyard Entrance
+    {5402,  703,    -25,    1329,  2129,    0,      "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to Graveyard Entrance
+    {5402,  704,    -25,    1329,  2129,    0,      "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to Graveyard Entrance
+    {1363,  1884,  0,       5172,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1364,  1884,  0,       5173,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1365,  1884,  0,       5174,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1366,  1884,  0,       5175,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1367,  1884,  0,       5176,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5172,  368,  0,        1363,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5173,  368,  0,        1364,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5174,  368,  0,        1365,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5175,  368,  0,        1366,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5176,  368,  0,        1367,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1796,  1870,   30,     1835,   1858,   30,     "britannia_alt",    "britannia_alt"},   //Shandalaar Water Passage Tower
+    {1834,  1858,   30,     1795,   1870,   30,     "britannia_alt",    "britannia_alt"},   //Shandalaar Water Passage Tower
+
+    {572,  1973,  0,  6120,  1499,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {572,  1974,  0,  6120,  1500,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {572,  1975,  0,  6120,  1501,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {572,  1976,  0,  6120,  1502,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {6121,  1499,  0,  573,  1973,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {6121,  1500,  0,  573,  1974,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {6121,  1501,  0,  573,  1975,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {6121,  1502,  0,  573,  1976,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+
+    {3552,  1453,  20,  5843,  1857,  0,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
+    {3553,  1453,  20,  5844,  1857,  0,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
+    {5843,  1858,  0,  3552,  1454,  20,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
+    {5844,  1858,  0,  3553,  1454,  20,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
+
+    {1068,  629,  20,  5183,  1160,  0,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
+    {1069,  629,  20,  5183,  1160,  0,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
+    {5183,  1161,  0,  1068,  630,  20,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
+    {5184,  1161,  0,  1069,  630,  20,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
+
+    ////////////////////////////////
+    ////////////////////////////////
+    // Sosaria
+    // Dungeon Teleporters
+    ///////////////////////////////
+    ///////////////////////////////
+
+    {5742,  3307,  0,       5373,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
+
+    {5743,  3307,  0,       5374,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
+    {5744,  3307,  0,       5375,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
+    {5745,  3307,  0,       5376,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
+    {5373,  2121,  0,       5742,  3308,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Southeast Entrance
+    {5374,  2121,  0,       5743,  3308,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Southeast Entrance
+    {5375,  2121,  0,       5744,  3308,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Southeast Entrance
+    {5376,  2121,  0,       5745,  3308,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Southeast Entrance
+
+    {5680,  2444,  18,      5604,   1118,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 1
+    {5680,  2445,  18,      5604,   1119,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 2
+    {5680,  2446,  18,      5604,   1120,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 3
+    {5680,  2447,  18,      5604,   1121,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 4
+    {5680,  2448,  18,      5604,   1122,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 5
+    {5680,  2449,  18,      5604,   1123,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 6
+    {5680,  2450,  18,      5604,   1124,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Dungeon Entrance 7
+    {5605,  1118,  -8,      5681,   2444,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 1
+    {5605,  1119,  -8,      5681,   2445,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 2
+    {5605,  1120,  -8,      5681,   2446,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 3
+    {5605,  1121,  -8,      5681,   2447,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 4
+    {5605,  1122,  -8,      5681,   2448,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 5
+    {5605,  1123,  -8,      5681,   2449,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 6
+    {5605,  1124,  -8,      5681,   2450,   13,     "britannia_alt",    "britannia_alt"},   //Khaz Darak East Entrance 7
+
+    {1248,  1794,   -38,    5414,  1473,    2,      "britannia_alt",    "britannia_alt"},   //To Shandalaar Dungeon
+    {1248,  1795,   -38,    5414,  1474,    2,      "britannia_alt",    "britannia_alt"},   //To Shandalaar Dungeon
+    {1248,  1796,   -38,    5414,  1475,    2,      "britannia_alt",    "britannia_alt"},   //To Shandalaar Dungeon
+    {5415,  1473,   7,      1249,  1794,    -33,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Dungeon
+    {5415,  1474,   7,      1249,  1795,    -33,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Dungeon
+    {5415,  1475,   7,      1249,  1796,    -33,    "britannia_alt",    "britannia_alt"},   //From Shandalaar Dungeon
+
+    {820,  573,  -35,  5484,  892,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {820,  574,  -35,  5484,  893,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {820,  575,  -35,  5484,  894,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {5485,  892,  77,  821,  573,  -30,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {5485,  893,  77,  821,  574,  -30,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {5485,  894,  77,  821,  575,  -30,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+
+    {391,   2790,   -6,     6328,   416,    85,     "britannia_alt",    "britannia_alt"},   //Rebellion Island Dungeon To Level 1
+    {6328,  415,    96,     391,    2789,   -1,     "britannia_alt",    "britannia_alt"},   //Rebellion Island Dungeon To Entrance
+    {6383,  535,    0,      6650,   80,     11,     "britannia_alt",    "britannia_alt"},   //To Rebellion Island To Level 2
+    {6384,  535,    0,      6651,   80,     11,     "britannia_alt",    "britannia_alt"},   //To Rebellion Island To Level 2
+    {6650,  79,     11,     6383,   534,    0,      "britannia_alt",    "britannia_alt"},   //To Rebellion Island From Level 2 to Level 1
+    {6651,  79,     11,     6384,   534,    0,      "britannia_alt",    "britannia_alt"},   //To Rebellion Island From Level 2 to Level 1
+    {6652,  79,     11,     6385,   534,    0,      "britannia_alt",    "britannia_alt"},   //To Rebellion Island From Level 2 to Level 1
+
+    {5927,  288,    1,      5918,  549,     5,      "britannia_alt",    "britannia_alt"},   //Random Dungeon
+    {5927,  289,    1,      5918,  550,     3,      "britannia_alt",    "britannia_alt"},   //Random Dungeon
+    {5919,  550,    4,      5928,  288,     1,      "britannia_alt",    "britannia_alt"},   //Random Dungeon
+    {5919,  549,    4,      5928,  289,     2,      "britannia_alt",    "britannia_alt"},   //Random Dungeon
+
+    {5933,  397,  -14,  5717,  450,  11,     "britannia_alt",    "britannia_alt"}, //Random Dungeon Level 1 to 2
+    {5933,  398,  -14,  5717,  451,  11,     "britannia_alt",    "britannia_alt"}, //Random Dungeon Level 1 to 2
+    {5933,  399,  -14,  5717,  452,  11,     "britannia_alt",    "britannia_alt"}, //Random Dungeon Level 1 to 2
+    {5718,  450,  16,  5934,  397,  -9,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 1
+    {5718,  451,  16,  5934,  398,  -9,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 1
+    {5718,  452,  16,  5934,  399,  -9,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 1
+    {5691,  496,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
+    {5691,  497,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
+    {5691,  498,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
+
+    ////////////////////////////////
+    ////////////////////////////////
+    // Test Teleporters for
+    // ilshenar, malas and tokuno
+    ///////////////////////////////
+    ///////////////////////////////
+
+    { 10, 872, -28, 10, 1518, -27, "ilshenar", "ilshenar" },
+    { 10, 1519, -28, 10, 873, -28, "ilshenar", "ilshenar" },
+    { 11, 872, -28, 11, 1518, -28, "ilshenar", "ilshenar" },
+    { 11, 1519, -27, 11, 873, -28, "ilshenar", "ilshenar" },
+    { 12, 872, -27, 12, 1518, -28, "ilshenar", "ilshenar" },
+    { 12, 1519, -27, 12, 873, -27, "ilshenar", "ilshenar" },
+    { 78, 1365, -41, 393, 1586, -16, "ilshenar", "ilshenar" },
+    { 79, 1365, -41, 394, 1586, -16, "ilshenar", "ilshenar" },
+    { 80, 1365, -41, 395, 1586, -16, "ilshenar", "ilshenar" },
+    { 81, 1365, -41, 396, 1586, -16, "ilshenar", "ilshenar" },
+    { 131, 129, -16, 284, 68, -28, "ilshenar", "ilshenar" },
+    { 132, 129, -16, 285, 68, -28, "ilshenar", "ilshenar" },
+    { 133, 129, -16, 286, 68, -28, "ilshenar", "ilshenar" },
+    { 134, 129, -16, 287, 68, -28, "ilshenar", "ilshenar" },
+    { 154, 1472, -8, 575, 1155, -121, "ilshenar", "ilshenar" },
+    { 155, 88, -16, 357, 40, -31, "ilshenar", "ilshenar" },
+    { 155, 89, -16, 357, 41, -31, "ilshenar", "ilshenar" },
+    { 155, 90, -16, 357, 42, -31, "ilshenar", "ilshenar" },
+    { 155, 1472, -8, 576, 1155, -120, "ilshenar", "ilshenar" },
+    { 156, 1472, -8, 577, 1155, -120, "ilshenar", "ilshenar" },
+    { 164, 746, -16, 636, 815, -52, "ilshenar", "ilshenar" },
+    { 242, 25, -16, 372, 29, -31, "ilshenar", "ilshenar" },
+    { 242, 26, -16, 372, 30, -31, "ilshenar", "ilshenar" },
+    { 242, 27, -16, 372, 31, -31, "ilshenar", "ilshenar" },
+    { 265, 130, -31, 284, 72, -21, "ilshenar", "ilshenar" },
+    { 265, 1587, -28, 225, 1334, -20, "ilshenar", "ilshenar" },
+    { 266, 130, -31, 285, 72, -21, "ilshenar", "ilshenar" },
+    { 266, 1587, -28, 226, 1334, -20, "ilshenar", "ilshenar" },
+    { 267, 130, -31, 286, 72, -21, "ilshenar", "ilshenar" },
+    { 267, 1587, -28, 227, 1334, -20, "ilshenar", "ilshenar" },
+    { 268, 130, -31, 287, 72, -21, "ilshenar", "ilshenar" },
+    { 272, 141, -16, 555, 427, -1, "ilshenar", "ilshenar" },
+    { 273, 141, -16, 556, 427, -1, "ilshenar", "ilshenar" },
+    { 274, 141, -16, 557, 427, -1, "ilshenar", "ilshenar" },
+    { 284, 67, -30, 131, 128, -21, "ilshenar", "ilshenar" },
+    { 284, 73, -16, 265, 131, -28, "ilshenar", "ilshenar" },
+    { 285, 67, -30, 132, 128, -21, "ilshenar", "ilshenar" },
+    { 285, 73, -16, 266, 131, -28, "ilshenar", "ilshenar" },
+    { 286, 67, -30, 133, 128, -21, "ilshenar", "ilshenar" },
+    { 286, 73, -16, 267, 131, -28, "ilshenar", "ilshenar" },
+    { 287, 67, -30, 134, 128, -21, "ilshenar", "ilshenar" },
+    { 287, 73, -16, 268, 131, -28, "ilshenar", "ilshenar" },
+    { 313, 1329, -40, 327, 1593, -13, "ilshenar", "ilshenar" },
+    { 314, 1329, -38, 328, 1593, -13, "ilshenar", "ilshenar" },
+    { 315, 1329, -36, 329, 1593, -13, "ilshenar", "ilshenar" },
+    { 330, 1593, -13, 315, 1329, -35, "ilshenar", "ilshenar" },
+    { 348, 1427, 15, 18, 1198, -5, "ilshenar", "ilshenar" },
+    { 349, 1427, 15, 19, 1198, -5, "ilshenar", "ilshenar" },
+    { 350, 1427, 15, 20, 1198, -5, "ilshenar", "ilshenar" },
+    { 351, 1427, 15, 21, 1198, -5, "ilshenar", "ilshenar" },
+    { 358, 40, -36, 156, 88, -18, "ilshenar", "ilshenar" },
+    { 358, 41, -36, 156, 89, -18, "ilshenar", "ilshenar" },
+    { 358, 42, -36, 156, 90, -18, "ilshenar", "ilshenar" },
+    { 371, 29, -36, 241, 25, -18, "ilshenar", "ilshenar" },
+    { 371, 30, -36, 241, 26, -18, "ilshenar", "ilshenar" },
+    { 371, 31, -36, 241, 27, -18, "ilshenar", "ilshenar" },
+    { 393, 1587, -13, 78, 1366, -36, "ilshenar", "ilshenar" },
+    { 394, 1587, -13, 79, 1366, -36, "ilshenar", "ilshenar" },
+    { 395, 1587, -13, 80, 1366, -36, "ilshenar", "ilshenar" },
+    { 396, 1587, -13, 81, 1366, -36, "ilshenar", "ilshenar" },
+    { 429, 113, -28, 548, 455, -40, "ilshenar", "ilshenar" },
+    { 531, 1533, -4, 810, 875, -40, "ilshenar", "ilshenar" },
+    { 532, 1533, -4, 811, 875, -39, "ilshenar", "ilshenar" },
+    { 533, 1533, -4, 812, 875, -39, "ilshenar", "ilshenar" },
+    { 534, 1533, -4, 813, 875, -40, "ilshenar", "ilshenar" },
+    { 546, 455, -40, 426, 113, -28, "ilshenar", "ilshenar" },
+    { 547, 455, -40, 427, 113, -28, "ilshenar", "ilshenar" },
+    { 548, 455, -40, 428, 113, -28, "ilshenar", "ilshenar" },
+    { 555, 426, -6, 272, 140, -21, "ilshenar", "ilshenar" },
+    { 556, 426, -6, 273, 140, -21, "ilshenar", "ilshenar" },
+    { 557, 426, -6, 274, 140, -21, "ilshenar", "ilshenar" },
+    { 575, 1156, -121, 154, 1473, -8, "ilshenar", "ilshenar" },
+    { 576, 1156, -121, 155, 1473, -8, "ilshenar", "ilshenar" },
+    { 577, 1156, -121, 156, 1473, -8, "ilshenar", "ilshenar" },
+    { 626, 1527, -28, 650, 1298, -58, "ilshenar", "ilshenar" },
+    { 627, 1527, -28, 651, 1298, -59, "ilshenar", "ilshenar" },
+    { 628, 1527, -28, 652, 1298, -58, "ilshenar", "ilshenar" },
+    { 629, 1527, -28, 653, 1298, -58, "ilshenar", "ilshenar" },
+    { 636, 813, -62, 164, 743, -28, "ilshenar", "ilshenar" },
+    { 650, 1297, -58, 626, 1526, -28, "ilshenar", "ilshenar" },
+    { 651, 1297, -58, 627, 1526, -28, "ilshenar", "ilshenar" },
+    { 652, 1297, -58, 628, 1526, -28, "ilshenar", "ilshenar" },
+    { 653, 1297, -58, 629, 1526, -28, "ilshenar", "ilshenar" },
+    { 668, 928, -84, 3, 1267, -8, "ilshenar", "ilshenar" },
+    { 668, 929, -84, 3, 1268, -8, "ilshenar", "ilshenar" },
+    { 668, 930, -82, 3, 1269, -8, "ilshenar", "ilshenar" },
+    { 694, 1490, -53, 719, 1490, -28, "ilshenar", "ilshenar" },
+    { 694, 1491, -53, 719, 1491, -28, "ilshenar", "ilshenar" },
+    { 694, 1492, -53, 719, 1492, -28, "ilshenar", "ilshenar" },
+    { 694, 1493, -53, 719, 1493, -28, "ilshenar", "ilshenar" },
+    { 709, 667, -39, 912, 451, -80, "ilshenar", "ilshenar" },
+    { 710, 667, -39, 912, 452, -80, "ilshenar", "ilshenar" },
+    { 711, 667, -39, 912, 453, -80, "ilshenar", "ilshenar" },
+    { 712, 1490, -3, 686, 1490, -28, "ilshenar", "ilshenar" },
+    { 712, 1491, -3, 686, 1491, -28, "ilshenar", "ilshenar" },
+    { 712, 1492, -3, 686, 1492, -28, "ilshenar", "ilshenar" },
+    { 712, 1493, -3, 686, 1493, -28, "ilshenar", "ilshenar" },
+    { 722, 1505, -53, 833, 1550, -28, "ilshenar", "ilshenar" },
+    { 722, 1506, -53, 833, 1551, -28, "ilshenar", "ilshenar" },
+    { 722, 1507, -53, 833, 1552, -28, "ilshenar", "ilshenar" },
+    { 722, 1508, -53, 833, 1553, -28, "ilshenar", "ilshenar" },
+    { 747, 1539, -28, 785, 1514, -28, "ilshenar", "ilshenar" },
+    { 747, 1555, -28, 785, 1570, -28, "ilshenar", "ilshenar" },
+    { 751, 1473, -28, 763, 1479, -28, "ilshenar", "ilshenar" },
+    { 751, 1479, -28, 763, 1555, -28, "ilshenar", "ilshenar" },
+    { 752, 1549, -28, 751, 1484, -28, "ilshenar", "ilshenar" },
+    { 775, 1467, -28, 658, 1498, -28, "ilshenar", "ilshenar" },
+    { 775, 1492, -28, 827, 1515, -28, "ilshenar", "ilshenar" },
+    { 776, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 776, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 777, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 777, 1548, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 777, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 777, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 778, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 778, 1554, -28, 787, 1538, -28, "ilshenar", "ilshenar" },
+    { 779, 1540, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 779, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 780, 1541, -28, 785, 1554, -28, "ilshenar", "ilshenar" },
+    { 780, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 780, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 780, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 781, 1545, -28, 789, 1552, -28, "ilshenar", "ilshenar" },
+    { 781, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 781, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 781, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 781, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 781, 1555, -28, 789, 1556, -28, "ilshenar", "ilshenar" },
+    { 782, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 782, 1542, -28, 785, 1546, -28, "ilshenar", "ilshenar" },
+    { 782, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 782, 1550, -28, 783, 1538, -28, "ilshenar", "ilshenar" },
+    { 782, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 783, 1537, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 783, 1539, -28, 787, 1542, -28, "ilshenar", "ilshenar" },
+    { 783, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 783, 1543, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 784, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 784, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 784, 1546, -28, 776, 1548, -28, "ilshenar", "ilshenar" },
+    { 784, 1550, -28, 777, 1554, -28, "ilshenar", "ilshenar" },
+    { 784, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 784, 1580, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 785, 1524, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 785, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 785, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 785, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 785, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 785, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 785, 1555, -28, 783, 1542, -28, "ilshenar", "ilshenar" },
+    { 786, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 786, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 786, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 786, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 786, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 787, 1537, -28, 781, 1546, -28, "ilshenar", "ilshenar" },
+    { 787, 1539, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 787, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 787, 1543, -28, 781, 1544, -28, "ilshenar", "ilshenar" },
+    { 788, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 788, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 788, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 788, 1552, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 788, 1556, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 789, 1545, -28, 779, 1541, -28, "ilshenar", "ilshenar" },
+    { 789, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 789, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 789, 1553, -28, 789, 1546, -28, "ilshenar", "ilshenar" },
+    { 789, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 789, 1557, -28, 785, 1550, -28, "ilshenar", "ilshenar" },
+    { 790, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 790, 1552, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 790, 1556, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 791, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 791, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 791, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 791, 1548, -28, 781, 1547, -28, "ilshenar", "ilshenar" },
+    { 791, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 791, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
+    { 810, 874, -39, 532, 1532, -7, "ilshenar", "ilshenar" },
+    { 811, 874, -39, 533, 1532, -7, "ilshenar", "ilshenar" },
+    { 812, 874, -39, 534, 1532, -7, "ilshenar", "ilshenar" },
+    { 812, 1546, -6, 848, 1434, -28, "ilshenar", "ilshenar" },
+    { 812, 1547, -6, 848, 1435, -28, "ilshenar", "ilshenar" },
+    { 812, 1548, -6, 848, 1436, -28, "ilshenar", "ilshenar" },
+    { 812, 1549, -6, 848, 1437, -28, "ilshenar", "ilshenar" },
+    { 827, 777, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
+    { 827, 778, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
+    { 827, 779, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
+    { 828, 777, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
+    { 828, 778, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
+    { 828, 779, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
+    { 829, 777, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
+    { 829, 778, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
+    { 829, 779, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
+    { 838, 1550, -6, 728, 1505, -28, "ilshenar", "ilshenar" },
+    { 838, 1551, -6, 728, 1506, -28, "ilshenar", "ilshenar" },
+    { 838, 1552, -6, 728, 1507, -28, "ilshenar", "ilshenar" },
+    { 838, 1553, -6, 728, 1508, -28, "ilshenar", "ilshenar" },
+    { 843, 1434, -51, 807, 1546, -28, "ilshenar", "ilshenar" },
+    { 843, 1435, -51, 807, 1547, -28, "ilshenar", "ilshenar" },
+    { 843, 1436, -51, 807, 1548, -28, "ilshenar", "ilshenar" },
+    { 843, 1437, -51, 807, 1549, -28, "ilshenar", "ilshenar" },
+    { 871, 1433, -6, 897, 1449, -28, "ilshenar", "ilshenar" },
+    { 871, 1434, -6, 897, 1450, -28, "ilshenar", "ilshenar" },
+    { 871, 1435, -6, 897, 1451, -28, "ilshenar", "ilshenar" },
+    { 871, 1436, -6, 897, 1452, -28, "ilshenar", "ilshenar" },
+    { 871, 1437, -6, 897, 1453, -28, "ilshenar", "ilshenar" },
+    { 879, 1490, 24, 960, 1425, -28, "ilshenar", "ilshenar" },
+    { 879, 1491, 24, 960, 1426, -28, "ilshenar", "ilshenar" },
+    { 879, 1492, 24, 960, 1427, -28, "ilshenar", "ilshenar" },
+    { 879, 1493, 24, 960, 1428, -28, "ilshenar", "ilshenar" },
+    { 892, 1449, -51, 866, 1433, -28, "ilshenar", "ilshenar" },
+    { 892, 1450, -51, 866, 1434, -28, "ilshenar", "ilshenar" },
+    { 892, 1451, -51, 866, 1435, -28, "ilshenar", "ilshenar" },
+    { 892, 1452, -51, 866, 1436, -28, "ilshenar", "ilshenar" },
+    { 892, 1453, -51, 866, 1437, -28, "ilshenar", "ilshenar" },
+    { 904, 1360, -21, 1014, 1506, 0, "ilshenar", "ilshenar" },
+    { 904, 1361, -21, 1014, 1507, 0, "ilshenar", "ilshenar" },
+    { 904, 1362, -21, 1014, 1508, 0, "ilshenar", "ilshenar" },
+    { 904, 1363, -21, 1014, 1509, 0, "ilshenar", "ilshenar" },
+    { 911, 451, -80, 709, 668, -39, "ilshenar", "ilshenar" },
+    { 911, 452, -80, 710, 668, -39, "ilshenar", "ilshenar" },
+    { 911, 453, -80, 711, 668, -38, "ilshenar", "ilshenar" },
+    { 938, 494, -40, 83, 749, -23, "ilshenar", "ilshenar" },
+    { 939, 494, -40, 84, 749, -23, "ilshenar", "ilshenar" },
+    { 940, 494, -40, 85, 749, -23, "ilshenar", "ilshenar" },
+    { 941, 494, -40, 86, 749, -23, "ilshenar", "ilshenar" },
+    { 948, 1464, -56, 951, 1442, -6, "ilshenar", "ilshenar" },
+    { 948, 1465, -56, 951, 1443, -6, "ilshenar", "ilshenar" },
+    { 948, 1466, -56, 951, 1444, -6, "ilshenar", "ilshenar" },
+    { 948, 1467, -56, 951, 1445, -6, "ilshenar", "ilshenar" },
+    { 954, 1425, -53, 874, 1490, 2, "ilshenar", "ilshenar" },
+    { 954, 1426, -53, 874, 1491, 2, "ilshenar", "ilshenar" },
+    { 954, 1427, -53, 874, 1492, 2, "ilshenar", "ilshenar" },
+    { 954, 1428, -53, 874, 1493, 2, "ilshenar", "ilshenar" },
+    { 954, 1429, -53, 874, 1493, 2, "ilshenar", "ilshenar" },
+    { 1029, 1153, -24, 1349, 1510, -3, "ilshenar", "ilshenar" },
+    { 1029, 1154, -24, 1349, 1511, -3, "ilshenar", "ilshenar" },
+    { 1029, 1155, -24, 1349, 1512, -3, "ilshenar", "ilshenar" },
+    { 1037, 579, -73, 1790, 66, -26, "ilshenar", "ilshenar" },
+    { 1037, 580, -73, 1790, 67, -26, "ilshenar", "ilshenar" },
+    { 1037, 581, -73, 1790, 68, -26, "ilshenar", "ilshenar" },
+    { 1038, 578, -73, 1786, 70, -26, "ilshenar", "ilshenar" },
+    { 1038, 579, -73, 1786, 70, -26, "ilshenar", "ilshenar" },
+    { 1038, 581, -73, 1786, 65, -26, "ilshenar", "ilshenar" },
+    { 1038, 582, -73, 1786, 65, -26, "ilshenar", "ilshenar" },
+    { 1039, 578, -73, 1787, 70, -26, "ilshenar", "ilshenar" },
+    { 1039, 582, -73, 1787, 65, -26, "ilshenar", "ilshenar" },
+    { 1040, 578, -73, 1788, 70, -26, "ilshenar", "ilshenar" },
+    { 1040, 579, -73, 1788, 70, -26, "ilshenar", "ilshenar" },
+    { 1040, 581, -73, 1788, 65, -26, "ilshenar", "ilshenar" },
+    { 1040, 582, -73, 1788, 65, -26, "ilshenar", "ilshenar" },
+    { 1041, 579, -73, 1785, 66, -26, "ilshenar", "ilshenar" },
+    { 1041, 580, -73, 1785, 67, -26, "ilshenar", "ilshenar" },
+    { 1041, 581, -73, 1785, 68, -26, "ilshenar", "ilshenar" },
+    { 1139, 592, -80, 1238, 583, -19, "ilshenar", "ilshenar" },
+    { 1140, 592, -80, 1238, 584, -19, "ilshenar", "ilshenar" },
+    { 1141, 592, -80, 1238, 585, -19, "ilshenar", "ilshenar" },
+    { 1142, 592, -80, 1238, 585, -19, "ilshenar", "ilshenar" },
+    { 1237, 583, -19, 1139, 593, -80, "ilshenar", "ilshenar" },
+    { 1237, 584, -19, 1140, 593, -80, "ilshenar", "ilshenar" },
+    { 1237, 585, -19, 1141, 593, -80, "ilshenar", "ilshenar" },
+    { 1250, 1511, -28, 1268, 1510, -28, "ilshenar", "ilshenar" },
+    { 1250, 1512, -28, 1268, 1510, -28, "ilshenar", "ilshenar" },
+    { 1268, 1508, -28, 1250, 1508, -28, "ilshenar", "ilshenar" },
+    { 1268, 1509, -28, 1250, 1509, -28, "ilshenar", "ilshenar" },
+    { 1268, 1510, -28, 1250, 1510, -28, "ilshenar", "ilshenar" },
+    { 1349, 1509, -3, 1030, 1153, -24, "ilshenar", "ilshenar" },
+    { 1362, 1031, -13, 1981, 1107, -16, "ilshenar", "ilshenar" },
+    { 1363, 1031, -13, 1982, 1107, -16, "ilshenar", "ilshenar" },
+    { 1364, 1031, -13, 1983, 1107, -16, "ilshenar", "ilshenar" },
+    { 1419, 909, -10, 1784, 994, -28, "ilshenar", "ilshenar" },
+    { 1420, 909, -10, 1785, 994, -28, "ilshenar", "ilshenar" },
+    { 1421, 909, -10, 1786, 994, -28, "ilshenar", "ilshenar" },
+    { 1456, 1328, -27, 1479, 1494, -28, "ilshenar", "ilshenar" },
+    { 1456, 1329, -27, 1479, 1495, -28, "ilshenar", "ilshenar" },
+    { 1456, 1330, -27, 1479, 1496, -28, "ilshenar", "ilshenar" },
+    { 1479, 1493, -28, 1456, 1328, -27, "ilshenar", "ilshenar" },
+    { 1479, 1497, -28, 1456, 1330, -27, "ilshenar", "ilshenar" },
+    { 1516, 879, 10, 1363, 1105, -26, "ilshenar", "ilshenar" },
+    { 1745, 1236, -30, 2112, 829, -11, "ilshenar", "ilshenar" },
+    { 1746, 1236, -30, 2113, 829, -11, "ilshenar", "ilshenar" },
+    { 1747, 1236, -30, 2114, 829, -11, "ilshenar", "ilshenar" },
+    { 1748, 1236, -30, 2115, 829, -11, "ilshenar", "ilshenar" },
+    { 1783, 994, -28, 1419, 909, -10, "ilshenar", "ilshenar" },
+    { 1786, 66, -26, 1038, 583, -78, "ilshenar", "ilshenar" },
+    { 1786, 67, -26, 1042, 579, -78, "ilshenar", "ilshenar" },
+    { 1786, 68, -26, 1042, 580, -78, "ilshenar", "ilshenar" },
+    { 1786, 69, -26, 1042, 581, -78, "ilshenar", "ilshenar" },
+    { 1787, 66, -26, 1039, 583, -78, "ilshenar", "ilshenar" },
+    { 1787, 69, -26, 1038, 577, -78, "ilshenar", "ilshenar" },
+    { 1787, 994, -28, 1421, 909, -10, "ilshenar", "ilshenar" },
+    { 1788, 66, -26, 1040, 583, -78, "ilshenar", "ilshenar" },
+    { 1788, 69, -26, 1039, 577, -78, "ilshenar", "ilshenar" },
+    { 1788, 994, -28, 1421, 909, -10, "ilshenar", "ilshenar" },
+    { 1789, 66, -26, 1041, 583, -78, "ilshenar", "ilshenar" },
+    { 1789, 67, -26, 1036, 579, -78, "ilshenar", "ilshenar" },
+    { 1789, 68, -26, 1036, 578, -78, "ilshenar", "ilshenar" },
+    { 1789, 69, -26, 1036, 581, -78, "ilshenar", "ilshenar" },
+    { 1861, 980, -28, 1490, 877, 10, "ilshenar", "ilshenar" },
+    { 1861, 981, -28, 1490, 878, 10, "ilshenar", "ilshenar" },
+    { 1861, 982, -28, 1490, 879, 10, "ilshenar", "ilshenar" },
+    { 1861, 983, -28, 1490, 880, 10, "ilshenar", "ilshenar" },
+    { 1861, 984, -28, 1490, 880, 10, "ilshenar", "ilshenar" },
+    { 1978, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1978, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1978, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1978, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1979, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1979, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1979, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1979, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1980, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1980, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1980, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1980, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1980, 1107, -16, 1362, 1031, -13, "ilshenar", "ilshenar" },
+    { 1981, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1981, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1981, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1981, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },
+    { 1984, 1107, -16, 1364, 1031, -13, "ilshenar", "ilshenar" },
+    { 2116, 829, -11, 1748, 1236, -30, "ilshenar", "ilshenar" },
+    { 2186, 294, -27, 2186, 33, -27, "ilshenar", "ilshenar" },
+    { 2187, 294, -27, 2187, 33, -27, "ilshenar", "ilshenar" },
+    { 2187, 320, -7, 1787, 569, 74, "ilshenar", "ilshenar" },
+    { 2188, 294, -27, 2188, 33, -27, "ilshenar", "ilshenar" },
+    { 2188, 320, -7, 1787, 569, 74, "ilshenar", "ilshenar" },
+    { 2189, 294, -27, 2189, 33, -27, "ilshenar", "ilshenar" },
+    { 2189, 320, -7, 1788, 569, 74, "ilshenar", "ilshenar" },
+    { 3, 128, -1, 259, 785, 64, "malas", "tokuno" },
+    { 4, 128, -1, 259, 785, 64, "malas", "tokuno" },
+    { 5, 128, -1, 259, 785, 64, "malas", "tokuno" },
+    { 6, 128, -1, 259, 785, 64, "malas", "tokuno" },
+    { 7, 128, -1, 259, 785, 64, "malas", "tokuno" },
+    { 8, 128, -1, 259, 785, 64, "malas", "tokuno" },
+    { 61, 523, 6, 63, 352, -3, "malas", "malas" },
+    { 61, 524, 6, 63, 352, -3, "malas", "malas" },
+    { 61, 525, 6, 63, 352, -3, "malas", "malas" },
+    { 61, 526, 6, 63, 352, -3, "malas", "malas" },
+    { 64, 336, 11, 983, 195, 24, "malas", "tokuno" },
+    { 64, 337, 11, 983, 195, 24, "malas", "tokuno" },
+    { 64, 338, 11, 983, 195, 24, "malas", "tokuno" },
+    { 64, 339, 11, 983, 195, 24, "malas", "tokuno" },
+    { 66, 351, -7, 63, 524, -1, "malas", "malas" },
+    { 66, 352, -7, 63, 524, -1, "malas", "malas" },
+    { 66, 353, -7, 63, 524, -1, "malas", "malas" },
+    { 66, 354, -7, 63, 524, -1, "malas", "malas" },
+    { 73, 688, 6, 100, 556, -2, "malas", "malas" },
+    { 73, 689, 6, 100, 556, -2, "malas", "malas" },
+    { 73, 690, 6, 100, 556, -2, "malas", "malas" },
+    { 73, 691, 6, 100, 556, -2, "malas", "malas" },
+    { 73, 692, 6, 100, 556, -2, "malas", "malas" },
+    { 73, 693, 6, 100, 556, -2, "malas", "malas" },
+    { 73, 694, 6, 100, 556, -2, "malas", "malas" },
+    { 84, 1673, -2, 156, 1613, 0, "malas", "malas" },
+    { 103, 555, -6, 76, 691, -1, "malas", "malas" },
+    { 103, 556, -6, 76, 691, -1, "malas", "malas" },
+    { 103, 557, -6, 76, 691, -1, "malas", "malas" },
+    { 103, 558, -6, 76, 691, -1, "malas", "malas" },
+    { 156, 1609, 17, 87, 1673, 0, "malas", "malas" },
+    { 157, 1609, 17, 87, 1673, 0, "malas", "malas" },
+    { 328, 1972, 5, 1731, 978, -80, "malas", "malas" },
+    { 328, 1973, 5, 1731, 978, -80, "malas", "malas" },
+    { 328, 1974, 5, 1731, 978, -80, "malas", "malas" },
+    { 328, 1975, 5, 1731, 978, -80, "malas", "malas" },
+    { 330, 706, -1, 384, 733, -1, "malas", "malas" },
+    { 331, 769, -1, 384, 733, -1, "malas", "malas" },
+    { 355, 745, -1, 384, 733, -1, "malas", "malas" },
+    { 375, 802, 1, 770, 1209, 25, "malas", "tokuno" },
+    { 384, 810, -1, 403, 1167, 0, "malas", "malas" },
+    { 389, 704, -1, 384, 733, -1, "malas", "malas" },
+    { 391, 777, -1, 770, 1209, 25, "malas", "tokuno" },
+    { 403, 1169, 0, 385, 811, -1, "malas", "malas" },
+    { 404, 1169, 0, 385, 808, -1, "malas", "malas" },
+    { 405, 1169, 0, 385, 808, -1, "malas", "malas" },
+    { 407, 254, 2, 428, 318, 2, "malas", "malas" },
+    { 408, 254, 2, 428, 318, 2, "malas", "malas" },
+    { 409, 254, 2, 428, 318, 2, "malas", "malas" },
+    { 411, 1117, 0, 422, 806, -1, "malas", "malas" },
+    { 412, 1086, 0, 391, 803, -1, "malas", "malas" },
+    { 412, 1123, 0, 417, 806, -1, "malas", "malas" },
+    { 421, 1092, 0, 391, 803, -1, "malas", "malas" },
+    { 426, 780, -1, 384, 733, -1, "malas", "malas" },
+    { 427, 321, 2, 422, 327, -1, "malas", "malas" },
+    { 428, 321, 2, 422, 327, -1, "malas", "malas" },
+    { 429, 321, 2, 422, 327, -1, "malas", "malas" },
+    { 496, 49, 6, 2350, 1270, -85, "malas", "malas" },
+    { 2315, 1267, -109, 381, 132, 33, "malas", "malas" },
+    { 2315, 1268, -110, 381, 132, 33, "malas", "malas" },
+    { 2315, 1269, -110, 381, 132, 33, "malas", "malas" },
+    { 2316, 1267, -110, 381, 132, 33, "malas", "malas" },
+    { 2316, 1269, -110, 381, 132, 33, "malas", "malas" },
+    { 2317, 1266, -110, 381, 132, 33, "malas", "malas" },
+    { 2317, 1267, -110, 381, 132, 33, "malas", "malas" },
+    { 2317, 1268, -110, 381, 132, 33, "malas", "malas" },
+    { 2317, 1269, -110, 381, 132, 33, "malas", "malas" },
+    { 257, 783, 63, 5, 128, -1, "tokuno", "malas" },
+    { 258, 783, 63, 5, 128, -1, "tokuno", "malas" },
+    { 259, 783, 63, 5, 128, -1, "tokuno", "malas" },
+    { 260, 783, 63, 5, 128, -1, "tokuno", "malas" },
+    { 987, 196, 15, 67, 337, -1, "tokuno", "malas" },
+    { 988, 194, 15, 67, 337, -1, "tokuno", "malas" },
+    { 988, 195, 15, 67, 337, -1, "tokuno", "malas" },
+    { 988, 197, 18, 67, 337, -1, "tokuno", "malas" },
+    { 33, 241, 7, 996, 3842, -41, "termur", "termur" },
+    { 34, 241, 7, 997, 3842, -41, "termur", "termur" },
+    { 35, 241, 7, 998, 3842, -41, "termur", "termur" },
+    { 36, 241, 7, 999, 3842, -41, "termur", "termur" },
+    { 37, 241, 7, 1000, 3842, -41, "termur", "termur" },
+    { 40, 366, 105, 79, 353, 5, "termur", "termur" },
+    { 40, 564, 105, 79, 551, 5, "termur", "termur" },
+    { 40, 772, 105, 79, 759, 5, "termur", "termur" },
+    { 45, 366, 85, 81, 399, 105, "termur", "termur" },
+    { 45, 564, 85, 81, 597, 105, "termur", "termur" },
+    { 45, 772, 85, 81, 805, 105, "termur", "termur" },
+    { 52, 343, 65, 80, 338, 85, "termur", "termur" },
+    { 52, 389, 65, 79, 379, 5, "termur", "termur" },
+    { 52, 541, 65, 80, 536, 85, "termur", "termur" },
+    { 52, 587, 65, 79, 577, 5, "termur", "termur" },
+    { 52, 749, 65, 80, 744, 85, "termur", "termur" },
+    { 52, 795, 65, 79, 785, 5, "termur", "termur" },
+    { 79, 353, 5, 40, 366, 105, "termur", "termur" },
+    { 79, 379, 5, 52, 389, 65, "termur", "termur" },
+    { 79, 551, 5, 40, 564, 105, "termur", "termur" },
+    { 79, 577, 5, 52, 587, 65, "termur", "termur" },
+    { 79, 759, 5, 40, 772, 105, "termur", "termur" },
+    { 79, 785, 5, 52, 795, 65, "termur", "termur" },
+    { 80, 338, 85, 52, 343, 64, "termur", "termur" },
+    { 80, 536, 85, 52, 541, 64, "termur", "termur" },
+    { 80, 744, 85, 52, 749, 64, "termur", "termur" },
+    { 81, 399, 105, 45, 366, 85, "termur", "termur" },
+    { 81, 597, 105, 45, 564, 85, "termur", "termur" },
+    { 81, 805, 105, 45, 772, 85, "termur", "termur" },
+    { 317, 136, 65, 310, 159, 85, "termur", "termur" },
+    { 317, 182, 65, 346, 192, 105, "termur", "termur" },
+    { 344, 146, 5, 349, 138, 60, "termur", "termur" },
+    { 344, 172, 5, 349, 180, 60, "termur", "termur" },
+    { 345, 131, 85, 345, 128, 100, "termur", "termur" },
+    { 442, 152, -38, 850, 272, -11, "termur", "termur" },
+    { 442, 153, -38, 850, 273, -11, "termur", "termur" },
+    { 442, 166, -38, 850, 286, -11, "termur", "termur" },
+    { 442, 167, -38, 850, 287, -11, "termur", "termur" },
+    { 511, 584, 11, 6992, 1367, -15, "termur", "Felucca" },
+    { 512, 584, 11, 6992, 1367, -15, "termur", "Felucca" },
+    { 513, 584, 11, 6993, 1367, -15, "termur", "Felucca" },
+    { 514, 584, 11, 6993, 1367, -15, "termur", "Felucca" },
+    { 519, 919, 39, 1125, 1075, -117, "termur", "termur" },
+    { 519, 919, 39, 1125, 1076, -117, "termur", "termur" },
+    { 520, 919, 39, 1125, 1075, -117, "termur", "termur" },
+    { 520, 919, 39, 1126, 1076, -117, "termur", "termur" },
+    { 521, 919, 39, 1126, 1075, -117, "termur", "termur" },
+    { 522, 919, 36, 1126, 1075, -117, "termur", "termur" },
+    { 594, 3846, -31, 644, 3857, -43, "termur", "termur" },
+    { 644, 3857, -43, 594, 3846, -31, "termur", "termur" },
+    { 841, 272, 30, 434, 152, 0, "termur", "termur" },
+    { 841, 273, 30, 434, 153, 0, "termur", "termur" },
+    { 841, 287, 30, 433, 167, 0, "termur", "termur" },
+    { 843, 286, 22, 433, 166, 0, "termur", "termur" },
+    { 996, 3841, -41, 33, 240, 5, "termur", "termur" },
+    { 997, 3841, -41, 34, 240, 5, "termur", "termur" },
+    { 998, 3841, -41, 35, 240, 5, "termur", "termur" },
+    { 999, 3841, -41, 36, 240, 5, "termur", "termur" },
+    { 1000, 3841, -41, 37, 240, 5, "termur", "termur" },
+    { 1006, 1110, -42, 1012, 1071, -32, "termur", "termur" },
+    { 1006, 1127, -42, 1010, 1144, -65, "termur", "termur" },
+    { 1010, 1144, -65, 1006, 1127, -42, "termur", "termur" },
+    { 1012, 1071, -32, 1006, 1110, -42, "termur", "termur" },
+    { 1042, 1047, -33, 1238, 1151, -42, "termur", "termur" },
+    { 1079, 882, 0, 1080, 977, -21, "termur", "termur" },
+    { 1079, 883, 0, 1080, 977, -21, "termur", "termur" },
+    { 1079, 884, 0, 1080, 977, -21, "termur", "termur" },
+    { 1079, 885, 0, 1080, 977, -21, "termur", "termur" },
+    { 1080, 974, -20, 1081, 883, -5, "termur", "termur" },
+    { 1080, 975, -20, 1081, 883, -5, "termur", "termur" },
+    { 1081, 974, -20, 1081, 883, -5, "termur", "termur" },
+    { 1081, 975, -20, 1081, 883, -5, "termur", "termur" },
+    { 1125, 1076, -117, 520, 920, 39, "termur", "termur" },
+    { 1125, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1125, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1126, 1076, 15, 521, 920, 39, "termur", "termur" },
+    { 1126, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1126, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1127, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1127, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1128, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1128, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1129, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1129, 1215, 5, 4195, 3261, 5, "termur", "britannia_alt" },
+    { 1130, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1130, 1215, 5, 4195, 3261, 5, "termur", "britannia_alt" },
+    { 1131, 1215, 5, 4194, 3261, 5, "termur", "britannia_alt" },
+    { 1131, 1215, 5, 4195, 3261, 5, "termur", "britannia_alt" },
+    { 1162, 1120, -42, 1147, 1089, -42, "termur", "termur" },
+    { 1180, 885, 0, 1187, 1127, -42, "termur", "termur" },
+    { 1183, 1180, -45, 1183, 1182, -47, "termur", "termur" },
+    { 1183, 1182, -47, 1183, 1180, -45, "termur", "termur" },
+    { 1183, 1187, -45, 1183, 1189, -44, "termur", "termur" },
+    { 1183, 1189, -44, 1183, 1187, -45, "termur", "termur" },
+    { 1184, 1177, -47, 1186, 1177, -45, "termur", "termur" },
+    { 1186, 1177, -45, 1184, 1177, -47, "termur", "termur" },
+    { 1186, 1183, -40, 1184, 1183, -43, "termur", "termur" },
+    { 1187, 1126, -42, 1180, 884, 0, "termur", "termur" },
+    { 1187, 1173, -47, 1187, 1175, -45, "termur", "termur" },
+    { 1187, 1175, -45, 1187, 1173, -47, "termur", "termur" },
+    { 1190, 1185, -40, 1190, 1183, -40, "termur", "termur" },
+    { 1192, 1186, -40, 1190, 1186, -41, "termur", "termur" },
+    { 1197, 1189, -58, 1195, 1189, -56, "termur", "termur" },
+    { 1198, 1187, -45, 1196, 1187, -45, "termur", "termur" },
+    { 1200, 1187, -66, 1200, 1190, -64, "termur", "termur" },
+    { 1201, 1189, -71, 1201, 1186, -68, "termur", "termur" },
+    { 1202, 1183, -45, 1202, 1185, -45, "termur", "termur" },
+    { 1203, 1190, -74, 1201, 1190, -73, "termur", "termur" },
+    { 1206, 1181, -47, 1204, 1181, -45, "termur", "termur" },
+    { 1238, 1151, -42, 1140, 951, -42, "termur", "termur" },
+    { 4194, 3260, 5, 1128, 1213, -2, "termur", "termur" },
+    { 4195, 3260, 5, 1129, 1213, -2, "termur", "termur" },
+    { 7149, 756, 25, 511, 585, 11, "termur", "termur" },
+    { 7149, 756, 25, 511, 585, 9, "termur", "termur" },
+    { 7150, 756, 25, 511, 585, 9, "termur", "termur" },
+    { 7151, 756, 25, 511, 585, 9, "termur", "termur" },
+    { 7152, 756, 25, 511, 585, 9, "termur", "termur" },
+    { 7153, 756, 25, 511, 585, 9, "termur", "termur" }
+
 };	
 
 function CreateTeleporters()

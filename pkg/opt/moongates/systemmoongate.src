@@ -18,7 +18,7 @@ include ":gumps:gumps_ex";
 const TEXT_COLOR_TITLE := 52;
 const TEXT_COLOR_GATE := 1086;
 
-// these are also defined in the moongates.inc.
+// these are also defined in the moongates.inc.  These must be the same.
         var moongates := { 
         {4467,	1283,	5,		"britannia"},		// moonglow
     	{1336,	1997,	5,		"britannia"},		// britain
@@ -27,14 +27,22 @@ const TEXT_COLOR_GATE := 1086;
     	{2701,	693,	5,		"britannia"},		// minoc
     	{1828,	2948,	-20,	"britannia"},		// trinsic
     	{643,	2067,	5,		"britannia"},		// skara
-    	{3564,	2140,	34,		"britannia"},		// magincia
+    	{3564,	2140,	31,		"britannia"},		// magincia
 		{802,	1204,	25,		"tokuno"},			// Zento City
 		{1169,	998,	41,		"tokuno"},			// Isamu-Jima Island
 		{270,	628,	15,		"tokuno"},			// Homare-Jima Island
 		{2264, 	1574,	-28,	"ilshenar"},		//Vitures Gate System
 		{1015,	527,	-65,	"malas"},			//Luna
 		{1997,	1386,	-85,	"malas"},			//Umbra
-		{851,	3525,	-38,	"termur"}			//Royal City
+		{851,	3525,	-38,	"termur"},			//Royal City
+		{611,	1016,	-8,		"britannia_alt"},	//Winterwyn
+		{1675,	2005,	0,		"britannia_alt"},	//Shandalaar
+		{2082,	3205,	-8,		"britannia_alt"},	//Kromwell
+		{3720,	1476,	20,		"britannia_alt"},	//Faymoor
+		{3825,	3338,	0,		"britannia_alt"},	//Hathor
+		{4426,	427,	2,		"britannia_alt"},	//Ice Isle
+		{3074,	2672,	0,		"britannia_alt"},	//Janacres
+		{1874,	501,	7,		"britannia_alt"}	//Arcanus
     };
 
 program walk_on_moongate(mobile, moongate)
@@ -97,8 +105,22 @@ program walk_on_moongate(mobile, moongate)
 	GFAddButton(res, 215, 380, 2360, 2361, GF_CLOSE_BTN, 16);
 
 	//Teleport Buttons for Sosaria
-	GFTextLine(res, 265, 200, TEXT_COLOR_GATE, "Main City");
-	GFAddButton(res, 345, 205, 2360, 2361, GF_CLOSE_BTN, 2);
+	GFTextLine(res, 265, 200, TEXT_COLOR_GATE, "Winterwyn");
+	GFAddButton(res, 345, 205, 2360, 2361, GF_CLOSE_BTN, 32);
+	GFTextLine(res, 265, 225, TEXT_COLOR_GATE, "Shandalaar");
+	GFAddButton(res, 345, 230, 2360, 2361, GF_CLOSE_BTN, 34);
+	GFTextLine(res, 265, 250, TEXT_COLOR_GATE, "Kromwell");
+	GFAddButton(res, 345, 255, 2360, 2361, GF_CLOSE_BTN, 36);
+	GFTextLine(res, 265, 275, TEXT_COLOR_GATE, "Faymoor");
+	GFAddButton(res, 345, 280, 2360, 2361, GF_CLOSE_BTN, 38);
+	GFTextLine(res, 265, 300, TEXT_COLOR_GATE, "Hathor");
+	GFAddButton(res, 345, 305, 2360, 2361, GF_CLOSE_BTN, 40);
+	GFTextLine(res, 265, 325, TEXT_COLOR_GATE, "Ice Isle");
+	GFAddButton(res, 345, 330, 2360, 2361, GF_CLOSE_BTN, 42);
+	GFTextLine(res, 265, 350, TEXT_COLOR_GATE, "Janacres");
+	GFAddButton(res, 345, 355, 2360, 2361, GF_CLOSE_BTN, 44);
+	GFTextLine(res, 265, 375, TEXT_COLOR_GATE, "Arcanus");
+	GFAddButton(res, 345, 380, 2360, 2361, GF_CLOSE_BTN, 46);
 
 	//Teleport Buttons for Ilshenar
 	GFTextLine(res, 395, 200, TEXT_COLOR_GATE, "Virtues");
@@ -200,6 +222,46 @@ program walk_on_moongate(mobile, moongate)
 			y:=moongates[15][2];
 			z:=moongates[15][3];
 			realm:=moongates[15][4];
+		32:
+			x:=moongates[16][1];
+			y:=moongates[16][2];
+			z:=moongates[16][3];
+			realm:=moongates[16][4];
+		34:
+			x:=moongates[17][1];
+			y:=moongates[17][2];
+			z:=moongates[17][3];
+			realm:=moongates[17][4];
+		36:
+			x:=moongates[18][1];
+			y:=moongates[18][2];
+			z:=moongates[18][3];
+			realm:=moongates[18][4];
+		38:
+			x:=moongates[19][1];
+			y:=moongates[19][2];
+			z:=moongates[19][3];
+			realm:=moongates[19][4];
+		40:
+			x:=moongates[20][1];
+			y:=moongates[20][2];
+			z:=moongates[20][3];
+			realm:=moongates[20][4];
+		42:
+			x:=moongates[21][1];
+			y:=moongates[21][2];
+			z:=moongates[21][3];
+			realm:=moongates[21][4];
+		44:
+			x:=moongates[22][1];
+			y:=moongates[22][2];
+			z:=moongates[22][3];
+			realm:=moongates[22][4];
+		46:
+			x:=moongates[23][1];
+			y:=moongates[23][2];
+			z:=moongates[23][3];
+			realm:=moongates[23][4];
 
 	endcase
 

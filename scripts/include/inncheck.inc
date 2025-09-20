@@ -1,11 +1,11 @@
 use uo;
 use os;
+use npc;
 use cfgfile;
-use util;
 
 function Inncheck(character)
 
-  var element, rect;
+  /*var element, rect;
   var cfgfile := ReadConfigFile("::innlocation");
   var entries := GetConfigStringKeys(cfgfile);
   foreach listing in entries
@@ -18,5 +18,23 @@ function Inncheck(character)
     endif
   endforeach
   return 0;
+  */
+
+	var npc_cfg := ReadConfigFile(":*:npcdesc");
+  var found := 0;
+
+	foreach mobile in ListMobilesNearLocation( character.x, character.y, character.z, 5, character.realm )
+    if( mobile.IsA(POLCLASS_NPC) )
+      if (GetObjProperty(mobile, "MerchantType") == "innkeep")
+        found := 1;
+      endif
+    endif
+  endforeach
+
+  if(found == 1)
+    return 1;
+  else
+    return 0;
+  endif
 
 endfunction  
