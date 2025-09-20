@@ -558,7 +558,6 @@ var teleporters := {
     ///////////////////////////////
 
     {5742,  3307,  0,       5373,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
-
     {5743,  3307,  0,       5374,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
     {5744,  3307,  0,       5375,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
     {5745,  3307,  0,       5376,  2120,    0,      "britannia_alt",    "britannia_alt"},   //Nexus Dungeon Entrance
