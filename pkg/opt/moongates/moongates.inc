@@ -48,9 +48,12 @@ function CreateMoongates();
 		{3720,	1476,	20,		"britannia_alt"},	//Faymoor
 		{3825,	3338,	0,		"britannia_alt"},	//Hathor
 		{4426,	427,	2,		"britannia_alt"},	//Ice Isle
-		{3074,	2672,	0,		"britannia_alt"},	//Janacres
-		{1874,	501,	7,		"britannia_alt"}	//Arcanus
+		{2804,	2313,	12,		"britannia_alt"},	//Janacres
+		{1874,	501,	7,		"britannia_alt"},	//Arcanus
+		{5539,	1077,	0,		"britannia_alt"},	//Khaz Darak
+		{5277,	1983,	25,		"britannia_alt"}	//Nexus
     };
+
 
 	var moongate;
 
