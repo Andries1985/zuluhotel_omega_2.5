@@ -103,6 +103,7 @@ endif
 
 endfunction
 
+/*
 function IsInPlayerCity( who )
 
 	var items := ListItemsNearLocationOfType( who.x, who.y, 0, 250, 0x7566, who.realm );
@@ -131,6 +132,7 @@ function IsInPlayerCity( who )
 	return 0;
 
 endfunction
+*/
 
 function fixname(player)
 
