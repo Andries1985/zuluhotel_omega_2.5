@@ -724,7 +724,9 @@ function OpenMyPack();
 		//0x9:	mounttype := 0x3f6f;	// Demon (looks awful)			- No idea where this comes from
 		//0x3E9B	- Set as mounts, but no corresponding graphics
 		//0x3EB5	- Set as mounts, but no corresponding graphics
-
+		//0x3EC3	- Set as mounts, but no corresponding graphics
+		//0x3F3A	- Set as mounts, but no corresponding graphics
+		
 	endcase
 
 	if (mounttype)
