@@ -35,6 +35,14 @@ use os;
 // but for now the walkonscript gets the lowest walkable location.
 //
 var teleporters := {
+
+    ////////////////////////////////
+    ////////////////////////////////
+    // Britannia
+    // Britannia Teleporters
+    ///////////////////////////////
+    ///////////////////////////////
+
     {6058,  272,  	-8,    	6095,   279,    44,     "britannia",    "britannia"},       // ctf1a
     {6058,  273,  	-8,    	6095,   279,    44,     "britannia",    "britannia"},       // ctf1b
     {6088,  274,  	58,    	6063,   278,    -22,    "britannia",    "britannia"},       // ctf2a
@@ -448,25 +456,6 @@ var teleporters := {
 	{2399, 	198, 	0, 		5186, 	1941, 	0,	    "britannia",	"britannia"},       // mine_near_minoc_0_1
 	{5185, 	1942, 	0, 		2398, 	199, 	0,	    "britannia",	"britannia"},       // mine_near_minoc_1_0
 	{5186, 	1942, 	0, 		2399, 	199, 	0,  	"britannia",	"britannia"},       // mine_near_minoc_1_0
-
-//ilshenar  { fromX, fromY, fromZ, toX, toY, ToZ, fromR, toR }
-//Shrine Room
-    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},     
-    {2264,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 2
-    {2249,  1558,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 1
-    {2249,  1559,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 2
-    {2249,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},        //Honor 1
-    {2250,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},        //Honor 2
-    {2256,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},        //Honesty 1
-    {2257,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},        //Honesty 2
-    {2263,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},        //Humility 1
-    {2264,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},        //Humility 2
-    {2271,  1542,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},        //Justice 1
-    {2271,  1543,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},        //Justice 2
-    {2278,  1548,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 1
-    {2278,  1549,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 2
-    {2278,  1558,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 1
-    {2278,  1559,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 2
 
     ////////////////////////////////
     ////////////////////////////////
@@ -980,15 +969,15 @@ var teleporters := {
     {5691,  497,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
     {5691,  498,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
 
-    //Nexus Outpost (Seperate City to Unnamed Dungeon ATM, which needs more teleporters)
-    { 5863, 355, 1, 5939, 2750, 0, "britannia_alt", "britannia_alt" }, //Nexus Outpost -> Unnamed Dungeon
-    { 5864, 355, 1, 5940, 2750, -1, "britannia_alt", "britannia_alt" }, //Nexus Outpost -> Unnamed Dungeon
-    { 5865, 355, 0, 5941, 2750, -2, "britannia_alt", "britannia_alt" }, //Nexus Outpost -> Unnamed Dungeon
-    { 5866, 355, 0, 5942, 2750, 2, "britannia_alt", "britannia_alt" }, //Nexus Outpost -> Unnamed Dungeon
-    { 5939, 2749, 0, 5863, 354, 3, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon -> Nexus Outpost 
-    { 5940, 2749, 0, 5864, 354, 2, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon -> Nexus Outpost 
-    { 5941, 2749, -1, 5865, 354, 1, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon -> Nexus Outpost 
-    { 5942, 2749, 5, 5866, 354, 1, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon -> Nexus Outpost
+    //Nexus Outpost (Needs a teleporter still to a dungeon, its under the top area buildings)
+    { 5863, 355, 1, 5939, 2750, 0, "britannia_alt", "britannia_alt" }, //Nexus Outpost -> Underworld
+    { 5864, 355, 1, 5940, 2750, -1, "britannia_alt", "britannia_alt" }, //Nexus Outpost -> Underworld
+    { 5865, 355, 0, 5941, 2750, -2, "britannia_alt", "britannia_alt" }, //Nexus Outpost -> Underworld
+    { 5866, 355, 0, 5942, 2750, 2, "britannia_alt", "britannia_alt" }, //Nexus Outpost -> Underworld
+    { 5939, 2749, 0, 5863, 354, 3, "britannia_alt", "britannia_alt" }, //Underworld -> Nexus Outpost 
+    { 5940, 2749, 0, 5864, 354, 2, "britannia_alt", "britannia_alt" }, //Underworld -> Nexus Outpost 
+    { 5941, 2749, -1, 5865, 354, 1, "britannia_alt", "britannia_alt" }, //Underworld -> Nexus Outpost 
+    { 5942, 2749, 5, 5866, 354, 1, "britannia_alt", "britannia_alt" }, //Underworld -> Nexus Outpost
 
     //Top Unnamed big dungeon... has like 3 entrances still not connected
     { 5540, 76, 0, 5330, 414, 0, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon to Society of Mages
@@ -1006,81 +995,98 @@ var teleporters := {
     ///////////////////////////////
     ///////////////////////////////
 
-    { 3, 128, -1, 259, 785, 64, "malas", "tokuno" },
-    { 4, 128, -1, 259, 785, 64, "malas", "tokuno" },
-    { 5, 128, -1, 259, 785, 64, "malas", "tokuno" },
-    { 6, 128, -1, 259, 785, 64, "malas", "tokuno" },
-    { 7, 128, -1, 259, 785, 64, "malas", "tokuno" },
-    { 8, 128, -1, 259, 785, 64, "malas", "tokuno" },
-    { 61, 523, 6, 63, 352, -3, "malas", "malas" },
-    { 61, 524, 6, 63, 352, -3, "malas", "malas" },
-    { 61, 525, 6, 63, 352, -3, "malas", "malas" },
-    { 61, 526, 6, 63, 352, -3, "malas", "malas" },
-    { 64, 336, 11, 983, 195, 24, "malas", "tokuno" },
-    { 64, 337, 11, 983, 195, 24, "malas", "tokuno" },
-    { 64, 338, 11, 983, 195, 24, "malas", "tokuno" },
-    { 64, 339, 11, 983, 195, 24, "malas", "tokuno" },
-    { 66, 351, -7, 63, 524, -1, "malas", "malas" },
-    { 66, 352, -7, 63, 524, -1, "malas", "malas" },
-    { 66, 353, -7, 63, 524, -1, "malas", "malas" },
-    { 66, 354, -7, 63, 524, -1, "malas", "malas" },
-    { 73, 688, 6, 100, 556, -2, "malas", "malas" },
-    { 73, 689, 6, 100, 556, -2, "malas", "malas" },
-    { 73, 690, 6, 100, 556, -2, "malas", "malas" },
-    { 73, 691, 6, 100, 556, -2, "malas", "malas" },
-    { 73, 692, 6, 100, 556, -2, "malas", "malas" },
-    { 73, 693, 6, 100, 556, -2, "malas", "malas" },
-    { 73, 694, 6, 100, 556, -2, "malas", "malas" },
-    { 84, 1673, -2, 156, 1613, 0, "malas", "malas" },
-    { 103, 555, -6, 76, 691, -1, "malas", "malas" },
-    { 103, 556, -6, 76, 691, -1, "malas", "malas" },
-    { 103, 557, -6, 76, 691, -1, "malas", "malas" },
-    { 103, 558, -6, 76, 691, -1, "malas", "malas" },
-    { 156, 1609, 17, 87, 1673, 0, "malas", "malas" },
-    { 157, 1609, 17, 87, 1673, 0, "malas", "malas" },
-    { 328, 1972, 5, 1731, 978, -80, "malas", "malas" },
-    { 328, 1973, 5, 1731, 978, -80, "malas", "malas" },
-    { 328, 1974, 5, 1731, 978, -80, "malas", "malas" },
-    { 328, 1975, 5, 1731, 978, -80, "malas", "malas" },
+    //Not in Photopea
+    //Yomotsu Mines
+    { 3, 128, -1, 259, 785, 64, "malas", "tokuno" }, //Yomotsu Mines To Tokuno
+    { 4, 128, -1, 259, 785, 64, "malas", "tokuno" }, //Yomotsu Mines To Tokuno
+    { 5, 128, -1, 259, 785, 64, "malas", "tokuno" }, //Yomotsu Mines To Tokuno
+    { 6, 128, -1, 259, 785, 64, "malas", "tokuno" }, //Yomotsu Mines To Tokuno
+    { 7, 128, -1, 259, 785, 64, "malas", "tokuno" }, //Yomotsu Mines To Tokuno
+    { 8, 128, -1, 259, 785, 64, "malas", "tokuno" }, //Yomotsu Mines To Tokuno
+    { 257, 783, 63, 5, 129, -1, "tokuno", "malas" }, //Tokuno To Yomotsu Mines
+    { 258, 783, 63, 5, 129, -1, "tokuno", "malas" }, //Tokuno To Yomotsu Mines
+    { 259, 783, 63, 5, 129, -1, "tokuno", "malas" }, //Tokuno To Yomotsu Mines
+    { 260, 783, 63, 5, 129, -1, "tokuno", "malas" }, //Tokuno To Yomotsu Mines
+
+    //Fan Dancer Dojo
+    { 64, 336, 11, 983, 195, 24, "malas", "tokuno" }, //Fan Dancer Dojo to Tokuno
+    { 64, 337, 11, 983, 195, 24, "malas", "tokuno" }, //Fan Dancer Dojo to Tokuno
+    { 64, 338, 11, 983, 195, 24, "malas", "tokuno" }, //Fan Dancer Dojo to Tokuno
+    { 64, 339, 11, 983, 195, 24, "malas", "tokuno" }, //Fan Dancer Dojo to Tokuno
+    { 987, 196, 15, 67, 337, -1, "tokuno", "malas" }, //Tokuno to Fan Dancer Dojo
+    { 988, 194, 15, 67, 337, -1, "tokuno", "malas" }, //Tokuno to Fan Dancer Dojo
+    { 988, 195, 15, 67, 337, -1, "tokuno", "malas" }, //Tokuno to Fan Dancer Dojo
+    { 988, 197, 18, 67, 337, -1, "tokuno", "malas" }, //Tokuno to Fan Dancer Dojo
+    { 66, 351, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 - > 2
+    { 66, 352, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 - > 2
+    { 66, 353, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 - > 2
+    { 66, 354, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 - > 2
+    { 61, 523, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 1
+    { 61, 524, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 1
+    { 61, 525, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 1
+    { 61, 526, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 1
+    { 103, 555, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 3
+    { 103, 556, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 3
+    { 103, 557, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 3
+    { 103, 558, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 3
+    { 73, 688, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
+    { 73, 689, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
+    { 73, 690, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
+    { 73, 691, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
+    { 73, 692, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
+    { 73, 693, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
+    { 73, 694, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
+
+    //Bedlam Dungeon (Incomplete... need a way in, in OSI its a quest in Umbra)
+    { 84, 1673, -2, 156, 1613, 0, "malas", "malas" }, //1 to 2
+    { 156, 1609, 17, 87, 1673, 0, "malas", "malas" }, //2 to 1
+    { 157, 1609, 17, 87, 1673, 0, "malas", "malas" }, //2 to 1
+
+    //Labyrinth Dungeon (Incomplete... need a way in on the island in Malas, and need a teleport from main area to island built)
+    { 328, 1972, 5, 1731, 978, -80, "malas", "malas" }, //Labyrinth Dungeon
+    { 328, 1973, 5, 1731, 978, -80, "malas", "malas" }, //Labyrinth Dungeon
+    { 328, 1974, 5, 1731, 978, -80, "malas", "malas" }, //Labyrinth Dungeon
+    { 328, 1975, 5, 1731, 978, -80, "malas", "malas" }, //Labyrinth Dungeon
+    
+    //Ninja Event Area
     { 330, 706, -1, 384, 733, -1, "malas", "malas" },
     { 331, 769, -1, 384, 733, -1, "malas", "malas" },
     { 355, 745, -1, 384, 733, -1, "malas", "malas" },
-    { 375, 802, 1, 770, 1209, 25, "malas", "tokuno" },
-    { 384, 810, -1, 403, 1167, 0, "malas", "malas" },
     { 389, 704, -1, 384, 733, -1, "malas", "malas" },
-    { 391, 777, -1, 770, 1209, 25, "malas", "tokuno" },
-    { 403, 1169, 0, 385, 811, -1, "malas", "malas" },
-    { 404, 1169, 0, 385, 808, -1, "malas", "malas" },
-    { 405, 1169, 0, 385, 808, -1, "malas", "malas" },
-    { 407, 254, 2, 428, 318, 2, "malas", "malas" },
-    { 408, 254, 2, 428, 318, 2, "malas", "malas" },
-    { 409, 254, 2, 428, 318, 2, "malas", "malas" },
-    { 411, 1117, 0, 422, 806, -1, "malas", "malas" },
-    { 412, 1086, 0, 391, 803, -1, "malas", "malas" },
-    { 412, 1123, 0, 417, 806, -1, "malas", "malas" },
-    { 421, 1092, 0, 391, 803, -1, "malas", "malas" },
     { 426, 780, -1, 384, 733, -1, "malas", "malas" },
-    { 427, 321, 2, 422, 327, -1, "malas", "malas" },
-    { 428, 321, 2, 422, 327, -1, "malas", "malas" },
-    { 429, 321, 2, 422, 327, -1, "malas", "malas" },
-    { 496, 49, 6, 2350, 1270, -85, "malas", "malas" },
-    { 2315, 1267, -109, 381, 132, 33, "malas", "malas" },
-    { 2315, 1268, -110, 381, 132, 33, "malas", "malas" },
-    { 2315, 1269, -110, 381, 132, 33, "malas", "malas" },
-    { 2316, 1267, -110, 381, 132, 33, "malas", "malas" },
-    { 2316, 1269, -110, 381, 132, 33, "malas", "malas" },
-    { 2317, 1266, -110, 381, 132, 33, "malas", "malas" },
-    { 2317, 1267, -110, 381, 132, 33, "malas", "malas" },
-    { 2317, 1268, -110, 381, 132, 33, "malas", "malas" },
-    { 2317, 1269, -110, 381, 132, 33, "malas", "malas" },
-    { 257, 783, 63, 5, 128, -1, "tokuno", "malas" },
-    { 258, 783, 63, 5, 128, -1, "tokuno", "malas" },
-    { 259, 783, 63, 5, 128, -1, "tokuno", "malas" },
-    { 260, 783, 63, 5, 128, -1, "tokuno", "malas" },
-    { 987, 196, 15, 67, 337, -1, "tokuno", "malas" },
-    { 988, 194, 15, 67, 337, -1, "tokuno", "malas" },
-    { 988, 195, 15, 67, 337, -1, "tokuno", "malas" },
-    { 988, 197, 18, 67, 337, -1, "tokuno", "malas" },
+    { 391, 777, -1, 770, 1209, 25, "malas", "tokuno" }, //Back to Zento
+    { 375, 802, 1, 770, 1209, 25, "malas", "tokuno" }, //Back to Zento
+    { 384, 810, -1, 403, 1167, 0, "malas", "malas" },  //Ninja Event Area to Dungeon
+
+    //Ninja Cave of Ninja Event Area (No Idea how its supposed to get to Area 3)
+    { 403, 1169, 0, 385, 811, -1, "malas", "malas" }, //Ninja Cave 1 to Ninja Event Area
+    { 404, 1169, 0, 385, 808, -1, "malas", "malas" }, //Ninja Cave 1 to Ninja Event Area
+    { 405, 1169, 0, 385, 808, -1, "malas", "malas" }, //Ninja Cave 1 to Ninja Event Area
+    { 412, 1086, 0, 391, 803, -1, "malas", "malas" }, //Ninja Cave 3 to Ninja Event Area
+    { 412, 1123, 0, 417, 806, -1, "malas", "malas" }, //Ninja Cave 1 to Ninja Cave 2
+    { 411, 1117, 0, 422, 806, -1, "malas", "malas" }, //Ninja Cave 2 to Ninja Cave 1
+    { 421, 1092, 0, 391, 803, -1, "malas", "malas" }, //Ninja Cave 2 to Ninja Event Area
+    
+    //Doom Dungeon (Needs teleporter to secret side area for healer and exit from gauntlet)
+    { 2315, 1267, -109, 381, 132, 33, "malas", "malas" }, //Doom Entrance
+    { 2315, 1268, -110, 381, 132, 33, "malas", "malas" }, //Doom Entrance
+    { 2315, 1269, -110, 381, 132, 33, "malas", "malas" }, //Doom Entrance
+    { 2316, 1267, -110, 381, 132, 33, "malas", "malas" }, //Doom Entrance
+    { 2316, 1269, -110, 381, 132, 33, "malas", "malas" }, //Doom Entrance
+    { 2317, 1266, -110, 381, 132, 33, "malas", "malas" }, //Doom Entrance
+    { 2317, 1267, -110, 381, 132, 33, "malas", "malas" }, //Doom Entrance
+    { 2317, 1268, -110, 381, 132, 33, "malas", "malas" }, //Doom Entrance
+    { 2317, 1269, -110, 381, 132, 33, "malas", "malas" }, //Doom Entrance
+    { 496, 49, 6, 2368, 1267, -85, "malas", "malas" },  //Doom Before Ship to Doom Entrance
+    { 407, 254, 2, 428, 318, 2, "malas", "malas" }, //Doom Ship 1 to Ship 2
+    { 408, 254, 2, 428, 318, 2, "malas", "malas" }, //Doom Ship 1 to Ship 2
+    { 409, 254, 2, 428, 318, 2, "malas", "malas" }, //Doom Ship 1 to Ship 2
+    { 427, 321, 2, 422, 327, -1, "malas", "malas" }, //Doom Ship 2 to Beach
+    { 428, 321, 2, 422, 327, -1, "malas", "malas" }, //Doom Ship 2 to Beach
+    { 429, 321, 2, 422, 327, -1, "malas", "malas" }, //Doom Ship 2 to Beach
+    
+ 
+
 
     ////////////////////////////////
     ////////////////////////////////
@@ -1088,6 +1094,24 @@ var teleporters := {
     // ilshenar and termur
     ///////////////////////////////
     ///////////////////////////////
+
+    //Shrine Room
+    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},     
+    {2264,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 2
+    {2249,  1558,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 1
+    {2249,  1559,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 2
+    {2249,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},        //Honor 1
+    {2250,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},        //Honor 2
+    {2256,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},        //Honesty 1
+    {2257,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},        //Honesty 2
+    {2263,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},        //Humility 1
+    {2264,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},        //Humility 2
+    {2271,  1542,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},        //Justice 1
+    {2271,  1543,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},        //Justice 2
+    {2278,  1548,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 1
+    {2278,  1549,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 2
+    {2278,  1558,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 1
+    {2278,  1559,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 2
 
     { 10, 872, -28, 10, 1518, -27, "ilshenar", "ilshenar" },
     { 10, 1519, -28, 10, 873, -28, "ilshenar", "ilshenar" },
