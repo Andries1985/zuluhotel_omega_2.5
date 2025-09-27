@@ -1048,7 +1048,7 @@ var teleporters := {
     { 328, 1974, 5, 1731, 978, -80, "malas", "malas" }, //Labyrinth Dungeon
     { 328, 1975, 5, 1731, 978, -80, "malas", "malas" }, //Labyrinth Dungeon
     
-    //Ninja Event Area
+    //Ninja Event Area (Need to fix Entrance and Exit to Zento)
     { 330, 706, -1, 384, 733, -1, "malas", "malas" },
     { 331, 769, -1, 384, 733, -1, "malas", "malas" },
     { 355, 745, -1, 384, 733, -1, "malas", "malas" },
@@ -1058,7 +1058,7 @@ var teleporters := {
     { 375, 802, 1, 770, 1209, 25, "malas", "tokuno" }, //Back to Zento
     { 384, 810, -1, 403, 1167, 0, "malas", "malas" },  //Ninja Event Area to Dungeon
 
-    //Ninja Cave of Ninja Event Area (No Idea how its supposed to get to Area 3)
+    //Ninja Cave of Ninja Event Area (Need to fix how to get to area 3)
     { 403, 1169, 0, 385, 811, -1, "malas", "malas" }, //Ninja Cave 1 to Ninja Event Area
     { 404, 1169, 0, 385, 808, -1, "malas", "malas" }, //Ninja Cave 1 to Ninja Event Area
     { 405, 1169, 0, 385, 808, -1, "malas", "malas" }, //Ninja Cave 1 to Ninja Event Area
