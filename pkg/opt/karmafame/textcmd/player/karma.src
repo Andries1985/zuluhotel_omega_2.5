@@ -41,6 +41,17 @@ program textcmd_karma( who )
 	// The main gump screen
 	GFResizePic(gump, 20, 20, 40288, 845, 300);
 
+	GFTextLine(gump, 110, 38, 53, "+");
+	GFGumpPic(gump, 90, 40, 5605);
+	GFTextLine(gump, 64, 120, 53, "+");
+	//GFTextLine(gump, 68, 100, 53, "^");
+	//GFTextLine(gump, 72, 120, 53, "|");
+	//GFTextLine(gump, 72, 140, 53, "|");
+	//GFTextLine(gump, 72, 160, 53, "|");
+	//GFTextLine(gump, 72, 180, 53, "|");
+	GFGumpPic(gump, 60, 140, 5600);
+	GFGumpPic(gump, 60, 160, 5602);
+	GFTextLine(gump, 64, 175, 53, "-");
 	GFTextLine(gump, 415, 40, 53, "FAME");
 	GFTextLine(gump, 40, 120, 53, "K");
 	GFTextLine(gump, 40, 135, 53, "A");
