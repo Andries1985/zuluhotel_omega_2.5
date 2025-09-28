@@ -12,7 +12,7 @@ program textcmd_karma( who )
 	/*  +2500 */ {"Good",        "Honorable",    "Admirable", "Noble",         "Noble Lord/Lady"        },
 	/*  +1250 */ {"Kind",        "Respectable",  "Proper",    "Eminent",       "Eminent Lord/Lady"      },
 	/*   +625 */ {"Fair",        "Upstanding",   "Reputable", "Distinguished", "Distinguished Lord/Lady"},
-	/*   -624 */ {"Unfair",            "Notable",      "Prominent", "Renowned",      "Lord/Lady"              },
+	/*   -624 */ {"Unfair",      "Notable",      "Prominent", "Renowned",      "Lord/Lady"              },
 	/*  -1249 */ {"Rude",        "Disreputable", "Notorious", "Infamous",      "Dishonored Lord/Lady"   },
 	/*  -2499 */ {"Unsavory",    "Dishonorable", "Ignoble",   "Sinister",      "Sinister Lord/Lady"     },
 	/*  -4999 */ {"Scoundrel",   "Malicious",    "Vile",      "Villainous",    "Dark Lord/Lady"         },
@@ -44,11 +44,6 @@ program textcmd_karma( who )
 	GFTextLine(gump, 110, 38, 53, "+");
 	GFGumpPic(gump, 90, 40, 5605);
 	GFTextLine(gump, 64, 120, 53, "+");
-	//GFTextLine(gump, 68, 100, 53, "^");
-	//GFTextLine(gump, 72, 120, 53, "|");
-	//GFTextLine(gump, 72, 140, 53, "|");
-	//GFTextLine(gump, 72, 160, 53, "|");
-	//GFTextLine(gump, 72, 180, 53, "|");
 	GFGumpPic(gump, 60, 140, 5600);
 	GFGumpPic(gump, 60, 160, 5602);
 	GFTextLine(gump, 64, 175, 53, "-");
