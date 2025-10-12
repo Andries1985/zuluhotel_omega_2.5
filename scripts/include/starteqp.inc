@@ -115,6 +115,10 @@ function MakeLoot( corpse , lootgroup := 0, magic_chance_default := 0, magic_lev
 		var mprop;
 		var mlevel;
 		var lootgroups;
+		var randomlootgroup;
+
+
+
 
 		// Custom Loot, best be carefull with this, don't want bad people changing loot levels/
 		// * added a check in customnpc script so only admin+ can set custom loot
@@ -124,9 +128,24 @@ function MakeLoot( corpse , lootgroup := 0, magic_chance_default := 0, magic_lev
 			mlevel := CInt(cloot[2]);
 			lootgroups := {cloot[3]};
 		elseif( elem )
-			mprop  := GetConfigInt( elem, "Magicitemchance");
-			mlevel := GetConfigInt( elem, "Magicitemlevel");
-			lootgroups := GetConfigStringArray( elem, "lootgroup" );
+			//New code to randomize lootgroup
+			/*
+			randomlootgroup := GetConfigInt(elem, "lootgrouptype");
+			Print( "Random loot group number is: " + randomlootgroup);
+			if (randomlootgroup == 1)
+				mprop  := GetConfigInt( elem, "Magicitemchance");
+				mlevel := GetConfigInt( elem, "Magicitemlevel");
+				lootgroups := GetConfigInt( elem, "lootgroup" );
+				lootgroups := lootgroups + Random(3);
+				//lootgroups := CStr(lootgroups);
+				Print("Lootgroup is Random! "+lootgroups+", "+mprop+", "+mlevel);
+			else
+			*/
+				mprop  := GetConfigInt( elem, "Magicitemchance");
+				mlevel := GetConfigInt( elem, "Magicitemlevel");
+				lootgroups := GetConfigStringArray( elem, "lootgroup" );
+				//Print("Normal Lootgroup: "+lootgroups);
+			//endif
 		endif
 
 		if( mprop )
@@ -141,9 +160,14 @@ function MakeLoot( corpse , lootgroup := 0, magic_chance_default := 0, magic_lev
 
 		// Almost ALWAYS just 1 lootgroup, although multiple can be used. So this function
 		// runs only once.
+		//New code to randomize lootgroup
+		//if(randomlootgroup == 1)
+		//	CreateFromGroup( corpse, lootgroups);
+		//else
         	foreach str in lootgroups
-            		CreateFromGroup( corpse , cint(str) );
+            	CreateFromGroup( corpse , cint(str) );
         	endforeach
+		//endif
 	endif
 	
 endfunction

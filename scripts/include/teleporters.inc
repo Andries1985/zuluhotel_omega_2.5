@@ -991,11 +991,10 @@ var teleporters := {
     ////////////////////////////////
     ////////////////////////////////
     // Malas and Tokuno
-    // Unsorted
+    // Sorted But Incomplete
     ///////////////////////////////
     ///////////////////////////////
 
-    //Not in Photopea
     //Yomotsu Mines
     { 3, 128, -1, 259, 785, 64, "malas", "tokuno" }, //Yomotsu Mines To Tokuno
     { 4, 128, -1, 259, 785, 64, "malas", "tokuno" }, //Yomotsu Mines To Tokuno
@@ -1085,18 +1084,17 @@ var teleporters := {
     { 428, 321, 2, 422, 327, -1, "malas", "malas" }, //Doom Ship 2 to Beach
     { 429, 321, 2, 422, 327, -1, "malas", "malas" }, //Doom Ship 2 to Beach
     
- 
 
 
     ////////////////////////////////
     ////////////////////////////////
-    // Test Teleporters for
-    // ilshenar and termur
+    // Ilshenar
+    // Incomplete
     ///////////////////////////////
     ///////////////////////////////
 
     //Shrine Room
-    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},     
+    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 1
     {2264,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 2
     {2249,  1558,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 1
     {2249,  1559,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 2
@@ -1113,26 +1111,73 @@ var teleporters := {
     {2278,  1558,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 1
     {2278,  1559,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 2
 
-    { 10, 872, -28, 10, 1518, -27, "ilshenar", "ilshenar" },
-    { 10, 1519, -28, 10, 873, -28, "ilshenar", "ilshenar" },
-    { 11, 872, -28, 11, 1518, -28, "ilshenar", "ilshenar" },
-    { 11, 1519, -27, 11, 873, -28, "ilshenar", "ilshenar" },
-    { 12, 872, -27, 12, 1518, -28, "ilshenar", "ilshenar" },
-    { 12, 1519, -27, 12, 873, -27, "ilshenar", "ilshenar" },
-    { 78, 1365, -41, 393, 1586, -16, "ilshenar", "ilshenar" },
-    { 79, 1365, -41, 394, 1586, -16, "ilshenar", "ilshenar" },
-    { 80, 1365, -41, 395, 1586, -16, "ilshenar", "ilshenar" },
-    { 81, 1365, -41, 396, 1586, -16, "ilshenar", "ilshenar" },
+    // Ankh Dungeon
+    { 10, 1519, -28, 10, 873, -28, "ilshenar", "ilshenar" },    //Ankh Dungeon to Kirin Passage
+    { 11, 1519, -27, 11, 873, -28, "ilshenar", "ilshenar" },    //Ankh Dungeon to Kirin Passage
+    { 12, 1519, -27, 12, 873, -27, "ilshenar", "ilshenar" },    //Ankh Dungeon to Kirin Passage
+    { 10, 872, -28, 10, 1518, -27, "ilshenar", "ilshenar" },    //Kirin Passage to Ankh Dungeon
+    { 11, 872, -28, 11, 1518, -28, "ilshenar", "ilshenar" },    //Kirin Passage to Ankh Dungeon
+    { 12, 872, -27, 12, 1518, -28, "ilshenar", "ilshenar" },    //Kirin Passage to Ankh Dungeon
+    { 78, 1365, -41, 531, 1532, -9, "ilshenar", "ilshenar" },  //Ankh Dungeon to Serpentine Passage
+    { 79, 1365, -41, 532, 1532, -7, "ilshenar", "ilshenar" },  //Ankh Dungeon to Serpentine Passage
+    { 80, 1365, -41, 533, 1532, -7, "ilshenar", "ilshenar" },  //Ankh Dungeon to Serpentine Passage
+    { 81, 1365, -41, 534, 1532, -7, "ilshenar", "ilshenar" },  //Ankh Dungeon to Serpentine Passage
+    { 531, 1533, -4, 78, 1366, -36, "ilshenar", "ilshenar" },  //Serpentine Passage to Ankh Dungeon
+    { 532, 1533, -4, 79, 1366, -36, "ilshenar", "ilshenar" },  //Serpentine Passage to Ankh Dungeon
+    { 533, 1533, -4, 80, 1366, -36, "ilshenar", "ilshenar" },  //Serpentine Passage to Ankh Dungeon
+    { 534, 1533, -4, 81, 1366, -36, "ilshenar", "ilshenar" },  //Serpentine Passage to Ankh Dungeon
+    { 154, 1472, -8, 575, 1155, -121, "ilshenar", "ilshenar" }, //Ankh Dungeon to The Abandoned Tower
+    { 155, 1472, -8, 576, 1155, -120, "ilshenar", "ilshenar" }, //Ankh Dungeon to The Abandoned Tower
+    { 156, 1472, -8, 577, 1155, -120, "ilshenar", "ilshenar" }, //Ankh Dungeon to The Abandoned Tower
+    { 575, 1156, -121, 154, 1473, -8, "ilshenar", "ilshenar" }, //The Abandoned Tower to Ankh Dungeon
+    { 576, 1156, -121, 155, 1473, -8, "ilshenar", "ilshenar" }, //The Abandoned Tower to Ankh Dungeon
+    { 577, 1156, -121, 156, 1473, -8, "ilshenar", "ilshenar" }, //The Abandoned Tower to Ankh Dungeon
+    { 3, 1267, -8, 666, 928, -83, "ilshenar", "ilshenar" },     //Ankh Dungeon to The Ruined Tower
+    { 3, 1268, -8, 666, 929, -83, "ilshenar", "ilshenar" },     //Ankh Dungeon to The Ruined Tower
+    { 3, 1269, -8, 666, 930, -83, "ilshenar", "ilshenar" },     //Ankh Dungeon to The Ruined Tower
+    { 667, 927, -85, 4, 1267, -11, "ilshenar", "ilshenar" },    //The Ruined Tower to Ankh Dungeon
+    { 667, 928, -85, 4, 1267, -11, "ilshenar", "ilshenar" },    //The Ruined Tower to Ankh Dungeon
+    { 667, 929, -85, 4, 1268, -11, "ilshenar", "ilshenar" },    //The Ruined Tower to Ankh Dungeon
+    { 667, 930, -85, 4, 1269, -11, "ilshenar", "ilshenar" },    //The Ruined Tower to Ankh Dungeon
+
+    // Kirin Passage
+    { 348, 1427, 15, 18, 1197, -6, "ilshenar", "ilshenar" },    //To Kirin Passage
+    { 349, 1427, 15, 19, 1197, -6, "ilshenar", "ilshenar" },    //To Kirin Passage
+    { 350, 1427, 15, 20, 1197, -6, "ilshenar", "ilshenar" },    //To Kirin Passage
+    { 351, 1427, 15, 20, 1197, -6, "ilshenar", "ilshenar" },    //To Kirin Passage
+    { 18, 1198, -5, 348, 1428, 15, "ilshenar", "ilshenar" },    //To Kirin Passage Entrance
+    { 19, 1198, -5, 349, 1428, 15, "ilshenar", "ilshenar" },    //To Kirin Passage Entrance
+    { 20, 1198, -5, 350, 1428, 15, "ilshenar", "ilshenar" },    //To Kirin Passage Entrance
+    
+    //Serpentine Passage
+    { 393, 1587, -13, 810, 875, -40, "ilshenar", "ilshenar" },   //To Serpentine Entrance
+    { 394, 1587, -13, 811, 875, -39, "ilshenar", "ilshenar" },   //To Serpentine Entrance
+    { 395, 1587, -13, 812, 875, -39, "ilshenar", "ilshenar" },   //To Serpentine Entrance
+    { 396, 1587, -13, 813, 875, -40, "ilshenar", "ilshenar" },   //To Serpentine Entrance
+    { 810, 874, -39, 393, 1586, -13, "ilshenar", "ilshenar" },   //To Serpentine Passage
+    { 811, 874, -39, 394, 1586, -13, "ilshenar", "ilshenar" },   //To Serpentine Passage
+    { 812, 874, -39, 395, 1586, -13, "ilshenar", "ilshenar" },   //To Serpentine Passage
+
+    //Blood Dungeon
+    { 2113, 829, -13, 1745, 1235, -29, "ilshenar", "ilshenar" },    //To Blood Dungeon Entrance
+    { 2114, 829, -13, 1746, 1235, -29, "ilshenar", "ilshenar" },    //To Blood Dungeon Entrance
+    { 2115, 829, -13, 1747, 1235, -29, "ilshenar", "ilshenar" },    //To Blood Dungeon Entrance
+    { 2116, 829, -13, 1748, 1235, -29, "ilshenar", "ilshenar" },    //To Blood Dungeon Entrance
+    { 1745, 1236, -30, 2113, 830, -11, "ilshenar", "ilshenar" },    //To Blood Dungeon
+    { 1746, 1236, -30, 2114, 830, -11, "ilshenar", "ilshenar" },    //To Blood Dungeon
+    { 1747, 1236, -30, 2115, 830, -11, "ilshenar", "ilshenar" },    //To Blood Dungeon
+    { 1748, 1236, -30, 2116, 830, -11, "ilshenar", "ilshenar" },    //To Blood Dungeon
+
+
+
     { 131, 129, -16, 284, 68, -28, "ilshenar", "ilshenar" },
     { 132, 129, -16, 285, 68, -28, "ilshenar", "ilshenar" },
     { 133, 129, -16, 286, 68, -28, "ilshenar", "ilshenar" },
     { 134, 129, -16, 287, 68, -28, "ilshenar", "ilshenar" },
-    { 154, 1472, -8, 575, 1155, -121, "ilshenar", "ilshenar" },
     { 155, 88, -16, 357, 40, -31, "ilshenar", "ilshenar" },
     { 155, 89, -16, 357, 41, -31, "ilshenar", "ilshenar" },
     { 155, 90, -16, 357, 42, -31, "ilshenar", "ilshenar" },
-    { 155, 1472, -8, 576, 1155, -120, "ilshenar", "ilshenar" },
-    { 156, 1472, -8, 577, 1155, -120, "ilshenar", "ilshenar" },
+    
     { 164, 746, -16, 636, 815, -52, "ilshenar", "ilshenar" },
     { 242, 25, -16, 372, 29, -31, "ilshenar", "ilshenar" },
     { 242, 26, -16, 372, 30, -31, "ilshenar", "ilshenar" },
@@ -1159,34 +1204,23 @@ var teleporters := {
     { 314, 1329, -38, 328, 1593, -13, "ilshenar", "ilshenar" },
     { 315, 1329, -36, 329, 1593, -13, "ilshenar", "ilshenar" },
     { 330, 1593, -13, 315, 1329, -35, "ilshenar", "ilshenar" },
-    { 348, 1427, 15, 18, 1198, -5, "ilshenar", "ilshenar" },
-    { 349, 1427, 15, 19, 1198, -5, "ilshenar", "ilshenar" },
-    { 350, 1427, 15, 20, 1198, -5, "ilshenar", "ilshenar" },
-    { 351, 1427, 15, 21, 1198, -5, "ilshenar", "ilshenar" },
+
     { 358, 40, -36, 156, 88, -18, "ilshenar", "ilshenar" },
     { 358, 41, -36, 156, 89, -18, "ilshenar", "ilshenar" },
     { 358, 42, -36, 156, 90, -18, "ilshenar", "ilshenar" },
     { 371, 29, -36, 241, 25, -18, "ilshenar", "ilshenar" },
     { 371, 30, -36, 241, 26, -18, "ilshenar", "ilshenar" },
     { 371, 31, -36, 241, 27, -18, "ilshenar", "ilshenar" },
-    { 393, 1587, -13, 78, 1366, -36, "ilshenar", "ilshenar" },
-    { 394, 1587, -13, 79, 1366, -36, "ilshenar", "ilshenar" },
-    { 395, 1587, -13, 80, 1366, -36, "ilshenar", "ilshenar" },
-    { 396, 1587, -13, 81, 1366, -36, "ilshenar", "ilshenar" },
+
     { 429, 113, -28, 548, 455, -40, "ilshenar", "ilshenar" },
-    { 531, 1533, -4, 810, 875, -40, "ilshenar", "ilshenar" },
-    { 532, 1533, -4, 811, 875, -39, "ilshenar", "ilshenar" },
-    { 533, 1533, -4, 812, 875, -39, "ilshenar", "ilshenar" },
-    { 534, 1533, -4, 813, 875, -40, "ilshenar", "ilshenar" },
+    
     { 546, 455, -40, 426, 113, -28, "ilshenar", "ilshenar" },
     { 547, 455, -40, 427, 113, -28, "ilshenar", "ilshenar" },
     { 548, 455, -40, 428, 113, -28, "ilshenar", "ilshenar" },
     { 555, 426, -6, 272, 140, -21, "ilshenar", "ilshenar" },
     { 556, 426, -6, 273, 140, -21, "ilshenar", "ilshenar" },
     { 557, 426, -6, 274, 140, -21, "ilshenar", "ilshenar" },
-    { 575, 1156, -121, 154, 1473, -8, "ilshenar", "ilshenar" },
-    { 576, 1156, -121, 155, 1473, -8, "ilshenar", "ilshenar" },
-    { 577, 1156, -121, 156, 1473, -8, "ilshenar", "ilshenar" },
+   
     { 626, 1527, -28, 650, 1298, -58, "ilshenar", "ilshenar" },
     { 627, 1527, -28, 651, 1298, -59, "ilshenar", "ilshenar" },
     { 628, 1527, -28, 652, 1298, -58, "ilshenar", "ilshenar" },
@@ -1196,9 +1230,7 @@ var teleporters := {
     { 651, 1297, -58, 627, 1526, -28, "ilshenar", "ilshenar" },
     { 652, 1297, -58, 628, 1526, -28, "ilshenar", "ilshenar" },
     { 653, 1297, -58, 629, 1526, -28, "ilshenar", "ilshenar" },
-    { 668, 928, -84, 3, 1267, -8, "ilshenar", "ilshenar" },
-    { 668, 929, -84, 3, 1268, -8, "ilshenar", "ilshenar" },
-    { 668, 930, -82, 3, 1269, -8, "ilshenar", "ilshenar" },
+   
     { 694, 1490, -53, 719, 1490, -28, "ilshenar", "ilshenar" },
     { 694, 1491, -53, 719, 1491, -28, "ilshenar", "ilshenar" },
     { 694, 1492, -53, 719, 1492, -28, "ilshenar", "ilshenar" },
@@ -1292,9 +1324,7 @@ var teleporters := {
     { 791, 1548, -28, 781, 1547, -28, "ilshenar", "ilshenar" },
     { 791, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
     { 791, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 810, 874, -39, 532, 1532, -7, "ilshenar", "ilshenar" },
-    { 811, 874, -39, 533, 1532, -7, "ilshenar", "ilshenar" },
-    { 812, 874, -39, 534, 1532, -7, "ilshenar", "ilshenar" },
+   
     { 812, 1546, -6, 848, 1434, -28, "ilshenar", "ilshenar" },
     { 812, 1547, -6, 848, 1435, -28, "ilshenar", "ilshenar" },
     { 812, 1548, -6, 848, 1436, -28, "ilshenar", "ilshenar" },
@@ -1394,10 +1424,7 @@ var teleporters := {
     { 1479, 1493, -28, 1456, 1328, -27, "ilshenar", "ilshenar" },
     { 1479, 1497, -28, 1456, 1330, -27, "ilshenar", "ilshenar" },
     { 1516, 879, 10, 1363, 1105, -26, "ilshenar", "ilshenar" },
-    { 1745, 1236, -30, 2112, 829, -11, "ilshenar", "ilshenar" },
-    { 1746, 1236, -30, 2113, 829, -11, "ilshenar", "ilshenar" },
-    { 1747, 1236, -30, 2114, 829, -11, "ilshenar", "ilshenar" },
-    { 1748, 1236, -30, 2115, 829, -11, "ilshenar", "ilshenar" },
+  
     { 1783, 994, -28, 1419, 909, -10, "ilshenar", "ilshenar" },
     { 1786, 66, -26, 1038, 583, -78, "ilshenar", "ilshenar" },
     { 1786, 67, -26, 1042, 579, -78, "ilshenar", "ilshenar" },
@@ -1436,7 +1463,7 @@ var teleporters := {
     { 1981, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },
     { 1981, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },
     { 1984, 1107, -16, 1364, 1031, -13, "ilshenar", "ilshenar" },
-    { 2116, 829, -11, 1748, 1236, -30, "ilshenar", "ilshenar" },
+    
     { 2186, 294, -27, 2186, 33, -27, "ilshenar", "ilshenar" },
     { 2187, 294, -27, 2187, 33, -27, "ilshenar", "ilshenar" },
     { 2187, 320, -7, 1787, 569, 74, "ilshenar", "ilshenar" },
