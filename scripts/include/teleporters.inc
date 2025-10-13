@@ -1084,12 +1084,10 @@ var teleporters := {
     { 428, 321, 2, 422, 327, -1, "malas", "malas" }, //Doom Ship 2 to Beach
     { 429, 321, 2, 422, 327, -1, "malas", "malas" }, //Doom Ship 2 to Beach
     
-
-
     ////////////////////////////////
     ////////////////////////////////
     // Ilshenar
-    // Incomplete
+    // Sorted
     ///////////////////////////////
     ///////////////////////////////
 
@@ -1168,222 +1166,417 @@ var teleporters := {
     { 1747, 1236, -30, 2115, 830, -11, "ilshenar", "ilshenar" },    //To Blood Dungeon
     { 1748, 1236, -30, 2116, 830, -11, "ilshenar", "ilshenar" },    //To Blood Dungeon
 
+    //Sorcerer`s Dungeon  (Needs a teleporter to Level 4)
+    { 426, 113, -28, 546, 456, -40, "ilshenar", "ilshenar" },   //To Sorcerers Dungeon Entrance
+    { 427, 113, -28, 547, 456, -40, "ilshenar", "ilshenar" },   //To Sorcerers Dungeon Entrance
+    { 428, 113, -28, 548, 456, -40, "ilshenar", "ilshenar" },   //To Sorcerers Dungeon Entrance
+    { 429, 113, -28, 549, 456, -40, "ilshenar", "ilshenar" },   //To Sorcerers Dungeon Entrance
+    { 546, 455, -40, 426, 112, -28, "ilshenar", "ilshenar" },   //To Sorcerers Dungeon
+    { 547, 455, -40, 427, 112, -28, "ilshenar", "ilshenar" },   //To Sorcerers Dungeon
+    { 548, 455, -40, 428, 112, -28, "ilshenar", "ilshenar" },   //To Sorcerers Dungeon
 
-
-    { 131, 129, -16, 284, 68, -28, "ilshenar", "ilshenar" },
-    { 132, 129, -16, 285, 68, -28, "ilshenar", "ilshenar" },
-    { 133, 129, -16, 286, 68, -28, "ilshenar", "ilshenar" },
-    { 134, 129, -16, 287, 68, -28, "ilshenar", "ilshenar" },
-    { 155, 88, -16, 357, 40, -31, "ilshenar", "ilshenar" },
-    { 155, 89, -16, 357, 41, -31, "ilshenar", "ilshenar" },
-    { 155, 90, -16, 357, 42, -31, "ilshenar", "ilshenar" },
+    { 371, 29, -36, 241, 25, -18, "ilshenar", "ilshenar" },     //Sorcerers Dungeon Level 1 to 2
+    { 371, 30, -36, 241, 26, -18, "ilshenar", "ilshenar" },     //Sorcerers Dungeon Level 1 to 2
+    { 371, 31, -36, 241, 27, -18, "ilshenar", "ilshenar" },     //Sorcerers Dungeon Level 1 to 2
+    { 242, 25, -16, 372, 29, -31, "ilshenar", "ilshenar" },     //Sorcerers Dungeon Level 2 to 1
+    { 242, 26, -16, 372, 30, -31, "ilshenar", "ilshenar" },     //Sorcerers Dungeon Level 2 to 1
+    { 242, 27, -16, 372, 31, -31, "ilshenar", "ilshenar" },     //Sorcerers Dungeon Level 2 to 1
     
-    { 164, 746, -16, 636, 815, -52, "ilshenar", "ilshenar" },
-    { 242, 25, -16, 372, 29, -31, "ilshenar", "ilshenar" },
-    { 242, 26, -16, 372, 30, -31, "ilshenar", "ilshenar" },
-    { 242, 27, -16, 372, 31, -31, "ilshenar", "ilshenar" },
-    { 265, 130, -31, 284, 72, -21, "ilshenar", "ilshenar" },
-    { 265, 1587, -28, 225, 1334, -20, "ilshenar", "ilshenar" },
-    { 266, 130, -31, 285, 72, -21, "ilshenar", "ilshenar" },
-    { 266, 1587, -28, 226, 1334, -20, "ilshenar", "ilshenar" },
-    { 267, 130, -31, 286, 72, -21, "ilshenar", "ilshenar" },
-    { 267, 1587, -28, 227, 1334, -20, "ilshenar", "ilshenar" },
-    { 268, 130, -31, 287, 72, -21, "ilshenar", "ilshenar" },
-    { 272, 141, -16, 555, 427, -1, "ilshenar", "ilshenar" },
-    { 273, 141, -16, 556, 427, -1, "ilshenar", "ilshenar" },
-    { 274, 141, -16, 557, 427, -1, "ilshenar", "ilshenar" },
-    { 284, 67, -30, 131, 128, -21, "ilshenar", "ilshenar" },
-    { 284, 73, -16, 265, 131, -28, "ilshenar", "ilshenar" },
-    { 285, 67, -30, 132, 128, -21, "ilshenar", "ilshenar" },
-    { 285, 73, -16, 266, 131, -28, "ilshenar", "ilshenar" },
-    { 286, 67, -30, 133, 128, -21, "ilshenar", "ilshenar" },
-    { 286, 73, -16, 267, 131, -28, "ilshenar", "ilshenar" },
-    { 287, 67, -30, 134, 128, -21, "ilshenar", "ilshenar" },
-    { 287, 73, -16, 268, 131, -28, "ilshenar", "ilshenar" },
-    { 313, 1329, -40, 327, 1593, -13, "ilshenar", "ilshenar" },
-    { 314, 1329, -38, 328, 1593, -13, "ilshenar", "ilshenar" },
-    { 315, 1329, -36, 329, 1593, -13, "ilshenar", "ilshenar" },
-    { 330, 1593, -13, 315, 1329, -35, "ilshenar", "ilshenar" },
+    { 284, 67, -30, 131, 128, -21, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to 3 South
+    { 285, 67, -30, 132, 128, -21, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to 3 South
+    { 286, 67, -30, 133, 128, -21, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to 3 South
+    { 287, 67, -30, 134, 128, -21, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to 3 South
+    { 131, 129, -16, 284, 68, -28, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 3 South to 2
+    { 132, 129, -16, 285, 68, -28, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 3 South to 2
+    { 133, 129, -16, 286, 68, -28, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 3 South to 2
+    { 134, 129, -16, 287, 68, -28, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 3 South to 2
 
-    { 358, 40, -36, 156, 88, -18, "ilshenar", "ilshenar" },
-    { 358, 41, -36, 156, 89, -18, "ilshenar", "ilshenar" },
-    { 358, 42, -36, 156, 90, -18, "ilshenar", "ilshenar" },
-    { 371, 29, -36, 241, 25, -18, "ilshenar", "ilshenar" },
-    { 371, 30, -36, 241, 26, -18, "ilshenar", "ilshenar" },
-    { 371, 31, -36, 241, 27, -18, "ilshenar", "ilshenar" },
+    { 358, 40, -36, 156, 88, -18, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to 3 North
+    { 358, 41, -36, 156, 89, -18, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to 3 North
+    { 358, 42, -36, 156, 90, -18, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to 3 North
+    { 155, 88, -16, 357, 40, -31, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 3 North to 2
+    { 155, 89, -16, 357, 41, -31, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 3 North to 2
+    { 155, 90, -16, 357, 42, -31, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 3 North to 2
 
-    { 429, 113, -28, 548, 455, -40, "ilshenar", "ilshenar" },
-    
-    { 546, 455, -40, 426, 113, -28, "ilshenar", "ilshenar" },
-    { 547, 455, -40, 427, 113, -28, "ilshenar", "ilshenar" },
-    { 548, 455, -40, 428, 113, -28, "ilshenar", "ilshenar" },
-    { 555, 426, -6, 272, 140, -21, "ilshenar", "ilshenar" },
-    { 556, 426, -6, 273, 140, -21, "ilshenar", "ilshenar" },
-    { 557, 426, -6, 274, 140, -21, "ilshenar", "ilshenar" },
-   
-    { 626, 1527, -28, 650, 1298, -58, "ilshenar", "ilshenar" },
-    { 627, 1527, -28, 651, 1298, -59, "ilshenar", "ilshenar" },
-    { 628, 1527, -28, 652, 1298, -58, "ilshenar", "ilshenar" },
-    { 629, 1527, -28, 653, 1298, -58, "ilshenar", "ilshenar" },
-    { 636, 813, -62, 164, 743, -28, "ilshenar", "ilshenar" },
-    { 650, 1297, -58, 626, 1526, -28, "ilshenar", "ilshenar" },
-    { 651, 1297, -58, 627, 1526, -28, "ilshenar", "ilshenar" },
-    { 652, 1297, -58, 628, 1526, -28, "ilshenar", "ilshenar" },
-    { 653, 1297, -58, 629, 1526, -28, "ilshenar", "ilshenar" },
-   
-    { 694, 1490, -53, 719, 1490, -28, "ilshenar", "ilshenar" },
-    { 694, 1491, -53, 719, 1491, -28, "ilshenar", "ilshenar" },
-    { 694, 1492, -53, 719, 1492, -28, "ilshenar", "ilshenar" },
-    { 694, 1493, -53, 719, 1493, -28, "ilshenar", "ilshenar" },
-    { 709, 667, -39, 912, 451, -80, "ilshenar", "ilshenar" },
-    { 710, 667, -39, 912, 452, -80, "ilshenar", "ilshenar" },
-    { 711, 667, -39, 912, 453, -80, "ilshenar", "ilshenar" },
-    { 712, 1490, -3, 686, 1490, -28, "ilshenar", "ilshenar" },
-    { 712, 1491, -3, 686, 1491, -28, "ilshenar", "ilshenar" },
-    { 712, 1492, -3, 686, 1492, -28, "ilshenar", "ilshenar" },
-    { 712, 1493, -3, 686, 1493, -28, "ilshenar", "ilshenar" },
-    { 722, 1505, -53, 833, 1550, -28, "ilshenar", "ilshenar" },
-    { 722, 1506, -53, 833, 1551, -28, "ilshenar", "ilshenar" },
-    { 722, 1507, -53, 833, 1552, -28, "ilshenar", "ilshenar" },
-    { 722, 1508, -53, 833, 1553, -28, "ilshenar", "ilshenar" },
-    { 747, 1539, -28, 785, 1514, -28, "ilshenar", "ilshenar" },
-    { 747, 1555, -28, 785, 1570, -28, "ilshenar", "ilshenar" },
-    { 751, 1473, -28, 763, 1479, -28, "ilshenar", "ilshenar" },
-    { 751, 1479, -28, 763, 1555, -28, "ilshenar", "ilshenar" },
-    { 752, 1549, -28, 751, 1484, -28, "ilshenar", "ilshenar" },
-    { 775, 1467, -28, 658, 1498, -28, "ilshenar", "ilshenar" },
-    { 775, 1492, -28, 827, 1515, -28, "ilshenar", "ilshenar" },
-    { 776, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 776, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 777, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 777, 1548, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 777, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 777, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 778, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 778, 1554, -28, 787, 1538, -28, "ilshenar", "ilshenar" },
-    { 779, 1540, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 779, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 780, 1541, -28, 785, 1554, -28, "ilshenar", "ilshenar" },
-    { 780, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 780, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 780, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 781, 1545, -28, 789, 1552, -28, "ilshenar", "ilshenar" },
-    { 781, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 781, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 781, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 781, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 781, 1555, -28, 789, 1556, -28, "ilshenar", "ilshenar" },
-    { 782, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 782, 1542, -28, 785, 1546, -28, "ilshenar", "ilshenar" },
-    { 782, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 782, 1550, -28, 783, 1538, -28, "ilshenar", "ilshenar" },
-    { 782, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 783, 1537, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 783, 1539, -28, 787, 1542, -28, "ilshenar", "ilshenar" },
-    { 783, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 783, 1543, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 784, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 784, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 784, 1546, -28, 776, 1548, -28, "ilshenar", "ilshenar" },
-    { 784, 1550, -28, 777, 1554, -28, "ilshenar", "ilshenar" },
-    { 784, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 784, 1580, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 785, 1524, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 785, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 785, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 785, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 785, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 785, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 785, 1555, -28, 783, 1542, -28, "ilshenar", "ilshenar" },
-    { 786, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 786, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 786, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 786, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 786, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 787, 1537, -28, 781, 1546, -28, "ilshenar", "ilshenar" },
-    { 787, 1539, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 787, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 787, 1543, -28, 781, 1544, -28, "ilshenar", "ilshenar" },
-    { 788, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 788, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 788, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 788, 1552, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 788, 1556, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 789, 1545, -28, 779, 1541, -28, "ilshenar", "ilshenar" },
-    { 789, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 789, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 789, 1553, -28, 789, 1546, -28, "ilshenar", "ilshenar" },
-    { 789, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 789, 1557, -28, 785, 1550, -28, "ilshenar", "ilshenar" },
-    { 790, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 790, 1552, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 790, 1556, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 791, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 791, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 791, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 791, 1548, -28, 781, 1547, -28, "ilshenar", "ilshenar" },
-    { 791, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-    { 791, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" },
-   
-    { 812, 1546, -6, 848, 1434, -28, "ilshenar", "ilshenar" },
-    { 812, 1547, -6, 848, 1435, -28, "ilshenar", "ilshenar" },
-    { 812, 1548, -6, 848, 1436, -28, "ilshenar", "ilshenar" },
-    { 812, 1549, -6, 848, 1437, -28, "ilshenar", "ilshenar" },
-    { 827, 777, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
-    { 827, 778, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
-    { 827, 779, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
-    { 828, 777, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
-    { 828, 778, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
-    { 828, 779, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
-    { 829, 777, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
-    { 829, 778, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
-    { 829, 779, -80, 1975, 114, -28, "ilshenar", "ilshenar" },
-    { 838, 1550, -6, 728, 1505, -28, "ilshenar", "ilshenar" },
-    { 838, 1551, -6, 728, 1506, -28, "ilshenar", "ilshenar" },
-    { 838, 1552, -6, 728, 1507, -28, "ilshenar", "ilshenar" },
-    { 838, 1553, -6, 728, 1508, -28, "ilshenar", "ilshenar" },
-    { 843, 1434, -51, 807, 1546, -28, "ilshenar", "ilshenar" },
-    { 843, 1435, -51, 807, 1547, -28, "ilshenar", "ilshenar" },
-    { 843, 1436, -51, 807, 1548, -28, "ilshenar", "ilshenar" },
-    { 843, 1437, -51, 807, 1549, -28, "ilshenar", "ilshenar" },
-    { 871, 1433, -6, 897, 1449, -28, "ilshenar", "ilshenar" },
-    { 871, 1434, -6, 897, 1450, -28, "ilshenar", "ilshenar" },
-    { 871, 1435, -6, 897, 1451, -28, "ilshenar", "ilshenar" },
-    { 871, 1436, -6, 897, 1452, -28, "ilshenar", "ilshenar" },
-    { 871, 1437, -6, 897, 1453, -28, "ilshenar", "ilshenar" },
-    { 879, 1490, 24, 960, 1425, -28, "ilshenar", "ilshenar" },
-    { 879, 1491, 24, 960, 1426, -28, "ilshenar", "ilshenar" },
-    { 879, 1492, 24, 960, 1427, -28, "ilshenar", "ilshenar" },
-    { 879, 1493, 24, 960, 1428, -28, "ilshenar", "ilshenar" },
-    { 892, 1449, -51, 866, 1433, -28, "ilshenar", "ilshenar" },
-    { 892, 1450, -51, 866, 1434, -28, "ilshenar", "ilshenar" },
-    { 892, 1451, -51, 866, 1435, -28, "ilshenar", "ilshenar" },
-    { 892, 1452, -51, 866, 1436, -28, "ilshenar", "ilshenar" },
-    { 892, 1453, -51, 866, 1437, -28, "ilshenar", "ilshenar" },
-    { 904, 1360, -21, 1014, 1506, 0, "ilshenar", "ilshenar" },
-    { 904, 1361, -21, 1014, 1507, 0, "ilshenar", "ilshenar" },
-    { 904, 1362, -21, 1014, 1508, 0, "ilshenar", "ilshenar" },
-    { 904, 1363, -21, 1014, 1509, 0, "ilshenar", "ilshenar" },
-    { 911, 451, -80, 709, 668, -39, "ilshenar", "ilshenar" },
-    { 911, 452, -80, 710, 668, -39, "ilshenar", "ilshenar" },
-    { 911, 453, -80, 711, 668, -38, "ilshenar", "ilshenar" },
-    { 938, 494, -40, 83, 749, -23, "ilshenar", "ilshenar" },
-    { 939, 494, -40, 84, 749, -23, "ilshenar", "ilshenar" },
-    { 940, 494, -40, 85, 749, -23, "ilshenar", "ilshenar" },
-    { 941, 494, -40, 86, 749, -23, "ilshenar", "ilshenar" },
-    { 948, 1464, -56, 951, 1442, -6, "ilshenar", "ilshenar" },
-    { 948, 1465, -56, 951, 1443, -6, "ilshenar", "ilshenar" },
-    { 948, 1466, -56, 951, 1444, -6, "ilshenar", "ilshenar" },
-    { 948, 1467, -56, 951, 1445, -6, "ilshenar", "ilshenar" },
-    { 954, 1425, -53, 874, 1490, 2, "ilshenar", "ilshenar" },
-    { 954, 1426, -53, 874, 1491, 2, "ilshenar", "ilshenar" },
-    { 954, 1427, -53, 874, 1492, 2, "ilshenar", "ilshenar" },
-    { 954, 1428, -53, 874, 1493, 2, "ilshenar", "ilshenar" },
-    { 954, 1429, -53, 874, 1493, 2, "ilshenar", "ilshenar" },
-    { 1029, 1153, -24, 1349, 1510, -3, "ilshenar", "ilshenar" },
-    { 1029, 1154, -24, 1349, 1511, -3, "ilshenar", "ilshenar" },
-    { 1029, 1155, -24, 1349, 1512, -3, "ilshenar", "ilshenar" },
-    { 1037, 579, -73, 1790, 66, -26, "ilshenar", "ilshenar" },
+    //Terort Skitas
+    { 284, 73, -16, 265, 131, -28, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to Terort Skitas Atrium
+    { 285, 73, -16, 266, 131, -28, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to Terort Skitas Atrium
+    { 286, 73, -16, 267, 131, -28, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to Terort Skitas Atrium
+    { 287, 73, -16, 268, 131, -28, "ilshenar", "ilshenar" },    //Sorcerers Dungeon Level 2 to Terort Skitas Atrium
+    { 265, 130, -31, 284, 72, -21, "ilshenar", "ilshenar" },    //Terort Skitas Atrium to Sorcerers Dungeon Level 2
+    { 266, 130, -31, 285, 72, -21, "ilshenar", "ilshenar" },    //Terort Skitas Atrium to Sorcerers Dungeon Level 2
+    { 267, 130, -31, 286, 72, -21, "ilshenar", "ilshenar" },    //Terort Skitas Atrium to Sorcerers Dungeon Level 2
+    { 268, 130, -31, 287, 72, -21, "ilshenar", "ilshenar" },    //Terort Skitas Atrium to Sorcerers Dungeon Level 2
+    { 272, 141, -16, 555, 427, -1, "ilshenar", "ilshenar" },    //Terort Skitas Atrium to Terort Skitas
+    { 273, 141, -16, 556, 427, -1, "ilshenar", "ilshenar" },    //Terort Skitas Atrium to Terort Skitas
+    { 274, 141, -16, 557, 427, -1, "ilshenar", "ilshenar" },    //Terort Skitas Atrium to Terort Skitas
+    { 555, 426, -6, 272, 140, -21, "ilshenar", "ilshenar" },    //Terort Skitas to Terort Skitas Atrium
+    { 556, 426, -6, 273, 140, -21, "ilshenar", "ilshenar" },    //Terort Skitas to Terort Skitas Atrium
+    { 557, 426, -6, 274, 140, -21, "ilshenar", "ilshenar" },    //Terort Skitas to Terort Skitas Atrium
+
+    //Ratman Villa
+    { 636, 813, -62, 164, 743, -28, "ilshenar", "ilshenar" },   //Ratman Villa to Rathman Cellar
+    { 164, 746, -16, 636, 815, -52, "ilshenar", "ilshenar" },   //Ratman Cellar to Ratman Villa
+
+    //Lizardman Village
+    { 313, 1329, -40, 327, 1592, -13, "ilshenar", "ilshenar" }, //Lizardman Village to Lizardman Passage
+    { 314, 1329, -38, 328, 1592, -13, "ilshenar", "ilshenar" }, //Lizardman Village to Lizardman Passage
+    { 315, 1329, -36, 329, 1592, -13, "ilshenar", "ilshenar" }, //Lizardman Village to Lizardman Passage
+    { 327, 1593, -13, 313, 1330, -39, "ilshenar", "ilshenar" }, //Lizardman Passage to Lizardman Village
+    { 328, 1593, -13, 314, 1330, -37, "ilshenar", "ilshenar" }, //Lizardman Passage to Lizardman Village
+    { 329, 1593, -13, 315, 1330, -35, "ilshenar", "ilshenar" }, //Lizardman Passage to Lizardman Village
+    { 330, 1593, -13, 315, 1330, -35, "ilshenar", "ilshenar" }, //Lizardman Passage to Lizardman Village
+    { 265, 1587, -28, 225, 1335, -20, "ilshenar", "ilshenar" }, //Lizardman Passage to Wyrms Lair
+    { 266, 1587, -28, 226, 1335, -20, "ilshenar", "ilshenar" }, //Lizardman Passage to Wyrms Lair
+    { 225, 1334, -20, 265, 1586, -28, "ilshenar", "ilshenar" }, //Lizardman Passage to Wyrms Lair
+    { 226, 1334, -20, 266, 1586, -28, "ilshenar", "ilshenar" }, //Lizardman Passage to Wyrms Lair
+    { 227, 1334, -20, 266, 1586, -28, "ilshenar", "ilshenar" }, //Lizardman Passage to Wyrms Lair
+
+    //Wisp Dungeon
+    { 650, 1297, -58, 626, 1526, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon Entrance To Wisp Dungeon
+    { 651, 1297, -58, 627, 1526, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon Entrance To Wisp Dungeon
+    { 652, 1297, -58, 628, 1526, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon Entrance To Wisp Dungeon
+    { 626, 1527, -28, 650, 1298, -58, "ilshenar", "ilshenar" }, //Wisp Dungeon to Wisp Dungeon Entrance
+    { 627, 1527, -28, 651, 1298, -59, "ilshenar", "ilshenar" }, //Wisp Dungeon to Wisp Dungeon Entrance
+    { 628, 1527, -28, 652, 1298, -58, "ilshenar", "ilshenar" }, //Wisp Dungeon to Wisp Dungeon Entrance
+    { 629, 1527, -28, 652, 1298, -58, "ilshenar", "ilshenar" }, //Wisp Dungeon to Wisp Dungeon Entrance
+    { 694, 1490, -53, 713, 1490, -6, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to Wisp Dungeon Level 1 to 2 Passage
+    { 694, 1491, -53, 713, 1491, -6, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to Wisp Dungeon Level 1 to 2 Passage
+    { 694, 1492, -53, 713, 1492, -6, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to Wisp Dungeon Level 1 to 2 Passage
+    { 694, 1493, -53, 713, 1493, -6, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to Wisp Dungeon Level 1 to 2 Passage
+    { 712, 1490, -3, 686, 1490, -28, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to 2 Passage to 1
+    { 712, 1491, -3, 686, 1491, -28, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to 2 Passage to 1
+    { 712, 1492, -3, 686, 1492, -28, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to 2 Passage to 1
+    { 712, 1493, -3, 686, 1493, -28, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to 2 Passage to 1
+    { 722, 1505, -53, 837, 1550, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 1 to 2 Passage to 2
+    { 722, 1506, -53, 837, 1551, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 1 to 2 Passage to 2
+    { 722, 1507, -53, 837, 1552, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 1 to 2 Passage to 2
+    { 722, 1508, -53, 837, 1553, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 1 to 2 Passage to 2
+    { 838, 1550, -6, 723, 1505, -51, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to 2 Passage to 1
+    { 838, 1551, -6, 723, 1506, -51, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to 2 Passage to 1
+    { 838, 1552, -6, 723, 1507, -51, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to 2 Passage to 1
+    { 838, 1553, -6, 723, 1508, -51, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 1 to 2 Passage to 1
+    { 892, 1449, -51, 870, 1433, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to Wisp Dungeon Level 2 to 3 Passage
+    { 892, 1450, -51, 870, 1434, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to Wisp Dungeon Level 2 to 3 Passage
+    { 892, 1451, -51, 870, 1435, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to Wisp Dungeon Level 2 to 3 Passage
+    { 892, 1452, -51, 870, 1436, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to Wisp Dungeon Level 2 to 3 Passage
+    { 892, 1453, -51, 870, 1437, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to Wisp Dungeon Level 2 to 3 Passage
+    { 871, 1433, -6, 893, 1449, -46, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 2 to 3 Passage to 2
+    { 871, 1434, -6, 893, 1450, -46, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 2 to 3 Passage to 2
+    { 871, 1435, -6, 893, 1451, -46, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 2 to 3 Passage to 2
+    { 871, 1436, -6, 893, 1452, -46, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 2 to 3 Passage to 2
+    { 871, 1437, -6, 893, 1453, -46, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 2 to 3 Passage to 2
+    { 840, 1433, -53, 811, 1546, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to 3 Passage to 3
+    { 840, 1434, -53, 811, 1547, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to 3 Passage to 3
+    { 840, 1435, -53, 811, 1548, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to 3 Passage to 3
+    { 840, 1436, -53, 811, 1549, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to 3 Passage to 3
+    { 840, 1437, -53, 811, 1549, -11, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 2 to 3 Passage to 3
+    { 812, 1546, -6, 841, 1433, -53, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 3 to Wisp Dungeon Level 2 to 3 Passage
+    { 812, 1547, -6, 841, 1434, -53, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 3 to Wisp Dungeon Level 2 to 3 Passage
+    { 812, 1548, -6, 841, 1435, -53, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 3 to Wisp Dungeon Level 2 to 3 Passage
+    { 812, 1549, -6, 841, 1436, -53, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 3 to Wisp Dungeon Level 2 to 3 Passage
+
+    //Wisp Dungeon Maze
+    { 791, 1547, -28, 783, 1542, -28, "ilshenar", "ilshenar" }, //Maze Rune 1
+    { 791, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 1 Reset
+    { 791, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 1 Reset
+    { 791, 1548, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 1 Reset
+    { 791, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 1 Reset
+    { 791, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 1 Reset
+    { 784, 1542, -28, 781, 1550, -28, "ilshenar", "ilshenar" }, //Maze Rune 2
+    { 782, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 2 Reset
+    { 783, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 2 Reset
+    { 784, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 2 Reset
+    { 782, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 2 Reset
+    { 782, 1543, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 2 Reset
+    { 783, 1543, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 2 Reset
+    { 784, 1543, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 2 Reset
+    { 782, 1550, -28, 789, 1556, -28, "ilshenar", "ilshenar" }, //Maze Rune 3
+    { 780, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 3 Reset
+    { 781, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 3 Reset
+    { 782, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 3 Reset
+    { 780, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 3 Reset
+    { 780, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 3 Reset
+    { 781, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 3 Reset
+    { 782, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 3 Reset
+    { 788, 1556, -28, 789, 1552, -28, "ilshenar", "ilshenar" }, //Maze Rune 4
+    { 788, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 4 Reset
+    { 789, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 4 Reset
+    { 790, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 4 Reset
+    { 790, 1556, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 4 Reset
+    { 788, 1557, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 4 Reset
+    { 789, 1557, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 4 Reset
+    { 790, 1557, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 4 Reset
+    { 788, 1552, -28, 789, 1546, -28, "ilshenar", "ilshenar" }, //Maze Rune 5
+    { 788, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 5 Reset
+    { 789, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 5 Reset
+    { 790, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 5 Reset
+    { 790, 1552, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 5 Reset
+    { 788, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 5 Reset
+    { 789, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 5 Reset
+    { 790, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 5 Reset
+    { 789, 1547, -28, 783, 1538, -28, "ilshenar", "ilshenar" }, //Maze Rune 6
+    { 788, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 6 Reset
+    { 789, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 6 Reset
+    { 790, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 6 Reset
+    { 788, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 6 Reset
+    { 790, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 6 Reset
+    { 788, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 6 Reset
+    { 790, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 6 Reset
+    { 782, 1538, -28, 781, 1554, -28, "ilshenar", "ilshenar" }, //Maze Rune 7
+    { 782, 1537, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 7 Reset
+    { 783, 1537, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 7 Reset
+    { 784, 1537, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 7 Reset
+    { 784, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 7 Reset
+    { 782, 1539, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 7 Reset
+    { 783, 1539, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 7 Reset
+    { 784, 1539, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 7 Reset
+    { 780, 1554, -28, 777, 1554, -28, "ilshenar", "ilshenar" }, //Maze Rune 8
+    { 780, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 8 Reset
+    { 781, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 8 Reset
+    { 782, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 8 Reset
+    { 782, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 8 Reset
+    { 780, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 8 Reset
+    { 781, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 8 Reset
+    { 782, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 8 Reset
+    { 777, 1553, -28, 785, 1546, -28, "ilshenar", "ilshenar" }, //Maze Rune 9
+    { 778, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 9 Reset
+    { 778, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 9 Reset
+    { 777, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 9 Reset
+    { 778, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 9 Reset
+    { 786, 1546, -28, 787, 1538, -28, "ilshenar", "ilshenar" }, //Maze Rune 10
+    { 784, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 10 Reset
+    { 785, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 10 Reset
+    { 786, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 10 Reset
+    { 784, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 10 Reset
+    { 784, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 10 Reset
+    { 785, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 10 Reset
+    { 786, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 10 Reset
+    { 787, 1539, -28, 785, 1554, -28, "ilshenar", "ilshenar" }, //Maze Rune 11
+    { 786, 1537, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 11 Reset
+    { 787, 1537, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 11 Reset
+    { 788, 1537, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 11 Reset
+    { 786, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 11 Reset
+    { 788, 1538, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 11 Reset
+    { 786, 1539, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 11 Reset
+    { 788, 1539, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 11 Reset
+    { 785, 1555, -28, 787, 1542, -28, "ilshenar", "ilshenar" }, //Maze Rune 12
+    { 784, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 12 Reset
+    { 785, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 12 Reset
+    { 786, 1553, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 12 Reset
+    { 784, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 12 Reset
+    { 786, 1554, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 12 Reset
+    { 784, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 12 Reset
+    { 786, 1555, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 12 Reset
+    { 787, 1541, -28, 779, 1541, -28, "ilshenar", "ilshenar" }, //Maze Rune 13
+    { 786, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 13 Reset
+    { 788, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 13 Reset
+    { 786, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 13 Reset
+    { 788, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 13 Reset
+    { 786, 1543, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 13 Reset
+    { 787, 1543, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 13 Reset
+    { 788, 1543, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 13 Reset
+    { 780, 1541, -28, 785, 1550, -28, "ilshenar", "ilshenar" }, //Maze Rune 14
+    { 778, 1540, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 14 Reset
+    { 779, 1540, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 14 Reset
+    { 780, 1540, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 14 Reset
+    { 778, 1541, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 14 Reset
+    { 778, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 14 Reset
+    { 779, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 14 Reset
+    { 780, 1542, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 14 Reset
+    { 785, 1549, -28, 781, 1546, -28, "ilshenar", "ilshenar" }, //Maze Rune 15
+    { 784, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 15 Reset
+    { 786, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 15 Reset
+    { 784, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 15 Reset
+    { 786, 1550, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 15 Reset
+    { 784, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 15 Reset
+    { 785, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 15 Reset
+    { 786, 1551, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 15 Reset
+    { 781, 1547, -28, 776, 1548, -28, "ilshenar", "ilshenar" }, //Maze Rune 16
+    { 780, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 16 Reset
+    { 781, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 16 Reset
+    { 782, 1545, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 16 Reset
+    { 780, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 16 Reset
+    { 782, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 16 Reset
+    { 780, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 16 Reset
+    { 782, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 16 Reset
+    { 776, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 17 Reset
+    { 777, 1546, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 17 Reset
+    { 777, 1547, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 17 Reset
+    { 777, 1548, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 17 Reset
+    { 777, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 17 Reset
+    { 776, 1549, -28, 798, 1547, -28, "ilshenar", "ilshenar" }, //Maze Rune 17 Reset
+
+    //More Wisp Dungeon
+    { 752, 1549, -28, 751, 1484, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 3 to 4
+    { 747, 1539, -28, 785, 1514, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon North Room 1 Teleport
+    { 785, 1524, -28, 779, 1538, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon North Room 2 Teleport
+    { 779, 1514, -28, 772, 1514, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon North Room 3 Teleport
+    { 770, 1524, -28, 755, 1547, -28, "ilshenar", "ilshenar" }, //Maze North Room Reset
+    { 747, 1555, -28, 785, 1570, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon South Room 1 Teleport
+    { 784, 1580, -28, 779, 1559, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon South Room 2 Teleport
+    { 777, 1579, -28, 772, 1581, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon South Room 3 Teleport
+    { 769, 1569, -28, 755, 1547, -28, "ilshenar", "ilshenar" }, //Maze South Room Reset
+    { 751, 1479, -28, 763, 1555, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 4 to 3
+    { 751, 1473, -28, 763, 1479, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 4 to Boss Room
+    { 775, 1467, -28, 658, 1498, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 4 to 1
+    { 775, 1492, -28, 827, 1515, -28, "ilshenar", "ilshenar" }, //Wisp Dungeon Level 4 to 2
+    { 879, 1490, 24, 952, 1425, -53, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 2 to Cyclops Dungeon Passage 
+    { 879, 1491, 24, 952, 1426, -53, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 2 to Cyclops Dungeon Passage
+    { 879, 1492, 24, 952, 1427, -53, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 2 to Cyclops Dungeon Passage
+    { 879, 1493, 24, 952, 1428, -53, "ilshenar", "ilshenar" },  //Wisp Dungeon Level 2 to Cyclops Dungeon Passage
+    { 951, 1424, -53, 878, 1490, 19, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Wisp Dungeon Level 2
+    { 951, 1425, -53, 878, 1490, 19, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Wisp Dungeon Level 2
+    { 951, 1426, -53, 878, 1491, 19, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Wisp Dungeon Level 2
+    { 951, 1427, -53, 878, 1492, 19, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Wisp Dungeon Level 2
+    { 951, 1428, -53, 878, 1493, 19, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Wisp Dungeon Level 2
+    { 951, 1429, -53, 878, 1493, 19, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Wisp Dungeon Level 2
+    { 951, 1442, -6, 947, 1464, -51, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Cyclops Dungeon Level 1
+    { 951, 1443, -6, 947, 1465, -51, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Cyclops Dungeon Level 1
+    { 951, 1444, -6, 947, 1466, -51, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Cyclops Dungeon Level 1
+    { 951, 1445, -6, 947, 1467, -51, "ilshenar", "ilshenar" },  //Cyclops Dungeon Passage to Cyclops Dungeon Level 1
+    { 948, 1464, -56, 952, 1442, -11, "ilshenar", "ilshenar" }, //Cyclops Dungeon Level 1 to Cyclops Dungeon Passage
+    { 948, 1465, -56, 952, 1443, -11, "ilshenar", "ilshenar" }, //Cyclops Dungeon Level 1 to Cyclops Dungeon Passage
+    { 948, 1466, -56, 952, 1444, -11, "ilshenar", "ilshenar" }, //Cyclops Dungeon Level 1 to Cyclops Dungeon Passage
+    { 948, 1467, -56, 952, 1445, -11, "ilshenar", "ilshenar" }, //Cyclops Dungeon Level 1 to Cyclops Dungeon Passage
+
+    //Cyclops Dungeon
+    { 904, 1360, -21, 1013, 1506, 0, "ilshenar", "ilshenar" },  //Cyclops Dungeon Entrance To Cyclops Dungeon Level 1
+    { 904, 1361, -21, 1013, 1507, 0, "ilshenar", "ilshenar" },  //Cyclops Dungeon Entrance To Cyclops Dungeon Level 1
+    { 904, 1362, -21, 1013, 1508, 0, "ilshenar", "ilshenar" },  //Cyclops Dungeon Entrance To Cyclops Dungeon Level 1
+    { 904, 1363, -21, 1013, 1509, 0, "ilshenar", "ilshenar" },  //Cyclops Dungeon Entrance To Cyclops Dungeon Level 1
+    { 1014, 1506, 0, 905, 1360, -21, "ilshenar", "ilshenar" },  //Cyclops Dungeon Level 1 to Cyclops Dungeon Entrance
+    { 1014, 1507, 0, 905, 1361, -21, "ilshenar", "ilshenar" },  //Cyclops Dungeon Level 1 to Cyclops Dungeon Entrance
+    { 1014, 1508, 0, 905, 1362, -21, "ilshenar", "ilshenar" },  //Cyclops Dungeon Level 1 to Cyclops Dungeon Entrance
+    { 1014, 1509, 0, 905, 1363, -21, "ilshenar", "ilshenar" },  //Cyclops Dungeon Level 1 to Cyclops Dungeon Entrance
+
+    //Exodus Dungeon
+    { 827, 777, -80, 1975, 114, -28, "ilshenar", "ilshenar" },  //Exodus City to Exodus Dungeon
+    { 827, 778, -80, 1975, 114, -28, "ilshenar", "ilshenar" },  //Exodus City to Exodus Dungeon
+    { 827, 779, -80, 1975, 114, -28, "ilshenar", "ilshenar" },  //Exodus City to Exodus Dungeon
+    { 828, 777, -80, 1975, 114, -28, "ilshenar", "ilshenar" },  //Exodus City to Exodus Dungeon
+    { 828, 778, -80, 1975, 114, -28, "ilshenar", "ilshenar" },  //Exodus City to Exodus Dungeon
+    { 828, 779, -80, 1975, 114, -28, "ilshenar", "ilshenar" },  //Exodus City to Exodus Dungeon
+    { 829, 777, -80, 1975, 114, -28, "ilshenar", "ilshenar" },  //Exodus City to Exodus Dungeon
+    { 829, 778, -80, 1975, 114, -28, "ilshenar", "ilshenar" },  //Exodus City to Exodus Dungeon
+    { 829, 779, -80, 1975, 114, -28, "ilshenar", "ilshenar" },  //Exodus City to Exodus Dungeon
+    { 1978, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1978, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1978, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1978, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1979, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1979, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1979, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1979, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1980, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1980, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1980, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1980, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1981, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1981, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1981, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+    { 1981, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },  //Exodus Dungeon to Exodus City
+
+    //Central Ilshenar
+    { 1237, 583, -19, 1139, 594, -80, "ilshenar", "ilshenar" }, //Central Area East Entrance
+    { 1237, 584, -19, 1140, 594, -80, "ilshenar", "ilshenar" }, //Central Area East Entrance
+    { 1237, 585, -19, 1141, 594, -80, "ilshenar", "ilshenar" }, //Central Area East Entrance
+    { 1139, 593, -80, 1238, 583, -19, "ilshenar", "ilshenar" }, //Central Area East Exit
+    { 1140, 593, -80, 1238, 584, -19, "ilshenar", "ilshenar" }, //Central Area East Exit
+    { 1141, 593, -80, 1238, 585, -19, "ilshenar", "ilshenar" }, //Central Area East Exit
+    { 1142, 593, -80, 1238, 585, -19, "ilshenar", "ilshenar" }, //Central Area East Exit
+
+    //Ancient Lair
+    { 938, 494, -40, 83, 748, -26, "ilshenar", "ilshenar" },    //Ancient Lair Entrance
+    { 939, 494, -40, 84, 748, -26, "ilshenar", "ilshenar" },    //Ancient Lair Entrance
+    { 940, 494, -40, 85, 748, -26, "ilshenar", "ilshenar" },    //Ancient Lair Entrance
+    { 941, 494, -40, 86, 748, -26, "ilshenar", "ilshenar" },    //Ancient Lair Entrance
+    { 83, 749, -23, 938, 495, -35, "ilshenar", "ilshenar" },    //Ancient Lair
+    { 84, 749, -23, 939, 495, -35, "ilshenar", "ilshenar" },    //Ancient Lair
+    { 85, 749, -23, 940, 495, -35, "ilshenar", "ilshenar" },    //Ancient Lair
+    { 86, 749, -23, 941, 495, -35, "ilshenar", "ilshenar" },    //Ancient Lair
+    { 87, 749, -23, 941, 495, -35, "ilshenar", "ilshenar" },    //Ancient Lair
+
+    //Ratman Mine
+    { 1029, 1153, -24, 1348, 1509, -3, "ilshenar", "ilshenar" },    //Ratman Mine Entrance to Ratman Mine Level 1
+    { 1029, 1154, -24, 1348, 1510, -3, "ilshenar", "ilshenar" },    //Ratman Mine Entrance to Ratman Mine Level 1
+    { 1029, 1155, -24, 1348, 1511, -3, "ilshenar", "ilshenar" },    //Ratman Mine Entrance to Ratman Mine Level 1
+    { 1349, 1509, -3, 1030, 1153, -24, "ilshenar", "ilshenar" },    //Ratman Mine Level 1 to Ratman Mine Entrance
+    { 1349, 1510, -3, 1030, 1154, -24, "ilshenar", "ilshenar" },    //Ratman Mine Level 1 to Ratman Mine Entrance
+    { 1349, 1511, -3, 1030, 1155, -24, "ilshenar", "ilshenar" },    //Ratman Mine Level 1 to Ratman Mine Entrance
+    { 1268, 1508, -28, 1249, 1508, -28, "ilshenar", "ilshenar" },   //Ratman Mine Level 1 to Ratman Mine Level 2
+    { 1268, 1509, -28, 1249, 1509, -28, "ilshenar", "ilshenar" },   //Ratman Mine Level 1 to Ratman Mine Level 2
+    { 1268, 1510, -28, 1249, 1510, -28, "ilshenar", "ilshenar" },   //Ratman Mine Level 1 to Ratman Mine Level 2
+    { 1250, 1508, -28, 1269, 1508, -28, "ilshenar", "ilshenar" },   //Ratman Mine Level 2 to Ratman Mine Level 1
+    { 1250, 1509, -28, 1269, 1509, -28, "ilshenar", "ilshenar" },   //Ratman Mine Level 2 to Ratman Mine Level 1
+    { 1250, 1510, -28, 1269, 1510, -28, "ilshenar", "ilshenar" },   //Ratman Mine Level 2 to Ratman Mine Level 1
+
+    //Mushroom Cave
+    { 1456, 1328, -27, 1478, 1494, -28, "ilshenar", "ilshenar" },   //Mushroom Cave Entrance
+    { 1456, 1329, -27, 1478, 1495, -28, "ilshenar", "ilshenar" },   //Mushroom Cave Entrance
+    { 1456, 1330, -27, 1478, 1496, -28, "ilshenar", "ilshenar" },   //Mushroom Cave Entrance
+    { 1479, 1493, -28, 1457, 1328, -27, "ilshenar", "ilshenar" },   //Mushroom Cave Exit
+    { 1479, 1494, -28, 1457, 1328, -27, "ilshenar", "ilshenar" },   //Mushroom Cave Exit
+    { 1479, 1495, -28, 1457, 1329, -27, "ilshenar", "ilshenar" },   //Mushroom Cave Exit
+    { 1479, 1496, -28, 1457, 1330, -27, "ilshenar", "ilshenar" },   //Mushroom Cave Exit
+
+    //Spider Cave
+    { 1419, 909, -10, 1784, 993, -28, "ilshenar", "ilshenar" }, //Spider Cave Entrance
+    { 1420, 909, -10, 1785, 993, -28, "ilshenar", "ilshenar" }, //Spider Cave Entrance
+    { 1421, 909, -10, 1786, 993, -28, "ilshenar", "ilshenar" }, //Spider Cave Entrance
+    { 1784, 994, -29, 1419, 910, -10, "ilshenar", "ilshenar" }, //Spider Cave Exit
+    { 1785, 994, -29, 1420, 910, -10, "ilshenar", "ilshenar" }, //Spider Cave Exit
+    { 1786, 994, -29, 1421, 910, -10, "ilshenar", "ilshenar" }, //Spider Cave Exit
+    { 1861, 980, -28, 1490, 877, 10, "ilshenar", "ilshenar" },  //Spider Cave to Spider Shrine
+    { 1861, 981, -28, 1490, 878, 10, "ilshenar", "ilshenar" },  //Spider Cave to Spider Shrine
+    { 1861, 982, -28, 1490, 879, 10, "ilshenar", "ilshenar" },  //Spider Cave to Spider Shrine
+    { 1861, 983, -28, 1490, 880, 10, "ilshenar", "ilshenar" },  //Spider Cave to Spider Shrine
+    { 1861, 984, -28, 1490, 880, 10, "ilshenar", "ilshenar" },  //Spider Cave to Spider Shrine
+    { 1516, 879, 10, 1363, 1105, -26, "ilshenar", "ilshenar" }, //Spider Shrine to Reg Volom (Spectre Dungeon)
+
+    //Spectre Dungeon
+    { 1362, 1031, -13, 1981, 1106, -21, "ilshenar", "ilshenar" },   //Spectre Dungeon Entrance
+    { 1363, 1031, -13, 1982, 1106, -21, "ilshenar", "ilshenar" },   //Spectre Dungeon Entrance
+    { 1364, 1031, -13, 1983, 1106, -21, "ilshenar", "ilshenar" },   //Spectre Dungeon Entrance
+    { 1980, 1107, -16, 1362, 1032, -11, "ilshenar", "ilshenar" },   //Spectre Dungeon Exit
+    { 1981, 1107, -16, 1362, 1032, -11, "ilshenar", "ilshenar" },   //Spectre Dungeon Exit
+    { 1982, 1107, -16, 1363, 1032, -11, "ilshenar", "ilshenar" },   //Spectre Dungeon Exit
+    { 1983, 1107, -16, 1364, 1032, -11, "ilshenar", "ilshenar" },   //Spectre Dungeon Exit
+    { 1984, 1107, -16, 1364, 1032, -11, "ilshenar", "ilshenar" },   //Spectre Dungeon Exit
+
+    //Rock Dungeon
+    { 1787, 569, 74, 2187, 319, -7, "ilshenar", "ilshenar" },   //Rock Dungeon Entrance to Rock Dungeon Passage
+    { 1788, 569, 74, 2187, 319, -7, "ilshenar", "ilshenar" },   //Rock Dungeon Entrance to Rock Dungeon Passage
+    { 2187, 320, -7, 1787, 570, 71, "ilshenar", "ilshenar" },   //Rock Dungeon Passage to Rock Dungeon Entrance
+    { 2188, 320, -7, 1787, 570, 71, "ilshenar", "ilshenar" },   //Rock Dungeon Passage to Rock Dungeon Entrance
+    { 2189, 320, -7, 1788, 570, 71, "ilshenar", "ilshenar" },   //Rock Dungeon Passage to Rock Dungeon Entrance
+    { 2186, 294, -27, 2186, 32, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Passage to Rock Dungeon Level 1
+    { 2187, 294, -27, 2187, 32, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Passage to Rock Dungeon Level 1
+    { 2188, 294, -27, 2188, 32, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Passage to Rock Dungeon Level 1
+    { 2189, 294, -27, 2189, 32, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Passage to Rock Dungeon Level 1
+    { 2186, 33, -27, 2186, 295, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Level 1 to Rock Dungeon Passage
+    { 2187, 33, -27, 2187, 295, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Level 1 to Rock Dungeon Passage
+    { 2188, 33, -27, 2188, 295, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Level 1 to Rock Dungeon Passage
+    { 2189, 33, -27, 2189, 295, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Level 1 to Rock Dungeon Passage
+
+    ////////////////////////////////
+    ////////////////////////////////
+    // Ilshenar
+    // Incomplete
+    ///////////////////////////////
+    ///////////////////////////////
+
+    //Central Ilshenar (Missing Cave Entrance Graphics in the Mountain at the Entrance)
+    { 709, 667, -39, 912, 451, -80, "ilshenar", "ilshenar" },   //Central Area West Entrance
+    { 710, 667, -39, 912, 452, -80, "ilshenar", "ilshenar" },   //Central Area West Entrance
+    { 711, 667, -39, 912, 453, -80, "ilshenar", "ilshenar" },   //Central Area West Entrance
+    { 911, 451, -80, 709, 668, -39, "ilshenar", "ilshenar" },   //Central Area West Exit
+    { 911, 452, -80, 710, 668, -39, "ilshenar", "ilshenar" },   //Central Area West Exit
+    { 911, 453, -80, 711, 668, -38, "ilshenar", "ilshenar" },   //Central Area West Exit
+
+    //Meer Caverns (No Platform for them to be on atm)
+    //https://www.uoguide.com/Meer_Catacombs
+    { 1037, 579, -73, 1790, 66, -26, "ilshenar", "ilshenar" },  //Meer Caverns Entrance
     { 1037, 580, -73, 1790, 67, -26, "ilshenar", "ilshenar" },
     { 1037, 581, -73, 1790, 68, -26, "ilshenar", "ilshenar" },
     { 1038, 578, -73, 1786, 70, -26, "ilshenar", "ilshenar" },
@@ -1403,75 +1596,26 @@ var teleporters := {
     { 1140, 592, -80, 1238, 584, -19, "ilshenar", "ilshenar" },
     { 1141, 592, -80, 1238, 585, -19, "ilshenar", "ilshenar" },
     { 1142, 592, -80, 1238, 585, -19, "ilshenar", "ilshenar" },
-    { 1237, 583, -19, 1139, 593, -80, "ilshenar", "ilshenar" },
-    { 1237, 584, -19, 1140, 593, -80, "ilshenar", "ilshenar" },
-    { 1237, 585, -19, 1141, 593, -80, "ilshenar", "ilshenar" },
-    { 1250, 1511, -28, 1268, 1510, -28, "ilshenar", "ilshenar" },
-    { 1250, 1512, -28, 1268, 1510, -28, "ilshenar", "ilshenar" },
-    { 1268, 1508, -28, 1250, 1508, -28, "ilshenar", "ilshenar" },
-    { 1268, 1509, -28, 1250, 1509, -28, "ilshenar", "ilshenar" },
-    { 1268, 1510, -28, 1250, 1510, -28, "ilshenar", "ilshenar" },
-    { 1349, 1509, -3, 1030, 1153, -24, "ilshenar", "ilshenar" },
-    { 1362, 1031, -13, 1981, 1107, -16, "ilshenar", "ilshenar" },
-    { 1363, 1031, -13, 1982, 1107, -16, "ilshenar", "ilshenar" },
-    { 1364, 1031, -13, 1983, 1107, -16, "ilshenar", "ilshenar" },
-    { 1419, 909, -10, 1784, 994, -28, "ilshenar", "ilshenar" },
-    { 1420, 909, -10, 1785, 994, -28, "ilshenar", "ilshenar" },
-    { 1421, 909, -10, 1786, 994, -28, "ilshenar", "ilshenar" },
-    { 1456, 1328, -27, 1479, 1494, -28, "ilshenar", "ilshenar" },
-    { 1456, 1329, -27, 1479, 1495, -28, "ilshenar", "ilshenar" },
-    { 1456, 1330, -27, 1479, 1496, -28, "ilshenar", "ilshenar" },
-    { 1479, 1493, -28, 1456, 1328, -27, "ilshenar", "ilshenar" },
-    { 1479, 1497, -28, 1456, 1330, -27, "ilshenar", "ilshenar" },
-    { 1516, 879, 10, 1363, 1105, -26, "ilshenar", "ilshenar" },
-  
-    { 1783, 994, -28, 1419, 909, -10, "ilshenar", "ilshenar" },
-    { 1786, 66, -26, 1038, 583, -78, "ilshenar", "ilshenar" },
+    { 1786, 66, -26, 1038, 583, -78, "ilshenar", "ilshenar" },  //Meer Caverns Exit
     { 1786, 67, -26, 1042, 579, -78, "ilshenar", "ilshenar" },
     { 1786, 68, -26, 1042, 580, -78, "ilshenar", "ilshenar" },
     { 1786, 69, -26, 1042, 581, -78, "ilshenar", "ilshenar" },
     { 1787, 66, -26, 1039, 583, -78, "ilshenar", "ilshenar" },
     { 1787, 69, -26, 1038, 577, -78, "ilshenar", "ilshenar" },
-    { 1787, 994, -28, 1421, 909, -10, "ilshenar", "ilshenar" },
     { 1788, 66, -26, 1040, 583, -78, "ilshenar", "ilshenar" },
     { 1788, 69, -26, 1039, 577, -78, "ilshenar", "ilshenar" },
-    { 1788, 994, -28, 1421, 909, -10, "ilshenar", "ilshenar" },
     { 1789, 66, -26, 1041, 583, -78, "ilshenar", "ilshenar" },
     { 1789, 67, -26, 1036, 579, -78, "ilshenar", "ilshenar" },
     { 1789, 68, -26, 1036, 578, -78, "ilshenar", "ilshenar" },
     { 1789, 69, -26, 1036, 581, -78, "ilshenar", "ilshenar" },
-    { 1861, 980, -28, 1490, 877, 10, "ilshenar", "ilshenar" },
-    { 1861, 981, -28, 1490, 878, 10, "ilshenar", "ilshenar" },
-    { 1861, 982, -28, 1490, 879, 10, "ilshenar", "ilshenar" },
-    { 1861, 983, -28, 1490, 880, 10, "ilshenar", "ilshenar" },
-    { 1861, 984, -28, 1490, 880, 10, "ilshenar", "ilshenar" },
-    { 1978, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1978, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1978, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1978, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1979, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1979, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1979, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1979, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1980, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1980, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1980, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1980, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1980, 1107, -16, 1362, 1031, -13, "ilshenar", "ilshenar" },
-    { 1981, 114, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1981, 115, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1981, 116, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1981, 117, -28, 835, 778, -80, "ilshenar", "ilshenar" },
-    { 1984, 1107, -16, 1364, 1031, -13, "ilshenar", "ilshenar" },
-    
-    { 2186, 294, -27, 2186, 33, -27, "ilshenar", "ilshenar" },
-    { 2187, 294, -27, 2187, 33, -27, "ilshenar", "ilshenar" },
-    { 2187, 320, -7, 1787, 569, 74, "ilshenar", "ilshenar" },
-    { 2188, 294, -27, 2188, 33, -27, "ilshenar", "ilshenar" },
-    { 2188, 320, -7, 1787, 569, 74, "ilshenar", "ilshenar" },
-    { 2189, 294, -27, 2189, 33, -27, "ilshenar", "ilshenar" },
-    { 2189, 320, -7, 1788, 569, 74, "ilshenar", "ilshenar" },
-    
+
+    ////////////////////////////////
+    ////////////////////////////////
+    // Termur
+    // Incomplete
+    ///////////////////////////////
+    ///////////////////////////////
+
     { 33, 241, 7, 996, 3842, -41, "termur", "termur" },
     { 34, 241, 7, 997, 3842, -41, "termur", "termur" },
     { 35, 241, 7, 998, 3842, -41, "termur", "termur" },
