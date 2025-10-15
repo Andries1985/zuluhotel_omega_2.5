@@ -13,6 +13,6 @@ program fb( who )
 		SendSysmessage( who , "You have no boat." );		
 		return;
 	endif
-	SendSysmessage( who , "You boat is at : "+boat.x+", "+boat.y+", "+boat.z );	
+	SendSysmessage( who , "You boat is at : "+boat.x+", "+boat.y+", "+boat.z+", "+boat.realm+".");	
 endprogram
 

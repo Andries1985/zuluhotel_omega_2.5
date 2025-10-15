@@ -1,0 +1,15 @@
+// command .whereat
+// Alryc
+
+use uo;
+
+program textcmd_whereat( who )
+	SendSysMessage( who, "Target the object you want to know the coordinates of." );
+
+    var tgt := Target( who );
+    if (tgt)
+		var regionname := GetRegionName(tgt);
+		PrintTextAbovePrivate(who, "It is in " + regionname + " Territory at ("+tgt.x+", "+tgt.y+", "+tgt.z+", "+tgt.realm+".)", who);
+	endif
+	
+endprogram
