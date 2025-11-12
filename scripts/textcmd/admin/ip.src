@@ -10,16 +10,17 @@ SendSysMessage(who, "Target a player to reveal all logged in characters.");
 
 var targ := Target(who, TGTOPT_NOCHECK_LOS);
 
-if (!targ || !targ.acct || targ.cmdlevel)
-	SendSysMessage(who, "You can only target a player");
-	return 0;
-endif
+//if (!targ || !targ.acct || targ.cmdlevel)
+//	SendSysMessage(who, "You can only target a player");
+//	return 0;
+//endif
 
 var info := "";
 var chars := {};
 
 foreach person in EnumerateOnlineCharacters()
-	if (person.ip == targ.ip && !person.cmdlevel)
+	//if (person.ip == targ.ip && !person.cmdlevel)
+	if (person.ip == targ.ip )
 		chars.append(person.name);
 	endif
 endforeach

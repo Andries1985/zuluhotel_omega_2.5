@@ -3,8 +3,8 @@
 use uo;
 use os;
 
-include ":staff:include/staff";
-include ":gumps:include/gumps";
+include ":staff:staff";
+include ":gumps:gumps";
 
 program textcmd_gotomobtype( character , text )
 
@@ -47,8 +47,8 @@ program textcmd_gotomobtype( character , text )
 					SleepMs(2);
 				endif
             endif
-		elseif( mobile.IsA())
-			Print("stuff");
+//		elseif( mobile.IsA())
+//			Print("stuff");
         endif
     endforeach
 

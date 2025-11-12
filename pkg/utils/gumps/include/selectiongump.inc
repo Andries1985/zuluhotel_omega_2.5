@@ -16,6 +16,7 @@ use uo;
 use os;
 
 include ":gumps:gumps";
+include ":gumps:gumps_ex";
 
 CONST BTN_TYPE_RADIO	:= 0x1;
 CONST BTN_TYPE_CHECKBOX	:= 0x2;
