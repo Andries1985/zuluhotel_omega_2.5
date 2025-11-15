@@ -12,8 +12,8 @@ use os;
 use uo;
 use cfgfile;
 
-include ":staff:include/staff";
-include ":gumps:include/gumps";
+include ":staff:staff";
+include ":gumps:gumps";
 include "include/areas";
 include "include/constants/cfgfiles";
 include "include/constants/propids";
@@ -62,12 +62,12 @@ Program areas(who, text)
 	GFTextLine(gump, 180, 35, 67, "AREA SET-UP");
 
 	// Button info
-	GFTextLine(gump, 110, 70, 57, "Edit Area Boundaries");
-	GFAddButton(gump, 60, 70, 4005, 4006, 1, 2); 
-	GFTextLine(gump, 110, 105, 57, "Add Area");
-	GFAddButton(gump, 60, 105, 4005, 4006, 1, 4); 
-	GFTextLine(gump, 110, 140, 57, "Delete Area");
-	GFAddButton(gump, 60, 140, 4005, 4006, 1, 6); 
+	//GFTextLine(gump, 110, 70, 57, "Edit Area Boundaries");
+	//GFAddButton(gump, 60, 70, 4005, 4006, 1, 2); 
+	//GFTextLine(gump, 110, 105, 57, "Add Area");
+	//GFAddButton(gump, 60, 105, 4005, 4006, 1, 4); 
+	//GFTextLine(gump, 110, 140, 57, "Delete Area");
+	//GFAddButton(gump, 60, 140, 4005, 4006, 1, 6); 
 
 	// HTML gump
 	GFHTMLArea(gump, 405, 35, 390, 140, GetHelpString(), 1, 1);
