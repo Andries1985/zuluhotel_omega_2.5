@@ -669,7 +669,7 @@ foreach thing in items
 						endif								
 					endif
 			
-					if (MoveObjectToLocation(thing2, 5291, 1166, 0, "britannia" ))
+					if (MoveObjectToLocation(thing2, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION ))
 						totalsellprice := totalsellprice + individualsellprice;
 						items2.append(thing2);
 					endif
@@ -689,7 +689,7 @@ foreach thing in items
 						endif			
 					endif
 			
-					if (MoveObjectToLocation(thing, 5291, 1166, 0, "britannia" ))
+					if (MoveObjectToLocation(thing, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION ))
 						totalsellprice := totalsellprice + individualsellprice;
 						items2.append(thing);
 					endif
@@ -708,7 +708,7 @@ foreach thing in items
 			endif			
 		endif 
 		
-		if (MoveObjectToLocation(thing, 5291, 1166, 0, "britannia" ))
+		if (MoveObjectToLocation(thing, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION ))
 			totalsellprice := totalsellprice + individualsellprice;
 			items2.append(thing);
 		endif

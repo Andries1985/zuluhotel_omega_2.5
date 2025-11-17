@@ -24,6 +24,7 @@ program walk_on_rpergate( mobile, gate )
     	z := GetObjProperty( gate, "GateDestZ" );
 	
     	SetObjProperty(mobile,"#justgated",1);
-    	MoveObjectToLocation( mobile, x, y, z , "britannia" , MOVEOBJECT_FORCELOCATION );
+		//Needs to be fixed for new maps
+    	//MoveObjectToLocation( mobile, x, y, z , "britannia" , MOVEOBJECT_FORCELOCATION );
 
 endprogram

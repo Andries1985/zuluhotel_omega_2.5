@@ -47,7 +47,7 @@ endcase
 
 GFHTMLArea(gump, 190, 90, 210, 170, raceinfo(), 1, 1);
 
-GFTextLine(gump, 177, 280, 63, "Enter Britannia?");
+GFTextLine(gump, 177, 280, 63, "Enter Sosaria?");
 
 GFAddBUtton(gump, 60, 280, 2128, 2129, 1, 10);
 GFAddBUtton(gump, 325, 280, 2119, 2120, 1, 0);
@@ -60,7 +60,8 @@ if (result[0] == 10)
 	else
 		SetRace(who, race);
 		SetColour(who, gate);
-		MoveObjectToLocation(who, 3648, 2672, -2, "britannia", 1);
+		//Need to fix for new map
+		//MoveObjectToLocation(who, 3648, 2672, -2, "britannia", 1);
 		PlayObjectCenteredEffect( who, 0x373a, 10,10);
 		playsoundeffect(who, 0x244);
 		SendSysMessage(who, "You are now a "+race+"!", 3, 67);

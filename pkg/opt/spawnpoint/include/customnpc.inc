@@ -169,7 +169,7 @@ function DressNPCCustom(me)
 var point := SystemFindObjectBySerial(GetObjProperty(me, "SpawnPoint"));
 
 foreach item in EnumerateItemsInContainer(point)
-	var copy := CreateItemCopyAtLocation(5273, 1181, 0, item, "britannia");
+	var copy := CreateItemCopyAtLocation(DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, item, DEFAULT_LOCATION_ITEM_CREATION_R);
 	copy.movable := 1;
 	if (GetObjProperty(copy, "packitem"))
 		EraseObjProperty(copy, "packitem");

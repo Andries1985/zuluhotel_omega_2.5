@@ -39,7 +39,7 @@ program blackrockscript(attacker, defender, weapon, armor, basedamage, rawdamage
                 PlayObjectCenteredEffect( defender, FX_SPELL_MANA_VAMPIRE, 7,7);
                 PlaySoundEffect( attacker , SFX_SPELL_MANA_VAMPIRE );
                 PlayStationaryEffect( defender.x, defender.y, defender.z, FX_SPELL_SUMMON_CREATURE, 0xA, 0xA, 0, defender.realm );
-                MoveObjectToLocation(defender, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+                MoveObjectToLocation(defender, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION);
                 ApplyTheDamage( defender , attacker , GetMaxHP(defender) + 3 , DMGID_MAGIC );
             else
                 PlayObjectCenteredEffect( attacker, FX_SPELL_MANA_VAMPIRE, 7,7);

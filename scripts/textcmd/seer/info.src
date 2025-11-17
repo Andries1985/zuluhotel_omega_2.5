@@ -702,7 +702,7 @@ program textcmd_info( character , whom )
     endif
 
     acc.setprop("Release", (ReadGameClock() + time));
-    MoveObjectToLocation( who, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, "britannia", MOVEOBJECT_FORCELOCATION);
+    MoveObjectToLocation( who, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, DEFAULT_LOCATION_JAIL_R, MOVEOBJECT_FORCELOCATION);
     
     if(val > 1)
       SendSysMessage( who, "You have been jailed for "+val+" days.");

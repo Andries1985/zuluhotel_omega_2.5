@@ -418,7 +418,7 @@ endfunction
 
 function KillME()
 	DisableMainEvents();
-	MoveObjectToLocation(me,5288 , 1176 , 0, "britannia", MOVEOBJECT_FORCELOCATION);
+	MoveObjectToLocation( me, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 	SetObjProperty(me,"guardkill",1);
 	damage( me, me.maxhp + 8 );
 endfunction

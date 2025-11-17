@@ -68,7 +68,7 @@ endif
 		copy2 := CreateNPCfromTemplate( "quagmires", me.x, me.y, me.z, 1, me.realm );
 		setobjproperty( copy1, "guardkill", 1);
 		setobjproperty( copy2, "guardkill", 1);
-		MoveObjectToLocation(me, 5378, 1269, 0, "britannia" );
+		MoveObjectToLocation( me, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 		RevokePrivilege( me, "invul" );
 		setobjproperty( me, "guardkill", 1);
 		ApplyRawDamage( me, Cint(GetHP(me)+3) );

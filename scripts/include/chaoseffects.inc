@@ -272,7 +272,7 @@ function DivertPlayer(who)
 
 	SendSysMessage(who, "Something is amiss...");
 
-	MoveObjectToLocation(who, Cint(newx[i]), Cint(newy[i]), Cint(newz[i]), "britannia", MOVEOBJECT_FORCELOCATION );
+	MoveObjectToLocation( who, Cint(newx[i]), Cint(newy[i]), Cint(newz[i]), "britannia", MOVEOBJECT_FORCELOCATION );
 	return;
 
 endfunction

@@ -448,7 +448,9 @@ function CreateSpawnPointNpc( byref point, template )
 	var z := point.z;
 	var realm := point.realm;
 	var range	:= Cint( GetObjProperty( point , "Range" ) );
-	var critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0, 0, "britannia" );
+	//Using old britannia map
+	//var critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0, 0, "britannia" );
+	var critter	:= CreateNpcFromTemplate( template, 6338, 1581, 0, 0, "britannia_alt" );
 	if( !critter )
 		return 0;
 	endif

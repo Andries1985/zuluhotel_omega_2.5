@@ -76,11 +76,11 @@ program logon( who )
 							var timerm := (((release - ReadGameClock())%86400)%3600)/60;
 							var timers := (((release - ReadGameClock())%86400)%3600)%60;
 								
-							MoveObjectToLocation( who, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, "britannia", MOVEOBJECT_FORCELOCATION);
+							MoveObjectToLocation( who, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, DEFAULT_LOCATION_JAIL_R, MOVEOBJECT_FORCELOCATION);
 							SendSysmessage(who, "You have " + timeremaining + " day(s) "+ timerh +" hour(s) "+ timerm +" minute(s) and "+ timers +" second(s) left in jail.", FONT_NORMAL, 2595 );
 						else
 							acc.setprop("Release",0);
-		 					MoveObjectToLocation( who, 3682, 2517, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+		 					MoveObjectToLocation( who, 1433, 1861, 36, "britannia_alt", MOVEOBJECT_FORCELOCATION);
 		 					SendSysmessage(who, "You are freed.");
 							who.frozen := 0;
 		 				endif

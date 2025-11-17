@@ -75,7 +75,7 @@ if (who.cmdlevel > 1)
 		if (!where)
 			SendSysMessage(who, "Cancelled.");
 		endif
-		SetObjProperty(stone, "Destination", {where.x, where.y, where.z});
+		SetObjProperty(stone, "Destination", {where.x, where.y, where.z, where.realm});
 		SendSysMessage(who, "Stones destination updated.", 3, 53);
 		
 	elseif (data[0] == 3)
@@ -95,13 +95,13 @@ if (!dest)
 	return 0;
 endif
 
-if (dest[1] == who.x && dest[2] == who.y)
+if (dest[1] == who.x && dest[2] == who.y && dest[4] == who.realm)
 	SendSysMessage(who, "You are already at the stones destination point.");
 	return 0;
 endif
 
 PrintTextAbove(who, "*Donator recall stone activated*", 3, 53);
-PlaySoundEffectXYZ(who.x, who.y, who.z, 0x381);
+PlaySoundEffectXYZ(who.x, who.y, who.z, 0x381, who.realm);
 SendSysMessage(who, "Please stay still while you prepare to teleport...");
 
 var i := 0;
@@ -128,8 +128,8 @@ repeat
 	
 until ( i >= TELE_TIME);
 
-PlaySoundEffectXYZ(who.x, who.y, who.z, 0x210);
+PlaySoundEffectXYZ(who.x, who.y, who.z, 0x210, who.realm);
 SendSysMessage(who, "You are succesfully teleported to the stones destination");
-MoveObjectToLocation(who, dest[1], dest[2], dest[3], "britannia");
+MoveObjectToLocation(who, dest[1], dest[2], dest[3], dest[4]);
 
 endprogram

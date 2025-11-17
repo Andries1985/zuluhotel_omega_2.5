@@ -51,7 +51,7 @@ program SignListener( sign )
 				MoveObjectToLocation( mobile, sign.x, sign.y, (sign.z-5), sign.realm ,MOVEOBJECT_FORCELOCATION );
 			endif
 			if(mobile.isa(POLCLASS_NPC) && GetObjProperty(mobile,"Boss") || GetObjProperty(mobile,"SuperBoss")) //(S)Boss Eviction
-				MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia",MOVEOBJECT_FORCELOCATION );
+				MoveObjectToLocation(mobile, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 				SetObjProperty(mobile, "guardkill", 1);
 				ApplyRawdamage(mobile, GetMaxHP(mobile) + 3 );
 			endif

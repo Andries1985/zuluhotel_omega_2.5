@@ -39,7 +39,7 @@ endfunction
 function MoveMyPack(me)
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(5123, 1779, 0, 0xe75, 1, "britannia");
+		var newbackpack := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, 0xe75, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 		EquipItem(me, newbackpack);
 	endif
 
@@ -59,7 +59,7 @@ endfunction
 function clone(npc, me)
 
 	if (!npc.backpack)
-		var newbackpack := CreateItemAtLocation(5123, 1779, 0, 0xe75, 1, "britannia");
+		var newbackpack := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, 0xe75, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 		EquipItem(npc, newbackpack);
 	endif
 
@@ -88,8 +88,8 @@ function clone(npc, me)
 		SetRawSkill( me, i, GetRawSkill(npc,i) );
 	endfor
 
-	MoveObjectToLocation( me, npc.x, npc.y, npc.z, "britannia", MOVEOBJECT_FORCELOCATION );	
-	MoveObjectToLocation( npc, 5276, 1164, 0, "britannia", MOVEOBJECT_FORCELOCATION );
+	MoveObjectToLocation( me, npc.x, npc.y, npc.z, npc.realm, MOVEOBJECT_FORCELOCATION );	
+	MoveObjectToLocation( npc, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 	me.concealed := 0;
 
 	npc.hidden := 1;
@@ -137,7 +137,7 @@ function unpossess( me )
 	npc.hp := me.hp;
 	npc.mana := me.mana;
 
-	MoveObjectToLocation(npc,me.x, me.y, me.z, "britannia", MOVEOBJECT_FORCELOCATION );
+	MoveObjectToLocation(npc,me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION );
 
 	var i;
 	for (i := 0; i <= SKILLID__HIGHEST; i := i + 1)
@@ -177,7 +177,7 @@ endfunction
 function SwapClothes(me, npc)
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(5123, 1779, 0, 0xe75, 1, "britannia");
+		var newbackpack := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, 0xe75, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 		EquipItem(me, newbackpack);
 	endif
 
@@ -185,9 +185,9 @@ function SwapClothes(me, npc)
 	var mypack := me.backpack;
 
 	if (hispack)
-		MoveItemToLocation(hispack, 5123, 1779, 0, MOVEITEM_FORCELOCATION);
+		MoveItemToLocation(hispack, DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, MOVEITEM_FORCELOCATION);
 	else
-		hispack := CreateItemAtLocation(5123, 1779, 0, 0xe75, 1, "britannia");
+		hispack := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, 0xe75, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 	endif
 
 	foreach thing in listequippeditems(me)
@@ -235,7 +235,7 @@ function unpossesscorpse( me, corpse )
 	eraseobjproperty(me,"oldprefix");
 	eraseobjproperty(me,"oldsuffix");
 
-	MoveObjectToLocation( npc, 5288 , 1176 , 0, "britannia", MOVEOBJECT_FORCELOCATION );
+	MoveObjectToLocation( npc, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 	setobjproperty(npc, "guardkill", 1);
 	RevokePrivilege( npc, "invul" );
 	Damage( npc, npc.hp );

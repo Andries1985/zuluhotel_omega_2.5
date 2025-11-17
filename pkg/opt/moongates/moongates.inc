@@ -27,14 +27,14 @@ function CreateMoongates();
     // aswell.
 	//Must be the same as systemmoongate.src
         var moongates := { 
-        {4467,	1283,	5,		"britannia"},		// moonglow
-    	{1336,	1997,	5,		"britannia"},		// britain
-    	{1499,	3771,	5,		"britannia"},		// jhelom
-        {771,	753,	5,		"britannia"},		// yew
-    	{2701,	693,	5,		"britannia"},		// minoc
-    	{1828,	2948,	-20,	"britannia"},		// trinsic
-    	{643,	2067,	5,		"britannia"},		// skara
-    	{3564,	2140,	31,		"britannia"},		// magincia
+        ////4467,	1283,	5,		"britannia"},		// moonglow
+    	//{1336,	1997,	5,		"britannia"},		// britain
+    	//{1499,	3771,	5,		"britannia"},		// jhelom
+       // {771,	753,	5,		"britannia"},		// yew
+    	//{2701,	693,	5,		"britannia"},		// minoc
+    	//{1828,	2948,	-20,	"britannia"},		// trinsic
+    	//{643,	2067,	5,		"britannia"},		// skara
+    	//{3564,	2140,	31,		"britannia"},		// magincia
 		{802,	1204,	25,		"tokuno"},			// Zento City
 		{1169,	998,	41,		"tokuno"},			// Isamu-Jima Island
 		{270,	628,	15,		"tokuno"},			// Homare-Jima Island

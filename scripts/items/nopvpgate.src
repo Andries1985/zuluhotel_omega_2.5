@@ -15,12 +15,14 @@ program NoPvPGate( mobile , gate )
         if(GetObjProperty( mobile, CLASSEID_POWERPLAYER))
             if(level > 1)
                 SendSysMessage(mobile, "This dungeon is only for lvl 1 Powerplayers and below.");
-                var move := MoveObjectToLocation( mobile , 3682 , 2557 , 0 , "britannia" , MOVEOBJECT_FORCELOCATION );
+                //Need to fix for new maps
+                //var move := MoveObjectToLocation( mobile , 3682 , 2557 , 0 , "britannia" , MOVEOBJECT_FORCELOCATION );
                 return;
             endif
         elseif(level > 4)
             SendSysMessage(mobile, "This dungeon is only for spec class lvl 4 and below.");
-            var move := MoveObjectToLocation( mobile , 3682 , 2557 , 0 , "britannia" , MOVEOBJECT_FORCELOCATION );
+            //Need to fix for new maps
+            //var move := MoveObjectToLocation( mobile , 3682 , 2557 , 0 , "britannia" , MOVEOBJECT_FORCELOCATION );
             return;
         endif
     endif

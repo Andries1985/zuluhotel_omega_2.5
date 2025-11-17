@@ -12,7 +12,7 @@ program maindestroy( item )
 	// It doesn't, so we unequip any item by moving it to jail first to force it to run
 	if (item.unequipscript) // The item has an unequip script
 		if (item.container.isa(POLCLASS_MOBILE)) // The item in equipped
-			MoveObjectToLocation(item, 5286, 1170, 0, "britannia", MOVEOBJECT_NORMAL);
+			MoveObjectToLocation( item, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_NORMAL );
 		endif
 	endif
 

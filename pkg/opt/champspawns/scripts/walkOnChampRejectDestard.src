@@ -10,7 +10,7 @@ Program walkOn(mobile)
 			SetObjProperty(mobile, "AlreadyPorted", 1);
 			var rtime := Random(5)+5;
 			Sleep(rtime);
-			MoveObjectToLocation(mobile, 5281, 808, 6, "britannia", MOVEOBJECT_FORCELOCATION);
+			MoveObjectToLocation(mobile, DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, DEFAULT_LOCATION_ITEM_CREATION_R, MOVEOBJECT_FORCELOCATION);
 			SetHP(mobile, GetMaxHP(mobile));
 			CurePoison(mobile);
 			EraseObjProperty(mobile, "AlreadyPorted");

@@ -34,7 +34,8 @@ program item_cast_spell( who, item )
 		return;
 	endif
 
-	MoveObjectToLocation( who, 1475, 1645, 20, "britannia" );
+	//Needs to be fixed for new maps
+	//MoveObjectToLocation( who, 1475, 1645, 20, "britannia" );
 	PlaySoundEffect( who, SFX_SPELL_RECALL2 );
 	SetObjProperty( item, "#next_use", CInt(ReadGameClock()+DELAY_BETWEEN_USE) );
 	

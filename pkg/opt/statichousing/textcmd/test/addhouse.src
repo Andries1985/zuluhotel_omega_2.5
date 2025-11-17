@@ -38,9 +38,9 @@ program textcmd_addhouse( who )
 	SendSysMessage( who, "Select where to place sign." );
 	var signplace := TargetCoordinates( who );
 	if( lower(signtype) == "e" )
-		sign := CreateItemAtLocation( signplace.x, signplace.y, signplace.z, 0x755f, 1 );
+		sign := CreateItemAtLocation( signplace.x, signplace.y, signplace.z, 0x755f, 1, signplace.realm );
 	elseif( lower(signtype) == "s" )
-		sign := CreateItemAtLocation( signplace.x, signplace.y, signplace.z, 0x755e, 1 );
+		sign := CreateItemAtLocation( signplace.x, signplace.y, signplace.z, 0x755e, 1, signplace.realm );
 	else
 		SendSysMessage( who, "You need to select E or S for the signtype." );
 		return;
@@ -83,7 +83,7 @@ program textcmd_addhouse( who )
 		k := miny;
 		while( i <= maxx )
 			while( k <= maxy )
-				item := CreateItemAtLocation( i, k, z, 0x755d, 1);
+				item := CreateItemAtLocation( i, k, z, 0x755d, 1, who.realm);
 				SetObjProperty( item, "HousePlate", 1 );
 				SetObjProperty( item, "houseserial", sign.serial );
 				k += 1;

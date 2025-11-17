@@ -378,7 +378,7 @@ endfunction
 function cast_teleport( caster, where )
 
     if (CheckLosAt( caster, where.x, where.y, where.z ))
-        MoveObjectToLocation( caster, where.x, where.y, where.z, "britannia", MOVEOBJECT_FORCELOCATION );
+        MoveObjectToLocation( caster, where.x, where.y, where.z, where.realm, MOVEOBJECT_FORCELOCATION );
     endif
 
 endfunction

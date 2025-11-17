@@ -220,7 +220,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 		return 0;
 	endif
 	
-	var chest	:= CreateItemAtLocation( 0, 0, 0, objtype, 1, "britannia" );
+	var chest	:= CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, objtype, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 	if( !chest )
 		return 0;
 	elseif( !chest.IsA(POLCLASS_CONTAINER) )
@@ -424,7 +424,11 @@ function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
 		critter := CreateCustomNpc(point, template);
 		SetHP(critter, vits.hits);
 	else
-		critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0, 0, "britannia");
+		
+	//Old Britannia Map
+	//critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0, 0, "britannia");
+		critter	:= CreateNpcFromTemplate( template, 6338, 1581, 0, 0, "britannia_alt" );
+
 	endif
 
 	if( !critter )
@@ -542,7 +546,11 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
     if (GetObjProperty(point, "CustomPoint"))
 		critter := CreateCustomNpc(point, template);
 	else
-		critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0, 0, "britannia");
+
+		//Old Britannia Map
+		//critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0, 0, "britannia");
+		critter	:= CreateNpcFromTemplate( template, 6338, 1581, 0, 0, "britannia_alt" );
+
 	endif
 
 	if( !critter )
@@ -732,7 +740,10 @@ function CreateCustomNPC(point, template)
 	var vits := GetObjProperty(point, "NPCVits"); 
 	var overw := GetObjProperty(point, "overw");
 
-	var critter := CreateNpcFromTemplate( template, 5283, 1184, 0, overw, "britannia");
+	
+	//Old Britannia Map
+	//var critter := CreateNpcFromTemplate( template, 5283, 1184, 0, overw, "britannia");
+	var critter	:= CreateNpcFromTemplate( template, 6338, 1581, 0, 0, "britannia_alt" );
 
 	var i := 0;
 	foreach skill in skills

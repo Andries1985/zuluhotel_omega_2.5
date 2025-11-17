@@ -1,5 +1,5 @@
 use uo;
 include ":staff:include/staff";
 program textcmd_home( who )
-    MoveObjectToLocation(who, 5433,1087,18, "britannia", MOVEOBJECT_FORCELOCATION);
+    MoveObjectToLocation( who, 9, 2049, 0, "britannia", MOVEOBJECT_FORCELOCATION );
 endprogram
