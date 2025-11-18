@@ -13,7 +13,8 @@ program newbieGate( mobile , gate )
 
 	if(GetObjProperty(mobile, "onlinetimer") > 604800 || GetClasseLevel(mobile))
 		SendSysMessage(mobile, "You don't meet the requirements to enter the newbie dungeon.");
-		var move := MoveObjectToLocation( mobile , 1413 , 1716 , 20 , "britannia" , MOVEOBJECT_FORCELOCATION );
+		//Need to fix for new maps
+		//var move := MoveObjectToLocation( mobile , 1413 , 1716 , 20 , "britannia" , MOVEOBJECT_FORCELOCATION );
 		return;
 	endif
 

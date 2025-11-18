@@ -211,7 +211,7 @@ function AutoJail (looter)
 	acc.setprop("Release", (ReadGameClock() + jaildays));
 	acc.setprop("Notes", note);
 	looter.frozen := 1;
-	MoveObjectToLocation( looter, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, "britannia", MOVEOBJECT_FORCELOCATION);
+	MoveObjectToLocation( looter, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, DEFAULT_LOCATION_JAIL_R, MOVEOBJECT_FORCELOCATION);
 	SendSysMessage( looter, "You have been jailed for attempted town looting.");
 	DisconnectClient( looter );
 endfunction

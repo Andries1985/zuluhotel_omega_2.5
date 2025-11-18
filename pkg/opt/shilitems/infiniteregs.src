@@ -44,7 +44,7 @@ program infiniteregs( bag )
 					the_sub_bags[i].movable := 0;
 				endif
 			else
-				the_sub_bags[i] := CreateItemAtLocation( 0 , 0 , 0 , sub_bags_obj[i] , 1 );
+				the_sub_bags[i] := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X , DEFAULT_LOCATION_ITEM_CREATION_Y , DEFAULT_LOCATION_ITEM_CREATION_Z , sub_bags_obj[i] , 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 				if( the_sub_bags[i] )
 					the_sub_bags[i].movable := 1;
 					MoveItemToContainer( the_sub_bags[i] , bag , sub_bags_x_positions[i] , sub_bags_y );

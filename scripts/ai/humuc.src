@@ -34,7 +34,7 @@ var nextwatch := ReadGameClock();
 me.setmaster( master );
 
 if (!me.backpack)
-	var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
+	var newbackpack := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X , DEFAULT_LOCATION_ITEM_CREATION_Y , DEFAULT_LOCATION_ITEM_CREATION_Z, 0xe75, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 	EquipItem(me, newbackpack);
 endif
 
@@ -535,7 +535,7 @@ function Release()
 		it.name := me.name;
 		PlaySoundEffect( me, SFX_SPELL_DISPEL );
 		PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
-		MoveObjectToLocation(me,5288 , 1176 , 0, "britannia", MOVEOBJECT_FORCELOCATION);
+		MoveObjectToLocation(me, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION);
 		RevokePrivilege( me, "invul" );
 		ApplyRawdamage( me , GetMaxHP(me) + 3 );
 		EraseObjProperty(master, "humuc");

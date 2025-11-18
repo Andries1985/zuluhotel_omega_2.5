@@ -34,7 +34,7 @@ program oncreate(who,skillids)
     SetObjProperty(who, "DiscordID", who.acct.getprop("DiscordID"));
     // The starting area
 
-	var move := MoveObjectToLocation( who, 6119, 616, 5, "britannia", MOVEOBJECT_FORCELOCATION);
+	var move := MoveObjectToLocation( who, 1433, 1861, 36, "britannia_alt", MOVEOBJECT_FORCELOCATION);
 	if(!move)
 		Print("Move errortext " + move);
 	endif

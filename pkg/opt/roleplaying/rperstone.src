@@ -235,7 +235,8 @@ program OnUse_RPerFactionStone(who, newstone)
                 2:	SetObjProperty(who,"IsRPer", 1);
                     SetObjProperty(who,"OrgName", who.name);
                     who.name := who.name + " [RPer]";
-                    MoveObjectToLocation( who, 5227, 461, 16, "britannia", MOVEOBJECT_FORCELOCATION );
+                    //Needs to be fixed for new maps
+                    //MoveObjectToLocation( who, 5227, 461, 16, "britannia", MOVEOBJECT_FORCELOCATION );
                     SendSysMessage( who, "You have joined the [RPer] faction and have been sent to the town of Randorin!", FONT_NORMAL, 2595 );
                     break;
             endcase

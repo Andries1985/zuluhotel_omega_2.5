@@ -42,7 +42,7 @@ var teleporters := {
     // Britannia Teleporters
     ///////////////////////////////
     ///////////////////////////////
-
+/*
     {6058,  272,  	-8,    	6095,   279,    44,     "britannia",    "britannia"},       // ctf1a
     {6058,  273,  	-8,    	6095,   279,    44,     "britannia",    "britannia"},       // ctf1b
     {6088,  274,  	58,    	6063,   278,    -22,    "britannia",    "britannia"},       // ctf2a
@@ -456,7 +456,7 @@ var teleporters := {
 	{2399, 	198, 	0, 		5186, 	1941, 	0,	    "britannia",	"britannia"},       // mine_near_minoc_0_1
 	{5185, 	1942, 	0, 		2398, 	199, 	0,	    "britannia",	"britannia"},       // mine_near_minoc_1_0
 	{5186, 	1942, 	0, 		2399, 	199, 	0,  	"britannia",	"britannia"},       // mine_near_minoc_1_0
-
+*/
     ////////////////////////////////
     ////////////////////////////////
     // Sosaria
@@ -1016,25 +1016,25 @@ var teleporters := {
     { 988, 194, 15, 67, 337, -1, "tokuno", "malas" }, //Tokuno to Fan Dancer Dojo
     { 988, 195, 15, 67, 337, -1, "tokuno", "malas" }, //Tokuno to Fan Dancer Dojo
     { 988, 197, 18, 67, 337, -1, "tokuno", "malas" }, //Tokuno to Fan Dancer Dojo
-    { 66, 351, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 - > 2
-    { 66, 352, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 - > 2
-    { 66, 353, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 - > 2
-    { 66, 354, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 - > 2
-    { 61, 523, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 1
-    { 61, 524, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 1
-    { 61, 525, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 1
-    { 61, 526, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 1
-    { 103, 555, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 3
-    { 103, 556, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 3
-    { 103, 557, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 3
-    { 103, 558, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 - > 3
-    { 73, 688, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
-    { 73, 689, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
-    { 73, 690, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
-    { 73, 691, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
-    { 73, 692, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
-    { 73, 693, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
-    { 73, 694, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 - > 2
+    { 66, 351, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 to 2
+    { 66, 352, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 to 2
+    { 66, 353, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 to 2
+    { 66, 354, -7, 63, 524, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 1 to 2
+    { 61, 523, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 to 1
+    { 61, 524, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 to 1
+    { 61, 525, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 to 1
+    { 61, 526, 6, 63, 352, -3, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 to 1
+    { 103, 555, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 to 3
+    { 103, 556, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 to 3
+    { 103, 557, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 to 3
+    { 103, 558, -6, 76, 691, -1, "malas", "malas" }, //Fan Dancer Dojo Lvl 2 to 3
+    { 73, 688, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 to 2
+    { 73, 689, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 to 2
+    { 73, 690, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 to 2
+    { 73, 691, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 to 2
+    { 73, 692, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 to 2
+    { 73, 693, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 to 2
+    { 73, 694, 6, 100, 556, -2, "malas", "malas" },  //Fan Dancer Dojo Lvl 3 to 2
 
     //Bedlam Dungeon (Incomplete... need a way in, in OSI its a quest in Umbra)
     { 84, 1673, -2, 156, 1613, 0, "malas", "malas" }, //1 to 2
@@ -1092,22 +1092,22 @@ var teleporters := {
     ///////////////////////////////
 
     //Shrine Room
-    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 1
-    {2264,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},        //Spirituality 2
-    {2249,  1558,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 1
-    {2249,  1559,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},        //Compassion 2
-    {2249,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},        //Honor 1
-    {2250,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},        //Honor 2
-    {2256,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},        //Honesty 1
-    {2257,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},        //Honesty 2
-    {2263,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},        //Humility 1
-    {2264,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},        //Humility 2
-    {2271,  1542,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},        //Justice 1
-    {2271,  1543,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},        //Justice 2
-    {2278,  1548,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 1
-    {2278,  1549,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},        //Valor 2
-    {2278,  1558,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 1
-    {2278,  1559,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},        //Sacrifice 2
+    {2263,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},    //Spirituality 1
+    {2264,  1562,   -28,    1527,   1340,   -3,     "ilshenar",     "ilshenar"},    //Spirituality 2
+    {2249,  1558,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},    //Compassion 1
+    {2249,  1559,   -28,    1216,   468,    -13,    "ilshenar",     "ilshenar"},    //Compassion 2
+    {2249,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},    //Honor 1
+    {2250,  1548,   -28,    747,    730,    -29,    "ilshenar",     "ilshenar"},    //Honor 2
+    {2256,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},    //Honesty 1
+    {2257,  1542,   -28,    723,    1355,   -61,    "ilshenar",     "ilshenar"},    //Honesty 2
+    {2263,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},    //Humility 1
+    {2264,  1540,   -28,    286,    1018,   0,      "ilshenar",     "ilshenar"},    //Humility 2
+    {2271,  1542,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},    //Justice 1
+    {2271,  1543,   -28,    987,    1001,   -36,    "ilshenar",     "ilshenar"},    //Justice 2
+    {2278,  1548,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},    //Valor 1
+    {2278,  1549,   -28,    528,    211,    -42,    "ilshenar",     "ilshenar"},    //Valor 2
+    {2278,  1558,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},    //Sacrifice 1
+    {2278,  1559,   -28,    1171,   1287,   -30,    "ilshenar",     "ilshenar"},    //Sacrifice 2
 
     // Ankh Dungeon
     { 10, 1519, -28, 10, 873, -28, "ilshenar", "ilshenar" },    //Ankh Dungeon to Kirin Passage
@@ -1486,6 +1486,13 @@ var teleporters := {
     { 1141, 593, -80, 1238, 585, -19, "ilshenar", "ilshenar" }, //Central Area East Exit
     { 1142, 593, -80, 1238, 585, -19, "ilshenar", "ilshenar" }, //Central Area East Exit
 
+    //Central Ilshenar
+    { 709, 668, -39, 913, 452, -79, "ilshenar", "ilshenar" },   //Central Area West Entrance
+    { 710, 668, -38, 913, 453, -79, "ilshenar", "ilshenar" },   //Central Area West Entrance
+    { 912, 451, -78, 709, 669, -38, "ilshenar", "ilshenar" },   //Central Area West Exit
+    { 912, 452, -78, 709, 669, -38, "ilshenar", "ilshenar" },   //Central Area West Exit
+    { 912, 453, -78, 710, 669, -38, "ilshenar", "ilshenar" },   //Central Area West Exit
+
     //Ancient Lair
     { 938, 494, -40, 83, 748, -26, "ilshenar", "ilshenar" },    //Ancient Lair Entrance
     { 939, 494, -40, 84, 748, -26, "ilshenar", "ilshenar" },    //Ancient Lair Entrance
@@ -1559,23 +1566,11 @@ var teleporters := {
     { 2188, 33, -27, 2188, 295, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Level 1 to Rock Dungeon Passage
     { 2189, 33, -27, 2189, 295, -27, "ilshenar", "ilshenar" },  //Rock Dungeon Level 1 to Rock Dungeon Passage
 
-    ////////////////////////////////
-    ////////////////////////////////
-    // Ilshenar
-    // Incomplete
-    ///////////////////////////////
-    ///////////////////////////////
+    //Sparkles
+    { 1576, 849, -25, 857, 902, -33, "ilshenar", "ilshenar" },   //Sparkles from Lake to Dam
+    { 857, 903, -33, 1577, 850, -25, "ilshenar", "ilshenar" },   //Sparkles from Dam to Lake
 
-    //Central Ilshenar (Missing Cave Entrance Graphics in the Mountain at the Entrance)
-    { 709, 667, -39, 912, 451, -80, "ilshenar", "ilshenar" },   //Central Area West Entrance
-    { 710, 667, -39, 912, 452, -80, "ilshenar", "ilshenar" },   //Central Area West Entrance
-    { 711, 667, -39, 912, 453, -80, "ilshenar", "ilshenar" },   //Central Area West Entrance
-    { 911, 451, -80, 709, 668, -39, "ilshenar", "ilshenar" },   //Central Area West Exit
-    { 911, 452, -80, 710, 668, -39, "ilshenar", "ilshenar" },   //Central Area West Exit
-    { 911, 453, -80, 711, 668, -38, "ilshenar", "ilshenar" },   //Central Area West Exit
-
-    //Meer Caverns (No Platform for them to be on atm)
-    //https://www.uoguide.com/Meer_Catacombs
+    //Meer Caverns
     { 1037, 579, -73, 1790, 66, -26, "ilshenar", "ilshenar" },  //Meer Caverns Entrance
     { 1037, 580, -73, 1790, 67, -26, "ilshenar", "ilshenar" },
     { 1037, 581, -73, 1790, 68, -26, "ilshenar", "ilshenar" },
@@ -1607,7 +1602,7 @@ var teleporters := {
     { 1789, 66, -26, 1041, 583, -78, "ilshenar", "ilshenar" },
     { 1789, 67, -26, 1036, 579, -78, "ilshenar", "ilshenar" },
     { 1789, 68, -26, 1036, 578, -78, "ilshenar", "ilshenar" },
-    { 1789, 69, -26, 1036, 581, -78, "ilshenar", "ilshenar" },
+    { 1789, 69, -26, 1036, 581, -78, "ilshenar", "ilshenar" }
 
     ////////////////////////////////
     ////////////////////////////////
@@ -1616,6 +1611,7 @@ var teleporters := {
     ///////////////////////////////
     ///////////////////////////////
 
+    /*
     { 33, 241, 7, 996, 3842, -41, "termur", "termur" },
     { 34, 241, 7, 997, 3842, -41, "termur", "termur" },
     { 35, 241, 7, 998, 3842, -41, "termur", "termur" },
@@ -1734,6 +1730,7 @@ var teleporters := {
     { 7151, 756, 25, 511, 585, 9, "termur", "termur" },
     { 7152, 756, 25, 511, 585, 9, "termur", "termur" },
     { 7153, 756, 25, 511, 585, 9, "termur", "termur" }
+    */
 
 };	
 

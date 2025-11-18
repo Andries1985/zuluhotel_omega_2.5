@@ -39,16 +39,17 @@
 use uo;
 use os;
 use basic;
+use cfgfile;
 
-include ":gumps:autoClose";
-include ":gumps:gumpprompt";
-include ":gumps:gumps_ex";
-include ":gumps:htmlgump";
-include ":gumps:playerselectiongump";
-include ":gumps:requestgump";
-include ":gumps:selectiongump";
-include ":gumps:textConsts";
-include ":gumps:yesno";
+//include ":gumps:autoClose";
+//include ":gumps:gumpprompt";
+//include ":gumps:gumps_ex";
+//include ":gumps:htmlgump";
+//include ":gumps:playerselectiongump";
+//include ":gumps:requestgump";
+//include ":gumps:selectiongump";
+//include ":gumps:textConsts";
+//include ":gumps:yesno";
 
 // CONSTants for the GFAddButton() function
 CONST GF_PAGE_BTN	:= 0x0;
@@ -921,7 +922,7 @@ function GetCfgConst(elem_name, prop_name)
     if ( cfg.errortext )
         return XGFError("GetCfgConst():: Unable to open GumpInfo.cfg -> "+cfg.errortext);
     endif
-
+ 
     var elem := cfg[elem_name];
     if ( elem.errortext )
         return XGFError("GetCfgConst():: Unable to find GumpInfo.cfg["+elem_name+"] ->"+elem.errortext);

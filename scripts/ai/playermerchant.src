@@ -126,7 +126,7 @@ function DoMerchantOnCreationSetup()
 	endif
 
 	if(!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, UOBJ_BACKPACK, 1, "britannia");
+		var newbackpack := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X , DEFAULT_LOCATION_ITEM_CREATION_Y , DEFAULT_LOCATION_ITEM_CREATION_Z, UOBJ_BACKPACK, 1, DEFAULT_LOCATION_ITEM_CREATION_R);
 		EquipItem(me, newbackpack);
 	endif
 
@@ -352,7 +352,7 @@ function stockitem(byref item, byref seller)
 		var theItem;
 		Say("I'll just sell this at the same price as the others.");
 		if(newAmount <= 60000)
-			theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, newAmount, "britannia" );
+			theItem := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, itemType, newAmount, DEFAULT_LOCATION_ITEM_CREATION_R );
 			theItem.sellprice := sellPrice;
 			if(!theItem.movable)
 				theItem.movable := 1;
@@ -363,7 +363,7 @@ function stockitem(byref item, byref seller)
 			endif
 		else
 			while(newAmount > 60000)
-				theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, 60000, "britannia" );
+				theItem := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, itemType, 60000, DEFAULT_LOCATION_ITEM_CREATION_R );
 				theItem.sellprice := sellPrice;
 				if(!theItem.movable)
 					theItem.movable := 1;
@@ -374,7 +374,7 @@ function stockitem(byref item, byref seller)
 				endif
 				newAmount := newAmount - 60000;
 			endwhile
-			theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, newAmount, "britannia" );
+			theItem := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, itemType, newAmount, DEFAULT_LOCATION_ITEM_CREATION_R );
 			theItem.sellprice := sellPrice;
 			if(!theItem.movable)
 				theItem.movable := 1;
@@ -553,7 +553,7 @@ function getpay()
 		SetObjProperty(me, "pastdue",pastdue);
 		if(pastdue > 2)
 			me.hidden := 1;
-			MoveOBJECTToLocation(me, 5288, 1176, 0, "britannia",  MOVEOBJECT_FORCELOCATION);
+			MoveOBJECTToLocation( me, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 			RevokePrivilege( me, "invul" );
 			setobjproperty(me, "guardkill", 1);
 			var count := 0;
@@ -609,7 +609,7 @@ function strip_items(byref mmaster)
 	endif
 
 	if(!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
+		var newbackpack := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X , DEFAULT_LOCATION_ITEM_CREATION_Y , DEFAULT_LOCATION_ITEM_CREATION_Z, 0xe75, 1, DEFAULT_LOCATION_ITEM_CREATION_R);
 		EquipItem(me, newbackpack);
 	endif
 
@@ -649,7 +649,7 @@ function fireme(byref ev)
 	Say("Kal Ort Por");
 	sleep(2);
 	PlaySoundEffect(ev.source, SFX_SPELL_RECALL);
-	MoveOBJECTToLocation(me, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+	MoveOBJECTToLocation( me, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 	RevokePrivilege(me, "invul");
 	setobjproperty(me, "guardkill", 1);
 	var count := 0;
@@ -1054,7 +1054,7 @@ endfunction
 
 function undress_items(byref you)
 	if(!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288, 1176, 0, UOBJ_BACKPACK, 1, "britannia");
+		var newbackpack := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, UOBJ_BACKPACK, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 		EquipItem(me, newbackpack);
 	endif
 

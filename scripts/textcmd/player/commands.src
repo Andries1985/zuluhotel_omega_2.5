@@ -2,7 +2,7 @@ use os;
 use uo;
 use polsys;
 
-include ":gumps:include/gumps";
+include ":gumps:gumps";
 
 
 

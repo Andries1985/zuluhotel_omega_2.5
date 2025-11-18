@@ -14,7 +14,10 @@ return;
 		SetGlobalProperty("storagestart2", startnum);
 	endif
 
-	npctest := CreateNpcFromTemplate( "banker", 5445, 1153, 0, 0, "britannia" );
+	//Old Britannia Map
+	//npctest := CreateNpcFromTemplate( "banker", 5445, 1153, 0, 0, "britannia" );
+	npctest	:= CreateNpcFromTemplate( "banker", 6338, 1581, 0, 0, "britannia_alt" );
+	
 	endnum := npctest.serial;
 	RevokePrivilege( npctest, "invul" );
 	setobjproperty(npctest, "guardkill", 1);

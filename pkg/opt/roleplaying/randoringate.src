@@ -2,6 +2,7 @@ use uo;
 use os;
 
 include "include/client";
+include "include/constants/locations";
 
 program RandorinGate( mobile )
 
@@ -14,13 +15,13 @@ program RandorinGate( mobile )
     if(mobile.cmdlevel < 1)
         if(!IsRPer)
             SendSysMessage( mobile, "You need to be an [RPer] to enter Randorin.", FONT_NORMAL, 2595 );
-            MoveObjectToLocation( mobile , 3682 , 2557 , 0 , "britannia" , MOVEOBJECT_FORCELOCATION );
+            //MoveObjectToLocation( mobile, 5227, 461, 16, "britannia", MOVEOBJECT_FORCELOCATION );
             return;
         endif
     endif
-    
-	var move := MoveObjectToLocation( mobile , 5227 , 461 , 16 , "britannia" , MOVEOBJECT_FORCELOCATION );
-	if(!move)
-		Print("Move error msg: "+move);		
-	endif
+    //Needs to ber fixed for new maps
+	//var move := MoveObjectToLocation( mobile, 5227, 461, 16, "britannia", MOVEOBJECT_FORCELOCATION );
+	//if(!move)
+	//	Print("Move error msg: "+move);		
+	//endif
 endprogram

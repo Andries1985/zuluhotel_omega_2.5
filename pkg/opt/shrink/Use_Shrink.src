@@ -35,7 +35,9 @@ function CreateCustomNPC(point, template)
 	var vits := GetObjProperty(point, "NPCVits"); 
 	var overw := GetObjProperty(point, "overw");
 
-	var critter := CreateNpcFromTemplate( template, 5283, 1184, 0, overw, "britannia");
+	//Old Britannia Map
+	//var critter := CreateNpcFromTemplate( template, 5283, 1184, 0, overw, "britannia");
+	var critter	:= CreateNpcFromTemplate( template, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, overw, DEFAULT_LOCATION_NPC_RELOCATION_R );
 
 	var i := 0;
 	foreach skill in skills

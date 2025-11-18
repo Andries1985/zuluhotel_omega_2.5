@@ -11,6 +11,8 @@ use guilds;
 include ":guilds:include/guilds";
 include ":guilds:include/guildconstants";
 include "include/classes";
+include ":gumps:autoClose";
+
 
 const PROPID_MOBILE_BROWSING := "#BrowsingGuild";
 
