@@ -42,7 +42,7 @@ var teleporters := {
     // Britannia Teleporters
     ///////////////////////////////
     ///////////////////////////////
-
+/*
     {6058,  272,  	-8,    	6095,   279,    44,     "britannia",    "britannia"},       // ctf1a
     {6058,  273,  	-8,    	6095,   279,    44,     "britannia",    "britannia"},       // ctf1b
     {6088,  274,  	58,    	6063,   278,    -22,    "britannia",    "britannia"},       // ctf2a
@@ -456,7 +456,7 @@ var teleporters := {
 	{2399, 	198, 	0, 		5186, 	1941, 	0,	    "britannia",	"britannia"},       // mine_near_minoc_0_1
 	{5185, 	1942, 	0, 		2398, 	199, 	0,	    "britannia",	"britannia"},       // mine_near_minoc_1_0
 	{5186, 	1942, 	0, 		2399, 	199, 	0,  	"britannia",	"britannia"},       // mine_near_minoc_1_0
-
+*/
     ////////////////////////////////
     ////////////////////////////////
     // Sosaria

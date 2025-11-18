@@ -709,8 +709,8 @@ function SplitLord(me)
 	//Old Britannia Map
 	//var twin1 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0, "britannia" );
 	//var twin2 := CreateNpcFromTemplate( tp, 5376, 1081, 0, 0, "britannia" );
-	var twin1 := CreateNpcFromTemplate( tp, 6338, 1581, 0, 0, "britannia_alt" );
-	var twin2 := CreateNpcFromTemplate( tp, 6338, 1581, 0, 0, "britannia_alt" );
+	var twin1 := CreateNpcFromTemplate( tp, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, 0, DEFAULT_LOCATION_NPC_RELOCATION_R );
+	var twin2 := CreateNpcFromTemplate( tp, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, 0, DEFAULT_LOCATION_NPC_RELOCATION_R );
 
 	twin1.hidden := 1;
 	twin2.hidden := 1;

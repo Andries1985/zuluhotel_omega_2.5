@@ -450,7 +450,7 @@ function CreateSpawnPointNpc( byref point, template )
 	var range	:= Cint( GetObjProperty( point , "Range" ) );
 	//Using old britannia map
 	//var critter	:= CreateNpcFromTemplate( template, 5283, 1184, 0, 0, "britannia" );
-	var critter	:= CreateNpcFromTemplate( template, 6338, 1581, 0, 0, "britannia_alt" );
+	var critter	:= CreateNpcFromTemplate( template, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, 0, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 	if( !critter )
 		return 0;
 	endif
