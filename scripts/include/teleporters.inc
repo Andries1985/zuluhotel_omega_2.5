@@ -465,7 +465,7 @@ var teleporters := {
     ///////////////////////////////
 
     //Khaz Darak
-    {2546,  1766,   -13,    5552,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance
+    {2546,  1766,   -13,    5552,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance - Fixed for New Map
     {2547,  1766,  -13,     5552,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance
     {2548,  1766,  -13,     5553,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance
     {2549,  1766,  -13,     5554,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance
@@ -474,14 +474,14 @@ var teleporters := {
     {2552,  1766,  -13,     5557,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance
     {2553,  1766,  -13,     5558,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance
     {2554,  1766,  -13,     5558,   1169,   22,     "britannia_alt",    "britannia_alt"},   //Khaz Darak Mountain Entrance
-    {5552,  1170,  22,      2546,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance
+    {5552,  1170,  22,      2546,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance - Fixed for New Map
     {5553,  1170,  22,      2547,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance
     {5554,  1170,  22,      2548,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance
     {5555,  1170,  22,      2549,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance
     {5556,  1170,  22,      2550,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance
     {5557,  1170,  22,      2551,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance
     {5558,  1170,  22,      2552,   1767,   -8,     "britannia_alt",    "britannia_alt"},   //Khaz Darak South Entrance
-    {5476,  1175,   0,      5550,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
+    {5476,  1175,   0,      5550,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining - Fixed for New Map
     {5477,  1175,   0,      5551,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
     {5478,  1175,   0,      5552,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
     {5479,  1175,   0,      5553,   1194,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
@@ -493,67 +493,67 @@ var teleporters := {
     {5554,  1193,   0,      5480,   1174,   0,      "britannia_alt",    "britannia_alt"},   //Khaz Darak Mining
 
     //Shandalaar
-    {1396,  1866,   10,     5135,  157,     11,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Bank Basement
-    {1397,  1866,   10,     5136,  157,     11,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Bank Basement
-    {5135,  158,    11,     1396,  1867,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Bank Basement
-    {5136,  158,    11,     1397,  1867,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Bank Basement
-    {1307,  1810,   27,     1310,  1811,    32,     "britannia_alt",    "britannia_alt"},   //Shandalaar Wall Fix
+    {1396,  1866,   10,     6535,  141,     11,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Bank Basement - Fixed for New Map
+    {1397,  1866,   10,     6536,  141,     11,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Bank Basement
+    {6535,  142,    11,     1396,  1867,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Bank Basement - Fixed for New Map
+    {6536,  142,    11,     1397,  1867,    12,     "britannia_alt",    "britannia_alt"},   //From Shandalaar Bank Basement
+    {1307,  1810,   27,     1310,  1811,    32,     "britannia_alt",    "britannia_alt"},   //Shandalaar Wall Fix - Fixed for New Map
     {1309,  1811,   34,     1306,  1810,    27,     "britannia_alt",    "britannia_alt"},   //Shandalaar Wall Fix
-    {1363,  1884,  0,       5172,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {1364,  1884,  0,       5173,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {1365,  1884,  0,       5174,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {1366,  1884,  0,       5175,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {1367,  1884,  0,       5176,  367,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {5172,  368,  0,        1363,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {5173,  368,  0,        1364,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {5174,  368,  0,        1365,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {5175,  368,  0,        1366,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {5176,  368,  0,        1367,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
-    {1796,  1870,   30,     1835,   1858,   30,     "britannia_alt",    "britannia_alt"},   //Shandalaar Water Passage Tower
+    {1363,  1884,  0,       5217,  422,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining - Fixed for New Map
+    {1364,  1884,  0,       5218,  422,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1365,  1884,  0,       5219,  422,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1366,  1884,  0,       5220,  422,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1367,  1884,  0,       5221,  422,     1,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5217,  423,  0,        1363,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5218,  423,  0,        1364,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5219,  423,  0,        1365,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5220,  423,  0,        1366,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {5221,  423,  0,        1367,  1885,    0,      "britannia_alt",    "britannia_alt"},   //Shandalaar Mining
+    {1796,  1870,   30,     1835,   1858,   30,     "britannia_alt",    "britannia_alt"},   //Shandalaar Water Passage Tower - Fixed for New Map
     {1834,  1858,   30,     1795,   1870,   30,     "britannia_alt",    "britannia_alt"},   //Shandalaar Water Passage Tower
 
     //Nexus
-    {5939, 1989, 0, 5278, 2127, 0, "britannia_alt", "britannia_alt" }, //Nexus Mine -> Nexus
+    {5939, 1989, 0, 5278, 2127, 0, "britannia_alt", "britannia_alt" }, //Nexus Mine -> Nexus - Fixed for New Map
     {5939, 1990, 0, 5278, 2128, 0, "britannia_alt", "britannia_alt" }, //Nexus Mine -> Nexus
     {5939, 1991, 0, 5278, 2129, 0, "britannia_alt", "britannia_alt" }, //Nexus Mine -> Nexus
     {5939, 1992, 0, 5278, 2130, 0, "britannia_alt", "britannia_alt" }, //Nexus Mine -> Nexus
     {5939, 1993, 0, 5278, 2131, 0, "britannia_alt", "britannia_alt" }, //Nexus Mine -> Nexus
-    {5277, 2127, 0, 5938, 1990, 0, "britannia_alt", "britannia_alt" }, //Nexus -> Nexus Mine
+    {5277, 2127, 0, 5938, 1989, 0, "britannia_alt", "britannia_alt" }, //Nexus -> Nexus Mine - Fixed for New Map
     {5277, 2128, 0, 5938, 1990, 0, "britannia_alt", "britannia_alt" }, //Nexus -> Nexus Mine
     {5277, 2129, 0, 5938, 1991, 0, "britannia_alt", "britannia_alt" }, //Nexus -> Nexus Mine
     {5277, 2130, 0, 5938, 1992, 0, "britannia_alt", "britannia_alt" }, //Nexus -> Nexus Mine
     {5277, 2131, 0, 5938, 1993, 0, "britannia_alt", "britannia_alt" }, //Nexus -> Nexus Mine
 
     //Nexus Outpost
-    {5927,  288,    1,      5918,  549,     5,      "britannia_alt",    "britannia_alt"},   //Nexus Outpost Mine
-    {5927,  289,    1,      5918,  550,     3,      "britannia_alt",    "britannia_alt"},   //Nexus Outpost Mine
-    {5919,  550,    4,      5928,  289,     1,      "britannia_alt",    "britannia_alt"},   //Nexus Outpost Mine
-    {5919,  549,    4,      5928,  288,     2,      "britannia_alt",    "britannia_alt"},   //Nexus Outpost Mine
+    {5857,  390,    1,      5918,  549,     5,      "britannia_alt",    "britannia_alt"},   //Nexus Outpost to Outpost Mine - Fixed for New Map
+    {5857,  391,    2,      5918,  550,     3,      "britannia_alt",    "britannia_alt"},   //Nexus Outpost to Outpost Mine
+    {5919,  549,    4,      5858,  390,     1,      "britannia_alt",    "britannia_alt"},   //Nexus Outpost Mine to Outpost
+    {5919,  550,    4,      5858,  391,     2,      "britannia_alt",    "britannia_alt"},   //Nexus Outpost Mine to Outpost
 
     //Dracham
-    {572,  1973,  0,  6120,  1499,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
-    {572,  1974,  0,  6120,  1500,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
-    {572,  1975,  0,  6120,  1501,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
-    {572,  1976,  0,  6120,  1502,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
-    {6121,  1499,  0,  573,  1973,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
-    {6121,  1500,  0,  573,  1974,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
-    {6121,  1501,  0,  573,  1975,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
-    {6121,  1502,  0,  573,  1976,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {572,  1973,  0,  5872,  759,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining - Fixed for New Map
+    {572,  1974,  0,  5872,  760,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {572,  1975,  0,  5872,  761,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {572,  1976,  0,  5872,  762,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {5873,  759,  0,  573,  1973,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {5873,  760,  0,  573,  1974,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {5873,  761,  0,  573,  1975,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
+    {5873,  762,  0,  573,  1976,  0,     "britannia_alt",    "britannia_alt"},   //Dracham Mining
 
     //Faymoor
-    {3552,  1453,  20,  5843,  1857,  0,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
+    {3552,  1453,  20,  5843,  1857,  0,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining - Fixed for New Map
     {3553,  1453,  20,  5844,  1857,  0,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
     {5843,  1858,  0,  3552,  1454,  20,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
     {5844,  1858,  0,  3553,  1454,  20,     "britannia_alt",    "britannia_alt"}, //Faymoor Mining
 
     //Winterwyn
-    {1068,  629,  20,  5184,  1160,  0,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
+    {1068,  629,  20,  5184,  1160,  0,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining - Need added back to map
     {1069,  629,  20,  5183,  1160,  0,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
     {5183,  1161,  0,  1068,  630,  20,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
     {5184,  1161,  0,  1069,  630,  20,     "britannia_alt",    "britannia_alt"},   //Winterwyn Mining
 
     //Sunken City
-    { 1908, 3665, 60, 1979, 3651, 5, "britannia_alt", "britannia_alt" }, //Sunken City Hub -> Mainland
+    { 1908, 3665, 60, 1979, 3651, 5, "britannia_alt", "britannia_alt" }, //Sunken City Hub -> Mainland - Fixed for New Map
     { 1976, 3651, 5, 1907, 3665, 60, "britannia_alt", "britannia_alt" }, //Mainland -> Sunken City Hub
     { 1908, 3641, 30, 1965, 3793, 10, "britannia_alt", "britannia_alt" }, //Sunken City Hub -> Sunken City Island
     { 1965, 3794, 10, 1909, 3640, 30, "britannia_alt", "britannia_alt" }, //Sunken City Island -> Sunken City Hub
@@ -580,10 +580,10 @@ var teleporters := {
     ///////////////////////////////
 
     //Great Maze
-    { 2785, 1956, 8, 2784, 1985, 7, "britannia_alt", "britannia_alt" }, //Great Maze
+    { 2785, 1956, 8, 2784, 1985, 7, "britannia_alt", "britannia_alt" }, //Great Maze  - Fixed for New Map
 
     //Waygate of Khaz Darak
-    { 3005, 1920, 85, 3127, 1923, 87, "britannia_alt", "britannia_alt" }, //Mainland to Faymoor Island
+    { 3005, 1920, 85, 3127, 1923, 87, "britannia_alt", "britannia_alt" }, //Mainland to Faymoor Island  - Fixed for New Map
     { 3005, 1919, 85, 3127, 1922, 87, "britannia_alt", "britannia_alt" }, //Mainland to Faymoor Island
     { 3126, 1923, 85, 3004, 1920, 85, "britannia_alt", "britannia_alt" }, //Faymoor Island to Mainland
     { 3126, 1922, 85, 3004, 1919, 85, "britannia_alt", "britannia_alt" }, //Faymoor Island to Mainland
@@ -593,15 +593,15 @@ var teleporters := {
     { 3126, 1911, 85, 3004, 1908, 85, "britannia_alt", "britannia_alt" }, //Faymoor Island to Mainland
 
     //Stonemoor
-    { 786, 1473, -20, 5145, 413, 0, "britannia_alt", "britannia_alt" }, //Mainland to Stonemoor Mine
-    { 786, 1474, -20, 5145, 414, 0, "britannia_alt", "britannia_alt" }, //Mainland to Stonemoor Mine
-    { 786, 1475, -20, 5145, 415, 0, "britannia_alt", "britannia_alt" }, //Mainland to Stonemoor Mine
-    { 786, 1476, -20, 5145, 416, 0, "britannia_alt", "britannia_alt" }, //Mainland to Stonemoor Mine
-    { 5144, 413, 0, 785, 1473, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
-    { 5144, 414, 0, 785, 1473, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
-    { 5144, 415, 0, 785, 1474, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
-    { 5144, 416, 0, 785, 1475, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
-    { 5144, 417, 0, 785, 1476, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
+    { 786, 1473, -20, 5129, 798, 0, "britannia_alt", "britannia_alt" }, //Mainland to Stonemoor Mine  - Fixed for New Map
+    { 786, 1474, -20, 5129, 799, 0, "britannia_alt", "britannia_alt" }, //Mainland to Stonemoor Mine
+    { 786, 1475, -20, 5129, 800, 0, "britannia_alt", "britannia_alt" }, //Mainland to Stonemoor Mine
+    { 786, 1476, -20, 5129, 801, 0, "britannia_alt", "britannia_alt" }, //Mainland to Stonemoor Mine
+    { 5128, 798, 0, 785, 1473, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
+    { 5128, 799, 0, 785, 1473, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
+    { 5128, 800, 0, 785, 1474, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
+    { 5128, 801, 0, 785, 1475, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
+    { 5128, 802, 0, 785, 1476, -20, "britannia_alt", "britannia_alt" }, //Stonemoor Mine to Mainland
     
     ////////////////////////////////
     ////////////////////////////////
@@ -611,7 +611,7 @@ var teleporters := {
     ///////////////////////////////
 
     //Shandalaar
-    {1311,  1996,   -27,    5424,  486,     10,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers West City Entrance
+    {1311,  1996,   -27,    5424,  486,     10,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers West City Entrance  - Fixed for New Map
     {1328,  2129,   0,      5401,  704,     -24,    "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers Graveyard Entrance
     {1328,  2128,   0,      5401,  703,     -24,    "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers Graveyard Entrance
     {1489,  1800,   5,      5430,  407,     10,     "britannia_alt",    "britannia_alt"},   //To Shandalaar Blood Sewers North City Entrance
@@ -621,41 +621,41 @@ var teleporters := {
     {5402,  702,    -25,    1329,  2128,    0,      "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to Graveyard Entrance
     {5402,  703,    -25,    1329,  2129,    0,      "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to Graveyard Entrance
     {5402,  704,    -25,    1329,  2129,    0,      "britannia_alt",    "britannia_alt"},   //From Shandalaar Blood Sewers to Graveyard Entrance
-    {1248,  1794,   -38,    5414,  1473,    2,      "britannia_alt",    "britannia_alt"},   //Shandalaar To Shandalaar Cathedral Dungeon
-    {1248,  1795,   -38,    5414,  1474,    2,      "britannia_alt",    "britannia_alt"},   //Shandalaar To Shandalaar Cathedral Dungeon
-    {1248,  1796,   -38,    5414,  1475,    2,      "britannia_alt",    "britannia_alt"},   //Shandalaar To Shandalaar Cathedral Dungeon
-    {1248,  1797,   -38,    5414,  1476,    2,      "britannia_alt",    "britannia_alt"},   //Shandalaar To Shandalaar Cathedral Dungeon
-    {5415,  1473,   7,      1249,  1794,    -33,    "britannia_alt",    "britannia_alt"},   //Shandalaar Cathedral Dungeon to Shandalaar
-    {5415,  1474,   7,      1249,  1795,    -33,    "britannia_alt",    "britannia_alt"},   //Shandalaar Cathedral Dungeon to Shandalaar
-    {5415,  1475,   7,      1249,  1796,    -33,    "britannia_alt",    "britannia_alt"},   //Shandalaar Cathedral Dungeon to Shandalaar
-    {5415,  1476,   7,      1249,  1797,    -33,    "britannia_alt",    "britannia_alt" },  //Shandalaar Cathedral Dungeon to Shandalaar
+    {1248,  1794,   -38,    5266,  1579,    2,      "britannia_alt",    "britannia_alt"},   //Shandalaar To Shandalaar Cathedral Dungeon  - Fixed for New Map
+    {1248,  1795,   -38,    5266,  1580,    2,      "britannia_alt",    "britannia_alt"},   //Shandalaar To Shandalaar Cathedral Dungeon
+    {1248,  1796,   -38,    5266,  1581,    2,      "britannia_alt",    "britannia_alt"},   //Shandalaar To Shandalaar Cathedral Dungeon
+    {1248,  1797,   -38,    5266,  1582,    2,      "britannia_alt",    "britannia_alt"},   //Shandalaar To Shandalaar Cathedral Dungeon
+    {5267,  1579,   7,      1249,  1794,    -33,    "britannia_alt",    "britannia_alt"},   //Shandalaar Cathedral Dungeon to Shandalaar
+    {5267,  1580,   7,      1249,  1795,    -33,    "britannia_alt",    "britannia_alt"},   //Shandalaar Cathedral Dungeon to Shandalaar
+    {5267,  1581,   7,      1249,  1796,    -33,    "britannia_alt",    "britannia_alt"},   //Shandalaar Cathedral Dungeon to Shandalaar
+    {5267,  1582,   7,      1249,  1797,    -33,    "britannia_alt",    "britannia_alt" },  //Shandalaar Cathedral Dungeon to Shandalaar
 
     //Nexus
-    {5742, 3307, 0, 5373,  2120, 0, "britannia_alt", "britannia_alt"}, //Underworld to Nexus
+    {5742, 3307, 0, 5373,  2120, 0, "britannia_alt", "britannia_alt"}, //Underworld to Nexus - Fixed for New Map
     {5743, 3307, 0, 5374,  2120, 0, "britannia_alt", "britannia_alt"}, //Underworld to Nexus
     {5744, 3307, 0, 5375,  2120, 0, "britannia_alt", "britannia_alt"}, //Underworld to Nexus
     {5745, 3307, 0, 5376,  2120, 0, "britannia_alt", "britannia_alt"}, //Underworld to Nexus
-    {5373, 2121, 0, 5742,  3308, 0, "britannia_alt", "britannia_alt"}, //Nexus to Underworld
+    {5373, 2121, 0, 5742,  3308, 0, "britannia_alt", "britannia_alt"}, //Nexus to Underworld - Fixed for New Map
     {5374, 2121, 0, 5743,  3308, 0, "britannia_alt", "britannia_alt"}, //Nexus to Underworld
     {5375, 2121, 0, 5744,  3308, 0, "britannia_alt", "britannia_alt"}, //Nexus to Underworld
     {5376, 2121, 0, 5745,  3308, 0, "britannia_alt", "britannia_alt"}, //Nexus to Underworld
 
     //Khaz Darak
-    {5680,  2444,  18,      5604,   1118,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
-    {5680,  2445,  18,      5604,   1119,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
-    {5680,  2446,  18,      5604,   1120,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
-    {5680,  2447,  18,      5604,   1121,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
-    {5680,  2448,  18,      5604,   1122,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
-    {5680,  2449,  18,      5604,   1123,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
-    {5680,  2450,  18,      5604,   1124,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
-    {5605,  1118,  -8,      5681,   2444,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
-    {5605,  1119,  -8,      5681,   2445,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
-    {5605,  1120,  -8,      5681,   2446,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
-    {5605,  1121,  -8,      5681,   2447,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
-    {5605,  1122,  -8,      5681,   2448,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
-    {5605,  1123,  -8,      5681,   2449,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
-    {5605,  1124,  -8,      5681,   2450,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
-    { 5539, 1050, 0, 5553, 1483, 0, "britannia_alt", "britannia_alt" }, //Kaz Darak -> Kaz Darak Ruins
+    {6724,  3280,  18,      5604,   1118,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance - Fixed for New Map
+    {6724,  3281,  18,      5604,   1119,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
+    {6724,  3282,  18,      5604,   1120,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
+    {6724,  3283,  18,      5604,   1121,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
+    {6724,  3284,  18,      5604,   1122,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
+    {6724,  3285,  18,      5604,   1123,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
+    {6724,  3286,  18,      5604,   1124,   -3,     "britannia_alt",    "britannia_alt"},   //Khaz Darak to Underworld Dungeon Entrance
+    {5605,  1118,  -8,      6725,   3280,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
+    {5605,  1119,  -8,      6725,   3281,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
+    {5605,  1120,  -8,      6725,   3282,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
+    {5605,  1121,  -8,      6725,   3283,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
+    {5605,  1122,  -8,      6725,   3284,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
+    {5605,  1123,  -8,      6725,   3285,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
+    {5605,  1124,  -8,      6725,   3286,   13,     "britannia_alt",    "britannia_alt"},   //Underworld to Khaz Darak East Entrance
+    { 5539, 1050, 0, 5553, 1483, 0, "britannia_alt", "britannia_alt" }, //Kaz Darak -> Kaz Darak Ruins - Fixed for New Map
     { 5540, 1050, 0, 5554, 1483, 0, "britannia_alt", "britannia_alt" }, //Kaz Darak -> Kaz Darak Ruins
     { 5541, 1050, 0, 5555, 1483, 0, "britannia_alt", "britannia_alt" }, //Kaz Darak -> Kaz Darak Ruins
     { 5542, 1050, 0, 5556, 1483, 0, "britannia_alt", "britannia_alt" }, //Kaz Darak -> Kaz Darak Ruins
@@ -668,7 +668,7 @@ var teleporters := {
     { 5558, 1484, 0, 5544, 1051, 0, "britannia_alt", "britannia_alt" }, //Kaz Darak Ruins -> Kaz Darak
 
     //Winterwyrn Dungeon (Needs a Name)
-    {820,  573,  -35,  5484,  892,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
+    {820,  573,  -35,  5484,  892,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance - Fixed for New Map
     {820,  574,  -35,  5484,  893,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
     {820,  575,  -35,  5484,  894,  75,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
     {5485,  892,  77,  821,  573,  -30,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
@@ -676,7 +676,7 @@ var teleporters := {
     {5485,  894,  77,  821,  575,  -30,     "britannia_alt",    "britannia_alt"},  //Winterwyn Dungeon Entrance
 
     //Mausoleum of Aeloria Veyn
-    { 3609, 1988, 5, 5737, 1891, 10, "britannia_alt", "britannia_alt" }, //Faymoor Island to Mausoleum of Aeloria Veyn
+    { 3609, 1988, 5, 5737, 1891, 10, "britannia_alt", "britannia_alt" }, //Faymoor Island to Mausoleum of Aeloria Veyn - Fixed for New Map
     { 3609, 1989, 5, 5737, 1892, 10, "britannia_alt", "britannia_alt" }, //Faymoor Island to Mausoleum of Aeloria Veyn
     { 3609, 1990, 5, 5737, 1893, 10, "britannia_alt", "britannia_alt" }, //Faymoor Island to Mausoleum of Aeloria Veyn
     { 3609, 1991, 5, 5737, 1894, 10, "britannia_alt", "britannia_alt" }, //Faymoor Island to Mausoleum of Aeloria Veyn
@@ -684,72 +684,54 @@ var teleporters := {
     { 5738, 1892, 10, 3610, 1989, 5, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn to Faymoor Island
     { 5738, 1893, 10, 3610, 1990, 5, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn to Faymoor Island
     { 5738, 1894, 10, 3610, 1991, 5, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn to Faymoor Island
-    { 5770, 1787, 12, 5736, 1787, 0, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl1 -> Lvl2
+    { 5770, 1787, 12, 5736, 1787, 0, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl1 -> Lvl2 - Fixed for New Map
     { 5771, 1787, 12, 5737, 1787, 0, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl1 -> Lvl2
     { 5772, 1787, 12, 5737, 1787, 0, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl1 -> Lvl2
     { 5773, 1787, 12, 5738, 1787, 0, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl1 -> Lvl2
     { 5736, 1788, 0, 5770, 1788, 7, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl2 -> Lvl1
     { 5737, 1788, 0, 5771, 1788, 7, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl2 -> Lvl1
     { 5738, 1788, 0, 5772, 1788, 7, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl2 -> Lvl1
-    { 5686, 1884, 10, 5762, 1702, 7, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl2 -> Boss
+    { 5686, 1884, 10, 5762, 1702, 7, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Lvl2 -> Boss - Fixed for New Map
     { 5762, 1701, 10, 5686, 1880, 0, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Boss -> Lvl2
     { 5740, 1723, 10, 5686, 1880, 0, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Boss -> Lvl2
     { 5762, 1745, 10, 5686, 1880, 0, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Boss -> Lvl2
     { 5784, 1723, 10, 5686, 1880, 0, "britannia_alt", "britannia_alt" }, //Mausoleum of Aeloria Veyn Boss -> Lvl2
 
     //Great Pyramid
-    { 2398, 2384, -23, 5554, 361, 60, "britannia_alt", "britannia_alt" }, //Great Pyramid Entrance
-    { 2398, 2385, -23, 5554, 362, 60, "britannia_alt", "britannia_alt" }, //Great Pyramid Entrance
-    { 5555, 360, 60, 2399, 2384, -18, "britannia_alt", "britannia_alt" }, //Great Pyramid Exit
-    { 5555, 361, 60, 2399, 2384, -18, "britannia_alt", "britannia_alt" }, //Great Pyramid Exit
-    { 5555, 362, 60, 2399, 2385, -18, "britannia_alt", "britannia_alt" }, //Great Pyramid Exit
-    { 5555, 363, 60, 2399, 2385, -18, "britannia_alt", "britannia_alt" }, //Great Pyramid Exit
+    { 2398, 2384, -23, 5741, 267, 60, "britannia_alt", "britannia_alt" }, //Great Pyramid Entrance - Fixed for New Map
+    { 2398, 2385, -23, 5741, 268, 60, "britannia_alt", "britannia_alt" }, //Great Pyramid Entrance
+    { 5742, 267, 60, 2399, 2384, -18, "britannia_alt", "britannia_alt" }, //Great Pyramid Exit
+    { 5742, 268, 60, 2399, 2384, -18, "britannia_alt", "britannia_alt" }, //Great Pyramid Exit
+    { 5742, 269, 60, 2399, 2385, -18, "britannia_alt", "britannia_alt" }, //Great Pyramid Exit
+    { 5742, 270, 60, 2399, 2385, -18, "britannia_alt", "britannia_alt" }, //Great Pyramid Exit
 
     //Tomb of Hashut
-    { 5461, 364, 40, 2447, 2904, 0, "britannia_alt", "britannia_alt" }, //Tomb of Hashut to City of Rust
-    { 5462, 364, 40, 2447, 2904, 0, "britannia_alt", "britannia_alt" }, //Tomb of Hashut to City of Rust
-    { 5463, 364, 40, 2449, 2904, 0, "britannia_alt", "britannia_alt" }, //Tomb of Hashut to City of Rust
-    { 5464, 364, 40, 2449, 2904, 0, "britannia_alt", "britannia_alt" }, //Tomb of Hashut to City of Rust
-    { 2447, 2903, 0, 5461, 363, 39, "britannia_alt", "britannia_alt" }, //City of Rust to Tomb of Hashut
-    { 2448, 2903, 0, 5462, 363, 39, "britannia_alt", "britannia_alt" }, //City of Rust to Tomb of Hashut
-    { 2449, 2903, 0, 5463, 363, 39, "britannia_alt", "britannia_alt" }, //City of Rust to Tomb of Hashut
+    { 5648, 271, 40, 2447, 2904, 0, "britannia_alt", "britannia_alt" }, //Tomb of Hashut to City of Rust - Fixed for New Map
+    { 5649, 271, 40, 2447, 2904, 0, "britannia_alt", "britannia_alt" }, //Tomb of Hashut to City of Rust
+    { 5650, 271, 40, 2448, 2904, 0, "britannia_alt", "britannia_alt" }, //Tomb of Hashut to City of Rust
+    { 5651, 271, 40, 2449, 2904, 0, "britannia_alt", "britannia_alt" }, //Tomb of Hashut to City of Rust
+    { 2447, 2903, 0, 5648, 270, 39, "britannia_alt", "britannia_alt" }, //City of Rust to Tomb of Hashut
+    { 2448, 2903, 0, 5649, 270, 39, "britannia_alt", "britannia_alt" }, //City of Rust to Tomb of Hashut
+    { 2449, 2903, 2, 5650, 270, 39, "britannia_alt", "britannia_alt" }, //City of Rust to Tomb of Hashut
 
-    //Spider Cave
-    { 5845, 248, -21, 5703, 221, 9, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl2 -> Boss
-    { 5703, 220, 21, 5845, 247, -10, "britannia_alt", "britannia_alt" }, //Spider Cave Boss -> Lvl2
-    { 5871, 167, 12, 5669, 342, 4, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl2 -> Lvl1
-    { 5872, 167, 12, 5670, 342, 4, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl2 -> Lvl1
-    { 5873, 167, 12, 5671, 342, 4, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl2 -> Lvl1
-    { 5874, 167, 12, 5672, 342, 4, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl2 -> Lvl1
-    { 5875, 167, 12, 5673, 342, 4, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl2 -> Lvl1
-    { 5669, 343, 4, 5871, 168, 10, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl1 -> Lvl2
-    { 5670, 343, 4, 5872, 168, 10, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl1 -> Lvl2
-    { 5671, 343, 4, 5873, 168, 10, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl1 -> Lvl2
-    { 5672, 343, 4, 5874, 168, 10, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl1 -> Lvl2
-    { 5673, 343, 4, 5875, 168, 10, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl1 -> Lvl2
-    { 5746, 330, 4, 1554, 2720, -63, "britannia_alt", "britannia_alt" }, //Spider Cave Exit
-    { 5746, 331, 4, 1554, 2721, -55, "britannia_alt", "britannia_alt" }, //Spider Cave Exit
-    { 1553, 2719, -66, 5745, 330, 4, "britannia_alt", "britannia_alt" }, //Spider Cave Entrance
-    { 1553, 2720, -68, 5745, 331, 4, "britannia_alt", "britannia_alt" }, //Spider Cave Entrance
-    { 5743, 183, 0, 6094, 2580, 0, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl2 -> Underworld
-    { 5743, 184, 0, 6094, 2581, 0, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl2 -> Underworld
-    { 5743, 185, 0, 6094, 2582, 0, "britannia_alt", "britannia_alt" }, //Spider Cave Lvl2 -> Underworld
-    { 6095, 2580, 0, 5744, 183, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Spider Cave Lvl2
-    { 6095, 2581, 0, 5744, 184, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Spider Cave Lvl2
-    { 6095, 2582, 0, 5744, 185, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Spider Cave Lvl2
+    //Spider Area
+    { 1553, 2720, -68, 7138, 3417, 0, "britannia_alt", "britannia_alt" }, //Spider Area Entrance -> Underworld - Fixed for New Map
+    { 7139, 3416, 0, 1554, 2720, -63, "britannia_alt", "britannia_alt" }, //Underworld -> Spider Area Entrance
+    { 7139, 3417, 0, 1554, 2720, -63, "britannia_alt", "britannia_alt" }, //Underworld -> Spider Area Entrance
+    { 7139, 3418, 0, 1554, 2720, -63, "britannia_alt", "britannia_alt" }, //Underworld -> Spider Area Entrance
 
     //Crystal Dungeon
-    { 6052, 2426, 0, 5613, 152, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Crystal Dungeon Entrance
-    { 6052, 2427, 0, 5613, 153, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Crystal Dungeon Entrance
-    { 6052, 2428, 0, 5613, 154, 6, "britannia_alt", "britannia_alt" }, //Underworld -> Crystal Dungeon Entrance
-    { 5612, 152, 0, 6051, 2426, 0, "britannia_alt", "britannia_alt" }, //Crystal Dungeon Exit -> Underworld
-    { 5612, 153, 1, 6051, 2427, 0, "britannia_alt", "britannia_alt" }, //Crystal Dungeon Exit -> Underworld
-    { 5612, 154, 7, 6051, 2428, 0, "britannia_alt", "britannia_alt" }, //Crystal Dungeon Exit -> Underworld
-    { 5864, 61, 0, 5840, 106, 1, "britannia_alt", "britannia_alt" }, //Boss -> Crystal Dungeon Lvl1
-    { 5839, 106, 1, 5865, 61, 0, "britannia_alt", "britannia_alt" }, //Crystal Dungeon Lvl1 -> Boss
+    { 7096, 3262, 0, 5616, 101, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Crystal Dungeon Entrance - Fixed for New Map
+    { 7096, 3263, 0, 5616, 102, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Crystal Dungeon Entrance
+    { 7096, 3264, 0, 5616, 103, 6, "britannia_alt", "britannia_alt" }, //Underworld -> Crystal Dungeon Entrance
+    { 5615, 101, 0, 7095, 3262, 0, "britannia_alt", "britannia_alt" }, //Crystal Dungeon Exit -> Underworld
+    { 5615, 102, 1, 7095, 3263, 0, "britannia_alt", "britannia_alt" }, //Crystal Dungeon Exit -> Underworld
+    { 5615, 103, 7, 7095, 3264, 0, "britannia_alt", "britannia_alt" }, //Crystal Dungeon Exit -> Underworld
+    { 5864, 75, 0, 5841, 55, 1, "britannia_alt", "britannia_alt" }, //Boss -> Crystal Dungeon Lvl1 - Fixed for New Map
+    { 5842, 55, 1, 5865, 75, 0, "britannia_alt", "britannia_alt" }, //Crystal Dungeon Lvl1 -> Boss
 
     //Black City of the Damned
-    { 5342, 961, 15, 1085, 2910, 27, "britannia_alt", "britannia_alt" }, //Black City of the Damned Dungeon Exit
+    { 5342, 961, 15, 1085, 2910, 27, "britannia_alt", "britannia_alt" }, //Black City of the Damned Dungeon Exit - Fixed for New Map
     { 5343, 961, 15, 1086, 2910, 27, "britannia_alt", "britannia_alt" }, //Black City of the Damned Dungeon Exit
     { 5344, 961, 15, 1087, 2910, 27, "britannia_alt", "britannia_alt" }, //Black City of the Damned Dungeon Exit
     { 5345, 961, 15, 1088, 2910, 27, "britannia_alt", "britannia_alt" }, //Black City of the Damned Dungeon Exit
@@ -767,27 +749,27 @@ var teleporters := {
     { 5687, 3960, 0, 5268, 996, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Black City of the Damned
 
     //Ancient Pyramid of Nehekharas
-    { 3429, 3523, -20, 6214, 413, 0, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Entrance
+    { 3429, 3523, -20, 6214, 413, 0, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Entrance - Fixed for New Map
     { 3430, 3523, -20, 6215, 413, 0, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Entrance
     { 3431, 3523, -20, 6216, 413, 0, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Entrance
     { 6214, 414, 0, 3429, 3524, -18, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Exit
     { 6215, 414, 0, 3430, 3524, -18, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Exit
     { 6216, 414, 0, 3431, 3524, -18, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Exit
-    { 6214, 295, 0, 6356, 772, 32, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Lvl1 -> Lvl2
+    { 6214, 295, 0, 6356, 772, 32, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Lvl1 -> Lvl2 - Fixed for New Map
     { 6215, 295, 0, 6356, 772, 32, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Lvl1 -> Lvl2
     { 6216, 295, 0, 6357, 772, 32, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Lvl1 -> Lvl2
     { 6356, 773, 35, 6214, 296, 0, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Lvl2 -> Lvl1
     { 6357, 773, 35, 6215, 296, 0, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Lvl2 -> Lvl1
-    { 6544, 931, 12, 6495, 815, 55, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Lvl2 -> Boss
+    { 6544, 931, 12, 6495, 815, 55, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Lvl2 -> Boss - Fixed for New Map
     { 6494, 815, 55, 6543, 931, 12, "britannia_alt", "britannia_alt" }, //Ancient Pyramid of Nehekharas Boss -> Lvl2
 
     //Poison Dungeon
-    { 2025, 3454, -13, 5678, 683, 17, "britannia_alt", "britannia_alt" }, //Poison Dungeon Entrance
-    { 2026, 3454, -13, 5679, 683, 17, "britannia_alt", "britannia_alt" }, //Poison Dungeon Entrance
-    { 2027, 3454, -13, 5680, 683, 17, "britannia_alt", "britannia_alt" }, //Poison Dungeon Entrance
-    { 5678, 684, 22, 2025, 3455, -8, "britannia_alt", "britannia_alt" }, //Poison Dungeon Exit
-    { 5679, 684, 22, 2026, 3455, -8, "britannia_alt", "britannia_alt" }, //Poison Dungeon Exit
-    { 5680, 684, 22, 2027, 3455, -8, "britannia_alt", "britannia_alt" }, //Poison Dungeon Exit
+    { 2025, 3454, -13, 5944, 863, 17, "britannia_alt", "britannia_alt" }, //Poison Dungeon Entrance - Fixed for New Map
+    { 2026, 3454, -13, 5945, 863, 17, "britannia_alt", "britannia_alt" }, //Poison Dungeon Entrance
+    { 2027, 3454, -13, 5946, 863, 17, "britannia_alt", "britannia_alt" }, //Poison Dungeon Entrance
+    { 5944, 864, 22, 2025, 3455, -8, "britannia_alt", "britannia_alt" }, //Poison Dungeon Exit
+    { 5945, 864, 22, 2026, 3455, -8, "britannia_alt", "britannia_alt" }, //Poison Dungeon Exit
+    { 5946, 864, 22, 2027, 3455, -8, "britannia_alt", "britannia_alt" }, //Poison Dungeon Exit
 
     //Fire Dungeon
     { 2847, 1875, 5, 5720, 2001, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
