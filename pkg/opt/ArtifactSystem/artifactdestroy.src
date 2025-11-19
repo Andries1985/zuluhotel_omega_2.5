@@ -2,12 +2,13 @@ use uo;
 use os;
 
 include ":ArtifactSystem:artifact";
+include "include/constants/locations";
 
 program maindestroy( item ) 
 
 	if (item.unequipscript) // The item has an unequip script
 		if (item.container.isa(POLCLASS_MOBILE)) // The item in equipped
-			MoveObjectToLocation(item, 5286, 1170, 0, "britannia", MOVEOBJECT_NORMAL);
+			MoveObjectToLocation(item, DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, DEFAULT_LOCATION_ITEM_CREATION_R, MOVEOBJECT_NORMAL);
 		endif
 	endif
 

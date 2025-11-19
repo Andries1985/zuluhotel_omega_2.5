@@ -1,8 +1,9 @@
 use uo;
+use os;
 use math;
 use cfgfile;
 
-const MIN_KARMA_LIMIT := -10500;
+const MIN_KARMA_LIMIT := -20500;
 const MAX_KARMA_LIMIT := 10500;
 
 const MIN_FAME_LIMIT := 0;
@@ -343,7 +344,7 @@ endfunction
 
 function GetKarmaID( karma )
 
-	var KarmaArray := {-30000, -9999, -4999, -2499, -1249, -625, +625, +1250, +2500, +5000, +10000}; /*ROWS*/
+	var KarmaArray := {-20000, -9999, -4999, -2499, -1249, -625, +625, +1250, +2500, +5000, +10000}; /*ROWS*/
 	var index := Len(KarmaArray);
 	while ((index > 1) && (karma < KarmaArray[index]))
 		index := index - 1;
@@ -363,7 +364,7 @@ function GetKarmaFameName( who )
 	/*  -4999 */ {"Scoundrel",   "Malicious",    "Vile",      "Villainous",    "Dark Lord/Lady"         },
 	/*  -2499 */ {"Unsavory",    "Dishonorable", "Ignoble",   "Sinister",      "Sinister Lord/Lady"     },
 	/*  -1249 */ {"Rude",        "Disreputable", "Notorious", "Infamous",      "Dishonored Lord/Lady"   },
-	/*   -624 */ {"",            "Notable",      "Prominent", "Renowned",      "Lord/Lady"              },
+	/*   -624 */ {"Unfair",      "Notable",      "Prominent", "Renowned",      "Lord/Lady"              },
 	/*   +625 */ {"Fair",        "Upstanding",   "Reputable", "Distinguished", "Distinguished Lord/Lady"},
 	/*  +1250 */ {"Kind",        "Respectable",  "Proper",    "Eminent",       "Eminent Lord/Lady"      },
 	/*  +2500 */ {"Good",        "Honorable",    "Admirable", "Noble",         "Noble Lord/Lady"        },

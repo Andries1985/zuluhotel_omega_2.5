@@ -1,7 +1,11 @@
 use uo;
 use os;
 
-include ":gumps:gumps";
+//include ":gumps:gumps";
+include ":gumps:gumps_ex";
+include ":gumps:autoClose";
+include ":gumps:yesno";
+include ":gumps:yesNoSizable";
 
 program Gump_YesNo( params )
 

@@ -138,7 +138,7 @@ function CanJoin(guard, recruit, guardtype, shieldtype)
 	if (yourtype)
 		SendSysMessage(guard,"They're already a Virtue Guard.");
 		if (yourtype = guardtype)
-		  var newshield := CreateItemAtLocation(5288 , 1176 , 0, shieldtype, 1, "britannia");
+		  var newshield := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, shieldtype, 1, DEFAULT_LOCATION_ITEM_CREATION_R);
 		  if (!EquipItem(recruit,newshield))
 		    DestroyItem(newshield);
 		  else
@@ -183,7 +183,7 @@ function CanJoin(guard, recruit, guardtype, shieldtype)
 	setobjproperty(recruit,"guardtype",guardtype);
 	recruit.title_prefix := "Squire ";
 	recruit.title_suffix := ", Virtue Guard";
-	var newshield := CreateItemAtLocation(recruit.x , recruit.y , recruit.z, shieldtype, 1, "britannia");
+	var newshield := CreateItemAtLocation(recruit.x , recruit.y , recruit.z, shieldtype, 1, recruit.realm);
 	EquipItem(recruit,newshield);
 	PlaySoundEffect(recruit, SFX_SPELL_BLESS);
 	PlayObjectCenteredEffect( recruit, FX_BLESS_EFFECT, 10,10);

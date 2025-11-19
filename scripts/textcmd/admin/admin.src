@@ -291,7 +291,7 @@ program textcmd_testgump( who )
 		endif
 
 		acc.setprop( "Release" , (ReadGameClock() + time) );
-		MoveObjectToLocation( client , DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, "britannia", MOVEOBJECT_FORCELOCATION);
+		MoveObjectToLocation( client , DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, DEFAULT_LOCATION_JAIL_R, MOVEOBJECT_FORCELOCATION);
 		SendSysMessage( client , "You have been jailed" );
 		SendSysMessage( who , playername + " has been jailed." );
 //		DisconnectClient(client);
@@ -309,7 +309,7 @@ program textcmd_testgump( who )
 		acc.setprop( "Release" , 0 );
 		SendSysMessage( client , "You have been freed.");
 		SendSysMessage( who , playername + " has been freed." );
-		MoveObjectToLocation( client , 3674 , 2507 , 0 , "britannia", 0);
+		MoveObjectToLocation( client , 1433 , 1861 , 36 , "britannia_alt", 0);
 		return;
 	
 	elseif( action == 7 ) // NOTES

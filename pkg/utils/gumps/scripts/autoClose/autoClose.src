@@ -1,4 +1,4 @@
-include ":gumps:gumps";
+include ":gumps:autoClose";
 
 program CloseGumpEx(params)
 	var mobile	:= params[1];

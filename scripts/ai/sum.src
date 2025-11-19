@@ -71,33 +71,33 @@ endprogram
 /////////////////////////////////////////////////////////////////////////////
 function CloseDistance( opponent )
 
-//	return 1 if we DON'T need to move
-//	return 0 if we DO need to move
-var Near;
-Near := ListItemsNearLocation( me.x , me.y , me.z , 5, me.realm );
-var kwall := 0;
-var runaround := 0;
-foreach item in Near
-if (item.objtype == 0x5f or item.objtype == 0x57 or item.objtype == 0x3946 or item.objtype == 0x3955)
-if (kwall == 0)
-	if (!CheckLineOfSight( me, opponent))
-		if (Random(2) == 1 )
-			SetMana(me, GetMana(me)+50);
-			CastSpell(me,me,"dispel_field");
-			kwall := 1;
-		else	
-			while (runaround < 15)
-				runaround := runaround + 1;
-				RunToward(opponent);
-			endwhile
-			runaround := 0;
+	//	return 1 if we DON'T need to move
+	//	return 0 if we DO need to move
+	var Near;
+	Near := ListItemsNearLocation( me.x , me.y , me.z , 5, me.realm );
+	var kwall := 0;
+	var runaround := 0;
+	foreach item in Near
+		if (item.objtype == 0x5f or item.objtype == 0x57 or item.objtype == 0x3946 or item.objtype == 0x3955)
+			if (kwall == 0)
+				if (!CheckLineOfSight( me, opponent))
+					if (Random(2) == 1 )
+						SetMana(me, GetMana(me)+50);
+						CastSpell(me,me,"dispel_field");
+						kwall := 1;
+					else	
+						while (runaround < 15)
+							runaround := runaround + 1;
+							RunToward(opponent);
+						endwhile
+						runaround := 0;
+					endif
+				endif
+			endif
 		endif
-	endif
-endif
-endif
-endforeach
-  var sleepdelay := 300 - (CInt(me.dexterity) * 1.5);
-  if (sleepdelay < 0) sleepdelay := 0; endif
+	endforeach
+	var sleepdelay := 300 - (CInt(me.dexterity) * 1.5);
+	if (sleepdelay < 0) sleepdelay := 0; endif
 
 	var d:=distance(me,opponent);
 	if ( d > 10 )
@@ -162,42 +162,41 @@ endforeach
 			endif
 			return 2;
 		else
-
-		If(Gethp(me) <= Getmaxhp(me)/10*8)
-			if(najs == 0)
-			//undre raden
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5307 ,752 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "occultliche" ,5311 ,752 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5315 ,752 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "abyssalliche" ,5319 ,752 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5323 ,752 ,-20 ,1 , "britannia" );
-			//�vre raden
-			thecritter := CreateNPCfromTemplate( "undeadflayer" ,5307 ,746 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5311 ,746 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "umbralflicker" ,5315 ,746 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5319 ,746 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "ebonyhorror" ,5323 ,746 ,-20 ,1 , "britannia" );
-			najs := 1;
+			if(Gethp(me) <= Getmaxhp(me)/10*8)
+				if(najs == 0)
+				//undre raden
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "occultliche" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "abyssalliche" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				//�vre raden
+				thecritter := CreateNPCfromTemplate( "undeadflayer" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "umbralflicker" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "ebonyhorror" ,me.x ,me.y ,me.z ,1 , me.realm );
+				najs := 1;
+				endif
 			endif
-		endif
 
-		If(Gethp(me) <= Getmaxhp(me)/10*4)
-			if(najs2 == 0)
-			//undre raden
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5307 ,752 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "occultliche" ,5311 ,752 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5315 ,752 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "abyssalliche" ,5319 ,752 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5323 ,752 ,-20 ,1 , "britannia" );
-			//�vre raden
-			thecritter := CreateNPCfromTemplate( "undeadflayer" ,5307 ,746 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5311 ,746 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "umbralflicker" ,5315 ,746 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,5319 ,746 ,-20 ,1 , "britannia" );
-			thecritter := CreateNPCfromTemplate( "ebonyhorror" ,5323 ,746 ,-20 ,1 , "britannia" );
-			najs2 := 1;
+			If(Gethp(me) <= Getmaxhp(me)/10*4)
+				if(najs2 == 0)
+				//undre raden
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "occultliche" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "abyssalliche" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				//�vre raden
+				thecritter := CreateNPCfromTemplate( "undeadflayer" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "umbralflicker" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "skeletalwarrior" ,me.x ,me.y ,me.z ,1 , me.realm );
+				thecritter := CreateNPCfromTemplate( "ebonyhorror" ,me.x ,me.y ,me.z ,1 , me.realm );
+				najs2 := 1;
+				endif
 			endif
-		endif
 
 			spellattack(opponent);
 		endif

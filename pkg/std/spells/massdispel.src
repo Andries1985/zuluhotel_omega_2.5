@@ -83,7 +83,7 @@ program mass_dispel ( parms, spell_id )
 		
 				if( !CheckSkill( mobile, SKILLID_MAGICRESISTANCE, magery, 50 ))
 					PlaySoundEffect( mobile, SFX_SPELL_DISPEL );
-					MoveObjectToLocation(mobile, 0, 0, 0, MOVEOBJECT_FORCELOCATION, "britannia");
+					MoveObjectToLocation( mobile, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 					ApplyTheDamage( mobile, caster, GetMaxHP(mobile)+3, DMGID_MAGIC );
 				endif
 

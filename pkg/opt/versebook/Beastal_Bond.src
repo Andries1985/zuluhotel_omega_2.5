@@ -228,7 +228,9 @@ function BondToAnimal(who, animal, range)
 	override.+concealed := 1;
 	override.+frozen := 1;
 	override.+script := ":versebook:ai_beastal_bond";
-	var wisp := CreateNpcFromTemplate("wisp", 5276, 1186, 0, override, "britannia");
+	//Old Britannia Map
+	//var wisp := CreateNpcFromTemplate("wisp", 5276, 1186, 0, override, "britannia");
+	var wisp	:= CreateNpcFromTemplate( "wisp", 6338, 1581, 0, override, "britannia_alt" );
 	SetObjProperty(wisp, "Animal", animal.serial);
 	SetObjProperty(wisp, "Master", who.serial);
 	return 1;

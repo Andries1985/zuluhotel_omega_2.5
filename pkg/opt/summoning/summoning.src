@@ -74,7 +74,10 @@ program summon_creature( parms )
 	PlaySoundEffect( caster , sfx );
 	Detach();
 	
-	var thecritter := CreateNpcFromTemplate( npctemplate, 5283, 1184, 0, 0, "britannia");
+	
+	//Old Britannia Map
+	//var thecritter := CreateNpcFromTemplate( npctemplate, 5283, 1184, 0, 0, "britannia");
+	var thecritter	:= CreateNpcFromTemplate( npctemplate, 6338, 1581, 0, 0, "britannia_alt" );
 	thecritter.hidden := 1;
 
 	//Modify this for Mystic Archer to not require ME
@@ -157,7 +160,7 @@ program summon_creature( parms )
   			MoveObjectToLocation( item , thecritter.x , thecritter.y , thecritter.z, thecritter.realm, MOVEOBJECT_FORCELOCATION );
 		endforeach
 	endif
-	MoveObjectToLocation( thecritter , 0 , 0 , 0 , "britannia",MOVEOBJECT_FORCELOCATION );
+	MoveObjectToLocation( thecritter, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 	ApplyRawDamage(thecritter, GetMaxHP(thecritter) + 3);
 
 endprogram

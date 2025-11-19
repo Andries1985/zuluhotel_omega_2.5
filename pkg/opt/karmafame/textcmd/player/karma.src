@@ -1,0 +1,162 @@
+use uo;
+
+include "../../karmafame";
+include ":gumps:include/gumps";
+
+program textcmd_karma( who )
+
+	var KFNameMatrix   := {
+	/* Karma\Fame  0              1250            2500         5000             10000                   */
+	/* +10000 */ {"Trustworthy", "Estimable",    "Great",     "Glorious",      "Glorious Lord/Lady"     },
+	/*  +5000 */ {"Honest",      "Commendable",  "Famed",     "Illustrious",   "Illustrious Lord/Lady"  },
+	/*  +2500 */ {"Good",        "Honorable",    "Admirable", "Noble",         "Noble Lord/Lady"        },
+	/*  +1250 */ {"Kind",        "Respectable",  "Proper",    "Eminent",       "Eminent Lord/Lady"      },
+	/*   +625 */ {"Fair",        "Upstanding",   "Reputable", "Distinguished", "Distinguished Lord/Lady"},
+	/*   -624 */ {"Unfair",      "Notable",      "Prominent", "Renowned",      "Lord/Lady"              },
+	/*  -1249 */ {"Rude",        "Disreputable", "Notorious", "Infamous",      "Dishonored Lord/Lady"   },
+	/*  -2499 */ {"Unsavory",    "Dishonorable", "Ignoble",   "Sinister",      "Sinister Lord/Lady"     },
+	/*  -4999 */ {"Scoundrel",   "Malicious",    "Vile",      "Villainous",    "Dark Lord/Lady"         },
+	/*  -9999 */ {"Despicable",  "Dastardly",    "Wicked",    "Evil",          "Evil Lord/Lady"         },
+	/* -30000 */ {"Outcast",     "Wretched",     "Nefarious", "Dread",         "Dread Lord/Lady"        }
+	};
+
+	var hue, i, chue;
+	var j := 1;
+	var k := 1;
+	var l := 1; 
+	var m := 1;
+	var n := 1;
+	var countb := 0;
+	var countc := 0;
+	var countd := 0;
+	var counte := 0;
+	var countf := 0;
+
+	var karma := GetKarma( who );
+	var fame  := GetFame( who );
+
+	var title := GetKarmaFameName(who);
+	var gump := GFCreateGump(20, 20, 845, 300);
+
+	// The main gump screen
+	GFResizePic(gump, 20, 20, 40288, 845, 300);
+
+	GFTextLine(gump, 110, 38, 53, "+");
+	GFGumpPic(gump, 90, 40, 5605);
+	GFTextLine(gump, 64, 120, 53, "+");
+	GFGumpPic(gump, 60, 140, 5600);
+	GFGumpPic(gump, 60, 160, 5602);
+	GFTextLine(gump, 64, 175, 53, "-");
+	GFTextLine(gump, 415, 40, 53, "FAME");
+	GFTextLine(gump, 40, 120, 53, "K");
+	GFTextLine(gump, 40, 135, 53, "A");
+	GFTextLine(gump, 40, 150, 53, "R");
+	GFTextLine(gump, 40, 165, 53, "M");
+	GFTextLine(gump, 40, 180, 53, "A");
+
+
+	for(i:=1; i<=55; i:=i+1)
+		if (i <= 11)
+			var x := 70;
+			var y := 60 + countb;
+			var title2 := KFNameMatrix[j][1];
+			if( title2["Lord/Lady"] )
+				if( who.gender == 0 )
+					title2["Lord/Lady"] := "Lord";
+				else
+					title2["Lord/Lady"] := "Lady";
+				endif
+			endif
+			if (title == title2)
+				chue := 2799;
+			else
+				chue := 0;
+			endif
+			GFTextLine(gump, x + 20, y, chue, KFNameMatrix[j][1]);
+			j := j+1;
+			countb := countb + 20;
+		elseif (i > 11 && i <= 22)
+			var x := 220;
+			var y := 60 + countc;
+			var title2 := KFNameMatrix[k][2];
+			if( title2["Lord/Lady"] )
+				if( who.gender == 0 )
+					title2["Lord/Lady"] := "Lord";
+				else
+					title2["Lord/Lady"] := "Lady";
+				endif
+			endif
+			if (title == title2)
+				chue := 2799;
+			else
+				chue := 0;
+			endif
+			GFTextLine(gump, x + 20, y, chue, KFNameMatrix[k][2]);
+			k := k+1;
+			countc := countc + 20;
+		elseif (i > 22 && i <= 33)
+			var x := 370;
+			var y := 60 + countd;
+			var title2 := KFNameMatrix[l][3];
+			if( title2["Lord/Lady"] )
+				if( who.gender == 0 )
+					title2["Lord/Lady"] := "Lord";
+				else
+					title2["Lord/Lady"] := "Lady";
+				endif
+			endif
+			if (title == title2)
+				chue := 2799;
+			else
+				chue := 0;
+			endif
+			GFTextLine(gump, x + 20, y, chue, KFNameMatrix[l][3]);
+			l := l+1;
+			countd := countd + 20;
+		elseif (i > 33 && i <= 44)
+			var x := 520;
+			var y := 60 + counte;
+			var title2 := KFNameMatrix[m][4];
+			if( title2["Lord/Lady"] )
+				if( who.gender == 0 )
+					title2["Lord/Lady"] := "Lord";
+				else
+					title2["Lord/Lady"] := "Lady";
+				endif
+			endif
+			if (title == title2)
+				chue := 2799;
+			else
+				chue := 0;
+			endif
+			GFTextLine(gump, x + 20, y, chue, KFNameMatrix[m][4]);
+			m := m+1;
+			counte := counte + 20;
+		elseif (i > 44 && i <= 55)
+			var x := 670;
+			var y := 60 + countf;
+			var title2 := KFNameMatrix[n][5];
+			if( title2["Lord/Lady"] )
+				if( who.gender == 0 )
+					title2["Lord/Lady"] := "Lord";
+				else
+					title2["Lord/Lady"] := "Lady";
+				endif
+			endif
+			if (title == title2)
+				chue := 2799;
+			else
+				chue := 0;
+			endif
+			GFTextLine(gump, x + 20, y, chue, KFNameMatrix[n][5]);
+			n := n+1;
+			countf := countf + 20;
+		endif
+
+	endfor
+	SetFame(who, fame);
+	SetKarma(who, karma);
+	SendSysmessage( who , "Karma : "+ karma + ", Fame :"+ fame, 3, 2799);
+	GFSendGump(who, gump);
+
+endprogram

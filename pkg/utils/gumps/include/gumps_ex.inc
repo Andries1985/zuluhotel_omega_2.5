@@ -19,6 +19,8 @@ use os;
 use polsys;
 use cfgfile;
 
+include ":gumps:gumps";
+
 // CONSTants for GFTextCoords()
 CONST ALIGN_CENTER	:= 0x1;
 CONST ALIGN_RIGHT	:= 0x2;

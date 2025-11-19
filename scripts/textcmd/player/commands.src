@@ -2,10 +2,11 @@ use os;
 use uo;
 use polsys;
 
-include ":gumps:include/gumps";
+include ":gumps:gumps";
 
 
-Program use_racegate(who, gate)
+
+Program textcmd_commands(who)
 
 var commands := ListTextCOmmands();	
 var displayinfo := "<BASEFONT SIZE=16>";
@@ -25,13 +26,15 @@ endforeach
 var gump := GFCreateGump(20, 20, 230, 400);
 
 // The main gump screen
-GFResizePic(gump, 20, 20, 9250, 230, 400);
+//GFResizePic(gump, 20, 20, 9250, 230, 400);
+//GFGumpPic(gump, 20, 20, 3500);
+GFResizePic(gump, 20, 20, 3500, 280, 635);
 
-GFResizePic(gump, 70, 32, 9200, 131, 27);
+//GFResizePic(gump, 70, 32, 9200, 131, 27);
 
-GFHTMLArea(gump, 35, 75, 200, 335, displayinfo, 1, 1);
+GFHTMLArea(gump, 35, 55, 250, 575, displayinfo, 1, 1);
 
-GFTextLine(gump, 95, 35, 67, "Command List");
+GFTextLine(gump, 115, 35, 67, "Command List");
 
 var result := GFSendGump(who, gump);
 

@@ -50,7 +50,7 @@ program summon_creature( parms )
 
 	RevokePrivilege( thecritter, "invul" );
 	SetObjProperty(thecritter,"guardkill",1);
-	MoveOBJECTToLocation(thecritter,5288,1176,0,"britannia",MOVEOBJECT_FORCELOCATION);
+	MoveOBJECTToLocation( thecritter, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 	ApplyRawDamage(thecritter, GetMaxHP(thecritter)+3);
 
 	var count := 0;

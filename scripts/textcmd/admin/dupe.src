@@ -17,7 +17,7 @@ program open_bank( who )
 		return 0;
 	endif
 
-	var newitem := CreateItemCopyAtLocation(0, 0, 0, what, "britannia");
+	var newitem := CreateItemCopyAtLocation(DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, what, DEFAULT_LOCATION_ITEM_CREATION_R);
 	newitem.movable := 1;
 	MoveItemToContainer(newitem, who.backpack);
 
@@ -26,7 +26,7 @@ program open_bank( who )
 	if (what.objtype == 8)
 		var sub_item;
 		foreach item in EnumerateItemsInContainer(what)
-			sub_item := CreateItemCopyAtLocation(0, 0, 0, item, "britannia");
+			sub_item := CreateItemCopyAtLocation(DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, item, DEFAULT_LOCATION_ITEM_CREATION_R);
 			MoveItemToContainer(sub_item, newitem);
 		endforeach
 	endif

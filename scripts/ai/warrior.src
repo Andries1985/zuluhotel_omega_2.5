@@ -226,10 +226,10 @@ function ChangeWeapons()
 	var shield := GetEquipmentByLayer(me,LAYER_HAND2);
 
 	if (weapon)
-		MoveObjectToLocation(weapon, me.x, me.y, me.z, "britannia", MOVEOBJECT_FORCELOCATION);
+		MoveObjectToLocation(weapon, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
 	endif
 	if (shield)
-		MoveObjectToLocation(shield, me.x, me.y, me.z, "britannia", MOVEOBJECT_FORCELOCATION);
+		MoveObjectToLocation(shield, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
 	endif
 	foreach item in ListRootItemsInContainer(me.backpack)
 		EquipItem(me,item);
@@ -299,7 +299,7 @@ function SetMeUp()
 	endif
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
+		var newbackpack := CreateItemAtLocation(DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, 0xe75, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 		if (!EquipItem(me, newbackpack)) DestroyItem(newbackpack); endif
 	endif
 	var i;
@@ -839,7 +839,7 @@ function Follow()
 		sleep(1);
 		chaseloop := 0;
 	elseif (( d > 10 ) or ( chaseloop > 50 ))
-		MoveObjectToLocation( me, following.x, following.y, following.z, "britannia", MOVEOBJECT_FORCELOCATION );
+		MoveObjectToLocation( me, following.x, following.y, following.z, following.realm, MOVEOBJECT_FORCELOCATION );
 		chaseloop := 0;
 		sleep(1);
 	else
@@ -1284,7 +1284,7 @@ function MountHorse(horse)
 		if ( MoveObjectToLocation(me, horse.x, horse.y, horse.z, horse.realm, 0) )
 			set_critical(1);
 			me.facing := horse.facing;
-			var mount := CreateItemAtLocation(5288 , 1176 , 0, 0x1F021, 1, "britannia");
+			var mount := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, 0x1F021, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
 			mount.color := horse.color;
 			setobjproperty(mount,"petname",horse.name);
 			setobjproperty(mount,"pethp",GetHP(horse));
@@ -1293,14 +1293,13 @@ function MountHorse(horse)
 			mount.graphic := mounttype;
 			setobjproperty(me,"mountedon",horse.npctemplate);
 			setobjproperty(me,"mountspawn",horse.npctemplate);
-			MoveObjectToLocation(horse, 5288 , 1176 , 0,"britannia", MOVEOBJECT_FORCELOCATION);
+			MoveObjectToLocation( horse, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 			RevokePrivilege( horse, "invul" );
 			setobjproperty(horse,"guardkill",1);
 			ApplyRawdamage(horse,GetMaxHP(horse)+3);
 			EquipItem(me,mount);
 			if (horse)
-				MoveObjectToLocation(horse, 5288 , 1176 , 0,"britannia",
-				 MOVEOBJECT_FORCELOCATION);
+				MoveObjectToLocation( horse, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION );
 				RevokePrivilege(horse, "invul" );
 				setobjproperty(horse,"guardkill",1);
 				applyRawdamage(horse,GetMaxHP(horse)+3);
@@ -1325,7 +1324,7 @@ function OpenMyPack()
 	endif
 
 	if (!me.backpack)
-		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75, 1, "britannia");
+		var newbackpack := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, 0xe75, 1, DEFAULT_LOCATION_ITEM_CREATION_R);
 		EquipItem(me, newbackpack);
 	endif
 

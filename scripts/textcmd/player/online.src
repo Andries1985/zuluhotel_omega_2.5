@@ -1,156 +1,190 @@
-// command .online  started June 19, 2000
-// Zulu (zulu@zuluhotel.com)
-// last updated sept 6, 2000 by Developer Giro (developergiro@galactica.it)
+// Updated Nov 12, 2025
+// Dev Alryc
 
-use os;
 use uo;
+use os;
 
-include "include/areas";
+include ":gumps:gumps";
+include ":staff:staff";
 
+program onlinechars( who )
 
-var layout := {
-"page 0",
-"nodispose",
-"resizepic  50   0 2600 540 405", // background
-"resizepic 210 360 5100 200  25", // buttons
+	//Check for Chars
+	var found := {};
+	var numplayer := 0;
+	var numstaff := 0;
+	var numcharsonline := 0;
 
-"text 260 30 0 0", // title
-"text  80 60 0 1", // name
-"text 360 60 0 2"  // Started
-};
-
-var data := {
-"",
-"Name",
-"Started",
-"" // 5
-};
-
-program textcmd_online( who )
-
-FillInArrays();
-
-SendDialogGump( who, layout, data );
+	if (who.cmdlevel)
+		foreach mobile in EnumerateOnlineCharacters();
+			if (!mobile.cmdlevel)
+				found.append(mobile);
+				numplayer++;
+				SleepMs(2);
+			elseif (mobile.cmdlevel)
+				found.append(mobile);
+				numstaff++;
+				SleepMs(2);
+			endif
+		endforeach
+		var chr := MakeAndProcessGumpStaff( who, found, numstaff, numplayer );
+		if( chr )
+			LogCommand(who, GetProcess(GetPid()).name, chr.name+"/"+chr.serial, "XYZ - "+chr.x+","+chr.y+","+chr.z+","+chr.realm);
+			var moved := MoveObjecttoLocation( who , chr.x , chr.y , chr.z , chr.realm, MOVEOBJECT_FORCELOCATION );
+			if (moved.errortext)
+			SendSysMessage(who, "oh no an error... can't go to: " + moved.errortext);
+			endif
+    endif
+	elseif (!who.cmdlevel)
+		foreach mobile in EnumerateOnlineCharacters();
+			if (!mobile.cmdlevel)
+				found.append(mobile);
+				numplayer++;
+				SleepMs(2);
+			endif
+		endforeach
+		MakeAndProcessGumpPlayer( who, found, numplayer );
+	endif
 
 endprogram
 
-function FillInArrays()
-    // Variables designed to Store The full array of players, the number of players, and the current player
-    var players := EnumerateOnlineCharacters();
-    var numplayer := len(players);
-    var player;
+function MakeAndProcessGumpPlayer( character, found, numcharsonline )
 
-    // Counter.
-    var i := 0, online := 0, locationscount := 5 ,rowcount :=80, pagecount :=2, playercount :=0;
+	var gump := GFCreateGump(20, 20, 500, 720);
+	GFDisposable(gump, 0);
+	var y := 110;
+	var perpage := 20;
+	//var totalpages := ((len(found))/20); 
+	var page := 1;
+	var i := 0;
+	var start := 1;
 
-    layout.append("page 1");
+	// The main gump screen
+	GFResizePic(gump, 20, 20, 9250, 500, 725);
 
-    // Cycle through all the players in the game and add them to the goto list.
-    for (i := 1; i <= numplayer; i := i + 1)
-		player := players[i];
-    
-		if(player.cmdlevel==0)
-			online := online +1;
-			playercount := playercount +1;
-			
-			if (playercount>13)
-				playercount :=1;
-				rowcount :=80;
-				// add forward button
-					layout.append("button 350 361 5540 5541 0 " + pagecount);
-				// add backward button
-				if (pagecount>2)
-					layout.append("button 260 361 5537 5538 0 " + (pagecount-2));
-				endif
-				layout.append("page " + pagecount);
-				pagecount := pagecount +1;
-			endif
+	// The area background gumps
+	GFResizePic(gump, 38, 55, 9200, 464, 40);
+	GFResizePic(gump, 38, 95, 9200, 464, 610);
 
-			layout.append("text 80 " + rowcount + " 0 " + locationscount);
 
-			fixname(player);
+	// Title text
+	GFResizePic(gump, 175, 35, 9200, 155, 20);
+	GFTextLine(gump, 180, 35, 67, "Characters Online: " + numcharsonline );
 
-			data.append(data[5]);
+	// Column Titles
+	GFTextLine(gump, 96, 65, 900, "Character Name");
+	GFTextLine(gump, 300, 65, 900, "Account Age");
 
-			locationscount := locationscount + 1;
 
-			layout.append("text 360 " + rowcount + " 0 " + locationscount);
-
-			var time := GetObjProperty(player, "CreatedAt");
-			var timenow := ReadGameClock();
-			if(!time)
-				time := 0;
-			endif
-			time := timenow-time;
-			time := CInt(time/(24*3600));
-			data.append(time+" Days ago.");
-			
-			locationscount := locationscount + 1;
-
-			data.append(player.name);
-			locationscount := locationscount + 1;
-			rowcount := rowcount +20;
-		endif
+	GFTextLine(gump, 240, 708, 1000, "Page 1");
+	GFPage(gump, 1);
+	//Fill the gump
+	for( i := start ; i <= found.size() ; i := i + 1 )
 		
-		Sleepms(5);
-    endfor
-
-data[1] := online + " players online";
-
-if (pagecount>2)
-layout.append("button 260 361 5537 5538 0 " + (pagecount-2));
-endif
-
-endfunction
-
-function IsInPlayerCity( who )
-
-	var items := ListItemsNearLocationOfType( who.x, who.y, 0, 250, 0x7566, who.realm );
-	var stone;
-	var minx;
-	var maxx;
-	var miny;
-	var maxy;
-	if( !items )
-		items := ListItemsNearLocationOfType( who.x, who.y, 1, 250, 0x7566, who.realm );
-		if( !items )
-			items := ListItemsNearLocationOfType( who.x, who.y, 2, 250, 0x7566, who.realm );
+		if (perpage <= 0)
+			GFAddButton(gump, 450, 705, 4005, 4006, 0, page+1); // Next Page button
+			GFPage(gump, page + 1);
+			GFAddButton(gump, 50, 705, 4014, 4015, 0, page); // Prev Page button
+			page := page + 1;
+			GFTextLine(gump, 240, 708, 1000, "Page "+page);
+			y := 110;
+			perpage := 20;
 		endif
-	endif
-	foreach item in items
-		stone := item;
-		minx := GetObjProperty( stone, "MinX" );
-		maxx := GetObjProperty( stone, "MaxX" );
-		miny := GetObjProperty( stone, "MinY" );
-		maxy := GetObjProperty( stone, "MaxY" );
-		if( (who.x >= minx) AND (who.x <= maxx) AND (who.y >= miny) AND (who.y <= maxy) )
-			return GetObjProperty( stone, "City" );
+
+		GFTextLine(gump, 96, y, 0, found[i].name);
+
+		var time := GetObjProperty(character, "CreatedAt");
+		var timenow := ReadGameClock();
+		if(!time)
+			time := 0;
 		endif
-	endforeach
+		time := timenow-time;
+		time := CInt(time/(24*3600));
+		GFTextLine(gump, 300, y, 0, time);
 
-	return 0;
-
-endfunction
-
-function fixname(player)
-
-	var oldname :=player.name;
-	
-        var split := SplitWords( oldname ), i, newname :="";
-
-	for (i := 1; i <= 4; i := i + 1)
-
-	if (split[i])
-	  newname := newname + split[i] + " ";
-        endif
-
+		perpage := perpage - 1;
+		y := y + 25;
 	endfor
 
-	if (GetObjProperty(player,"guardtype")==2)
-		data[5] := "Chaos : " + newname;
-	elseif (GetObjProperty(player,"guardtype")==1)
-		data[5] := "Order : " + newname;
-	else
-	data[5] := newname;
-	endif
+	var result := GFSendGump(character, gump);
+	result := Cint(result[0]);
+
+	return found[result];
+	
+endfunction
+
+function MakeAndProcessGumpStaff( character, found, numstaff, numplayer )
+
+	var gump := GFCreateGump(20, 20, 600, 720);
+	GFDisposable(gump, 0);
+	var y := 110;
+	var perpage := 20;
+	//var totalpages := ((len(found))/20); 
+	var page := 1;
+	var i := 0;
+	var start := 1;
+
+	// The main gump screen
+	GFResizePic(gump, 20, 20, 9250, 600, 725);
+
+	// The area background gumps
+	GFResizePic(gump, 38, 62, 9200, 564, 40);
+	GFResizePic(gump, 38, 102, 9200, 564, 603);
+
+
+	// Title text
+	GFResizePic(gump, 38, 40, 9200, 155, 20);
+	GFTextLine(gump, 48, 40, 67, "Staff Online: " + numstaff );
+	GFResizePic(gump, 447, 40, 9200, 155, 20);
+	GFTextLine(gump, 457, 40, 67, "Characters Online: " + numplayer );
+
+	// Column Titles
+	GFTextLine(gump, 40, 75, 900, "Character");
+	GFTextLine(gump, 180, 75, 900, "Account Age");
+	GFTextLine(gump, 280, 75, 900, "IP");
+	GFTextLine(gump, 380, 75, 900, "Location");
+	GFTextLine(gump, 570, 75, 900, "Goto");
+
+
+	GFTextLine(gump, 290, 708, 1000, "Page 1");
+	GFPage(gump, 1);
+	//Fill the gump
+	for( i := start ; i <= found.size() ; i := i + 1 )
+		if (perpage <= 0)
+			GFAddButton(gump, 450, 705, 4005, 4006, 0, page+1); // Next Page button
+			GFPage(gump, page + 1);
+			GFAddButton(gump, 50, 705, 4014, 4015, 0, page); // Prev Page button
+			page := page + 1;
+			GFTextLine(gump, 290, 708, 1000, "Page "+page);
+			y := 110;
+			perpage := 20;
+		endif
+
+		if(found[i].cmdlevel)
+			GFTextLine(gump, 40, y, 900, found[i].name);
+		else
+			GFTextLine(gump, 40, y, 0, found[i].name);
+		endif
+		var time := GetObjProperty(character, "CreatedAt");
+		var timenow := ReadGameClock();
+		if(!time)
+			time := 0;
+		endif
+		time := timenow-time;
+		time := CInt(time/(24*3600));
+		var region := GetRegionName(found[i]);
+		GFTextLine(gump, 180, y, 0, time);
+		GFTextLine(gump, 280, y, 0, found[i].ip);
+		GFTextLine(gump, 380, y, 0, region);
+		GFAddButton(gump, 570, y-3, 5540, 5541, GF_CLOSE_BTN, i);
+
+		perpage := perpage - 1;
+		y := y + 25;
+	endfor
+
+	var result := GFSendGump(character, gump);
+	result := Cint(result[0]);
+
+	return found[result];
+	
 endfunction

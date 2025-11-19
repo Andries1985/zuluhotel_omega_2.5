@@ -14,6 +14,7 @@ include "include/classes";
 include "include/dotempmods";
 include "include/constants/propids";
 include ":gumps:gumps";
+include ":gumps:gumps_ex";
 include ":gumps:yesno";
 include "include/attributes";
 include ":staff:include/staff";

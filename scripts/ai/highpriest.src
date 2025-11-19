@@ -294,7 +294,9 @@ while (1)
 					Say( "By the power of the Virtues, may this soul be brought back to life!" );
 					PerformAction( me , ANIM_CAST_DIR );
 					PlaySoundEffect( me , SFX_SPELL_RESURRECTION);
-					wfh := CreateNpcFromTemplate("warriorforhire", DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, 0, "britannia");
+					//Old Britannia Map
+					//wfh := CreateNpcFromTemplate("warriorforhire", DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, 0, "britannia");
+					wfh := CreateNpcFromTemplate("warriorforhire", DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, 0, DEFAULT_LOCATION_NPC_RELOCATION_R);
 					wfh.hidden := 1;
 					SetObjProperty(wfh, "master", event.source.serial);
 					sleep(2);

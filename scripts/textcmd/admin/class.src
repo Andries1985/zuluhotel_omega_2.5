@@ -13,8 +13,8 @@ program textcmd_class(who, amount)
 		amount := Cint( amount );
 	endif
 	
-	var gump := GFCreateGump(15, 15, 200, 200);
-	GFResizePic(gump, 15, 15, 9250, 200, 200);
+	var gump := GFCreateGump(15, 15, 200, 300);
+	GFResizePic(gump, 15, 15, 9250, 200, 300);
 	GFTextLine(gump, 60, 30, 53, "--Choose a Class--");
 
 	var y := 60;

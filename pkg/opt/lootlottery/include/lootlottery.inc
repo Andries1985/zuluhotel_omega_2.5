@@ -103,7 +103,8 @@ function LootLottery(who)
 		return 0;
 	endif
 	//create the self destructing bag
-	var lootbag := Createitematlocation(5288 , 1176 , 0, "lootbag", 1, "britannia");
+	//var lootbag := Createitematlocation(5288 , 1176 , 0, "lootbag", 1, "britannia");
+	var lootbag := Createitematlocation(DEFAULT_LOCATION_ITEM_CREATION_X , DEFAULT_LOCATION_ITEM_CREATION_Y , DEFAULT_LOCATION_ITEM_CREATION_Z, "lootbag", 1, DEFAULT_LOCATION_ITEM_CREATION_R);
 	//get the original loot parameters
 	var npcdesc := ReadConfigFile( "::npcdesc" );
 	var elem := FindConfigElem( npcdesc, GetObjProperty( who, "npctemplate" ) );

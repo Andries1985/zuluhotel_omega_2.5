@@ -20,27 +20,29 @@ endprogram
 
 function SendPlayerToValidArea( who )
 
-	var possibles := {	{ 1475, 1645, 20, "" } ,	// Britain
-				{ 2477, 399 , 0  } ,	// Minoc
-				{ 634 , 849 , 1  } };	// Yew
+	var possibles := {	
+				{ 1433, 1861, 36 },		// Shandalaar
+				{ 986, 621, 0 },		// Winterwyn
+				{ 3572, 1559, 0 }		// Faymoor
+					};	
 
 	var x;
 	var y;
 	var z;
 
 	foreach loc in possibles
-		if( !IsForbiddenAreaToRecallTo( who, loc[1], loc[2], "britannia" ) )
+		if( !IsForbiddenAreaToRecallTo( who, loc[1], loc[2], "britannia_alt" ) )
 			x := loc[1];
 			y := loc[2];
 			z := loc[3];
-			return MoveObjectToLocation( who, x, y, z, "britannia", MOVEOBJECT_FORCELOCATION );
+			return MoveObjectToLocation( who, x, y, z, "britannia_alt", MOVEOBJECT_FORCELOCATION );
 		endif
 	endforeach
 	
-	x := 1475;
-	y := 1645;
-	z := 20;
+	x := 1433;
+	y := 1861;
+	z := 36;
 
-	return MoveObjectToLocation( who, x, y, z, "britannia", MOVEOBJECT_FORCELOCATION );
+	return MoveObjectToLocation( who, x, y, z, "britannia_alt", MOVEOBJECT_FORCELOCATION );
 
 endfunction

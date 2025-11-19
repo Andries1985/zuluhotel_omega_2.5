@@ -89,7 +89,8 @@ function mountllama( who, item)
 		return 0;
 	endif
 
-	pet := CreateItemAtLocation(5288,1176,0,0x1F021,1);
+	pet := CreateItemAtLocation( DEFAULT_LOCATION_ITEM_CREATION_X, DEFAULT_LOCATION_ITEM_CREATION_Y, DEFAULT_LOCATION_ITEM_CREATION_Z, 0x1F021, 1, DEFAULT_LOCATION_ITEM_CREATION_R );
+	//pet := CreateItemAtLocation(5288,1176,0,0x1F021,1);
 	pet.color := color;
 	pet.graphic := 0x3ea6;
 	SetObjProperty( who, "DonatorMounted", 1);

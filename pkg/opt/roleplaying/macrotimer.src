@@ -44,7 +44,7 @@ program macrotimer(player)
         
         acc.setprop("Release", (ReadGameClock() + jaildays));
 
-        MoveObjectToLocation( player , DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, "britannia", MOVEOBJECT_FORCELOCATION);
+        MoveObjectToLocation( player , DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, DEFAULT_LOCATION_JAIL_R, MOVEOBJECT_FORCELOCATION);
         SendSysMessage( player , "You have been jailed for " + days + " day(s). Reason: Breaking the no-macro rule.", FONT_NORMAL, 2595 );
 
         // Broadcast to staff

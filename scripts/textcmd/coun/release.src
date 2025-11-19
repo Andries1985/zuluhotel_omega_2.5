@@ -24,7 +24,7 @@ program release(character)
     acc.setprop("Release",0);
     SendSysMessage( who, "You have been freed.");
     SendSysMessage( character, who.name + " has been freed." );
-    MoveObjectToLocation( who, 3682, 2517, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+    MoveObjectToLocation( who, 1433, 1861, 36, "britannia_alt", MOVEOBJECT_FORCELOCATION);
     LogCommand(character, GetProcess(GetPid()).name, who.name+"/"+who.serial, "Release from jail");
 
     return;

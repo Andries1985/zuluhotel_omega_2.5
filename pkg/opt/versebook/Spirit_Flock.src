@@ -179,7 +179,7 @@ function KillFlock()
 		endif
 		goat := SystemFindObjectBySerial(goat);
 		PlayStationaryEffectEx( goat.x, goat.y, goat.z, goat.realm, 14120, 8, 15, GFX_COLOUR);
-		MoveObjectToLocation(goat, 5286, 1160, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+		MoveObjectToLocation(goat, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION);
 		ApplyRawdamage(goat, GetMaxHP(goat)+1);
 	endforeach
 

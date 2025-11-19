@@ -149,10 +149,10 @@ program help( who2 )
 					endif
 				endif
 			endif
-			if( who.x >= 5272 )
-				if( who.x <= 5310 )
-					if( who.y >= 1160 )
-						if( who.y <= 1190 )
+			if( who.x >= 6319 )
+				if( who.x <= 6362 )
+					if( who.y >= 1563 )
+						if( who.y <= 1598 )
 							SendSysMessage( who , "Can't use this in jail." );
 							EraseObjProperty( who, PROPID_MOBILE_PAGING );
 							return 0;
@@ -185,14 +185,14 @@ program help( who2 )
 				count := count+1;
 			endwhile
 
-			MoveObjectToLocation( who, 3637, 2539, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+			MoveObjectToLocation( who, 1433, 1861, 36, "britannia_alt", MOVEOBJECT_FORCELOCATION);
 			EraseObjProperty( who, PROPID_MOBILE_PAGING );
 			return 0;
 		3:	page_msg := RequestInput( who, who.backpack, "Type in your problem:" );
-		4:	if( who.x >= 5272 )
-				if( who.x <= 5310 )
-					if( who.y >= 1160 )
-						if( who.y <= 1190 )
+		4:	if( who.x >= 6319 )
+				if( who.x <= 6362 )
+					if( who.y >= 1563 )
+						if( who.y <= 1598 )
 							SendSysMessage( who , "Can't use this in jail... :)" );
 							EraseObjProperty( who, PROPID_MOBILE_PAGING );
 							return 0;
@@ -250,10 +250,10 @@ program help( who2 )
 				EraseObjProperty( who, PROPID_MOBILE_PAGING );
 				return 0;
 			endif
-			if( who.x >= 5272 )
-				if( who.x <= 5310 )
-					if( who.y >= 1160 )
-						if( who.y <= 1190 )
+			if( who.x >= 6319 )
+				if( who.x <= 6362 )
+					if( who.y >= 1563 )
+						if( who.y <= 1598 )
 							SendSysMessage( who , "Can't use this in jail... :)" );
 							EraseObjProperty( who, PROPID_MOBILE_PAGING );
 							return 0;
