@@ -894,7 +894,7 @@ var teleporters := {
     { 6163, 464, 0, 411, 1346, 2, "britannia_alt", "britannia_alt" }, //Ogre Cave -> Mainland
     { 6164, 464, 0, 412, 1346, 2, "britannia_alt", "britannia_alt" }, //Ogre Cave -> Mainland
 
-    //Underworld <> Deep Underworld
+    //Underworld <> Tartarus
     { 6012, 3250, 0, 7109, 3954, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Tartarus - Fixed for New Map
     { 6013, 3250, 0, 7110, 3954, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Tartarus
     { 6014, 3250, 0, 7111, 3954, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Tartarus
