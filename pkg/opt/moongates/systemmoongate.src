@@ -6,7 +6,18 @@
 //
 //  Modified by Madman Across the Water  2000/03/14
 ////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////
+//
+//Removed Due to different felucca map
+		//{4467,	1283,	5,		"britannia"},		// moonglow
+    	//{1336,	1997,	5,		"britannia"},		// britain
+    	//{1499,	3771,	5,		"britannia"},		// jhelom
+        //{771,	753,	5,		"britannia"},		// yew
+    	//{2701,	693,	5,		"britannia"},		// minoc
+    	//{1828,	2948,	-20,	"britannia"},		// trinsic
+    	//{643,	2067,	5,		"britannia"},		// skara
+    	//{3564,	2140,	31,		"britannia"},		// magincia
+//
+////////////////////////////////////////////////////////////////////////////
 
 use os;
 use uo;
@@ -20,21 +31,6 @@ const TEXT_COLOR_GATE := 1086;
 
 // these are also defined in the moongates.inc.  These must be the same.
         var moongates := { 
-        //{4467,	1283,	5,		"britannia"},		// moonglow
-    	//{1336,	1997,	5,		"britannia"},		// britain
-    	//{1499,	3771,	5,		"britannia"},		// jhelom
-        //{771,	753,	5,		"britannia"},		// yew
-    	//{2701,	693,	5,		"britannia"},		// minoc
-    	//{1828,	2948,	-20,	"britannia"},		// trinsic
-    	//{643,	2067,	5,		"britannia"},		// skara
-    	//{3564,	2140,	31,		"britannia"},		// magincia
-		{802,	1204,	25,		"tokuno"},			// Zento City
-		{1169,	998,	41,		"tokuno"},			// Isamu-Jima Island
-		{270,	628,	15,		"tokuno"},			// Homare-Jima Island
-		{2264, 	1574,	-28,	"ilshenar"},		//Vitures Gate System
-		{1015,	527,	-65,	"malas"},			//Luna
-		{1997,	1386,	-85,	"malas"},			//Umbra
-		{851,	3525,	-38,	"termur"},			//Royal City
 		{611,	1016,	-8,		"britannia_alt"},	//Winterwyn
 		{1675,	2005,	0,		"britannia_alt"},	//Shandalaar
 		{2082,	3205,	-8,		"britannia_alt"},	//Kromwell
@@ -44,7 +40,14 @@ const TEXT_COLOR_GATE := 1086;
 		{2804,	2313,	12,		"britannia_alt"},	//Janacres	
 		{1874,	501,	7,		"britannia_alt"},	//Arcanus
 		{5539,	1077,	0,		"britannia_alt"},	//Khaz Darak
-		{5277,	1983,	25,		"britannia_alt"}	//Nexus
+		{5277,	1983,	25,		"britannia_alt"},	//Nexus
+		{802,	1204,	25,		"tokuno"},			// Zento City
+		{1169,	998,	41,		"tokuno"},			// Isamu-Jima Island
+		{270,	628,	15,		"tokuno"},			// Homare-Jima Island
+		{1015,	527,	-65,	"malas"},			//Luna
+		{1997,	1386,	-85,	"malas"},			//Umbra
+		{851,	3525,	-38,	"termur"},			//Royal City
+		{2264, 	1574,	-28,	"ilshenar"}			//Vitures Gate System
     };
 
 program walk_on_moongate(mobile, moongate)
@@ -80,15 +83,16 @@ program walk_on_moongate(mobile, moongate)
 
 	GFGumpPic(res, 50, 50, 336);
 	GFTextLine(res, 235, 85, TEXT_COLOR_TITLE, "Select Your Destination");
-	GFTextLine(res, 135, 175, TEXT_COLOR_TITLE, "Felucca");
-	GFTextLine(res, 265, 175, TEXT_COLOR_TITLE, "Sosaria");
-	GFTextLine(res, 395, 175, TEXT_COLOR_TITLE, "Ilshenar");
-	GFTextLine(res, 555, 175, TEXT_COLOR_TITLE, "Malas");
-	GFTextLine(res, 395, 275, TEXT_COLOR_TITLE, "Tokuno");
-	GFTextLine(res, 555, 275, TEXT_COLOR_TITLE, "Termur");
+	//GFTextLine(res, 135, 175, TEXT_COLOR_TITLE, "Felucca");
+	GFTextLine(res, 135, 175, TEXT_COLOR_TITLE, "Sosaria");
+	GFTextLine(res, 265, 175, TEXT_COLOR_TITLE, "Malas");
+	GFTextLine(res, 265, 275, TEXT_COLOR_TITLE, "Tokuno");
+	GFTextLine(res, 395, 175, TEXT_COLOR_TITLE, "Termur");
+	GFTextLine(res, 395, 275, TEXT_COLOR_TITLE, "Ilshenar");
 	
 
 	//Teleport Buttons for Felucca
+	/*
 	GFTextLine(res, 135, 200, TEXT_COLOR_GATE, "Moonglow");
 	GFAddButton(res, 215, 205, 2360, 2361, GF_CLOSE_BTN, 2);
 	GFTextLine(res, 135, 225, TEXT_COLOR_GATE, "Britain");
@@ -105,50 +109,53 @@ program walk_on_moongate(mobile, moongate)
 	GFAddButton(res, 215, 355, 2360, 2361, GF_CLOSE_BTN, 14);
 	GFTextLine(res, 135, 375, TEXT_COLOR_GATE, "Magincia");
 	GFAddButton(res, 215, 380, 2360, 2361, GF_CLOSE_BTN, 16);
+	*/
 
 	//Teleport Buttons for Sosaria
-	GFTextLine(res, 265, 200, TEXT_COLOR_GATE, "Winterwyn");
-	GFAddButton(res, 345, 205, 2360, 2361, GF_CLOSE_BTN, 32);
-	GFTextLine(res, 265, 225, TEXT_COLOR_GATE, "Shandalaar");
-	GFAddButton(res, 345, 230, 2360, 2361, GF_CLOSE_BTN, 34);
-	GFTextLine(res, 265, 250, TEXT_COLOR_GATE, "Kromwell");
-	GFAddButton(res, 345, 255, 2360, 2361, GF_CLOSE_BTN, 36);
-	GFTextLine(res, 265, 275, TEXT_COLOR_GATE, "Faymoor");
-	GFAddButton(res, 345, 280, 2360, 2361, GF_CLOSE_BTN, 38);
-	GFTextLine(res, 265, 300, TEXT_COLOR_GATE, "Hathor");
-	GFAddButton(res, 345, 305, 2360, 2361, GF_CLOSE_BTN, 40);
-	GFTextLine(res, 265, 325, TEXT_COLOR_GATE, "Ice Isle");
-	GFAddButton(res, 345, 330, 2360, 2361, GF_CLOSE_BTN, 42);
-	GFTextLine(res, 265, 350, TEXT_COLOR_GATE, "Janacres");
-	GFAddButton(res, 345, 355, 2360, 2361, GF_CLOSE_BTN, 44);
-	GFTextLine(res, 265, 375, TEXT_COLOR_GATE, "Arcanus");
-	GFAddButton(res, 345, 380, 2360, 2361, GF_CLOSE_BTN, 46);
-	GFTextLine(res, 265, 400, TEXT_COLOR_GATE, "Khaz Darak");
-	GFAddButton(res, 345, 405, 2360, 2361, GF_CLOSE_BTN, 48);
-	GFTextLine(res, 265, 425, TEXT_COLOR_GATE, "Nexus");
-	GFAddButton(res, 345, 430, 2360, 2361, GF_CLOSE_BTN, 50);
-
-	//Teleport Buttons for Ilshenar
-	GFTextLine(res, 395, 200, TEXT_COLOR_GATE, "Virtues");
-	GFAddButton(res, 475, 205, 2360, 2361, GF_CLOSE_BTN, 24);
+	GFTextLine(res, 135, 200, TEXT_COLOR_GATE, "Winterwyn");
+	GFAddButton(res, 215, 205, 2360, 2361, GF_CLOSE_BTN, 2);
+	GFTextLine(res, 135, 225, TEXT_COLOR_GATE, "Shandalaar");
+	GFAddButton(res, 215, 230, 2360, 2361, GF_CLOSE_BTN, 4);
+	GFTextLine(res, 135, 250, TEXT_COLOR_GATE, "Kromwell");
+	GFAddButton(res, 215, 255, 2360, 2361, GF_CLOSE_BTN, 6);
+	GFTextLine(res, 135, 275, TEXT_COLOR_GATE, "Faymoor");
+	GFAddButton(res, 215, 280, 2360, 2361, GF_CLOSE_BTN, 8);
+	GFTextLine(res, 135, 300, TEXT_COLOR_GATE, "Hathor");
+	GFAddButton(res, 215, 305, 2360, 2361, GF_CLOSE_BTN, 10);
+	GFTextLine(res, 135, 325, TEXT_COLOR_GATE, "Ice Isle");
+	GFAddButton(res, 215, 330, 2360, 2361, GF_CLOSE_BTN, 12);
+	GFTextLine(res, 135, 350, TEXT_COLOR_GATE, "Janacres");
+	GFAddButton(res, 215, 355, 2360, 2361, GF_CLOSE_BTN, 14);
+	GFTextLine(res, 135, 375, TEXT_COLOR_GATE, "Arcanus");
+	GFAddButton(res, 215, 380, 2360, 2361, GF_CLOSE_BTN, 16);
+	GFTextLine(res, 135, 400, TEXT_COLOR_GATE, "Khaz Darak");
+	GFAddButton(res, 215, 405, 2360, 2361, GF_CLOSE_BTN, 18);
+	GFTextLine(res, 135, 425, TEXT_COLOR_GATE, "Nexus");
+	GFAddButton(res, 215, 430, 2360, 2361, GF_CLOSE_BTN, 20);
 
 	//Teleport Buttons for Tokuno
-	GFTextLine(res, 395, 300, TEXT_COLOR_GATE, "Zento City");
-	GFAddButton(res, 475, 305, 2360, 2361, GF_CLOSE_BTN, 18);
-	GFTextLine(res, 395, 325, TEXT_COLOR_GATE, "Isamu-Jima");
-	GFAddButton(res, 475, 330, 2360, 2361, GF_CLOSE_BTN, 20);
-	GFTextLine(res, 395, 350, TEXT_COLOR_GATE, "Homare-Jima");
-	GFAddButton(res, 475, 355, 2360, 2361, GF_CLOSE_BTN, 22);
+	GFTextLine(res, 265, 200, TEXT_COLOR_GATE, "Zento City");
+	GFAddButton(res, 345, 205, 2360, 2361, GF_CLOSE_BTN, 22);
+	GFTextLine(res, 265, 225, TEXT_COLOR_GATE, "Isamu-Jima");
+	GFAddButton(res, 345, 230, 2360, 2361, GF_CLOSE_BTN, 24);
+	GFTextLine(res, 265, 250, TEXT_COLOR_GATE, "Homare-Jima");
+	GFAddButton(res, 345, 255, 2360, 2361, GF_CLOSE_BTN, 26);
 
 	//Teleport Buttons for Malas
-	GFTextLine(res, 555, 200, TEXT_COLOR_GATE, "Luna");
-	GFAddButton(res, 635, 205, 2360, 2361, GF_CLOSE_BTN, 26);
-	GFTextLine(res, 555, 225, TEXT_COLOR_GATE, "Umbra");
-	GFAddButton(res, 635, 230, 2360, 2361, GF_CLOSE_BTN, 28);
+	GFTextLine(res, 265, 300, TEXT_COLOR_GATE, "Luna");
+	GFAddButton(res, 345, 305, 2360, 2361, GF_CLOSE_BTN, 28);
+	GFTextLine(res, 265, 325, TEXT_COLOR_GATE, "Umbra");
+	GFAddButton(res, 345, 330, 2360, 2361, GF_CLOSE_BTN, 30);
 
 	//Teleport Buttons for Termur
-	GFTextLine(res, 555, 300, TEXT_COLOR_GATE, "Royal City");
-	GFAddButton(res, 635, 305, 2360, 2361, GF_CLOSE_BTN, 30);
+	GFTextLine(res, 395, 200, TEXT_COLOR_GATE, "Royal City");
+	GFAddButton(res, 475, 205, 2360, 2361, GF_CLOSE_BTN, 32);
+
+	//Teleport Buttons for Ilshenar
+	GFTextLine(res, 395, 300, TEXT_COLOR_GATE, "Virtues");
+	GFAddButton(res, 475, 305, 2360, 2361, GF_CLOSE_BTN, 34);
+
+
 	var data := GFSendGump(mobile, res);
 
 	case( data[0] )
@@ -238,6 +245,7 @@ program walk_on_moongate(mobile, moongate)
 			y:=moongates[17][2];
 			z:=moongates[17][3];
 			realm:=moongates[17][4];
+		/*
 		36:
 			x:=moongates[18][1];
 			y:=moongates[18][2];
@@ -278,7 +286,7 @@ program walk_on_moongate(mobile, moongate)
 			y:=moongates[25][2];
 			z:=moongates[25][3];
 			realm:=moongates[25][4];
-
+		*/
 	endcase
 
 	if((x==0) and (y==0) and (z==0))
