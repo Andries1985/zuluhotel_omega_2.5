@@ -1570,7 +1570,7 @@ var teleporters := {
     { 1789, 66, -26, 1041, 583, -78, "ilshenar", "ilshenar" },
     { 1789, 67, -26, 1036, 579, -78, "ilshenar", "ilshenar" },
     { 1789, 68, -26, 1036, 578, -78, "ilshenar", "ilshenar" },
-    { 1789, 69, -26, 1036, 581, -78, "ilshenar", "ilshenar" }
+    { 1789, 69, -26, 1036, 581, -78, "ilshenar", "ilshenar" },
 
     ////////////////////////////////
     ////////////////////////////////
@@ -1579,34 +1579,54 @@ var teleporters := {
     ///////////////////////////////
     ///////////////////////////////
 
-    /*
-    { 33, 241, 7, 996, 3842, -41, "termur", "termur" },
+    //Tomb of Kings
+    { 33, 241, 7, 996, 3842, -41, "termur", "termur" },     //Holy City to Tomb of Kings
     { 34, 241, 7, 997, 3842, -41, "termur", "termur" },
     { 35, 241, 7, 998, 3842, -41, "termur", "termur" },
     { 36, 241, 7, 999, 3842, -41, "termur", "termur" },
     { 37, 241, 7, 1000, 3842, -41, "termur", "termur" },
-    { 40, 366, 105, 79, 353, 5, "termur", "termur" },
+    { 996, 3841, -41, 33, 240, 5, "termur", "termur" },     //Tomb of Kings to Holy City
+    { 997, 3841, -41, 34, 240, 5, "termur", "termur" },
+    { 998, 3841, -41, 35, 240, 5, "termur", "termur" },
+    { 999, 3841, -41, 36, 240, 5, "termur", "termur" },
+    { 1000, 3841, -41, 37, 240, 5, "termur", "termur" },
+
+    //Stygian Dungeon Lair
+    //Encounter Room 1
+    { 79, 379, 5, 52, 389, 65, "termur", "termur" },        //Tele A Bottom Level
+    { 52, 389, 65, 79, 379, 5, "termur", "termur" },        //Tele A Top Level
+    { 52, 343, 65, 80, 338, 85, "termur", "termur" },       //Tele B Bottom Level
+    { 80, 338, 85, 52, 343, 64, "termur", "termur" },       //Tele B Top Level
+    { 45, 366, 85, 81, 399, 105, "termur", "termur" },      //Tele C Bottom Level
+    { 81, 399, 105, 45, 366, 85, "termur", "termur" },      //Tele C Top Level
+    { 79, 353, 5, 40, 366, 105, "termur", "termur" },       //Tele D Bottom Level
+    { 40, 366, 105, 79, 353, 5, "termur", "termur" },       //Tele D Top Level
+
+    //Encounter Room 2
+
+
+    //Unsorted
     { 40, 564, 105, 79, 551, 5, "termur", "termur" },
     { 40, 772, 105, 79, 759, 5, "termur", "termur" },
-    { 45, 366, 85, 81, 399, 105, "termur", "termur" },
+    
     { 45, 564, 85, 81, 597, 105, "termur", "termur" },
     { 45, 772, 85, 81, 805, 105, "termur", "termur" },
-    { 52, 343, 65, 80, 338, 85, "termur", "termur" },
-    { 52, 389, 65, 79, 379, 5, "termur", "termur" },
+    
+   
     { 52, 541, 65, 80, 536, 85, "termur", "termur" },
     { 52, 587, 65, 79, 577, 5, "termur", "termur" },
     { 52, 749, 65, 80, 744, 85, "termur", "termur" },
     { 52, 795, 65, 79, 785, 5, "termur", "termur" },
-    { 79, 353, 5, 40, 366, 105, "termur", "termur" },
-    { 79, 379, 5, 52, 389, 65, "termur", "termur" },
+   
+    
     { 79, 551, 5, 40, 564, 105, "termur", "termur" },
     { 79, 577, 5, 52, 587, 65, "termur", "termur" },
     { 79, 759, 5, 40, 772, 105, "termur", "termur" },
     { 79, 785, 5, 52, 795, 65, "termur", "termur" },
-    { 80, 338, 85, 52, 343, 64, "termur", "termur" },
+    
     { 80, 536, 85, 52, 541, 64, "termur", "termur" },
     { 80, 744, 85, 52, 749, 64, "termur", "termur" },
-    { 81, 399, 105, 45, 366, 85, "termur", "termur" },
+    
     { 81, 597, 105, 45, 564, 85, "termur", "termur" },
     { 81, 805, 105, 45, 772, 85, "termur", "termur" },
     { 317, 136, 65, 310, 159, 85, "termur", "termur" },
@@ -1634,11 +1654,7 @@ var teleporters := {
     { 841, 273, 30, 434, 153, 0, "termur", "termur" },
     { 841, 287, 30, 433, 167, 0, "termur", "termur" },
     { 843, 286, 22, 433, 166, 0, "termur", "termur" },
-    { 996, 3841, -41, 33, 240, 5, "termur", "termur" },
-    { 997, 3841, -41, 34, 240, 5, "termur", "termur" },
-    { 998, 3841, -41, 35, 240, 5, "termur", "termur" },
-    { 999, 3841, -41, 36, 240, 5, "termur", "termur" },
-    { 1000, 3841, -41, 37, 240, 5, "termur", "termur" },
+   
     { 1006, 1110, -42, 1012, 1071, -32, "termur", "termur" },
     { 1006, 1127, -42, 1010, 1144, -65, "termur", "termur" },
     { 1010, 1144, -65, 1006, 1127, -42, "termur", "termur" },
@@ -1698,7 +1714,7 @@ var teleporters := {
     { 7151, 756, 25, 511, 585, 9, "termur", "termur" },
     { 7152, 756, 25, 511, 585, 9, "termur", "termur" },
     { 7153, 756, 25, 511, 585, 9, "termur", "termur" }
-    */
+    
 
 };	
 
