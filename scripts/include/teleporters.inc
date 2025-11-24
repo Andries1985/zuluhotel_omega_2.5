@@ -739,7 +739,7 @@ var teleporters := {
     { 1086, 2911, 22, 5343, 962, 15, "britannia_alt", "britannia_alt" }, //Black City of the Damned Dungeon Entrance
     { 1087, 2911, 22, 5344, 962, 15, "britannia_alt", "britannia_alt" }, //Black City of the Damned Dungeon Entrance
     { 1088, 2911, 22, 5345, 962, 15, "britannia_alt", "britannia_alt" }, //Black City of the Damned Dungeon Entrance
-    { 5269, 993, 0, 5688, 3957, 0, "britannia_alt", "britannia_alt" }, //Black City of the Damned -> Underworld
+    { 5269, 993, 0, 5688, 3957, 0, "britannia_alt", "britannia_alt" }, //Black City of the Damned -> Underworld - Fixed for New Map
     { 5269, 994, 0, 5688, 3958, 0, "britannia_alt", "britannia_alt" }, //Black City of the Damned -> Underworld
     { 5269, 995, 0, 5688, 3959, 0, "britannia_alt", "britannia_alt" }, //Black City of the Damned -> Underworld
     { 5269, 996, 0, 5688, 3960, 0, "britannia_alt", "britannia_alt" }, //Black City of the Damned -> Underworld
@@ -772,51 +772,51 @@ var teleporters := {
     { 5946, 864, 22, 2027, 3455, -8, "britannia_alt", "britannia_alt" }, //Poison Dungeon Exit
 
     //Fire Dungeon
-    { 2847, 1875, 5, 5720, 2001, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
-    { 2848, 1875, 5, 5721, 2001, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
-    { 2849, 1875, 5, 5722, 2001, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
-    { 2850, 1875, 5, 5723, 2001, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
-    { 2851, 1875, 5, 5724, 2001, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
-    { 2852, 1875, 5, 5725, 2001, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
-    { 5720, 2002, 0, 2847, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
-    { 5721, 2002, 0, 2848, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
-    { 5722, 2002, 0, 2849, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
-    { 5723, 2002, 0, 2850, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
-    { 5724, 2002, 0, 2851, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
-    { 5725, 2002, 0, 2852, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
-    { 5652, 2163, 26, 5623, 2256, 12, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl1 -> lvl2
-    { 5624, 2256, 16, 5652, 2164, 22, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl2 -> lvl1
-    { 5556, 1941, 5, 5482, 2023, 10, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl2 -> lvl3
-    { 5557, 1941, 5, 5483, 2023, 10, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl2 -> lvl3
-    { 5482, 2024, 10, 5556, 1942, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl3 -> lvl2
-    { 5483, 2024, 10, 5557, 1942, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl3 -> lvl2
-    { 6022, 3433, 5, 5710, 2216, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Fire Dungeon
-    { 6023, 3433, 5, 5711, 2216, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Fire Dungeon
-    { 6024, 3433, 5, 5712, 2216, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Fire Dungeon
-    { 5710, 2217, 0, 6022, 3434, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon -> Underworld
-    { 5711, 2217, 0, 6023, 3434, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon -> Underworld
-    { 5712, 2217, 0, 6024, 3434, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon -> Underworld
+    { 2847, 1875, 5, 5450, 2281, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance - Fixed for New Map
+    { 2848, 1875, 5, 5451, 2281, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
+    { 2849, 1875, 5, 5452, 2281, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
+    { 2850, 1875, 5, 5453, 2281, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
+    { 2851, 1875, 5, 5454, 2281, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
+    { 2852, 1875, 5, 5455, 2281, 0, "britannia_alt", "britannia_alt" }, //Fire Dungeon Entrance
+    { 5450, 2282, 0, 2847, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
+    { 5451, 2282, 0, 2848, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
+    { 5452, 2282, 0, 2849, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
+    { 5453, 2282, 0, 2850, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
+    { 5454, 2282, 0, 2851, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
+    { 5455, 2282, 0, 2852, 1876, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon Exit
+    { 5382, 2443, 25, 5353, 2536, 15, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl1 -> lvl2 - Fixed for New Map
+    { 5354, 2536, 15, 5383, 2443, 22, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl2 -> lvl1
+    { 5286, 2221, 5, 5212, 2303, 10, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl2 -> lvl3 - Fixed for New Map
+    { 5287, 2221, 5, 5213, 2303, 10, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl2 -> lvl3
+    { 5212, 2304, 10, 5286, 2222, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl3 -> lvl2
+    { 5213, 2304, 10, 5287, 2222, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon lvl3 -> lvl2
+    { 6022, 3433, 5, 5440, 2496, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Fire Dungeon - Fixed for New Map
+    { 6023, 3433, 5, 5441, 2496, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Fire Dungeon
+    { 6024, 3433, 5, 5442, 2496, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Fire Dungeon
+    { 5440, 2497, 0, 6022, 3434, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon -> Underworld
+    { 5441, 2497, 0, 6023, 3434, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon -> Underworld
+    { 5442, 2497, 0, 6024, 3434, 5, "britannia_alt", "britannia_alt" }, //Fire Dungeon -> Underworld
 
     //Caverns of Despair
-    { 1978, 2408, 0, 5971, 1672, 32, "britannia_alt", "britannia_alt" }, //Caverns of Despair Entrance
+    { 1978, 2408, 0, 5971, 1672, 32, "britannia_alt", "britannia_alt" }, //Caverns of Despair Entrance - Fixed for New Map
     { 1979, 2408, 0, 5972, 1672, 32, "britannia_alt", "britannia_alt" }, //Caverns of Despair Entrance
     { 1980, 2408, 0, 5973, 1672, 32, "britannia_alt", "britannia_alt" }, //Caverns of Despair Entrance
     { 5971, 1673, 37, 1978, 2409, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair Exit
     { 5972, 1673, 37, 1979, 2409, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair Exit
     { 5973, 1673, 37, 1980, 2409, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair Exit
-    { 6004, 1652, 0, 5268, 30, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Underworld
-    { 6004, 1653, 0, 5268, 31, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Underworld
-    { 6004, 1654, 0, 5268, 32, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Underworld
-    { 6004, 1655, 0, 5268, 33, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Underworld
-    { 6004, 1656, 0, 5268, 34, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Underworld
-    { 5267, 30, 0, 6003, 1652, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Caverns of Despair
-    { 5267, 31, 0, 6003, 1653, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Caverns of Despair
-    { 5267, 32, 0, 6003, 1654, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Caverns of Despair
-    { 5267, 33, 0, 6003, 1655, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Caverns of Despair
-    { 5267, 34, 0, 6003, 1656, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Caverns of Despair
+    { 6004, 1652, 0, 5268, 30, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Unnamed Dungeon - Fixed for New Map
+    { 6004, 1653, 0, 5268, 31, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Unnamed Dungeon
+    { 6004, 1654, 0, 5268, 32, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Unnamed Dungeon
+    { 6004, 1655, 0, 5268, 33, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Unnamed Dungeon
+    { 6004, 1656, 0, 5268, 34, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Unnamed Dungeon
+    { 5267, 30, 0, 6003, 1652, 0, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon -> Caverns of Despair
+    { 5267, 31, 0, 6003, 1653, 0, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon -> Caverns of Despair
+    { 5267, 32, 0, 6003, 1654, 0, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon -> Caverns of Despair
+    { 5267, 33, 0, 6003, 1655, 0, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon -> Caverns of Despair
+    { 5267, 34, 0, 6003, 1656, 0, "britannia_alt", "britannia_alt" }, //Unnamed Dungeon -> Caverns of Despair
 
     //Coven of the Eternal Night
-    { 5890, 1465, 0, 6819, 1480, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Coven of the Eternal Night
+    { 5890, 1465, 0, 6819, 1480, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Coven of the Eternal Night - Fixed for New Map
     { 5891, 1465, 0, 6820, 1480, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Coven of the Eternal Night
     { 5892, 1465, 0, 6821, 1480, 0, "britannia_alt", "britannia_alt" }, //Caverns of Despair -> Coven of the Eternal Night
     { 6819, 1481, 0, 5890, 1466, 0, "britannia_alt", "britannia_alt" }, //Coven of the Eternal Night -> Caverns of Despair
@@ -824,15 +824,15 @@ var teleporters := {
     { 6821, 1481, 0, 5892, 1466, 0, "britannia_alt", "britannia_alt" }, //Coven of the Eternal Night -> Caverns of Despair
 
     //Lair of Golaroth
-    { 5232, 2713, 5, 5270, 1431, 2, "britannia_alt", "britannia_alt" }, //Underworld -> Lair of Golaroth
-    { 5233, 2713, 5, 5271, 1431, 2, "britannia_alt", "britannia_alt" }, //Underworld -> Lair of Golaroth
-    { 5234, 2713, 5, 5272, 1431, 2, "britannia_alt", "britannia_alt" }, //Underworld -> Lair of Golaroth
-    { 5235, 2713, 5, 5273, 1431, 2, "britannia_alt", "britannia_alt" }, //Underworld -> Lair of Golaroth
-    { 5270, 1432, 2, 5232, 2714, 5, "britannia_alt", "britannia_alt" }, //Lair of Golaroth -> Underworld
-    { 5271, 1432, 2, 5233, 2714, 5, "britannia_alt", "britannia_alt" }, //Lair of Golaroth -> Underworld
-    { 5272, 1432, 2, 5234, 2714, 5, "britannia_alt", "britannia_alt" }, //Lair of Golaroth -> Underworld
-    { 5273, 1432, 2, 5235, 2714, 5, "britannia_alt", "britannia_alt" }, //Lair of Golaroth -> Underworld
-    { 5200, 1212, -8, 5365, 1406, 13, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl1 -> Lvl2
+    { 6276, 3549, 5, 5270, 1431, 2, "britannia_alt", "britannia_alt" }, //Underworld -> Lair of Golaroth - Fixed for New Map
+    { 6277, 3549, 5, 5271, 1431, 2, "britannia_alt", "britannia_alt" }, //Underworld -> Lair of Golaroth
+    { 6278, 3549, 5, 5272, 1431, 2, "britannia_alt", "britannia_alt" }, //Underworld -> Lair of Golaroth
+    { 6279, 3549, 5, 5273, 1431, 2, "britannia_alt", "britannia_alt" }, //Underworld -> Lair of Golaroth
+    { 5270, 1432, 2, 6276, 3550, 5, "britannia_alt", "britannia_alt" }, //Lair of Golaroth -> Underworld
+    { 5271, 1432, 2, 6277, 3550, 5, "britannia_alt", "britannia_alt" }, //Lair of Golaroth -> Underworld
+    { 5272, 1432, 2, 6278, 3550, 5, "britannia_alt", "britannia_alt" }, //Lair of Golaroth -> Underworld
+    { 5273, 1432, 2, 6279, 3550, 5, "britannia_alt", "britannia_alt" }, //Lair of Golaroth -> Underworld
+    { 5200, 1212, -8, 5365, 1406, 13, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl1 -> Lvl2 - Fixed for New Map
     { 5201, 1212, -9, 5366, 1406, 10, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl1 -> Lvl2
     { 5202, 1212, -7, 5367, 1406, 11, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl1 -> Lvl2
     { 5203, 1212, -7, 5368, 1406, 12, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl1 -> Lvl2
@@ -842,7 +842,7 @@ var teleporters := {
     { 5367, 1407, 14, 5202, 1213, -5, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl2 -> Lvl1
     { 5368, 1407, 16, 5203, 1213, -4, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl2 -> Lvl1
     { 5369, 1407, 16, 5204, 1213, -4, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl2 -> Lvl1
-    { 5319, 1166, -20, 5689, 562, 9, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl2 -> Boss
+    { 5319, 1166, -20, 5689, 562, 9, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl2 -> Boss - Fixed for New Map
     { 5319, 1167, -20, 5689, 563, 8, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl2 -> Boss
     { 5319, 1168, -20, 5689, 564, 8, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl2 -> Boss
     { 5319, 1169, -20, 5689, 565, 9, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl2 -> Boss
@@ -852,13 +852,13 @@ var teleporters := {
     { 5690, 564, 8, 5320, 1168, -15, "britannia_alt", "britannia_alt" }, //Boss -> Lair of Golaroth Lvl2
     { 5690, 565, 10, 5320, 1169, -15, "britannia_alt", "britannia_alt" }, //Boss -> Lair of Golaroth Lvl2
     { 5690, 566, 9, 5320, 1170, -10, "britannia_alt", "britannia_alt" }, //Boss -> Lair of Golaroth Lvl2
-    { 5174, 1500, 11, 5995, 519, -14, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl1 -> Lair of Golaroth Cave
+    { 5174, 1500, 11, 5995, 519, -14, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl1 -> Lair of Golaroth Cave - Fixed for New Map
     { 5174, 1501, 11, 5995, 520, -14, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl1 -> Lair of Golaroth Cave
     { 5174, 1502, 11, 5995, 521, -14, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Lvl1 -> Lair of Golaroth Cave
     { 5996, 519, -13, 5175, 1500, 11, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave -> Lair of Golaroth Lvl1
-    { 5996, 520, -13, 5175, 1501, 11, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave -> Lair of Golaroth Lvl2
-    { 5996, 521, -13, 5175, 1502, 11, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave -> Lair of Golaroth Lvl3
-    { 577, 1276, 42, 6021, 601, 4, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave Entrance
+    { 5996, 520, -13, 5175, 1501, 11, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave -> Lair of Golaroth Lvl1
+    { 5996, 521, -13, 5175, 1502, 11, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave -> Lair of Golaroth Lvl1
+    { 577, 1276, 42, 6021, 601, 4, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave Entrance - Fixed for New Map
     { 578, 1276, 42, 6022, 601, 4, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave Entrance
     { 579, 1276, 42, 6023, 601, 4, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave Entrance
     { 580, 1276, 42, 6024, 601, 4, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave Entrance
@@ -869,40 +869,40 @@ var teleporters := {
     { 6025, 602, 6, 580, 1277, 47, "britannia_alt", "britannia_alt" }, //Lair of Golaroth Cave Exit
 
     //Cult of the Serpent
-    { 378, 881, -5, 5372, 1683, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Snow Mine
-    { 378, 882, -5, 5372, 1684, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Snow Mine
-    { 378, 883, -5, 5372, 1685, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Snow Mine
-    { 378, 884, -5, 5372, 1685, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Snow Mine
-    { 5373, 1683, 0, 379, 881, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Mainland
-    { 5373, 1684, 0, 379, 882, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Mainland
-    { 5373, 1685, 0, 379, 883, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Mainland
-    { 5373, 1686, 0, 379, 884, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Mainland
-    { 5356, 1668, 0, 5345, 1644, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Cult of the Serpent
-    { 5356, 1669, 0, 5345, 1645, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Cult of the Serpent
-    { 5346, 1644, 0, 5357, 1668, 0, "britannia_alt", "britannia_alt" }, //Cult of the Serpent -> Snow Mine
-    { 5346, 1645, 0, 5357, 1669, 0, "britannia_alt", "britannia_alt" }, //Cult of the Serpent -> Snow Mine
+    { 378, 881, -5, 5408, 1643, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Snow Mine - Fixed for New Map
+    { 378, 882, -5, 5408, 1644, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Snow Mine
+    { 378, 883, -5, 5408, 1645, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Snow Mine
+    { 378, 884, -5, 5408, 1646, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Snow Mine
+    { 5409, 1643, 0, 379, 881, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Mainland
+    { 5409, 1644, 0, 379, 882, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Mainland
+    { 5409, 1645, 0, 379, 883, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Mainland
+    { 5409, 1646, 0, 379, 884, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Mainland
+    { 5396, 1611, 0, 5355, 1604, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Cult of the Serpent - Fixed for New Map
+    { 5396, 1612, 0, 5355, 1605, 0, "britannia_alt", "britannia_alt" }, //Snow Mine -> Cult of the Serpent
+    { 5356, 1604, 0, 5397, 1611, 0, "britannia_alt", "britannia_alt" }, //Cult of the Serpent -> Snow Mine
+    { 5356, 1605, 0, 5397, 1612, 0, "britannia_alt", "britannia_alt" }, //Cult of the Serpent -> Snow Mine
 
     //Temple of Itzcali
-    { 5462, 1592, 25, 2053, 3430, -30, "britannia_alt", "britannia_alt" }, //The Dark Brotherhood Guild Hall -> Temple of Itzcali
+    { 5462, 1592, 25, 2053, 3430, -30, "britannia_alt", "britannia_alt" }, //The Dark Brotherhood Guild Hall -> Temple of Itzcali - Fixed for New Map
     { 5463, 1592, 25, 2054, 3430, -30, "britannia_alt", "britannia_alt" }, //The Dark Brotherhood Guild Hall -> Temple of Itzcali
     { 2053, 3429, -30, 5462, 1591, 25, "britannia_alt", "britannia_alt" }, //Temple of Itzcali -> The Dark Brotherhood Guild Hall
-    { 2054, 3430, -30, 5463, 1591, 25, "britannia_alt", "britannia_alt" }, //Temple of Itzcali -> The Dark Brotherhood Guild Hall
+    { 2054, 3429, -30, 5463, 1591, 25, "britannia_alt", "britannia_alt" }, //Temple of Itzcali -> The Dark Brotherhood Guild Hall
 
     //Ogre Cave
-    { 411, 1345, 2, 6163, 463, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Ogre Cave
+    { 411, 1345, 2, 6163, 463, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Ogre Cave - Fixed for New Map
     { 412, 1345, 2, 6164, 463, 0, "britannia_alt", "britannia_alt" }, //Mainland -> Ogre Cave
     { 6163, 464, 0, 411, 1346, 2, "britannia_alt", "britannia_alt" }, //Ogre Cave -> Mainland
     { 6164, 464, 0, 412, 1346, 2, "britannia_alt", "britannia_alt" }, //Ogre Cave -> Mainland
 
-    //Underworld <> Deep Underworld
-    { 6012, 3250, 0, 6065, 3118, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Deep Underworld
-    { 6013, 3250, 0, 6066, 3118, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Deep Underworld
-    { 6014, 3250, 0, 6067, 3118, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Deep Underworld
-    { 6015, 3250, 0, 6068, 3118, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Deep Underworld
-    { 6065, 3119, 0, 6012, 3251, 0, "britannia_alt", "britannia_alt" }, //Deep Underworld -> Underworld
-    { 6066, 3119, 0, 6013, 3251, 0, "britannia_alt", "britannia_alt" }, //Deep Underworld -> Underworld
-    { 6067, 3119, 0, 6014, 3251, 0, "britannia_alt", "britannia_alt" }, //Deep Underworld -> Underworld
-    { 6068, 3119, 0, 6015, 3251, 0, "britannia_alt", "britannia_alt" }, //Deep Underworld -> Underworld
+    //Underworld <> Tartarus
+    { 6012, 3250, 0, 7109, 3954, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Tartarus - Fixed for New Map
+    { 6013, 3250, 0, 7110, 3954, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Tartarus
+    { 6014, 3250, 0, 7111, 3954, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Tartarus
+    { 6015, 3250, 0, 7112, 3954, 0, "britannia_alt", "britannia_alt" }, //Underworld -> Tartarus
+    { 7109, 3955, 0, 6012, 3251, 0, "britannia_alt", "britannia_alt" }, //Tartarus -> Underworld
+    { 7110, 3955, 0, 6013, 3251, 0, "britannia_alt", "britannia_alt" }, //Tartarus -> Underworld
+    { 7111, 3955, 0, 6014, 3251, 0, "britannia_alt", "britannia_alt" }, //Tartarus -> Underworld
+    { 7112, 3955, 0, 6015, 3251, 0, "britannia_alt", "britannia_alt" }, //Tartarus -> Underworld
 
     //Rikktors Lair
     { 5256, 620, 25, 5276, 620, 22, "britannia_alt", "britannia_alt" }, //Rikktors Lair
@@ -920,9 +920,6 @@ var teleporters := {
     { 5246, 737, 25, 6099, 3786, 22, "britannia_alt", "britannia_alt" }, //Rikktors Lair to Tartarus
     { 6099, 3785, 25, 5246, 736, 22, "britannia_alt", "britannia_alt" }, //Tartarus to Rikktors Lair Entrance
 
-
-
-
     ////////////////////////////////
     ////////////////////////////////
     // Nagash Added Teleporters
@@ -939,17 +936,6 @@ var teleporters := {
     {6650,  79,     11,     6383,   534,    0,      "britannia_alt",    "britannia_alt"},   //To Rebellion Island From Level 2 to Level 1
     {6651,  79,     11,     6384,   534,    0,      "britannia_alt",    "britannia_alt"},   //To Rebellion Island From Level 2 to Level 1
     {6652,  79,     11,     6385,   534,    0,      "britannia_alt",    "britannia_alt"},   //To Rebellion Island From Level 2 to Level 1
-
-    //Not connected to the world on level 1... level 3 needs teleporter to somewhere
-    {5933,  397,  -14,  5717,  450,  11,     "britannia_alt",    "britannia_alt"}, //Random Dungeon Level 1 to 2
-    {5933,  398,  -14,  5717,  451,  11,     "britannia_alt",    "britannia_alt"}, //Random Dungeon Level 1 to 2
-    {5933,  399,  -14,  5717,  452,  11,     "britannia_alt",    "britannia_alt"}, //Random Dungeon Level 1 to 2
-    {5718,  450,  16,  5934,  397,  -9,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 1
-    {5718,  451,  16,  5934,  398,  -9,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 1
-    {5718,  452,  16,  5934,  399,  -9,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 1
-    {5691,  496,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
-    {5691,  497,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
-    {5691,  498,  -3,  5806,  393,  16,     "britannia_alt",    "britannia_alt"},  //Random Dungeon Level 2 to 3
 
     //Nexus Outpost (Needs a teleporter still to a dungeon, its under the top area buildings)
     { 5863, 355, 1, 5939, 2750, 0, "britannia_alt", "britannia_alt" }, //Nexus Outpost -> Underworld
@@ -1584,7 +1570,7 @@ var teleporters := {
     { 1789, 66, -26, 1041, 583, -78, "ilshenar", "ilshenar" },
     { 1789, 67, -26, 1036, 579, -78, "ilshenar", "ilshenar" },
     { 1789, 68, -26, 1036, 578, -78, "ilshenar", "ilshenar" },
-    { 1789, 69, -26, 1036, 581, -78, "ilshenar", "ilshenar" }
+    { 1789, 69, -26, 1036, 581, -78, "ilshenar", "ilshenar" },
 
     ////////////////////////////////
     ////////////////////////////////
@@ -1593,34 +1579,54 @@ var teleporters := {
     ///////////////////////////////
     ///////////////////////////////
 
-    /*
-    { 33, 241, 7, 996, 3842, -41, "termur", "termur" },
+    //Tomb of Kings
+    { 33, 241, 7, 996, 3842, -41, "termur", "termur" },     //Holy City to Tomb of Kings
     { 34, 241, 7, 997, 3842, -41, "termur", "termur" },
     { 35, 241, 7, 998, 3842, -41, "termur", "termur" },
     { 36, 241, 7, 999, 3842, -41, "termur", "termur" },
     { 37, 241, 7, 1000, 3842, -41, "termur", "termur" },
-    { 40, 366, 105, 79, 353, 5, "termur", "termur" },
+    { 996, 3841, -41, 33, 240, 5, "termur", "termur" },     //Tomb of Kings to Holy City
+    { 997, 3841, -41, 34, 240, 5, "termur", "termur" },
+    { 998, 3841, -41, 35, 240, 5, "termur", "termur" },
+    { 999, 3841, -41, 36, 240, 5, "termur", "termur" },
+    { 1000, 3841, -41, 37, 240, 5, "termur", "termur" },
+
+    //Stygian Dungeon Lair
+    //Encounter Room 1
+    { 79, 379, 5, 52, 389, 65, "termur", "termur" },        //Tele A Bottom Level
+    { 52, 389, 65, 79, 379, 5, "termur", "termur" },        //Tele A Top Level
+    { 52, 343, 65, 80, 338, 85, "termur", "termur" },       //Tele B Bottom Level
+    { 80, 338, 85, 52, 343, 64, "termur", "termur" },       //Tele B Top Level
+    { 45, 366, 85, 81, 399, 105, "termur", "termur" },      //Tele C Bottom Level
+    { 81, 399, 105, 45, 366, 85, "termur", "termur" },      //Tele C Top Level
+    { 79, 353, 5, 40, 366, 105, "termur", "termur" },       //Tele D Bottom Level
+    { 40, 366, 105, 79, 353, 5, "termur", "termur" },       //Tele D Top Level
+
+    //Encounter Room 2
+
+
+    //Unsorted
     { 40, 564, 105, 79, 551, 5, "termur", "termur" },
     { 40, 772, 105, 79, 759, 5, "termur", "termur" },
-    { 45, 366, 85, 81, 399, 105, "termur", "termur" },
+    
     { 45, 564, 85, 81, 597, 105, "termur", "termur" },
     { 45, 772, 85, 81, 805, 105, "termur", "termur" },
-    { 52, 343, 65, 80, 338, 85, "termur", "termur" },
-    { 52, 389, 65, 79, 379, 5, "termur", "termur" },
+    
+   
     { 52, 541, 65, 80, 536, 85, "termur", "termur" },
     { 52, 587, 65, 79, 577, 5, "termur", "termur" },
     { 52, 749, 65, 80, 744, 85, "termur", "termur" },
     { 52, 795, 65, 79, 785, 5, "termur", "termur" },
-    { 79, 353, 5, 40, 366, 105, "termur", "termur" },
-    { 79, 379, 5, 52, 389, 65, "termur", "termur" },
+   
+    
     { 79, 551, 5, 40, 564, 105, "termur", "termur" },
     { 79, 577, 5, 52, 587, 65, "termur", "termur" },
     { 79, 759, 5, 40, 772, 105, "termur", "termur" },
     { 79, 785, 5, 52, 795, 65, "termur", "termur" },
-    { 80, 338, 85, 52, 343, 64, "termur", "termur" },
+    
     { 80, 536, 85, 52, 541, 64, "termur", "termur" },
     { 80, 744, 85, 52, 749, 64, "termur", "termur" },
-    { 81, 399, 105, 45, 366, 85, "termur", "termur" },
+    
     { 81, 597, 105, 45, 564, 85, "termur", "termur" },
     { 81, 805, 105, 45, 772, 85, "termur", "termur" },
     { 317, 136, 65, 310, 159, 85, "termur", "termur" },
@@ -1648,11 +1654,7 @@ var teleporters := {
     { 841, 273, 30, 434, 153, 0, "termur", "termur" },
     { 841, 287, 30, 433, 167, 0, "termur", "termur" },
     { 843, 286, 22, 433, 166, 0, "termur", "termur" },
-    { 996, 3841, -41, 33, 240, 5, "termur", "termur" },
-    { 997, 3841, -41, 34, 240, 5, "termur", "termur" },
-    { 998, 3841, -41, 35, 240, 5, "termur", "termur" },
-    { 999, 3841, -41, 36, 240, 5, "termur", "termur" },
-    { 1000, 3841, -41, 37, 240, 5, "termur", "termur" },
+   
     { 1006, 1110, -42, 1012, 1071, -32, "termur", "termur" },
     { 1006, 1127, -42, 1010, 1144, -65, "termur", "termur" },
     { 1010, 1144, -65, 1006, 1127, -42, "termur", "termur" },
@@ -1712,7 +1714,7 @@ var teleporters := {
     { 7151, 756, 25, 511, 585, 9, "termur", "termur" },
     { 7152, 756, 25, 511, 585, 9, "termur", "termur" },
     { 7153, 756, 25, 511, 585, 9, "termur", "termur" }
-    */
+    
 
 };	
 
