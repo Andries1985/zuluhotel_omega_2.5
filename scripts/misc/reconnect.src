@@ -17,10 +17,18 @@ program reconnect( who )
 
 	CheckIPBan(who);
 
-    	SendSysMessage( who, "Reconnected." );
+	var temp := GetObjProperty(who, "#ViewingBeast");
+	if (temp)
+		who.frozen := 0;
+		who.concealed := 0;
+		EraseObjProperty(who, "#ViewingBeast");
+	endif
+
 	if (getobjproperty(who,"starttime"))
 		Eraseobjproperty(who,"starttime");
 	endif
+
+	SendSysMessage( who, "Reconnected." );
 
 endprogram
 
