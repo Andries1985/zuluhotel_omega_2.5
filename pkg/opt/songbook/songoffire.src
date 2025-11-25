@@ -8,10 +8,13 @@ include "include/bard";
 include "include/eventid";
 include "include/checkcity";
 include "include/dotempmods";
+
 const SPELL_EFFECT_TYPE_MOVING 	:= MOVING_SPELL_RISING_FIRE;
 const SPELL_EFFECT_ID		:= FX_SPELL_RISING_FIRE;
 const SPELL_EFFECT_SPEED	:= SPEED_SPELL_RISING_FIRE;
 const SPELL_EFFECT_LOOP		:= LOOP_SPELL_RISING_FIRE;
+
+
 program cast_songoffire( player )
 	var singinghp := GetHp( player );
 	SetObjProperty( player , "#Casting", 1 );

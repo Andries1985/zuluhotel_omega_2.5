@@ -446,7 +446,14 @@ function Release()
 		RevokePrivilege( me, "invul" );
 		ApplyRawDamage( me , GetMaxHP(me)+3 );
 	else
-		if( IsInNOPKArea(me) || IsInSafeArea(me) || IsInGuardedArea(me) )
+		if( IsInSafeArea(me) || IsInSafeArea(me.master) )
+			SendSysmessage( master , "You can't release an animal here, it has been destroyed." );
+			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
+			MoveObjectToLocation(me, DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z, DEFAULT_LOCATION_NPC_RELOCATION_R, MOVEOBJECT_FORCELOCATION);
+			RevokePrivilege( me, "invul" );
+			ApplyRawDamage( me , GetMaxHP(me)+3 );
+			return;
+		elseif( IsInNOPKArea(me) || IsInGuardedArea(me) )
 			SendSysmessage( master , "You can't release an animal here!" );
 			return;
 		endif
