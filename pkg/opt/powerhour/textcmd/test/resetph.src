@@ -1,0 +1,31 @@
+//Reset Powerhour on a Player
+
+use os;
+use uo;
+
+include "include/client";
+
+program resetph( who )
+
+    var mobile := target(who);
+    
+    if (!mobile)
+        SendSysMessage(who, "Canceled", FONT_NORMAL, 43);
+        return 0;
+    endif
+
+    if (mobile == POLCLASS_NPC)
+        SendSysMessage(who, "You cannot reset Powerhour on NPCs.", FONT_NORMAL, 43);
+        return 0;
+    endif
+
+    SetObjProperty(mobile, "usedpph", 0);
+
+    EraseObjProperty(mobile, "pph_use_time");
+    EraseObjProperty(mobile, "pph_use_weekday");
+
+    EraseObjProperty(mobile, "#PPHH");
+    EraseObjProperty(mobile, "#PPHC");
+    EraseObjProperty(mobile, "#PPHS");
+
+endprogram

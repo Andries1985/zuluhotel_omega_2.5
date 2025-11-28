@@ -16,6 +16,8 @@ use os;
 include "include/utility";
 include "include/teleporters";
 
+include "util/bank";
+
 start_script("blockLogin");
 
 SetGlobalProperty("signs",{"NONE"});

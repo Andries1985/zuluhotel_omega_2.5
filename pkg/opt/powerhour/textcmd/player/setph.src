@@ -13,24 +13,32 @@ program textcmd_setPH(who)
 
 	var time_now := POLCore().systime;
 	var use_time := GetObjProperty(who, "pph_use_time");
-	var use_time_nextweek := use_time + week;
+
+	Print("Current time: "+time_now);
+	Print("Use time: "+use_time);
+
+	//var use_time_nextweek := use_time + week;
+	var use_time_nextweek := use_time + minute + minute;
+
+	Print("Next week time: "+use_time_nextweek);
+
 	var weekday_now := cint(Floor(time_now/86400)+4) % 7;
 	var use_weekday := GetObjProperty(who, "pph_use_weekday");
 
-	if(GetObjProperty(who, "#PPHH") || GetObjProperty(who, "#PPHC") || GetObjProperty(who, "#PPHS"))
-		var remaining := (use_time+hour - time_now)/60;
+	if(GetObjProperty(who, "usedpph") == 1)
+		SendSysMessage( who, "You currently have a Power Hour Running.", FONT_BOLD, 2595 );
 		if(GetObjProperty(who, "#PPHH"))
-			SendSysMessage( who, "You are already under the influence of the Hunting Powerhour!", FONT_BOLD, 2595 );
+			SendSysMessage( who, "You are under the influence of the Hunting Powerhour!", FONT_BOLD, 2595 );
 		elseif(GetObjProperty(who,"#PPHC"))
-			SendSysMessage( who, "You are already under the influence of the Half-Resources Powerhour!", FONT_BOLD, 2595 );
+			SendSysMessage( who, "You are under the influence of the Half-Resources Powerhour!", FONT_BOLD, 2595 );
 		elseif(GetObjProperty(who, "#PPHS"))
-			SendSysMessage( who, "You are already under the influence of the Double-Skillgain Powerhour!", FONT_BOLD, 2595 );
+			SendSysMessage( who, "You are under the influence of the Double-Skillgain Powerhour!", FONT_BOLD, 2595 );
 		endif
+		var remaining := (use_time+hour - time_now)/60;
 		SendSysMessage( who, "Remaining minutes left: "+remaining, FONT_BOLD, 2601 );
 		return;
-	endif
-
-	if ((weekday_now < use_weekday) || (time_now > use_time_nextweek) )
+	//elseif((weekday_now < use_weekday) || (time_now > use_time_nextweek) )
+	elseif( time_now > use_time_nextweek && GetObjProperty(who, "usedpph") != 1 )
 		
 		var gump := {
 			"nodispose",
@@ -97,6 +105,21 @@ program textcmd_setPH(who)
 		SendSysMessage( who, "You have already started a Personal Powerhour this week. Try again next week!", FONT_NORMAL, 2595 );
 	endif
 
+/*
+	if(GetObjProperty(who, "#PPHH") || GetObjProperty(who, "#PPHC") || GetObjProperty(who, "#PPHS"))
+		var remaining := (use_time+hour - time_now)/60;
+		if(GetObjProperty(who, "#PPHH"))
+			SendSysMessage( who, "You are already under the influence of the Hunting Powerhour!", FONT_BOLD, 2595 );
+		elseif(GetObjProperty(who,"#PPHC"))
+			SendSysMessage( who, "You are already under the influence of the Half-Resources Powerhour!", FONT_BOLD, 2595 );
+		elseif(GetObjProperty(who, "#PPHS"))
+			SendSysMessage( who, "You are already under the influence of the Double-Skillgain Powerhour!", FONT_BOLD, 2595 );
+		endif
+		SendSysMessage( who, "Remaining minutes left: "+remaining, FONT_BOLD, 2601 );
+		return;
+	endif
+*/
+
 endprogram
 
 
@@ -106,9 +129,18 @@ function activateph(who, choice)
 	
 	var setph := SetObjProperty(who, choice, 1);
 	var use_weekday :=  cint(Floor(use_time/86400)+4) % 7;
-	
+
 	SetObjProperty(who, "pph_use_time", use_time);
 	SetObjProperty(who, "pph_use_weekday", use_weekday);
+	SetObjProperty(who, "usedpph", 1);
+
+
+	Print("Setting Powerhour type: "+choice);
+	Print("Current weekday: "+use_weekday);
+	Print("Setting use_time to: "+use_time);
+	Print("Setting use_weekday to: "+use_weekday);
+	Print("Setting usedpph to 1");
+
 
 	if(GetObjProperty(who, "#PPHH"))
 		SendSysMessage( who, "Your Hunting Powerhour has started!", FONT_BOLD, 2601 );
@@ -118,7 +150,8 @@ function activateph(who, choice)
 		SendSysMessage( who, "Your Double-Skillgain Powerhour has started!", FONT_BOLD, 2601 );
 	endif
 
-	Sleep(3600);
+	//Sleep(3600);
+	Sleep(60);
 
 	if(GetObjProperty(who, "#PPHH"))
 		SendSysMessage( who, "Your Hunting Powerhour has ended!", FONT_BOLD, 2595 );
@@ -129,5 +162,9 @@ function activateph(who, choice)
 	endif
 	EraseObjProperty(who, "#PPHH");
 	EraseObjProperty(who, "#PPHC");
-	EraseObjProperty(who, "#PPHS");	
+	EraseObjProperty(who, "#PPHS");
+	SetObjProperty(who, "usedpph", 0);
+
+	Print("Setting usedpph to 0");
+
 endfunction
