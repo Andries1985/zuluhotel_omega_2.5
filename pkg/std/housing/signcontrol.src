@@ -1,12 +1,15 @@
 use uo;
 use os;
 use basic;
+use vitals;
 
-include "include/eventid";
-include "include/itemutil";
-include "include/objtype";
+//include "include/eventid";
+//include "include/itemutil";
+//include "include/objtype";
 include "setup";
-include "utility";
+//include "utility";
+include "include/attributes";
+include "include/constants/locations";
 
 var bans, owns; // updated by CacheData
 

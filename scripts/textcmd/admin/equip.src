@@ -1,6 +1,8 @@
 use uo;
 
 include ":staff:include/staff";
+include "include/constants/locations";
+include "include/attributes";
 
 program textcmd_equip( speaker )
     SendSysMessage( speaker, "What shall be equipped?" );
@@ -19,7 +21,7 @@ program textcmd_equip( speaker )
 	var res;
 	
 	if (what.isa(POLCLASS_NPC))
-		res := MountNPC(speaker, who, what);
+		res := MountNPC(who, what);
 	else
 		res := EquipItem( who, what );
     endif
@@ -32,7 +34,7 @@ program textcmd_equip( speaker )
     endif
 endprogram
 
-function MountNPC(who, npc, mount)
+function MountNPC(npc, mount)
 
 	var mounttype := 0;
 

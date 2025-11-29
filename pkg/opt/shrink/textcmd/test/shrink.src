@@ -4,6 +4,7 @@ use npc;
 use cfgfile;
 
 include ":staff:include/staff";
+include "include/attributes";
 
 program shrink(who)
 
@@ -21,7 +22,7 @@ SetName(doll, what.name);
 doll.color := what.color;
 SetGraphic(doll, what);
 
-if (SaveNPCToDoll(what, doll, who))
+if (SaveNPCToDoll(what, doll))
 	PrintTextAbovePrivate(what, "NPC copy shrunk and placed in your pack!", who, 3, 53);
 	LogCommand(who, GetProcess(GetPid()).name, what.name+"/"+what.npctemplate, doll.name+"/"+doll.serial);
 else
@@ -43,7 +44,7 @@ endif
 
 endfunction
 
-function SaveNPCToDoll(what, doll, who)
+function SaveNPCToDoll(what, doll)
 
 
 var o := struct, vits := struct, cprops := {}, skillids := {};

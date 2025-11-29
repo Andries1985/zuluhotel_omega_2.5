@@ -15,6 +15,7 @@ include "include/attributes";
 include "include/difficulty";
 include "include/random";
 include "include/snoop";
+include "../pkg/opt/karmafame/karmafame";
 
 var stealme_cfg:= ReadConfigFile( "stealme" );
 var items_cfg:= ReadConfigFile( "stealitems" );

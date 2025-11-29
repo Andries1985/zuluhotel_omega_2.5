@@ -6,6 +6,7 @@ include "include/skillpoints";
 include "include/random";
 include "include/classes";
 include "include/attributes";
+include "../pkg/opt/karmafame/karmafame";
 
 const Minutes:=1; // You can beg only after this time
 

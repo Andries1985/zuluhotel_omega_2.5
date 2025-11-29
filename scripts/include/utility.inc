@@ -1,4 +1,6 @@
 use storage;
+use uo;
+use os;
 
 function find_or_create_storage ( areaname )
 
@@ -26,27 +28,27 @@ function find_or_create_item ( storage, name, objtype )
 
 endfunction
 
-function IsLocationAccessible ( character, x, y, z )
-    var xd, yd, zd;
+// function IsLocationAccessible ( character, x, y, z )
+//     var xd, yd, zd;
     
-    xd := character.x - x;
-    if (xd < -1 or xd > 1) 
-        return 0;
-    endif
+//     xd := character.x - x;
+//     if (xd < -1 or xd > 1) 
+//         return 0;
+//     endif
     
-    yd := character.y - y;
-    if (yd < -1 or yd > 1) 
-        return 0;
-    endif
+//     yd := character.y - y;
+//     if (yd < -1 or yd > 1) 
+//         return 0;
+//     endif
     
-    zd := character.z - z;
-    if (zd < -10 or zd > 10)
-        return 0;
-    endif
+//     zd := character.z - z;
+//     if (zd < -10 or zd > 10)
+//         return 0;
+//     endif
 
-    return CheckLosAt( character, x, y, z );
+//     return CheckLosAt( character, x, y, z );
 
-endfunction
+// endfunction
 
 function coordist ( x1 , y1 , x2 , y2 )
 
@@ -108,47 +110,47 @@ function GetDirection (character, x, y)
 
 endfunction
 
-///////////////////
-//  opens the bank storage area
-///////////////////
+// ///////////////////
+// //  opens the bank storage area
+// ///////////////////
 
-function OpenWorldBank()
+// function OpenWorldBank()
 
-	var bank := FindStorageArea( "World Bank" );
-	if (!bank)
-		bank := CreateStorageArea( "World Bank" );
-	endif
+// 	var bank := FindStorageArea( "World Bank" );
+// 	if (!bank)
+// 		bank := CreateStorageArea( "World Bank" );
+// 	endif
 
-	// this should not happen. FIXME, make sure and document that fact.
-	if (!bank)
-		syslog( "Unable to open or create world bank!" );
-	endif
+// 	// this should not happen. FIXME, make sure and document that fact.
+// 	if (!bank)
+// 		syslog( "Unable to open or create world bank!" );
+// 	endif
 
-	return bank;
+// 	return bank;
 
-endfunction
+// endfunction
 
 
 
-///////////////////
-// finds the bankbox for the given character
-///////////////////
+// ///////////////////
+// // finds the bankbox for the given character
+// ///////////////////
 
-function FindBankBox( character )
+// function FindBankBox( character )
 
-	var worldbank := OpenWorldBank();
-	var bank_obj_name := "Bankbox of " + character.serial;
-	var bankbox := FindRootItemInStorageArea( worldbank, bank_obj_name );
+// 	var worldbank := OpenWorldBank();
+// 	var bank_obj_name := "Bankbox of " + character.serial;
+// 	var bankbox := FindRootItemInStorageArea( worldbank, bank_obj_name );
 
-	if (!bankbox)
-		bankbox := CreateRootItemInStorageArea( worldbank, bank_obj_name, UOBJ_BANKBOX );
-	endif
+// 	if (!bankbox)
+// 		bankbox := CreateRootItemInStorageArea( worldbank, bank_obj_name, UOBJ_BANKBOX );
+// 	endif
 
-	// should never happen.  FIXME make sure and document that fact
-	if (!bankbox)
-		SysLog( "Unable to find or create bankbox for " + character.serial );
-	endif
+// 	// should never happen.  FIXME make sure and document that fact
+// 	if (!bankbox)
+// 		SysLog( "Unable to find or create bankbox for " + character.serial );
+// 	endif
 
-	return bankbox;
+// 	return bankbox;
 
-endfunction
+// endfunction

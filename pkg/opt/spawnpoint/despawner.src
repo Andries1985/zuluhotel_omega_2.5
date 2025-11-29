@@ -4,11 +4,12 @@ use util;
 use basic;
 use cfgfile;
 
-include "include/all";
-include "include/starteqp";
-include "include/time";
-include "include/objtype"; // add start & end hair
-include "include/itemutil"; // added for getcursedlevel()
+//include "include/all";
+//include "include/starteqp";
+//include "include/time";
+//include "include/objtype"; // add start & end hair
+//include "include/itemutil"; // added for getcursedlevel()
+include "include/spawnpoint";
 
 program DeSpawner( point )
 	

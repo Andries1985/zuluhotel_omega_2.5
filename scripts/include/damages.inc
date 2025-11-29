@@ -18,16 +18,20 @@ const DMGID_MAGIC	:= 0x0200;
 const DMGID_ASTRAL	:= 0x0400;
 const DMGID_NO_RESIST	:= 0x0800;
 
+//Removed Includes
+//Moved Stored Damage function to Damages include
+//include "include/storedamage";
+
 include "include/attributes";
-include "include/constants";
+//include "include/constants";
 include ":karmafame:karmafame";
-include "include/mobileutil";
+//include "include/mobileutil";
 include "include/astralfights";
-include ":shilhook:shilcombat";
-include "include/areas";
-include "include/classes";
-include "include/client";
-include ":lootlottery:include/storedamage";
+//include ":shilhook:shilcombat";
+//include "include/areas";
+//include "include/classes";
+//include "include/client";
+
 
 const MAX_SERIAL_IN_HITLIST := 5;
 
@@ -382,3 +386,25 @@ function IsSummoned( byref mobile )
 
 endfunction
 
+function StoreDamage(attacker, defender, damage)
+
+	var attacker_list := GetObjProperty(defender, "AttackerList");
+
+	if (!attacker_list)
+		attacker_list := dictionary;
+	endif
+
+	var attacker_serial := CInt(attacker.serial);
+	
+	if (!attacker_list.Exists(attacker_serial))
+		attacker_list[attacker_serial] := damage;
+	else
+		attacker_list[attacker_serial] += damage;
+	endif
+	SetObjProperty(defender, "AttackerList", attacker_list);
+
+	if (!GetObjProperty(defender, "MyMaxHP"))
+		SetObjProperty(defender, "MyMaxHP", GetMaxHP(defender));
+	endif
+
+endfunction

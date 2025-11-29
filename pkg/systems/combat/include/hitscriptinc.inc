@@ -6,13 +6,16 @@ use cfgfile;
 use unicode;
 use attributes;
 
+//Removed Includes
+//include ":lootlottery:storedamage";
+
+
 include "include/client";
 include "include/dotempmods";
 include "include/classes";
 include "include/damages";
 include "include/bitwise";
 include "include/attributes";
-include ":lootlottery:storedamage";
 include "include/skillpoints";
 
 var combat_settingscfg := ReadConfigFile(":combat:settings");
@@ -170,8 +173,8 @@ function RecalcAstralDmg( attacker, defender, weapon, armor, byref basedamage, p
 		* ((GetEffectiveSkill( attacker , SKILLID_SPIRITSPEAK ) + 50.0 + (GetIntelligence(attacker) * 0.2)) * 0.01)
 		/ ((GetEffectiveSkill( attacker , SKILLID_TACTICS ) + 50.0 + (GetStrength(attacker) * 0.2)) * 0.01);
 
-	AwardRawSkillPoints( attacker, SKILLID_EVALINT, 30 );
-	AwardRawSkillPoints( attacker, SKILLID_SPIRITSPEAK, 30 );
+	AwardSkillPoints( attacker, SKILLID_EVALINT, 30 );
+	AwardSkillPoints( attacker, SKILLID_SPIRITSPEAK, 30 );
 
 	if( defender.isa(POLCLASS_NPC) )
 		basedamage *= ClasseBonus( attacker , CLASSEID_MAGE );
@@ -210,8 +213,8 @@ function RecalcAstralDmg( attacker, defender, weapon, armor, byref basedamage, p
 			var resist := GetEffectiveSkill( defender , SKILLID_MAGICRESISTANCE );
 			var defint := GetIntelligence(defender);
 
-			AwardRawSkillPoints( defender, SKILLID_MEDITATION, 30 );
-			AwardRawSkillPoints( defender, SKILLID_MAGICRESISTANCE, 30 );
+			AwardSkillPoints( defender, SKILLID_MEDITATION, 30 );
+			AwardSkillPoints( defender, SKILLID_MAGICRESISTANCE, 30 );
 			PerformAction(  defender, ANIM_CAST_AREA );
 			SendSysmessage( defender, "You successfully block a part of the astral attack." );
 

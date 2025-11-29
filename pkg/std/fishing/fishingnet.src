@@ -1,13 +1,13 @@
-use uo;
 use os;
+use uo;
 use cfgfile;
 
-include "include/client";
+//include "include/client";
 include "include/utility";
 include "fishing";
 include "include/checkcity";
-include "include/random";
-include "include/itemutil";
+//include "include/random";
+//include "include/itemutil";
 
 program use_net( character, net )
 

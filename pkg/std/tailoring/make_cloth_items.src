@@ -24,6 +24,7 @@ include "util/repair";
 include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
+include "../pkg/opt/karmafame/karmafame";
 
 const SCISSORS_SOUND    := 0x0249;
 const ID_HIDES          := 1;

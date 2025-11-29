@@ -8,6 +8,7 @@ use util;
 include "include/findcity";
 include "include/areas";
 include ":staff:include/staff";
+include "include/client";
 
 Const CORE_IGNORE := 1;
 Const CORE_OK     := 0;

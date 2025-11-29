@@ -9,6 +9,7 @@ include ":gumps:gumps";
 include ":gumps:gumps_ex";
 include ":gumps:yesno";
 include "include/utility";
+include "util/bank";
 //include ":containers:storageAreas";
 include "include/constants/storageareas";
 

@@ -40,6 +40,7 @@ include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
 include ":crafting:craftingfunctions";
+include "../pkg/opt/karmafame/karmafame";
 
 const DIVIDER		:= 3;
 const APPEAR_AT		:= -10;

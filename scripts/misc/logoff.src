@@ -41,6 +41,13 @@ program logoff(who)
 	if (temp)
 		EraseObjProperty(who,"#Paging");
 	endif
+
+	temp := GetObjProperty(who, "#ViewingBeast");
+	if (temp)
+		who.frozen := 0;
+		who.concealed := 0;
+		EraseObjProperty(who, "#ViewingBeast");
+	endif
 	
 	//Erase #Casting just to be sure!
 	EraseObjProperty(who, "#Casting");

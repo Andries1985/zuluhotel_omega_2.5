@@ -69,7 +69,7 @@ program reveal_hider ( parms, spell_id )
 					circle := circle * 2;
 				endif
 				
-				if(Found( caster, mobile))
+				if(Found( caster, mobile ))
 					numfound := 1;
 					mobile.hidden := 0;
 					PrintTextAbovePrivate( mobile , "You have been revealed!" , mobile );
@@ -89,28 +89,295 @@ endprogram
 function Found ( finder , hider )
 	var finder_level := GetClasseLevel(finder);
 	var hider_level := GetClasseLevel(hider);
+
 	var finder_skill := GetEffectiveSkill( finder , SKILLID_MAGERY  );
 	var hider_skill  := GetEffectiveSkill( hider , SKILLID_HIDING );
 	var resist_skill := GetEffectiveSkill( hider , SKILLID_MAGICRESISTANCE );
+	var musicmanship_skill := GetEffectiveSkill( hider , SKILLID_MUSICIANSHIP );
     var highest;
 	
-    if ( GetObjProperty( hider, CLASSEID_THIEF ))
-    	hider_skill := CInt( hider_skill * ClasseBonus(hider, CLASSEID_THIEF ));
+	Print("New Cast");
+	Print("Finder skill: " + finder_skill);
+	Print("Hider skill: " + hider_skill);
+
+	//Class Bonuses for Finder
+	if ( GetObjProperty( finder, CLASSEID_MAGE ))
+		var finder_newskill := CInt( finder_skill * ClasseBonus(finder, CLASSEID_MAGE ));
+		finder_skill := finder_newskill;
     endif
-	
-    if ( GetObjProperty( hider, CLASSEID_MAGE ))
-    	resist_skill := CInt( resist_skill * ClasseBonus(hider, CLASSEID_MAGE ));
+	if ( GetObjProperty( finder, CLASSEID_PALADIN ))
+		var finder_newskill := CInt( finder_skill * ClasseBonus(finder, CLASSEID_PALADIN ));
+		finder_skill := finder_newskill;
+    endif
+	if ( GetObjProperty( finder, CLASSEID_MYSTIC_ARCHER ))
+		var finder_newskill := CInt( finder_skill * ClasseBonus(finder, CLASSEID_MYSTIC_ARCHER ));
+		finder_skill := finder_newskill;
     endif
 
-    if (hider_skill > resist_skill)
-    	highest := hider_skill;
-    else
-   		highest := resist_skill;
+	//Class Bonuses for Hider
+    if ( GetObjProperty( hider, CLASSEID_THIEF ))
+    	var hider_newskill := CInt( hider_skill * ClasseBonus(hider, CLASSEID_THIEF ));
+		hider_skill := hider_newskill;
     endif
+    if ( GetObjProperty( hider, CLASSEID_MAGE ))
+    	var resist_newskill := CInt( resist_skill * ClasseBonus(hider, CLASSEID_MAGE ));
+		resist_skill := resist_newskill;
+    endif
+	if ( GetObjProperty( hider, CLASSEID_PALADIN ))
+    	var resist_newskill := CInt( resist_skill * ClasseBonus(hider, CLASSEID_PALADIN ));
+		resist_skill := resist_newskill;
+    endif
+	if ( GetObjProperty( hider, CLASSEID_MYSTIC_ARCHER ))
+    	var resist_newskill := CInt( resist_skill * ClasseBonus(hider, CLASSEID_MYSTIC_ARCHER ));
+		resist_skill := resist_newskill;
+    endif
+	if ( GetObjProperty( hider, CLASSEID_BARD ))
+		var musicmanship_newskill := CInt( musicmanship_skill * ClasseBonus(finder, CLASSEID_BARD ));
+		musicmanship_skill := musicmanship_newskill;
+    endif
+	if ( GetObjProperty( hider, CLASSEID_BLADESINGER ))
+		var musicmanship_newskill := CInt( musicmanship_skill * ClasseBonus(finder, CLASSEID_BLADESINGER ));
+		musicmanship_skill := musicmanship_newskill;
+    endif
+
+	Print("Finder skill: " + finder_skill);
+	Print("Hider skill: " + hider_skill);
+	Print("Resist skill: " + resist_skill);
+	Print("Musicmanship skill: " + musicmanship_skill);
+
+    if (hider_skill > resist_skill && hider_skill > musicmanship_skill)
+    	highest := hider_skill;
+    elseif (resist_skill > musicmanship_skill && resist_skill > hider_skill)
+   		highest := resist_skill;
+    elseif (musicmanship_skill > resist_skill && musicmanship_skill > hider_skill)
+		highest := musicmanship_skill;
+	else
+		highest := hider_skill; // In case of a tie, just pick hiding.
+	endif
+
+	Print("Highest skill: " + highest);
 	
 	var diceroll := RandomInt(100);
+
+	Print("Dice Roll: " + diceroll);
+
     var chance := Cint(finder_skill - (highest / 5));
-	
+
+	var lvl_diff := finder_level - hider_level;
+
+	if ( lvl_diff < 0 )
+		lvl_diff := -lvl_diff;
+	endif
+
+	if( lvl_diff == 0 )
+		if ( finder_skill > highest )
+			if(diceroll > 45)
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill == highest )
+			if (diceroll > 50 )
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill < highest )
+			if (diceroll > 55 )
+				return 1;
+			else
+				return 0;
+			endif
+		endif	
+	elseif ( lvl_diff == 1 )
+		if ( finder_skill > highest )
+			if(diceroll > 40)
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill == highest )
+			if (diceroll > 50 )
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill < highest )
+			if (diceroll > 60 )
+				return 1;
+			else
+				return 0;
+			endif
+		endif	
+	elseif( lvl_diff == 2 )
+		if ( finder_skill > highest )
+			if(diceroll > 35)
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill == highest )
+			if (diceroll > 50 )
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill < highest )
+			if (diceroll > 65 )
+				return 1;
+			else
+				return 0;
+			endif
+		endif	
+	elseif( lvl_diff == 3 )
+		if ( finder_skill > highest )
+			if(diceroll > 30)
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill == highest )
+			if (diceroll > 50 )
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill < highest )
+			if (diceroll > 70 )
+				return 1;
+			else
+				return 0;
+			endif
+		endif	
+	elseif( lvl_diff == 4 )
+		if ( finder_skill > highest )
+			if(diceroll > 25)
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill == highest )
+			if (diceroll > 50 )
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill < highest )
+			if (diceroll > 75 )
+				return 1;
+			else
+				return 0;
+			endif
+		endif	
+	elseif( lvl_diff == 5 )
+		if ( finder_skill > highest )
+			if(diceroll > 20)
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill == highest )
+			if (diceroll > 50 )
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill < highest )
+			if (diceroll > 80 )
+				return 1;
+			else
+				return 0;
+			endif
+		endif	
+	elseif( lvl_diff == 6 )
+		if ( finder_skill > highest )
+			if(diceroll > 15)
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill == highest )
+			if (diceroll > 50 )
+				return 1;
+			else
+				return 0;
+			endif
+		elseif ( finder_skill < highest )
+			if (diceroll > 85 )
+				return 1;
+			else
+				return 0;
+			endif
+		endif	
+	endif
+
+endfunction
+
+
+	/*
+	//Debug Logic
+	if( lvl_diff == 0 )
+		if ( finder_skill > highest )
+			if(diceroll > 45)
+				Print( "Finder Skill Higher -> Won: " +diceroll );
+				// message to both parties (adjust text/viewer as you prefer)
+				PrintTextAbovePrivate( hider, "Level difference is 0, Hider Found! (Hider: " + hider_level + " Finder: " + finder_level + ")", hider );
+				PrintTextAbovePrivate( finder, "Level difference is 0, Hider Found! (Hider: " + hider_level + " Finder: " + finder_level + ")", finder );
+				return 1;
+			else
+				Print( "Finder Skill Higher -> Lost: " +diceroll );
+				return 0;
+			endif
+		elseif ( finder_skill == highest )
+			if (diceroll > 50 )
+				Print( "Skills Equal -> Won: " +diceroll );
+				// message to both parties (adjust text/viewer as you prefer)
+				PrintTextAbovePrivate( hider, "Level difference is 0, Hider Found! (Hider: " + hider_level + " Finder: " + finder_level + ")", hider );
+				PrintTextAbovePrivate( finder, "Level difference is 0, Hider Found! (Hider: " + hider_level + " Finder: " + finder_level + ")", finder );
+				return 1;
+			else
+				Print( "Skills Equal -> Lost: " +diceroll );
+				return 0;
+			endif
+		elseif ( finder_skill < highest )
+			if (diceroll > 55 )
+				Print( "Finder Skill Lower -> Won: " +diceroll );
+				// message to both parties (adjust text/viewer as you prefer)
+				PrintTextAbovePrivate( hider, "Level difference is 0, Hider Found! (Hider: " + hider_level + " Finder: " + finder_level + ")", hider );
+				PrintTextAbovePrivate( finder, "Level difference is 0, Hider Found! (Hider: " + hider_level + " Finder: " + finder_level + ")", finder );
+				return 1;
+			else
+				Print( "Finder Skill Lower -> Lost: " +diceroll );
+				return 0;
+			endif
+		endif	
+	elseif ( lvl_diff == 1 )
+		// message to both parties (adjust text/viewer as you prefer)
+		PrintTextAbovePrivate( hider, "Level difference is 1 (Hider: " + hider_level + " Finder: " + finder_level + ")", hider );
+		PrintTextAbovePrivate( finder, "Level difference is 1 (Hider: " + hider_level + " Finder: " + finder_level + ")", finder );
+	elseif( lvl_diff == 2 )
+		// message to both parties (adjust text/viewer as you prefer)
+		PrintTextAbovePrivate( hider, "Level difference is 2 (Hider: " + hider_level + " Finder: " + finder_level + ")", hider );
+		PrintTextAbovePrivate( finder, "Level difference is 2 (Hider: " + hider_level + " Finder: " + finder_level + ")", finder );
+	elseif( lvl_diff == 3 )
+		// message to both parties (adjust text/viewer as you prefer)
+		PrintTextAbovePrivate( hider, "Level difference is 3 (Hider: " + hider_level + " Finder: " + finder_level + ")", hider );
+		PrintTextAbovePrivate( finder, "Level difference is 3 (Hider: " + hider_level + " Finder: " + finder_level + ")", finder );
+	elseif( lvl_diff == 4 )
+		// message to both parties (adjust text/viewer as you prefer)
+		PrintTextAbovePrivate( hider, "Level difference is 4 (Hider: " + hider_level + " Finder: " + finder_level + ")", hider );
+		PrintTextAbovePrivate( finder, "Level difference is 4 (Hider: " + hider_level + " Finder: " + finder_level + ")", finder );
+	elseif( lvl_diff == 5 )
+		// message to both parties (adjust text/viewer as you prefer)
+		PrintTextAbovePrivate( hider, "Level difference is 5 (Hider: " + hider_level + " Finder: " + finder_level + ")", hider );
+		PrintTextAbovePrivate( finder, "Level difference is 5 (Hider: " + hider_level + " Finder: " + finder_level + ")", finder );
+	elseif( lvl_diff == 6 )
+		// message to both parties (adjust text/viewer as you prefer)
+		PrintTextAbovePrivate( hider, "Level difference is 6 (Hider: " + hider_level + " Finder: " + finder_level + ")", hider );
+		PrintTextAbovePrivate( finder, "Level difference is 6 (Hider: " + hider_level + " Finder: " + finder_level + ")", finder );
+	endif
+
+	//Old Logic
 	// Equal lvl == 50% chance.
 	if(finder_level == hider_level)
 		if( diceroll < chance / 1.5)
@@ -177,5 +444,5 @@ function Found ( finder , hider )
 			return 0;
 		endif
 	endif
- 
-endfunction
+ */
+

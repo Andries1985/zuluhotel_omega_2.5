@@ -293,3 +293,28 @@ function CheckForMaxClientsOnline(who)
 
     return 1;
 endfunction
+
+function ACCT_FindValidPlayer(player)
+
+	var playerserial := 0;
+	var acctlist := ListAccounts();
+	var i := 1;
+
+	// Stuff for verifying that the player exists
+	foreach acctnam in acctlist
+		var acctref := FindAccount(acctnam);
+		for ( i := 1; i<=5; i:=i+1 )
+			var playername := CStr(acctref.GetCharacter(i).name);
+			if(!playername)
+				continue;
+			endif
+			if ( Lower(playername) == Lower(player) )
+				playerserial := acctref.GetCharacter(i).serial;
+				break;
+			endif
+		endfor
+	endforeach
+
+  return playerserial;
+
+endfunction
