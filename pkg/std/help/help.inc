@@ -6,6 +6,7 @@
 //pagecheck(who, type) //check if who have paged, return  page num or 0 //
 //pagewarning(type, message) //send to all staff types the message 	//
 //////////////////////////////////////////////////////////////////////////
+use uo;
 
 
 //globals variables
@@ -39,7 +40,7 @@ case(cint(type))
 1:	var maxi := gmpages.size(); 
 	
 	for(i := 0; i < maxi; i := i + 1)
-		if (cserial = cint(gmpages[i]))
+		if (cserial == cint(gmpages[i]))
 			retval := i;
 			break;
 		endif	
@@ -48,7 +49,7 @@ case(cint(type))
 
 2:	var maxi := counpages.size();
 	for(i := 0; i < maxi; i := i + 1)
-		if (cserial = cint(counpages[i]))
+		if (cserial == Cint(counpages[i]))
 			retval := i;
 			break;
 		endif	
