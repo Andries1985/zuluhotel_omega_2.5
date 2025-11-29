@@ -274,6 +274,7 @@ function BuyBankersNote(who, me, currency)
 		SendSysMessage(who, "Please page a staff member and reprt this.", 1, 33);
 		return 0;
 	endif
+//endfunction
 
 	var created := CreateItemInBackpack(who, "bankersorder");
 	if(created.errortext == "That container is full")
