@@ -2,6 +2,7 @@
 Use uo;
 include ":staff:include/staff";
 include "util/bank";
+include "include/constants/locations";
 
 program open_bank( who )
 

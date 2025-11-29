@@ -2,6 +2,7 @@ use os;
 use uo;
 
 include ":staff:include/staff";
+include "include/attributes";
 
 program ft( who )
 	var totem;

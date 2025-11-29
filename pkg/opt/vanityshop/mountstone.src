@@ -7,6 +7,7 @@ include "include/attributes";
 include "include/areas";
 include ":housing:utility";
 include "include/dismount";
+include "include/constants/locations";
 
 const MSG_COLOR := 100;
 const FX_SPEED := 0xa;

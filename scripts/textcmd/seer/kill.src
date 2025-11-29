@@ -1,8 +1,10 @@
 use os;
 use uo;
 use vitals;
+
 include ":staff:include/staff";
 include "include/attributes";
+include "include/managers";
 
 program textcmd_kill( who )
 

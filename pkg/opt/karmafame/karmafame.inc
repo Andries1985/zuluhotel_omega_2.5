@@ -22,7 +22,7 @@ const VALUE_MULTIPLIER_FOR_TAMED  := 0.5;
 
 const DELAY_TO_GET_KARMA_FAME := 300;
 
-include "include/client";
+//include "include/client";
 // Action ids used by AwardKarmaFameForAction function
 /*
 const ACTIONID_BEGGING       := 1;

@@ -6,14 +6,14 @@ use util;
 
 include "util/bank";
 include "include/randname";
-//include "include/eventid";
+include "include/eventid";
 //include "ai/setup/modsetup";
 //include "include/attributes";
 //include "include/npcboosts";
 
 
 //include "include/eventid";
-//include "include/sysevent";
+//include "include/syseventids";
 //include "include/client";
 include "include/anchors";
 //include "include/string";

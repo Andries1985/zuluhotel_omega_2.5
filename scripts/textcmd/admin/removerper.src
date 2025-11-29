@@ -2,6 +2,7 @@ use uo;
 use os;
 
 include ":staff:include/staff";
+include "include/client";
 
 program textcmd_removerper(who)
 

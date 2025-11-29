@@ -3,6 +3,7 @@ use os;
 
 include "include/itemutil";
 include "include/objtype";
+include "include/constants/locations";
 
 
 var sub_bags_y := 74;

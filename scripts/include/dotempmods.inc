@@ -9,6 +9,7 @@ include "include/client";
 include "include/spelldata";
 include "include/classes";
 include "include/random";
+include "include/constants/locations";
 
 
 function AddToPersistedMods( byref allmods , byref mmod )

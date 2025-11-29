@@ -5,6 +5,7 @@ include "include/spelldata";
 include "include/classes";
 include "include/client";
 include "include/attributes";
+include "include/constants/locations";
 
 program cast_summon( parms, spell_id )
 

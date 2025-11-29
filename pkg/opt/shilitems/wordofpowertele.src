@@ -5,8 +5,10 @@ use basic;
 
 include "include/itemutil";
 include "include/eventid";
-include "include/objtype";
+//include "include/objtype";
 include "include/client";
+//include "include/attributes";
+include "include/shilitems";
 
 program wordofpowertele( teleporter )
 
@@ -78,3 +80,4 @@ function ClearEvents()
 	until (! (ev := os::wait_for_event(0)) );
 
 endfunction
+

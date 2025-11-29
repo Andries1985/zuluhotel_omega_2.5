@@ -7,6 +7,9 @@ use boat;
 include ":gumps:yesno";
 include ":housing:utility";
 include "include/dotempmods";
+include "include/constants/gumpids";
+include "include/constants/cmdlevels";
+
 
 const X := 210;
 const Y := 175;

@@ -7,7 +7,7 @@ use attributes;
 include "include/attributes";
 include "include/client";
 include "include/constants/gumpids";
-
+include "include/constants/locations";
  
 include ":gumps:old-gumps";
 

@@ -1,6 +1,7 @@
 use uo;
 use os;
 use vitals;
+
 include "include/attributes";
 
 const DELAY_BETWEEN_USE	:= 20;
