@@ -31,7 +31,7 @@ function gump_bankersorder(who, stramt, bankcity, cointype, payee)
 		0x0EED:	coins := "Gold";
 	endcase
 		
-
+/*
 	var bankersorder := GFCreateGump();
 	
 	GFPage(bankersorder, 0);
@@ -70,21 +70,23 @@ function gump_bankersorder(who, stramt, bankcity, cointype, payee)
 	GFHTMLArea(bankersorder, 248, 203, 210, 128, "<BASEFONT size=7>The person named below is to be paid in the amount of " + stramt + " " + coins + " Coins when this Note is presented to a legal bank representative.</BASEFONT>");
 
 	GFSendGump(who, bankersorder);
-/*	var bankersorder := GFCreateGump();
+
+*/
+	var bankersorder := GFCreateGump();
 	
 	GFPage(bankersorder, 0);
 	//Image 1
 	GFGumpPic(bankersorder, 202, 91, 2080, 0);
 	//Image 2
-	GFGumpPic(bankersorder, 219, 128, 2081, 0);
+	GFGumpPic(bankersorder, 220, 128, 2081, 0);
 	//Image 3
-	GFGumpPic(bankersorder, 218, 197, 2082, 0);
+	GFGumpPic(bankersorder, 220, 197, 2082, 0);
 	//Image 4
-	GFGumpPic(bankersorder, 219, 267, 2081, 0);
+	GFGumpPic(bankersorder, 220, 267, 2081, 0);
 	//Image 5
-	GFGumpPic(bankersorder, 219, 336, 2082, 0);
+	GFGumpPic(bankersorder, 220, 336, 2082, 0);
 	//Image 6
-	GFGumpPic(bankersorder, 220, 406, 2083, 0);
+	GFGumpPic(bankersorder, 202, 406, 2083, 0);
 	//Label 1
 	GFTextLine(bankersorder, 294, 132, 801, "Banker's Order");
 	//Label 2
@@ -104,5 +106,5 @@ function gump_bankersorder(who, stramt, bankcity, cointype, payee)
 	//Label 9
 	GFTextLine(bankersorder, 258, 370, 907, payee);
 	GFSendGump(who, bankersorder);
-*/
+
 endfunction

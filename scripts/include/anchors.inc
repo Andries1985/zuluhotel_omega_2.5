@@ -1,12 +1,11 @@
 use npc;
+use uo;
 use cfgfile;
 
 function drop_anchor(me)
 
         // assumes that var me = npc::self
-
         var cfg := readconfigfile("npcdesc");
-
         var dstart := cfg[me.npctemplate].dstart;
         var psub := cfg[me.npctemplate].psub;
 
@@ -15,7 +14,10 @@ function drop_anchor(me)
         endif
 
         if (dstart)
-        SetAnchor(me.x, me.y, dstart, psub);
+                SetAnchor(me.x, me.y, dstart, psub);
         endif
+
+        var parms := { me.x, me.y, me.z };
+        SetObjProperty(me, "Anchor", parms);
 
 endfunction
