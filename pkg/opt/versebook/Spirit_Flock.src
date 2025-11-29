@@ -5,6 +5,7 @@ include "include/attributes";
 include "include/classes";
 include ":versebook:include/versefunctions";
 include ":versebook:include/verseconstants";
+include "include/constants/locations";
 
 var stamina, diff, skills, element, instrument, musicianship, name, range;
 var flock := {};

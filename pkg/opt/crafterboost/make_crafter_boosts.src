@@ -8,6 +8,7 @@ include "include/classes";
 include "include/autoloop";
 include ":gumps:yesno";
 include "include/math";
+include "../pkg/opt/karmafame/karmafame";
 
 const TEXT_COLOR		:= 319;
 const MAT_DIVIDER		:= 3;

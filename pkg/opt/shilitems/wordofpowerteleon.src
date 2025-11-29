@@ -7,9 +7,10 @@ use os;
 use uo;
 use basic;
 
-include "include/itemutil";
+//include "include/itemutil";
 include "include/eventid";
-include "include/client";
+//include "include/client";
+include "include/shilitems";
 
 program wordofpowergate( teleporter )
 

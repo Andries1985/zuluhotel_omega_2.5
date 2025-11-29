@@ -11,7 +11,8 @@ use uo;
 use basic;
 
 include "include/eventid";
-include "include/itemutil";
+//include "include/itemutil";
+include "../pkg/opt/shilitems/include/shilitems";
 
 program wordofpowergate(me)
 

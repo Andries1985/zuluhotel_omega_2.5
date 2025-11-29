@@ -4,15 +4,17 @@ use util;
 use basic;
 use cfgfile;
 
-include "include/managers";
-include "include/starteqp";
+//include "include/managers";
+//include "include/starteqp";
 include "include/time";
-include "include/objtype"; // add start & end hair
-include "include/itemutil"; // added for getcursedlevel()
+//include "include/objtype"; // add start & end hair
+//include "include/itemutil"; // added for getcursedlevel()
 include ":spawnpoint:customnpc";
-include ":lootlottery:include/lootlottery";
+//include ":lootlottery:include/lootlottery";
+//include "include/all";
+include "include/spawnpoint";
 
-const VALIDATE_INTERVAL	:= 4 * TIMEID_SECONDS_PER_HOUR;
+//const VALIDATE_INTERVAL	:= 4 * TIMEID_SECONDS_PER_HOUR;
 
 program CheckPoint( point )
 
@@ -42,7 +44,7 @@ program CheckPoint( point )
 	endif
 
 	// Done periodically.
-	ValidatePointSpawns( point, pt_data );
+	ValidatePointSpawnsCP( point, pt_data );
 
 	// Check for expiry based on time.
 	if( pt_data[10] )
@@ -58,7 +60,7 @@ program CheckPoint( point )
 		return 0;
 	endif
 	
-	if( !CanSpawn(point, pt_data) )
+	if( !CanSpawnCP(point, pt_data) )
 		return 0;
 	endif
 	
@@ -90,7 +92,7 @@ program CheckPoint( point )
 	// Check if grouping, otherwise stagger.
 	if( !pt_data[8] )
 		if( numtospawn > 1 )
-			DelaySpawning( point, Cint(pt_data[6])*TIMEID_SECONDS_PER_MINUTE );
+			DelaySpawningCP( point, Cint(pt_data[6])*TIMEID_SECONDS_PER_MINUTE );
 		endif
 		numtospawn := 1;
 	endif
@@ -100,11 +102,11 @@ program CheckPoint( point )
 	for( num := 0; num < numtospawn; num := num + 1 )
 		set_critical(1);
 		case( pt_data[1] )
-			"NPC":		ret := CreateSpawnPointNpc( point, pt_data[2], pt_data );
-			"Group":	ret := CreateSpawnPointNpcFromGroup( point, pt_data );
-			"Item":		ret := CreateSpawnPointItem( point, pt_data );
-			"Container":	ret := CreateSpawnPointContainer( point, pt_data );
-			"Custom NPC":   ret := CreateSpawnPointNpc( point, pt_data[2], pt_data );
+			"NPC":		ret := CreateSpawnPointNpcCP( point, pt_data[2], pt_data );
+			"Group":	ret := CreateSpawnPointNpcFromGroupCP( point, pt_data );
+			"Item":		ret := CreateSpawnPointItemCP( point, pt_data );
+			"Container":	ret := CreateSpawnPointContainerCP( point, pt_data );
+			"Custom NPC":   ret := CreateSpawnPointNpcCP( point, pt_data[2], pt_data );
 		endcase
 		
 		if( ret == error )
@@ -131,7 +133,7 @@ program CheckPoint( point )
 endprogram
 
 
-function CanSpawn( byref point, byref pt_data )
+function CanSpawnCP( byref point, byref pt_data )
 
 	var clock := ReadGameClock();
 	var nextspawn := GetObjProperty( point, PROPID_SPAWNPOINT_NEXT_SPAWNING );
@@ -139,7 +141,7 @@ function CanSpawn( byref point, byref pt_data )
 	if( pt_data[6] )
 		if( nextspawn )
 			if( nextspawn > clock )
-				DelaySpawning( point, Cint(nextspawn-clock+5) );
+				DelaySpawningCP( point, Cint(nextspawn-clock+5) );
 				return 0;
 			endif
 		endif
@@ -189,10 +191,10 @@ function CanSpawn( byref point, byref pt_data )
 			endif
 		endif
 		
-		DespawnAll(point); // Despawn all, can't spawn now.
+		DespawnAllCP(point); // Despawn all, can't spawn now.
 		delaying := delaying * TIMEID_SECONDS_PER_HOUR;
 		delaying := delaying - (current_time.minutes*TIMEID_SECONDS_PER_MINUTE);
-		DelaySpawning( point, delaying+5 );
+		DelaySpawningCP( point, delaying+5 );
 		return 0;
 	endif
 	
@@ -206,7 +208,7 @@ function CanSpawn( byref point, byref pt_data )
 endfunction
 
 
-function CreateSpawnPointContainer( byref point, byref pt_data )
+function CreateSpawnPointContainerCP( byref point, byref pt_data )
 
 	var objtype	:= pt_data[2];
 	var template	:= objtype;
@@ -316,7 +318,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 endfunction
 
 
-function CreateSpawnPointItem( byref point, byref pt_data )
+function CreateSpawnPointItemCP( byref point, byref pt_data )
 	
 	var objtype	:= pt_data[2];
 	var template	:= objtype;
@@ -386,7 +388,7 @@ function CreateSpawnPointItem( byref point, byref pt_data )
 endfunction
 
 
-function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
+function CreateSpawnPointNpcCP( byref point, byref template, byref pt_data )
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
 	if( !serials )
 		serials := {};
@@ -421,7 +423,7 @@ function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
     if (GetObjProperty(point, "CustomPoint"))
 		vits := GetObjProperty(point, "NPCVits");
 		//Print($"Point Vits is " + GetObjProperty(point, "NPCVits") + " Template is " + template + " vits is " + vits.hits);
-		critter := CreateCustomNpc(point, template);
+		critter := CreateCustomNpcCP(point, template);
 		SetHP(critter, vits.hits);
 	else
 		
@@ -506,7 +508,7 @@ function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
 endfunction
 
 
-function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
+function CreateSpawnPointNpcFromGroupCP( byref point, byref pt_data )
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
 	if( !serials )
 		serials := {};
@@ -544,7 +546,7 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 	
 	 // update for customnpc
     if (GetObjProperty(point, "CustomPoint"))
-		critter := CreateCustomNpc(point, template);
+		critter := CreateCustomNpcCP(point, template);
 	else
 
 		//Old Britannia Map
@@ -633,7 +635,7 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 endfunction
 
 
-function DelaySpawning( byref point, byref delay )
+function DelaySpawningCP( byref point, byref delay )
 
 	var parms	:= array;
 	parms[1]	:= point;
@@ -644,7 +646,7 @@ function DelaySpawning( byref point, byref delay )
 endfunction
 
 
-function DespawnAll( byref point )
+function DespawnAllCP( byref point )
 
 	return Start_Script( ":spawnpoint:despawner", point );
 	
@@ -666,7 +668,7 @@ function TheresPlayersNear( byref obj )
 endfunction
 
 
-function ValidatePointSpawns( byref point, byref pt_data )
+function ValidatePointSpawnsCP( byref point, byref pt_data )
 
 	var nextval := Cint(GetObjProperty(point,PROPID_SPAWNPOINT_NEXT_VALIDATION));
 	if( !nextval )
@@ -733,7 +735,7 @@ function ValidatePointSpawns( byref point, byref pt_data )
 	
 endfunction
 
-function CreateCustomNPC(point, template)
+function CreateCustomNPCCP(point, template)
 
 	var skills := GetObjProperty(point, "NPCSkills");
 	var NPCProps := GetObjProperty(point, "NPCProps");

@@ -5,6 +5,7 @@ use vitals;
 include "include/attributes";
 include ":gumps:yesno";
 include "include/areas";
+include "include/constants/locations";
 
 const MONEY := 0xeed;
 
@@ -46,7 +47,7 @@ Program OnUse_donatorbearstone( who, item)
 	colormount( who, item );
 
 	3:
-	killmounts( who, item );
+	killmounts( who);
 
     
    	4:
@@ -164,7 +165,7 @@ function colormount( who, item )
 
 endfunction
 
-function killmounts( who, item )
+function killmounts( who )
 	var mountserial := GetObjProperty( who, "DMountSerial" );
 	var mount := SystemFindObjectBySerial( mountserial );
 	var mounted := GetEquipmentByLayer( who, 25 );

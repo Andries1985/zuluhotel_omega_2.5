@@ -1,7 +1,12 @@
 use uo;
+use os;
 
+//Removed Includes
+//include "include/attributes";
+//Move FitRequirements to wordofpowertele.src to avoid circular includes
+
+//Needed Includes
 include "include/objtype";
-include "include/attributes";
 include "include/constants/settings";
 include "include/constants/propids";
 
@@ -139,56 +144,6 @@ function FindRootItemInContainer( container , objtype )
 	
 	return the_item;
 
-endfunction
-
-
-function FitRequirements( who , item )
-
-	var required := GetObjProperty( item , "ToUseRequirements" );
-	if( !required )
-		return 1;
-	endif
-	
-	foreach condition in required
-		var type := condition[1];
-		case( type )
-			"skill":	if( GetEffectiveSkill( who , Cint(condition[2]) ) < Cint( condition[3] ) )
-						return 0;
-					endif
-					break;
-					
-			"stat":		case( condition[2] )
-						"str":	if( GetStrength(who) < Cint( condition[3] ) )
-								return 0;
-							endif
-							break;
-							
-						"dex":	if(GetDexterity(who) < Cint( condition[3] ) )
-								return 0;
-							endif
-							break;
-							
-						"int":	if( GetIntelligence(who) < Cint( condition[3] ) )
-								return 0;
-							endif
-							break;
-					endcase
-					break;
-					
-			"spec":		if( Cint( GetObjProperty( who , condition[2] ) ) < Cint( condition[3] ) )
-						return 0;
-					endif
-					break;
-					
-			"owner":	if( !( who.serial in condition[2] ) )
-						return 0;
-					endif
-					break;
-		endcase
-	endforeach
-	
-	return 1;
-	
 endfunction
 
 function GetPlatemailArmorGraphics()

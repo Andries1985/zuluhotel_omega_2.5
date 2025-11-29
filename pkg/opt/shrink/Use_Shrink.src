@@ -5,6 +5,7 @@ use cfgfile;
 
 include ":spawnpoint:customnpc";
 include ":staff:include/staff";
+include "include/constants/locations";
 
 program Use_shrink(who, doll)
 

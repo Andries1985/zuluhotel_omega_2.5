@@ -28,6 +28,7 @@ include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
 include "include/chests";
+include "../pkg/opt/karmafame/karmafame";
 
 const GOLD_COLOR	:= 0x0033;
 const CARPENTER_SOUND	:= 0x23e;

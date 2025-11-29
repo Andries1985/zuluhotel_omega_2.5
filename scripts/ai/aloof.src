@@ -23,13 +23,9 @@ include "include/randname";
 include "include/npcutil";
 include "include/anchors";
 include "ai/setup/modsetup";
+include "include/objtype";
 
 const HALT_THRESHOLD := 2; // how close before he barks?
-
-// TODO: move these to OBJTYPE.INC
-
-//const UOBJ_HUMAN_MALE   := 0x190;
-//const UOBJ_HUMAN_FEMALE := 0x191;
 
 var me := Self();
 if( me.name["<random>"] )

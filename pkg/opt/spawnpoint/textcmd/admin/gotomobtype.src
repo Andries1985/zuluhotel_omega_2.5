@@ -2,6 +2,7 @@
 
 use uo;
 use os;
+use polsys;
 
 include ":staff:staff";
 include ":gumps:gumps";

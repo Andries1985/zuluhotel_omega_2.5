@@ -1,7 +1,9 @@
 use uo;
 
-include "include/all";
+
+//include "include/all";
 include "include/shard";
+include "include/constants/timeids";
 
 
 function CalculateDate( byref secs, byref year, byref month, byref day )

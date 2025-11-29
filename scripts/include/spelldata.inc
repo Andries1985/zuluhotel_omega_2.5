@@ -14,16 +14,20 @@ use basic;
 use cfgfile;
 use polsys;
 
-include "include/client";
+//Removed Includes
+//include ":lootlottery:storedamage";
+
+
+//include "include/client";
 include "include/random";
-include "include/eventid";
+include "::include/constants/syseventids";
 include "include/classes";
 include "include/damages";
-include "include/areas";
+//include "include/areas";
 include "include/skillpoints";
 include "include/attributes";
 include "include/difficulty";
-include ":lootlottery:storedamage";
+
 
 ////////////////////////////////
 // Spell functions' constants //
@@ -1355,6 +1359,11 @@ function SmartAoE( caster, victims)
 		SendSysMessage( caster, "caster_CW "+caster_CW, color :=53);
 		SendSysMessage( caster, "caster_CWcolor "+caster_CWcolor, color :=53);
 	endif
+
+	if (IsInSafeArea(caster))
+			SendSysMessage( caster, "Cannot cast this in a safe area!", color :=34);
+		return;
+	endif
 	for(i:=1; i<=victims.Size(); i:=i+1)
 		var victim_RPer := GetObjProperty(victims[i], "IsRPer" );
 		var victim_noPK := GetObjProperty(victims[i], "NOPKAREA");
@@ -1372,6 +1381,9 @@ function SmartAoE( caster, victims)
 			SendSysMessage( caster, "same_CWcolor "+same_CWcolor, color :=53);
 		endif
 		//Borrowed from SmartSongAoE Function
+		if (IsInSafeArea(victims[i]))
+				victims.erase(i);
+		endif
 		if ((victims[i].isa(POLCLASS_NPC)) && (victims[i].master == caster))
 			victims.erase(i);
 		endif

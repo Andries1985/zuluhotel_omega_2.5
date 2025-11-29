@@ -2,8 +2,10 @@ use uo;
 use cfgfile;
 use os;
 
+include "include/client";
 include "include/random";
 include "include/itemutil";
+include "include/attributes";
 
 function RandomFish(character)
 

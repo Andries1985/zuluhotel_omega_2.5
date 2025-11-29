@@ -16,6 +16,7 @@ include "include/utility";
 include "include/eventid";
 include "include/attributes";
 include "include/random";
+include "../pkg/opt/karmafame/karmafame";
 
 
 program stealing(who)

@@ -1,6 +1,7 @@
 use uo;
 
 include ":staff:include/staff";
+include "include/managers";
 
 program tame( who )
 

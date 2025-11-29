@@ -6,6 +6,7 @@ include "include/spelldata";
 include "include/client";
 include "include/dotempmods";
 include "include/areas";
+include "include/damages";
 
 program processtempmods( parms )
 

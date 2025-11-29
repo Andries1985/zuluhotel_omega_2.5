@@ -17,7 +17,7 @@
 
 
 // DEBUG MODE
-const DEBUG_MODE	:= 0;
+const DEBUG_MODE	:= 1;
 
 
 ////

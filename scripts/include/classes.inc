@@ -1,9 +1,11 @@
 use uo;
+use os;
 
-include "include/spelldata";
+//include "include/spelldata";
 include "include/itemutil";
 include "include/client";
 include ":staff:include/staff";
+include "include/attributes";
 
 const CLASSE_BONUS        		:= 1.5;
 const CLASSEID_BARD       		:= "IsBard";
@@ -442,7 +444,7 @@ function HaveInvalidSkillEnchantmentForClasse( item , classeid )
 endfunction
 
 
-function HaveRestrictedModEnchantmentForClasse( who , item , classeid )
+function HaveRestrictedModEnchantmentForClasse( item , classeid )
 
 	var ret := 0;
 
@@ -460,7 +462,7 @@ function HaveRestrictedModEnchantmentForClasse( who , item , classeid )
 	endcase
 
 	//Warrior original restrictions
-	/*if( GetObjProperty( item , "MagicImmunity" ) )
+	if( GetObjProperty( item , "MagicImmunity" ) )
 		ret := 1;
 	elseif( GetObjProperty( item , "SpellReflect" ) )
 		ret := 1;
@@ -469,8 +471,8 @@ function HaveRestrictedModEnchantmentForClasse( who , item , classeid )
 	elseif( GetObjProperty( item , "Permmr" ) )
 		ret := 1;
 	endif
-	break;
-*/
+	//break;
+
 	return ret;
 
 endfunction
@@ -736,7 +738,7 @@ function IsProhibitedByClasse( who , item )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_WARRIOR ) )
 			ret := 1;
-		elseif( HaveRestrictedModEnchantmentForClasse( who , item , CLASSEID_WARRIOR ) )
+		elseif( HaveRestrictedModEnchantmentForClasse( item , CLASSEID_WARRIOR ) )
 			ret := 1;
 		endif
 	endif
