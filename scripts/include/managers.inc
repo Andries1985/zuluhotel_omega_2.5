@@ -2,7 +2,7 @@ use os;
 use uo;
 use cfgfile;
 
-//include "include/constants";
+include "include/constants";
 include "include/constants/eventids";
 include "include/constants/propids";
 

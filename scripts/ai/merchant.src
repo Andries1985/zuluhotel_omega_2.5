@@ -385,35 +385,35 @@ endfunction
 
 function EquipAnyHair(who)
 
-foreach item in EnumerateItemsInContainer(who.backpack)
-	// Destroy current hair, equip new
-	if (item.tile_layer == 0x0b)
+	foreach item in EnumerateItemsInContainer(who.backpack)
+		// Destroy current hair, equip new
+		if (item.tile_layer == 0x0b)
 
-		DestroyItem(GetEquipmentByLayer(who, 0x0b));
+			DestroyItem(GetEquipmentByLayer(who, 0x0b));
 
-		item.color := GetObjProperty(who, "HairColour");
-		EquipItem(who, item);
-
-	// Destroy current facial hair, equip new
-	elseif (item.tile_layer == 0x10)
-		DestroyItem(GetEquipmentByLayer(who, 0x10));
-		// only males can have beards
-		if (who.gender == 0)
+			item.color := GetObjProperty(who, "HairColour");
 			EquipItem(who, item);
-			item.color := GetObjProperty(who, "BeardColour");
+
+		// Destroy current facial hair, equip new
+		elseif (item.tile_layer == 0x10)
+			DestroyItem(GetEquipmentByLayer(who, 0x10));
+			// only males can have beards
+			if (who.gender == 0)
+				EquipItem(who, item);
+				item.color := GetObjProperty(who, "BeardColour");
+			endif
 		endif
-	endif
 
-	// For no hair/no beard. They don't have layers
-	if (item.objtype == 0x2004)
-		DestroyItem(GetEquipmentByLayer(who, 0x0b));
-		DestroyItem(item);
-	elseif (item.objtype == 0x2005)
-		DestroyItem(GetEquipmentByLayer(who, 0x10));
-		DestroyItem(item);
-	endif
+		// For no hair/no beard. They don't have layers
+		if (item.objtype == 0x2004)
+			DestroyItem(GetEquipmentByLayer(who, 0x0b));
+			DestroyItem(item);
+		elseif (item.objtype == 0x2005)
+			DestroyItem(GetEquipmentByLayer(who, 0x10));
+			DestroyItem(item);
+		endif
 
-endforeach
+	endforeach
 
 endfunction
 

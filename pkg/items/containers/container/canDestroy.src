@@ -1,0 +1,10 @@
+/*
+        Maintained by The POL Distro Team
+
+        2018-07-25
+*/
+use uo;
+
+program canDestroy( unused container )
+	return 1;
+endprogram

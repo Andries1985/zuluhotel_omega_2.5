@@ -1,0 +1,24 @@
+/*
+        Created by *Edwards
+
+        Maintained by The POL Distro Team
+
+        2011-03-2011
+*/
+use uo;
+use util;
+
+include "../pkg/items/containers/include/containers";
+//include ":keys:key";
+
+program OnCreateContainer( item )
+
+	if(GetObjProperty(item, "NoKey"))
+		return 1;
+	//elseif( KP_IsLockable( item ))
+		//Create_ChestKey( item );
+		//SetObjProperty( item, "LockPickDiff", RandomIntMinMax( 29, 91 ) );
+	endif
+
+	return 1;
+endprogram

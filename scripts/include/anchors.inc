@@ -15,7 +15,7 @@ function drop_anchor(me)
         endif
 
         if (dstart)
-        SetAnchor(me.x, me.y, dstart, psub);
+                SetAnchor(me.x, me.y, dstart, psub);
         endif
 
 endfunction
