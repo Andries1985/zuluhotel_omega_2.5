@@ -18,55 +18,40 @@ include "include/randname";
 	var bank;
 	const REACT_THRESHOLD := 8;
 	var me := Self();
+	var wanderlimit := 10;
+	var wanders := 0;
 	var npccfg := ReadConfigFile("npcdesc");
 	var bankcity := WhatCityAmIIn(me);
-	Print("Banker npc located in city: " + bankcity);
 	var currency := GetTownCurrency(bankcity);
 	if(!currency)
 		var currency := 0xEED;
 	endif
-	Print("Banker npc using currency objtype: " + currency);
 	
 	var bank_region := CP_DEFAULT_AREA;
 	var my_speech_font := me.speech_font;
 	var my_speech_color := me.speech_color;
 
 	if( me.name["<random>"] )
-		Print("Assigning random name to banker npc.");
 		SetName( me , RandomName( me ) );
-		Print("Assigned name: " + me.name);
 		EquipFromTemplate( me , "Banker" );
-		Print("Equipped banker npc from template.");
 	endif
 
 program banker();
-	//start_script("NPCKeeper", me);
-	var next_wander := ReadGameClock() + 130;
+	var next_wander := ReadGameClock() + 30;
 	var myanchor := GetObjProperty(me, "Anchor");
 	if(myanchor)
-		MoveObjectToLocation(me, myanchor[1], myanchor[2], myanchor[3], me.realm, MOVEOBJECT_FORCELOCATION);
+		//MoveObjectToLocation(me, myanchor[1], myanchor[2], myanchor[5], me.realm, MOVEOBJECT_FORCELOCATION);
+		WalkHome();
 	endif
-
-	drop_anchor(me);
-	Print("Banker " + me.name + " started in city: " + bankcity + " with currency objtype: " + currency);
-	Print("Bank region set to: " + bank_region);
-	Print("Banker speech font: " + my_speech_font + ", color: " + my_speech_color);
-	Print("Banker anchor at: " + myanchor);
-
-	myanchor := GetObjProperty(me, "Anchor");
-
-	Print("Banker " + me.name + " anchor at: " + myanchor);
-	//EnableEvents(EVID_NODE);
-
+	
 	EnableEvents(SYSEVENT_ITEM_GIVEN);
 	EnableEvents(SYSEVENT_SPEECH, REACT_THRESHOLD);
 
 	var text;
 	var splitted := {};
 	while(1)
-		Print("Banker " + me.name + " waiting for event...");
 		var ev;
-		ev := os::wait_for_event(120);
+		ev := os::wait_for_event(1);
 		if(ev.type == SYSEVENT_SPEECH)
 			text := lower(ev.text);
 			splitted := SplitWords(text);
@@ -127,10 +112,16 @@ program banker();
 		if(ReadGameClock() >= next_wander)
 			//begpurse(me);
 			wander();
-			if(CoordinateDistance(me.x, me.y, myanchor[1], myanchor[2]) > 5)
-				MoveObjectToLocation(me, myanchor[1], myanchor[2], myanchor[3], me.realm, MOVEOBJECT_FORCELOCATION);
+			wanders := wanders + 1;
+			//if(CoordinateDistance(me.x, me.y, myanchor[1], myanchor[2]) > 5)
+			//	MoveObjectToLocation(me, myanchor[1], myanchor[2], myanchor[5], me.realm, MOVEOBJECT_FORCELOCATION);
+			//endif
+			if (wanders > wanderlimit)
+				WalkHome();
+				wanders := 0;
 			endif
-			next_wander := ReadGameClock() + 110;
+
+			next_wander := ReadGameClock() + RandomDice( 2, 25, 10 );
 		endif
 	endwhile
 endprogram
@@ -529,5 +520,39 @@ function ConvertSilver(who, me, currency := 0x0EF0)
 	SetObjProperty(created, "PurchaserSerial", who.serial);		// The serial number of the purchaser
 	SetName(created, created.desc + " made out to " + payee + " in the amount of " + AddCommas(amt) + " " + GetObjTypeDesc(currency2, 1) + ".");
 	created.color := 0x501;
+
+endfunction
+
+function walkhome()
+
+	var myhome := {};
+	if (!getobjproperty(me, "myhome"))
+		myhome[1] := me.x;
+		myhome[2] := me.y;
+		setobjproperty(me, "myhome", myhome);
+	else
+		myhome := getobjproperty(me, "myhome");
+	endif
+
+	if ( me.x == myhome[1] and me.y == myhome[2] )
+		SetAnchor( me.x, me.y, 3, 80 );
+		return;
+	endif
+
+	var i;
+	for (i := 1; i < 11; i := i + 1)
+		WalkTowardLocation(myhome[1], myhome[2]);
+		if (me.x == myhome[1] and me.y == myhome[2] )
+			break;
+		endif
+	endfor
+
+	var Anchor := GetObjProperty(me, "Anchor");
+
+	if (me.x != myhome[1] and me.y != myhome[2] )
+		MoveObjectToLocation(me, Anchor[1], Anchor[2], Anchor[5], me.realm, MOVEOBJECT_FORCELOCATION);
+	endif
+
+	SetAnchor( myhome[1], myhome[2], 3, 80 );
 
 endfunction

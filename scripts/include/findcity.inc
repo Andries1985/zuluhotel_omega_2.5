@@ -2,7 +2,7 @@ use os;
 use uo;
 use cfgfile;
 
-include "include/utility";
+//include "include/utility";
 
 UnloadConfigFile("regions");
 var  regions_cfg := ReadConfigFile("::regions/regions");               // Reads regions.cfg
@@ -30,8 +30,6 @@ endif
 
 function IsInsideCity(thing)
 
-Print("findcity.inc: IsInsideCity called.");
-//  var regions_cfg;                                      // File ref to regions.cfg
   var regions := {};                                    // Array of city names
   var boundary := "";                                   // String containing the 4 coords defining a resgion.
   var boundaries := {};                                 // Array with the boundary coords as each element.
@@ -42,23 +40,21 @@ Print("findcity.inc: IsInsideCity called.");
 
   regions := GetConfigStringKeys( regions_cfg );          // Creates an array of city names
 
+  foreach place in regions
+      region := FindConfigElem( regions_cfg, place );
+      boundary := GetConfigString( region, "Range" );
+      boundary := SplitWords(boundary);
+      isCity := Lower(GetConfigString( region, "Type" ));
+      if(IsInsideRectangle(thing, boundaries) && isCity == "city")
+        answer := 1;
+        city := place;
+        break;
+      endif
+  endforeach
 
-        foreach place in regions
-            region := FindConfigElem( regions_cfg, place );
-            //cityboundary := FindConfigElem( cityinfo, place );
-            boundary := region[place]."Range";
-            isCity := Lower(CStr(region[place]."Type"));
-            boundaries := SplitWords(boundary);
-              if(IsInsideRectangle(thing, boundaries) && isCity == "city")
-                  answer := 1;
-                  city := place;
-                  break;
-              endif
+  return answer;
 
-        endforeach
-      return answer;
-
- endfunction
+endfunction
 
 
 
@@ -78,8 +74,7 @@ Print("findcity.inc: IsInsideCity called.");
 
 
 function WhatCityAmIIn(object)
-Print("findcity.inc: WhatCityAmIIn called.");
-//  var regions_cfg;                                      // File ref to regions.cfg
+
   var regions := {};                                    // Array of city names
   var boundary := "";                                   // String containing the 4 coords defining a resgion.
   var boundaries := {};                                 // Array with the boundary coords as each element.
@@ -88,42 +83,27 @@ Print("findcity.inc: WhatCityAmIIn called.");
   var isCity := "";
   var region;
 
-/*  regions_cfg := ReadConfigFile("../regions/regions");               // Reads cities.cfg
-  if(!regions_cfg)
-    Broadcast("findCity: Can't read regions.cfg", 2, 33);
-    return 0;
-  endif*/
-
   regions := GetConfigStringKeys( regions_cfg );          // Creates an array of city names
+
   foreach place in regions
-    Print(place);
+    region := FindConfigElem( regions_cfg, place );
+    boundary := GetConfigString( region, "Range" );
+    boundary := SplitWords(boundary);
+    isCity := Lower(GetConfigString( region, "Type" ));
+    if(IsInsideRectangle(object, boundary) && isCity == "city")
+      answer := 1;
+      city := place;
+      break;
+    endif
   endforeach
 
+  if(!answer)
+        city := "notincity";
+  endif
 
-        foreach place in regions
-            region := FindConfigElem( regions_cfg, place );
-            //cityboundary := FindConfigElem( cityinfo, place );
-            boundary := region[place]."Range";
-            Print(region[place]."Range");  //How do i print this properly?  
-            isCity := CStr(region[place]."Type");
-            //Print("Type: " + isCity);
-            boundaries := SplitWords(boundary);
-              if(IsInsideRectangle(object, boundaries) && isCity == "city")
-                  answer := 1;
-                  city := place;
-                  break;
-              endif
+  return city;
 
-        endforeach
-
-        if(!answer)
-              city := "notincity";
-        endif
-
-
-      return city;
-
- endfunction
+endfunction
 
 
 function GetTownCurrency(town)
@@ -140,25 +120,20 @@ function GetTownCurrency(town)
 
   regions := GetConfigStringKeys( regions_cfg );          // Creates an array of city names
 
-        foreach place in regions
-            region := FindConfigElem( regions_cfg, place );
-            if(Lower(place) == Lower(town))
-              FoundCurrency := region[place]."Currency";
+  foreach place in regions
+    region := FindConfigElem( regions_cfg, place );
+    if(Lower(place) == Lower(town))
+      FoundCurrency := GetConfigString( region, "Currency" );
+      if(!FoundCurrency)
+        return CInt(DEFAULTCURRENCY);
+      endif
+      break;
+    endif
+  endforeach
 
-                if(!FoundCurrency)
-                  return CInt(DEFAULTCURRENCY);
-                endif
+  return CInt(FoundCurrency);
 
-              break;
-            endif
-
-        endforeach
-
-
-
-      return CInt(FoundCurrency);
-
- endfunction
+endfunction
 
 //////////////////////////////////////////////////////////////////////////////////////
 //
@@ -176,9 +151,6 @@ function GetTownCurrency(town)
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 function IsInsideRectangle (object, boundary)
-Print("findcity.inc: IsInsideRectangle called.");
-Print("Object X: " + object.x + " Object Y: " + object.y);
-
     if ((object.x >= CInt(boundary[1]) && object.x <= CInt(boundary[3])) && (object.y >= CInt(boundary[2]) && object.y <= CInt(boundary[4])))
         return 1;
     else
