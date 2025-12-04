@@ -3,6 +3,7 @@ use uo;
 
 include ":OrionClient:settings";
 
+/*
 Program OrionClientLogon(who)
 
 	var res;
@@ -22,4 +23,13 @@ Program OrionClientLogon(who)
 		print("SendPacket AssistantFeatures error: " + res.errortext );
 	endif
 
+endprogram
+*/
+
+
+program orionfeatures_sendpacket(who)
+var res := SendPacket(who, "BF000BFACE0032FFF5AC13");
+	if (!res)
+		print("SendPacket error: " + res.errortext );
+	endif
 endprogram

@@ -4,37 +4,30 @@ use uo;
 use cfgfile;
 use util;
 
-include "util/bank";
-include "include/randname";
-include "include/eventid";
-//include "ai/setup/modsetup";
-//include "include/attributes";
-//include "include/npcboosts";
-
-
-//include "include/eventid";
-//include "include/syseventids";
-//include "include/client";
 include "include/anchors";
-//include "include/string";
-//include "include/findcity";
+include "include/eventid";
+include "include/findcity";
 include ":mdgumps:gumps";
-//include ":mdgumps:requestGump";
 include ":mdgumps:confirmationSizable";
 include "../pkg/items/currency/include/currency";
-include "../pkg/items/itemUtils/include/itemdesc";
+include "../pkg/items/currency/include/itemdesc";
 include ":accounts:accounts";
+include "../pkg/items/containers/include/storageAreas";
+include "include/randname";
 
 	var bank;
 	const REACT_THRESHOLD := 8;
 	var me := Self();
+	var wanderlimit := 10;
+	var wanders := 0;
 	var npccfg := ReadConfigFile("npcdesc");
-	//var bankcity := "Sosaria World Bank";
-	//var currency := GetTownCurrency(bankcity);
-	//if(!currency)
-	var currency := 0xEED;
-	//endif
-
+	var bankcity := WhatCityAmIIn(me);
+	var currency := GetTownCurrency(bankcity);
+	if(!currency)
+		var currency := 0xEED;
+	endif
+	
+	var bank_region := CP_DEFAULT_AREA;
 	var my_speech_font := me.speech_font;
 	var my_speech_color := me.speech_color;
 
@@ -44,17 +37,13 @@ include ":accounts:accounts";
 	endif
 
 program banker();
-	//start_script("NPCKeeper", me);
-	var next_wander := ReadGameClock() + 130;
+	var next_wander := ReadGameClock() + 30;
 	var myanchor := GetObjProperty(me, "Anchor");
 	if(myanchor)
-		MoveObjectToLocation(me, myanchor[1], myanchor[2], myanchor[3], me.realm, MOVEOBJECT_FORCELOCATION);
+		//MoveObjectToLocation(me, myanchor[1], myanchor[2], myanchor[5], me.realm, MOVEOBJECT_FORCELOCATION);
+		WalkHome();
 	endif
-
-	drop_anchor(me);
-	myanchor := GetObjProperty(me, "Anchor");
-	//EnableEvents(EVID_NODE);
-
+	
 	EnableEvents(SYSEVENT_ITEM_GIVEN);
 	EnableEvents(SYSEVENT_SPEECH, REACT_THRESHOLD);
 
@@ -62,7 +51,7 @@ program banker();
 	var splitted := {};
 	while(1)
 		var ev;
-		ev := os::wait_for_event(120);
+		ev := os::wait_for_event(1);
 		if(ev.type == SYSEVENT_SPEECH)
 			text := lower(ev.text);
 			splitted := SplitWords(text);
@@ -91,7 +80,8 @@ program banker();
 				//if(ev.source.criminal == 1)
 					//say("I will not do business with criminals!");
 				//else
-					var bankbox := FindBankBox( ev.source );
+					//var bankbox := FindBankBox( ev.source );
+					var bankbox := ev.source.BankBox();
 					var contents := EnumerateItemsInContainer(bankbox);
 					var camt := 0;
 					var samt := 0;
@@ -107,7 +97,7 @@ program banker();
 					ShowBalance(ev.source, AddCommas(gamt), AddCommas(samt), AddCommas(camt));
 				//endif
 			elseif(text["bank"])
-				OpenBank(ev.source);
+				OpenBank(ev.source, bank_region);
 			elseif(text["convert copper"])
 				ConvertCopper(ev.source, me);
 			elseif(text["convert silver"])
@@ -122,20 +112,26 @@ program banker();
 		if(ReadGameClock() >= next_wander)
 			//begpurse(me);
 			wander();
-			if(CoordinateDistance(me.x, me.y, myanchor[1], myanchor[2]) > 5)
-				MoveObjectToLocation(me, myanchor[1], myanchor[2], myanchor[3], me.realm, MOVEOBJECT_FORCELOCATION);
+			wanders := wanders + 1;
+			//if(CoordinateDistance(me.x, me.y, myanchor[1], myanchor[2]) > 5)
+			//	MoveObjectToLocation(me, myanchor[1], myanchor[2], myanchor[5], me.realm, MOVEOBJECT_FORCELOCATION);
+			//endif
+			if (wanders > wanderlimit)
+				WalkHome();
+				wanders := 0;
 			endif
-			next_wander := ReadGameClock() + 110;
+
+			next_wander := ReadGameClock() + RandomDice( 2, 25, 10 );
 		endif
 	endwhile
 endprogram
 
 // Using 'new' StorageAreas.inc
-function OpenBank(you)
+function OpenBank(you, bank_region)
 	var item_word := "items";
   TurnToward(you);
-  //var bankbox := CP_GetStorageContainerForMobile( you, bank_region, CP_CREATE );
-  var bankbox := FindBankBox( you );
+  var bankbox := CP_GetStorageContainerForMobile( you, bank_region, CP_CREATE );
+  //var bankbox := FindBankBox( you );
   if(bankbox)
     var contents := EnumerateItemsInContainer( bankbox, ENUMERATE_ROOT_ONLY );
 		if( contents.Size() == 1 )
@@ -205,7 +201,8 @@ function ShowBalance(who, goldamt, silveramt, copperamt)
 endfunction
 
 function BuyBankersNote(who, me, currency)
-	var box := FindBankBox( who );  //CP_GetStorageContainerForMobile( who, bank_region, CP_CREATE );
+	//var box := FindBankBox( who );  
+	var box := CP_GetStorageContainerForMobile( who, bank_region, CP_CREATE );
 	var stuff := EnumerateItemsInContainer(box);
 	var payeeserial := 0;
 	var amt := 0;		// This is so the 'while' loop will get executed.
@@ -274,7 +271,6 @@ function BuyBankersNote(who, me, currency)
 		SendSysMessage(who, "Please page a staff member and reprt this.", 1, 33);
 		return 0;
 	endif
-//endfunction
 
 	var created := CreateItemInBackpack(who, "bankersorder");
 	if(created.errortext == "That container is full")
@@ -286,7 +282,7 @@ function BuyBankersNote(who, me, currency)
 	SetObjProperty(created, "PayeeSerial", payeeserial);		// Serial number of the player to whom the order is made
 	SetObjProperty(created, "Currency", currency);				// The ObjType of the coins being used
 	SetObjProperty(created, "Amount", amt);						// The amount of coins
-	//SetObjProperty(created, "IssuingBank", bankcity);			// The city name in which the bank is located
+	SetObjProperty(created, "IssuingBank", bankcity);			// The city name in which the bank is located
 	SetObjProperty(created, "PurchaserSerial", who.serial);		// The serial number of the purchaser
 	SetName(created, created.desc + " made out to " + payee + " in the amount of " + AddCommas(amt) + " " + GetObjTypeDesc(currency, 1) + ".");
 	
@@ -317,8 +313,8 @@ function CashBankersOrder(me, event)
 		endif
 		type := CInt(GetObjProperty(event.item, "Currency"));
 		amnt := CInt(GetObjProperty(event.item, "Amount"));
-		//bankbox := CP_GetStorageContainerForMobile( event.source, bank_region, CP_CREATE );
-		bankbox := FindBankBox( event.source );
+		bankbox := CP_GetStorageContainerForMobile( event.source, bank_region, CP_CREATE );
+		//bankbox := FindBankBox( event.source );
 		refund := createcoins( bankbox, type, amnt );
 		if(refund < 0)
 			SendSysMessage(event.source, "This note is made out for 0 coins. Stop wasting my time!", 2, 33);
@@ -342,8 +338,8 @@ function CashBankersOrder(me, event)
 		endif
 		type := CInt(GetObjProperty(event.item, "Currency"));
 		amnt := CInt(GetObjProperty(event.item, "Amount"));
-		//bankbox := CP_GetStorageContainerForMobile( event.source, bank_region, CP_CREATE );
-		bankbox := FindBankBox( event.source );
+		bankbox := CP_GetStorageContainerForMobile( event.source, bank_region, CP_CREATE );
+		//bankbox := FindBankBox( event.source );
 		refund := createcoins( bankbox, type, amnt );
 		if(refund < 0)
 			SendSysMessage(event.source, "This note is made out for 0 coins. Stop wasting my time!", 2, 33);
@@ -396,7 +392,8 @@ endfunction
 
 function ConvertCopper(who, me, currency := 0x0EEA)
 
-	var box := FindBankBox( who );  //CP_GetStorageContainerForMobile( who, bank_region, CP_CREATE );
+	//var box := FindBankBox( who );  
+	var box := CP_GetStorageContainerForMobile( who, bank_region, CP_CREATE );
 	var stuff := EnumerateItemsInContainer(box);
 	var payeeserial := 0;
 	var amt := 60000;
@@ -453,7 +450,7 @@ function ConvertCopper(who, me, currency := 0x0EEA)
 	SetObjProperty(created, "PayeeSerial", payeeserial);		// Serial number of the player to whom the order is made
 	SetObjProperty(created, "Currency", currency2);		// The ObjType of the coins being used
 	SetObjProperty(created, "Amount", amt);						// The amount of coins
-	//SetObjProperty(created, "IssuingBank", bankcity);			// The city name in which the bank is located
+	SetObjProperty(created, "IssuingBank", bankcity);			// The city name in which the bank is located
 	SetObjProperty(created, "PurchaserSerial", who.serial);		// The serial number of the purchaser
 	SetName(created, created.desc + " made out to " + payee + " in the amount of " + AddCommas(amt) + " " + GetObjTypeDesc(currency2, 1) + ".");
 	created.color := 1154;
@@ -462,8 +459,8 @@ endfunction
 
 function ConvertSilver(who, me, currency := 0x0EF0)
 
-	var box := FindBankBox( who );  //CP_GetStorageContainerForMobile( who, bank_region, CP_CREATE );
-	var stuff := EnumerateItemsInContainer(box);
+	//var box := FindBankBox( who );  
+	var box := CP_GetStorageContainerForMobile( who, bank_region, CP_CREATE );var stuff := EnumerateItemsInContainer(box);
 	var payeeserial := 0;
 	var amt := 60000;
 	var currency2 := 0x0EED;
@@ -519,9 +516,43 @@ function ConvertSilver(who, me, currency := 0x0EF0)
 	SetObjProperty(created, "PayeeSerial", payeeserial);		// Serial number of the player to whom the order is made
 	SetObjProperty(created, "Currency", currency2);		// The ObjType of the coins being used
 	SetObjProperty(created, "Amount", amt);						// The amount of coins
-	//SetObjProperty(created, "IssuingBank", bankcity);			// The city name in which the bank is located
+	SetObjProperty(created, "IssuingBank", bankcity);			// The city name in which the bank is located
 	SetObjProperty(created, "PurchaserSerial", who.serial);		// The serial number of the purchaser
 	SetName(created, created.desc + " made out to " + payee + " in the amount of " + AddCommas(amt) + " " + GetObjTypeDesc(currency2, 1) + ".");
 	created.color := 0x501;
+
+endfunction
+
+function walkhome()
+
+	var myhome := {};
+	if (!getobjproperty(me, "myhome"))
+		myhome[1] := me.x;
+		myhome[2] := me.y;
+		setobjproperty(me, "myhome", myhome);
+	else
+		myhome := getobjproperty(me, "myhome");
+	endif
+
+	if ( me.x == myhome[1] and me.y == myhome[2] )
+		SetAnchor( me.x, me.y, 3, 80 );
+		return;
+	endif
+
+	var i;
+	for (i := 1; i < 11; i := i + 1)
+		WalkTowardLocation(myhome[1], myhome[2]);
+		if (me.x == myhome[1] and me.y == myhome[2] )
+			break;
+		endif
+	endfor
+
+	var Anchor := GetObjProperty(me, "Anchor");
+
+	if (me.x != myhome[1] and me.y != myhome[2] )
+		MoveObjectToLocation(me, Anchor[1], Anchor[2], Anchor[5], me.realm, MOVEOBJECT_FORCELOCATION);
+	endif
+
+	SetAnchor( myhome[1], myhome[2], 3, 80 );
 
 endfunction

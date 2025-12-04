@@ -1,5 +1,166 @@
 use os;
 use uo;
+use cfgfile;
+
+//include "include/utility";
+
+UnloadConfigFile("regions");
+var  regions_cfg := ReadConfigFile("::regions/regions");               // Reads regions.cfg
+
+if(regions_cfg.errortext)
+	Broadcast("findCity.inc: Can't read regions.cfg", 2, 33);
+	Broadcast(regions_cfg.errortext, 2, 33);
+	return 0;
+endif
+
+
+////////////////////////////////////////////////////////////
+//
+//  Function:   IsInsideCity
+//  Purpose:    Determines whether an object is located
+//              within a city as defined in regions.cfg.
+//              Regions.cfg MUST have the following element defined:
+//              "Type".
+//              Entry for the city region is "Type   city"
+//  Values returned:  0 - object is not in a city.
+//                    1 - object is in a city.
+//
+/////////////////////////////////////////////////////////////
+
+
+function IsInsideCity(thing)
+
+  var regions := {};                                    // Array of city names
+  var boundary := "";                                   // String containing the 4 coords defining a resgion.
+  var boundaries := {};                                 // Array with the boundary coords as each element.
+  var answer := 0;
+  var city := "";
+  var isCity := "";
+  var region;
+
+  regions := GetConfigStringKeys( regions_cfg );          // Creates an array of city names
+
+  foreach place in regions
+      region := FindConfigElem( regions_cfg, place );
+      boundary := GetConfigString( region, "Range" );
+      boundary := SplitWords(boundary);
+      isCity := Lower(GetConfigString( region, "Type" ));
+      if(IsInsideRectangle(thing, boundaries) && isCity == "city")
+        answer := 1;
+        city := place;
+        break;
+      endif
+  endforeach
+
+  return answer;
+
+endfunction
+
+
+
+////////////////////////////////////////////////////////////
+//
+//  Function:   WhatCityAmIIn
+//  Purpose:    Determines the city in which 'object' is
+//              located as defined in regions.cfg.
+//              Regions.cfg MUST have the following element defined:
+//              "Type".
+//              Entry for the city region is "Type   city"
+//
+//  Values returned:  "notincity" - object is not in a city.
+//                    Element value defined by 'Range' element in regions.cfg.
+//
+/////////////////////////////////////////////////////////////
+
+
+function WhatCityAmIIn(object)
+
+  var regions := {};                                    // Array of city names
+  var boundary := "";                                   // String containing the 4 coords defining a resgion.
+  var boundaries := {};                                 // Array with the boundary coords as each element.
+  var answer := 0;
+  var city := "";
+  var isCity := "";
+  var region;
+
+  regions := GetConfigStringKeys( regions_cfg );          // Creates an array of city names
+
+  foreach place in regions
+    region := FindConfigElem( regions_cfg, place );
+    boundary := GetConfigString( region, "Range" );
+    boundary := SplitWords(boundary);
+    isCity := Lower(GetConfigString( region, "Type" ));
+    if(IsInsideRectangle(object, boundary) && isCity == "city")
+      answer := 1;
+      city := place;
+      break;
+    endif
+  endforeach
+
+  if(!answer)
+        city := "notincity";
+  endif
+
+  return city;
+
+endfunction
+
+
+function GetTownCurrency(town)
+
+  var regions := {};                                    // Array of city names
+  var region;
+  var DEFAULTCURRENCY := 0x0EED;
+  var FoundCurrency := "";
+  //  regions_cfg := ReadConfigFile("../regions/regions");               // Reads cities.cfg
+  /*if(!regions_cfg)
+    Broadcast("findCity.inc: Can't read regions.cfg", 2, 33);
+    return 0;
+  endif*/
+
+  regions := GetConfigStringKeys( regions_cfg );          // Creates an array of city names
+
+  foreach place in regions
+    region := FindConfigElem( regions_cfg, place );
+    if(Lower(place) == Lower(town))
+      FoundCurrency := GetConfigString( region, "Currency" );
+      if(!FoundCurrency)
+        return CInt(DEFAULTCURRENCY);
+      endif
+      break;
+    endif
+  endforeach
+
+  return CInt(FoundCurrency);
+
+endfunction
+
+//////////////////////////////////////////////////////////////////////////////////////
+//
+//  Determines if the object is within a rectangle
+//  Note: The scope of this function is to determine whether
+//  an object lies within a two dimwnsional area.
+//  There is no 'z' check performed.
+//
+//  Parameters:
+//  Name                  Type
+//  object                UO_OBJECT reference
+//  boundary              Array containing the {nwx, nwy, sex, sey}
+//                        The function assumes that the 'boundary' parameter
+//                        might contain numeric values as strings in its elements.
+//
+/////////////////////////////////////////////////////////////////////////////////////////
+function IsInsideRectangle (object, boundary)
+    if ((object.x >= CInt(boundary[1]) && object.x <= CInt(boundary[3])) && (object.y >= CInt(boundary[2]) && object.y <= CInt(boundary[4])))
+        return 1;
+    else
+        return 0;
+    endif
+endfunction
+
+ ////////////////////////////////////////////////////////////////////
+ // This is the old FindCity function with city bounds hard coded.
+ ////////////////////////////////////////////////////////////////////
 
 Function FindCity(me)
 

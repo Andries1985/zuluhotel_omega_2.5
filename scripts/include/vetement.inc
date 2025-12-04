@@ -4,7 +4,9 @@
 //
 // First release on November 29 by Helldrige (boum0@frankiz.polytechnique.fr)
 //
-include "include/attributes";
+
+//include "include/attributes";
+include "include/random";
 
 use cfgfile;
 use os;
