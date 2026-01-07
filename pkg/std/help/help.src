@@ -150,15 +150,13 @@ program help( who2 )
 				endif
 			endif
 
-			if (who.realm == "britannia_alt")
-				if( who.x >= 6319 )
-					if( who.x <= 6362 )
-						if( who.y >= 1563 )
-							if( who.y <= 1598 )
-								SendSysMessage( who , "Can't use this in jail." );
-								EraseObjProperty( who, PROPID_MOBILE_PAGING );
-								return 0;
-							endif
+			if( who.x >= 5272 )
+				if( who.x <= 5310 )
+					if( who.y >= 1160 )
+						if( who.y <= 1190 )
+							SendSysMessage( who , "Can't use this in jail." );
+							EraseObjProperty( who, PROPID_MOBILE_PAGING );
+							return 0;
 						endif
 					endif
 				endif
@@ -189,15 +187,14 @@ program help( who2 )
 				count := count+1;
 			endwhile
 
-			MoveObjectToLocation( who, 1433, 1861, 36, "britannia_alt", MOVEOBJECT_FORCELOCATION);
+			MoveObjectToLocation( who, 3637, 2539, 0, "britannia", MOVEOBJECT_FORCELOCATION);
 			EraseObjProperty( who, PROPID_MOBILE_PAGING );
 			return 0;
 		3:	page_msg := RequestInput( who, who.backpack, "Type in your problem:" );
-		4:	if (who.realm == "britannia_alt")
-				if( who.x >= 6319 )
-					if( who.x <= 6362 )
-						if( who.y >= 1563 )
-							if( who.y <= 1598 )
+		4:	if( who.x >= 5272 )
+				if( who.x <= 5310 )
+					if( who.y >= 1160 )
+						if( who.y <= 1190 )
 								SendSysMessage( who , "Can't use this in jail... :)" );
 								EraseObjProperty( who, PROPID_MOBILE_PAGING );
 								return 0;
@@ -205,7 +202,6 @@ program help( who2 )
 						endif
 					endif
 				endif
-			endif
 
 			var initial_x	:= who.x;
 			var initial_y	:= who.y;
@@ -218,7 +214,7 @@ program help( who2 )
 					EraseObjProperty( who, PROPID_MOBILE_PAGING );
 					return 0;
 				endif
-				if(who.hidden == 1 || who.concealed == 1)
+				if(who.hidden == 1 )
 					SendSysMessage(who, "You can't be hidden when using this help function.",3,33);
 					EraseObjProperty( who, PROPID_MOBILE_PAGING );
 					return 0;
@@ -257,15 +253,13 @@ program help( who2 )
 				return 0;
 			endif
 			
-			if (who.realm == "britannia_alt")
-				if( who.x >= 6319 )
-					if( who.x <= 6362 )
-						if( who.y >= 1563 )
-							if( who.y <= 1598 )
-								SendSysMessage( who , "Can't use this in jail... :)" );
-								EraseObjProperty( who, PROPID_MOBILE_PAGING );
-								return 0;
-							endif
+			if( who.x >= 5272 )
+				if( who.x <= 5310 )
+					if( who.y >= 1160 )
+						if( who.y <= 1190 )
+							SendSysMessage( who , "Can't use this in jail... :)" );
+							EraseObjProperty( who, PROPID_MOBILE_PAGING );
+							return 0;
 						endif
 					endif
 				endif
