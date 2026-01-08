@@ -35,6 +35,9 @@ function sleepmode()
 	Eraseobjproperty(me, "#flees");
 
 	DisableMainEvents();
+	if (me.script != "merchant" || me.npctemplate != "healer")
+		me.frozen := 0;
+	endif
 	if ( (GetEffectiveSkill(me, 21) > 0 ) and (me.script != "merchant") )
 		me.hidden := 1;
 		EnableEvents(SYSEVENT_ENTEREDAREA, 4);
