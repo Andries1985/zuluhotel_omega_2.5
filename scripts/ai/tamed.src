@@ -44,7 +44,7 @@ var poisoner;
 var summons := 0;
 var chaseloop := 0;
 
-var guarding :=0;
+var guarding := 0;
 var following := 0;
 var staying := 0;
 var nextwatch := ReadGameClock();
@@ -101,7 +101,7 @@ program TamedAI()
 	SetAnchor( me.x, me.y, 20, 0 );
 
 	var npccfg := readconfigfile("npcdesc");
-	if ((npccfg[me.npctemplate].script == "spellkillpcs") || (npccfg[me.npctemplate].script == "goodcaster"))
+	if ((npccfg[me.npctemplate].script == "spellkillpcs") || (npccfg[me.npctemplate].script == "goodcaster") || (npccfg[me.npctemplate].script == "tamed"))
 		caster := 1;
 		spells := GetConfigStringArray( npccfg[me.npctemplate], "spell" );
 		saywords := npccfg[me.npctemplate].saywords;
@@ -228,10 +228,9 @@ function Fight( opponent )
 			endif
 		elseif (caster)
 			if ( nextbreath <= readgameclock() )
-
 				if (Random(3) != 1)
 					sleep(1);
-					cast_offensive_spell(me,opponent);
+					cast_offensive_spell( me, opponent );
 				endif
 				SetObjProperty(me,"#lastbreath",ReadGameClock() + 2);
 			endif
@@ -358,7 +357,8 @@ function Transfer()
 
 	if( GetObjProperty( me , "summoned" ) or
 		GetObjProperty( me , "animated" ) or
-		GetObjProperty( me , "charmed" ) )
+		GetObjProperty( me , "charmed" ) or
+		GetObjProperty( me, "EBSummons" ) )
 		return;
 	endif
 
@@ -1175,9 +1175,9 @@ function ProcessSpeech(ev)
 				AllCommand(EVID_ALL_GUARD_CMD, what);
 			endif
 		endif
-	elseif (evtext[mename + " fetch"]	or (evtext[mename + " get"]))
-		if (dragonspeak) dragontalk("fetch", master.name); endif
-		fetch();
+	// elseif (evtext[mename + " fetch"]	or (evtext[mename + " get"]))
+	// 	if (dragonspeak) dragontalk("fetch", master.name); endif
+	// 	fetch();
 	elseif (evtext[mename + " drop"])
 		if (dragonspeak) dragontalk("drop", master.name); endif
 		drop();

@@ -36,6 +36,11 @@ function SelectItemToID(who,delay)
 		return 1;
 	endif
 
+	if (!ReserveItem( the_item ))
+		Print("Item "+the_item.serial+" is already reserved.");
+		return 1;
+	endif
+
 	if (the_item.isa(POLCLASS_CONTAINER))
 	 	if ((skillID >= MIN_SKILLFORBATCH) & (intelligence >= MIN_INTFORBATCH))
 			var itemlist := {};
@@ -51,7 +56,7 @@ function SelectItemToID(who,delay)
 				SendSysMessage(who,"Your vast intellect tries to uncover the mysteries of your hoard.", FONT_NORMAL, 2601 );
 				SendSysMessage(who,"There's "+itemlist.Size()+" magical items to identify.", FONT_NORMAL, 2601 );
 				foreach item in itemlist
-					if( !Accessible( who , item ) || Distance( who , the_item ) > 2)
+					if( !Accessible( who , item ) || Distance( who , the_item ) > 2 )
 						SendSysMessage( who , "You can't reach that." );
 						return 1;
 					endif
@@ -83,10 +88,17 @@ function SelectItemToID(who,delay)
 	endif
 
 	ItemID(who,the_item);
-
+	
 endfunction
 
 function ItemID(who,the_item)
+
+	ReserveItem( the_item );
+	if( !ReserveItem( the_item ) )
+		//Print("Item "+the_item.serial+" is already reserved.");
+		return 1;
+	endif
+	//Print("Item reserved for IDing." + the_item.serial + " ." + the_item.desc);
 
 	var thepoints := get_default_points( SKILLID_ITEMID );
 	var ided := GetObjProperty( the_item , "IDed" );
@@ -95,9 +107,15 @@ function ItemID(who,the_item)
 		if( !IsIDable( the_item ) )
 			SendSysmessage( who , "This is a normal item." );
 			SetObjProperty( the_item , "IDed" , 1 );
+			ReleaseItem( the_item );
+			//Print("Normal Item.");
+			//Print("Releasing item...");
 			return 1;
 		elseif( !CheckSkill( who , SKILLID_ITEMID , -2 , thepoints ) )
 			SendSysmessage (who, "I'm not sure . . .");
+			ReleaseItem( the_item );
+			//Print("Failed ID.");
+			//Print("Releasing item...");
 			return 1;
 		endif
 	endif 
@@ -109,6 +127,7 @@ function ItemID(who,the_item)
 		GetObjProperty( the_item , "StaticName" ) )	
 		if( !ided )
 			SetNameByEnchant( the_item );
+			//Print("Set Name By Enchant." + who.Name);
 		endif
 		GetItemDetails(who, the_item);			
 	else
@@ -116,6 +135,10 @@ function ItemID(who,the_item)
 	endif
 	
 	SetObjProperty( the_item , "IDed" , 1 );
+
+	ReleaseItem( the_item );
+	//Print("Item IDed.");
+	//Print("Releasing item..." + the_item.serial + " ." + the_item.desc);
 	
 	return 1;
 		

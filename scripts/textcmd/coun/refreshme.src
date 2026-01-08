@@ -13,4 +13,5 @@ program textcmd_refreshme( who )
     SetHP(who, GetMaxHP(who));
     SetMana(who, GetMaxMana(who));
     SetStamina(who, GetMaxStamina(who));
+    SetObjProperty(who, "hunger", 0);
 endprogram

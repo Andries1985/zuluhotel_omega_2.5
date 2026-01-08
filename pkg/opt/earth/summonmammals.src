@@ -50,55 +50,56 @@ program cast_summonmammals( parms )
 			EraseObjProperty( caster , "#Casting" );
 			return;
 		endif
-	endif
+	//endif
 
-	var count := RandomDiceStr( "1d2" );
-	
-	var bonus := 0;
-	if( GetObjProperty( caster , CLASSEID_MAGE ) )
-		bonus := 1;
-		count := count + 1;
-	endif
-	
-	var npctemplate;
-	
-	while( count )
-		var creature := RandomDiceStr("1d8") + bonus;
-		case (creature)
-			1:
-			2:	npctemplate := "wolf";		break;
-			
-			3:
-			4:	npctemplate := "horse";		break;
-			
-			5:
-			6:	npctemplate := "panther";	break;
-			
-			7:	npctemplate := "bear";		break;
-			
-			8:	npctemplate := "grizzly";	break;
-			
-			9:	npctemplate := "forestostard";	break;
-
-			default: npctemplate := "wolf";
-		endcase
-
-		if( !cast_loc )
-			var loc := CanTargetArea( caster , circle );
-			if( !loc )
-				EraseObjProperty( caster , "#Casting" );
-				return;
-			endif
-			
-			EraseObjProperty( caster , "#Casting" );
-			SummonCreature( caster , npctemplate , loc );
-		else
-			EraseObjProperty( caster , "#Casting" );
-			SummonCreature( caster , npctemplate , cast_loc );
+		var count := RandomDiceStr( "1d2" );
+		
+		var bonus := 0;
+		if( GetObjProperty( caster , CLASSEID_MAGE ) )
+			bonus := 1;
+			count := count + 1;
 		endif
 		
-		count := count - 1;
-	endwhile
+		var npctemplate;
+		
+		while( count )
+			var creature := RandomDiceStr("1d8") + bonus;
+			case (creature)
+				1:
+				2:	npctemplate := "wolf";		break;
+				
+				3:
+				4:	npctemplate := "horse";		break;
+				
+				5:
+				6:	npctemplate := "panther";	break;
+				
+				7:	npctemplate := "bear";		break;
+				
+				8:	npctemplate := "grizzly";	break;
+				
+				9:	npctemplate := "forestostard";	break;
 
+				default: npctemplate := "wolf";
+			endcase
+
+			if( !cast_loc )
+				var loc := CanTargetArea( caster , circle );
+				if( !loc )
+					EraseObjProperty( caster , "#Casting" );
+					return;
+				endif
+				
+				EraseObjProperty( caster , "#Casting" );
+				SummonCreature( caster , npctemplate , loc );
+			else
+				EraseObjProperty( caster , "#Casting" );
+				SummonCreature( caster , npctemplate , cast_loc );
+			endif
+			
+			count := count - 1;
+		endwhile
+
+	endif
 endprogram
 

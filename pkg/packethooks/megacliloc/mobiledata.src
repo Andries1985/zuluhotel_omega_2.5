@@ -40,7 +40,7 @@ program mobiledata(parms)
 	prop.+ clilocid := 0;
 	prop.+ values := array;
 	
-	var npc := xObject.isa(POLCLASS_NPC);
+	var npc := xObject.IsA(POLCLASS_NPC);
 	if (!npc)
 		if(xObject.title_guild)
 			prop.clilocid := 1026360; // Nothing
@@ -51,171 +51,35 @@ program mobiledata(parms)
 	var boss;
 	var superboss;
 	var lesserboss;
-	if(npc)
-		boss := GetObjProperty(xObject, "Boss");
-		if(boss)
-			prop.clilocid := 1063521; // 
-			prop.values := array {};
-			allprops.append(prop);
-		endif
-		superboss := GetObjProperty(xObject, "SuperBoss");
-		if(superboss)
-			prop.clilocid := 1063522; //
-			prop.values := array {};
-			allprops.append(prop);
-		endif
-		lesserboss := GetObjProperty(xObject, "LesserBoss");
-		if(lesserboss)
-			prop.clilocid := 1063523; // 
-			prop.values := array {};
-			allprops.append(prop);
-		endif
-	endif
-	if(xObject.Enabled("invul"))
-		prop.clilocid := 1063517; // 
-		prop.values := array {};
-		allprops.append(prop);
-	endif
-	if(xObject.frozen)
-		prop.clilocid := 1063518; //
-		prop.values := array {};
-		allprops.append(prop);
-	endif
-	if(xObject.paralyzed)
-		prop.clilocid := 1026360; // 
-		prop.values := array {};
-		allprops.append(prop);
-	endif
-	if(xObject.poisoned)
-		prop.clilocid := 1063520; // 
-		prop.values := array {};
-		allprops.append(prop);
-	endif
-	if(npc)
-		var taming := mob[xObject.npctemplate].tameskill;
-		if(taming && (GetEffectiveSkill(who, SKILLID_TAMING) > 50))
-			prop.clilocid := 1063524; // 
-			prop.values := array {taming};
-			allprops.append(prop);
-		endif
-		var provoke := mob[xObject.npctemplate].provoke;
-		if(provoke && (GetEffectiveSkill(who, SKILLID_PROVOCATION) > 50))
-			prop.clilocid := 1063525; // 
-			prop.values := array {provoke};
-			allprops.append(prop);
-		endif
-		if(GetEffectiveSkill(who, SKILLID_SNOOPING) > 50)
-			var snoop := GetObjProperty(xObject, "snoopme");
-			if(snoop)	
-				prop.clilocid := 1063526; // 
-				prop.values := array {snoop};
-				allprops.append(prop);
-			endif
-			var steal := GetObjProperty(xObject, "stealme");
-			if(steal)	
-				prop.clilocid := 1063527; // 
-				prop.values := array {steal};
-				allprops.append(prop);
-			endif
-		endif
-	endif
-	var evalint := GetEffectiveSkill(who, SKILLID_EVALINT);
-	if ((xObject == who) || (superboss && (evalint > 130)) || (boss && (evalint > 120)) || (evalint && npc && !boss && !superboss && !xObject.invulnerable))
-		elem_prot := GetObjProperty(xObject, "EarthProtection");
-		if(elem_prot)
-			prop.clilocid := 1063490; // Earth Protection: ~1_PERCENT~%
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "WaterProtection");
-		if(elem_prot)
-			prop.clilocid := 1063491; // Water Protection: ~1_PERCENT~%
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "FireProtection");
-		if(elem_prot)
-			prop.clilocid := 1063492; // Fire Protection: ~1_PERCENT~%
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "AirProtection");
-		if(elem_prot)
-			prop.clilocid := 1063493; // Air Protection: ~1_PERCENT~%
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "NecroProtection");
-		if(elem_prot)
-			prop.clilocid := 1063502; // Necro Protection:
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "HolyProtection");
-		if(elem_prot)
-			prop.clilocid := 1063503; // Holy Protection:
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "Permmr");
-		if(elem_prot)
-			prop.clilocid := 1063508; // "Magic Reflection: "+
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "PermMagicImmunity");
-		if(elem_prot)
-			prop.clilocid := 1063509; // "Magic Absorption:
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-	endif
-	if(xObject == who)
-		elem_prot := GetObjProperty(xObject, "PhysicalProtection");
-		if(elem_prot)
-			prop.clilocid := 1063504; // Physical Protection: ~1_PERCENT~%
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "PermPoisonImmunity");
-		if(elem_prot)
-			prop.clilocid := 1063505; //Poison Immunity:
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "FreeAction");
-		if(elem_prot)
-			prop.clilocid := 1063506; // Free Action
-			prop.values := array {};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "HealingIncrease");
-		if(elem_prot)
-			prop.clilocid := 1063507; //Healing Increase: 
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "PoisonImmunity");
-		if(elem_prot && IsMage(who))
-			prop.clilocid := 1063510; // "Poison Immunity Charges:
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "MagicImmunity");
-		if(elem_prot && IsMage(who))
-			prop.clilocid := 1063511; // "Magic Absorption Charges: 
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-		elem_prot := GetObjProperty(xObject, "SpellReflect");
-		if(elem_prot && IsMage(who))
-			prop.clilocid := 1063512; // Magic Reflection Charges: 
-			prop.values := array {elem_prot};
-			allprops.append(prop);
-		endif
-	endif
 
 	if(who.cmdlevel)
+		if(npc)
+			var npc := xObject.IsA(POLCLASS_NPC);
+			if(npc)
+				prop.clilocid := 1070722; // nothing 
+				var s := GetAttribute(xObject, "strength");
+				var ms := Cint(GetVitalMaximumValue(xObject, "life") / 100);
+				prop.values := array {"Str: " + s + " MaxHP: " + ms};
+				allprops.append(prop);
+			endif
+			npc := xObject.IsA(POLCLASS_NPC);
+			if(npc)
+				prop.clilocid := 1070722; // nothing 
+				var iv := GetAttribute(xObject, "intelligence");
+				var mi := Cint(GetVitalMaximumValue(xObject, "mana") / 100);
+				prop.values := array {"Int: " + iv + " MaxMP: " + mi};
+				allprops.append(prop);
+			endif
+			npc := xObject.IsA(POLCLASS_NPC);
+			if(npc)
+				prop.clilocid := 1070722; // nothing 
+				var dv := GetAttribute(xObject, "dexterity");
+				var md := Cint(GetVitalMaximumValue(xObject, "stamina") / 100);
+				prop.values := array {"Dex: " + dv + " MaxStam: " + md};
+				allprops.append(prop);
+			endif
+		endif
+
 		if(!xObject.isa(POLCLASS_NPC))
 			prop.clilocid := 1026360; // nothing 
 			prop.values := array {"IP: "+xObject.client.ip};
@@ -230,8 +94,484 @@ program mobiledata(parms)
 				allprops.append(prop);
 			endif
 		endif
+
+	elseif(!who.cmdlevel)
+
+		if(npc)
+			boss := GetObjProperty(xObject, "Boss");
+			if(boss)
+				prop.clilocid := 1063521; // 
+				prop.values := array {};
+				allprops.append(prop);
+			endif
+			superboss := GetObjProperty(xObject, "SuperBoss");
+			if(superboss)
+				prop.clilocid := 1063522; //
+				prop.values := array {};
+				allprops.append(prop);
+			endif
+			lesserboss := GetObjProperty(xObject, "LesserBoss");
+			if(lesserboss)
+				prop.clilocid := 1063523; // 
+				prop.values := array {};
+				allprops.append(prop);
+			endif
+		endif
+		if(xObject.Enabled("invul"))
+			prop.clilocid := 1063517; // 
+			prop.values := array {};
+			allprops.append(prop);
+		endif
+		if(xObject.frozen)
+			prop.clilocid := 1063518; //
+			prop.values := array {};
+			allprops.append(prop);
+		endif
+		if(xObject.paralyzed)
+			prop.clilocid := 1026360; // 
+			prop.values := array {};
+			allprops.append(prop);
+		endif
+		if(xObject.poisoned)
+			prop.clilocid := 1063520; // 
+			prop.values := array {};
+			allprops.append(prop);
+		endif
+		if(npc)
+			var taming := mob[xObject.npctemplate].tameskill;
+			if(taming && (GetEffectiveSkill(who, SKILLID_TAMING) > 50))
+				prop.clilocid := 1063524; // 
+				prop.values := array {taming};
+				allprops.append(prop);
+			endif
+			var provoke := mob[xObject.npctemplate].provoke;
+			if(provoke && (GetEffectiveSkill(who, SKILLID_PROVOCATION) > 50))
+				prop.clilocid := 1063525; // 
+				prop.values := array {provoke};
+				allprops.append(prop);
+			endif
+			if(GetEffectiveSkill(who, SKILLID_SNOOPING) > 50)
+				var snoop := GetObjProperty(xObject, "snoopme");
+				if(snoop)	
+					prop.clilocid := 1063526; // 
+					prop.values := array {snoop};
+					allprops.append(prop);
+				endif
+				var steal := GetObjProperty(xObject, "stealme");
+				if(steal)	
+					prop.clilocid := 1063527; // 
+					prop.values := array {steal};
+					allprops.append(prop);
+				endif
+			endif
+		endif
+		var evalint := GetEffectiveSkill(who, SKILLID_EVALINT);
+		if ((xObject == who) || (superboss && (evalint > 140)) || (boss && (evalint > 130)) || (lesserboss && (evalint > 120)) || (evalint && npc && !boss && !superboss && !lesserboss && !xObject.invulnerable))
+			elem_prot := GetObjProperty(xObject, "EarthProtection");
+			if(elem_prot)
+				prop.clilocid := 1063490; // Earth Protection: ~1_PERCENT~%
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "WaterProtection");
+			if(elem_prot)
+				prop.clilocid := 1063491; // Water Protection: ~1_PERCENT~%
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "FireProtection");
+			if(elem_prot)
+				prop.clilocid := 1063492; // Fire Protection: ~1_PERCENT~%
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "AirProtection");
+			if(elem_prot)
+				prop.clilocid := 1063493; // Air Protection: ~1_PERCENT~%
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "NecroProtection");
+			if(elem_prot)
+				prop.clilocid := 1063502; // Necro Protection:
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "HolyProtection");
+			if(elem_prot)
+				prop.clilocid := 1063503; // Holy Protection:
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "Permmr");
+			if(elem_prot)
+				prop.clilocid := 1063508; // "Magic Reflection: "+
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "PermMagicImmunity");
+			if(elem_prot)
+				prop.clilocid := 1063509; // "Magic Absorption:
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+		endif
+		if(xObject == who)
+			elem_prot := GetObjProperty(xObject, "PhysicalProtection");
+			if(elem_prot)
+				prop.clilocid := 1063504; // Physical Protection: ~1_PERCENT~%
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "PermPoisonImmunity");
+			if(elem_prot)
+				prop.clilocid := 1063505; //Poison Immunity:
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "FreeAction");
+			if(elem_prot)
+				prop.clilocid := 1063506; // Free Action
+				prop.values := array {};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "HealingIncrease");
+			if(elem_prot)
+				prop.clilocid := 1063507; //Healing Increase: 
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "PoisonImmunity");
+			if(elem_prot)
+				prop.clilocid := 1063510; // "Poison Immunity Charges:
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "MagicImmunity");
+			if(elem_prot)
+				prop.clilocid := 1063511; // "Magic Absorption Charges: 
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "SpellReflect");
+			if(elem_prot)
+				prop.clilocid := 1063512; // Magic Reflection Charges: 
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+		endif
 	endif
+
+	// if(who.cmdlevel)
+	// 	var npc := xObject.IsA(POLCLASS_NPC);
+	// 	if(npc)
+	// 		prop.clilocid := 1070722; // nothing 
+	// 		var s := GetAttribute(xObject, "strength");
+	// 		var ms := Cint(GetVitalMaximumValue(xObject, "life") / 100);
+	// 		prop.values := array {"Str: " + s + " MaxHP: " + ms};
+	// 		allprops.append(prop);
+	// 	endif
+	// 	npc := xObject.IsA(POLCLASS_NPC);
+	// 	if(npc)
+	// 		prop.clilocid := 1070722; // nothing 
+	// 		var iv := GetAttribute(xObject, "intelligence");
+	// 		var mi := Cint(GetVitalMaximumValue(xObject, "mana") / 100);
+	// 		prop.values := array {"Int: " + iv + " MaxMP: " + mi};
+	// 		allprops.append(prop);
+	// 	endif
+	// 	npc := xObject.IsA(POLCLASS_NPC);
+	// 	if(npc)
+	// 		prop.clilocid := 1070722; // nothing 
+	// 		var dv := GetAttribute(xObject, "dexterity");
+	// 		var md := Cint(GetVitalMaximumValue(xObject, "stamina") / 100);
+    //     	prop.values := array {"Dex: " + dv + " MaxStam: " + md};
+	// 		allprops.append(prop);
+	// 	endif
+
+	// 	if(!xObject.isa(POLCLASS_NPC))
+	// 		prop.clilocid := 1026360; // nothing 
+	// 		prop.values := array {"IP: "+xObject.client.ip};
+	// 		allprops.append(prop);
+	// 		prop.clilocid := 1026360; // nothing
+	// 		prop.values := array {"Acct: "+xObject.client.acctname};
+	// 		allprops.append(prop);
+	// 		var classe := GetClass(xObject);
+	// 		if (classe)
+	// 			prop.clilocid := 1026360; // Nothing
+	// 			prop.values := array {GetClasseName(classe)+" Lvl "+GetClasseLevel(xObject)};
+	// 			allprops.append(prop);
+	// 		endif
+	// 	endif
+	// endif
 		
 	return allprops;
 
 endprogram
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//old Code
+
+
+// // Item data generator for tooltip packet
+// //
+// // Created by Agata natalia_buenota@hotmail.com
+// // Modified for Zulu Hotel by Wintermute
+// //
+
+// use uo;
+// use cfgfile;
+// use polsys;
+
+// include "include/math";
+// include "include/attributes";
+// include "include/classes";
+
+
+// /*todo
+
+// Class levels
+// title
+// guild
+// invulnerable
+// boss
+// Super Boss
+// extra stuff for Gms?
+// hidden
+// #Casting
+// HP/MP/ST
+
+
+// */
+
+// var mob := ReadConfigFile(":*:npcdesc");
+
+// program mobiledata(parms)
+// 	var elem_prot;
+// 	var who := parms[1];
+// 	var xObject := parms[2];
+// 	var allprops := array;
+// 	var prop := struct;
+// 	prop.+ clilocid := 0;
+// 	prop.+ values := array;
+	
+// 	var npc := xObject.isa(POLCLASS_NPC);
+// 	if (!npc)
+// 		if(xObject.title_guild)
+// 			prop.clilocid := 1026360; // Nothing
+// 			prop.values := array {xObject.title_guild};
+// 			allprops.append(prop);
+// 		endif
+// 	endif
+// 	var boss;
+// 	var superboss;
+// 	var lesserboss;
+// 	if(npc)
+// 		boss := GetObjProperty(xObject, "Boss");
+// 		if(boss)
+// 			prop.clilocid := 1063521; // 
+// 			prop.values := array {};
+// 			allprops.append(prop);
+// 		endif
+// 		superboss := GetObjProperty(xObject, "SuperBoss");
+// 		if(superboss)
+// 			prop.clilocid := 1063522; //
+// 			prop.values := array {};
+// 			allprops.append(prop);
+// 		endif
+// 		lesserboss := GetObjProperty(xObject, "LesserBoss");
+// 		if(lesserboss)
+// 			prop.clilocid := 1063523; // 
+// 			prop.values := array {};
+// 			allprops.append(prop);
+// 		endif
+// 	endif
+// 	if(xObject.Enabled("invul"))
+// 		prop.clilocid := 1063517; // 
+// 		prop.values := array {};
+// 		allprops.append(prop);
+// 	endif
+// 	if(xObject.frozen)
+// 		prop.clilocid := 1063518; //
+// 		prop.values := array {};
+// 		allprops.append(prop);
+// 	endif
+// 	if(xObject.paralyzed)
+// 		prop.clilocid := 1026360; // 
+// 		prop.values := array {};
+// 		allprops.append(prop);
+// 	endif
+// 	if(xObject.poisoned)
+// 		prop.clilocid := 1063520; // 
+// 		prop.values := array {};
+// 		allprops.append(prop);
+// 	endif
+// 	if(npc)
+// 		var taming := mob[xObject.npctemplate].tameskill;
+// 		if(taming && (GetEffectiveSkill(who, SKILLID_TAMING) > 50))
+// 			prop.clilocid := 1063524; // 
+// 			prop.values := array {taming};
+// 			allprops.append(prop);
+// 		endif
+// 		var provoke := mob[xObject.npctemplate].provoke;
+// 		if(provoke && (GetEffectiveSkill(who, SKILLID_PROVOCATION) > 50))
+// 			prop.clilocid := 1063525; // 
+// 			prop.values := array {provoke};
+// 			allprops.append(prop);
+// 		endif
+// 		if(GetEffectiveSkill(who, SKILLID_SNOOPING) > 50)
+// 			var snoop := GetObjProperty(xObject, "snoopme");
+// 			if(snoop)	
+// 				prop.clilocid := 1063526; // 
+// 				prop.values := array {snoop};
+// 				allprops.append(prop);
+// 			endif
+// 			var steal := GetObjProperty(xObject, "stealme");
+// 			if(steal)	
+// 				prop.clilocid := 1063527; // 
+// 				prop.values := array {steal};
+// 				allprops.append(prop);
+// 			endif
+// 		endif
+// 	endif
+// 	var evalint := GetEffectiveSkill(who, SKILLID_EVALINT);
+// 	if ((xObject == who) || (superboss && (evalint > 130)) || (boss && (evalint > 120)) || (evalint && npc && !boss && !superboss && !xObject.invulnerable))
+// 		elem_prot := GetObjProperty(xObject, "EarthProtection");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063490; // Earth Protection: ~1_PERCENT~%
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "WaterProtection");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063491; // Water Protection: ~1_PERCENT~%
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "FireProtection");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063492; // Fire Protection: ~1_PERCENT~%
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "AirProtection");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063493; // Air Protection: ~1_PERCENT~%
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "NecroProtection");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063502; // Necro Protection:
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "HolyProtection");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063503; // Holy Protection:
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "Permmr");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063508; // "Magic Reflection: "+
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "PermMagicImmunity");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063509; // "Magic Absorption:
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 	endif
+// 	if(xObject == who)
+// 		elem_prot := GetObjProperty(xObject, "PhysicalProtection");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063504; // Physical Protection: ~1_PERCENT~%
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "PermPoisonImmunity");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063505; //Poison Immunity:
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "FreeAction");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063506; // Free Action
+// 			prop.values := array {};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "HealingIncrease");
+// 		if(elem_prot)
+// 			prop.clilocid := 1063507; //Healing Increase: 
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "PoisonImmunity");
+// 		if(elem_prot && IsMage(who))
+// 			prop.clilocid := 1063510; // "Poison Immunity Charges:
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "MagicImmunity");
+// 		if(elem_prot && IsMage(who))
+// 			prop.clilocid := 1063511; // "Magic Absorption Charges: 
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 		elem_prot := GetObjProperty(xObject, "SpellReflect");
+// 		if(elem_prot && IsMage(who))
+// 			prop.clilocid := 1063512; // Magic Reflection Charges: 
+// 			prop.values := array {elem_prot};
+// 			allprops.append(prop);
+// 		endif
+// 	endif
+
+// 	if(who.cmdlevel)
+// 		if(!xObject.isa(POLCLASS_NPC))
+// 			prop.clilocid := 1026360; // nothing 
+// 			prop.values := array {"IP: "+xObject.client.ip};
+// 			allprops.append(prop);
+// 			prop.clilocid := 1026360; // nothing
+// 			prop.values := array {"Acct: "+xObject.client.acctname};
+// 			allprops.append(prop);
+// 			var classe := GetClass(xObject);
+// 			if (classe)
+// 				prop.clilocid := 1026360; // Nothing
+// 				prop.values := array {GetClasseName(classe)+" Lvl "+GetClasseLevel(xObject)};
+// 				allprops.append(prop);
+// 			endif
+// 		endif
+// 	endif
+		
+// 	return allprops;
+
+// endprogram

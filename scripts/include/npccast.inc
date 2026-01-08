@@ -12,6 +12,11 @@ include "include/attributes";
 include "include/classes";
 include "include/npccastspells";
 
+// var npccfg := readconfigfile("npcdesc");
+// var me := Self();
+// var spells := GetConfigStringArray( npccfg[me.npctemplate], "spell" );
+// var saywords := npccfg[me.npctemplate].saywords;
+
 function castspell( caster, cast_on, spellname )
 
 	case (spellname)
@@ -590,10 +595,22 @@ endfunction
 function SummonsShiftingEarth(caster, cast_on)
 	var circle := GetCircle( SPELLID_SHIFTING_EARTH );
 	var element := EARTH;
-	if(IsInSafeArea(caster))
+	if(IsInSafeArea(caster) || IsInSafeArea(cast_on))
 			EraseObjProperty( caster , "#Casting" );
             return;
     endif
+
+	// if(!CheckLosBetween( caster.x, caster.y, caster.z, cast_on.x, cast_on.y, cast_on.z, caster.realm ))
+	// 		Print("Using CLB: No LOS between caster and target.");
+	// 		EraseObjProperty( caster , "#Casting" );
+	// 		return;
+	// endif
+
+	if(!CheckLineOfSight( caster, cast_on ))
+		//Print("Using CLoS: No LOS between caster and target.");
+		EraseObjProperty( caster , "#Casting" );
+		return;
+	endif
 	
 	say("Esmagamento Con Pedra");
 	PlayObjectCenteredEffect(cast_on, FX_SPELL_SHIFTING_EARTH, SPEED_SPELL_SHIFTING_EARTH, LOOP_SPELL_SHIFTING_EARTH);
@@ -647,10 +664,22 @@ function SummonsGustOfAir(caster, cast_on)
 	var circle := GetCircle( SPELLID_GUST_OF_AIR);
 	var element := AIR;
 
-	if(IsInSafeArea(caster))
-			EraseObjProperty( caster, "#Casting" );
+	if(IsInSafeArea(caster) || IsInSafeArea(cast_on))
+			EraseObjProperty( caster , "#Casting" );
             return;
     endif
+
+	// if(!CheckLosBetween( caster.x, caster.y, caster.z, cast_on.x, cast_on.y, cast_on.z, caster.realm ))
+	// 		Print("Using CLB: No LOS between caster and target.");
+	// 		EraseObjProperty( caster , "#Casting" );
+	// 		return;
+	// endif
+
+	if(!CheckLineOfSight( caster, cast_on ))
+		//Print("Using CLoS: No LOS between caster and target.");
+		EraseObjProperty( caster , "#Casting" );
+		return;
+	endif
 	
 	say("Gust Do Ar");
 	PlayObjectCenteredEffect(cast_on, FX_SPELL_GUST_OF_AIR, SPEED_SPELL_GUST_OF_AIR, LOOP_SPELL_GUST_OF_AIR);
@@ -688,10 +717,22 @@ function SummonsIceStrike(caster, cast_on)
 	var circle := GetCircle( SPELLID_ICE_STRIKE);
 	var element := WATER;
 
-	if(IsInSafeArea(caster))
-			EraseObjProperty( caster, "#Casting" );
+	if(IsInSafeArea(caster) || IsInSafeArea(cast_on))
+			EraseObjProperty( caster , "#Casting" );
             return;
     endif
+
+	// if(!CheckLosBetween( caster.x, caster.y, caster.z, cast_on.x, cast_on.y, cast_on.z, caster.realm ))
+	// 		Print("Using CLB: No LOS between caster and target.");
+	// 		EraseObjProperty( caster , "#Casting" );
+	// 		return;
+	// endif
+
+	if(!CheckLineOfSight( caster, cast_on ))
+		//Print("Using CLoS: No LOS between caster and target.");
+		EraseObjProperty( caster , "#Casting" );
+		return;
+	endif
 	
 	say("Geada Com Inverno");
 	PlayObjectCenteredEffect(cast_on, FX_SPELL_ICE_STRIKE, SPEED_SPELL_ICE_STRIKE, LOOP_SPELL_ICE_STRIKE);
@@ -729,11 +770,22 @@ function SummonsRisingFire(caster, cast_on)
 	var circle := GetCircle( SPELLID_RISING_FIRE);
 	var element := FIRE;
 
-	if(IsInSafeArea(caster))
-			EraseObjProperty( caster, "#Casting" );
-			Print("Cant cast in safe area");
+	if(IsInSafeArea(caster) || IsInSafeArea(cast_on))
+			EraseObjProperty( caster , "#Casting" );
             return;
     endif
+
+	// if(!CheckLosBetween( caster.x, caster.y, caster.z, cast_on.x, cast_on.y, cast_on.z, caster.realm ))
+	// 		Print("Using CLB: No LOS between caster and target.");
+	// 		EraseObjProperty( caster , "#Casting" );
+	// 		return;
+	// endif
+
+	if(!CheckLineOfSight( caster, cast_on ))
+		//Print("Using CLoS: No LOS between caster and target.");
+		EraseObjProperty( caster , "#Casting" );
+		return;
+	endif
 
 	say("Batida Do Fogo");
 
@@ -812,11 +864,22 @@ function SummonsSpectreTouch(caster, cast_on)
 	var circle := GetCircle( SPELLID_SPECTER_TOUCH);
 	var plane := NECRO;
 
-	if(IsInSafeArea(caster))
-			EraseObjProperty( caster, "#Casting" );
-			Print("Cant cast in safe area");
+	if(IsInSafeArea(caster) || IsInSafeArea(cast_on))
+			EraseObjProperty( caster , "#Casting" );
             return;
     endif
+
+	// if(!CheckLosBetween( caster.x, caster.y, caster.z, cast_on.x, cast_on.y, cast_on.z, caster.realm ))
+	// 		Print("Using CLB: No LOS between caster and target.");
+	// 		EraseObjProperty( caster , "#Casting" );
+	// 		return;
+	// endif
+
+	if(!CheckLineOfSight( caster, cast_on ))
+		//Print("Using CLoS: No LOS between caster and target.");
+		EraseObjProperty( caster , "#Casting" );
+		return;
+	endif
 
 	say("Enervare");
 

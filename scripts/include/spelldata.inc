@@ -320,6 +320,14 @@ function CanTargetArea( caster, circle := 1 )
 		return 0;
 	endif
 	
+	if (IsInSafeArea(cast_loc))
+		SendSysMessage( caster, "Can't cast spells in safe zone." );
+		if(GetObjProperty(caster, "#SpellMove"))
+			EraseObjProperty(caster, "#SpellMove");
+		endif
+		EraseObjProperty(caster, "#Casting");
+		return 0;
+	endif
 	/*
 	if( IsInNOPKArea(cast_loc) )
         SendSysMessage( caster, "Can't cast area of effect spells in NO-PK zone." );
