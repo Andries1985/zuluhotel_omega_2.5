@@ -165,57 +165,57 @@ program mobiledata(parms)
 				endif
 			endif
 		endif
-		// var evalint := GetEffectiveSkill(who, SKILLID_EVALINT);
-		// if ((xObject == who) || (superboss && (evalint > 140)) || (boss && (evalint > 130)) || (lesserboss && (evalint > 120)) || (evalint && npc && !boss && !superboss && !lesserboss && !xObject.invulnerable))
-		// 	elem_prot := GetObjProperty(xObject, "EarthProtection");
-		// 	if(elem_prot)
-		// 		prop.clilocid := 1063490; // Earth Protection: ~1_PERCENT~%
-		// 		prop.values := array {elem_prot};
-		// 		allprops.append(prop);
-		// 	endif
-		// 	elem_prot := GetObjProperty(xObject, "WaterProtection");
-		// 	if(elem_prot)
-		// 		prop.clilocid := 1063491; // Water Protection: ~1_PERCENT~%
-		// 		prop.values := array {elem_prot};
-		// 		allprops.append(prop);
-		// 	endif
-		// 	elem_prot := GetObjProperty(xObject, "FireProtection");
-		// 	if(elem_prot)
-		// 		prop.clilocid := 1063492; // Fire Protection: ~1_PERCENT~%
-		// 		prop.values := array {elem_prot};
-		// 		allprops.append(prop);
-		// 	endif
-		// 	elem_prot := GetObjProperty(xObject, "AirProtection");
-		// 	if(elem_prot)
-		// 		prop.clilocid := 1063493; // Air Protection: ~1_PERCENT~%
-		// 		prop.values := array {elem_prot};
-		// 		allprops.append(prop);
-		// 	endif
-		// 	elem_prot := GetObjProperty(xObject, "NecroProtection");
-		// 	if(elem_prot)
-		// 		prop.clilocid := 1063502; // Necro Protection:
-		// 		prop.values := array {elem_prot};
-		// 		allprops.append(prop);
-		// 	endif
-		// 	elem_prot := GetObjProperty(xObject, "HolyProtection");
-		// 	if(elem_prot)
-		// 		prop.clilocid := 1063503; // Holy Protection:
-		// 		prop.values := array {elem_prot};
-		// 		allprops.append(prop);
-		// 	endif
-		// 	elem_prot := GetObjProperty(xObject, "Permmr");
-		// 	if(elem_prot)
-		// 		prop.clilocid := 1063508; // "Magic Reflection: "+
-		// 		prop.values := array {elem_prot};
-		// 		allprops.append(prop);
-		// 	endif
-		// 	elem_prot := GetObjProperty(xObject, "PermMagicImmunity");
-		// 	if(elem_prot)
-		// 		prop.clilocid := 1063509; // "Magic Absorption:
-		// 		prop.values := array {elem_prot};
-		// 		allprops.append(prop);
-		// 	endif
-		// endif
+		var evalint := GetEffectiveSkill(who, SKILLID_EVALINT);
+		if ((xObject == who) || (superboss && (evalint > 140)) || (boss && (evalint > 130)) || (lesserboss && (evalint > 120)) || (evalint && npc && !boss && !superboss && !lesserboss && !xObject.invulnerable))
+			elem_prot := GetObjProperty(xObject, "EarthProtection");
+			if(elem_prot)
+				prop.clilocid := 1063490; // Earth Protection: ~1_PERCENT~%
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "WaterProtection");
+			if(elem_prot)
+				prop.clilocid := 1063491; // Water Protection: ~1_PERCENT~%
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "FireProtection");
+			if(elem_prot)
+				prop.clilocid := 1063492; // Fire Protection: ~1_PERCENT~%
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "AirProtection");
+			if(elem_prot)
+				prop.clilocid := 1063493; // Air Protection: ~1_PERCENT~%
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "NecroProtection");
+			if(elem_prot)
+				prop.clilocid := 1063502; // Necro Protection:
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "HolyProtection");
+			if(elem_prot)
+				prop.clilocid := 1063503; // Holy Protection:
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "Permmr");
+			if(elem_prot)
+				prop.clilocid := 1063508; // "Magic Reflection: "+
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "PermMagicImmunity");
+			if(elem_prot)
+				prop.clilocid := 1063509; // "Magic Absorption:
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+		endif
 		if(xObject == who)
 			elem_prot := GetObjProperty(xObject, "PhysicalProtection");
 			if(elem_prot)
