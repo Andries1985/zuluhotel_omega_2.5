@@ -59,7 +59,31 @@ program itemdata(parms)
 				prop.clilocid := 1063495; // AR: ~1_VAL~
 				prop.values := array {CS_GetEffectiveArmor(xObject)};
 				allprops.append(prop);
+				var BE := GetObjProperty(xObject, "BardicEfficiency");
+				if(BE && (IsBard(who) || IsBladesinger(who) || IsPowerPlayer(who)))
+					prop.clilocid := 1070722; // Nothing
+					prop.values := array {"Bardic Efficency: " + BE};
+					allprops.append(prop);
+				endif
+				var MP := GetObjProperty(xObject, "MagicPenalty");
+				if(MP && (IsMage(who) || IsPaladin(who) || IsMysticArcher(who) || IsPowerPlayer(who)))
+					prop.clilocid := 1070722; // Nothing
+					prop.values := array {"Magic Efficency: " + MP};
+					allprops.append(prop);
+				endif
 			elseif(xObject.isa(POLCLASS_WEAPON))
+				var BE := GetObjProperty(xObject, "BardicEfficiency");
+				if(BE && (IsBard(who) || IsBladesinger(who) || IsPowerPlayer(who)))
+					prop.clilocid := 1070722; // Nothing
+					prop.values := array {"Bardic Efficency: " + BE};
+					allprops.append(prop);
+				endif
+				var MP := GetObjProperty(xObject, "MagicPenalty");
+				if(MP && (IsMage(who) || IsPaladin(who) || IsMysticArcher(who) || IsPowerPlayer(who)))
+					prop.clilocid := 1070722; // Nothing
+					prop.values := array {"Magic Efficency: " + MP};
+					allprops.append(prop);
+				endif
 				var weapondesc := GetItemDescriptor(xObject.objtype);
 				//Damage
 				prop.clilocid := 1061168; // weapon damage ~1_val~ - ~2_val~
@@ -155,7 +179,7 @@ program itemdata(parms)
 				allprops.append(prop);
 			endif
 			var spellcast := GetObjProperty(xObject, "HitWithSpell");
-			if (spellcast && (IsMage(who) || IsCrafter(who) || IsPaladin(who)) )
+			if (spellcast && ( IsMage(who) || IsCrafter(who) || IsPaladin(who) || IsPowerPlayer(who) || IsMysticArcher(who) ) )
 				var spell_cfg := ReadConfigFile(":*:spells");
 				var elem := FindConfigElem(spell_cfg, spellcast);
 				if(elem)
@@ -166,7 +190,7 @@ program itemdata(parms)
 				endif
 			endif
 			var chanceofeffect := GetObjProperty(xObject, "ChanceOfEffect");
-			if (chanceofeffect && (IsMage(who) || IsCrafter(who) || IsPaladin(who)) )
+			if (chanceofeffect && ( IsMage(who) || IsCrafter(who) || IsPaladin(who) || IsPowerPlayer(who) || IsMysticArcher(who) ) )
 				prop.clilocid := 1063500; // Chance of Effect: ~1_VAL~
 				prop.values := array {chanceofeffect};
 				allprops.append(prop);
@@ -275,24 +299,24 @@ program itemdata(parms)
 				allprops.append(prop);
 			endif
 			elem_prot := GetObjProperty(xObject, "PoisonImmunity");
-			if(elem_prot && IsMage(who))
+			if(elem_prot && (IsMage(who) || IsPaladin(who) || IsPowerPlayer(who) || IsMysticArcher(who)))
 				prop.clilocid := 1063510; // "Poison Immunity Charges:
 				prop.values := array {elem_prot};
 				allprops.append(prop);
 			endif
 			elem_prot := GetObjProperty(xObject, "MagicImmunity");
-			if(elem_prot && IsMage(who))
+			if(elem_prot && (IsMage(who) || IsPaladin(who) || IsPowerPlayer(who) || IsMysticArcher(who)))
 				prop.clilocid := 1063511; // "Magic Absorption Charges: 
 				prop.values := array {elem_prot};
 				allprops.append(prop);
 			endif
 			elem_prot := GetObjProperty(xObject, "SpellReflect");
-			if(elem_prot && IsMage(who))
+			if(elem_prot && (IsMage(who) || IsPaladin(who) || IsPowerPlayer(who) || IsMysticArcher(who)))
 				prop.clilocid := 1063512; // Magic Reflection Charges: 
 				prop.values := array {elem_prot};
 				allprops.append(prop);
 			endif
-			if(xObject.isa(POLCLASS_EQUIPMENT) && (IsCrafter(who)||who.cmdlevel))
+			if(xObject.isa(POLCLASS_EQUIPMENT) && (IsCrafter(who) || IsWarrior(who) || IsBladesinger(who) ))
 				prop.clilocid := 1060639; // durability ~1_val~ / ~2_val~
 				prop.values := array {xObject.hp, xObject.maxhp};
 				allprops.append(prop);
