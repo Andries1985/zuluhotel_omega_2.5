@@ -36,6 +36,11 @@ function SelectItemToID(who,delay)
 		return 1;
 	endif
 
+	if (!ReserveItem( the_item ))
+		Print("Item "+the_item.serial+" is already reserved.");
+		return 1;
+	endif
+
 	if (the_item.isa(POLCLASS_CONTAINER))
 	 	if ((skillID >= MIN_SKILLFORBATCH) & (intelligence >= MIN_INTFORBATCH))
 			var itemlist := {};
@@ -68,10 +73,6 @@ function SelectItemToID(who,delay)
 	
 	if( !the_item.movable )
 		SendSysMessage( who, "You can't id unmovable items." );
-		return 1;
-	endif
-	if (!ReserveItem( the_item ))
-		Print("Item "+the_item.serial+" is already reserved.");
 		return 1;
 	endif
 
