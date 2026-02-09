@@ -45,8 +45,9 @@ program cast_CUNNING( parms )
 	
 	PlaySoundEffect(caster, SFX_SPELL_ENLIGHTENMENT);
 
-	var mod_amount;
+	var mod_amount := 0;
 	var duration := GetModDuration( caster );
+	
 	if(GetObjProperty( caster, CLASSEID_MAGE ))
 		mod_amount := Cint( GetModAmount( caster ) );
 	elseif(GetObjProperty( caster, CLASSEID_PALADIN ))

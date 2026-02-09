@@ -38,7 +38,7 @@ program cast_earth_blessing( parms )
 	PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 	PlaySoundEffect( caster , SFX_SPELL_EARTH_BLESSING );
 
-	var mod_amount;
+	var mod_amount := 0;
 	var duration := GetModDuration( caster );
 	if(GetObjProperty( caster, CLASSEID_MAGE ))
 		mod_amount := Cint( GetModAmount( caster ) * 1.75 );
