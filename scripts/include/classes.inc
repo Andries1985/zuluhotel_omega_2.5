@@ -133,10 +133,10 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphicsThief() );
 					break;
-
 		CLASSEID_WARRIOR:
-
+					break;
 		CLASSEID_POWERPLAYER:
+					break;
 	endcase
 
 	foreach type in fract_array
