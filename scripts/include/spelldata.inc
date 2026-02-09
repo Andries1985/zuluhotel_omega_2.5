@@ -921,7 +921,7 @@ function Resisted( caster , cast_on , circle , dmg )
 		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_MAGE ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
 		//Print("Base Chance Pala 1: " + chance);
-		chance := Cint( chance * ( ClasseBonus( cast_on , CLASSEID_PALADIN ) * 0.8 ) );
+		chance := Cint( (chance * ClasseBonus( cast_on , CLASSEID_PALADIN ) ) * 0.5 );
 		//Print("Base Chance Pala 2: " + chance);
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		var bonus := ClasseBonus( cast_on , CLASSEID_WARRIOR );
@@ -958,8 +958,8 @@ function Resisted( caster , cast_on , circle , dmg )
 
 	if( GetObjProperty( cast_on , CLASSEID_MAGE ) )
 		dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_MAGE ) );
-	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
-		dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_PALADIN ) );
+	// elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
+	// 	dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_PALADIN ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		dmg := Cint( dmg * ClasseBonus( cast_on , CLASSEID_WARRIOR ) );
 	endif

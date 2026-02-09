@@ -1,139 +1,71 @@
 use uo;
-use cfgfile;
 use os;
 
 include "include/spelldata";
 include "include/dotempmods";
-include "include/classes";
 include "include/client";
+include "include/attributes";
+include "include/classes";
 
-const SPELL_EFFECT_TYPE_MOVING 	:= MOVING_SPELL_SHAPESHIFT;
-const SPELL_EFFECT_ID1		:= FX_SPELL_SHAPESHIFT1;
-const SPELL_EFFECT_ID2		:= FX_SPELL_SHAPESHIFT2;
-const SPELL_EFFECT_SPEED	:= SPEED_SPELL_SHAPESHIFT;
-const SPELL_EFFECT_LOOP		:= LOOP_SPELL_SHAPESHIFT;
+const SPELL_EFFECT_TYPE_MOVING 	:= MOVING_SPELL_EARTH_BLESSING;
+const SPELL_EFFECT_ID		:= FX_SPELL_EARTH_BLESSING;
+const SPELL_EFFECT_SPEED	:= SPEED_SPELL_EARTH_BLESSING;
+const SPELL_EFFECT_LOOP		:= LOOP_SPELL_EARTH_BLESSING;
 
-program shapeshift( caster )
+program cast_earth_blessing( parms )
 
-  var casterismage := GetObjProperty( caster, CLASSEID_MAGE );
-	var casterispp := GetObjProperty( caster, CLASSEID_POWERPLAYER);
-  var casterismysticarcher := GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER);
-	var circle := GetCircle( SPELLID_SHAPESHIFT );
-	
-	if( TryToCast( caster, SPELLID_SHAPESHIFT ) != SUCCESS )
-		EraseObjProperty( caster , "#Casting" );
-		return;
-	endif
+	var circle := GetCircle( SPELLID_EARTH_BLESSING );
+	var caster;
+	var fromhit;
 
-	/* if(GetObjProperty( caster , "tg" )) // he wants to change back to a human
-		EraseObjProperty( caster , "#Casting" );
-        	caster.color := GetObjProperty( caster , "tc" );
-        	caster.graphic := GetObjProperty( caster , "tg" );
-		PlayObjectCenteredEffect(caster, 
-                                         SPELL_EFFECT_ID1,
-                                         SPELL_EFFECT_SPEED,
-                                         SPELL_EFFECT_LOOP);
-                                         
-		PlayObjectCenteredEffect(caster, 
-                                         SPELL_EFFECT_ID2,
-                                         SPELL_EFFECT_SPEED,
-                                         SPELL_EFFECT_LOOP);
-                                         
-                PlaySoundEffect( caster , SFX_SPELL_SHAPESHIFT );
-        	SendSysmessage( caster , "You resume your true form" );
-        	EraseObjProperty( caster , "tn" );
-        	EraseObjProperty( caster , "tc" );
-        	EraseObjProperty( caster , "tg" );
-        	var modarray := GetObjProperty( caster , "#mods" );
-		if( !modarray )
-			modarray := {};
+ 	if (parms[1] == "#MOB")
+		caster := parms[2];
+		if (parms[4])
+			circle := parms[4];
 		endif
-	
-		var newmods := {};
-		foreach mmod in modarray
-			if( mmod[1] == "poly" )
-				UndoTheMod( caster , mmod[1] , mmod[2] );
-			else
-				newmods.append(mmod);
-			endif
-		endforeach
-		SetObjProperty( caster , "#mods" , newmods );
-        	return;
-	endif 
+		if (parms[5])
+			fromhit := parms[5];
+		endif
 
-	*/
-  //if(casterismysticarcher)
-   
-	//else
-  if( (!CanMod(caster, "all") || !CanMod(caster, "ebless") || !CanMod(caster, "poly")) && (!casterispp) )
-		EraseObjProperty( caster , "#Casting" );
-		SendSysMessage( caster , "You're already blessed." );
-		return;
+	else
+		caster := parms;
+		if( TryToCast( caster, SPELLID_EARTH_BLESSING ) != SUCCESS )
+			EraseObjProperty( caster , "#Casting" );
+			return;
+		endif
 	endif
+	
+	PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
+	PlaySoundEffect( caster , SFX_SPELL_EARTH_BLESSING );
 
-  var cfg 	:= ReadConfigFile( "shapeshift" );
-  var maxint 	:= GetConfigMaxIntKey( cfg );
-  var i		:= 1;
-
-
-  var tmenu 	:= CreateMenu( "What form would you like to assume?" );
-  var texit 	:= 0;
-  var meditation := ModifyWithMagicEfficiency( caster , GetEffectiveSkill( caster , SKILLID_MEDITATION ) );
-
-  while( !texit )
-      var elem := cfg[i];
-      if (!elem)
-          texit := 1;
-      elseif ( meditation >= elem.Difficulty )
-            AddMenuItem( tmenu , elem.Menu , elem.Name );
-        else
-            texit := 1;
-        endif
-        i := i + 1;
-  endwhile
-
-  var sel := SelectMenuItem2( caster , tmenu );
-
-  if (!sel)
-    EraseObjProperty( caster , "#Casting" );
-      return;
-  endif
-
-  var elem := cfg[sel.index];
-
-  if (!elem)
-    EraseObjProperty( caster , "#Casting" );
-      return;
-  endif
-
-  if( CheckSkill( caster , SKILLID_MEDITATION , 90 , 400 )) 
-    SetObjProperty(caster, "old_colah", caster.color);
-    PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID1, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);                            
-    PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID2, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);                              
-    PlaySoundEffect( caster , SFX_SPELL_SHAPESHIFT );
-  else
-    SendSysmessage(caster, "You fail to transform yourself");
-    PlayObjectCenteredEffect(caster, FX_SPELL_FIZZLE, SPEED_SPELL_FIZZLE, LOOP_SPELL_FIZZLE );
-    PlaySoundEffect(caster, SFX_SPELL_FIZZLE);
-    EraseObjProperty( caster , "#Casting" );
-    return;
-  endif
-
-  EraseObjProperty( caster , "#Casting" );
-  var mod_amount;
-  if(casterismage)
-    mod_amount := Cint( GetModAmount( caster ) * 2.75 );
-  elseif(casterismysticarcher)
-    mod_amount := Cint( GetModAmount( caster ) * 3 );
-  elseif(casterispp)
+	var mod_amount;
+	var duration := GetModDuration( caster );
+	if(GetObjProperty( caster, CLASSEID_MAGE ))
+		mod_amount := Cint( GetModAmount( caster ) * 1.75 );
+		Print("In Earth Blessing: Mage mod amount is " + mod_amount);
+	elseif(GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER ))
+		mod_amount := Cint( GetModAmount( caster ) * 3 );
+	elseif(GetObjProperty( caster, CLASSEID_POWERPLAYER ))
 		mod_amount := Cint( GetModAmount( caster ) * 2 );
 	else
-    mod_amount := Cint( GetModAmount( caster ) * 3 );
-  endif
+		mod_amount := Cint( GetModAmount( caster ) );
+		Print("In Earth Blessing: Non-spec mod amount is " + mod_amount);
+	endif
 
-  var duration := Cint( GetModDuration( caster ) );
+	if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ) && CanMod( caster, "poly")) 
+		DoTempMod( caster, "ebless" , mod_amount , duration );
+		SendBoostMessage( caster, caster, "earth blessing", mod_amount, duration, 0 );
+	else
+		SendSysMessage( caster , "Already under the influence!" );
+	endif
 
-  PolymorphMobile( caster , elem.graphic , 0 , duration , mod_amount );
-  SendBoostMessage( caster, caster, "shapeshift", mod_amount, duration, 0 );
+	/* 
+	if( CanMod( caster , "ar" ) )
+		DoTempMod( caster , "ar" , Cint(mod_amount * 0.75)+1 , duration );
+	endif */
+	
+	EraseObjProperty( caster , "#Casting" );
 
 endprogram
+
+                                                

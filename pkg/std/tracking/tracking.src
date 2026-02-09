@@ -10,7 +10,8 @@ include "include/attributes";
 const POINT_VALUE := 200;
 
 program track(who)
-unloadconfigfile(":tracking:tracking");
+
+	unloadconfigfile(":tracking:tracking");
 
 	var ranger := GetObjProperty( who , CLASSEID_RANGER );
 	var mysticarcher := GetObjProperty( who , CLASSEID_MYSTIC_ARCHER );
@@ -24,13 +25,16 @@ unloadconfigfile(":tracking:tracking");
 	var tracker := ReadGameClock();
 	SetObjProperty(who, "TrackingCounter", tracker);
 	var range := Cint(GetEffectiveSkill(who, SKILLID_TRACKING)/3);
+	Print("Base range is " + range);
 	if( ranger )
 		range := Cint( range * ClasseBonusByLevel( ranger ) );
+		//Print("Ranger range is " + range);
 	elseif( mysticarcher )
 		range := Cint( range * ClasseBonusByLevel( mysticarcher ) );
+		//Print("Mystic Archer range is " + range);
 	endif
 
-	var nearby := ListMobilesNearLocation (who.x,who.y, who.z, range, who.realm);
+	var nearby := ListMobilesNearLocation(who.x, who.y, who.z, range, who.realm);
 	if(len(nearby) == 1)
 		SendSysmessage (who, "There don't seem to be any creatures nearby");
 		return;
@@ -142,6 +146,10 @@ unloadconfigfile(":tracking:tracking");
 		endwhile
 		SendSysmessage(who, "You have lost your quarry.");
 		EraseObjProperty(who , "#trackingtimeout");
+		return;
+	  else
+		SendSysMessage(who, "You fail to find any creatures nearby");
+		return;
 	endif
 
 endprogram

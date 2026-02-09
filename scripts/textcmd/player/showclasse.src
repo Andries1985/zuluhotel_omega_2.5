@@ -347,7 +347,7 @@ program show_classe( who )
 				if (!GetGlobalProperty("4bs"))
 					if(level == 4 and classe == CLASSEID_BLADESINGER)
 					Broadcast( who.name + " is the first to reach level 4 Bladesinger!" , FONT_BOLD, 1176);
-					SetGlobalProperty("4pa", who.name);
+					SetGlobalProperty("4bs", who.name);
 					endif
 				endif
 				if (!GetGlobalProperty("5bs"))
