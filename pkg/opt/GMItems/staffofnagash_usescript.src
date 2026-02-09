@@ -2,70 +2,99 @@ use uo;
 use os;
 
 include "include/spelldata";
-include "include/dotempmods";
 include "include/client";
-include "include/attributes";
-include "include/classes";
+include "include/dotempmods";
 
-const SPELL_EFFECT_TYPE_MOVING 	:= MOVING_SPELL_EARTH_BLESSING;
-const SPELL_EFFECT_ID		:= FX_SPELL_EARTH_BLESSING;
-const SPELL_EFFECT_SPEED	:= SPEED_SPELL_EARTH_BLESSING;
-const SPELL_EFFECT_LOOP		:= LOOP_SPELL_EARTH_BLESSING;
+const USE_TIME := 30; // in minutes
 
-program cast_earth_blessing( parms )
+program StaffOfNagash(who,staff)
 
-	var circle := GetCircle( SPELLID_EARTH_BLESSING );
-	var caster;
-	var fromhit;
+if (!staff.layer)
+	SendSysMessage(who, "You must be holding that to use it.");
+	return 0;
+endif
 
- 	if (parms[1] == "#MOB")
-		caster := parms[2];
-		if (parms[4])
-			circle := parms[4];
-		endif
-		if (parms[5])
-			fromhit := parms[5];
-		endif
+SetObjProperty(staff, "EnchantColor", staff.color);
 
-	else
-		caster := parms;
-		if( TryToCast( caster, SPELLID_EARTH_BLESSING ) != SUCCESS )
-			EraseObjProperty( caster , "#Casting" );
-			return;
-		endif
-	endif
+var time_now := ReadGameClock();
+var last_use := GetObjProperty(staff, "LastUsed");
+var remaining := (last_use+(USE_TIME*60) - time_now)/60;
+
+if ( ( (last_use + (USE_TIME*60)) > time_now) && !who.cmdlevel )
+	SendSysMessage(who, "You can only utilize the staff's energy once every "+USE_TIME+" minutes.");
+	SendSysMessage(who, "Time remaining: "+remaining+" minutes.");
+	return 0;
+endif
+
+SetObjProperty(staff, "LastUsed", ReadGameClock());
+PerformAction(who,0x0011);
+sleep(2);
+PlaySoundEffect(who, 0x1EA);
+staff.color := 1473;
+PlayObjectCenteredEffectEx( who, 14089, 7, 22, 1950 );
+
+var range := GetEffectiveSkill(who, SKILLID_MAGERY)/20; // 130 magery is 6 range
+range := range + IsMage(who); // level 4 130 magery is 10 range
+
+var mod_amount := CInt(GetModAmount( who ) * 0.93);
+var duration := CInt(GetModDuration( who ));
+
+ApplyBuff(who, mod_amount, duration);
+
+var first := 0;
+var lasthit := 0;
+// target has to be in los, npcs get buffed too
+var affected := ListMobilesNearLocation( who.x, who.y, who.z, range, who.realm );
+
+affected := SmartBoost(who, affected);
+
+foreach person in affected
+	if (CheckLineOfSight( who, person ) && person != who)
 	
-	PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
-	PlaySoundEffect( caster , SFX_SPELL_EARTH_BLESSING );
+		sleep(2);
+		if (first == 0)
+			PlayMovingEffectEx( who, person, 14052, 1, 10, 1950 );
+			first := 1;
+		else
+			PlayMovingEffectEx( lasthit, person, 14052, 1, 10, 1950 );
+		endif
 
-	var mod_amount;
-	var duration := GetModDuration( caster );
-	if(GetObjProperty( caster, CLASSEID_MAGE ))
-		mod_amount := Cint( GetModAmount( caster ) * 1.75 );
-		Print("In Earth Blessing: Mage mod amount is " + mod_amount);
-	elseif(GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER ))
-		mod_amount := Cint( GetModAmount( caster ) * 3 );
-	elseif(GetObjProperty( caster, CLASSEID_POWERPLAYER ))
-		mod_amount := Cint( GetModAmount( caster ) * 2 );
-	else
-		mod_amount := Cint( GetModAmount( caster ) );
-		Print("In Earth Blessing: Non-spec mod amount is " + mod_amount);
+		sleep(1);
+		ApplyBuff(person, mod_amount, duration);
+		PlayObjectCenteredEffectEx( person, 14089, 7, 22, 1950 );
+		PlaySoundEffect(person, 0x1EA);
+		lasthit := person;
+
 	endif
+endforeach
 
-	if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ) && CanMod( caster, "poly")) 
-		DoTempMod( caster, "ebless" , mod_amount , duration );
-		SendBoostMessage( caster, caster, "earth blessing", mod_amount, duration, 0 );
-	else
-		SendSysMessage( caster , "Already under the influence!" );
-	endif
-
-	/* 
-	if( CanMod( caster , "ar" ) )
-		DoTempMod( caster , "ar" , Cint(mod_amount * 0.75)+1 , duration );
-	endif */
-	
-	EraseObjProperty( caster , "#Casting" );
+staff.color := GetObjProperty(staff, "EnchantColor");
 
 endprogram
 
-                                                
+function ApplyBuff(person, amt, duration)
+
+	if( CanMod( person , "all" ) && CanMod( person , "ebless" )  && CanMod( person , "poly"))
+		DoTempMod( person, "all" , amt , duration );
+	endif
+
+	if (CanMod(person, "dex"))
+		DoTempMod(person, "dex", amt, duration);
+	endif
+
+	if (CanMod(person, "str"))
+		DoTempMod(person, "str", amt, duration);
+	endif
+
+	if (CanMod(person, "ar"))
+		var arAmount := Cint(amt/1.25);
+		DoTempMod(person, "ar", arAmount, duration);
+	endif
+
+	if (CanMod(person, "int"))
+		DoTempMod(person, "int", amt, duration);
+	endif
+
+	SendSysMessage(person, "The power of Nagash fills you with energy!");
+
+endfunction
