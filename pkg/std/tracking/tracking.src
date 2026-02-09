@@ -34,7 +34,7 @@ program track(who)
 		//Print("Mystic Archer range is " + range);
 	endif
 
-	var nearby := ListMobilesNearLocation(who.x, who.y, who.z, range, who.realm);
+	var nearby := ListMobilesNearLocation(who.x, who.y, LIST_IGNORE_Z, range, who.realm);
 	if(len(nearby) == 1)
 		SendSysmessage (who, "There don't seem to be any creatures nearby");
 		return;
