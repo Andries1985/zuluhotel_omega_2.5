@@ -451,7 +451,8 @@ function Load_Ticket_Data (me, who, ticket)
     newpet := CreateNPCFromTemplate(tempdata, me.x, me.y, me.z);
 
     newpet.name := GetObjProperty(ticket, "petname");
-    SetHp(newpet, CInt(GetObjProperty(ticket, "pethp"))); //doesn't work, no errors trown, some other script influencing?
+    SetHp(newpet, GetMaxHp(newpet));
+    //SetHp(newpet, CInt(GetObjProperty(ticket, "pethp"))); //doesn't work, no errors trown, some other script influencing?
     SetMana(newpet, CInt(GetObjProperty(ticket, "petmana")));
     newpet.color := GetObjProperty(ticket, "petcolor");
 

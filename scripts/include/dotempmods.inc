@@ -148,7 +148,7 @@ function DoTempMod( who , stat , amt , duration , liche := 0)
 	var parms := {};
 	parms[1] := who;
 	parms[2] := stat;
-	parms[3] := CInt(amt*0.8);
+	parms[3] := CInt(amt);
 	parms[4] := duration;
 	if(liche)
 		parms[5] := liche;
@@ -163,8 +163,10 @@ endfunction
 function GetModAmount( who ) 
 
 	var magery := GetEffectiveSkill( who , SKILLID_MAGERY );
-	var amount := RandomInt(5) + Cint(magery/7);
-	amount := ModifyWithMagicEfficiency( who, amount );
+	var amount := 5 + Cint(magery/7);
+	if (GetObjProperty( who, CLASSEID_MAGE ))
+		amount := ModifyWithMagicEfficiency( who, amount );
+	endif
 	if( !amount )
 		amount := 1;
 	endif
@@ -177,12 +179,12 @@ endfunction
 function GetModDuration( who )
 
 	var magery := GetEffectiveSkill( who , SKILLID_MAGERY );
-	var duration := magery * 5;
-	duration := ModifyWithMagicEfficiency( who , duration );
+	var duration := (magery * 20) + 5;
+	//duration := ModifyWithMagicEfficiency( who , duration );
 	if( !duration )
 		duration := 1;
 	endif
-	duration := (duration * 2);
+	//duration := (duration * 2);
 	return Cint(duration);
 
 endfunction
