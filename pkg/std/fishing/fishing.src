@@ -77,18 +77,19 @@ program use_fishpole( character , pole )
 
 	Performaction(character, UACTION_FISHING);
 	PlaySoundEffect(character, SFX_SKILL_FISHING);
+	PlayStationaryEffect(use_on.x, use_on.y, use_on.z, 0x352D, 0, 10, 0, use_on.realm);
 
 	// Remove the code below and enable the commented out if/else statement if you want the random graphics.
-	newsplash := CreateItemAtLocation(use_on.x, use_on.y, use_on.z, 0x352d, 1, use_on.realm);
-	newsplash.movable := 0;
-	sleepms(800);
-	newsplash.graphic := 0x352e;
-	sleepms(800);
-	newsplash.graphic := 0x352f;
-	sleepms(800);
-	newsplash.graphic := 0x3530;
-	sleepms(800);
-	DestroyItem(newsplash);
+	// newsplash := CreateItemAtLocation(use_on.x, use_on.y, use_on.z, 0x352d, 1, use_on.realm);
+	// newsplash.movable := 0;
+	// sleepms(800);
+	// newsplash.graphic := 0x352e;
+	// sleepms(800);
+	// newsplash.graphic := 0x352f;
+	// sleepms(800);
+	// newsplash.graphic := 0x3530;
+	// sleepms(800);
+	// DestroyItem(newsplash);
 /* 	if(!tool_bon)
 		newsplash := CreateItemAtLocation(use_on.x, use_on.y, use_on.z,  0x352d, 1, use_on.realm);
 		newsplash.movable := 0;
