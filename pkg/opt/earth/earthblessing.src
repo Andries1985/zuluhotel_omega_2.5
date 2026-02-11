@@ -42,14 +42,14 @@ program cast_earth_blessing( parms )
 	var duration := GetModDuration( caster );
 	if(GetObjProperty( caster, CLASSEID_MAGE ))
 		mod_amount := Cint( GetModAmount( caster ) * 1.75 );
-		Print("In Earth Blessing: Mage mod amount is " + mod_amount);
+		//Print("In Earth Blessing: Mage mod amount is " + mod_amount);
 	elseif(GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER ))
 		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	elseif(GetObjProperty( caster, CLASSEID_POWERPLAYER ))
 		mod_amount := Cint( GetModAmount( caster ) * 2 );
 	else
 		mod_amount := Cint( GetModAmount( caster ) );
-		Print("In Earth Blessing: Non-spec mod amount is " + mod_amount);
+		//Print("In Earth Blessing: Non-spec mod amount is " + mod_amount);
 	endif
 
 	if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ) && CanMod( caster, "poly")) 
