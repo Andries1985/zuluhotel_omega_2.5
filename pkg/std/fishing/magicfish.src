@@ -246,7 +246,8 @@ function GetModAmountFish( who, miscprop1 )
 		level := CInt( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER ) );
 	endif
 	
-	amount := ( (level * amount) + Random(Cint( fishing / 10 )) );
+	//amount := ( (level * amount) + Random(Cint( fishing / 10 )) );
+	amount := ( (level * amount) + 15 );
 
 	if( !amount )
 		amount := 1;

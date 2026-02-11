@@ -69,7 +69,8 @@ program cast_natures_touch( parms )
 		endif
 		PlayObjectCenteredEffect(cast_near, SPELL_EFFECT_ID, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);
 		PlaySoundEffect( cast_near , SFX_SPELL_TOUCH_OF_GOD );
-		var healed := ModifyWithMagicEfficiency( caster , RandomDiceStr( "6d4+15" ) );
+		//var healed := ModifyWithMagicEfficiency( caster , RandomDiceStr( "6d4+15" ) );
+		var healed := RandomDiceStr( "6d4+15" );
 		var bonus := GetObjProperty( cast_near , "HealingIncrease" );
 		if( bonus )
 			healed := healed + Cint( healed * bonus * 0.2 );

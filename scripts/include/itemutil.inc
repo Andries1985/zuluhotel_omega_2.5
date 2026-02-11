@@ -264,6 +264,13 @@ function GetGraphicsBladesinger()
 	// Cloak of Lettenhove, Grarks Shepherds Crook
 endfunction
 
+function GetGraphicsCrafter()
+
+	return { 0x757a };
+	
+	// Feanors Hammer
+endfunction
+
 function GetPossiblePropertyNames()
 
 	return {	"AirProtection"		,

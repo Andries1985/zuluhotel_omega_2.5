@@ -98,45 +98,54 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 		CLASSEID_BARD:		
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
+					fract_array.append( GetGraphicsCrafter() );
 					break;
 		CLASSEID_BLADESINGER:
 					fract_array.append( GetLeatherArmorGraphics() );
 					fract_array.append( GetStuddedLeatherArmorGraphics() );
 					fract_array.append( GetGraphicsBladesinger() );
 					fract_array.append( GetShieldGraphics() );
+					fract_array.append( GetGraphicsCrafter() );
 					break;
 		CLASSEID_CRAFTER:
 					break;
-		CLASSEID_MAGE:		
+		CLASSEID_MAGE:
 					fract_array.append( GetBoneArmorGraphics() );
 					fract_array.append( GetRingmailArmorGraphics() );
 					fract_array.append( GetChainmailArmorGraphics() );
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
+					fract_array.append( GetGraphicsCrafter() );
 					break;
 		CLASSEID_MYSTIC_ARCHER:		
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
+					fract_array.append( GetGraphicsCrafter() );
 					break;
  		CLASSEID_PALADIN:
 					fract_array.append( GetLeatherArmorGraphics() );
 					fract_array.append( GetStuddedLeatherArmorGraphics() );
 					fract_array.append( GetBoneArmorGraphics() );
 					fract_array.append( GetRingmailArmorGraphics() );
+					fract_array.append( GetGraphicsCrafter() );
 					break;
 		CLASSEID_RANGER:
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphics() );
+					fract_array.append( GetGraphicsCrafter() );
 					break;
 		CLASSEID_THIEF:		
 					fract_array.append( GetChainmailArmorGraphics() );
 					fract_array.append( GetPlatemailArmorGraphics() );
 					fract_array.append( GetShieldGraphicsThief() );
+					fract_array.append( GetGraphicsCrafter() );
 					break;
-
 		CLASSEID_WARRIOR:
-
+					fract_array.append( GetGraphicsCrafter() );
+					break;
 		CLASSEID_POWERPLAYER:
+					fract_array.append( GetGraphicsCrafter() );
+					break;
 	endcase
 
 	foreach type in fract_array
