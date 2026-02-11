@@ -99,8 +99,9 @@ program cast_songofglory( player )
 			PrintTextAbove(player,"Obtestor Tribuo Dominatus Fortuno");
 //		endif
 		sleep(1);
-		dmod := RandomInt(5) + (peace/10) + spec*8;
-		duration := 1800;
+		//dmod := RandomInt(5) + (peace/10) + spec*8;
+		dmod := 6 + (peace/10) + (spec * 9);
+		duration := 3600;
 		affected := ListMobilesInLineOfSight( player , cint( (spec+1) * 2 )) + player;
 
 		affected := SmartBoost(player, affected);
