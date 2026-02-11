@@ -37,7 +37,7 @@ function SelectItemToID(who,delay)
 	endif
 
 	if (!ReserveItem( the_item ))
-		Print("Item "+the_item.serial+" is already reserved.");
+		//Print("Item "+the_item.serial+" is already reserved.");
 		return 1;
 	endif
 
