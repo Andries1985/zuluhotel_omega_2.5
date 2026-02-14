@@ -51,7 +51,7 @@ program cast_earth_portal( caster )
 	endif
 	
 	if (TryToCast( caster, SPELLID_EARTH_PORTAL ) != SUCCESS);
-		Print("Cannot cast spell!");
+		//Print("Cannot cast spell!");
 		EraseObjProperty(caster, "#Casting");
 		return 0;
 	endif

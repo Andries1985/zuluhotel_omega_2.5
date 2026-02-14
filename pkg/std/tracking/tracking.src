@@ -25,7 +25,7 @@ program track(who)
 	var tracker := ReadGameClock();
 	SetObjProperty(who, "TrackingCounter", tracker);
 	var range := Cint(GetEffectiveSkill(who, SKILLID_TRACKING)/3);
-	Print("Base range is " + range);
+	//Print("Base range is " + range);
 	if( ranger )
 		range := Cint( range * ClasseBonusByLevel( ranger ) );
 		//Print("Ranger range is " + range);
