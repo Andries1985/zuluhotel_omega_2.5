@@ -72,6 +72,7 @@ function Buildhouse( character, deed )
     var where := TargetMultiPlacement( character, housetype );
     if (!where) return; endif
 
+    if (character.cmdlevel < 4)
 	//var antigate := ListItemsNearLocation(where.x, where.y, where.z, 50, where.realm);
 	var antihouse :=  ListObjectsInBox( where.x-25, where.y-25, where.z-25, where.x+25,where.y+25,where.z+25 );
 	foreach item in antihouse
@@ -117,8 +118,7 @@ function Buildhouse( character, deed )
         return;
     endif
 
-if(character.realm == "britannia")
-        if(character.cmdlevel < 4)
+    if(character.realm == "britannia")
             if(where.x >= 5120)
                 if(where.x <= 7167)
                     if(where.y >= 1)
@@ -129,8 +129,8 @@ if(character.realm == "britannia")
                     endif
                 endif
             endif
-        endif
     endif
+    endif // cmdlevel < 4
 	
     // try to create the house
     set_critical( 1 );
@@ -409,7 +409,11 @@ function CreatehouseKeysAndBuiltDeed( character, housetype, where, deed )
         return 0;
     endif
 
-    var house := CreateMultiAtLocation( x, y, z, housetype );
+    var flags := 0;
+    if (character.cmdlevel >= 4)
+        flags := CRMULTI_IGNORE_ALL;
+    endif
+    var house := CreateMultiAtLocation( x, y, z, housetype, flags );
     //var sign;
 
     SetObjProperty( house , "numlockdowns" , GetObjProperty( deed , "numlockdowns" ));
