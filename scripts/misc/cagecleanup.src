@@ -1,0 +1,26 @@
+// Background script to clean up cage items and unparalyze the player after 30 seconds
+// Spawned by .admin "Summon Cage" action
+
+use uo;
+use os;
+
+program cage_cleanup( parms )
+
+	var client := parms[1];
+	var cage_items := parms[2];
+	var admin := parms[3];
+	var playername := parms[4];
+
+	Sleep(30);
+
+	foreach item in cage_items
+		DestroyItem( item );
+	endforeach
+
+	client.SetParalyzed(0);
+
+	if ( admin )
+		SendSysMessage( admin, playername + " has been released from the cage." );
+	endif
+
+endprogram
