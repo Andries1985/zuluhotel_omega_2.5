@@ -1,0 +1,29 @@
+use uo;
+
+include "include/classes";
+
+program what_classe( who )
+
+	SendSysMessage( who, "Target a player to see their class." );
+	var targ := Target( who );
+
+	if( !targ )
+		SendSysMessage( who, "Canceled." );
+		return;
+	endif
+
+	if( !targ.acctname )
+		SendSysMessage( who, "That is not a player." );
+		return;
+	endif
+
+	var classeid := GetClass( targ );
+
+	if( classeid )
+		var level := CInt( GetObjProperty( targ, classeid ) );
+		SendSysMessage( who, targ.name + " is a level " + level + " " + GetClasseName( classeid ) );
+	else
+		SendSysMessage( who, targ.name + " has no class." );
+	endif
+
+endprogram
