@@ -1358,7 +1358,7 @@ function SmartAoE( caster, victims)
 	var caster_noPK := GetObjProperty(caster, "NOPKAREA");
 	var caster_CW := GetObjProperty(caster, "cwarring");
 	var caster_CWcolor := GetObjProperty(caster,"cwcolor");
-	var same_CWcolor := 0;
+	var to_remove := {};
 	var i;
 	if(DEBUG_MODE)
 		SendSysMessage( caster, "caster_noPK "+caster_noPK, color :=53);
@@ -1370,6 +1370,7 @@ function SmartAoE( caster, victims)
 		var victim_noPK := GetObjProperty(victims[i], "NOPKAREA");
 		var victim_CWcolor := GetObjProperty(victims[i],"cwcolor");
 		var same_faction := caster_RPer == victim_RPer;
+		var same_CWcolor := 0;
 		if (caster_CW)
 			if (GetGlobalProperty("cwtype") != "k")
 				same_CWcolor := victim_CWcolor == caster_CWcolor;
@@ -1381,22 +1382,26 @@ function SmartAoE( caster, victims)
 			SendSysMessage( caster, "same_faction "+same_faction, color :=53);
 			SendSysMessage( caster, "same_CWcolor "+same_CWcolor, color :=53);
 		endif
-		//Borrowed from SmartSongAoE Function
 		if ((victims[i].isa(POLCLASS_NPC)) && (victims[i].master == caster))
-			victims.erase(i);
-		endif
-		if ((!victims[i].isa(POLCLASS_NPC)) && caster.party && (victims[i].party == caster.party))
-			victims.erase(i);
-		endif
-		//Back to Original
-		if (!caster.isa(POLCLASS_NPC) && !caster.cmdlevel && !victims[i].isa(POLCLASS_NPC))
+			to_remove.append(i);
+		elseif ((!victims[i].isa(POLCLASS_NPC)) && caster.party && (victims[i].party == caster.party))
+			to_remove.append(i);
+		elseif (!caster.isa(POLCLASS_NPC) && !caster.cmdlevel && !victims[i].isa(POLCLASS_NPC))
 			if((caster_noPK) || (victim_noPK) || (!same_faction) || (same_CWcolor))
 				if (DEBUG_MODE)
 					SendSysMessage( caster, "erased", color :=34);
 				endif
-				victims.erase(i);
+				to_remove.append(i);
 			endif
 		endif
+	endfor
+
+	// Erase in reverse order so indices stay valid
+	for(i:=to_remove.Size(); i>=1; i:=i-1)
+		if(DEBUG_MODE)
+			SendSysMessage( caster, "SmartAoE removing: " + victims[to_remove[i]].name, color :=34);
+		endif
+		victims.erase(to_remove[i]);
 	endfor
 
 	return victims;
@@ -1407,7 +1412,7 @@ function SmartBoost(caster, affected)
 	var caster_RPer := GetObjProperty(caster, "IsRPer");
 	var caster_CW := GetObjProperty(caster, "cwarring");
 	var caster_CWcolor := GetObjProperty(caster,"cwcolor");
-	var same_CWcolor := 1;
+	var to_remove := {};
 	var i;
 	if(DEBUG_MODE)
 		SendSysMessage( caster, "caster_RPer "+caster_RPer, color :=53);
@@ -1418,6 +1423,7 @@ function SmartBoost(caster, affected)
 		var victim_RPer := GetObjProperty(affected[i], "IsRPer" );
 		var victim_CWcolor := GetObjProperty(affected[i],"cwcolor");
 		var same_faction := caster_RPer == victim_RPer;
+		var same_CWcolor := 1;
 		if (caster_CW)
 			if (GetGlobalProperty("cwtype") != "k")
 				same_CWcolor := victim_CWcolor == caster_CWcolor;
@@ -1434,9 +1440,17 @@ function SmartBoost(caster, affected)
 				if (DEBUG_MODE)
 					SendSysMessage( caster, "erased", color :=34);
 				endif
-				affected.erase(i);
+				to_remove.append(i);
 			endif
 		endif
+	endfor
+
+	// Erase in reverse order so indices stay valid
+	for(i:=to_remove.Size(); i>=1; i:=i-1)
+		if(DEBUG_MODE)
+			SendSysMessage( caster, "SmartBoost removing: " + affected[to_remove[i]].name, color :=34);
+		endif
+		affected.erase(to_remove[i]);
 	endfor
 
 	return affected;
