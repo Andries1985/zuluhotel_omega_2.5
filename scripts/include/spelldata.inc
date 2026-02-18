@@ -1384,6 +1384,8 @@ function SmartAoE( caster, victims)
 		endif
 		if ((victims[i].isa(POLCLASS_NPC)) && (victims[i].master == caster))
 			to_remove.append(i);
+		elseif ((victims[i].isa(POLCLASS_NPC)) && victims[i].master && caster.party && (victims[i].master.party == caster.party))
+			to_remove.append(i);
 		elseif ((!victims[i].isa(POLCLASS_NPC)) && caster.party && (victims[i].party == caster.party))
 			to_remove.append(i);
 		elseif (!caster.isa(POLCLASS_NPC) && !caster.cmdlevel && !victims[i].isa(POLCLASS_NPC))
