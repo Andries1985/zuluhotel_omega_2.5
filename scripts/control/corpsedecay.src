@@ -6,8 +6,8 @@ use cfgfile;
 
 include "include/constants/propids";
 
-const DECAY_TIME_NPC_CORPSE		:= 30;		// In minutes.
-const DECAY_TIME_PLAYER_CORPSE		:= 30;		// In minutes.
+const DECAY_TIME_NPC_CORPSE		:= 1;		// In minutes.
+const DECAY_TIME_PLAYER_CORPSE		:= 1;		// In minutes.
 
 
 program corpse_decay( corpse )
@@ -36,11 +36,11 @@ function ProcessHumanCorpseDecaying( corpse )
 		name["A corpse"] := "Remains";
 		SetName( corpse, name );
 		EraseObjProperty( corpse, PROPID_CORPSE_IS_BLUE );
-		Sleep( Cint(DECAY_TIME_PLAYER_CORPSE * 60 / 2) );
+		//Sleep( Cint(DECAY_TIME_PLAYER_CORPSE * 60 / 2) );
 		if( !GetObjProperty( corpse, "NoDecay" ) )
 			foreach item in EnumerateItemsInContainer(corpse)
 				if( item.container == corpse )
-					MoveObjectToLocation( item, corpse.x, corpse.y, corpse.z, corpse.realm, MOVEOBJECT_NORMAL );
+					MoveObjectToLocation( item, corpse.x, corpse.y, corpse.z, corpse.realm, MOVEOBJECT_FORCELOCATION );
 					if(corpse.multi)
 						item.decayat := 0;
 					endif
