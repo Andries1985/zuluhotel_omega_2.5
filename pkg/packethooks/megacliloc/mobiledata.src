@@ -97,6 +97,15 @@ program mobiledata(parms)
 
 	elseif(!who.cmdlevel)
 
+		if(!npc && !GetObjProperty(xObject, "HideClasse"))
+			var classe := GetClass(xObject);
+			if (classe)
+				prop.clilocid := 1026360;
+				prop.values := array {"Level " + GetClasseLevel(xObject) + " " + GetClasseName(classe)};
+				allprops.append(prop);
+			endif
+		endif
+
 		if(npc)
 			boss := GetObjProperty(xObject, "Boss");
 			if(boss)

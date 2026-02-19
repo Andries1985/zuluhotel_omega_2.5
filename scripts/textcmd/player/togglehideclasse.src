@@ -1,0 +1,17 @@
+use uo;
+
+include "include/client";
+
+program toggle_hide_classe( who )
+
+	var hidden := GetObjProperty( who, "HideClasse" );
+
+	if( hidden )
+		EraseObjProperty( who, "HideClasse" );
+		SendSysMessage( who, "Your class is now visible to other players.", FONT_NORMAL, 63 );
+	else
+		SetObjProperty( who, "HideClasse", 1 );
+		SendSysMessage( who, "Your class is now hidden from other players.", FONT_NORMAL, 63 );
+	endif
+
+endprogram

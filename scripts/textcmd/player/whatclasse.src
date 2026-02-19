@@ -17,6 +17,12 @@ program what_classe( who )
 		return;
 	endif
 
+	// Allow players to always see their own class; staff can always see anyone's class
+	if( targ != who && !who.cmdlevel && GetObjProperty( targ, "HideClasse" ) )
+		SendSysMessage( who, "You could not determine " + targ.name + "'s class." );
+		return;
+	endif
+
 	var classeid := GetClass( targ );
 
 	if( classeid )
