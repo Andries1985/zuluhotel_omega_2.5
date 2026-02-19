@@ -1,4 +1,5 @@
 use uo;
+use polsys;
 
 include "include/client";
 
@@ -8,10 +9,12 @@ program toggle_hide_classe( who )
 
 	if( hidden )
 		EraseObjProperty( who, "HideClasse" );
-		SendSysMessage( who, "Your class is now visible to other players.", FONT_NORMAL, 63 );
+		SendSysMessage( who, "Your class is now visible to other players.");
 	else
 		SetObjProperty( who, "HideClasse", 1 );
-		SendSysMessage( who, "Your class is now hidden from other players.", FONT_NORMAL, 63 );
+		SendSysMessage( who, "Your class is now hidden from other players.");
 	endif
+
+	IncRevision( who );
 
 endprogram
