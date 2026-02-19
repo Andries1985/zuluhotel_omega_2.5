@@ -187,9 +187,9 @@ function ConfirmItemPurchase(who, item)
 
 	if (data[0] == 10)
 		var token_amount := 0;
-		foreach item in EnumerateItemsInContainer( who.backpack )
+		foreach item in EnumerateItemsInContainer( who.backpack, ENUMERATE_ROOT_ONLY )
 			if( item.objtype == OBJ_OMEGA_TOKEN )
-				print("found "+item.amount);
+				//print("found "+item.amount);
 				token_amount := token_amount + item.amount;
 			endif
 		endforeach
@@ -200,7 +200,7 @@ function ConfirmItemPurchase(who, item)
 			return 0;
 		endif
 		var cost_left := item_cost;
-		foreach item in EnumerateItemsInContainer( who.backpack )
+		foreach item in EnumerateItemsInContainer( who.backpack, ENUMERATE_ROOT_ONLY )
 			if( item.objtype == OBJ_OMEGA_TOKEN )
 				cost_left := cost_left - item.amount;
 				var to_sub := Min(item.amount, item_cost);
