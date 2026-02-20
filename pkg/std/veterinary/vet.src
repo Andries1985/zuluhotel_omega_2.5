@@ -404,36 +404,36 @@ function ResAnimal( who , patient , bandages )
 	//Print("My serial is: " + myserial);
 
 	if(masterserials == myserial && GetObjProperty(patient, "Boss") )
-		SendSysMessage( who , "The creature recognizes you as its master and is resurrected!", 3, 87);
-			if( CheckSkill( who , SKILLID_VETERINARY , diff , points ) )
+		//SendSysMessage( who , "The creature recognizes you as its master and is resurrected!", 3, 87);
+		if( CheckSkill( who , SKILLID_VETERINARY , diff , points ) )
 		var npc := CreateNPCFromTemplate(GetObjProperty(patient, "npctemplate"), patient.x, patient.y, patient.z, 0, patient.realm);
-		if (npc)
-			var color := getobjproperty(patient,"color");
-			DestroyItem(patient);
-			SetObjProperty(npc, "nocut", 1);
-			SetObjProperty(npc, "noloot", 1);
-			SetObjProperty(npc, "VetResed", 1);
-			if(color != npc.color)
-				npc.color := color;
-				setobjproperty(npc,"color", color);
-			endif
-			SendSysMessage( who , "You resurrected "+npc.name+"!" );
-			PrintTextAbove( npc, npc.name + " accepts you as it's master." );
-			SetObjProperty( npc ,"master" , who.serial );
-			npc.setmaster( who );
-			npc.script := "tamed";
-			RestartScript( npc );
-			if(GetObjProperty(npc, "PhysicalProtection") > 100)
-				SetObjProperty(npc, "PhysicalProtection", 6);
-				EraseObjProperty(npc, "AttackTypeImmunities");
-			endif
+			if (npc)
+				var color := getobjproperty(patient,"color");
+				DestroyItem(patient);
+				SetObjProperty(npc, "nocut", 1);
+				SetObjProperty(npc, "noloot", 1);
+				SetObjProperty(npc, "VetResed", 1);
+				if(color != npc.color)
+					npc.color := color;
+					setobjproperty(npc,"color", color);
+				endif
+				SendSysMessage( who , "You resurrected "+npc.name+"!" );
+				PrintTextAbove( npc, npc.name + " accepts you as it's master." );
+				SetObjProperty( npc ,"master" , who.serial );
+				npc.setmaster( who );
+				npc.script := "tamed";
+				RestartScript( npc );
+				if(GetObjProperty(npc, "PhysicalProtection") > 100)
+					SetObjProperty(npc, "PhysicalProtection", 6);
+					EraseObjProperty(npc, "AttackTypeImmunities");
+				endif
 
-			SetObjProperty( npc , "PreviouslyTamed" , prev_tame + 1 );
-			Detach();
-		endif
-		else
-			SendSysMessage(who, "You fail to resurrect the creature.");
-		endif
+				SetObjProperty( npc , "PreviouslyTamed" , prev_tame + 1 );
+				Detach();
+			endif
+			else
+				SendSysMessage(who, "You fail to resurrect the creature.");
+			endif
 
 		EraseObjProperty(patient, "#Ressing");
 	elseif( CheckSkill( who , SKILLID_VETERINARY , diff , points ) )
