@@ -45,16 +45,34 @@ program mass_dispel ( parms, spell_id )
 			return 0;
 		endif
         cast_on := CanTargetSpell(caster , circle , TGTOPT_HARMFUL + TGTOPT_CHECK_LOS );
+		
         if (!cast_on)
             return;
 		endif
+
+		var xdifference := caster.x - cast_on.x;
+		//print("X Difference: " + xdifference);
+		if (xdifference < -10 or xdifference > 10) 
+			SendSysMessage(caster, "That is too far away.", 3, 73);
+			return 0;
+		endif
+
+		var ydifference := caster.y - cast_on.y;
+		//Print("Y Difference: " + ydifference);
+		if (ydifference < -10 or ydifference > 10) 
+			SendSysMessage(caster, "That is too far away.", 3, 73);
+			return 0;
+		endif
+
 	endif
 
 	var magery	:= ModifyWithMagicEfficiency( caster , GetEffectiveSkill(caster, SKILLID_MAGERY) );
 	var range	:= Cint(magery / 15);
+	//Print("Range: " + range);
 	if(range > 10)
 		range := 10;
 	endif
+	//Print("Range after cap: " + range);
 	var victims	:= ListMobilesNearLocation( cint(cast_on.x), cint(cast_on.y) , cint(cast_on.z) , range );
 
 	victims := SmartAoE( caster, victims);
