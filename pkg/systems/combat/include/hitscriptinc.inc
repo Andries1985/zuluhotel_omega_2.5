@@ -289,7 +289,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		elseif(GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
 			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_TACTICS) * 0.003;
 		elseif(GetObjProperty( attacker, CLASSEID_MYSTIC_ARCHER))
-			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_EVALINT) * 0.004;
+			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_EVALINT) * 0.005;
 		endif
 		if(DEBUG_MODE)
 			SendSysMessage( attacker, "Skill Bonus: "+basedamage, FONT_NORMAL, 2569 );
@@ -319,7 +319,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		endif
 		// Skill Bonuses
 		if( GetObjProperty(attacker, CLASSEID_WARRIOR) || GetObjProperty(attacker, CLASSEID_POWERPLAYER) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
-			basedamage *=  1 + GetAttribute( attacker, ATTRIBUTEID_ANATOMY ) * 0.004 ;
+			basedamage *=  1 + GetAttribute( attacker, ATTRIBUTEID_ANATOMY ) * 0.005 ;
 		elseif( GetObjProperty( attacker, CLASSEID_THIEF ) && (weapon.attribute == ATTRIBUTEID_FENCING))
 			basedamage *= 1 + avg_skill * 0.005;
 		elseif( GetObjProperty(attacker, CLASSEID_PALADIN) )
@@ -355,12 +355,12 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			// Damage reduction from NPC's.
 			if( attacker.isA(POLCLASS_NPC) )
 			//Print("Base Damage Pala 1: " + basedamage);
-				basedamage := basedamage / ( (ClasseBonusByLevel( defenderlevel ) * 0.7 ) );
+				basedamage := basedamage / ( (ClasseBonusByLevel( defenderlevel ) * 0.5 ) );
 			//Print("Base Damage Pala 2: " + basedamage);
 			// Damage reduction from Players.
 			else
 				defenderlevel := max(0, defenderlevel-1);
-				basedamage := basedamage / ClasseBonusByLevel( defenderlevel );
+				basedamage := basedamage / (ClasseBonusByLevel( defenderlevel ) * 0.5);
 			endif
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Paladin reduction: "+basedamage, FONT_NORMAL, 2555 );
