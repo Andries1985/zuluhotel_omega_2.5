@@ -370,6 +370,14 @@ function CanTargetSpell( caster, circle := 1 , TargOpt := TGTOPT_CHECK_LOS )
 		return 0;
 	endif
 
+	if( GetObjProperty(caster, "#TargetRejected") )
+		EraseObjProperty(caster, "#TargetRejected");
+		if(GetObjProperty(caster, "#SpellMove"))
+			EraseObjProperty(caster, "#SpellMove");
+		endif
+		return 0;
+	endif
+
 	if ( (cx != caster.x) or (cy != caster.y) or (shp > GetHP(caster)) || GetObjProperty(caster, "#SpellMove") )
 		if(GetObjProperty(caster, "#SpellMove"))
 			EraseObjProperty(caster, "#SpellMove");

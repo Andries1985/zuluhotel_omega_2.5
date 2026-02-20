@@ -172,20 +172,30 @@ exported Function OnTarget( who, byref Packet )
 	var DEFisRPer := GetObjProperty(obj, "IsRPer");
 	var noPKatk := GetObjProperty(who, "NOPKAREA");
 	var noPKdef := GetObjProperty(obj, "NOPKAREA");
+	var is_casting := GetObjProperty(who , "#Casting");
 	var target_type := packet.GetInt8(6) != 1;
 	if((!who.cmdlevel && obj.isa(POLCLASS_MOBILE) && !obj.isa(POLCLASS_NPC) && obj != who) && (noPKatk || noPKdef) && (!target_type))
 		SendSysMessage(who, "You can't target players in a NO-PK zone!", FONT_NORMAL, 2595 );
-		EraseObjProperty( who , "#Casting" );
 		CancelTarget( who );
+		if(is_casting)
+			EraseObjProperty( who , "#Casting" );
+			SetObjProperty( who, "#TargetRejected", 1 );
+			return CORE_OK;
+		endif
 		return CORE_IGNORE;
 	endif
 	if((!who.cmdlevel && obj.isa(POLCLASS_MOBILE) && !obj.isa(POLCLASS_NPC) && obj != who) && (ATKisRPer != DEFisRPer))
 		SendSysMessage(who, "Only players with the [RPer] tag can attack each other!", FONT_NORMAL, 2595 );
-		EraseObjProperty( who , "#Casting" );
 		CancelTarget( who );
+		if(is_casting)
+			EraseObjProperty( who , "#Casting" );
+			SetObjProperty( who, "#TargetRejected", 1 );
+			return CORE_OK;
+		endif
 		return CORE_IGNORE;
 	endif
 
+	EraseObjProperty( who, "#TargetRejected" );
 	return CORE_OK;
 Endfunction
 
