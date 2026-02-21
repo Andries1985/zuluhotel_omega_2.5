@@ -37,7 +37,7 @@ Exported Function CheckDrop(char, ByRef packet)
 		if( element )
 			var material := element.Blocking;
 			if(!material)
-				return CORE_OK;				
+				return CORE_OK;
 			endif
 		endif
 		var parms := {item, char};
@@ -51,7 +51,7 @@ Exported Function CheckDrop(char, ByRef packet)
   If (serial and inhand and inhand.serial == serial)
     return CORE_OK;
   EndIf
-  
+
 	// Check if "Character 0x{:X} tried to drop item 0x{:X}, but had not gotten an item.\n"
 	var badpackets := GetObjProperty(char, "badpackets");
 	if (!badpackets)
@@ -99,7 +99,7 @@ Exported Function CheckDrop6017(char, ByRef packet)
 		if( element )
 			var material := element.Blocking;
 			if(!material)
-				return CORE_OK;				
+				return CORE_OK;
 			endif
 		endif
 		var parms := {item, char};
@@ -113,9 +113,9 @@ Exported Function CheckDrop6017(char, ByRef packet)
   If (serial and inhand and inhand.serial == serial)
     return CORE_OK;
   EndIf
-  		
+
 	// Check if "Character 0x{:X} tried to drop item 0x{:X}, but had not gotten an item.\n"
-	var badpackets := GetObjProperty(char, "badpackets");	
+	var badpackets := GetObjProperty(char, "badpackets");
 	if(GetObjProperty(char, "bpTime") < ReadGameClock() && badpackets)
 		SetObjProperty(char, "badpackets", 0);
 		EraseObjProperty(char, "bpTime");
@@ -137,7 +137,7 @@ Exported Function CheckDrop6017(char, ByRef packet)
 		return CORE_OK;
 	endif
  // IncrementScriptErrorCounter(char);
- 
+
   return CORE_IGNORE;
 EndFunction
 
@@ -158,8 +158,8 @@ exported Function OnTarget( who, byref Packet )
 	var obj := SystemFindObjectBySerial(packet.GetInt32(7));
 	if(!who.cmdlevel && obj.cmdlevel && (obj.concealed || obj.hidden))
 		SendSysMessage(obj, who.name+" is trying to target you while you are concealed/hidden", FONT_NORMAL, 2595 );
-	endif	
-	
+	endif
+
 	if(!who.cmdlevel && obj.objtype == 0x6200)
 		foreach player in EnumerateOnlineCharacters()
 			if(player.cmdlevel)
@@ -167,33 +167,35 @@ exported Function OnTarget( who, byref Packet )
 			endif
 		endforeach
 	endif
-	
+
 	var ATKisRPer := GetObjProperty(who, "IsRPer");
 	var DEFisRPer := GetObjProperty(obj, "IsRPer");
 	var noPKatk := GetObjProperty(who, "NOPKAREA");
 	var noPKdef := GetObjProperty(obj, "NOPKAREA");
-	var target_type := packet.GetInt8(6) == 2;
+	var is_casting := GetObjProperty(who , "#Casting");
+	var target_type := packet.GetInt8(6) != 1;
 	if((!who.cmdlevel && obj.isa(POLCLASS_MOBILE) && !obj.isa(POLCLASS_NPC) && obj != who) && (noPKatk || noPKdef) && (!target_type))
-		var newpacket := CreatePacket(0x6C, 0x13);
-		newpacket.SetInt8(1, 0);
-		newpacket.SetInt32(2, 00000000);
-		newpacket.SetInt8(6, 3);
-		newpacket.SendPacket(who);
 		SendSysMessage(who, "You can't target players in a NO-PK zone!", FONT_NORMAL, 2595 );
-		EraseObjProperty( who , "#Casting" );
+		CancelTarget( who );
+		if(is_casting)
+			EraseObjProperty( who , "#Casting" );
+			SetObjProperty( who, "#TargetRejected", 1 );
+			return CORE_OK;
+		endif
 		return CORE_IGNORE;
 	endif
 	if((!who.cmdlevel && obj.isa(POLCLASS_MOBILE) && !obj.isa(POLCLASS_NPC) && obj != who) && (ATKisRPer != DEFisRPer))
-		var newpacket := CreatePacket(0x6C, 0x13);
-		newpacket.SetInt8(1, 0);
-		newpacket.SetInt32(2, 00000000);
-		newpacket.SetInt8(6, 3);
-		newpacket.SendPacket(who);
 		SendSysMessage(who, "Only players with the [RPer] tag can attack each other!", FONT_NORMAL, 2595 );
-		EraseObjProperty( who , "#Casting" );
+		CancelTarget( who );
+		if(is_casting)
+			EraseObjProperty( who , "#Casting" );
+			SetObjProperty( who, "#TargetRejected", 1 );
+			return CORE_OK;
+		endif
 		return CORE_IGNORE;
 	endif
-	
+
+	EraseObjProperty( who, "#TargetRejected" );
 	return CORE_OK;
 Endfunction
 

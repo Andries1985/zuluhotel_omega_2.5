@@ -219,29 +219,19 @@ program textcmd_testgump( who )
 
 	elseif( action == 3 ) // SUMMON CAGE
 
-		var tempitem;
+		var cage_items := {};
 		MoveObjectToLocation(client, who.x+1, who.y+1, who.z, who.realm, MOVEOBJECT_FORCELOCATION);
-		tempitem := CreateItemAtLocation( client.x-1,client.y, client.z, 0x821, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
-		tempitem := CreateItemAtLocation( client.x+1,client.y, client.z, 0x821, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
-
-		tempitem := CreateItemAtLocation( client.x-1,client.y+1, client.z, 0x821, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
-		tempitem := CreateItemAtLocation( client.x+1,client.y+1, client.z, 0x821, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
-
-		tempitem := CreateItemAtLocation( client.x,client.y-1, client.z, 0x823, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
-		tempitem := CreateItemAtLocation( client.x,client.y+1, client.z, 0x823, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
-
-		tempitem := CreateItemAtLocation( client.x+1,client.y-1, client.z, 0x823, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
-		tempitem := CreateItemAtLocation( client.x+1,client.y+1, client.z, 0x823, 1 );
-		tempitem.decayat := ReadGameClock() + 30;
+		cage_items.append( CreateItemAtLocation( client.x-1, client.y, client.z, 0x821, 1 ) );
+		cage_items.append( CreateItemAtLocation( client.x+1, client.y, client.z, 0x821, 1 ) );
+		cage_items.append( CreateItemAtLocation( client.x-1, client.y+1, client.z, 0x821, 1 ) );
+		cage_items.append( CreateItemAtLocation( client.x+1, client.y+1, client.z, 0x821, 1 ) );
+		cage_items.append( CreateItemAtLocation( client.x, client.y-1, client.z, 0x823, 1 ) );
+		cage_items.append( CreateItemAtLocation( client.x, client.y+1, client.z, 0x823, 1 ) );
+		cage_items.append( CreateItemAtLocation( client.x+1, client.y-1, client.z, 0x823, 1 ) );
+		cage_items.append( CreateItemAtLocation( client.x+1, client.y+1, client.z, 0x823, 1 ) );
 		client.SetParalyzed(1);
 		ShowFlame(client);
+		start_script( "misc/cagecleanup", { client, cage_items, who, playername } );
 		return;
 	
 	elseif( action == 4 ) // LIGHTNING

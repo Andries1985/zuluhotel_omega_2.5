@@ -104,7 +104,7 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 	if(cast_on.hidden) return; endif
 	var noPKatk := GetObjProperty(caster, "NOPKAREA");
 	var noPKdef := GetObjProperty(cast_on, "NOPKAREA");
-	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (noPKatk || noPKdef))
+	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (!caster.isa(POLCLASS_NPC) || (caster.master && !caster.master.isa(POLCLASS_NPC))) && (noPKatk || noPKdef))
 		return;
 	endif
 
@@ -137,7 +137,7 @@ function ApplyElementalDamageNoResist( on_who, by_who, dmg, element )
 	if(on_who.hidden) return; endif
 	var noPKatk := GetObjProperty(by_who, "NOPKAREA");
 	var noPKdef := GetObjProperty(on_who, "NOPKAREA");
-	if((!by_who.cmdlevel && on_who.isa(POLCLASS_MOBILE) && !on_who.isa(POLCLASS_NPC) && on_who != by_who) && (noPKatk || noPKdef))
+	if((!by_who.cmdlevel && on_who.isa(POLCLASS_MOBILE) && !on_who.isa(POLCLASS_NPC) && on_who != by_who) && (!by_who.isa(POLCLASS_NPC) || (by_who.master && !by_who.master.isa(POLCLASS_NPC))) && (noPKatk || noPKdef))
 		return;
 	endif
 
@@ -162,7 +162,7 @@ function ApplyPlanarDamage( caster, cast_on, circle, dmg, plane )
 	if(cast_on.hidden) return; endif
 	var noPKatk := GetObjProperty(caster, "NOPKAREA");
 	var noPKdef := GetObjProperty(cast_on, "NOPKAREA");
-	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (noPKatk || noPKdef))
+	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (!caster.isa(POLCLASS_NPC) || (caster.master && !caster.master.isa(POLCLASS_NPC))) && (noPKatk || noPKdef))
 		return;
 	endif
 
@@ -207,7 +207,7 @@ function CalcSpellDamage( caster, cast_on, circle, area_spell := SINGLE_TARGET_S
 	if(cast_on.hidden) return 0; endif
 	var noPKatk := GetObjProperty(caster, "NOPKAREA");
 	var noPKdef := GetObjProperty(cast_on, "NOPKAREA");
-	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (noPKatk || noPKdef))
+	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (!caster.isa(POLCLASS_NPC) || (caster.master && !caster.master.isa(POLCLASS_NPC))) && (noPKatk || noPKdef))
 		return 0;
 	endif
 
@@ -367,6 +367,14 @@ function CanTargetSpell( caster, circle := 1 , TargOpt := TGTOPT_CHECK_LOS )
 			EraseObjProperty(caster, "#SpellMove");
 		endif
 		EraseObjProperty(caster, "#Casting");
+		return 0;
+	endif
+
+	if( GetObjProperty(caster, "#TargetRejected") )
+		EraseObjProperty(caster, "#TargetRejected");
+		if(GetObjProperty(caster, "#SpellMove"))
+			EraseObjProperty(caster, "#SpellMove");
+		endif
 		return 0;
 	endif
 
@@ -1359,7 +1367,7 @@ function SmartAoE( caster, victims)
 	var caster_noPK := GetObjProperty(caster, "NOPKAREA");
 	var caster_CW := GetObjProperty(caster, "cwarring");
 	var caster_CWcolor := GetObjProperty(caster,"cwcolor");
-	var same_CWcolor := 0;
+	var to_remove := {};
 	var i;
 	if(DEBUG_MODE)
 		SendSysMessage( caster, "caster_noPK "+caster_noPK, color :=53);
@@ -1371,6 +1379,7 @@ function SmartAoE( caster, victims)
 		var victim_noPK := GetObjProperty(victims[i], "NOPKAREA");
 		var victim_CWcolor := GetObjProperty(victims[i],"cwcolor");
 		var same_faction := caster_RPer == victim_RPer;
+		var same_CWcolor := 0;
 		if (caster_CW)
 			if (GetGlobalProperty("cwtype") != "k")
 				same_CWcolor := victim_CWcolor == caster_CWcolor;
@@ -1382,22 +1391,28 @@ function SmartAoE( caster, victims)
 			SendSysMessage( caster, "same_faction "+same_faction, color :=53);
 			SendSysMessage( caster, "same_CWcolor "+same_CWcolor, color :=53);
 		endif
-		//Borrowed from SmartSongAoE Function
 		if ((victims[i].isa(POLCLASS_NPC)) && (victims[i].master == caster))
-			victims.erase(i);
-		endif
-		if ((!victims[i].isa(POLCLASS_NPC)) && caster.party && (victims[i].party == caster.party))
-			victims.erase(i);
-		endif
-		//Back to Original
-		if (!caster.isa(POLCLASS_NPC) && !caster.cmdlevel && !victims[i].isa(POLCLASS_NPC))
+			to_remove.append(i);
+		elseif ((victims[i].isa(POLCLASS_NPC)) && victims[i].master && caster.party && (victims[i].master.party == caster.party))
+			to_remove.append(i);
+		elseif ((!victims[i].isa(POLCLASS_NPC)) && caster.party && (victims[i].party == caster.party))
+			to_remove.append(i);
+		elseif (!caster.isa(POLCLASS_NPC) && !caster.cmdlevel && !victims[i].isa(POLCLASS_NPC))
 			if((caster_noPK) || (victim_noPK) || (!same_faction) || (same_CWcolor))
 				if (DEBUG_MODE)
 					SendSysMessage( caster, "erased", color :=34);
 				endif
-				victims.erase(i);
+				to_remove.append(i);
 			endif
 		endif
+	endfor
+
+	// Erase in reverse order so indices stay valid
+	for(i:=to_remove.Size(); i>=1; i:=i-1)
+		if(DEBUG_MODE)
+			SendSysMessage( caster, "SmartAoE removing: " + victims[to_remove[i]].name, color :=34);
+		endif
+		victims.erase(to_remove[i]);
 	endfor
 
 	return victims;
@@ -1408,7 +1423,7 @@ function SmartBoost(caster, affected)
 	var caster_RPer := GetObjProperty(caster, "IsRPer");
 	var caster_CW := GetObjProperty(caster, "cwarring");
 	var caster_CWcolor := GetObjProperty(caster,"cwcolor");
-	var same_CWcolor := 1;
+	var to_remove := {};
 	var i;
 	if(DEBUG_MODE)
 		SendSysMessage( caster, "caster_RPer "+caster_RPer, color :=53);
@@ -1419,6 +1434,7 @@ function SmartBoost(caster, affected)
 		var victim_RPer := GetObjProperty(affected[i], "IsRPer" );
 		var victim_CWcolor := GetObjProperty(affected[i],"cwcolor");
 		var same_faction := caster_RPer == victim_RPer;
+		var same_CWcolor := 1;
 		if (caster_CW)
 			if (GetGlobalProperty("cwtype") != "k")
 				same_CWcolor := victim_CWcolor == caster_CWcolor;
@@ -1435,9 +1451,17 @@ function SmartBoost(caster, affected)
 				if (DEBUG_MODE)
 					SendSysMessage( caster, "erased", color :=34);
 				endif
-				affected.erase(i);
+				to_remove.append(i);
 			endif
 		endif
+	endfor
+
+	// Erase in reverse order so indices stay valid
+	for(i:=to_remove.Size(); i>=1; i:=i-1)
+		if(DEBUG_MODE)
+			SendSysMessage( caster, "SmartBoost removing: " + affected[to_remove[i]].name, color :=34);
+		endif
+		affected.erase(to_remove[i]);
 	endfor
 
 	return affected;
