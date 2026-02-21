@@ -104,7 +104,7 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 	if(cast_on.hidden) return; endif
 	var noPKatk := GetObjProperty(caster, "NOPKAREA");
 	var noPKdef := GetObjProperty(cast_on, "NOPKAREA");
-	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (noPKatk || noPKdef))
+	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (!caster.isa(POLCLASS_NPC) || (caster.master && !caster.master.isa(POLCLASS_NPC))) && (noPKatk || noPKdef))
 		return;
 	endif
 
@@ -137,7 +137,7 @@ function ApplyElementalDamageNoResist( on_who, by_who, dmg, element )
 	if(on_who.hidden) return; endif
 	var noPKatk := GetObjProperty(by_who, "NOPKAREA");
 	var noPKdef := GetObjProperty(on_who, "NOPKAREA");
-	if((!by_who.cmdlevel && on_who.isa(POLCLASS_MOBILE) && !on_who.isa(POLCLASS_NPC) && on_who != by_who) && (noPKatk || noPKdef))
+	if((!by_who.cmdlevel && on_who.isa(POLCLASS_MOBILE) && !on_who.isa(POLCLASS_NPC) && on_who != by_who) && (!by_who.isa(POLCLASS_NPC) || (by_who.master && !by_who.master.isa(POLCLASS_NPC))) && (noPKatk || noPKdef))
 		return;
 	endif
 
@@ -162,7 +162,7 @@ function ApplyPlanarDamage( caster, cast_on, circle, dmg, plane )
 	if(cast_on.hidden) return; endif
 	var noPKatk := GetObjProperty(caster, "NOPKAREA");
 	var noPKdef := GetObjProperty(cast_on, "NOPKAREA");
-	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (noPKatk || noPKdef))
+	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (!caster.isa(POLCLASS_NPC) || (caster.master && !caster.master.isa(POLCLASS_NPC))) && (noPKatk || noPKdef))
 		return;
 	endif
 
@@ -207,7 +207,7 @@ function CalcSpellDamage( caster, cast_on, circle, area_spell := SINGLE_TARGET_S
 	if(cast_on.hidden) return 0; endif
 	var noPKatk := GetObjProperty(caster, "NOPKAREA");
 	var noPKdef := GetObjProperty(cast_on, "NOPKAREA");
-	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (noPKatk || noPKdef))
+	if((!caster.cmdlevel && cast_on.isa(POLCLASS_MOBILE) && !cast_on.isa(POLCLASS_NPC) && cast_on != caster) && (!caster.isa(POLCLASS_NPC) || (caster.master && !caster.master.isa(POLCLASS_NPC))) && (noPKatk || noPKdef))
 		return 0;
 	endif
 
