@@ -253,13 +253,13 @@ endfunction
 function GetShieldGraphicsThief()
 
 	return { 0x1b72, 0x1b74, 0x1b75, 0x1b76,
-		 0x1b77, 0x1b78, 0x1b79, 0x1b7a, 0x1b7b };
+		 0x1b77, 0x1b78, 0x1b79, 0x1b7a, 0x1b7b, 0x982a };
 
 endfunction
 
 function GetGraphicsBladesinger()
 
-	return { 0x1f02, 0x9B10 };
+	return { 0x2b05, 0x9B10 };
 	
 	// Cloak of Lettenhove, Grarks Shepherds Crook
 endfunction
@@ -268,7 +268,14 @@ function GetGraphicsCrafter()
 
 	return { 0x757a };
 	
-	// Feanors Hammer
+	// Signus Hammer
+endfunction
+
+function GetGraphicsPaladin()
+
+	return { 0x75b2 };
+	
+	// Nagash Staff
 endfunction
 
 function GetPossiblePropertyNames()
