@@ -403,7 +403,7 @@ function ResAnimal( who , patient , bandages )
 	var prev_tame := GetObjProperty( patient , "PreviouslyTamed" );
 	//Print("My serial is: " + myserial);
 
-	if(masterserials == myserial && GetObjProperty(patient, "Boss") )
+	if( (masterserials == myserial && GetObjProperty(patient, "Boss") ) || (masterserials == myserial && GetObjProperty(patient, "Ethereal")) )
 		//SendSysMessage( who , "The creature recognizes you as its master and is resurrected!", 3, 87);
 		if( CheckSkill( who , SKILLID_VETERINARY , diff , points ) )
 		var npc := CreateNPCFromTemplate(GetObjProperty(patient, "npctemplate"), patient.x, patient.y, patient.z, 0, patient.realm);
