@@ -75,21 +75,21 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 	
 	if( !by_who )
 		if(DEBUG_MODE)
-			PrintTextAbovePrivate( by_who , "I've dealt this much damage: " +dmg, by_who );
-			PrintTextAbovePrivate( who , "I received this much damage: " +dmg, who );
+			PrintTextAbovePrivate( by_who , "I've dealt this much Physical damage: " +dmg, by_who );
+			PrintTextAbovePrivate( who , "I received this much Physical damage: " +dmg, who );
 		endif
 		return ApplyRawDamage( who, dmg );
 	elseif( !by_who.IsA(POLCLASS_MOBILE) )
 		if(DEBUG_MODE)
-			PrintTextAbovePrivate( by_who , "I've dealt this much damage: " +dmg, by_who );
-			PrintTextAbovePrivate( who , "I received this much damage: " +dmg, who );
+			PrintTextAbovePrivate( by_who , "I've dealt this much Physical damage: " +dmg, by_who );
+			PrintTextAbovePrivate( who , "I received this much Physical damage: " +dmg, who );
 		endif
 		return ApplyRawDamage( who, dmg );
-		if(DEBUG_MODE)
-			PrintTextAbovePrivate( by_who , "I've dealt this much damage: " +dmg, by_who );
-			PrintTextAbovePrivate( who , "I received this much damage: " +dmg, who );
-		endif
 	elseif( by_who == who )
+		if(DEBUG_MODE)
+			PrintTextAbovePrivate( by_who , "I've dealt this much Physical damage: " +dmg, by_who );
+			PrintTextAbovePrivate( who , "I received this much Physical damage: " +dmg, who );
+		endif
 		return ApplyRawDamage( who, dmg );
 	endif
 	
@@ -107,8 +107,8 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 					if( guild2 )
 						if( guild1 == guild2 )
 							if(DEBUG_MODE)
-								PrintTextAbovePrivate( by_who , "I've dealt this much damage: " +dmg, by_who );
-								PrintTextAbovePrivate( who , "I received this much damage: " +dmg, who );
+								PrintTextAbovePrivate( by_who , "I've dealt this much Physical damage: " +dmg, by_who );
+								PrintTextAbovePrivate( who , "I received this much Physical damage: " +dmg, who );
 							endif
 							return ApplyRawDamage( who, dmg );
 						else
@@ -116,14 +116,14 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 							guild2 := FindGuild( guild2 );
 							if( guild1.IsEnemyGuild(guild2) )
 								if(DEBUG_MODE)
-									PrintTextAbovePrivate( by_who , "I've dealt this much damage: " +dmg, by_who );
-									PrintTextAbovePrivate( who , "I received this much damage: " +dmg, who );
+									PrintTextAbovePrivate( by_who , "I've dealt this much Physical damage: " +dmg, by_who );
+									PrintTextAbovePrivate( who , "I received this much Physical damage: " +dmg, who );
 								endif
 								return ApplyRawDamage( who, dmg );
 							elseif( guild1.IsAllyGuild(guild2) )
 								if(DEBUG_MODE)
-									PrintTextAbovePrivate( by_who , "I've dealt this much damage: " +dmg, by_who );
-									PrintTextAbovePrivate( who , "I received this much damage: " +dmg, who );
+									PrintTextAbovePrivate( by_who , "I've dealt this much Physical damage: " +dmg, by_who );
+									PrintTextAbovePrivate( who , "I received this much Physical damage: " +dmg, who );
 								endif
 								return ApplyRawDamage( who, dmg );
 							endif

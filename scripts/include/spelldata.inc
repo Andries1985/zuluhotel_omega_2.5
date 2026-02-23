@@ -119,7 +119,10 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 		else
 			dmg := dmg - Cint(dmg * resultprot / 100);	
 		endif
-
+		if(DEBUG_MODE)
+			PrintTextAbovePrivate( caster , "I've dealt this much Elemental damage: " +dmg, caster );
+			PrintTextAbovePrivate( cast_on , "I received this much Elemental damage: " +dmg, cast_on );
+		endif
 		ApplyTheDamage( cast_on , caster , Resisted( caster, cast_on, circle, dmg ) , DMGID_MAGIC + element );
 	else
 		// Toadstool - heals x% of the damage that;s over 100. so 120% protection heals 20% of the damage
@@ -145,6 +148,10 @@ function ApplyElementalDamageNoResist( on_who, by_who, dmg, element )
 
 	if( resultprot < 100 )
 		dmg := dmg - Cint(dmg * resultprot / 100);	
+		if(DEBUG_MODE)
+			PrintTextAbovePrivate( by_who , "I've dealt this much Elemental damage: " +dmg, by_who );
+			PrintTextAbovePrivate( on_who , "I received this much Elemental damage: " +dmg, on_who );
+		endif
 		ApplyTheDamage( on_who , by_who ,dmg, element );
 	else
 		// Toadstool - heals x% of the damage that;s over 100. so 120% protection heals 20% of the damage
