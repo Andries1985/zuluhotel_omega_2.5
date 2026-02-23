@@ -12,6 +12,7 @@ use os;
 include ":combat:hitscriptinc";
 include "include/damages";
 include "include/random";
+
 program bouncingonhit(parms)
 
 	var attacker 	 := parms[1];
@@ -21,13 +22,15 @@ program bouncingonhit(parms)
 	var basedamage := parms[5];
 	var rawdamage	 := parms[6];
 	
-	var chance 	 := GetObjProperty( armor , "ChanceofEffect" );
+	var chance 	 := GetObjProperty( armor , "ChanceOfEffect" );
 
 	if( GetObjProperty( armor , "Cursed" ) )
 		ApplyTheDamage( defender , attacker , Cint(rawdamage * 1.5) , DMGID_MAGIC );
 		return;
 	endif
 	
+	//Print("In Displacing:  Chance: " + chance);
+
 	if( RandomDiceStr("1d100") <= chance )
 		var kickbackx := Random(10) - 5;
 		var kickbacky := Random(10) - 5;
@@ -35,9 +38,10 @@ program bouncingonhit(parms)
 		var newx	:= attacker.x + kickbackx;
 		var newy	:= attacker.y + kickbacky;
 		var newz	:= attacker.z + kickbackz;
-		
+		//Print("Kickback: " + kickbackx + " , " + kickbacky + " , " + kickbackz);
 		if( CheckLosAt( attacker , newx , newy , newz ) )
-			MoveObjectToLocation( attacker , newx , newy , newz );
+			//Print("Moving to: " + newx + " , " + newy + " , " + newz);
+			MoveObjectToLocation( attacker , newx , newy , newz, attacker.realm, MOVEOBJECT_FORCELOCATION );
 		endif
 	endif
 				 	 

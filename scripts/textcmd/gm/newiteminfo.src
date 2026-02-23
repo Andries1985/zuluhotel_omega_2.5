@@ -648,11 +648,10 @@ program textcmd_iteminfo( who )
 			if( SetSpellFromList( who , item ) )
 				if( item.ar )
 					SetObjProperty( item , "OnHitScript" , ":combat:spellonhit" );
-
 				else
 					item.hitscript := ":combat:spellstrikescript";
 				endif
-				
+
 				ResetAllHitscriptPropsExcep( item , "HitWithSpell" );
 				var one := AskForIntPropVal( who , item , "ChanceOfEffect" , "What is the chance of effect? Hit Esc to cancel." , "Enter a value." );
 				var two := AskForIntPropVal( who , item , "EffectCircle" , "Use with which circle efficiency? Hit Esc to cancel." , "Enter a value." );
@@ -1866,7 +1865,7 @@ function ChangeFromSkillList( who , item )
 	
 	SendSysmessage( who , "Select a skill." );
 	var res := SendDialogGump( who , layout2 , data2 );
-	//print( res[0] );
+	print( res[0] );
 	if( !res[0] )
 		SendSysmessage( who , "Canceled" );
 		return;
@@ -1881,6 +1880,14 @@ function ChangeFromSkillList( who , item )
 	
 	SetObjProperty( item , "skilladv" , res[0]-1 );
 	SetObjProperty( item , "skilladvamount" , val );
+	if( res[0]-1 == 31 || res[0]-1 == 5 || res[0]-1 == 43 || res[0]-1 == 27 || res[0]-1 == 40 || res[0]-1 == 41 || res[0]-1 == 42 )
+		SetObjProperty( item , "WeapAdv" , 1);
+	endif
+
+	EraseObjProperty( item , "IDed" );
+	EraseObjProperty( item , "UnIDedMagicalItem" );
+	SetObjProperty( item , "UnIDedMagicalItem" , 1 );
+	SetObjProperty(item, "isRare", 1);
 
 endfunction
 
@@ -2096,6 +2103,9 @@ endfunction
 
 function SetCreatureTypeFromList( who , item )
 
+	var start;
+	var amount;
+	
 	var layout2 := array(
 				"page 0",
 				"resizepic 50  0   2600 250 300",
@@ -2110,12 +2120,16 @@ function SetCreatureTypeFromList( who , item )
 	var cfg;
 	if( item.ar )
 		cfg := ReadConfigFile( ":combat:onhitscriptdesc" );
+		start	:= cfg["data"].NbSpell + 1;
+		amount	:= cfg["data"].NbRaceResistant;
 	else
 		cfg := ReadConfigFile( ":combat:hitscriptdesc" );
+		start	:= cfg["data"].NbSpell + 1;
+		amount	:= cfg["data"].NbSlayer;
 	endif
 
-	var amount	:= cfg["data"].NbSlayer;
-	var start	:= cfg["data"].NbSpell + 1;
+	//var amount	:= cfg["data"].NbSlayer;
+	//var start	:= cfg["data"].NbSpell + 1;
 	var last	:= start + amount;
 	var count	:= 0;
 	var done	:= 0;
@@ -2163,6 +2177,20 @@ function SetCreatureTypeFromList( who , item )
 	else
 		SetObjProperty( item , "SlayType" , cfg[result[0]].Type );
 	endif
+
+	if( item.ar )
+		EraseObjProperty( item , "IDed" );
+		EraseObjProperty( item , "UnIDedMagicalItem" );
+		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
+		SetObjProperty(item, "isRare", 1);
+		SetObjProperty(item, "OnHitscriptNumber", result[0] );
+	else
+		EraseObjProperty( item , "IDed" );
+		EraseObjProperty( item , "UnIDedMagicalItem" );
+		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
+		SetObjProperty(item, "isRare", 1);
+		SetObjProperty(item, "HitscriptNumber", result[0] );
+	endif
 	
 	return cfg[result[0]].Type;
 	
@@ -2170,6 +2198,8 @@ endfunction
 
 function SetAnEffectScriptFromList( who , item )
 
+	var start;
+
 	var layout2 := array(
 				"page 0",
 				"resizepic 50  0   2600 250 300",
@@ -2184,12 +2214,14 @@ function SetAnEffectScriptFromList( who , item )
 	var cfg;
 	if( item.ar )
 		cfg	:= ReadConfigFile( ":combat:onhitscriptdesc" );
+		start	:= cfg["data"].NbSpell + cfg["data"].NbRaceResistant + 1;
 	else
 		cfg	:= ReadConfigFile( ":combat:hitscriptdesc" );
+		start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + 1;
 	endif
 	
 	var amount	:= cfg["data"].NbEffect;
-	var start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + 1;
+	//var start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + 1;
 	var last	:= start + amount;
 	var count	:= 0;
 	var done	:= 0;
@@ -2240,6 +2272,9 @@ function SetAnEffectScriptFromList( who , item )
 	endif
 	
 	CProp := cfg[result[0]].CProp;
+	var cpropoption1 := "Poisonlvl";
+	var cpropoption2 := "ChanceOfEffect";
+	
 	if( CProp )
 		CPropVal := cfg[result[0]].CPropVal;
 		if( !CPropVal )
@@ -2249,15 +2284,40 @@ function SetAnEffectScriptFromList( who , item )
 				CPropVal := 0;
 			endif
 		endif
-		SetObjProperty( item , CProp , CPropVal );
+
+		Print( "CProp: " + CProp );
+		Print( "CPropVal: " + CPropVal );
+
+		if( Cprop == cpropoption1)
+			Print("Setting PoisonLvl");
+			SetObjProperty( item , "PoisonLvl" , CInt(CPropVal) );
+		elseif( Cprop == cpropoption2)
+			Print("Setting ChanceOfEffect");
+			SetObjProperty( item , "ChanceOfEffect" , CInt(CPropVal) );
+		endif
 	endif
 	
-	return {CProp, CPropVal};
+	if( item.ar )
+		EraseObjProperty( item , "IDed" );
+		EraseObjProperty( item , "UnIDedMagicalItem" );
+		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
+		SetObjProperty(item, "isRare", 1);
+		SetObjProperty(item, "OnHitscriptNumber", result[0] );
+	else
+		EraseObjProperty( item , "IDed" );
+		EraseObjProperty( item , "UnIDedMagicalItem" );
+		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
+		SetObjProperty(item, "isRare", 1);
+		SetObjProperty(item, "HitscriptNumber", result[0] );
+	endif
+	//return {CProp, CPropVal};
 	
 endfunction
 
 function SetAGreaterScriptFromList( who , item )
 
+	var start;
+
 	var layout2 := array(
 				"page 0",
 				"resizepic 50  0   2600 250 300",
@@ -2272,13 +2332,20 @@ function SetAGreaterScriptFromList( who , item )
 	var cfg;
 	if( item.ar )
 		cfg	:= ReadConfigFile( ":combat:onhitscriptdesc" );
+		start	:= cfg["data"].NbSpell + cfg["data"].NbRaceResistant + cfg["data"].NbEffect + 1;
+		//Print( "On Hit Start: " + start );
 	else
 		cfg	:= ReadConfigFile( ":combat:hitscriptdesc" );
+		start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + cfg["data"].NbEffect + 1;
+		//Print( "Hit Start: " + start );
 	endif
 	
 	var amount	:= cfg["data"].NbGreater;
-	var start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + cfg["data"].NbEffect + 1;
+	//Print( "Amount: " + amount );
+	//var start	:= cfg["data"].NbSpell + cfg["data"].NbRaceResistant + cfg["data"].NbEffect + 1;
+	
 	var last	:= start + amount;
+	Print( "Last: " + last );
 	var count	:= 0;
 	var done	:= 0;
 	var page	:= 1;
@@ -2317,6 +2384,7 @@ function SetAGreaterScriptFromList( who , item )
 	
 	SendSysmessage( who , "Select an effect." );
 	var result := SendDialogGump( who , layout2 , data2 );
+	Print( "Result: " + result[0] );
 	if( !result[0] )
 		return 0;
 	endif
@@ -2327,7 +2395,26 @@ function SetAGreaterScriptFromList( who , item )
 		item.hitscript := cfg[result[0]].Hitscript;
 	endif
 	
+	// CProp := cfg[result[0]].CProp;
+	// if( CProp )
+	// 	CPropVal := cfg[result[0]].CPropVal;
+	// 	if( !CPropVal )
+	// 		SendSysmessage( who, "What is the value of " + CProp + "? Integer only. Hit Esc to cancel." );
+    //     		CPropVal := Cint(RequestInput( who, who.backpack, "Enter the value."));
+	// 		if( !CPropVal )
+	// 			CPropVal := 0;
+	// 		endif
+	// 	endif
+	// 	SetObjProperty( item , CProp , CPropVal );
+	// endif
+	
+	// return {CProp, CPropVal};
+
 	CProp := cfg[result[0]].CProp;
+
+	var cpropoption1 := "Powerlevel";
+	var cpropoption2 := "ChanceOfEffect";
+	
 	if( CProp )
 		CPropVal := cfg[result[0]].CPropVal;
 		if( !CPropVal )
@@ -2337,15 +2424,39 @@ function SetAGreaterScriptFromList( who , item )
 				CPropVal := 0;
 			endif
 		endif
-		SetObjProperty( item , CProp , CPropVal );
+
+		//Print( "CProp: " + CProp );
+		//Print( "CPropVal: " + CPropVal );
+
+		if( Cprop == cpropoption1)
+			//Print("Setting Powerlevel");
+			SetObjProperty( item , "Powerlevel" , CInt(CPropVal) );
+		elseif( Cprop == cpropoption2)
+			//Print("Setting ChanceOfEffect");
+			SetObjProperty( item , "ChanceOfEffect" , CInt(CPropVal) );
+		endif
 	endif
-	
-	return {CProp, CPropVal};
+	if( item.ar )
+		EraseObjProperty( item , "IDed" );
+		EraseObjProperty( item , "UnIDedMagicalItem" );
+		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
+		SetObjProperty(item, "isRare", 1);
+		SetObjProperty(item, "OnHitscriptNumber", result[0] );
+	else
+		EraseObjProperty( item , "IDed" );
+		EraseObjProperty( item , "UnIDedMagicalItem" );
+		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
+		SetObjProperty(item, "isRare", 1);
+		SetObjProperty(item, "HitscriptNumber", result[0] );
+	endif
+	//SetNameByEnchant(item);
+	//return {CProp, CPropVal};
 	
 endfunction
 
 function SetASpecialScriptFromList( who , item )
 
+	var start;
 	var layout2 := array(
 				"page 0",
 				"resizepic 50  0   2600 250 300",
@@ -2360,12 +2471,14 @@ function SetASpecialScriptFromList( who , item )
 	var cfg;
 	if( item.ar )
 		cfg	:= ReadConfigFile( ":combat:onhitscriptdesc" );
+		start	:= cfg["data"].NbSpell + cfg["data"].NbRaceResistant + cfg["data"].NbEffect + cfg["data"].NbGreater + 1;
 	else
 		cfg	:= ReadConfigFile( ":combat:hitscriptdesc" );
+		start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + cfg["data"].NbEffect + cfg["data"].NbGreater + 1;
 	endif
 	
 	var amount	:= cfg["data"].NbSpecial;
-	var start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + cfg["data"].NbEffect + cfg["data"].NbGreater + 1;
+	//var start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + cfg["data"].NbEffect + cfg["data"].NbGreater + 1;
 	var last	:= start + amount;
 	var count	:= 0;
 	var done	:= 0;
