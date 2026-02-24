@@ -17,6 +17,7 @@ program avengingonhit( parms )
 	var armor 	 := parms[4];
 	var basedamage := parms[5];
 	var rawdamage	 := parms[6];
+	var revenge;
 	
 	ApplyTheDamage( defender , attacker , rawdamage );
 	
@@ -27,8 +28,12 @@ program avengingonhit( parms )
 	endif
 	
 	var power 	:= GetObjProperty( armor , "Powerlevel" );
-	var revenge 	:= Cint( absorbed * power / 10 );
-	//var revenge 	:= Cint( absorbed * power / 100 );
+
+	if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC) )
+		revenge := Cint( absorbed * power / 80 );
+	else
+		revenge := Cint( absorbed * power / 30 );
+	endif
 	
 	var targ;
 	if( GetObjProperty( armor , "Cursed" ) )
