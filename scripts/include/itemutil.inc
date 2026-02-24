@@ -259,7 +259,7 @@ endfunction
 
 function GetGraphicsBladesinger()
 
-	return { 0x2b05, 0x9B10 };
+	return { 0x1f02, 0x9B10 };
 	
 	// Cloak of Lettenhove, Grarks Shepherds Crook
 endfunction
