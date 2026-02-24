@@ -43,21 +43,21 @@ program trielementalscript(attacker, defender, weapon, armor, basedamage, rawdam
     
         var targ;
         if( GetObjProperty( weapon , "Cursed" ) )
-            Print("TriElementalscript launched on the Attacker!");
+            //Print("TriElementalscript launched on the Attacker!");
             targ := attacker;
         else
-            Print("TriElementalscript launched on the Defender!");
+            //Print("TriElementalscript launched on the Defender!");
             targ := defender;
         endif
 
         var spelldmg := (CalcSpellDamage( attacker, targ , 5 )*0.5);
-        Print("Spell damage before resist in TriScript: " + spelldmg);
+        //Print("Spell damage before resist in TriScript: " + spelldmg);
         spelldmg := Resisted( attacker , targ , 8 , spelldmg );
-		Print("Spell damage after resist in TriScript: " + spelldmg);
+		//Print("Spell damage after resist in TriScript: " + spelldmg);
 
         // 30% dmg nerf for mages, Paladins and Mystic Archers
         if(GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_PALADIN) || GetObjProperty( attacker , CLASSEID_MYSTIC_ARCHER))
-            spelldmg *= 0.8;
+            spelldmg *= 0.7;
         endif
 
         PlayMovingEffect( attacker , targ , FX_SPELL_FIREBALL , 5 , 1 );

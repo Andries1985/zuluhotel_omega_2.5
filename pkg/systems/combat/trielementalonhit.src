@@ -28,17 +28,17 @@ program trielementalonhit( parms )
 
 		var targ;
 		if( GetObjProperty( armor , "Cursed" ) )
-			Print("TriElemental OnHit script launched on the Defender!");
+			//Print("TriElemental OnHit script launched on the Defender!");
 			targ := defender;
 		else
-			Print("TriElemental OnHit script launched on the Attacker!");
+			//Print("TriElemental OnHit script launched on the Attacker!");
 			targ := attacker;
 		endif
 
 		var spelldmg := (CalcSpellDamage( attacker, targ , 5 )) * 0.5;
-		Print("Spell damage before resist in TriOnHit: " + spelldmg);
+		//Print("Spell damage before resist in TriOnHit: " + spelldmg);
 		spelldmg := Resisted( attacker , targ , 9 , spelldmg );
-		Print("Spell damage after resist in TriOnHit: " + spelldmg);
+		//Print("Spell damage after resist in TriOnHit: " + spelldmg);
 
 		PlayMovingEffect( attacker , targ , FX_SPELL_FIREBALL , 5 , 1 );
 		PlaySoundEffect( attacker , SFX_SPELL_FIREBALL );

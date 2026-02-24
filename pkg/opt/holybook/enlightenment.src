@@ -12,7 +12,7 @@ const SPELL_EFFECT_LOOP		:= LOOP_SPELL_ENLIGHTENMENT;
 
 program cast_CUNNING( parms )
 
-	var circle := 7;
+	var circle := 8;
 	var caster;
 	var cast_on;
 	var fromhit;
@@ -49,7 +49,7 @@ program cast_CUNNING( parms )
 	var duration := GetModDuration( caster );
 	
 	if(GetObjProperty( caster, CLASSEID_MAGE ))
-		mod_amount := Cint( GetModAmount( caster ) );
+		mod_amount := (Cint( GetModAmount( caster ) ) ) * 0.9;
 	elseif(GetObjProperty( caster, CLASSEID_PALADIN ))
 		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	elseif(GetObjProperty( caster, CLASSEID_POWERPLAYER ))

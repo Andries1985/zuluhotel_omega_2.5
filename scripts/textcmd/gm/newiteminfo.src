@@ -2289,10 +2289,10 @@ function SetAnEffectScriptFromList( who , item )
 		Print( "CPropVal: " + CPropVal );
 
 		if( Cprop == cpropoption1)
-			Print("Setting PoisonLvl");
+			//Print("Setting PoisonLvl");
 			SetObjProperty( item , "PoisonLvl" , CInt(CPropVal) );
 		elseif( Cprop == cpropoption2)
-			Print("Setting ChanceOfEffect");
+			//Print("Setting ChanceOfEffect");
 			SetObjProperty( item , "ChanceOfEffect" , CInt(CPropVal) );
 		endif
 	endif
@@ -2345,7 +2345,7 @@ function SetAGreaterScriptFromList( who , item )
 	//var start	:= cfg["data"].NbSpell + cfg["data"].NbRaceResistant + cfg["data"].NbEffect + 1;
 	
 	var last	:= start + amount;
-	Print( "Last: " + last );
+	//Print( "Last: " + last );
 	var count	:= 0;
 	var done	:= 0;
 	var page	:= 1;
@@ -2384,7 +2384,7 @@ function SetAGreaterScriptFromList( who , item )
 	
 	SendSysmessage( who , "Select an effect." );
 	var result := SendDialogGump( who , layout2 , data2 );
-	Print( "Result: " + result[0] );
+	//Print( "Result: " + result[0] );
 	if( !result[0] )
 		return 0;
 	endif
