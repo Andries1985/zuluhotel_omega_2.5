@@ -30,7 +30,7 @@ program avengingonhit( parms )
 	var power 	:= GetObjProperty( armor , "Powerlevel" );
 
 	if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC) )
-		revenge := Cint( absorbed * power / 80 );
+		revenge := Cint( absorbed * power / 100 );
 	else
 		revenge := Cint( absorbed * power / 30 );
 	endif

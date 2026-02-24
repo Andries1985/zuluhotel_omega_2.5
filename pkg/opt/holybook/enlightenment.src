@@ -12,7 +12,7 @@ const SPELL_EFFECT_LOOP		:= LOOP_SPELL_ENLIGHTENMENT;
 
 program cast_CUNNING( parms )
 
-	var circle := 8;
+	var circle := 7;
 	var caster;
 	var cast_on;
 	var fromhit;
