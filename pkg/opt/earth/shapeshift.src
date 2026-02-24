@@ -82,7 +82,7 @@ program shapeshift( caster )
 	var duration := Cint( GetModDuration( caster ) );
 	
 	if(GetObjProperty( caster, CLASSEID_MAGE ))
-	mod_amount := Cint( GetModAmount( caster ) * 1.5 );
+	mod_amount := Cint( GetModAmount( caster ) * 1.25 );
 	elseif(GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER ))
 	mod_amount := Cint( GetModAmount( caster ) * 4 );
 	elseif(GetObjProperty( caster, CLASSEID_POWERPLAYER ))

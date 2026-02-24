@@ -75,7 +75,8 @@ program mass_dispel ( parms, spell_id )
 	//Print("Range after cap: " + range);
 	var victims	:= ListMobilesNearLocation( cint(cast_on.x), cint(cast_on.y) , cint(cast_on.z) , range );
 
-	victims := SmartAoE( caster, victims);
+	//victims := SmartAoE( caster, victims);SmartAoEPartyAgnostic
+	victims := SmartAoEPartyAgnostic( caster, victims);
 
 	foreach mobile in victims
 	if(!mobile.dead)

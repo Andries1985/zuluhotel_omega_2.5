@@ -752,7 +752,7 @@ elseif (magiclevel == 8)
 
 // Level 9 loot
 elseif (magiclevel == 9)
-	Print("In level 9 loot for ApplyArmourModNew");
+	//Print("In level 9 loot for ApplyArmourModNew");
 	// 64% chance
 	if (chance < 6400)
 		ApplyARMod( item );
@@ -763,7 +763,7 @@ elseif (magiclevel == 9)
 
 // Level 10 loot
 elseif (magiclevel == 10)
-	Print("In level 10 loot for ApplyArmourModNew");
+	//Print("In level 10 loot for ApplyArmourModNew");
 	// 62% chance
 	if (chance < 1)
 		ApplyARMod( item );
@@ -4606,7 +4606,7 @@ function ApplyOnHitScript( item )
 		endif	
 
 	elseif (magiclevel == 10)
-		Print("Applying on hit for 10");
+		//Print("Applying on hit for 10");
 		
 			// 29% chance of spell
 		if (power < 1)
@@ -5078,7 +5078,7 @@ endfunction
 
 
 function ApplyGreaterOnHitscript( item )
-	Print("Applying greater on hit script");
+	//Print("Applying greater on hit script");
 	set_critical( 1 );
 
 	var multiplier := 2;
@@ -5089,7 +5089,7 @@ function ApplyGreaterOnHitscript( item )
 
 	SetOnHitscript( item , n , multiplier );
 	SetObjProperty(item, "isRare", 1);
-	
+
 	set_critical( 0 );
 	
 endfunction
@@ -5938,7 +5938,7 @@ function CountAvailHitscripts()
 			availgreaters.append(key);
 		endif
 	endforeach
-	Print("Available on hit scripts: " + availspellonhit.Size() + " spells, " + availeffectonhit.Size() + " effects, " + availgreateronhit.Size() + " greaters.");
+	//Print("Available on hit scripts: " + availspellonhit.Size() + " spells, " + availeffectonhit.Size() + " effects, " + availgreateronhit.Size() + " greaters.");
 endfunction
 
 
@@ -5960,7 +5960,7 @@ function CountAvailOnHitscripts()
 			availgreateronhit.append(key);
 		endif
 	endforeach
-	Print("Available on hit scripts: " + availspellonhit.Size() + " spells, " + availeffectonhit.Size() + " effects, " + availgreateronhit.Size() + " greaters.");
+	//Print("Available on hit scripts: " + availspellonhit.Size() + " spells, " + availeffectonhit.Size() + " effects, " + availgreateronhit.Size() + " greaters.");
 endfunction
 
 /////////////////////////////////////////////////////////////////////////////////////////////

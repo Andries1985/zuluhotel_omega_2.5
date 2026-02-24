@@ -22,8 +22,12 @@ program avengingonhit( parms )
 	ApplyTheDamage( defender , attacker , rawdamage );
 	
 	var absorbed := basedamage - rawdamage;
-	Print("Absorbed: " + absorbed + " Base: " + basedamage + " Raw: " + rawdamage);
+	//Print("Absorbed: " + absorbed + " Base: " + basedamage + " Raw: " + rawdamage);
 	if( !absorbed )
+		return;
+	endif
+
+	if( IsPaladin(defender) || IsMysticArcher(defender) || IsMage(defender) )
 		return;
 	endif
 	
@@ -35,6 +39,7 @@ program avengingonhit( parms )
 		revenge := Cint( absorbed * power / 30 );
 	endif
 	
+	
 	var targ;
 	if( GetObjProperty( armor , "Cursed" ) )
 		targ := defender;
@@ -43,6 +48,6 @@ program avengingonhit( parms )
 	endif
 	
 	ApplyTheDamage( targ , defender , revenge );
-	Print("Revenge: " + revenge);
+	//Print("Revenge: " + revenge);
 
 endprogram

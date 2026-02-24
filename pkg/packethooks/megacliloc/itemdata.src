@@ -201,6 +201,12 @@ program itemdata(parms)
 					allprops.append(prop);
 				endif
 			endif
+			var powerlevel := GetObjProperty(xObject, "Powerlevel");
+			if (powerlevel && ( IsBard( who ) || IsBladesinger( who ) || IsCrafter( who ) || IsRanger( who ) || IsThief( who ) || IsWarrior( who ) || IsPowerplayer( who ) ) )
+				prop.clilocid := 1070722; ; // Nothing
+				prop.values := array {"Power Level: " + powerlevel};
+				allprops.append(prop);
+			endif
 			var skillid := GetObjProperty(xObject, "skilladv");
 			if(skillid)
 				var skillname := GetSkillName( skillid );
