@@ -122,15 +122,15 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 			foreach thing in ListEquippedItems( caster )
 				if( GetObjProperty( thing, "int" ) )
 					mageequippedint := mageequippedint + Cint( GetObjProperty( thing, "int" ) );
-					Print("Found item with int: " + thing.desc + " with int value of " + GetObjProperty( thing, "int" ) );
-					Print("Total mage int is now: " + mageequippedint);
+					//Print("Found item with int: " + thing.desc + " with int value of " + GetObjProperty( thing, "int" ) );
+					//Print("Total mage int is now: " + mageequippedint);
 				endif
 			endforeach
-			Print("Damage: " + dmg + " Level: " + level + " Mage int: " + mageequippedint);
+			//Print("Damage: " + dmg + " Level: " + level + " Mage int: " + mageequippedint);
 			newdamage := mageequippedint / 3  * level / 10;
-			Print("New damage is " + newdamage);
+			//Print("New damage is " + newdamage);
 			dmg := dmg + newdamage;
-			Print("Damage after mage bonus: " + dmg);
+			//Print("Damage after mage bonus: " + dmg);
 		else
 			dmg := dmg - Cint(dmg * resultprot / 100);	
 		endif
@@ -138,8 +138,6 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 			PrintTextAbovePrivate( caster , "I've dealt this much Elemental damage: " +dmg, caster );
 			PrintTextAbovePrivate( cast_on , "I received this much Elemental damage: " +dmg, cast_on );
 		endif
-
-
 
 		ApplyTheDamage( cast_on , caster , Resisted( caster, cast_on, circle, dmg ) , DMGID_MAGIC + element );
 	else
