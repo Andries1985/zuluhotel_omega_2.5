@@ -4581,28 +4581,36 @@ function ApplyOnHitScript( item )
 		if (power < 30000)
 			ApplySpellOnHitscript( item ); // Spell on hit
 
-		// 33% chance slayer
-		elseif (power < 63000)
+		// 30% chance slayer
+		elseif (power < 62500)
 			ApplyResistantOnHitscript( item ); // 
 
-		// 31% chance effect
-		else
+		// 35% chance effect
+		elseif (power < 95000)
 			ApplyEffectOnHitscript( item ); // 
+		
+		// 5% chance greater effect
+		else
+			ApplyGreaterOnHitscript( item ); //
 		endif	
 
 	elseif (magiclevel == 9)
 		
-		// 30% chance of spell
+		// 25% chance of spell
 		if (power < 30000)
 			ApplySpellOnHitscript( item ); // Spell on hit
 
-		// 31% chance slayer
-		elseif (power < 61000)
+		// 25% chance slayer
+		elseif (power < 60000)
 			ApplyResistantOnHitscript( item ); // 
 
-		// 32% chance effect
-		else
+		// 25% chance effect
+		elseif (power < 90000)
 			ApplyEffectOnHitscript( item ); // 
+		
+		// 10% chance greater effect
+		else
+			ApplyGreaterOnHitscript( item ); //
 		endif	
 
 	elseif (magiclevel == 10)
