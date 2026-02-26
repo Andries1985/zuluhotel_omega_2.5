@@ -74,16 +74,17 @@ program dualplanaronhit( parms )
 		// endif
 	//endif
 	
-	// if( basedamage != rawdamage )
-	// 	rawdamage := rawdamage - 15;
-	// 	if( rawdamage < 1 )
-	// 		rawdamage := 1;
-	// 	endif
-	// endif
-	// if(DEBUG_MODE)
-    //         PrintTextAbovePrivate( defender , "I'm dealing this much physical damage: " +rawdamage, defender );
-	// endif
-	// ApplyTheDamage( defender , attacker , rawdamage );
+	if( basedamage != rawdamage )
+		rawdamage := rawdamage - 15;
+		if( rawdamage < 1 )
+			rawdamage := 1;
+		endif
+	endif
+	if(DEBUG_MODE)
+            PrintTextAbovePrivate( defender , "I'm dealing this much physical damage: " +rawdamage, defender );
+	endif
+	ApplyTheDamage( defender , attacker , rawdamage );
+	
 	var wasfrozen := 0;
 	if (targ.frozen == 1)
 		wasfrozen := 1;

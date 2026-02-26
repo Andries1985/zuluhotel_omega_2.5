@@ -48,12 +48,12 @@ program dualplanarscript(attacker, defender, weapon, armor, basedamage, rawdamag
             targ := defender;
         endif
 
-		Print("Target is: " + targ.name);
-		Print("Attacker is: " + attacker.name);
-		Print("Defender is: " + defender.name);
+		// Print("Target is: " + targ.name);
+		// Print("Attacker is: " + attacker.name);
+		// Print("Defender is: " + defender.name);
 
         var spelldmg := (CalcSpellDamage( attacker, targ , 5 ) * 0.5);
-        spelldmg := (Resisted( attacker , targ , 8 , spelldmg ) );
+        spelldmg := Resisted( attacker , targ , 9 , spelldmg );
 
         // 30% dmg nerf for mages, Paladins and Mystic Archers
         if(GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_PALADIN) || GetObjProperty( attacker , CLASSEID_MYSTIC_ARCHER))

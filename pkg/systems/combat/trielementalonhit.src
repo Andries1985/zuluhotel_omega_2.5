@@ -73,15 +73,15 @@ program trielementalonhit( parms )
 		endif
 	endif
 	
-	// if( basedamage != rawdamage )
-	// 	rawdamage := rawdamage - 15;
-	// 	if( rawdamage < 1 )
-	// 		rawdamage := 1;
-	// 	endif
-	// endif
-	// if(DEBUG_MODE)
-    //         PrintTextAbovePrivate( attacker , "I'm dealing this much physical damage: " +rawdamage, attacker );
-	// endif
-	// ApplyTheDamage( defender , attacker , rawdamage );
+	if( basedamage != rawdamage )
+		rawdamage := rawdamage - 15;
+		if( rawdamage < 1 )
+			rawdamage := 1;
+		endif
+	endif
+	if(DEBUG_MODE)
+            PrintTextAbovePrivate( attacker , "I'm dealing this much physical damage: " +rawdamage, attacker );
+	endif
+	ApplyTheDamage( defender , attacker , rawdamage );
 
 endprogram
