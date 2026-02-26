@@ -5093,7 +5093,7 @@ function ApplyGreaterOnHitscript( item )
 	
 	//Find the good script
 	var i := RandomDiceStr( "1d"+availgreateronhit.Size());
-	Print("Greater on hit script number: " + i);
+	//Print("Greater on hit script number: " + i);
 	var n := availgreateronhit[i];
 
 	SetOnHitscript( item , n , multiplier );

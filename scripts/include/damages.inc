@@ -156,7 +156,7 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 		PrintTextAbovePrivate( by_who , "I've dealt this much damage: " +dmg, by_who );
 		PrintTextAbovePrivate( who , "I received this much damage: " +dmg, who );
 	endif
-
+	//Print("In applythedamage: " +dmg+ " damage is being applied to " + who.name + " by " + by_who.name + " with attack type " + attack_type);
 	return ApplyRawDamage( who, dmg );
 
 endfunction
