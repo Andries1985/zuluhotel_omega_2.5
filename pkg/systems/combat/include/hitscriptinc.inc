@@ -10,9 +10,9 @@ include "include/client";
 include "include/dotempmods";
 include "include/classes";
 include "include/damages";
-include "include/bitwise";
+//include "include/bitwise";
 include "include/attributes";
-include ":lootlottery:storedamage";
+//include ":lootlottery:storedamage";
 include "include/skillpoints";
 
 var combat_settingscfg := ReadConfigFile(":combat:settings");

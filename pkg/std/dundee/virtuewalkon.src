@@ -2,9 +2,12 @@ use os;
 use uo;
 use cfgfile;
 
-include "include/bitwise";
+//include "include/bitwise";
 include "include/client";
 include "include/random";
+include "include/math";
+
+
 Const EFFECT_SPARKLE := 0x373a;
 Const SOUND_EFFECT_RES := 0x215;
 

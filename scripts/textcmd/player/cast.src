@@ -3,7 +3,7 @@ use basic;
 use cfgfile;
 use os;
 
-include "include/bitwise";
+//include "include/bitwise";
 include "include/client";
 include "include/objtype";
 include "include/itemutil";

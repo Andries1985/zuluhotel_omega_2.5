@@ -13,9 +13,9 @@ program polymorphing( parms )
 	var new_form	:= Cint( parms[2] );
 	var new_color	:= Cint( parms[3] );
 	var duration	:= Cint( parms[4] );
-	var mod;
+	var mods;
 	if( parms[5] )
-		mod := parms[5];
+		mods := parms[5];
 	endif
 	var liche;
 	if( parms[6] )
@@ -41,11 +41,11 @@ program polymorphing( parms )
 		cast_on.color := 0;
 	endif
 
-	if( mod )
+	if( mods )
 		if(!liche)
-			DoTempMod( cast_on , "poly" , mod , duration );
+			DoTempMod( cast_on , "poly" , mods , duration );
 		else
-			DoTempMod( cast_on , "poly" , mod , duration , liche);
+			DoTempMod( cast_on , "poly" , mods , duration , liche);
 		endif
 	endif
 endprogram

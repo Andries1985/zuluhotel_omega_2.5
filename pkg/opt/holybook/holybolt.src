@@ -3,7 +3,6 @@ use os;
 
 include "include/spelldata";
 include "include/client";
-include "include/damages";
 
 const SPELL_EFFECT_TYPE_MOVING 	:= MOVING_SPELL_HOLY_BOLT;
 const SPELL_EFFECT_ID		:= FX_SPELL_HOLY_BOLT;

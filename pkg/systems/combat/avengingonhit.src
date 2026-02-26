@@ -8,6 +8,7 @@
 use uo;
 
 include "include/damages";
+include "include/classes";
 
 program avengingonhit( parms )
 

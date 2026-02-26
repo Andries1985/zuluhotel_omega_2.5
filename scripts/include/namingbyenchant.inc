@@ -115,9 +115,9 @@ function SetNameByEnchant( item , cursed := 5 )
 	endforeach
 	
 	//Look for the regenerations mods
-	foreach mod in regenerations
-		if ( GetObjProperty( item , mod ) )
-			RenameByImmunity( item , mod , Cint(GetObjProperty( item , mod )/100) , cursed );
+	foreach regenmodd in regenerations
+		if ( GetObjProperty( item , regenmodd ) )
+			RenameByImmunity( item , regenmodd , Cint(GetObjProperty( item , regenmodd )/100) , cursed );
 		endif
 	endforeach
 	

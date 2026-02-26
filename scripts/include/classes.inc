@@ -1,6 +1,6 @@
 use uo;
 
-include "include/spelldata";
+//include "include/spelldata";
 include "include/itemutil";
 include "include/client";
 include ":staff:include/staff";
@@ -452,7 +452,7 @@ function HaveInvalidSkillEnchantmentForClasse( item , classeid )
 endfunction
 
 
-function HaveRestrictedModEnchantmentForClasse( who , item , classeid )
+function HaveRestrictedModEnchantmentForClasse( unused who , unused item , classeid )
 
 	var ret := 0;
 

@@ -15,7 +15,7 @@ use os;
 
 include "include/attributes";
 include ":gumps:yesno";
-include "include/bitwise";
+//include "include/bitwise";
 include "include/client";
 include "include/objtype";
 include "include/skillpoints";
@@ -25,6 +25,7 @@ include "include/string";
 include "include/random";
 include "include/autoloop";
 include "include/difficulty";
+include "include/math";
 
 
 const SOUND_EFFECT_INSCRIPTION 	:= 0x50;

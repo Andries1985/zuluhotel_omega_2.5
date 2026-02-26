@@ -28,47 +28,60 @@ program trielementalonhit( parms )
 
 		var targ;
 		if( GetObjProperty( armor , "Cursed" ) )
-			//Print("TriElemental OnHit script launched on the Defender!");
 			targ := defender;
 		else
-			//Print("TriElemental OnHit script launched on the Attacker!");
 			targ := attacker;
 		endif
 
-		var spelldmg := (CalcSpellDamage( attacker, targ , 5 )) * 0.5;
+		// Print("Target is: " + targ.name);
+		// Print("Attacker is: " + attacker.name);
+		// Print("Defender is: " + defender.name);
+		
+		var spelldmg := (CalcSpellDamage( defender, targ , 5 ) * 0.5);
 		//Print("Spell damage before resist in TriOnHit: " + spelldmg);
-		spelldmg := Resisted( attacker , targ , 9 , spelldmg );
+		spelldmg := Resisted( defender , targ , 9 , spelldmg );
 		//Print("Spell damage after resist in TriOnHit: " + spelldmg);
 
-		PlayMovingEffect( attacker , targ , FX_SPELL_FIREBALL , 5 , 1 );
-		PlaySoundEffect( attacker , SFX_SPELL_FIREBALL );
-		ApplyElementalDamage( attacker , targ , 1 , spelldmg , DMGID_FIRE );
-		Sleepms( 250 );
+		// 30% dmg nerf for mages, Paladins and Mystic Archers
+        if(GetObjProperty( defender , CLASSEID_MAGE) || GetObjProperty( defender , CLASSEID_PALADIN) || GetObjProperty( defender , CLASSEID_MYSTIC_ARCHER))
+            spelldmg *= 0.7;
+        endif
+		//Print("Spell damage after class nerf in TriOnHit: " + spelldmg);
 
-		PlayLightningBoltEffect( targ );
-		PlaySoundEffect( targ , SFX_SPELL_LIGHTNING );
-		ApplyElementalDamage( attacker , targ , 1 , spelldmg , DMGID_AIR );
-		Sleepms( 250 );
+		var whatspell := Random(2);
+		//Print("What spell will be casted? 0-Fire, 1-Lightning, 2-Water: " + whatspell);
 
-		PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE1);
-		PlayStationaryEffect( targ.x , targ.y , targ.z , 0x3789, speed:=30, loop:=30);
-		PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE2);
-		ApplyElementalDamage( attacker , targ , 1 , spelldmg , DMGID_WATER );
+		if(whatspell == 0)
+			PlayMovingEffect( defender , targ , FX_SPELL_FIREBALL , 5 , 1 );
+			PlaySoundEffect( targ , SFX_SPELL_FIREBALL );
+			ApplyElementalDamage( defender , targ , 1 , spelldmg , DMGID_FIRE );
+			Sleepms( 250 );
+		elseif(whatspell == 1)
+			PlayLightningBoltEffect( targ );
+			PlaySoundEffect( targ , SFX_SPELL_LIGHTNING );
+			ApplyElementalDamage( defender , targ , 1 , spelldmg , DMGID_AIR );
+			Sleepms( 250 );
+		elseif(whatspell == 2)
+			PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE1);
+			PlayStationaryEffect( targ.x , targ.y , targ.z , 0x3789, speed:=30, loop:=30);
+			PlaySoundEffect( targ , SFX_SPELL_ICE_STRIKE2);
+			ApplyElementalDamage( defender , targ , 1 , spelldmg , DMGID_WATER );
+		endif
 
 		if(DEBUG_MODE)
-			PrintTextAbovePrivate( attacker , "I'm dealing this much spell damage: " +spelldmg, attacker );
+			PrintTextAbovePrivate( defender , "I'm dealing this much spell damage: " +spelldmg, defender );
 		endif
 	endif
 	
-	if( basedamage != rawdamage )
-		rawdamage := rawdamage - 15;
-		if( rawdamage < 1 )
-			rawdamage := 1;
-		endif
-	endif
-	if(DEBUG_MODE)
-            PrintTextAbovePrivate( attacker , "I'm dealing this much physical damage: " +rawdamage, attacker );
-	endif
-	ApplyTheDamage( defender , attacker , rawdamage );
+	// if( basedamage != rawdamage )
+	// 	rawdamage := rawdamage - 15;
+	// 	if( rawdamage < 1 )
+	// 		rawdamage := 1;
+	// 	endif
+	// endif
+	// if(DEBUG_MODE)
+    //         PrintTextAbovePrivate( attacker , "I'm dealing this much physical damage: " +rawdamage, attacker );
+	// endif
+	// ApplyTheDamage( defender , attacker , rawdamage );
 
 endprogram

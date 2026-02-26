@@ -19,15 +19,15 @@ const DMGID_ASTRAL	:= 0x0400;
 const DMGID_NO_RESIST	:= 0x0800;
 
 include "include/attributes";
-include "include/constants";
+//include "include/constants";
 include ":karmafame:karmafame";
-include "include/mobileutil";
+//include "include/mobileutil";
 include "include/astralfights";
-include ":shilhook:shilcombat";
-include "include/areas";
-include "include/classes";
-include "include/client";
-include ":lootlottery:include/storedamage";
+//include ":shilhook:shilcombat";
+//include "include/areas";
+//include "include/classes";
+//include "include/client";
+//include ":lootlottery:include/storedamage";
 
 const MAX_SERIAL_IN_HITLIST := 5;
 
@@ -44,7 +44,7 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 		return 0;
 	endif
 
-	if (Getobjproperty(who, "LottoDrops"))
+	if (GetObjProperty(who, "LottoDrops"))
 		StoreDamage(by_who, who, dmg);
 	endif
 	
@@ -60,7 +60,7 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 	if( dmg < GetHP(who) )
 		factor := factor*VALUE_MULTIPLIER_FOR_ALLIES;
 	else
-		if( GetObjProperty(who,PROPID_MOBILE_RISE) )
+		if( GetObjProperty( who, PROPID_MOBILE_RISE) )
 			if( TryToInflictFinalDeath( who, attack_type ) )
 				SetObjProperty( who, PROPID_MOBILE_KILLED_BY, by_who.name );
 				SetObjProperty( who, "KilledBySerial", by_who.serial );
@@ -382,3 +382,25 @@ function IsSummoned( byref mobile )
 
 endfunction
 
+function StoreDamage(attacker, defender, damage)
+
+	var attacker_list := GetObjProperty(defender, "AttackerList");
+
+	if (!attacker_list)
+		attacker_list := dictionary;
+	endif
+
+	var attacker_serial := CInt(attacker.serial);
+	
+	if (!attacker_list.Exists(attacker_serial))
+		attacker_list[attacker_serial] := damage;
+	else
+		attacker_list[attacker_serial] += damage;
+	endif
+	SetObjProperty(defender, "AttackerList", attacker_list);
+
+	if (!GetObjProperty(defender, "MyMaxHP"))
+		SetObjProperty(defender, "MyMaxHP", GetMaxHP(defender));
+	endif
+
+endfunction

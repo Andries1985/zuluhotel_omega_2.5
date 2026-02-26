@@ -14,16 +14,18 @@ use basic;
 use cfgfile;
 use polsys;
 
-include "include/client";
+//include "include/client";
 include "include/random";
 include "include/eventid";
 include "include/classes";
 include "include/damages";
-include "include/areas";
+//include "include/areas";
 include "include/skillpoints";
 include "include/attributes";
 include "include/difficulty";
-include ":lootlottery:storedamage";
+//include ":lootlottery:storedamage";
+include "include/math";
+
 
 ////////////////////////////////
 // Spell functions' constants //
@@ -109,9 +111,9 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 	endif
 
 	var resultprot := GetResultingElementalProt( cast_on, element );
-	var magebonusdamage := 0;
-	var mageequippedint := 0;
-	var newdamage := 0;
+	//var magebonusdamage := 0;
+	//var mageequippedint := 0;
+	//var newdamage := 0;
 
 	if( resultprot < 100 )
 		if( GetObjProperty( caster , CLASSEID_MAGE ) )
@@ -119,17 +121,17 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 			resultprot := resultprot - (level * 3);
 			resultprot := Cint(dmg * resultprot / 100);
 			dmg := dmg - resultprot;
-			foreach thing in ListEquippedItems( caster )
-				if( GetObjProperty( thing, "int" ) )
-					mageequippedint := mageequippedint + Cint( GetObjProperty( thing, "int" ) );
-					//Print("Found item with int: " + thing.desc + " with int value of " + GetObjProperty( thing, "int" ) );
-					//Print("Total mage int is now: " + mageequippedint);
-				endif
-			endforeach
+			// foreach thing in ListEquippedItems( caster )
+			// 	if( GetObjProperty( thing, "int" ) )
+			// 		mageequippedint := mageequippedint + Cint( GetObjProperty( thing, "int" ) );
+			// 		//Print("Found item with int: " + thing.desc + " with int value of " + GetObjProperty( thing, "int" ) );
+			// 		//Print("Total mage int is now: " + mageequippedint);
+			// 	endif
+			// endforeach
 			//Print("Damage: " + dmg + " Level: " + level + " Mage int: " + mageequippedint);
-			newdamage := mageequippedint / 3  * level / 10;
-			//Print("New damage is " + newdamage);
-			dmg := dmg + newdamage;
+			// newdamage := mageequippedint / 3  * level / 10;
+			// //Print("New damage is " + newdamage);
+			// dmg := dmg + newdamage;
 			//Print("Damage after mage bonus: " + dmg);
 		else
 			dmg := dmg - Cint(dmg * resultprot / 100);	
@@ -192,7 +194,7 @@ function ApplyPlanarDamage( caster, cast_on, circle, dmg, plane )
 	var resultprot := GetResultingPlaneProtection( cast_on, plane );
 
 	if( resultprot < 100 )
-		dmg := dmg - Cint(dmg * resultprot / 100);	
+		dmg := dmg - Cint(dmg * resultprot / 100);
 		ApplyTheDamage( cast_on , caster , Resisted( caster, cast_on, circle, dmg ) , DMGID_MAGIC + plane );
 	else
 		// Toadstool - heals x% of the damage that;s over 100. so 120% protection heals 20% of the damage
@@ -576,6 +578,25 @@ function GetMagicEfficiencyPenalty( who )
 		penalty := 100;
 	endif
 
+	var mageequippedint := 0;
+	var magebonusefficiency := 0;
+	if( GetObjProperty( who, CLASSEID_MAGE ) )
+		foreach mageitem in ListEquippedItems( who )
+			if( GetObjProperty( mageitem, "int" ) )
+				mageequippedint := mageequippedint + Cint( GetObjProperty( mageitem, "int" ) );
+				//Print("Found item with int: " + mageitem.desc + " with int value of " + GetObjProperty( mageitem, "int" ) );
+				//Print("Total mage int is now: " + mageequippedint);
+			endif
+		endforeach
+		//Print("Magic efficiency penalty is: " + penalty);
+		//Print("Mage equipped int is: " + mageequippedint);
+		magebonusefficiency := Trunc((mageequippedint / 10), 0);
+		//Print("Mage bonus efficiency is: " + magebonusefficiency);
+		penalty := Cint( penalty - magebonusefficiency );
+		//Print("In GMEP: Total magic efficiency penalty is: " + penalty);
+
+	endif
+
 	return Cint(penalty);
 
 endfunction
@@ -797,6 +818,7 @@ function ModifyWithMagicEfficiency( who, val )
 		return 0;
 	endif
 
+	//Print("In MwME: Magic efficiency penalty is: " + penalty + "%" );
 	return CInt( val * ( 100 - penalty ) / 100 );
 
 endfunction
@@ -934,6 +956,7 @@ endfunction
 
 function Resisted( caster , cast_on , circle , dmg )
 
+	//Print("Calculating resistance for " + cast_on.name + " against spell of circle " + circle + " with base damage " + dmg);
 	if( cast_on.dead ) return 0; endif
 	if( caster.dead ) return 0; endif
 

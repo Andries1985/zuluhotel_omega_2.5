@@ -590,7 +590,7 @@ endfunction
 // ApplyArmourModNew() - Chooses what to put on armour
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function ApplyArmourModNew(who, item)
+function ApplyArmourModNew( unused who, item )
 
 /* This is the OLD way
 Min lvl 1 - 26		Max lvl 1 - 100
@@ -791,7 +791,7 @@ endfunction
 // ApplyShieldModNew() - Chooses what to put on a shield
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function ApplyShieldModNew(who, item)
+function ApplyShieldModNew(unused who, item)
 
 /* This is the OLD way
 Min lvl 1 - 26		Max lvl 1 - 100
@@ -979,7 +979,7 @@ endfunction
 // ApplyClothingModNew() - Chooses what to put on clothing
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function ApplyClothingModNew(who, item)
+function ApplyClothingModNew( unused who, item )
 
 	/* This is the OLD way
 	Min lvl 1 - 26		Max lvl 1 - 100
@@ -2802,7 +2802,7 @@ endfunction
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-function ApplyWeapHitscript( who , item )
+function ApplyWeapHitscript( unused who , item )
 
 	CountAvailHitscripts();
 /*
@@ -5093,6 +5093,7 @@ function ApplyGreaterOnHitscript( item )
 	
 	//Find the good script
 	var i := RandomDiceStr( "1d"+availgreateronhit.Size());
+	Print("Greater on hit script number: " + i);
 	var n := availgreateronhit[i];
 
 	SetOnHitscript( item , n , multiplier );
@@ -5399,7 +5400,7 @@ endfunction
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 
-function ApplyEnchant( who , item )
+function ApplyEnchant( unused who , item )
 
 	var rand := RandomInt(100);
 	var choice := 0;
@@ -5448,7 +5449,7 @@ endfunction
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////
    	
-function DetermineImmunityLevel(item, isimmun := 0, modifier := 0)
+function DetermineImmunityLevel( unused item, unused isimmun := 0, unused modifier := 0)
 
 	var n;
 	var power := RandomInt(100000)+1;
