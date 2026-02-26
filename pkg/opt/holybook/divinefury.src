@@ -35,6 +35,7 @@ program cast_HOLY_BOLT( parms )
 			return;
 		endif
 		cast_on := CanTargetSpell( caster , circle , TGTOPT_HARMFUL + TGTOPT_CHECK_LOS );
+		
 		if( !cast_on )
 			EraseObjProperty( caster , "#Casting" );
 			return;

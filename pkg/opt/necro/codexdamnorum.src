@@ -3,7 +3,7 @@ use os;
 use basic;
 use cfgfile;
 
-include "include/bitwise";
+//include "include/bitwise";
 include "include/spelldata";
 
 var layout := {
