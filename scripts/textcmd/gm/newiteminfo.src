@@ -2084,8 +2084,15 @@ function SetSpellFromList( who , item )
 		return 0;
 	endif
 	
-	SetObjProperty( item , "HitWithSpell" , result[0] );
-	return result[0];
+	//SetObjProperty( item , "HitWithSpell" , result[0] );
+
+	EraseObjProperty( item , "IDed" );
+	EraseObjProperty( item , "UnIDedMagicalItem" );
+	SetObjProperty( item , "UnIDedMagicalItem" , 1 );
+	SetObjProperty(item, "isCommon", 1);
+	SetObjProperty(item, "HitWithSpell", result[0] );
+
+	//return result[0];
 
 endfunction
 
@@ -2285,8 +2292,8 @@ function SetAnEffectScriptFromList( who , item )
 			endif
 		endif
 
-		Print( "CProp: " + CProp );
-		Print( "CPropVal: " + CPropVal );
+		// Print( "CProp: " + CProp );
+		// Print( "CPropVal: " + CPropVal );
 
 		if( Cprop == cpropoption1)
 			//Print("Setting PoisonLvl");

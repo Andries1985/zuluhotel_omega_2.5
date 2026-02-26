@@ -4,6 +4,7 @@ use os;
 include "include/spelldata";
 include "include/damages";
 include "include/random";
+
 program spellonhit(parms)
 
 	var attacker 	:= parms[1];
@@ -48,6 +49,7 @@ program spellonhit(parms)
 
 	endif
 	
+	//Print("Basedamage: " + basedamage + " Rawdamage: " + rawdamage);
 	if( basedamage != rawdamage )
 		rawdamage := rawdamage - 10;
 		if( rawdamage < 1 )
