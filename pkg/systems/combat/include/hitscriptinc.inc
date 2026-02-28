@@ -409,19 +409,19 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		endif
 	endif
 	//================================= Global changes ===================================\\
-	// PvP slowdown.
+	// Physical PvP slowdown.
 	// if(DEBUG_MODE)
 	// 	if( !defender.isA(POLCLASS_NPC) && GetGlobalProperty("ReducePhysical"))
 	// 		basedamage *= GetGlobalProperty("ReducePhysical");
 	// 	endif
 	// else
-	// 	// if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
-	// 	// 	//if( !defender.isA(POLCLASS_NPC))
-	// 	// 		Print("Applying Physical PvP reduction. Basedamage is: " + basedamage);
-	// 	// 		basedamage *= 0.4;
-	// 	// 		Print("Basedamage after PVP Physical reduction is: " + basedamage);
-	// 	// 	//endif
-	// 	// endif
+		if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
+			//if( !defender.isA(POLCLASS_NPC))
+				Print("Applying PvP Physical reduction. Basedamage is: " + basedamage);
+				basedamage *= 0.6;
+				Print("Basedamage after PvP Physical reduction is: " + basedamage);
+			//endif
+		endif
 	// endif
 	
 	// Ranged distance calculations for players only.
