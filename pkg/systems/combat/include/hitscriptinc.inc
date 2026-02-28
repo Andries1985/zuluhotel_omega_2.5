@@ -417,9 +417,9 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 	// else
 		if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
 			//if( !defender.isA(POLCLASS_NPC))
-				Print("Applying PvP Physical reduction. Basedamage is: " + basedamage);
+				//Print("Applying PvP Physical reduction. Basedamage is: " + basedamage);
 				basedamage := CInt( basedamage * 0.4 );
-				Print("Basedamage after PvP Physical reduction is: " + basedamage);
+				//Print("Basedamage after PvP Physical reduction is: " + basedamage);
 			//endif
 		endif
 	// endif
