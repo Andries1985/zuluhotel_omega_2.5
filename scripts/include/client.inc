@@ -17,7 +17,7 @@
 
 
 // DEBUG MODE
-const DEBUG_MODE	:= 1; // Set to 1 to enable debug output, 0 to disable
+const DEBUG_MODE	:= 0; // Set to 1 to enable debug output, 0 to disable
 
 
 ////
