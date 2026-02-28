@@ -398,10 +398,10 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 
 		// Mage increased damage received.
 		if( GetObjProperty( defender, CLASSEID_MAGE ) )
-			basedamage *= 1.5;
+			basedamage := CInt( basedamage * 1.5 );
 			// Warrior deals more damage towards mage.
 			if( GetObjProperty( attacker, CLASSEID_WARRIOR ))
-				basedamage *= 1.1;
+				basedamage := CInt( basedamage * 1.1 );
 			endif
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Mage increase: "+basedamage, FONT_NORMAL, 2555 );
@@ -418,7 +418,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
 			//if( !defender.isA(POLCLASS_NPC))
 				Print("Applying PvP Physical reduction. Basedamage is: " + basedamage);
-				basedamage *= 0.6;
+				basedamage := CInt( basedamage * 0.4 );
 				Print("Basedamage after PvP Physical reduction is: " + basedamage);
 			//endif
 		endif

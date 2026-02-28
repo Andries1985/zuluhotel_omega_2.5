@@ -59,7 +59,7 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 		//if( !defender.isA(POLCLASS_NPC))
 		Print("Applying Overall PvP reduction. Damage is: " + dmg);
 		olddmg := CInt(dmg);
-		dmg := CInt( Trunc( (dmg * 0.8), 0) );
+		dmg := CInt( dmg * 0.6);
 		newdmg := CInt(dmg);
 		Print("Damage after Overall PvP reduction is: " + dmg);
 		//endif
