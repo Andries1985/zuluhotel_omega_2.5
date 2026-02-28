@@ -99,13 +99,16 @@ program processtempmods( parms )
 			newPsnDmg := newPsnDmg * 5;
 		endif
 	endif
+
 	//PvP slowdown
-	if(!who.IsA(POLCLASS_NPC) && GetGlobalProperty("ReducePoison") && DEBUG_MODE)
-		newPsnDmg *= GetGlobalProperty("ReducePoison");
-	endif
+	// if(!who.IsA(POLCLASS_NPC) && GetGlobalProperty("ReducePoison") && DEBUG_MODE)
+	// 	newPsnDmg *= GetGlobalProperty("ReducePoison");
+	// endif
+
 	if(DEBUG_MODE)
 		PrintTextAbovePrivate( caster , "My Poison damage is: " + newPsnDmg, caster );
 	endif
+
 	if( who.poisoned )
 		var currPsnDmg := GetObjProperty(who, "psnDmg");
 		if(!currPsnDmg || (currPsnDmg < newPsnDmg) )

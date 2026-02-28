@@ -19,6 +19,8 @@ var combat_settingscfg := ReadConfigFile(":combat:settings");
 
 function RecalcDmg( attacker, defender, weapon, armor, byref basedamage, piercing := 0 )
 
+	//Print("In RecalcDmg with basedamage: " + basedamage);
+
 	var noPKatk := GetObjProperty(attacker, "NOPKAREA");
 	var noPKdef := GetObjProperty(defender, "NOPKAREA");
 
@@ -57,6 +59,8 @@ endfunction
 
 function RecalcPhysicalDmg( attacker, defender, weapon, armor, byref basedamage, piercing := 0 )
 
+	//Print("In RecalcPhysicalDmg with basedamage: " + basedamage);
+	
 	var rawdamage;
 	var absorbed;
 	var ar := defender.ar;
@@ -160,6 +164,8 @@ endfunction
 
 function RecalcAstralDmg( attacker, defender, weapon, armor, byref basedamage, piercing := 0 )
 
+	//Print("In RecalcAstralDmg with basedamage: " + basedamage);
+
 	var rawdamage;
 	weapon := weapon;
 	var absorbed := 0;
@@ -245,6 +251,8 @@ endfunction
 
 
 function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
+
+	//Print("In CalcPhysicalDamage with basedamage: " + basedamage);
 
     var total_skills 			:= GetClasseSkillTotal(attacker, GetClass(attacker));
 	var avg_skill				:= total_skills / 8;
@@ -402,17 +410,19 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 	endif
 	//================================= Global changes ===================================\\
 	// PvP slowdown.
-	if(DEBUG_MODE)
-		if( !defender.isA(POLCLASS_NPC) && GetGlobalProperty("ReducePhysical"))
-			basedamage *= GetGlobalProperty("ReducePhysical");
-		endif
-	else
-		if(!attacker.isA(POLCLASS_NPC))
-			if( !defender.isA(POLCLASS_NPC))
-				basedamage *= 0.4;
-			endif
-		endif
-	endif
+	// if(DEBUG_MODE)
+	// 	if( !defender.isA(POLCLASS_NPC) && GetGlobalProperty("ReducePhysical"))
+	// 		basedamage *= GetGlobalProperty("ReducePhysical");
+	// 	endif
+	// else
+	// 	// if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
+	// 	// 	//if( !defender.isA(POLCLASS_NPC))
+	// 	// 		Print("Applying Physical PvP reduction. Basedamage is: " + basedamage);
+	// 	// 		basedamage *= 0.4;
+	// 	// 		Print("Basedamage after PVP Physical reduction is: " + basedamage);
+	// 	// 	//endif
+	// 	// endif
+	// endif
 	
 	// Ranged distance calculations for players only.
 	if(!attacker.isA(POLCLASS_NPC))
@@ -543,6 +553,8 @@ endfunction
 
 
 function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
+
+	//Print("In DealDamage with basedamage: " + basedamage);
 
 	var noPKatk := GetObjProperty(attacker, "NOPKAREA");
 	var noPKdef := GetObjProperty(defender, "NOPKAREA");
