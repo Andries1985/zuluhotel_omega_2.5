@@ -57,11 +57,11 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 	// Global PvP slowdown.
 	if( !by_who.isA(POLCLASS_NPC) && !who.isA(POLCLASS_NPC))
 		//if( !defender.isA(POLCLASS_NPC))
-		Print("Applying Overall PvP reduction. Damage is: " + dmg);
+		//Print("Applying Overall PvP reduction. Damage is: " + dmg);
 		olddmg := CInt(dmg);
 		dmg := CInt( dmg * 0.6);
 		newdmg := CInt(dmg);
-		Print("Damage after Overall PvP reduction is: " + dmg);
+		//Print("Damage after Overall PvP reduction is: " + dmg);
 		//endif
 	endif
 	
@@ -173,7 +173,7 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 		PrintTextAbovePrivate( by_who , "I've dealt this much damage: " +dmg, by_who );
 		PrintTextAbovePrivate( who , "I received this much damage: " +dmg, who );
 	endif
-	Print("In applythedamage: Old damage was : " + olddmg + " New damage is: " + newdmg + " damage is being applied to " + who.name + " by " + by_who.name + " with attack type " + Hex(attack_type));
+	//Print("In applythedamage: Old damage was : " + olddmg + " New damage is: " + newdmg + " damage is being applied to " + who.name + " by " + by_who.name + " with attack type " + Hex(attack_type));
 	return ApplyRawDamage( who, dmg );
 
 endfunction
