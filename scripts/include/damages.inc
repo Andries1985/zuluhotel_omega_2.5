@@ -54,12 +54,12 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 	endif
 
 	//================================= Global changes ===================================\\
-	// PvP slowdown.
+	// Global PvP slowdown.
 	if( !by_who.isA(POLCLASS_NPC) && !who.isA(POLCLASS_NPC))
 		//if( !defender.isA(POLCLASS_NPC))
 		Print("Applying Overall PvP reduction. Damage is: " + dmg);
 		olddmg := CInt(dmg);
-		dmg := CInt( Trunc( (dmg * 0.4), 0) );
+		dmg := CInt( Trunc( (dmg * 0.2), 0) );
 		newdmg := CInt(dmg);
 		Print("Damage after Overall PvP reduction is: " + dmg);
 		//endif
