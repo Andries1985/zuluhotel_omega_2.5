@@ -1,3 +1,6 @@
+use os;
+use uo;
+
 function wipeItemsArray(Items)
   foreach item in Items
     item := SystemFindObjectBySerial(item);
@@ -13,7 +16,7 @@ function createNextWhiteSkull(altar)
   var wskulls := array;
   wskulls := GetObjProperty(altar, "wskulls");
   
-  if(white_skull_level == 4)
+  if(white_skull_level == 1)
     WipeItemsArray(wskulls);
     wskulls:= {};
     SetObjProperty(altar, "wskulls", wskulls);
@@ -54,7 +57,7 @@ function createNextRedSkull(altar)
   SetObjProperty(altar, "wskulls", wskulls);
   EraseObjProperty(altar, "white_skull_level");
 
-  if(lskull==16)
+  if(lskull==2)
     WipeItemsArray(skulls);
     skulls:= {};
     SetObjProperty(altar, "rskulls", skulls);

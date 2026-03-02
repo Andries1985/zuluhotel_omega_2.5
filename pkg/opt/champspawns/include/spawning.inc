@@ -1,7 +1,10 @@
+use os;
+use uo;
+
 include "titles";
 include "include/attributes";
 include "include/random";
-
+include ":champspawns:skulls";
 
 function getSpawnTemplateName(altar)  
   var fC := GetObjProperty(altar, "FirstCheck");
@@ -82,6 +85,8 @@ function SpawnChampion(altar)
 		  item.color := 1948;
     elseif(GetObjProperty(creature, "Champion") == 3)
 		  item.color := 1183;
+	  elseif(GetObjProperty(creature, "Champion") == 4)
+		  item.color := 1182;
 	  endif
   endif
 

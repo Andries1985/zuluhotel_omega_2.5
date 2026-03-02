@@ -37,7 +37,7 @@ program dualplanaronhit( parms )
 		// Print("Defender is: " + defender.name);
 
 		if ( GetObjProperty( targ , "Windsbreath" ) == 1)
-			Print("Windsbreath is still running!");
+			//Print("Windsbreath is still running!");
 			return 0;
 		endif
 
