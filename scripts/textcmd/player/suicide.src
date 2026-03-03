@@ -10,7 +10,8 @@ program suicide( who )
 	var dif := last - tme;
 	var hours;
 	var mins;
-	if ( tme < last )
+
+	if ( tme < last  && !who.cmdlevel)
 		hours := dif / 3600 ;
 		dif := dif - ( hours * 3600 );
 		mins := dif / 60 ;

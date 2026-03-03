@@ -85,6 +85,7 @@ function AutoRepeat(character, instrument)
 	endif
 
 	repeat
+		SetObjProperty( character, "#Casting", 1 );
 
 		if (inst_id == UOBJ_HARP)
 				ret := play(character,SFX_HARP_SUCC,SFX_HARP_FAIL);
@@ -118,6 +119,7 @@ function AutoRepeat(character, instrument)
 	
 	until ((character.x != cx) or (character.y != cy) || character.dead);
 	SendSysMessage(character,"You stop playing...");
+	SetObjProperty( character, "#Casting", 0 );
 
 endfunction
 

@@ -24,6 +24,8 @@ program reconnect( who )
 		EraseObjProperty(who, "#ViewingBeast");
 	endif
 
+	EraseObjProperty( who , "Windsbreath" );
+
 	if (getobjproperty(who,"starttime"))
 		Eraseobjproperty(who,"starttime");
 	endif

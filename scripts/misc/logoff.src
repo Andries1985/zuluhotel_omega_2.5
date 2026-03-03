@@ -12,6 +12,8 @@ program logoff(who)
 
 	DisplayLogoff( who );
 
+	EraseObjProperty( who , "Windsbreath" );
+
 	var temp := GetObjProperty(who,"realname");
 	if (temp)
 		SetName (who,temp);

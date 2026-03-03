@@ -18,7 +18,7 @@ program textcmd_setPH(who)
 	var use_weekday := GetObjProperty(who, "pph_use_weekday");
 
 	if(GetObjProperty(who, "#PPHH") || GetObjProperty(who, "#PPHC") || GetObjProperty(who, "#PPHS"))
-		var remaining := (use_time+hour - time_now)/60;
+		var remaining := (use_time + hour - time_now)/60;
 		if(GetObjProperty(who, "#PPHH"))
 			SendSysMessage( who, "You are already under the influence of the Hunting Powerhour!", FONT_BOLD, 2595 );
 		elseif(GetObjProperty(who,"#PPHC"))
@@ -30,7 +30,14 @@ program textcmd_setPH(who)
 		return;
 	endif
 
+	if( GetObjProperty(who, "#SettingPH") == 1)
+		SendSysMessage( who, "You have the gump window open already!", FONT_NORMAL, 2595 );
+		return 0;
+	endif
+
 	if ((weekday_now < use_weekday) || (time_now > use_time_nextweek) )
+
+		SetObjProperty(who, "#SettingPH", 1);
 		
 		var gump := {
 			"nodispose",
@@ -73,12 +80,14 @@ program textcmd_setPH(who)
 		var gumpdata := SendDialogGump(who, gump, data);
 		if(!gumpdata)
 			SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
+			EraseObjProperty(who, "#SettingPH");
 			return;
 		endif
 		
 		// Okay button wasn't pressed
 		if(gumpdata[0] != 1)
 			SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
+			EraseObjProperty(who, "#SettingPH");
 			return 0;
 		endif
 		
@@ -130,4 +139,5 @@ function activateph(who, choice)
 	EraseObjProperty(who, "#PPHH");
 	EraseObjProperty(who, "#PPHC");
 	EraseObjProperty(who, "#PPHS");	
+	EraseObjProperty(who, "#SettingPH");
 endfunction

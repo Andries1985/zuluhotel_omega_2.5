@@ -80,7 +80,7 @@ program cast_Astral_Storm( parms )
 	duration := duration/classresist;
 	
 	//Reduce time due to Holy Protection
-	var holyprot := CInt(GetObjProperty(cast_on, "NecroProtection"));
+	var holyprot := CInt(GetObjProperty(cast_on, "HolyProtection"));
 	duration := Cint(duration * (1-(holyprot*0.75)/100));
 
 	//Reduce 25% for Free Action

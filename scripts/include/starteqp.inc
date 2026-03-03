@@ -562,7 +562,7 @@ function ApplyWeaponModNew(who, item)
 	elseif (magiclevel == 10)
 		
 		// 68%
-		if (chance < 9000)
+		if (chance < 5000)
 			ApplyDmgMod( item );
 		// 32% chance
 		else
@@ -590,7 +590,7 @@ endfunction
 // ApplyArmourModNew() - Chooses what to put on armour
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function ApplyArmourModNew(who, item)
+function ApplyArmourModNew( unused who, item )
 
 /* This is the OLD way
 Min lvl 1 - 26		Max lvl 1 - 100
@@ -614,7 +614,7 @@ elseif(enchant < 350)
 	ApplyARMod( item );	// of fortification etc
 	
 else
-	ApplyOnHitScript ( who , item );	// slayer type, spell on hit, gm armour etc. This ISN'T anywhere near as good as weapons. give more
+	ApplyOnHitScript ( item );	// slayer type, spell on hit, gm armour etc. This ISN'T anywhere near as good as weapons. give more
 endif
 AddName( item );
 */
@@ -639,7 +639,7 @@ elseif (magiclevel == 1)
 		ApplyARMod( item );
 	// 10% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
 
 // Level 2 loot
@@ -656,7 +656,7 @@ elseif (magiclevel == 2)
 		ApplyARMod( item );
 	// 15% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
 
 
@@ -674,7 +674,7 @@ elseif (magiclevel == 3)
 		ApplyARMod( item );
 	// 20% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
 
 // Level 4 loot
@@ -691,7 +691,7 @@ elseif (magiclevel == 4)
 		ApplyARMod( item );
 	// 22% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
 
 // Level 5 loot
@@ -708,7 +708,7 @@ elseif (magiclevel == 5)
 		ApplyARMod( item );
 	// 25% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
 
 // Level 6 loot
@@ -725,7 +725,7 @@ elseif (magiclevel == 6)
 		ApplyARMod( item );
 	// 30% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
 
 // Level 7 loot
@@ -736,7 +736,7 @@ elseif (magiclevel == 7)
 		ApplyARMod( item );
 	// 32% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
 
 // Level 8 loot
@@ -747,31 +747,40 @@ elseif (magiclevel == 8)
 		ApplyARMod( item );
 	// 34% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
 
 // Level 9 loot
 elseif (magiclevel == 9)
-	
+	//Print("In level 9 loot for ApplyArmourModNew");
 	// 64% chance
 	if (chance < 6400)
 		ApplyARMod( item );
 	// 36% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
 
 // Level 10 loot
 elseif (magiclevel == 10)
-	
+	//Print("In level 10 loot for ApplyArmourModNew");
 	// 62% chance
 	if (chance < 6200)
 		ApplyARMod( item );
 	// 38% chance
 	else
-		ApplyOnHitScript ( who , item );
+		ApplyOnHitScript( item );
 	endif
-endif
+else
+		// 65% --> 60% chance
+		if (chance < 6000)
+			ApplyDmgMod( item );
+		// 40% chance
+		else
+			ApplyOnHitScript( item );
+		endif
+		
+	endif
 
 AddName( item );
 
@@ -782,7 +791,7 @@ endfunction
 // ApplyShieldModNew() - Chooses what to put on a shield
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function ApplyShieldModNew(who, item)
+function ApplyShieldModNew(unused who, item)
 
 /* This is the OLD way
 Min lvl 1 - 26		Max lvl 1 - 100
@@ -947,7 +956,7 @@ elseif (magiclevel == 10)
 	if (chance < 5)
 		ApplyHPMod( item );
 	// 4.995% chance
-	elseif (chance < 9500)
+	elseif (chance < 5000)
 		ApplyArSkillMod( item ); 
 	// 95% chance
 	else 
@@ -970,7 +979,7 @@ endfunction
 // ApplyClothingModNew() - Chooses what to put on clothing
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function ApplyClothingModNew(who, item)
+function ApplyClothingModNew( unused who, item )
 
 	/* This is the OLD way
 	Min lvl 1 - 26		Max lvl 1 - 100
@@ -1307,10 +1316,10 @@ elseif (magiclevel == 9)
 elseif (magiclevel == 10)
 	
 	// 35% chance 
-	if (chance < 3500)
+	if (chance < 3333)
 		ApplyMiscSkillMod( item );
 	// 55% chance
-	elseif (chance < 9000)
+	elseif (chance < 6666)
 		ApplyEnchant( who , item );
 	// 10% chance
 	else 
@@ -1831,11 +1840,11 @@ var n;
 			n := 3;
 		
 		// 40% chance of power
-		elseif (power < 50000)
+		elseif (power < 20000)
 			n := 4;
 
 		// 50% chance of vanq
-		elseif (power < 80000)
+		elseif (power < 30000)
 			n := 5;
 		// 10% chance of dev
 		else
@@ -2139,15 +2148,15 @@ var n;
 			n := 10;
 
 		// 0% chance of massive
-		elseif (power < 20000)
+		elseif (power < 10000)
 			n := 15;
 		
 		// 13% chance of fortified
-		elseif (power < 60000)
+		elseif (power < 20000)
 			n := 20;
 
 		// 70% chance of tempered
-		elseif (power < 86000)
+		elseif (power < 30000)
 			n := 25;
 		// 17% chance of indestructible
 		else
@@ -2428,15 +2437,15 @@ var n;
 			n := 10;
 
 		// 0% chance of hardening
-		elseif (power < 20000)
+		elseif (power < 10000)
 			n := 15;
 		
 		// 13% chance of fortification
-		elseif (power < 60000)
+		elseif (power < 20000)
 			n := 20;
 
 		// 70% chance of invulnerability
-		elseif (power < 96000)
+		elseif (power < 30000)
 			n := 25;
 		// 17% chance of invincibility
 		else
@@ -2720,15 +2729,15 @@ var n;
 			n := 10;
 
 		// 0% chance of met steel
-		elseif (power < 20000)
+		elseif (power < 10000)
 			n := 15;
 		
 		// 13% chance of obsidian
-		elseif (power < 60000)
+		elseif (power < 20000)
 			n := 20;
 
 		// 70% chance of onynx
-		elseif (power < 96000)
+		elseif (power < 30000)
 			n := 25;
 		// 17% chance of adamantium
 		else
@@ -2793,7 +2802,7 @@ endfunction
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-function ApplyWeapHitscript( who , item )
+function ApplyWeapHitscript( unused who , item )
 
 	CountAvailHitscripts();
 /*
@@ -2994,15 +3003,15 @@ function ApplyWeapHitscript( who , item )
 	elseif (magiclevel == 10)
 		
 		// 34% chance of spell
-		if (power < 34000)
+		if (power < 25000)
 			ApplySpellHitscript( item ); // Spell on hit
 
 		// 34% chance slayer
-		elseif (power < 68000)
+		elseif (power < 50000)
 			ApplySlayerHitscript( item ); // slayer weapons
 
 		// 26% chance effect
-		elseif (power < 98000)
+		elseif (power < 75000)
 			ApplyEffectHitscript( item ); // blinding/stam,mana, life drain/pzn/banish/piercing
 			SetObjProperty(item, "isRare", 1);
 
@@ -3288,27 +3297,27 @@ function ApplySpellHitscript( item )
 			ascircle := 2;
 
 		//0% 3rd circle
-		elseif (rand < 26000)
+		elseif (rand < 10000)
 			ascircle := 3;
 
 		//10% 4th circle
-		elseif (rand < 61000)
+		elseif (rand < 20000)
 			ascircle := 4;
 
 		//40% 5th circle
-		elseif (rand < 70000)
+		elseif (rand < 30000)
 			ascircle := 5;
 
 		//35% 6th circle
-		elseif (rand < 85000)
+		elseif (rand < 40000)
 			ascircle := 6;
 
 		//15% 7th circle
-		elseif (rand < 95000)
+		elseif (rand < 50000)
 			ascircle := 7;
 
 		//15% 7th circle
-		elseif (rand < 97000)
+		elseif (rand < 60000)
 			ascircle := 8;
 
 		else 
@@ -3400,7 +3409,7 @@ function ApplySlayerHitscript( item )
 	set_critical( 1 );
 	
 	var multiplier := 15;
-	var newRoll := magiclevel + 2;
+	var newRoll := magiclevel + 1;
 	if(newRoll > 10)
 		newRoll := 10;
 	endif
@@ -3517,7 +3526,7 @@ endfunction
 function ApplyWeapSkillMod( item )
 
 	var chance := Random(1000)+1;
-	if(chance <= 20)
+	if(chance <= 40)
 		ApplyStatMod( item );
 		SetObjProperty(item, "isRare", 1);
 		return;
@@ -3724,15 +3733,15 @@ function ApplyWeapSkillMod( item )
 			n := 10;
 
 		// 0% chance of hardening
-		elseif (power < 20000)
+		elseif (power < 10000)
 			n := 15;
 		
 		// 13% chance of fortification
-		elseif (power < 60000)
+		elseif (power < 20000)
 			n := 20;
 
 		// 70% chance of invulnerability
-		elseif (power < 96000)
+		elseif (power < 30000)
 			n := 25;
 		// 17% chance of invincibility
 		else
@@ -4040,15 +4049,15 @@ var n;
 			n := 10;
 
 		// 0% chance of hardening
-		elseif (power < 20000)
+		elseif (power < 10000)
 			n := 15;
 		
 		// 13% chance of fortification
-		elseif (power < 60000)
+		elseif (power < 20000)
 			n := 20;
 
 		// 70% chance of invulnerability
-		elseif (power < 96000)
+		elseif (power < 30000)
 			n := 25;
 		// 17% chance of invincibility
 		else
@@ -4370,15 +4379,15 @@ function ApplyMiscSkillMod( item )
 			n := 10;
 
 		// 0% chance of hardening
-		elseif (power < 20000)
+		elseif (power < 10000)
 			n := 15;
 		
 		// 13% chance of fortification
-		elseif (power < 60000)
+		elseif (power < 20000)
 			n := 20;
 
 		// 70% chance of invulnerability
-		elseif (power < 96000)
+		elseif (power < 30000)
 			n := 25;
 
 		// 14% chance of invincibility
@@ -4457,7 +4466,7 @@ endfunction
 // Just copy pasted from weap
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////
-function ApplyOnHitScript ( who , item )
+function ApplyOnHitScript( item )
 
 	CountAvailOnHitscripts();
 
@@ -4572,13 +4581,17 @@ function ApplyOnHitScript ( who , item )
 		if (power < 30000)
 			ApplySpellOnHitscript( item ); // Spell on hit
 
-		// 33% chance slayer
-		elseif (power < 63000)
+		// 30% chance slayer
+		elseif (power < 62500)
 			ApplyResistantOnHitscript( item ); // 
 
-		// 31% chance effect
-		else
+		// 35% chance effect
+		elseif (power < 95000)
 			ApplyEffectOnHitscript( item ); // 
+		
+		// 5% chance greater effect
+		else
+			ApplyGreaterOnHitscript( item ); //
 		endif	
 
 	elseif (magiclevel == 9)
@@ -4587,52 +4600,65 @@ function ApplyOnHitScript ( who , item )
 		if (power < 30000)
 			ApplySpellOnHitscript( item ); // Spell on hit
 
-		// 31% chance slayer
-		elseif (power < 61000)
+		// 30% chance slayer
+		elseif (power < 60000)
 			ApplyResistantOnHitscript( item ); // 
 
-		// 32% chance effect
-		else
+		// 30% chance effect
+		elseif (power < 90000)
 			ApplyEffectOnHitscript( item ); // 
+		
+		// 10% chance greater effect
+		else
+			ApplyGreaterOnHitscript( item ); //
 		endif	
 
 	elseif (magiclevel == 10)
+		//Print("Applying on hit for 10");
 		
-			// 29% chance of spell
-		if (power < 29000)
+		// 30% chance of spell
+		if (power < 30000)
 			ApplySpellOnHitscript( item ); // Spell on hit
 
-		// 30% chance slayer
-		elseif (power < 59000)
+		// 20% chance slayer
+		elseif (power < 50000)
 			ApplyResistantOnHitscript( item ); // 
 
-		// 33% chance effect
-		else
+		// 25% chance effect
+		elseif (power < 75000)
 			ApplyEffectOnHitscript( item ); // 
+		
+		// 25% chance greater effect
+		else
+			ApplyGreaterOnHitscript( item ); //
 		endif
 
 	// Higher than 10
 	else
 		
-		// 28% chance of spell
-		if (power < 28000)
+		// 30% chance of spell
+		if (power < 30000)
 			ApplySpellOnHitscript( item ); // Spell on hit
 
-		// 28% chance slayer
-		elseif (power < 56000)
+		// 10% chance slayer
+		elseif (power < 40000)
 			ApplyResistantOnHitscript( item ); // 
 
-		// 35% chance effect
-		else
+		// 30% chance effect
+		elseif (power < 70000)
 			ApplyEffectOnHitscript( item ); // 
-		endif	
+		
+		// 30% chance greater effect
+		else
+			ApplyGreaterOnHitscript( item ); //
+		endif
 	endif
 endfunction
 
 
 
 function ApplySpellOnHitscript( item )
-
+	
 	set_critical( 1 );
 	
 	var multiplier := 10;
@@ -4882,27 +4908,27 @@ function ApplySpellOnHitscript( item )
 			ascircle := 2;
 
 		//0% 3rd circle
-		elseif (rand < 26000)
+		elseif (rand < 10000)
 			ascircle := 3;
 
 		//10% 4th circle
-		elseif (rand < 61000)
+		elseif (rand < 20000)
 			ascircle := 4;
 
 		//40% 5th circle
-		elseif (rand < 70000)
+		elseif (rand < 30000)
 			ascircle := 5;
 
 		//35% 6th circle
-		elseif (rand < 85000)
+		elseif (rand < 40000)
 			ascircle := 6;
 
 		//15% 7th circle
-		elseif (rand < 95000)
+		elseif (rand < 50000)
 			ascircle := 7;
 
 		//15% 7th circle
-		elseif (rand < 97000)
+		elseif (rand < 60000)
 			ascircle := 8;
 
 		else 
@@ -4962,7 +4988,7 @@ function ApplySpellOnHitscript( item )
 
 	if (ascircle <= 0)
 		ascircle := 1;
-	elseif(ascircle > 5)
+	elseif(ascircle > 7)
 		SetObjProperty(item, "isRare", 1);
 	endif
 
@@ -4973,7 +4999,8 @@ function ApplySpellOnHitscript( item )
 	
 	if (chanceofeffect <= 0)
 		chanceofeffect := 5;
-	//elseif (chanceofeffect > 80)
+	elseif (chanceofeffect > 80)
+		SetObjProperty(item, "isRare", 1);
 	//	chanceofeffect := 80;
 	endif
 
@@ -4989,7 +5016,7 @@ endfunction
 function ApplyResistantOnHitscript( item )
 
 	set_critical( 1 );
-	
+
 	var multiplier := 15;
 	
 	var newRoll := magiclevel + 1;
@@ -5037,7 +5064,7 @@ function ApplyResistantOnHitscript( item )
 	endif
 
 	if(n > 15)
-		SetObjProperty(item, "isRare", 1);
+		SetObjProperty(item, "isUncommon", 1);
 	endif
 
 	var type := onhitcfg[n].Type;
@@ -5051,7 +5078,7 @@ endfunction
 
 
 function ApplyEffectOnHitscript( item )
-
+	
 	set_critical( 1 );
 	
 	var multiplier := 10;
@@ -5067,16 +5094,18 @@ endfunction
 
 
 function ApplyGreaterOnHitscript( item )
-	
+	//Print("Applying greater on hit script");
 	set_critical( 1 );
-	
+
 	var multiplier := 2;
 	
 	//Find the good script
 	var i := RandomDiceStr( "1d"+availgreateronhit.Size());
+	//Print("Greater on hit script number: " + i);
 	var n := availgreateronhit[i];
 
 	SetOnHitscript( item , n , multiplier );
+	SetObjProperty(item, "isRare", 1);
 
 	set_critical( 0 );
 	
@@ -5299,22 +5328,22 @@ function ApplyStatMod ( item )
 		elseif (power < 30000)
 			n := 3;
 		
-		// 50% chance of level 4
+		// 30% chance of level 4
 		elseif (power < 60000)
 			n := 4;
 
-		// 10% chance of level 5
+		// 30% chance of level 5
 		elseif (power < 90000)
 			n := 5;			
 		
-		// 5% chance of level 6
+		// 10% chance of level 6
 		else
 			n := 6;
 		endif
 			
 
-	// Anything higher than level 9, cap.
-	elseif (magiclevel > 9) 
+	
+	elseif (magiclevel == 10) 
 
 		// 0% chance of level 1
 		if (power < 0)
@@ -5328,15 +5357,43 @@ function ApplyStatMod ( item )
 		elseif (power < 0)
 			n := 3;
 		
-		// 50% chance of level 4
-		elseif (power < 50000)
+		// 48% chance of level 4
+		elseif (power < 48000)
 			n := 4;
 
-		// 20% chance of level 5
-		elseif (power < 80000)
+		// 30% chance of level 5
+		elseif (power < 78000)
 			n := 5;			
 		
-		// 10% chance of level 6
+		// 22% chance of level 6
+		else
+			n := 6;
+		endif
+
+	// Anything higher than level 10, cap.
+	elseif (magiclevel > 10) 
+
+		// 0% chance of level 1
+		if (power < 0)
+			n := 1;
+
+		// 0% chance of level 2
+		elseif (power < 0)
+			n := 2;
+
+		// 20% chance of level 3
+		elseif (power < 0)
+			n := 3;
+		
+		// 40% chance of level 4
+		elseif (power < 40000)
+			n := 4;
+
+		// 35% chance of level 5
+		elseif (power < 75000)
+			n := 5;			
+		
+		// 25% chance of level 6
 		else
 			n := 6;
 		endif
@@ -5379,7 +5436,7 @@ endfunction
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 
-function ApplyEnchant( who , item )
+function ApplyEnchant( unused who , item )
 
 	var rand := RandomInt(100);
 	var choice := 0;
@@ -5428,7 +5485,7 @@ endfunction
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////
    	
-function DetermineImmunityLevel(item, isimmun := 0, modifier := 0)
+function DetermineImmunityLevel( unused item, unused isimmun := 0, unused modifier := 0)
 
 	var n;
 	var power := RandomInt(100000)+1;
@@ -5634,7 +5691,7 @@ function DetermineImmunityLevel(item, isimmun := 0, modifier := 0)
 			
 
 	// Anything higher than level 9, cap.
-	elseif (magiclevel > 9) 
+	elseif (magiclevel == 10) 
 
 		// 0% chance of level 1
 		if (power < 0)
@@ -5645,18 +5702,45 @@ function DetermineImmunityLevel(item, isimmun := 0, modifier := 0)
 			n := 2;
 
 		// 20% chance of level 3
-		elseif (power < 30000)
+		elseif (power < 20000)
 			n := 3;
 		
 		// 50% chance of level 4
-		elseif (power < 60000)
+		elseif (power < 70000)
 			n := 4;
 
 		// 20% chance of level 5
-		elseif (power < 80000)
+		elseif (power < 90000)
 			n := 5;			
 		
 		// 10% chance of level 6
+		else
+			n := 6;
+		endif
+
+	elseif (magiclevel > 10) 
+
+		// 0% chance of level 1
+		if (power < 0)
+			n := 1;
+
+		// 0% chance of level 2
+		elseif (power < 0)
+			n := 2;
+
+		// 15% chance of level 3
+		elseif (power < 15000)
+			n := 3;
+		
+		// 45% chance of level 4
+		elseif (power < 60000)
+			n := 4;
+
+		// 25% chance of level 5
+		elseif (power < 85000)
+			n := 5;			
+		
+		// 15% chance of level 6
 		else
 			n := 6;
 		endif
@@ -5775,6 +5859,11 @@ function ApplyElementalImmunity( item )
 			break;
 		
 		5:	element := "NecroProtection";
+			if(power == 4)
+				SetObjProperty(item, "isUncommonProt", 1);
+			elseif(power > 4)
+				SetObjProperty(item, "isRareProt", 1);
+			endif
 			break;
 		
 		6:	element := "FreeAction";
@@ -5903,6 +5992,10 @@ endfunction
 
 function CountAvailHitscripts()
 
+	availeffects := {};
+	availspells := {};
+	availgreaters := {};
+
 	hitscriptcfg := ReadConfigFile( ":combat:hitscriptdesc" );
 	var all_keys := GetConfigIntKeys(hitscriptcfg);
 	foreach key in all_keys
@@ -5917,11 +6010,14 @@ function CountAvailHitscripts()
 			availgreaters.append(key);
 		endif
 	endforeach
-
+	//Print("Available on hit scripts: " + availspellonhit.Size() + " spells, " + availeffectonhit.Size() + " effects, " + availgreateronhit.Size() + " greaters.");
 endfunction
 
 
 function CountAvailOnHitscripts()
+	availeffectonhit := {};
+	availspellonhit := {};
+	availgreateronhit := {};
 
 	onhitcfg 		:= ReadConfigFile( ":combat:onhitscriptdesc" );
 	var all_keys := GetConfigIntKeys(onhitcfg);
@@ -5936,7 +6032,7 @@ function CountAvailOnHitscripts()
 			availgreateronhit.append(key);
 		endif
 	endforeach
-	
+	//Print("Available on hit scripts: " + availspellonhit.Size() + " spells, " + availeffectonhit.Size() + " effects, " + availgreateronhit.Size() + " greaters.");
 endfunction
 
 /////////////////////////////////////////////////////////////////////////////////////////////

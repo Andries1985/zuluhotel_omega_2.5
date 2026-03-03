@@ -69,9 +69,6 @@ function Log(base, answer)
 endfunction
 
 
-
-
-
 function Mod(Numerator, Denominator)
 
 // New Mod, to appease Louds, Dundee, and other disgruntled elements :P
@@ -86,8 +83,6 @@ function Mod(Numerator, Denominator)
 	return dividend;
 	
 endfunction
-
-
 
 
 function Remainder(Numerator, Denominator)

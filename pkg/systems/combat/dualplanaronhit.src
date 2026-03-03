@@ -1,11 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 //											
-//	trielementalscript :								
+//	Dual Planar On Hit Script:								
 //											
-//	Make the special weapon to ramdomly cast a lightning on the defender.		
-//	The % of chance that lightning will be cast is included in the itemdesc.	
-//	The lightning follow the normal spell damages and use the wielder magery	
-//	and eval int to determine it.																				
+//	Make the special armor to ramdomly cast a Necro and Holy spells on the attacker.							
 //											
 //////////////////////////////////////////////////////////////////////////////////////////
 use uo;
@@ -13,6 +10,7 @@ use uo;
 include "include/spelldata";
 include "include/damages";
 include "include/random";
+include "include/dotempmods";
 
 program dualplanaronhit( parms )
 
@@ -26,39 +24,55 @@ program dualplanaronhit( parms )
 	var chance := GetObjProperty( armor , "ChanceOfEffect" );
 	if(RandomDiceStr("1d100") <= chance)
 
+
+
 		var targ;
 		if( GetObjProperty( armor , "Cursed" ) )
 			targ := defender;
 		else
 			targ := attacker;
 		endif
+		// Print("Target is: " + targ.name);
+		// Print("Attacker is: " + attacker.name);
+		// Print("Defender is: " + defender.name);
 
-		var spelldmg := (CalcSpellDamage( attacker, targ , 3 )*0.5);
-		spelldmg := Resisted( attacker , targ , 9 , spelldmg );
-
-		PlayMovingEffect( attacker, targ, FX_SPELL_HOLY_BOLT, SPEED_SPELL_HOLY_BOLT, LOOP_SPELL_HOLY_BOLT );
-		PlaySoundEffect( attacker, SFX_SPELL_HOLY_BOLT );
-		ApplyPlanarDamage( targ, defender, 1, spelldmg, DMGID_HOLY );
-		Sleepms( 250 );
-
-		PlayMovingEffect( attacker, targ, FX_SPELL_ABYSSAL_FLAME, SPEED_SPELL_ABYSSAL_FLAME, LOOP_SPELL_ABYSSAL_FLAME );
-		PlaySoundEffect( targ, SFX_SPELL_ABYSSAL_FLAME );
-		ApplyPlanarDamage( targ, defender, 1, spelldmg, DMGID_NECRO );
-		Sleepms( 250 );
-
-		PlayMovingEffect( attacker, targ, FX_SPELL_DIVINE_FURY, SPEED_SPELL_DIVINE_FURY, LOOP_SPELL_DIVINE_FURY );
-		PlaySoundEffect( attacker, SFX_SPELL_DIVINE_FURY );
-		ApplyPlanarDamage( targ, defender, 1, spelldmg, DMGID_HOLY );
-		Sleepms( 250 );
-
-		PlayMovingEffect( attacker, targ, FX_SPELL_SPECTER_TOUCH, SPEED_SPELL_SPECTER_TOUCH, LOOP_SPELL_SPECTER_TOUCH );
-		PlaySoundEffect( targ, SFX_SPELL_SPECTER_TOUCH );
-		ApplyPlanarDamage( targ, defender, 1, spelldmg, DMGID_NECRO );
-
-		if(DEBUG_MODE)
-			PrintTextAbovePrivate( attacker , "I'm dealing this much spell damage: " +spelldmg, attacker );
+		if ( GetObjProperty( targ , "Windsbreath" ) == 1)
+			//Print("Windsbreath is still running!");
+			return 0;
 		endif
-	endif
+
+		SetObjProperty( targ , "Windsbreath" , 1 );
+
+		// var spelldmg := CalcSpellDamage( defender, targ , 5 );
+		// Print("Spell damage before resist in Dual Planar OnHit: " + spelldmg);
+		// spelldmg := Resisted( defender , targ , 9 , spelldmg );
+		// Print("Spell damage after resist in Dual Planar OnHit: " + spelldmg);
+
+		// // PlayMovingEffect( defender, targ, FX_SPELL_HOLY_BOLT, SPEED_SPELL_HOLY_BOLT, LOOP_SPELL_HOLY_BOLT );
+		// // PlaySoundEffect( targ, SFX_SPELL_HOLY_BOLT );
+		// // ApplyPlanarDamage( defender, targ, 1, spelldmg, DMGID_HOLY );
+		// // Sleepms( 250 );
+
+		// // PlayMovingEffect( defender, targ, FX_SPELL_ABYSSAL_FLAME, SPEED_SPELL_ABYSSAL_FLAME, LOOP_SPELL_ABYSSAL_FLAME );
+		// // PlaySoundEffect( targ, SFX_SPELL_ABYSSAL_FLAME );
+		// // ApplyPlanarDamage( defender, targ, 1, spelldmg, DMGID_NECRO );
+		// //Sleepms( 250 );
+
+		// PlayMovingEffect( defender, targ, FX_SPELL_ASTRAL_STORM, SPEED_SPELL_ASTRAL_STORM, LOOP_SPELL_ASTRAL_STORM );
+		// PlaySoundEffect( targ, SFX_SPELL_ASTRAL_STORM );
+		// start_script(":holybook:astralstorm_damage", {defender, targ, 5});
+		// //ApplyPlanarDamage( defender, targ, 1, spelldmg, DMGID_HOLY );
+		// Sleepms( 250 );
+
+		// // PlayMovingEffect( defender, targ, FX_SPELL_SPECTER_TOUCH, SPEED_SPELL_SPECTER_TOUCH, LOOP_SPELL_SPECTER_TOUCH );
+		// // PlaySoundEffect( targ, SFX_SPELL_SPECTER_TOUCH );
+		// // ApplyPlanarDamage( defender, targ, 1, spelldmg, DMGID_NECRO );
+		// // Sleepms( 250 );
+
+		// if(DEBUG_MODE)
+		// 	PrintTextAbovePrivate( defender , "I'm dealing this much spell damage: " +spelldmg, defender );
+		// endif
+	//endif
 	
 	if( basedamage != rawdamage )
 		rawdamage := rawdamage - 15;
@@ -67,8 +81,81 @@ program dualplanaronhit( parms )
 		endif
 	endif
 	if(DEBUG_MODE)
-            PrintTextAbovePrivate( attacker , "I'm dealing this much physical damage: " +rawdamage, attacker );
+            PrintTextAbovePrivate( defender , "I'm dealing this much physical damage: " +rawdamage, defender );
 	endif
 	ApplyTheDamage( defender , attacker , rawdamage );
+	
+	var wasfrozen := 0;
+	if (targ.frozen == 1)
+		wasfrozen := 1;
+	endif
+	PlaySoundEffect( targ , SFX_SPELL_ASTRAL_STORM );
+	var circle := 5;
+	var immunity := IsProtected( defender , targ , circle );
+	if( immunity == IMMUNED )
+		EraseObjProperty( targ , "Windsbreath" );
+		return;
+	endif
+	if( immunity == CURSED )
+		circle := circle * 2;
+	endif
+	var duration := ModifyWithMagicEfficiency( defender , 5 );
+
+	//Reduce time from magic resistance
+	var skillresist := Cint(GetEffectiveSkill(targ, SKILLID_MAGICRESISTANCE));
+	skillresist := 1.0 + (CDbl(skillresist)*3.5/1000.0);
+	duration := duration / skillresist;
+	
+	//Reduce time further for mages?
+	var characterClass := GetObjProperty(targ, "IsMage");
+	var classresist := 1;
+	if (characterClass > 0)
+		classresist := 1+ (CDbl(characterClass)*0.05);
+	endif
+	duration := duration/classresist;
+	
+	//Reduce time due to Holy Protection
+	var holyprot := CInt(GetObjProperty(targ, "HolyProtection"));
+	duration := Cint(duration * (1-(holyprot*0.75)/100));
+
+	//Reduce 25% for Free Action
+	var freeaction := GetObjProperty(targ, "FreeAction");
+	if (freeaction)
+		duration := duration * 0.75;
+	endif
+	
+	if (duration > 0)
+		if (!wasfrozen)
+			targ.frozen := 1;
+			IncRevision(targ);
+		endif
+		BuffOn(targ, "paralyze", 1, CInt(duration));
+		var fxduration := CInt(duration-2);
+		PlayStationaryEffect(targ.x, targ.y, targ.z, 0x17bd, fxduration);
+		PlayStationaryEffect(targ.x-1, targ.y, targ.z, 0x17ca, fxduration);
+		PlayStationaryEffect(targ.x+1, targ.y, targ.z, 0x17cc, fxduration);
+		PlayStationaryEffect(targ.x, targ.y+1, targ.z, 0x17c9, fxduration);
+		PlayStationaryEffect(targ.x, targ.y-1, targ.z, 0x17cb, fxduration);
+		PlayStationaryEffect(targ.x-1, targ.y+1, targ.z, 0x17c8, fxduration);
+		PlayStationaryEffect(targ.x-1, targ.y-1, targ.z, 0x17c5, fxduration);
+		PlayStationaryEffect(targ.x+1, targ.y-1, targ.z, 0x17c6, fxduration);
+		PlayStationaryEffect(targ.x+1, targ.y+1, targ.z, 0x17c7, fxduration);
+	else
+		SendSysMessage(defender, targ.name + " is protected from paralyzing effects!");
+		SendSysMessage(targ,  "You are protected from paralyzing effects!");
+	endif
+
+	start_script(":holybook:astralstorm_damage", {defender, targ, circle});
+	
+	Sleep(CInt(duration));
+	if (!wasfrozen)
+		targ.frozen :=0;
+	endif
+	targ.SetParalyzed(0);
+	//EraseObjProperty( defender , "#Casting" );
+	BuffOff(targ,"paralyze");
+	IncRevision(targ);
+	EraseObjProperty( targ , "Windsbreath" );
+	endif
 
 endprogram

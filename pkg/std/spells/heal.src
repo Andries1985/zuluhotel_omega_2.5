@@ -41,7 +41,7 @@ program cast_heal( parms, spell_id )
 			EraseObjProperty(caster, "#Casting");
 			return 0;
 		endif
-		cast_on := CanTargetSpell(caster, circle, TGTOPT_NEUTRAL + TGTOPT_CHECK_LOS );
+		cast_on := CanTargetSpell(caster, circle, TGTOPT_HELPFUL + TGTOPT_CHECK_LOS );
 		if (!cast_on)
 			return;
 		endif

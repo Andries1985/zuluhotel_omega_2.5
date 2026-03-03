@@ -8,6 +8,7 @@
 use uo;
 
 include "include/damages";
+include "include/classes";
 
 program avengingonhit( parms )
 
@@ -17,16 +18,28 @@ program avengingonhit( parms )
 	var armor 	 := parms[4];
 	var basedamage := parms[5];
 	var rawdamage	 := parms[6];
+	var revenge;
 	
 	ApplyTheDamage( defender , attacker , rawdamage );
 	
 	var absorbed := basedamage - rawdamage;
+	//Print("Absorbed: " + absorbed + " Base: " + basedamage + " Raw: " + rawdamage);
 	if( !absorbed )
+		return;
+	endif
+
+	if( IsPaladin(defender) || IsMysticArcher(defender) || IsMage(defender) )
 		return;
 	endif
 	
 	var power 	:= GetObjProperty( armor , "Powerlevel" );
-	var revenge 	:= Cint( absorbed * power / 100 );
+
+	if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC) )
+		revenge := Cint( absorbed * power / 100 );
+	else
+		revenge := Cint( absorbed * power / 30 );
+	endif
+	
 	
 	var targ;
 	if( GetObjProperty( armor , "Cursed" ) )
@@ -36,5 +49,6 @@ program avengingonhit( parms )
 	endif
 	
 	ApplyTheDamage( targ , defender , revenge );
+	//Print("Revenge: " + revenge);
 
 endprogram

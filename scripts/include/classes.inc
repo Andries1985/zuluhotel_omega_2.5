@@ -1,6 +1,6 @@
 use uo;
 
-include "include/spelldata";
+//include "include/spelldata";
 include "include/itemutil";
 include "include/client";
 include ":staff:include/staff";
@@ -128,6 +128,7 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 					fract_array.append( GetBoneArmorGraphics() );
 					fract_array.append( GetRingmailArmorGraphics() );
 					fract_array.append( GetGraphicsCrafter() );
+					fract_array.append( GetGraphicsPaladin() );
 					break;
 		CLASSEID_RANGER:
 					fract_array.append( GetPlatemailArmorGraphics() );
@@ -451,7 +452,7 @@ function HaveInvalidSkillEnchantmentForClasse( item , classeid )
 endfunction
 
 
-function HaveRestrictedModEnchantmentForClasse( who , item , classeid )
+function HaveRestrictedModEnchantmentForClasse( unused who , unused item , classeid )
 
 	var ret := 0;
 
@@ -677,11 +678,15 @@ function IsProhibitedByClasse( who , item )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BARD ) )
 			ret := 1;
+		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BARD ) )
+			ret := 1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_BLADESINGER	) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_BLADESINGER ) )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BLADESINGER ) )
+			ret := 1;
+		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BLADESINGER ) )
 			ret := 1;
 		elseif( GetObjProperty( item , "int" ) )
 			ret := 1;
@@ -693,17 +698,21 @@ function IsProhibitedByClasse( who , item )
 			//ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_CRAFTER ) )
 			ret := 1;
+		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_CRAFTER ) )
+			ret := 1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_MAGE ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_MAGE ) )
 			ret := 1;
 		elseif( GetObjProperty( item , "str" ) )
 			ret := 1;
-		//elseif( GetObjProperty( item , "dex" ) )
-		//	ret := 1;
+		elseif( GetObjProperty( item , "dex" ) )
+			ret := 1;
 		//elseif( GetObjProperty( item , "ArBonus" ) )
 			//ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MAGE ) )
+			ret := 1;
+		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MAGE ) )
 			ret := 1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER ) )
@@ -715,6 +724,8 @@ function IsProhibitedByClasse( who , item )
 			//ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MYSTIC_ARCHER ) )
 			ret := 1;
+		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MYSTIC_ARCHER ) )
+			ret := 1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_PALADIN ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_PALADIN ) )
@@ -723,19 +734,23 @@ function IsProhibitedByClasse( who , item )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_PALADIN ) )
 			ret := 1;
-		elseif( item.objtype == 0x75b2)
-			ret :=1;
+		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_PALADIN ) )
+			ret := 1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_RANGER ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_RANGER ) )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_RANGER ) )
 			ret := 1;
+		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_RANGER ) )
+			ret := 1;
 		endif
 	elseif( GetObjProperty( who , CLASSEID_THIEF ) )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_THIEF ) )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_THIEF ) )
+			ret := 1;
+		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_THIEF ) )
 			ret := 1;
 		elseif( GetObjProperty( item , "int" ) )
 			ret := 1;
@@ -746,6 +761,8 @@ function IsProhibitedByClasse( who , item )
 		elseif( GetObjProperty( item , "int" ) )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_WARRIOR ) )
+			ret := 1;
+		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_WARRIOR ) )
 			ret := 1;
 		elseif( HaveRestrictedModEnchantmentForClasse( who , item , CLASSEID_WARRIOR ) )
 			ret := 1;

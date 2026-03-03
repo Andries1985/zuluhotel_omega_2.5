@@ -15,6 +15,7 @@ const SPELL_EFFECT_SPEED	:= SPEED_SPELL_GUST_OF_AIR;
 const SPELL_EFFECT_LOOP		:= LOOP_SPELL_GUST_OF_AIR;
 
 program cast_songofair( player )
+
 	var singinghp := GetHp( player );
 	SetObjProperty( player , "#Casting", 1 );
 	var circle := GetCircle( SPELLID_SONG_OF_AIR  );
@@ -38,7 +39,7 @@ program cast_songofair( player )
 				sfx_failure := SFX_TAMB_FAIL;
 				break;
 				
-		default:	PrintTextAbovePrivate( player, "You dont have an Instrument!",player );
+		default:	PrintTextAbovePrivate( player, "You dont have an Instrument!", player );
 				EraseObjProperty( player , "#Casting" );
 				return;
 	endcase
@@ -63,7 +64,7 @@ program cast_songofair( player )
 	var difficulty := (circle*9)+(Random(25)-(spec*8));
 	//PrintTextAbove(player,"Difficulty:"+difficulty);
 	PerformAction( player, 0X021 );
-if (difficulty > peace or difficulty > mus or !spec)
+	if (difficulty > peace or difficulty > mus or !spec)
 		PlaySoundEffect( player , sfx_failure );
 		EraseObjProperty( player , "#Casting" );
 		PrintTextAbove(player,"*"+player.name+" plays a song poorly*");

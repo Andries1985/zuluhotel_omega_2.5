@@ -41,7 +41,7 @@ program cast_earth_blessing( parms )
 	var mod_amount := 0;
 	var duration := GetModDuration( caster );
 	if(GetObjProperty( caster, CLASSEID_MAGE ))
-		mod_amount := Cint( GetModAmount( caster ) * 1.75 );
+		mod_amount := Cint( GetModAmount( caster ) * 1.5 );
 		//Print("In Earth Blessing: Mage mod amount is " + mod_amount);
 	elseif(GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER ))
 		mod_amount := Cint( GetModAmount( caster ) * 3 );

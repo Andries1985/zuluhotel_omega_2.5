@@ -1,7 +1,7 @@
 use os;
 use uo;
 
-include "include/bitwise";
+//include "include/bitwise";
 include "include/client";
 include "include/dotempmods";
 include "include/res";

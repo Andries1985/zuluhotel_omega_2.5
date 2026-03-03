@@ -1,4 +1,4 @@
-include ":champspawns:include/rewards";
+include ":champspawns:rewards";
 
 function ProcessChampSpawnCorpse(corpse)
   if(!GetObjProperty(corpse, "iChampSpawn"))
