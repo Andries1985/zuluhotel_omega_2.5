@@ -49,7 +49,7 @@ program cast_CUNNING( parms )
 	var duration := GetModDuration( caster );
 	
 	if(GetObjProperty( caster, CLASSEID_MAGE ))
-		mod_amount := (Cint( GetModAmount( caster ) ) ) * 0.93;
+		mod_amount := Cint( GetModAmount( caster ) );
 	elseif(GetObjProperty( caster, CLASSEID_PALADIN ))
 		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	elseif(GetObjProperty( caster, CLASSEID_POWERPLAYER ))

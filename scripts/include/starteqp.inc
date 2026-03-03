@@ -765,17 +765,17 @@ elseif (magiclevel == 9)
 elseif (magiclevel == 10)
 	//Print("In level 10 loot for ApplyArmourModNew");
 	// 62% chance
-	if (chance < 1)
+	if (chance < 6200)
 		ApplyARMod( item );
 	// 38% chance
 	else
 		ApplyOnHitScript( item );
 	endif
 else
-		// 65%
-		if (chance < 9000)
+		// 65% --> 60% chance
+		if (chance < 6000)
 			ApplyDmgMod( item );
-		// 35% chance
+		// 40% chance
 		else
 			ApplyOnHitScript( item );
 		endif
@@ -3409,7 +3409,7 @@ function ApplySlayerHitscript( item )
 	set_critical( 1 );
 	
 	var multiplier := 15;
-	var newRoll := magiclevel + 2;
+	var newRoll := magiclevel + 1;
 	if(newRoll > 10)
 		newRoll := 10;
 	endif
@@ -3526,7 +3526,7 @@ endfunction
 function ApplyWeapSkillMod( item )
 
 	var chance := Random(1000)+1;
-	if(chance <= 20)
+	if(chance <= 40)
 		ApplyStatMod( item );
 		SetObjProperty(item, "isRare", 1);
 		return;
@@ -4596,15 +4596,15 @@ function ApplyOnHitScript( item )
 
 	elseif (magiclevel == 9)
 		
-		// 25% chance of spell
+		// 30% chance of spell
 		if (power < 30000)
 			ApplySpellOnHitscript( item ); // Spell on hit
 
-		// 25% chance slayer
+		// 30% chance slayer
 		elseif (power < 60000)
 			ApplyResistantOnHitscript( item ); // 
 
-		// 25% chance effect
+		// 30% chance effect
 		elseif (power < 90000)
 			ApplyEffectOnHitscript( item ); // 
 		
@@ -4616,34 +4616,42 @@ function ApplyOnHitScript( item )
 	elseif (magiclevel == 10)
 		//Print("Applying on hit for 10");
 		
-			// 29% chance of spell
-		if (power < 1)
+		// 30% chance of spell
+		if (power < 30000)
 			ApplySpellOnHitscript( item ); // Spell on hit
 
-		// 30% chance slayer
-		elseif (power < 2)
+		// 20% chance slayer
+		elseif (power < 50000)
 			ApplyResistantOnHitscript( item ); // 
 
-		// 33% chance effect
+		// 25% chance effect
+		elseif (power < 75000)
+			ApplyEffectOnHitscript( item ); // 
+		
+		// 25% chance greater effect
 		else
-			ApplyGreaterOnHitscript( item ); // 
+			ApplyGreaterOnHitscript( item ); //
 		endif
 
 	// Higher than 10
 	else
 		
-		// 28% chance of spell
-		if (power < 28000)
+		// 30% chance of spell
+		if (power < 30000)
 			ApplySpellOnHitscript( item ); // Spell on hit
 
-		// 28% chance slayer
-		elseif (power < 56000)
+		// 10% chance slayer
+		elseif (power < 40000)
 			ApplyResistantOnHitscript( item ); // 
 
-		// 35% chance effect
-		else
+		// 30% chance effect
+		elseif (power < 70000)
 			ApplyEffectOnHitscript( item ); // 
-		endif	
+		
+		// 30% chance greater effect
+		else
+			ApplyGreaterOnHitscript( item ); //
+		endif
 	endif
 endfunction
 
@@ -5320,22 +5328,22 @@ function ApplyStatMod ( item )
 		elseif (power < 30000)
 			n := 3;
 		
-		// 50% chance of level 4
+		// 30% chance of level 4
 		elseif (power < 60000)
 			n := 4;
 
-		// 10% chance of level 5
+		// 30% chance of level 5
 		elseif (power < 90000)
 			n := 5;			
 		
-		// 5% chance of level 6
+		// 10% chance of level 6
 		else
 			n := 6;
 		endif
 			
 
-	// Anything higher than level 9, cap.
-	elseif (magiclevel > 9) 
+	
+	elseif (magiclevel == 10) 
 
 		// 0% chance of level 1
 		if (power < 0)
@@ -5349,15 +5357,43 @@ function ApplyStatMod ( item )
 		elseif (power < 0)
 			n := 3;
 		
-		// 50% chance of level 4
-		elseif (power < 50000)
+		// 48% chance of level 4
+		elseif (power < 48000)
 			n := 4;
 
-		// 20% chance of level 5
-		elseif (power < 80000)
+		// 30% chance of level 5
+		elseif (power < 78000)
 			n := 5;			
 		
-		// 10% chance of level 6
+		// 22% chance of level 6
+		else
+			n := 6;
+		endif
+
+	// Anything higher than level 10, cap.
+	elseif (magiclevel > 10) 
+
+		// 0% chance of level 1
+		if (power < 0)
+			n := 1;
+
+		// 0% chance of level 2
+		elseif (power < 0)
+			n := 2;
+
+		// 20% chance of level 3
+		elseif (power < 0)
+			n := 3;
+		
+		// 40% chance of level 4
+		elseif (power < 40000)
+			n := 4;
+
+		// 35% chance of level 5
+		elseif (power < 75000)
+			n := 5;			
+		
+		// 25% chance of level 6
 		else
 			n := 6;
 		endif
@@ -5655,29 +5691,56 @@ function DetermineImmunityLevel( unused item, unused isimmun := 0, unused modifi
 			
 
 	// Anything higher than level 9, cap.
-	elseif (magiclevel > 9) 
+	elseif (magiclevel == 10) 
 
 		// 0% chance of level 1
 		if (power < 0)
 			n := 1;
 
 		// 0% chance of level 2
-		elseif (power < 1)
+		elseif (power < 0)
 			n := 2;
 
 		// 20% chance of level 3
-		elseif (power < 2)
+		elseif (power < 20000)
 			n := 3;
 		
 		// 50% chance of level 4
-		elseif (power < 3)
+		elseif (power < 70000)
 			n := 4;
 
 		// 20% chance of level 5
-		elseif (power < 4)
+		elseif (power < 90000)
 			n := 5;			
 		
 		// 10% chance of level 6
+		else
+			n := 6;
+		endif
+
+	elseif (magiclevel > 10) 
+
+		// 0% chance of level 1
+		if (power < 0)
+			n := 1;
+
+		// 0% chance of level 2
+		elseif (power < 0)
+			n := 2;
+
+		// 15% chance of level 3
+		elseif (power < 15000)
+			n := 3;
+		
+		// 45% chance of level 4
+		elseif (power < 60000)
+			n := 4;
+
+		// 25% chance of level 5
+		elseif (power < 85000)
+			n := 5;			
+		
+		// 15% chance of level 6
 		else
 			n := 6;
 		endif
