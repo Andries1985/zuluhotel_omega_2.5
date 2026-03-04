@@ -114,7 +114,7 @@ function RecalcPhysicalDmg( attacker, defender, weapon, armor, byref basedamage,
 		SendSysMessage(attacker, "MY opponents AR is: "+ar, FONT_NORMAL, 2601 );
 	endif
 
-	slayerMultiply := GetSlayMultiplier(weapon, defender);
+	var slayerMultiply := GetSlayMultiplier(weapon, defender);
 
 	if(DEBUG_MODE && slayerMultiply > 1)
 		SendSysMessage(attacker, "Slayer Multiplier: "+slayerMultiply, FONT_NORMAL, 2601 );
