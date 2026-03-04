@@ -16,9 +16,10 @@ program critstaminahit(attacker, defender, weapon, armor, basedamage, rawdamage)
 		attacker 	:= attacker[1];
 	endif
 
-	// Critical hit check (from crithit.src)
+	// Critical hit check (from crithit.src) based on player classe level plus one (items can always crit, even when unclassed)
+	var classeLevel := GetClasseLevel(attacker) + 1;
 	var crithit := 0;
-	var critchance := 5 * warrior;
+	var critchance := 5 * classeLevel;
 	if((Random(100) + 1) <= critchance)
 		crithit := 1;
 	endif
