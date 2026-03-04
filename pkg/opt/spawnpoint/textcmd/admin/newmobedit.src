@@ -16,7 +16,7 @@ include "include/client";
 include ":gumps:gumps";
 include ":gumps:gumps_ex";
 include "include/spelldata";
-include "include/math";
+//include "include/math";
 
 const TEXT_COLOR := 657;
 

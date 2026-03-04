@@ -58,7 +58,14 @@ function tellinfo(who)
 		" The proud Ki Rin awaits your call! ",
 		" The imposing Polar Bear awaits your call! ",
 		" The mighty Beetle awaits your call! ",
-		" The legendary Wolf awaits your call! "};
+		" The legendary Wolf awaits your call! ",
+		" The Loopy Llama awaits your call! ",
+		" The majestic Unicorn awaits your call! ",
+		" The savage Ridgeback awaits your call! ",
+		" The armored Swamp Dragon awaits your call! ",
+		" The Ridgeback awaits your call! ",
+		" Mondains Steed awaits your call! ",
+		" The Skeletal Steed awaits your call! "};
 
 	say(sales_pitch[randomint(sales_pitch.Size())+1]);
 

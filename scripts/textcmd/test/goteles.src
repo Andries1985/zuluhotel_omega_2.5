@@ -11,7 +11,7 @@ program gototele(who)
 		j:=0;
 	endif
 
-	print("j "+j);
+	//print("j "+j);
 
 	if(!who.getprop("CheckingTeleporters"))
 		if(YesNo(who, "Continue?"))

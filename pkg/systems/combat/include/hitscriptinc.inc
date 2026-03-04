@@ -10,14 +10,16 @@ include "include/client";
 include "include/dotempmods";
 include "include/classes";
 include "include/damages";
-include "include/bitwise";
+//include "include/bitwise";
 include "include/attributes";
-include ":lootlottery:storedamage";
+//include ":lootlottery:storedamage";
 include "include/skillpoints";
 
 var combat_settingscfg := ReadConfigFile(":combat:settings");
 
 function RecalcDmg( attacker, defender, weapon, armor, byref basedamage, piercing := 0 )
+
+	//Print("In RecalcDmg with basedamage: " + basedamage);
 
 	var noPKatk := GetObjProperty(attacker, "NOPKAREA");
 	var noPKdef := GetObjProperty(defender, "NOPKAREA");
@@ -57,6 +59,8 @@ endfunction
 
 function RecalcPhysicalDmg( attacker, defender, weapon, armor, byref basedamage, piercing := 0 )
 
+	//Print("In RecalcPhysicalDmg with basedamage: " + basedamage);
+	
 	var rawdamage;
 	var absorbed;
 	var ar := defender.ar;
@@ -160,6 +164,8 @@ endfunction
 
 function RecalcAstralDmg( attacker, defender, weapon, armor, byref basedamage, piercing := 0 )
 
+	//Print("In RecalcAstralDmg with basedamage: " + basedamage);
+
 	var rawdamage;
 	weapon := weapon;
 	var absorbed := 0;
@@ -246,6 +252,8 @@ endfunction
 
 function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 
+	//Print("In CalcPhysicalDamage with basedamage: " + basedamage);
+
     var total_skills 			:= GetClasseSkillTotal(attacker, GetClass(attacker));
 	var avg_skill				:= total_skills / 8;
 	var level 					:= GetClasseLevel(attacker);
@@ -289,7 +297,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		elseif(GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
 			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_TACTICS) * 0.003;
 		elseif(GetObjProperty( attacker, CLASSEID_MYSTIC_ARCHER))
-			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_EVALINT) * 0.007;
+			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_EVALINT) * 0.005;
 		endif
 		if(DEBUG_MODE)
 			SendSysMessage( attacker, "Skill Bonus: "+basedamage, FONT_NORMAL, 2569 );
@@ -319,7 +327,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		endif
 		// Skill Bonuses
 		if( GetObjProperty(attacker, CLASSEID_WARRIOR) || GetObjProperty(attacker, CLASSEID_POWERPLAYER) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
-			basedamage *=  1 + GetAttribute( attacker, ATTRIBUTEID_ANATOMY ) * 0.004 ;
+			basedamage *=  1 + GetAttribute( attacker, ATTRIBUTEID_ANATOMY ) * 0.005 ;
 		elseif( GetObjProperty( attacker, CLASSEID_THIEF ) && (weapon.attribute == ATTRIBUTEID_FENCING))
 			basedamage *= 1 + avg_skill * 0.005;
 		elseif( GetObjProperty(attacker, CLASSEID_PALADIN) )
@@ -355,12 +363,12 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			// Damage reduction from NPC's.
 			if( attacker.isA(POLCLASS_NPC) )
 			//Print("Base Damage Pala 1: " + basedamage);
-				basedamage := basedamage / ( (ClasseBonusByLevel( defenderlevel ) * 0.8 ) );
+				basedamage := basedamage / ( (ClasseBonusByLevel( defenderlevel ) * 0.5 ) );
 			//Print("Base Damage Pala 2: " + basedamage);
 			// Damage reduction from Players.
 			else
 				defenderlevel := max(0, defenderlevel-1);
-				basedamage := basedamage / ClasseBonusByLevel( defenderlevel );
+				basedamage := basedamage / (ClasseBonusByLevel( defenderlevel ) * 0.5);
 			endif
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Paladin reduction: "+basedamage, FONT_NORMAL, 2555 );
@@ -390,10 +398,10 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 
 		// Mage increased damage received.
 		if( GetObjProperty( defender, CLASSEID_MAGE ) )
-			basedamage *= 1.5;
+			basedamage := CInt( basedamage * 1.5 );
 			// Warrior deals more damage towards mage.
 			if( GetObjProperty( attacker, CLASSEID_WARRIOR ))
-				basedamage *= 1.1;
+				basedamage := CInt( basedamage * 1.1 );
 			endif
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Mage increase: "+basedamage, FONT_NORMAL, 2555 );
@@ -401,18 +409,20 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		endif
 	endif
 	//================================= Global changes ===================================\\
-	// PvP slowdown.
-	if(DEBUG_MODE)
-		if( !defender.isA(POLCLASS_NPC) && GetGlobalProperty("ReducePhysical"))
-			basedamage *= GetGlobalProperty("ReducePhysical");
+	// Physical PvP slowdown.
+	// if(DEBUG_MODE)
+	// 	if( !defender.isA(POLCLASS_NPC) && GetGlobalProperty("ReducePhysical"))
+	// 		basedamage *= GetGlobalProperty("ReducePhysical");
+	// 	endif
+	// else
+		if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
+			//if( !defender.isA(POLCLASS_NPC))
+				//Print("Applying PvP Physical reduction. Basedamage is: " + basedamage);
+				basedamage := CInt( basedamage * 0.4 );
+				//Print("Basedamage after PvP Physical reduction is: " + basedamage);
+			//endif
 		endif
-	else
-		if(!attacker.isA(POLCLASS_NPC))
-			if( !defender.isA(POLCLASS_NPC))
-				basedamage *= 0.4;
-			endif
-		endif
-	endif
+	// endif
 	
 	// Ranged distance calculations for players only.
 	if(!attacker.isA(POLCLASS_NPC))
@@ -543,6 +553,8 @@ endfunction
 
 
 function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
+
+	//Print("In DealDamage with basedamage: " + basedamage);
 
 	var noPKatk := GetObjProperty(attacker, "NOPKAREA");
 	var noPKdef := GetObjProperty(defender, "NOPKAREA");

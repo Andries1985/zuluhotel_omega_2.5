@@ -1,7 +1,12 @@
 use math;
+use os;
+use uo;
 
-include "include/bitwise";
+//include "include/bitwise";
 include ":gumps:yesno";
+include "include/math";
+include "include/random";
+include "include/client";
 
 const ORDERGUARDTYPE := 1;
 const CHAOSGUARDTYPE := 2;
@@ -37,7 +42,7 @@ function AddVirtue(who, amount :=1, nomsg:=0)
 		endif
 	endif
 	SetObjProperty(who,"virtue",yourvirtue);
-	if (GetObjProperty(who,"guardtype") = ORDERGUARDTYPE)
+	if (GetObjProperty(who,"guardtype") == ORDERGUARDTYPE)
 		if ( Random(8) < amount ) BonusHonor(who); endif
 	endif
 
@@ -48,7 +53,7 @@ function AwardVirtueForRes(you,them)
 	var lastres := GetObjProperty(you,"#lastres");
 	if (!lastres) lastres := { }; endif
 	foreach person in lastres
-		if (person = them.serial) return; endif
+		if (person == them.serial) return; endif
 	endforeach
 	lastres.append(them.serial);
 	if ( lastres.size() > 3 ) lastres.erase(1); endif
@@ -132,12 +137,12 @@ function CanJoin(guard, recruit, guardtype, shieldtype)
 
 	if (recruit.npctemplate) return; endif
 	if (!recruit.acctname) return; endif
-	if (guard = recruit) return; endif
+	if (guard == recruit) return; endif
 
 	var yourtype := GetObjProperty(recruit,"guardtype");
 	if (yourtype)
 		SendSysMessage(guard,"They're already a Virtue Guard.");
-		if (yourtype = guardtype)
+		if (yourtype == guardtype)
 		  var newshield := CreateItemAtLocation(5288 , 1176 , 0, shieldtype,1);
 		  if (!EquipItem(recruit,newshield))
 		    DestroyItem(newshield);
@@ -197,7 +202,7 @@ function BestowHonor(me, you, howmuch := 0)
 
 	if (you.npctemplate) return; endif
 	if (!you.acctname) return; endif
-	if (me = you) return; endif
+	if (me == you) return; endif
 
 	var yourtype := GetObjProperty(you,"guardtype");
 	if (!yourtype)
@@ -274,7 +279,7 @@ function Censure( me, you )
 
 	if (you.npctemplate) return; endif
 	if (!you.acctname) return; endif
-	if (me = you) return; endif
+	if (me == you) return; endif
 
 	var yourtype := GetObjProperty(you,"guardtype");
 	if (!yourtype)

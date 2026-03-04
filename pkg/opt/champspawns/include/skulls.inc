@@ -1,3 +1,6 @@
+use os;
+use uo;
+
 function wipeItemsArray(Items)
   foreach item in Items
     item := SystemFindObjectBySerial(item);

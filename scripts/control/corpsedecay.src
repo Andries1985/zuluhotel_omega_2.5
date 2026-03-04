@@ -39,7 +39,9 @@ function ProcessHumanCorpseDecaying( corpse )
 		Sleep( Cint(DECAY_TIME_PLAYER_CORPSE * 60 / 2) );
 		if( !GetObjProperty( corpse, "NoDecay" ) )
 			foreach item in EnumerateItemsInContainer(corpse)
+				//Print("Item " + item.objtype + " On Corpse");
 				if( item.container == corpse )
+					//Print("Item = to corpse:  Moving item " + item.objtype + " to the ground");
 					MoveObjectToLocation( item, corpse.x, corpse.y, corpse.z, corpse.realm, MOVEOBJECT_NORMAL );
 					if(corpse.multi)
 						item.decayat := 0;

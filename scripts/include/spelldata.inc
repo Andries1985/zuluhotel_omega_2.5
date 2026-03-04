@@ -14,16 +14,18 @@ use basic;
 use cfgfile;
 use polsys;
 
-include "include/client";
+//include "include/client";
 include "include/random";
 include "include/eventid";
 include "include/classes";
 include "include/damages";
-include "include/areas";
+//include "include/areas";
 include "include/skillpoints";
 include "include/attributes";
 include "include/difficulty";
-include ":lootlottery:storedamage";
+//include ":lootlottery:storedamage";
+include "include/math";
+
 
 ////////////////////////////////
 // Spell functions' constants //
@@ -109,15 +111,34 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 	endif
 
 	var resultprot := GetResultingElementalProt( cast_on, element );
-	
+	//var magebonusdamage := 0;
+	//var mageequippedint := 0;
+	//var newdamage := 0;
+
 	if( resultprot < 100 )
 		if( GetObjProperty( caster , CLASSEID_MAGE ) )
 			var level := GetClasseLevel(caster);
 			resultprot := resultprot - (level * 3);
 			resultprot := Cint(dmg * resultprot / 100);
-			dmg := dmg - resultprot;	
+			dmg := dmg - resultprot;
+			// foreach thing in ListEquippedItems( caster )
+			// 	if( GetObjProperty( thing, "int" ) )
+			// 		mageequippedint := mageequippedint + Cint( GetObjProperty( thing, "int" ) );
+			// 		//Print("Found item with int: " + thing.desc + " with int value of " + GetObjProperty( thing, "int" ) );
+			// 		//Print("Total mage int is now: " + mageequippedint);
+			// 	endif
+			// endforeach
+			//Print("Damage: " + dmg + " Level: " + level + " Mage int: " + mageequippedint);
+			// newdamage := mageequippedint / 3  * level / 10;
+			// //Print("New damage is " + newdamage);
+			// dmg := dmg + newdamage;
+			//Print("Damage after mage bonus: " + dmg);
 		else
 			dmg := dmg - Cint(dmg * resultprot / 100);	
+		endif
+		if(DEBUG_MODE)
+			PrintTextAbovePrivate( caster , "I've dealt this much Elemental damage: " +dmg, caster );
+			PrintTextAbovePrivate( cast_on , "I received this much Elemental damage: " +dmg, cast_on );
 		endif
 
 		ApplyTheDamage( cast_on , caster , Resisted( caster, cast_on, circle, dmg ) , DMGID_MAGIC + element );
@@ -145,6 +166,10 @@ function ApplyElementalDamageNoResist( on_who, by_who, dmg, element )
 
 	if( resultprot < 100 )
 		dmg := dmg - Cint(dmg * resultprot / 100);	
+		if(DEBUG_MODE)
+			PrintTextAbovePrivate( by_who , "I've dealt this much Elemental damage: " +dmg, by_who );
+			PrintTextAbovePrivate( on_who , "I received this much Elemental damage: " +dmg, on_who );
+		endif
 		ApplyTheDamage( on_who , by_who ,dmg, element );
 	else
 		// Toadstool - heals x% of the damage that;s over 100. so 120% protection heals 20% of the damage
@@ -169,7 +194,7 @@ function ApplyPlanarDamage( caster, cast_on, circle, dmg, plane )
 	var resultprot := GetResultingPlaneProtection( cast_on, plane );
 
 	if( resultprot < 100 )
-		dmg := dmg - Cint(dmg * resultprot / 100);	
+		dmg := dmg - Cint(dmg * resultprot / 100);
 		ApplyTheDamage( cast_on , caster , Resisted( caster, cast_on, circle, dmg ) , DMGID_MAGIC + plane );
 	else
 		// Toadstool - heals x% of the damage that;s over 100. so 120% protection heals 20% of the damage
@@ -553,6 +578,25 @@ function GetMagicEfficiencyPenalty( who )
 		penalty := 100;
 	endif
 
+	var mageequippedint := 0;
+	var magebonusefficiency := 0;
+	if( GetObjProperty( who, CLASSEID_MAGE ) )
+		foreach mageitem in ListEquippedItems( who )
+			if( GetObjProperty( mageitem, "int" ) )
+				mageequippedint := mageequippedint + Cint( GetObjProperty( mageitem, "int" ) );
+				//Print("Found item with int: " + mageitem.desc + " with int value of " + GetObjProperty( mageitem, "int" ) );
+				//Print("Total mage int is now: " + mageequippedint);
+			endif
+		endforeach
+		//Print("Magic efficiency penalty is: " + penalty);
+		//Print("Mage equipped int is: " + mageequippedint);
+		magebonusefficiency := Trunc((mageequippedint / 10), 0);
+		//Print("Mage bonus efficiency is: " + magebonusefficiency);
+		penalty := Cint( penalty - magebonusefficiency );
+		//Print("In GMEP: Total magic efficiency penalty is: " + penalty);
+
+	endif
+
 	return Cint(penalty);
 
 endfunction
@@ -774,6 +818,7 @@ function ModifyWithMagicEfficiency( who, val )
 		return 0;
 	endif
 
+	//Print("In MwME: Magic efficiency penalty is: " + penalty + "%" );
 	return CInt( val * ( 100 - penalty ) / 100 );
 
 endfunction
@@ -911,6 +956,7 @@ endfunction
 
 function Resisted( caster , cast_on , circle , dmg )
 
+	//Print("Calculating resistance for " + cast_on.name + " against spell of circle " + circle + " with base damage " + dmg);
 	if( cast_on.dead ) return 0; endif
 	if( caster.dead ) return 0; endif
 
@@ -1360,6 +1406,7 @@ points := CInt(points*0.8);
  return 1;
 endfunction
 
+/*  Old Code for Smart AoE and Smart Boost, not used anymore but kept for reference
 function SmartAoE( caster, victims)
 
 	var caster_RPer := GetObjProperty(caster, "IsRPer");
@@ -1466,4 +1513,168 @@ function SmartBoost(caster, affected)
 	return affected;
 
 endfunction
+*/
 
+function SmartAoE( caster, victims)
+
+	var caster_RPer := GetObjProperty(caster, "IsRPer");
+	var caster_noPK := GetObjProperty(caster, "NOPKAREA");
+	var caster_CW := GetObjProperty(caster, "cwarring");
+	var caster_CWcolor := GetObjProperty(caster,"cwcolor");
+	var to_remove := {};
+	var i;
+	if(DEBUG_MODE)
+		SendSysMessage( caster, "caster_noPK "+caster_noPK, color :=53);
+		SendSysMessage( caster, "caster_CW "+caster_CW, color :=53);
+		SendSysMessage( caster, "caster_CWcolor "+caster_CWcolor, color :=53);
+	endif
+	for(i:=1; i<=victims.Size(); i:=i+1)
+		var victim_RPer := GetObjProperty(victims[i], "IsRPer" );
+		var victim_noPK := GetObjProperty(victims[i], "NOPKAREA");
+		var victim_CWcolor := GetObjProperty(victims[i],"cwcolor");
+		var same_faction := caster_RPer == victim_RPer;
+		var same_CWcolor := 0;
+		if (caster_CW)
+			if (GetGlobalProperty("cwtype") != "k")
+				same_CWcolor := victim_CWcolor == caster_CWcolor;
+			endif
+		endif
+		if(DEBUG_MODE)
+			SendSysMessage( caster, victims[i].name, color :=63);
+			SendSysMessage( caster, "victim_noPK "+victim_noPK, color :=53);
+			SendSysMessage( caster, "same_faction "+same_faction, color :=53);
+			SendSysMessage( caster, "same_CWcolor "+same_CWcolor, color :=53);
+		endif
+		if ((victims[i].isa(POLCLASS_NPC)) && (victims[i].master == caster))
+			to_remove.append(i);
+		elseif ((victims[i].isa(POLCLASS_NPC)) && victims[i].master && caster.party && (victims[i].master.party == caster.party))
+			to_remove.append(i);
+		elseif ((!victims[i].isa(POLCLASS_NPC)) && caster.party && (victims[i].party == caster.party))
+			to_remove.append(i);
+		elseif (!caster.isa(POLCLASS_NPC) && !caster.cmdlevel && !victims[i].isa(POLCLASS_NPC))
+			if((caster_noPK) || (victim_noPK) || (!same_faction) || (same_CWcolor))
+				if (DEBUG_MODE)
+					SendSysMessage( caster, "erased", color :=34);
+				endif
+				to_remove.append(i);
+			endif
+		endif
+	endfor
+
+	// Erase in reverse order so indices stay valid
+	for(i:=to_remove.Size(); i>=1; i:=i-1)
+		if(DEBUG_MODE)
+			SendSysMessage( caster, "SmartAoE removing: " + victims[to_remove[i]].name, color :=34);
+		endif
+		victims.erase(to_remove[i]);
+	endfor
+
+	return victims;
+endfunction
+
+function SmartBoost(caster, affected)
+
+    var caster_RPer := GetObjProperty(caster, "IsRPer");
+    var caster_CW := GetObjProperty(caster, "cwarring");
+    var caster_CWcolor := GetObjProperty(caster,"cwcolor");
+    var to_remove := {};
+    var i;
+    if(DEBUG_MODE)
+        SendSysMessage( caster, "caster_RPer "+caster_RPer, color :=53);
+        SendSysMessage( caster, "caster_CW "+caster_CW, color :=53);
+        SendSysMessage( caster, "caster_CWcolor "+caster_CWcolor, color :=53);
+    endif
+    for(i:=1; i<=affected.Size(); i:=i+1)
+        var victim_RPer := GetObjProperty(affected[i], "IsRPer" );
+        var victim_CWcolor := GetObjProperty(affected[i],"cwcolor");
+        var same_faction := caster_RPer == victim_RPer;
+        var same_CWcolor := 1;
+        if (caster_CW)
+            if (GetGlobalProperty("cwtype") != "k")
+                same_CWcolor := victim_CWcolor == caster_CWcolor;
+            endif
+        endif
+        if(DEBUG_MODE)
+            SendSysMessage( caster, affected[i].name, color :=63);
+            SendSysMessage( caster, "victim_RPer "+victim_RPer, color :=53);
+            SendSysMessage( caster, "same_faction "+same_faction, color :=53);
+            SendSysMessage( caster, "same_CWcolor "+same_CWcolor, color :=53);
+        endif
+        if (!caster.isa(POLCLASS_NPC) && !caster.cmdlevel && !affected[i].isa(POLCLASS_NPC))
+            if((!same_faction) || (!same_CWcolor))
+                if (DEBUG_MODE)
+                    SendSysMessage( caster, "erased", color :=34);
+                endif
+                to_remove.append(i);
+            endif
+        endif
+    endfor
+
+    // Erase in reverse order so indices stay valid
+    for(i:=to_remove.Size(); i>=1; i:=i-1)
+        if(DEBUG_MODE)
+            SendSysMessage( caster, "SmartBoost removing: " + affected[to_remove[i]].name, color :=34);
+        endif
+        affected.erase(to_remove[i]);
+    endfor
+
+    return affected;
+
+endfunction
+
+function SmartAoEPartyAgnostic( caster, victims)
+
+	var caster_RPer := GetObjProperty(caster, "IsRPer");
+	var caster_noPK := GetObjProperty(caster, "NOPKAREA");
+	var caster_CW := GetObjProperty(caster, "cwarring");
+	var caster_CWcolor := GetObjProperty(caster,"cwcolor");
+	var to_remove := {};
+	var i;
+	if(DEBUG_MODE)
+		SendSysMessage( caster, "caster_noPK "+caster_noPK, color :=53);
+		SendSysMessage( caster, "caster_CW "+caster_CW, color :=53);
+		SendSysMessage( caster, "caster_CWcolor "+caster_CWcolor, color :=53);
+	endif
+	for(i:=1; i<=victims.Size(); i:=i+1)
+		var victim_RPer := GetObjProperty(victims[i], "IsRPer" );
+		var victim_noPK := GetObjProperty(victims[i], "NOPKAREA");
+		var victim_CWcolor := GetObjProperty(victims[i],"cwcolor");
+		var same_faction := caster_RPer == victim_RPer;
+		var same_CWcolor := 0;
+		if (caster_CW)
+			if (GetGlobalProperty("cwtype") != "k")
+				same_CWcolor := victim_CWcolor == caster_CWcolor;
+			endif
+		endif
+		if(DEBUG_MODE)
+			SendSysMessage( caster, victims[i].name, color :=63);
+			SendSysMessage( caster, "victim_noPK "+victim_noPK, color :=53);
+			SendSysMessage( caster, "same_faction "+same_faction, color :=53);
+			SendSysMessage( caster, "same_CWcolor "+same_CWcolor, color :=53);
+		endif
+		// if ((victims[i].isa(POLCLASS_NPC)) && (victims[i].master == caster))
+		// 	to_remove.append(i);
+		// elseif ((victims[i].isa(POLCLASS_NPC)) && victims[i].master && caster.party && (victims[i].master.party == caster.party))
+		// 	to_remove.append(i);
+		// elseif ((!victims[i].isa(POLCLASS_NPC)) && caster.party && (victims[i].party == caster.party))
+		// 	to_remove.append(i);
+		if (!caster.isa(POLCLASS_NPC) && !caster.cmdlevel && !victims[i].isa(POLCLASS_NPC))
+			if((caster_noPK) || (victim_noPK) || (!same_faction) || (same_CWcolor))
+				if (DEBUG_MODE)
+					SendSysMessage( caster, "erased", color :=34);
+				endif
+				to_remove.append(i);
+			endif
+		endif
+	endfor
+
+	// Erase in reverse order so indices stay valid
+	for(i:=to_remove.Size(); i>=1; i:=i-1)
+		if(DEBUG_MODE)
+			SendSysMessage( caster, "SmartAoE removing: " + victims[to_remove[i]].name, color :=34);
+		endif
+		victims.erase(to_remove[i]);
+	endfor
+
+	return victims;
+endfunction

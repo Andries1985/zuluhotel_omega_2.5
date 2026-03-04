@@ -10,7 +10,7 @@ program parry()
 
 endprogram
 
-exported function ParryAdvancement( attacker, weapon, defender, shield )
+exported function ParryAdvancement( unused attacker, unused weapon, defender, unused shield )
 
 	AwardSkillPoints( defender, SKILLID_PARRY, 30 );
 

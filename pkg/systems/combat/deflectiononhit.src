@@ -29,7 +29,7 @@ program deflectiononhit( parms )
 	else
 		
 		if( basedamage != rawdamage )
-			rawdamage := rawdamage - 5;
+			rawdamage := rawdamage - 15;
 			if( rawdamage < 1 )
 				rawdamage := 1;
 			endif

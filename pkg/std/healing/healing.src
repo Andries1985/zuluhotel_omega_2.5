@@ -78,7 +78,8 @@ program use_bandages( character , bandages )
 
 	var withvet := { "Animal"	,
 			   "Dragonkin"	,
-			   "Ratkin"		};
+			   "Ratkin"		,
+			   "Ethereal"		};
 
 	SendSysmessage( character, "Who would you like to heal?" );
 	var patient := Target( character , TGTOPT_HELPFUL + TGTOPT_CHECK_LOS );
