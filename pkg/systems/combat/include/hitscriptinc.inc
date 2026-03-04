@@ -17,6 +17,47 @@ include "include/skillpoints";
 
 var combat_settingscfg := ReadConfigFile(":combat:settings");
 
+function GetSlayMultiplier(weapon, defender)
+
+	var slaytype := GetObjProperty(weapon, "SlayType");
+	if(!slaytype)
+		return 1;
+	endif
+
+	if(slaytype == "WhoKnows")
+		case(RandomInt(16))
+			0:	slaytype := "Slime";
+			1:	slaytype := "Ratkin";
+			2:	slaytype := "Plant";
+			3:	slaytype := "Animal";
+			4:	slaytype := "Beholder";
+			5:	slaytype := "Orc";
+			6:	slaytype := "Terathan";
+			7:	slaytype := "Ophidian";
+			8:	slaytype := "Animated";
+			9:	slaytype := "Gargoyle";
+			10:	slaytype := "Troll";
+			11:	slaytype := "Giantkin";
+			12:	slaytype := "Elemental";
+			13:	slaytype := "Undead";
+			14:	slaytype := "Daemon";
+			15:	slaytype := "Dragonkin";
+		endcase
+	endif
+
+	var def_type := GetObjProperty(defender, "Type");
+	foreach creature in SplitWords(slaytype)
+		if(def_type == creature)
+			return 2;
+		elseif((creature == "Human") and !defender.npctemplate)
+			return 1.5;
+		endif
+	endforeach
+
+	return 1;
+
+endfunction
+
 function RecalcDmg( attacker, defender, weapon, armor, byref basedamage, piercing := 0 )
 
 	//Print("In RecalcDmg with basedamage: " + basedamage);
@@ -25,11 +66,11 @@ function RecalcDmg( attacker, defender, weapon, armor, byref basedamage, piercin
 	var noPKdef := GetObjProperty(defender, "NOPKAREA");
 
 	var _any_npc := 0;
-	if(attacker.isa(POLCLASS_NPC) || defender.isa(POLCLASS_NPC)) 
+	if(attacker.isa(POLCLASS_NPC) || defender.isa(POLCLASS_NPC))
 		_any_npc := 1;
 	endif
 
-	if((!attacker.cmdlevel && !_any_npc && defender != attacker) && (noPKatk || noPKdef))	
+	if((!attacker.cmdlevel && !_any_npc && defender != attacker) && (noPKatk || noPKdef))
 		attacker.setwarmode(0);
 		defender.setwarmode(0);
 		return;
@@ -38,7 +79,7 @@ function RecalcDmg( attacker, defender, weapon, armor, byref basedamage, piercin
 	var noSAatk := GetObjProperty(attacker, "InSafeArea");
 	var noSAdef := GetObjProperty(defender, "InSafeArea");
 
-	if((!attacker.cmdlevel && !_any_npc && defender != attacker) && (noSAatk || noSAdef))	
+	if((!attacker.cmdlevel && !_any_npc && defender != attacker) && (noSAatk || noSAdef))
 		if(!Getobjproperty(attacker, "pvping"))
 			attacker.setwarmode(0);
 		endif
@@ -60,7 +101,7 @@ endfunction
 function RecalcPhysicalDmg( attacker, defender, weapon, armor, byref basedamage, piercing := 0 )
 
 	//Print("In RecalcPhysicalDmg with basedamage: " + basedamage);
-	
+
 	var rawdamage;
 	var absorbed;
 	var ar := defender.ar;
@@ -72,6 +113,14 @@ function RecalcPhysicalDmg( attacker, defender, weapon, armor, byref basedamage,
 	if(DEBUG_MODE)
 		SendSysMessage(attacker, "MY opponents AR is: "+ar, FONT_NORMAL, 2601 );
 	endif
+
+	slayerMultiply := GetSlayMultiplier(weapon, defender);
+
+	if(DEBUG_MODE && slayerMultiply > 1)
+		SendSysMessage(attacker, "Slayer Multiplier: "+slayerMultiply, FONT_NORMAL, 2601 );
+	endif
+
+	basedamage := basedamage * slayerMultiply;
 
 	if(GetObjProperty( attacker , CLASSEID_THIEF ) || GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_BARD))
 		if(weapon.graphic in ClassWeapons(GetClass(attacker)))
@@ -423,7 +472,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			//endif
 		endif
 	// endif
-	
+
 	// Ranged distance calculations for players only.
 	if(!attacker.isA(POLCLASS_NPC))
 		basedamage := DistanceCheck(attacker, defender, weapon, basedamage);
@@ -431,7 +480,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			SendSysMessage( attacker, "Distance: "+basedamage, FONT_NORMAL, 2569 );
 		endif
 	endif
-	
+
 	return basedamage;
 
 endfunction
@@ -483,21 +532,21 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
     if( !shield_defender.IsA( POLCLASS_ARMOR ) )
     	weapon_defender := GetEquipmentByLayer( defender, LAYER_HAND2 );
     endif
-		
+
 	if( shield_defender.IsA( POLCLASS_ARMOR ) || weapon_defender.IsA( POLCLASS_WEAPON ) )
 		var parry_chance := GetAttribute( defender, ATTRIBUTEID_PARRY );
 		var parry_roll := ( RandomInt( 750 ) + 1 );
-		
+
 		parry_chance := CInt( parry_chance * ClasseBonusByLevel( defender_level ) );
 
 		if( ( parry_chance < 35 ) && shield_defender.IsA( POLCLASS_ARMOR ) )
 			AwardSkillPoints( defender, SKILLID_PARRY, 7 );
 		endif
-		
+
 		if( parry_roll <= parry_chance )
 			var absorbed := 0;
 			if( shield_defender.IsA( POLCLASS_ARMOR ) )
-				
+
 				if( weapon.attribute == ATTRIBUTEID_ARCHERY )
 					absorbed := CInt( shield_defender.ar / 2 );
 					SendSysMessage( defender, "You successfully deflected the arrow." );
@@ -522,19 +571,19 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 					SendSysMessage( Attacker, "Your opponent parried the attack." );
 					PerformAction( defender, ANIM_ATTACK_XBOW );
 					AwardSkillPoints( defender, SKILLID_PARRY, 20 );
-				else 
+				else
 					absorbed := 0;
 					//Print($"Non-Parry Weapon Absorbed " + absorbed);
 					//SendSysMessage( defender, "You shouldnt be able to parry the attack." );
 				endif
 				CheckEquipmentDamage(defender, weapon_defender);
 			endif
-			
+
 			//damage shield chance on parry
 
 			//Print($"Base Damage " + basedamage);
 			basedamage -= absorbed;
-			
+
 			if( basedamage < 0 )
 				basedamage := 0;
 			endif
@@ -546,7 +595,7 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 
       	endif
     endif
-	
+
 	return basedamage;
 
 endfunction
@@ -560,11 +609,11 @@ function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 	var noPKdef := GetObjProperty(defender, "NOPKAREA");
 
 	var _any_npc := 0;
-	if(attacker.isa(POLCLASS_NPC) || defender.isa(POLCLASS_NPC)) 
+	if(attacker.isa(POLCLASS_NPC) || defender.isa(POLCLASS_NPC))
 		_any_npc := 1;
 	endif
 
-	if((!attacker.cmdlevel && !_any_npc && defender != attacker) && (noPKatk || noPKdef))	
+	if((!attacker.cmdlevel && !_any_npc && defender != attacker) && (noPKatk || noPKdef))
 		attacker.setwarmode(0);
 		defender.setwarmode(0);
 		return;
@@ -593,7 +642,7 @@ function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 					EraseObjProperty( weapon , "SkillPoisoned" );
 					return 0;
 				endif
-				
+
 				if(GetObjProperty( weapon, "Cursed"))
 					defender := attacker;
 				endif
@@ -612,13 +661,13 @@ function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 						SetObjProperty( defender , "poisonnpc" , 1 );
 					endif
 				endif
-					
+
 				var maxx := plvl + psnboost;
 				if(maxx >= 9)
 					maxx := 9;
 				endif
-				
-				if( !GetObjProperty( attacker , CLASSEID_THIEF ) ) 
+
+				if( !GetObjProperty( attacker , CLASSEID_THIEF ) )
 					SetPoison( defender, plvl, "You have been poisoned by " + attacker.name + ".", attacker );
 				else
 					SetPoison( defender, maxx, "You have been poisoned by " + attacker.name + ".", attacker );
@@ -651,7 +700,7 @@ endfunction
 
 function DestroyEquipment( who, item )
 
-	// Wrestling, core error 
+	// Wrestling, core error
 	if (item.objtype == 0x1F020)
 		return 0;
 	endif
@@ -690,7 +739,7 @@ function DistanceCheck(attacker, defender, weapon, basedamage)
 			basedamage *= 0.25;
 		elseif(dist == 1)
 			basedamage *= 0.5;
-		endif	
+		endif
 	endif
 
 	return basedamage;
@@ -705,7 +754,7 @@ function ArAbsorptionCalc( ar, basedamage, divider := 5, multiplier := 0.05, exp
     if( percent >= 1.0 )
     	percent := 0.99;
     endif
-	
+
     var absorbed := basedamage * percent;
 
     return absorbed;
@@ -735,4 +784,3 @@ function CheckEquipmentDamage(who, item);
 	endif
 
 endfunction
-
