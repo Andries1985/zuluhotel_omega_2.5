@@ -1,0 +1,31 @@
+use uo;
+use os;
+use basic;
+
+//include "include/client";
+//include "include/skillpoints";
+//include "include/namingbyenchant";
+include "../pkg/opt/talisman/include/talismanid";
+
+// how many seconds between ID
+var BASE_DELAY := 10;
+
+program dotalismanid( who )
+
+    var lastid := GetObjProperty(who, "#LastID");
+
+    //var skill := GetEffectiveSkill( who, SKILLID_ITEMID );
+    //var isamage := IsMage(who);
+
+    var delay := BASE_DELAY;
+
+    if ( (lastid+delay) > ReadGameClock() )
+        SendSysMessage(who, "You must wait to use the talisman again.");
+        return 0;
+    endif
+    
+    TalismanID(who,delay);
+
+    SetObjProperty(who, "#LastID", ReadGameClock());
+
+endprogram
