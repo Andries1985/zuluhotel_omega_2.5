@@ -17,14 +17,14 @@
 
 
 // DEBUG MODE
-const DEBUG_MODE	:= 0; // Set to 1 to enable debug output, 0 to disable
+const DEBUG_MODE	:= 1; // Set to 1 to enable debug output, 0 to disable
 
 
 ////
 // Soundeffects
 // The first section is just an enum of existing sounds,
 // the second builds on the first ones, but providing more
-// logical names. 
+// logical names.
 ///
 
 const SFX_1 := 0x001; // d_frst01.wav
@@ -1610,7 +1610,7 @@ const FX_TELE_VANISH    :=  0x372a; // Teleport vanish.
 const FX_SPELL_FAIL     :=  0x3735; //
 const FX_BLESS_EFFECT   :=  0x373a; //
 const FX_CURSE_EFFECT   :=  0x374a; //
-const FX_SPARK_EFFECT   :=  0x375a; // 
+const FX_SPARK_EFFECT   :=  0x375a; //
 const FX_HEAL_EFFECT    :=  0x376a; //
 const FX_MARK_EFFECT    :=  0x3779;
 const FX_BLUEMOONSTART  :=  0x3789; // Deathvortex?
@@ -1632,7 +1632,7 @@ const FX_FIRE_F_NS      :=  0x3996; // Fire field.
 
 ////
 // Layers
-/// 
+///
 const LAYER_NONE        :=  0x00;   // Not used?
 const LAYER_HAND1       :=  0x01;   // One handed weapon.
 const LAYER_HAND2       :=  0x02;   // Two handed weapon, shield or misc.
@@ -1667,7 +1667,7 @@ const LAYER_TRADE       :=  0x1e;   // Can be multiple of these, do not use dire
 
 ////
 // Fonts
-/// 
+///
 const FONT_MAX          :=  0x00;   // Lowest font.
 const FONT_MIN          :=  0x09;   // Highest font.
 
@@ -1684,7 +1684,7 @@ const FONT_SMALL_LIGHT  :=  0x09;   // Small light letters.
 
 ////
 // Creature IDs ( hardcoded graphic IDs )
-/// 
+///
 const CID_ZERO			:= 0x0000;  // Not used.
 const CID_OGRE			:= 0x0001;  // Ogre.
 const CID_ETTIN			:= 0x0002;  // Ettin.
@@ -1713,7 +1713,7 @@ const CID_GM			:= 0x03db;
 
 ////
 // Directions
-/// 
+///
 const DIR_N             :=  0x00;   // North.
 const DIR_NE            :=  0x01;   // Northeast.
 const DIR_E             :=  0x02;   // East.
@@ -1781,7 +1781,7 @@ const FONTCOLOR_YELLOW		:= 0x0035;
 
 ////
 // SkillIDs
-/// 
+///
 const SKILLID_ALCHEMY           := 0;
 const SKILLID_ANATOMY           := 1;
 const SKILLID_ANIMALLORE        := 2;
@@ -2560,14 +2560,14 @@ const FX_SPELL_DIVINE_FURY		:= 0x37be;
 const MOVING_SPELL_DIVINE_FURY	:= 0;
 const SPEED_SPELL_DIVINE_FURY		:= 10;
 const LOOP_SPELL_DIVINE_FURY		:= 10;
-	
+
 //Enlightenment
 const SPELLID_ENLIGHTENMENT		:= 177;
 const SFX_SPELL_ENLIGHTENMENT		:= 0xF8;
 const FX_SPELL_ENLIGHTENMENT		:= 0x375a;
 const MOVING_SPELL_ENLIGHTENMENT	:= 0;
 const SPEED_SPELL_ENLIGHTENMENT	:= 10;
-const LOOP_SPELL_ENLIGHTENMENT	:= 10;	
+const LOOP_SPELL_ENLIGHTENMENT	:= 10;
 
 //Revive
 const SPELLID_REVIVE			:= 178;
@@ -2575,7 +2575,7 @@ const SFX_SPELL_REVIVE    		:= 0x0215;
 const FX_SPELL_REVIVE			:= 0;
 const MOVING_SPELL_REVIVE		:= 0;
 const SPEED_SPELL_REVIVE		:= 0;
-const LOOP_SPELL_REVIVE			:= 0;	
+const LOOP_SPELL_REVIVE			:= 0;
 
 //Summon Guardian
 const SPELLID_SUMMON_GUARDIAN	:= 180;
@@ -2603,7 +2603,7 @@ const FX_SPELL_SANCTUARY   	:= 0x373a;
 const MOVING_SPELL_SANCTUARY 	:= 0;
 const SPEED_SPELL_SANCTUARY  	:= 10;
 const LOOP_SPELL_SANCTUARY	:= 10;
-	
+
 //Apocalypse
 const SPELLID_APOCALYPSE	:= 181;
 const SFX_SPELL_APOCALYPSE := 0x02a;
