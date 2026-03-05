@@ -28,6 +28,9 @@ program critstaminahit(attacker, defender, weapon, armor, basedamage, rawdamage)
 
 	// Calculate absorbed before crit doubling (actual armor absorption)
 	var staminaDrainInput := basedamage - rawdamage;
+	if(DEBUG_MODE)
+        SendSysMessage(attacker, "Base Damage: "+basedamage+" Raw Damage: "+rawdamage+" Stamina Drain: "+staminaDrainInput, FONT_NORMAL, 2601 );
+	endif
 
 	if(crithit)
 		rawdamage := CInt(rawdamage * 2);
