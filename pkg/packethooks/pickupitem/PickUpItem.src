@@ -26,9 +26,13 @@ var newpacket;
 // Not staff, continue as normal
 if (who.cmdlevel < 1)
 	if(item.multi && !who.multi)
-		newpacket := CreatePacket(0x27, 2);
-		newpacket.SendPacket(who);
-		return 1;
+		// Allow lifting items equipped on the player - they retain
+		// the house multi from when they were equipped inside
+		if(item.container.serial != who.serial)
+			newpacket := CreatePacket(0x27, 2);
+			newpacket.SendPacket(who);
+			return 1;
+		endif
 	endif
 	return 0;
 endif
