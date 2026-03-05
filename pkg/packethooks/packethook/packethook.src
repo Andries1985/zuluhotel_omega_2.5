@@ -25,26 +25,26 @@ function TryPartialStack(char, item, target_serial)
 		return 0;
 	endif
 
-	var target := SystemFindObjectBySerial(target_serial);
-	if(!target)
+	var targetStack := SystemFindObjectBySerial(target_serial);
+	if(!targetStack)
 		return 0;
 	endif
 
-	if(!IsStackable(item, target))
+	if(!IsStackable(item, targetStack))
 		return 0;
 	endif
 
-	var combined := item.amount + target.amount;
+	var combined := item.amount + targetStack.amount;
 	if(combined <= 60000)
 		return 0; // Core can handle normally
 	endif
 
-	var space := 60000 - target.amount;
+	var space := 60000 - targetStack.amount;
 	if(space <= 0)
 		return 0; // Target already full
 	endif
 
-	AddAmount(target, space);
+	AddAmount(targetStack, space);
 	SubtractAmount(item, space);
 
 	// Put the reduced source stack back in backpack
