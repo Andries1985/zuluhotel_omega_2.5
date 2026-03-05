@@ -30,6 +30,7 @@ program critstaminahit(attacker, defender, weapon, armor, basedamage, rawdamage)
 	var staminaDrainInput := CInt((basedamage - (basedamage - rawdamage))/3); //The amount of damage dealt after armor absorption is the amount of stamina drained
 	if(staminaDrainInput < 1)
 	    staminaDrainInput := 0;
+	endif
 
 	if(DEBUG_MODE)
         SendSysMessage(attacker, "Base Damage: "+basedamage+" Raw Damage: "+rawdamage+" Stamina Drain: "+staminaDrainInput, FONT_NORMAL, 2601 );
