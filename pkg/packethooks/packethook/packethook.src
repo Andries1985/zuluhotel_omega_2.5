@@ -20,6 +20,52 @@ Program PacketHook()
   return CORE_IGNORE;
 EndProgram
 
+// Mirrors POL core's Item::can_add_to_self() checks
+// Used because IsStackable() fails on "gotten" (cursor-held) items
+function CanStack(item1, item2)
+	if(item1.objtype != item2.objtype)
+		return 0;
+	endif
+	if(!item1.stackable)
+		return 0;
+	endif
+	if(item1.graphic != item2.graphic)
+		return 0;
+	endif
+	if(item1.color != item2.color)
+		return 0;
+	endif
+	if(item1.newbie != item2.newbie)
+		return 0;
+	endif
+	if(item1.insured != item2.insured)
+		return 0;
+	endif
+	if(item1.cursed != item2.cursed)
+		return 0;
+	endif
+	if(item1.quality != item2.quality)
+		return 0;
+	endif
+	if(item1.weight_multiplier_mod != item2.weight_multiplier_mod)
+		return 0;
+	endif
+
+	// Compare CProps
+	var props1 := GetObjPropertyNames(item1);
+	var props2 := GetObjPropertyNames(item2);
+	if(props1.size() != props2.size())
+		return 0;
+	endif
+	foreach propname in props1
+		if(GetObjProperty(item1, propname) != GetObjProperty(item2, propname))
+			return 0;
+		endif
+	endforeach
+
+	return 1;
+endfunction
+
 function TryPartialStack(char, item, target_serial)
 	Print("[PartialStack] called: target_serial=" + target_serial + " item=" + item.serial + " item.amount=" + item.amount);
 
@@ -37,8 +83,8 @@ function TryPartialStack(char, item, target_serial)
 	Print("[PartialStack] target found: " + targetStack.name + " amount=" + targetStack.amount + " objtype=0x" + Hex(targetStack.objtype));
 	Print("[PartialStack] item: " + item.name + " amount=" + item.amount + " objtype=0x" + Hex(item.objtype));
 
-	if(!IsStackable(item, targetStack))
-		Print("[PartialStack] items are NOT stackable");
+	if(!CanStack(item, targetStack))
+		Print("[PartialStack] items are NOT stackable (CanStack failed)");
 		return 0;
 	endif
 
