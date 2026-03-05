@@ -531,6 +531,9 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 
     if( !shield_defender.IsA( POLCLASS_ARMOR ) )
     	weapon_defender := GetEquipmentByLayer( defender, LAYER_HAND2 );
+    	if( !weapon_defender.IsA( POLCLASS_WEAPON ) )
+    		weapon_defender := GetEquipmentByLayer( defender, LAYER_HAND1 );
+    	endif
     endif
 
 	if( shield_defender.IsA( POLCLASS_ARMOR ) || weapon_defender.IsA( POLCLASS_WEAPON ) )
@@ -565,7 +568,7 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 			elseif( weapon_defender.IsA( POLCLASS_WEAPON ) )
 				var weapcfg := ReadConfigFile( ":*:itemdesc" );
 				if( weapcfg[weapon_defender.objtype].CanWeaponParry == 1 )
-					absorbed := CInt( weapcfg[shield_defender.objtype].WeaponParryChance / 2 );
+					absorbed := CInt( weapcfg[weapon_defender.objtype].WeaponParryChance / 2 );
 					//Print($"Weapon Absorbed " + absorbed);
 					SendSysMessage( defender, "You successfully parry the attack." );
 					SendSysMessage( Attacker, "Your opponent parried the attack." );

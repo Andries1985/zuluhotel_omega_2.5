@@ -59,6 +59,10 @@ program critstaminahit(attacker, defender, weapon, armor, basedamage, rawdamage)
 		if(GetStamina(drainer) > GetMaxStamina(drainer))
 			SetStamina(drainer, GetMaxStamina(drainer));
 		endif
+
+		if(DEBUG_MODE)
+		    SendSysMessage(attacker, "Stamina Drain Amount: "+staminaDrainInput, FONT_NORMAL, 2601 );
+	    endif
 	endif
 
 endprogram
