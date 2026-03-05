@@ -8,7 +8,7 @@ use basic;
 include "../pkg/opt/talisman/include/talismanid";
 
 // how many seconds between ID
-var BASE_DELAY := 10;
+var BASE_DELAY := 60;
 
 program dotalismanid( who )
 
