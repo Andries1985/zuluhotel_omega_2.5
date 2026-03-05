@@ -21,28 +21,43 @@ Program PacketHook()
 EndProgram
 
 function TryPartialStack(char, item, target_serial)
+	Print("[PartialStack] called: target_serial=" + target_serial + " item=" + item.serial + " item.amount=" + item.amount);
+
 	if(target_serial == -1)
+		Print("[PartialStack] target_serial is -1 (ground drop), skipping");
 		return 0;
 	endif
 
 	var targetStack := SystemFindObjectBySerial(target_serial);
 	if(!targetStack)
+		Print("[PartialStack] target not found for serial " + target_serial);
 		return 0;
 	endif
+
+	Print("[PartialStack] target found: " + targetStack.name + " amount=" + targetStack.amount + " objtype=0x" + Hex(targetStack.objtype));
+	Print("[PartialStack] item: " + item.name + " amount=" + item.amount + " objtype=0x" + Hex(item.objtype));
 
 	if(!IsStackable(item, targetStack))
+		Print("[PartialStack] items are NOT stackable");
 		return 0;
 	endif
 
+	Print("[PartialStack] items ARE stackable");
+
 	var combined := item.amount + targetStack.amount;
+	Print("[PartialStack] combined=" + combined);
 	if(combined <= 60000)
-		return 0; // Core can handle normally
+		Print("[PartialStack] combined <= 60000, letting core handle");
+		return 0;
 	endif
 
 	var space := 60000 - targetStack.amount;
 	if(space <= 0)
-		return 0; // Target already full
+		Print("[PartialStack] no space (target already full)");
+		return 0;
 	endif
+
+	Print("[PartialStack] filling " + space + " into target, leaving " + (item.amount - space) + " in source");
 
 	AddAmount(targetStack, space);
 	SubtractAmount(item, space);
@@ -82,12 +97,16 @@ Exported Function CheckDrop(char, ByRef packet)
 
   var serial := packet.getint32(1);
   var inhand := char.getgottenitem();
+  Print("[CheckDrop] serial=" + serial + " inhand=" + inhand + " inhand.serial=" + inhand.serial);
   If (serial and inhand and inhand.serial == serial)
     var target_serial := packet.GetInt32(10);
+    Print("[CheckDrop] valid drop, target_serial=" + target_serial);
     if(TryPartialStack(char, inhand, target_serial))
         return CORE_IGNORE;
     endif
     return CORE_OK;
+  Else
+    Print("[CheckDrop] invalid drop - serial mismatch or no inhand");
   EndIf
 
 	// Check if "Character 0x{:X} tried to drop item 0x{:X}, but had not gotten an item.\n"
@@ -148,12 +167,16 @@ Exported Function CheckDrop6017(char, ByRef packet)
 
   var serial := packet.getint32(1);
   var inhand := char.getgottenitem();
+  Print("[CheckDrop6017] serial=" + serial + " inhand=" + inhand + " inhand.serial=" + inhand.serial);
   If (serial and inhand and inhand.serial == serial)
     var target_serial := packet.GetInt32(11);
+    Print("[CheckDrop6017] valid drop, target_serial=" + target_serial);
     if(TryPartialStack(char, inhand, target_serial))
         return CORE_IGNORE;
     endif
     return CORE_OK;
+  Else
+    Print("[CheckDrop6017] invalid drop - serial mismatch or no inhand");
   EndIf
 
 	// Check if "Character 0x{:X} tried to drop item 0x{:X}, but had not gotten an item.\n"
