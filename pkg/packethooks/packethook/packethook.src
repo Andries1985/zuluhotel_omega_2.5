@@ -91,7 +91,7 @@ function TryPartialStack(char, item, target_serial)
 	endif
 
 	if(DEBUG_MODE)
-		Print("[PartialStack] filling " + space + " into target (amount=" + targetStack.amount + "), leaving " + (item.amount - space) + " in source");
+	    SendSysMessage( char, "Partial Stack filling " + space + " into target (amount=" + targetStack.amount + "), leaving " + (item.amount - space) + " in source");
 	endif
 
 	AddAmount(targetStack, space);
