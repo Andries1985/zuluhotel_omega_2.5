@@ -23,6 +23,7 @@ const AVERAGE_SKILL       := 75;
 const AVERAGE_LEVEL_MOD   := 15;
 const BONUS_PER_LEVEL     := 0.25;
 const SMALL_BONUS_PER_LEVEL := 0.15;
+const HALF_BONUS_PER_LEVEL := 0.125;
 
 const THIEF_BACKSTAB_BONUS_DAMAGE := 10;
 const THIEF_AMBUSH_BONUS_DAMAGE := 10;
@@ -53,6 +54,12 @@ endfunction
 function ClasseSmallBonusByLevel( level )
 
 	return CDbl( 1.0 + ( SMALL_BONUS_PER_LEVEL * CDbl(level) ) );
+
+endfunction
+
+function ClasseHalfBonusByLevel( level )
+
+	return CDbl( 1.0 + ( HALF_BONUS_PER_LEVEL * CDbl(level) ) );
 
 endfunction
 

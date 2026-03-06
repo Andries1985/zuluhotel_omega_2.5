@@ -412,12 +412,12 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			// Damage reduction from NPC's.
 			if( attacker.isA(POLCLASS_NPC) )
 			//Print("Base Damage Pala 1: " + basedamage);
-				basedamage := basedamage / ( (ClasseBonusByLevel( defenderlevel ) * 0.5 ) );
+				basedamage := basedamage / ( ClasseHalfBonusByLevel( defenderlevel ) );
 			//Print("Base Damage Pala 2: " + basedamage);
 			// Damage reduction from Players.
 			else
 				defenderlevel := max(0, defenderlevel-1);
-				basedamage := basedamage / (ClasseBonusByLevel( defenderlevel ) * 0.5);
+				basedamage := basedamage / ( ClasseHalfBonusByLevel( defenderlevel ) );
 			endif
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Paladin reduction: "+basedamage, FONT_NORMAL, 2555 );
