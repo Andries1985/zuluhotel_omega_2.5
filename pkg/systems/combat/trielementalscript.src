@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////////////
-//											
-//	trielementalscript :								
-//											
-//	Make the special weapon to ramdomly cast a lightning on the defender.		
-//	The % of chance that lightning will be cast is included in the itemdesc.	
-//	The lightning follow the normal spell damages and use the wielder magery	
-//	and eval int to determine it.								
-//											
+//
+//	trielementalscript :
+//
+//	Make the special weapon to ramdomly cast a lightning on the defender.
+//	The % of chance that lightning will be cast is included in the itemdesc.
+//	The lightning follow the normal spell damages and use the wielder magery
+//	and eval int to determine it.
+//
 //////////////////////////////////////////////////////////////////////////////////////////
 
 use uo;
@@ -18,7 +18,7 @@ include "include/areas";
 include "include/client";
 
 program trielementalscript(attacker, defender, weapon, armor, basedamage, rawdamage)
-    
+
     if (lower(TypeOf(attacker)) == "array")
         defender 	:= attacker[2];
         weapon 	:= attacker[3];
@@ -34,13 +34,13 @@ program trielementalscript(attacker, defender, weapon, armor, basedamage, rawdam
 		SendSysMessage( attacker, "Spellstrike failed! You are already casting something!");
 		return 0;
 	endif
-    
+
     rawdamage := RecalcDmg( attacker , defender , weapon , armor , basedamage );
-    
+
     var chance := GetObjProperty(weapon, "ChanceOfEffect");
     var spelldmg := 0;
     if(RandomDiceStr("1d100") <= chance)
-    
+
         var targ;
         if( GetObjProperty( weapon , "Cursed" ) )
             //Print("TriElementalscript launched on the Attacker!");
@@ -55,8 +55,8 @@ program trielementalscript(attacker, defender, weapon, armor, basedamage, rawdam
         spelldmg := Resisted( attacker , targ , 8 , spelldmg );
 		//Print("Spell damage after resist in TriScript: " + spelldmg);
 
-        // 30% dmg nerf for mages, Paladins and Mystic Archers
-        if(GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_PALADIN) || GetObjProperty( attacker , CLASSEID_MYSTIC_ARCHER))
+        // 30% dmg nerf for mages and Mystic Archers
+        if(GetObjProperty(attacker , CLASSEID_MAGE) || GetObjProperty(attacker , CLASSEID_MYSTIC_ARCHER))
             spelldmg *= 0.7;
         endif
 
