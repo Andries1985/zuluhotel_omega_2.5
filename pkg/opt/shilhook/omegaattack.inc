@@ -25,7 +25,7 @@ function OmegaAttack(attacker, defender)
 //	Print($"animation " +Anim);
 
 	if(attacker.weapon.attribute == ATTRIBUTEID_ARCHERY)
-		if (!checkForAndDecrementAmmunition( attacker, attackerweaponType))	
+		if (!checkForAndDecrementAmmunition( attacker, attackerweaponType))
 			return;
 		endif
 		if (!ValidArcheryWeapon(attackerweaponType))
@@ -69,7 +69,7 @@ function OmegaAttack(attacker, defender)
 			endif
 		endforeach
 		return;
-	endif 
+	endif
 	//now we're sure there's a hit so check for damage on the weapon
 	CheckEquipmentDamage(attacker, attacker.weapon);
 
@@ -78,16 +78,16 @@ function OmegaAttack(attacker, defender)
 		weapDMG := "1d1";
 	endif
 
-	var wbasedamage:= RandomDiceRoll( weapDMG ); 
+	var wbasedamage:= RandomDiceRoll( weapDMG );
 	if(attacker.weapon.dmg_mod)
 		wbasedamage += attacker.weapon.dmg_mod;
 	endif
 
 	//find random piece of armor to hit -- need this for onhit script and damage
-	var def_armor:=GetHitArmor(defender);	
-	
+	var def_armor:=GetHitArmor(defender);
+
 	start_script(hitscript, {attacker, defender, attacker.weapon, def_armor, wbasedamage, 0});
-	
+
 endfunction
 
 
@@ -124,9 +124,9 @@ function CheckHitChance(attacker, defender)
 	var attacker_wep_skill;
 	//award skill points regardless of hit or miss
 	CombatAdvancement( attacker, weapon, defender );
-	if(GetObjProperty( attacker , CLASSEID_THIEF ) || GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_BARD))
+	if(!attacker.isA(POLCLASS_NPC) && (GetObjProperty( attacker , CLASSEID_THIEF ) || GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_BARD)))
 		attacker_wep_skill := CDbl(GetLowestClassSkillValue(attacker));
-	else 
+	else
 		attacker_wep_skill := CDbl(GetEffectiveSkill(attacker, wep_skill));
 	endif
 
@@ -140,13 +140,13 @@ function CheckHitChance(attacker, defender)
 	if (hit_chance < min_hit_chance)
 		hit_chance := min_hit_chance;
 	endif
-	
+
 	if( chance < hit_chance )
 		return 1;
-	else 
+	else
 		return 0;
 	endif
-	
+
 endfunction
 
 
@@ -201,7 +201,7 @@ function PlayArcheryAnimation(attacker, defender, attackerweaponType)
 endfunction
 
 function CombatAdvancement( attacker, weapon, defender )
-	
+
 	AwardSkillPoints( attacker, GetSkillIdByAttributeId( weapon.attribute ), 20 );
 
 	// Don't raise tactics with archery
@@ -215,7 +215,7 @@ function GetHitArmor(who)
 
 	var hit_zone := CS_GetRandomArmorZone();
 	var armor_hit := CS_GetEquipmentInArmorZone(who, hit_zone);
-	
+
 	if ( armor_hit.Size() < 1 )
 		return 0;
 	endif
@@ -224,7 +224,7 @@ function GetHitArmor(who)
 	best_armor.name := "nothing-"+hit_zone;
 	best_armor.desc := "nothing"+hit_zone;
 	best_armor.ar := 0;
-		
+
 	foreach item in ( armor_hit )
 		if ( item.ar > best_armor.ar )
 			best_armor := item;

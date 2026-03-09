@@ -122,7 +122,7 @@ function RecalcPhysicalDmg( attacker, defender, weapon, armor, byref basedamage,
 
 	basedamage := basedamage * slayerMultiply;
 
-	if(GetObjProperty( attacker , CLASSEID_THIEF ) || GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_BARD))
+	if(!attacker.isA(POLCLASS_NPC) && (GetObjProperty(attacker , CLASSEID_THIEF) || GetObjProperty(attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_BARD)))
 		if(weapon.graphic in ClassWeapons(GetClass(attacker)))
 			basedamage := CalcPhysicalDamage( attacker, defender, weapon, basedamage );
 		else
