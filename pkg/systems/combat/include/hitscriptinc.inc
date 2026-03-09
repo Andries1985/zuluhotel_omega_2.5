@@ -421,7 +421,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Paladin reduction: "+basedamage, FONT_NORMAL, 2555 );
 			endif
-		elseif( GetObjProperty( defender, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ) )
+		elseif( GetObjProperty( defender, CLASSEID_WARRIOR ) || GetObjProperty( defender, CLASSEID_BLADESINGER ) )
 			// Damage reduction from NPC's.
 			if( attacker.isA(POLCLASS_NPC) )
 			//Print("Base Damage War/BS 1: " + basedamage);
