@@ -9,9 +9,9 @@ program spellonhit(parms)
 
 	var attacker 	:= parms[1];
 	var defender 	:= parms[2];
-	var weapon 	:= parms[3];
-	var armor 	:= parms[4];
-	var basedamage := parms[5];
+	var weapon 	    := parms[3];
+	var armor 	    := parms[4];
+	var basedamage  := parms[5];
 	var rawdamage	:= parms[6];
 
 	//this is a workaround, need to find everything that is calling the hitscript besides omegaattack
@@ -23,7 +23,7 @@ program spellonhit(parms)
 			return 0;
 		endif
 	endif
-	
+
 	var chance := Cint(GetObjProperty(armor , "ChanceOfEffect"));
 	if(RandomDiceStr("1d100") <= chance)
 		var spellid := GetObjProperty( armor , "HitWithSpell" );
@@ -48,15 +48,14 @@ program spellonhit(parms)
 		Start_Script( GetScript( spellid ) , spellparms );
 
 	endif
-	
+
 	//Print("Basedamage: " + basedamage + " Rawdamage: " + rawdamage);
 	if( basedamage != rawdamage )
-		rawdamage := rawdamage - 10;
 		if( rawdamage < 1 )
 			rawdamage := 1;
 		endif
 	endif
-	
+
 	ApplyTheDamage( defender , attacker , rawdamage );
 
 endprogram
