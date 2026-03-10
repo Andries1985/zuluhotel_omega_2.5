@@ -3722,6 +3722,9 @@ function ApplyWeapSkillMod( item )
 			n := 30;
 		endif
 
+		//TESTING
+		n := 50;
+
 	elseif (magiclevel == 10)
 		
 		// 0% chance of defence
@@ -4037,6 +4040,9 @@ var n;
 		else
 			n := 30;
 		endif
+
+		//TESTING
+		n := 50;
 
 	elseif (magiclevel == 10)
 		
@@ -4367,6 +4373,9 @@ function ApplyMiscSkillMod( item )
 			n := 30;
 
 		endif
+
+		//TESTING
+		n := 50;
 
 	elseif (magiclevel == 10)
 		
