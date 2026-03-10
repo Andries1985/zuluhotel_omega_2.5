@@ -36,7 +36,7 @@ function ClasseBonus( who , classeid )
 	var level := CInt( GetObjProperty( who , classeid ) );
 	unequipRestrictedItems(who);
 	if( level )
-		return( 1.0 + BONUS_PER_LEVEL * level );
+		return ClasseBonusByLevel(level);
 	else
 		return( 1.0 );
 	endif
