@@ -4482,11 +4482,11 @@ function ApplyMiscSkillMod( item )
 	SetObjProperty( item , "skilladv" , skillid );
 	SetObjProperty( item , "skilladvamount" , amount );
 
-//if(n == 50)
-//	if(skillid == SKILLID_ALCHEMY or skillid == SKILLID_MAGERY or skillid == SKILLID_ITEMID or skillid == SKILLID_EVALINT or skillid == SKILLID_INSCRIPTION or skillid == SKILLID_MAGICRESISTANCE or skillid == SKILLID_MEDITATION or skillid == SKILLID_SPIRITSPEAK)
-//		EraseObjProperty( item , "ArBonus");
-//	endif
-//endif
+if(n == 50)
+	if(skillid == SKILLID_ALCHEMY or skillid == SKILLID_MAGERY or skillid == SKILLID_ITEMID or skillid == SKILLID_EVALINT or skillid == SKILLID_INSCRIPTION or skillid == SKILLID_MAGICRESISTANCE or skillid == SKILLID_MEDITATION or skillid == SKILLID_SPIRITSPEAK)
+		EraseObjProperty( item , "ArBonus");
+	endif
+endif
 
 endfunction
 
