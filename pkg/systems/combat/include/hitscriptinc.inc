@@ -380,7 +380,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			SendSysMessage( attacker, "Stat Bonus: "+basedamage, FONT_NORMAL, 2569 );
 		endif
 		// Skill Bonuses
-		if(attacker.isA(POLCLASS_NPC)
+		if(attacker.isA(POLCLASS_NPC))
 		    //Control NPC Skill Damage Bonuses here
 		else
 		    if( GetObjProperty(attacker, CLASSEID_WARRIOR) || GetObjProperty(attacker, CLASSEID_POWERPLAYER) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
