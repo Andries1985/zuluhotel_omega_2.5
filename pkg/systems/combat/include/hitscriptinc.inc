@@ -381,7 +381,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		endif
 		// Skill Bonuses
 		if(attacker.isA(POLCLASS_NPC)
-		    //Control NPC Class Damage Bonuses here
+		    //Control NPC Skill Damage Bonuses here
 		else
 		    if( GetObjProperty(attacker, CLASSEID_WARRIOR) || GetObjProperty(attacker, CLASSEID_POWERPLAYER) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
 		    	var anatomySkillLevel := GetAttribute( attacker, ATTRIBUTEID_ANATOMY );
@@ -401,27 +401,31 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			SendSysMessage( attacker, "Skill Bonus: "+basedamage, FONT_NORMAL, 2569 );
 		endif
 		// Attacks vs Players.
-		if( !defender.isA(POLCLASS_NPC) )
-			if( GetObjProperty( attacker, CLASSEID_WARRIOR ))
-				level := max(0, level-3);
-				basedamage *= ClasseSmallBonusByLevel( level );
-			elseif( level )
-				level := max(0, level-4);
-				basedamage *= ClasseSmallBonusByLevel( level );
-			endif
-		// Attacks vs NPC's.
+		if(attacker.isA(POLCLASS_NPC))
+		    //Control NPC Class Damage Bonuses here
 		else
-			if( GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ) || GetObjProperty( attacker, CLASSEID_PALADIN ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
-				level := max(0, level-3);
-				basedamage *= ClasseSmallBonusByLevel( level );
-			elseif( level )
-				level := max(0, level-4);
-				basedamage *= ClasseSmallBonusByLevel( level );
-			endif
+		    if( !defender.isA(POLCLASS_NPC) )
+		    	if( GetObjProperty( attacker, CLASSEID_WARRIOR ))
+		    		level := max(0, level-3);
+		    		basedamage *= ClasseSmallBonusByLevel( level );
+		    	elseif( level )
+		    		level := max(0, level-4);
+		    		basedamage *= ClasseSmallBonusByLevel( level );
+		    	endif
+		    // Attacks vs NPC's.
+		    else
+		    	if( GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ) || GetObjProperty( attacker, CLASSEID_PALADIN ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
+		    		level := max(0, level-3);
+		    		basedamage *= ClasseSmallBonusByLevel( level );
+		    	elseif( level )
+		    		level := max(0, level-4);
+		    		basedamage *= ClasseSmallBonusByLevel( level );
+		    	endif
+		    endif
 		endif
 		if(DEBUG_MODE)
-				SendSysMessage( attacker, "War/PP/PALA/BS Bonus: "+basedamage, FONT_NORMAL, 2569 );
-			endif
+			SendSysMessage( attacker, "War/PP/PALA/BS Bonus: "+basedamage, FONT_NORMAL, 2569 );
+		endif
 		// Warrior/Paladin/Bladesigner class bonus reduction
 		if( GetObjProperty( defender, CLASSEID_PALADIN ) )
 			// Damage reduction from NPC's.
