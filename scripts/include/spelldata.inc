@@ -962,7 +962,7 @@ function Resisted( caster , cast_on , circle , dmg )
 
 	var points 	:= circle * 40;
 	var magery 	:= GetEffectiveSkill( caster  , SKILLID_MAGERY );
-	var evalint 	:= GetEffectiveSkill( caster  , SKILLID_EVALINT );
+	var evalint := GetEffectiveSkill( caster  , SKILLID_EVALINT );
 	var resist 	:= GetEffectiveSkill( cast_on , SKILLID_MAGICRESISTANCE );
 	var chance 	:= Cint( resist / 6);
 	var chance2 	:= Cint( resist - ((magery / 4) + (circle * 6)) );
@@ -975,7 +975,7 @@ function Resisted( caster , cast_on , circle , dmg )
 		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_MAGE ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
 		//Print("Base Chance Pala 1: " + chance);
-		chance := Cint( (chance * ClasseBonus( cast_on , CLASSEID_PALADIN ) ) * 0.5 );
+		chance := Cint( (chance * ClasseHalfBonusByLevel( cast_on , CLASSEID_PALADIN ) ) );
 		//Print("Base Chance Pala 2: " + chance);
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		var bonus := ClasseBonus( cast_on , CLASSEID_WARRIOR );
