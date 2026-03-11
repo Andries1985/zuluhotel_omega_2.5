@@ -122,7 +122,7 @@ function RecalcPhysicalDmg( attacker, defender, weapon, armor, byref basedamage,
 
 	basedamage := basedamage * slayerMultiply;
 
-	if(!attacker.isA(POLCLASS_NPC) && (GetObjProperty(attacker , CLASSEID_THIEF) || GetObjProperty(attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_BARD)))
+	if(GetObjProperty( attacker , CLASSEID_THIEF ) || GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_BARD))
 		if(weapon.graphic in ClassWeapons(GetClass(attacker)))
 			basedamage := CalcPhysicalDamage( attacker, defender, weapon, basedamage );
 		else
@@ -343,24 +343,16 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_ARCHERY) * 0.007;
 		elseif( GetObjProperty( attacker, CLASSEID_THIEF ))
 			basedamage *= 1 + avg_skill * 0.003;
-		elseif(GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
+		elseif(GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
 			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_TACTICS) * 0.003;
-		elseif(GetObjProperty( attacker, CLASSEID_POWERPLAYER ))
-		    var archerySkillLevel := GetAttribute( attacker, ATTRIBUTEID_ARCHERY );
-			var tacticsSkillLevel := GetAttribute( attacker, ATTRIBUTEID_TACTICS );
-			var averageSkill := ((CDbl(archerySkillLevel + tacticsSkillLevel)) / 2.00);
-			basedamage *= 1 + (averageSkill * 0.003);
 		elseif(GetObjProperty( attacker, CLASSEID_MYSTIC_ARCHER))
-		    var archerySkillLevel := GetAttribute( attacker, ATTRIBUTEID_ARCHERY );
-		    var evalIntSkillLevel := GetAttribute( attacker, ATTRIBUTEID_EVALINT );
-			var averageSkill := ((CDbl(archerySkillLevel + evalIntSkillLevel)) / 2.00);
-			basedamage *= 1 + (averageSkill * 0.005);
+			basedamage *= 1 + GetAttribute(attacker, ATTRIBUTEID_EVALINT) * 0.005;
 		endif
 		if(DEBUG_MODE)
 			SendSysMessage( attacker, "Skill Bonus: "+basedamage, FONT_NORMAL, 2569 );
 		endif
-		// Ranger ranged class bonus from lvl 4.
-		if(!attacker.isA(POLCLASS_NPC) && (GetObjProperty( attacker, CLASSEID_RANGER ) || GetObjProperty( attacker, CLASSEID_MYSTIC_ARCHER )))
+		// Ranger ranged class bonus from lvl 2.
+		if( GetObjProperty( attacker, CLASSEID_RANGER ) || GetObjProperty( attacker, CLASSEID_MYSTIC_ARCHER ))
 			level := max(0, level-3);
 			basedamage *= ClasseSmallBonusByLevel( level );
 			if(DEBUG_MODE)
@@ -376,71 +368,61 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 		if(!attacker.isA(POLCLASS_NPC))
 			basedamage *= 1 + GetStrength(attacker) *0.005;
 		endif
+		// if(!attacker.isA(POLCLASS_NPC) && GetObjProperty(attacker, CLASSEID_PALADIN))
+		// 	basedamage *= 1 + GetIntelligence(attacker) *0.002;
+		// endif
 		if(DEBUG_MODE)
 			SendSysMessage( attacker, "Stat Bonus: "+basedamage, FONT_NORMAL, 2569 );
 		endif
 		// Skill Bonuses
-		if(attacker.isA(POLCLASS_NPC))
-		    //Control NPC Skill Damage Bonuses here
-		else
-		    if( GetObjProperty(attacker, CLASSEID_WARRIOR) || GetObjProperty(attacker, CLASSEID_POWERPLAYER) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
-		    	var anatomySkillLevel := GetAttribute( attacker, ATTRIBUTEID_ANATOMY );
-		    	var tacticsSkillLevel := GetAttribute( attacker, ATTRIBUTEID_TACTICS );
-				var averageSkill := ((CDbl(anatomySkillLevel + tacticsSkillLevel)) / 2.00);
-		    	basedamage *=  1 + (averageSkill * 0.005);
-		    elseif( GetObjProperty( attacker, CLASSEID_THIEF ) && (weapon.attribute == ATTRIBUTEID_FENCING))
-		    	basedamage *= 1 + avg_skill * 0.005;
-		    elseif( GetObjProperty(attacker, CLASSEID_PALADIN) )
-		        var evalIntSkillLevel := GetAttribute( attacker, ATTRIBUTEID_EVALINT );
-		    	var tacticsSkillLevel := GetAttribute( attacker, ATTRIBUTEID_TACTICS );
-				var averageSkill := ((CDbl(evalIntSkillLevel + tacticsSkillLevel)) / 2.00);
-		    	basedamage *=  1 + (averageSkill * 0.002);
-		    endif
+		if( GetObjProperty(attacker, CLASSEID_WARRIOR) || GetObjProperty(attacker, CLASSEID_POWERPLAYER) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
+			basedamage *=  1 + GetAttribute( attacker, ATTRIBUTEID_ANATOMY ) * 0.005 ;
+		elseif( GetObjProperty( attacker, CLASSEID_THIEF ) && (weapon.attribute == ATTRIBUTEID_FENCING))
+			basedamage *= 1 + avg_skill * 0.005;
+		elseif( GetObjProperty(attacker, CLASSEID_PALADIN) )
+			basedamage *=  1 + GetAttribute( attacker, ATTRIBUTEID_EVALINT ) * 0.002 ;
 		endif
 		if(DEBUG_MODE)
 			SendSysMessage( attacker, "Skill Bonus: "+basedamage, FONT_NORMAL, 2569 );
 		endif
 		// Attacks vs Players.
-		if(attacker.isA(POLCLASS_NPC))
-		    //Control NPC Class Damage Bonuses here
+		if( !defender.isA(POLCLASS_NPC) )
+			if( GetObjProperty( attacker, CLASSEID_WARRIOR ))
+				level := max(0, level-3);
+				basedamage *= ClasseSmallBonusByLevel( level );
+			elseif( level )
+				level := max(0, level-4);
+				basedamage *= ClasseSmallBonusByLevel( level );
+			endif
+		// Attacks vs NPC's.
 		else
-		    if( !defender.isA(POLCLASS_NPC) )
-		    	if( GetObjProperty( attacker, CLASSEID_WARRIOR ))
-		    		level := max(0, level-3);
-		    		basedamage *= ClasseSmallBonusByLevel( level );
-		    	elseif( level )
-		    		level := max(0, level-4);
-		    		basedamage *= ClasseSmallBonusByLevel( level );
-		    	endif
-		    // Attacks vs NPC's.
-		    else
-		    	if( GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ) || GetObjProperty( attacker, CLASSEID_PALADIN ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
-		    		level := max(0, level-3);
-		    		basedamage *= ClasseSmallBonusByLevel( level );
-		    	elseif( level )
-		    		level := max(0, level-4);
-		    		basedamage *= ClasseSmallBonusByLevel( level );
-		    	endif
-		    endif
+			if( GetObjProperty( attacker, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_POWERPLAYER ) || GetObjProperty( attacker, CLASSEID_PALADIN ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ))
+				level := max(0, level-3);
+				basedamage *= ClasseSmallBonusByLevel( level );
+			elseif( level )
+				level := max(0, level-4);
+				basedamage *= ClasseSmallBonusByLevel( level );
+			endif
 		endif
 		if(DEBUG_MODE)
-			SendSysMessage( attacker, "War/PP/PALA/BS Bonus: "+basedamage, FONT_NORMAL, 2569 );
-		endif
+				SendSysMessage( attacker, "War/PP/PALA/BS Bonus: "+basedamage, FONT_NORMAL, 2569 );
+			endif
 		// Warrior/Paladin/Bladesigner class bonus reduction
 		if( GetObjProperty( defender, CLASSEID_PALADIN ) )
 			// Damage reduction from NPC's.
 			if( attacker.isA(POLCLASS_NPC) )
 			//Print("Base Damage Pala 1: " + basedamage);
-				basedamage := basedamage / ((max(0, defenderlevel) * 0.08) + 1);
+				basedamage := basedamage / ( ClasseHalfBonusByLevel( defenderlevel ) );
 			//Print("Base Damage Pala 2: " + basedamage);
 			// Damage reduction from Players.
 			else
-				basedamage := basedamage / ((max(0, defenderlevel-1) * 0.08) + 1);
+				defenderlevel := max(0, defenderlevel-1);
+				basedamage := basedamage / ( ClasseHalfBonusByLevel( defenderlevel ) );
 			endif
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Paladin reduction: "+basedamage, FONT_NORMAL, 2555 );
 			endif
-		elseif( GetObjProperty( defender, CLASSEID_WARRIOR ) || GetObjProperty( defender, CLASSEID_BLADESINGER ) )
+		elseif( GetObjProperty( defender, CLASSEID_WARRIOR ) || GetObjProperty( attacker, CLASSEID_BLADESINGER ) )
 			// Damage reduction from NPC's.
 			if( attacker.isA(POLCLASS_NPC) )
 			//Print("Base Damage War/BS 1: " + basedamage);
