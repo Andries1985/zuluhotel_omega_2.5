@@ -23,6 +23,7 @@ const AVERAGE_SKILL       := 75;
 const AVERAGE_LEVEL_MOD   := 15;
 const BONUS_PER_LEVEL     := 0.25;
 const SMALL_BONUS_PER_LEVEL := 0.15;
+const HALF_BONUS_PER_LEVEL := 0.125;
 
 const THIEF_BACKSTAB_BONUS_DAMAGE := 10;
 const THIEF_AMBUSH_BONUS_DAMAGE := 10;
@@ -36,7 +37,7 @@ function ClasseBonus( who , classeid )
 	var level := CInt( GetObjProperty( who , classeid ) );
 	unequipRestrictedItems(who);
 	if( level )
-		return ClasseBonusByLevel(level);
+		return( 1.0 + BONUS_PER_LEVEL * level );
 	else
 		return( 1.0 );
 	endif
@@ -45,32 +46,21 @@ endfunction
 
 
 function ClasseBonusByLevel( level )
-	return CDbl( 1.0 + ClasseBonusByLevelFactor(level));
+
+	return CDbl( 1.0 + ( BONUS_PER_LEVEL * CDbl(level) ) );
+
 endfunction
 
 function ClasseSmallBonusByLevel( level )
-	return CDbl(1.0 + ClasseSmallBonusByLevelFactor(level));
+
+	return CDbl( 1.0 + ( SMALL_BONUS_PER_LEVEL * CDbl(level) ) );
+
 endfunction
 
 function ClasseHalfBonusByLevel( level )
-	return CDbl( 1.0 + ClasseHalfBonusByLevelFactor(level));
-endfunction
 
-//Factors are usefull when further calculations are needed:
-//When this returns 0.25 (25%) and you want to apply say 0.1 to it then we have
-//0.25 * 0.10 = 0.025 (which we can then add the one to) vs using the bonus calcs above this would be
-//1.25 * 0.10 = 0.125 which is not expected when we do further scaling in the calling method
+	return CDbl( 1.0 + ( HALF_BONUS_PER_LEVEL * CDbl(level) ) );
 
-function ClasseBonusByLevelFactor( level )
-	return CDbl(BONUS_PER_LEVEL * CDbl(level));
-endfunction
-
-function ClasseSmallBonusByLevelFactor( level )
-	return CDbl(SMALL_BONUS_PER_LEVEL * CDbl(level));
-endfunction
-
-function ClasseHalfBonusByLevelFactor( level )
-	return CDbl(BONUS_PER_LEVEL * 0.5 * CDbl(level));
 endfunction
 
 

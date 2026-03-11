@@ -74,7 +74,7 @@ program trielementalonhit( parms )
 	endif
 
 	if( basedamage != rawdamage )
-		rawdamage := rawdamage - 5;
+		rawdamage := rawdamage;
 		if( rawdamage < 1 )
 			rawdamage := 1;
 		endif
