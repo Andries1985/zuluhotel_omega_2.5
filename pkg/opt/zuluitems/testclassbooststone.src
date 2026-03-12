@@ -185,7 +185,6 @@ program testclassbooststone( who )
         SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
         return 0;
     endif
-
     var playerchoice2;
 
     foreach key2 in ( gump2.keys )

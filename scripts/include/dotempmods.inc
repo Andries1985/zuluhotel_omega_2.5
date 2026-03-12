@@ -282,7 +282,7 @@ function PoisonProtected( cast_on , plvl, thiefPoison := 0 )
 		return CURSED;
 		
 	elseif( protlvl >= plvl )
-		PrintTextAbovePrivate( cast_on , "Your poison immunity protect you from the poison" , cast_on );
+		PrintTextAbovePrivate( cast_on , "Your poison immunity protected you from the poison!" , cast_on );
 		return IMMUNED;
 	endif
 		

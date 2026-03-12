@@ -94,6 +94,17 @@ program track(who)
 						AddMenuItem(track_menu, tiletype, mobile.name);
 					endif
 				endif
+			elseif(GetObjProperty(mobile, "Ethereal") && GetEffectiveSkill(who, SKILLID_TRACKING) >= 115)
+				var elem := FindConfigElem(config, mobile.graphic);
+				if(elem)
+					ttype := GetConfigString(elem, "type");
+					if(ttype == listtype)
+						menucount := menucount + 1;
+						critter_ids[menucount] := mobile;
+						tiletype := GetConfigInt(elem, "tile");
+						AddMenuItem(track_menu, tiletype, mobile.name); 
+					endif
+				endif
 			elseif(GetObjProperty(mobile, "Boss") && GetEffectiveSkill(who, SKILLID_TRACKING) >= 135)
 				var elem := FindConfigElem(config, mobile.graphic);
 				if(elem)
