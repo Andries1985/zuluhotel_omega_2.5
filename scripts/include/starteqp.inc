@@ -4390,9 +4390,12 @@ function ApplyMiscSkillMod( item )
 		elseif (power < 30000)
 			n := 25;
 
-		// 14% chance of invincibility
-		else
+		// 69% chance of invincibility
+		elseif (power < 99000)
 			n := 30;
+		// 1% chance of legendary
+		else
+			n := 50;
 
 		endif
 	// Higher than 10
@@ -4418,9 +4421,12 @@ function ApplyMiscSkillMod( item )
 		elseif (power < 80000)
 			n := 25;
 
-		// 14% chance of invincibility
-		else
+		// 18% chance of invincibility
+		elseif (power < 98000)
 			n := 30;
+		// 2% chance of legendary
+		else
+			n := 50;
 
 		endif
 
@@ -4430,6 +4436,8 @@ function ApplyMiscSkillMod( item )
 		SetObjProperty(item, "isUncommon", 1);
 	elseif(n == 30)
 		SetObjProperty(item, "isRare", 1);
+	elseif(n == 50)
+		SetObjProperty(item, "isLegendary", 1);
 	endif
 
 	amount := n/5;
@@ -4449,11 +4457,11 @@ function ApplyMiscSkillMod( item )
 	SetObjProperty( item , "skilladv" , skillid );
 	SetObjProperty( item , "skilladvamount" , amount );
 
-//if(n == 50)
-//	if(skillid == SKILLID_ALCHEMY or skillid == SKILLID_MAGERY or skillid == SKILLID_ITEMID or skillid == SKILLID_EVALINT or skillid == SKILLID_INSCRIPTION or skillid == SKILLID_MAGICRESISTANCE or skillid == SKILLID_MEDITATION or skillid == SKILLID_SPIRITSPEAK)
-//		EraseObjProperty( item , "ArBonus");
-//	endif
-//endif
+if(n == 50)
+	if(skillid == SKILLID_ALCHEMY or skillid == SKILLID_MAGERY or skillid == SKILLID_ITEMID or skillid == SKILLID_EVALINT or skillid == SKILLID_INSCRIPTION or skillid == SKILLID_MAGICRESISTANCE or skillid == SKILLID_MEDITATION or skillid == SKILLID_SPIRITSPEAK)
+		EraseObjProperty( item , "ArBonus");
+	endif
+endif
 
 endfunction
 
