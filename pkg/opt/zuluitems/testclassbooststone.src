@@ -75,15 +75,9 @@ program testclassbooststone( who )
             "nodispose",                                                // You did not want to hit esc, did you?
             "page 0",                                                   // We initialize the first page which is the background
             "GumpPic 860 400 11265",                                    // We want the dark background
-<<<<<<< HEAD
-            "text 890 470 2595 0",                                      // The main headline 
-            "page 1",	                                                // Initialize the page
-            "text 900 470 2567 1", 
-=======
             "text 890 470 2595 0",                                      // The main headline
             "page 1",	                                                // Initialize the page
             "text 900 470 2567 1",
->>>>>>> e76aa1b968501a53baa5af124e51c9ec357344d6
             "text 900 485 2567 2",
             "text 900 500 2567 3",
             "text 900 515 2567 4",
@@ -91,11 +85,7 @@ program testclassbooststone( who )
             "text 910 545 2567 6",
 
             "text 920 550 2496 7",
-<<<<<<< HEAD
-            "text 920 575 2496 8", 
-=======
             "text 920 575 2496 8",
->>>>>>> e76aa1b968501a53baa5af124e51c9ec357344d6
             "text 920 600 2496 9",
             "text 920 625 2496 10",
             "text 920 650 2496 11",
@@ -195,11 +185,6 @@ program testclassbooststone( who )
         SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
         return 0;
     endif
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> e76aa1b968501a53baa5af124e51c9ec357344d6
     var playerchoice2;
 
     foreach key2 in ( gump2.keys )
@@ -231,11 +216,7 @@ program testclassbooststone( who )
          skillamount := 0;
     elseif(classlevel == 1)
         skillamount := 75;
-<<<<<<< HEAD
-    elseif(classlevel == 2) 
-=======
     elseif(classlevel == 2)
->>>>>>> e76aa1b968501a53baa5af124e51c9ec357344d6
         skillamount := 90;
     elseif(classlevel == 3)
         skillamount := 105;
