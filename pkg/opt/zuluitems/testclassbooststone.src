@@ -52,10 +52,10 @@ program testclassbooststone( who )
 
     var gfdata := {
             "<[ STARTER CLASS ]>",
-            "This will max your",
-            "stats and statcaps",
-            "as well as skills",
-            "and skillcaps to 150.",
+            "Choose a starting",
+            "class",
+            " ",
+            " ",
             "<[ CLASS ]>",
             "Ranger",
             "Warrior",
@@ -68,6 +68,64 @@ program testclassbooststone( who )
             "Mystic Archer",
             "Powerplayer",
             "Select a starting class",
+            "and hit the OKAY button."
+        };
+
+        var gflayout2 := {
+            "nodispose",                                                // You did not want to hit esc, did you?
+            "page 0",                                                   // We initialize the first page which is the background
+            "GumpPic 860 400 11265",                                    // We want the dark background
+            "text 890 470 2595 0",                                      // The main headline 
+            "page 1",	                                                // Initialize the page
+            "text 900 470 2567 1", 
+            "text 900 485 2567 2",
+            "text 900 500 2567 3",
+            "text 900 515 2567 4",
+            "text 900 530 2567 5",
+            "text 910 545 2567 6",
+
+            "text 920 550 2496 7",
+            "text 920 575 2496 8", 
+            "text 920 600 2496 9",
+            "text 920 625 2496 10",
+            "text 920 650 2496 11",
+            "text 920 675 2496 12",
+            "text 920 700 2496 13",
+            "text 920 725 2496 14",
+            "text 920 750 2496 15",
+
+            "text 887 950 2567 16",
+            "text 880 975 2567 17",
+
+            "radio 900 552 11410 11402 0 100",                             // Level 0
+            "radio 900 577 11410 11402 0 200",                             // Level 1
+            "radio 900 602 11410 11402 0 300",                             // Level 2
+            "radio 900 627 11410 11402 0 400",                             // Level 3
+            "radio 900 652 11410 11402 0 500",                             // Level 4
+            "radio 900 677 11410 11402 0 600",                             // Level 5
+            "radio 900 702 11410 11402 0 700",                             // Level 6
+
+            "button 926 1000 249 248 1 0 1"                                // Okay button
+        };
+
+    var gfdata2 := {
+            "<[ STARTER CLASS LEVEL ]>",
+            "This will max your",
+            "stats and statcaps",
+            "as well as skillcaps",
+            "and raise skills to",
+            "chosen level.",
+            "<[ LEVEL ]>",
+            "Reset Skills to 0",
+            "Level 1",
+            "Level 2",
+            "Level 3",
+            "Level 4",
+            "Level 5",
+            "Level 6",
+            " ",
+            " ",
+            "Select a starting level",
             "and hit the OKAY button."
         };
 
@@ -116,12 +174,61 @@ program testclassbooststone( who )
         default: selectedclass := "The player must have canceled the gump without doing anything";
     endcase
 
+    var gump2 := SendDialogGump( who, gflayout2, gfdata2 );
+    if( !gump2 )
+        SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
+        return;
+    endif
+
+    // Okay button wasn't pressed
+    if (gump2[0] != 1)
+        SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
+        return 0;
+    endif
+    
+    var playerchoice2;
+
+    foreach key2 in ( gump2.keys )
+        playerchoice2 := key2;
+    endforeach
+
+    var classlevel;
+    case(playerchoice2)
+        100:    classlevel := 0;
+        200:    classlevel := 1;
+        300:    classlevel := 2;
+        400:    classlevel := 3;
+        500:    classlevel := 4;
+        600:    classlevel := 5;
+        700:    classlevel := 6;
+        default: classlevel := "The player must have canceled the gump without doing anything";
+    endcase
+
+
     var i;
     for(i := 0; i < 49; i := i + 1)
         SetBaseSkill(who, i, 0);
     endfor
 
-    var skillamount := 150;
+
+    var skillamount := 0;
+
+    if(classlevel == 0)
+         skillamount := 0;
+    elseif(classlevel == 1)
+        skillamount := 75;
+    elseif(classlevel == 2) 
+        skillamount := 90;
+    elseif(classlevel == 3)
+        skillamount := 105;
+    elseif(classlevel == 4)
+        skillamount := 120;
+    elseif(classlevel == 5)
+        skillamount := 135;
+    elseif(classlevel == 6)
+        skillamount := 150;
+    endif
+
     foreach skill in GetClasseSkills( classid )
         SetBaseSkill(who, skill, skillamount);
     endforeach
@@ -135,7 +242,7 @@ program testclassbooststone( who )
     testmaxstatcaps(who);
 
     selectedclass := GetObjProperty(who, "StartingClass");
-    SendSysmessage( who, "You are now a level 6 "+selectedclass+". Good luck in your travels!", FONT_NORMAL, 2601 );
+    SendSysmessage( who, "You are now a level "+classlevel+" "+selectedclass+". Good luck in your travels!", FONT_NORMAL, 2601 );
 
     return;
 
