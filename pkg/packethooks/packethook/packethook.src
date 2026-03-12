@@ -20,6 +20,90 @@ Program PacketHook()
   return CORE_IGNORE;
 EndProgram
 
+// Mirrors POL core's Item::can_add_to_self() checks
+// Used because IsStackable() fails on "gotten" (cursor-held) items
+function CanStack(item1, item2)
+	if(item1.objtype != item2.objtype)
+		return 0;
+	endif
+	if(!item1.stackable)
+		return 0;
+	endif
+	if(item1.graphic != item2.graphic)
+		return 0;
+	endif
+	if(item1.color != item2.color)
+		return 0;
+	endif
+	if(item1.newbie != item2.newbie)
+		return 0;
+	endif
+	if(item1.insured != item2.insured)
+		return 0;
+	endif
+	if(item1.cursed != item2.cursed)
+		return 0;
+	endif
+	if(item1.quality != item2.quality)
+		return 0;
+	endif
+	if(item1.weight_multiplier_mod != item2.weight_multiplier_mod)
+		return 0;
+	endif
+
+	// Compare CProps
+	var props1 := GetObjPropertyNames(item1);
+	var props2 := GetObjPropertyNames(item2);
+	if(props1.size() != props2.size())
+		return 0;
+	endif
+	foreach propname in props1
+		if(GetObjProperty(item1, propname) != GetObjProperty(item2, propname))
+			return 0;
+		endif
+	endforeach
+
+	return 1;
+endfunction
+
+function TryPartialStack(char, item, target_serial)
+	if(target_serial == -1)
+		return 0;
+	endif
+
+	var targetStack := SystemFindObjectBySerial(target_serial);
+	if(!targetStack)
+		return 0;
+	endif
+
+	if(!CanStack(item, targetStack))
+		return 0;
+	endif
+
+	var combined := item.amount + targetStack.amount;
+	if(combined <= 60000)
+		return 0;
+	endif
+
+	var space := 60000 - targetStack.amount;
+	if(space <= 0)
+		return 0;
+	endif
+
+	if(DEBUG_MODE)
+	    SendSysMessage( char, "Partial Stack filling " + space + " into target (amount=" + targetStack.amount + "), leaving " + (item.amount - space) + " in source");
+	endif
+
+	AddAmount(targetStack, space);
+	SubtractAmount(item, space);
+
+	// Put the reduced source stack back in backpack
+	start_script("ForceMove", {item, char});
+
+	SendSysMessage(char, "You fill the stack to its maximum. The rest remains in your backpack.");
+	return 1;
+endfunction
+
 Exported Function CheckDrop(char, ByRef packet)
 	/* if(char.cmdlevel && char.cmdlevel < 3)
 		var item := SystemFindObjectBySerial( packet.GetInt32(1) );
@@ -49,6 +133,10 @@ Exported Function CheckDrop(char, ByRef packet)
   var serial := packet.getint32(1);
   var inhand := char.getgottenitem();
   If (serial and inhand and inhand.serial == serial)
+    var target_serial := packet.GetInt32(10);
+    if(TryPartialStack(char, inhand, target_serial))
+        return CORE_IGNORE;
+    endif
     return CORE_OK;
   EndIf
 
@@ -111,6 +199,10 @@ Exported Function CheckDrop6017(char, ByRef packet)
   var serial := packet.getint32(1);
   var inhand := char.getgottenitem();
   If (serial and inhand and inhand.serial == serial)
+    var target_serial := packet.GetInt32(11);
+    if(TryPartialStack(char, inhand, target_serial))
+        return CORE_IGNORE;
+    endif
     return CORE_OK;
   EndIf
 

@@ -1,0 +1,75 @@
+use uo;
+use os;
+
+include ":combat:hitscriptinc";
+include "include/client";
+include "include/damages";
+
+program critstaminahit(attacker, defender, weapon, armor, basedamage, rawdamage)
+
+	if (lower(TypeOf(attacker)) == "array")
+		defender 	:= attacker[2];
+		weapon 	:= attacker[3];
+		armor 	:= attacker[4];
+		basedamage := attacker[5];
+		rawdamage	:= attacker[6];
+		attacker 	:= attacker[1];
+	endif
+
+	// Critical hit check (from crithit.src) based on player classe level plus one (items can always crit, even when unclassed)
+	var classeLevel := GetClasseLevel(attacker) + 1;
+	var crithit := 0;
+	var critchance := 5 * classeLevel;
+	if((Random(100) + 1) <= critchance)
+		crithit := 1;
+	endif
+
+	rawdamage := RecalcDmg( attacker , defender , weapon , armor , basedamage );
+
+	// Calculate absorbed before crit doubling (actual armor absorption)
+	var staminaDrainInput := CInt((basedamage - (basedamage - rawdamage))/3); //The amount of damage dealt after armor absorption is the base amount for stamina drained and then devided to scale it
+	if(staminaDrainInput < 1)
+	    staminaDrainInput := 0;
+	endif
+
+	if(DEBUG_MODE)
+        SendSysMessage(attacker, "Base Damage: "+basedamage+" Raw Damage: "+rawdamage+" Stamina Drain: "+staminaDrainInput, FONT_NORMAL, 2601 );
+	endif
+
+	if(crithit)
+		rawdamage := CInt(rawdamage * 2);
+		PrintTextAbovePrivate( attacker, "Critical hit!", attacker, _DEFAULT_TEXT_FONT, 1172 );
+	endif
+
+	DealDamage( attacker , defender , weapon , armor , basedamage , rawdamage );
+
+	// Stamina drain based on absorbed damage (from staminadrainonhit.src)
+	if(staminaDrainInput > 0)
+		var drained;
+		var drainer;
+
+		if(GetObjProperty( weapon , "Cursed" ))
+			drained := attacker;
+			drainer := defender;
+		else
+			drained := defender;
+			drainer := attacker;
+		endif
+
+		if(staminaDrainInput > GetStamina(drained))
+			SetStamina(drained, 0);
+		else
+			SetStamina(drained, GetStamina(drained) - staminaDrainInput);
+		endif
+
+		SetStamina(drainer, GetStamina(drainer) + staminaDrainInput);
+		if(GetStamina(drainer) > GetMaxStamina(drainer))
+			SetStamina(drainer, GetMaxStamina(drainer));
+		endif
+
+		if(DEBUG_MODE)
+		    SendSysMessage(attacker, "Stamina Drain Amount: "+staminaDrainInput, FONT_NORMAL, 2601 );
+	    endif
+	endif
+
+endprogram
