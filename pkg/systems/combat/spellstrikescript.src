@@ -36,7 +36,8 @@ program spellstrikescript(attacker, defender, weapon, armor, basedamage, rawdama
 
 	// Range limit.
 	var dist := Distance( attacker, defender );
-	if( (dist < 1) || (dist > 14 ) )
+	//if( (dist < 1) || (dist > 14 ) )
+	if( dist > 14  )
 		return;
 	endif
 
@@ -80,12 +81,14 @@ program spellstrikescript(attacker, defender, weapon, armor, basedamage, rawdama
 
 	endif
 
+	//Slayer checks moved to RecalcPhysicalDmg called by RecalcDmg - No additional logic is required here
+	//Slayer checks will apply in RecalcDmg IF the weapon has a SlayType property
 	if( GetObjProperty( attacker , CLASSEID_POWERPLAYER ) )
 		rawdamage := (RecalcDmg( attacker , defender , weapon , armor , basedamage + 10 )*0.9);
 	else
 		rawdamage := (RecalcDmg( attacker , defender , weapon , armor , basedamage + 10 )*0.8);
 	endif
-		
-        DealDamage( attacker , defender , weapon , armor , basedamage , rawdamage );
+
+	DealDamage( attacker , defender , weapon , armor , basedamage , rawdamage );
 
 endprogram

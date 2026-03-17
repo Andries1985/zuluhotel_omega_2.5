@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////////////
-//											
-//	trielementalscript :								
-//											
-//	Make the special weapon to ramdomly cast a lightning on the defender.		
-//	The % of chance that lightning will be cast is included in the itemdesc.	
-//	The lightning follow the normal spell damages and use the wielder magery	
-//	and eval int to determine it.																				
-//											
+//
+//	trielementalscript :
+//
+//	Make the special weapon to ramdomly cast a lightning on the defender.
+//	The % of chance that lightning will be cast is included in the itemdesc.
+//	The lightning follow the normal spell damages and use the wielder magery
+//	and eval int to determine it.
+//
 //////////////////////////////////////////////////////////////////////////////////////////
 use uo;
 
@@ -22,7 +22,7 @@ program trielementalonhit( parms )
 	var armor 	 := parms[4];
 	var basedamage := parms[5];
 	var rawdamage	 := parms[6];
-	
+
 	var chance := GetObjProperty( armor , "ChanceOfEffect" );
 	if(RandomDiceStr("1d100") <= chance)
 
@@ -36,7 +36,7 @@ program trielementalonhit( parms )
 		// Print("Target is: " + targ.name);
 		// Print("Attacker is: " + attacker.name);
 		// Print("Defender is: " + defender.name);
-		
+
 		var spelldmg := (CalcSpellDamage( defender, targ , 5 ) * 0.5);
 		//Print("Spell damage before resist in TriOnHit: " + spelldmg);
 		spelldmg := Resisted( defender , targ , 9 , spelldmg );
@@ -72,9 +72,9 @@ program trielementalonhit( parms )
 			PrintTextAbovePrivate( defender , "I'm dealing this much spell damage: " +spelldmg, defender );
 		endif
 	endif
-	
+
 	if( basedamage != rawdamage )
-		rawdamage := rawdamage - 15;
+		rawdamage := rawdamage;
 		if( rawdamage < 1 )
 			rawdamage := 1;
 		endif

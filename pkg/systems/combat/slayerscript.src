@@ -6,7 +6,6 @@ include "include/areas";
 
 program slayerscript(attacker, defender, weapon, armor, basedamage, rawdamage)
 
-
 	if (lower(TypeOf(attacker)) == "array")
 		defender 	:= attacker[2];
 		weapon 		:= attacker[3];
@@ -15,53 +14,10 @@ program slayerscript(attacker, defender, weapon, armor, basedamage, rawdamage)
 		rawdamage	:= attacker[6];
 		attacker 	:= attacker[1];
 	endif
-	
-	var slaytype := GetObjProperty( weapon , "SlayType" );
-	var def_type := GetObjProperty( defender , "Type" );
-	var targ;
-	if (GetObjProperty( weapon , "Cursed"))
-		targ := attacker;
-	else
-		targ := defender;
-	endif
 
-	if(slaytype == "WhoKnows")
-		case(RandomInt(16))
-			0:	slaytype := "Slime";
-			1:	slaytype := "Ratkin";
-			2:	slaytype := "Plant";
-			3:	slaytype := "Animal";
-			4:	slaytype := "Beholder";
-			5:	slaytype := "Orc";
-			6:	slaytype := "Terathan";
-			7:	slaytype := "Ophidian";
-			8:	slaytype := "Animated";
-			9:	slaytype := "Gargoyle";
-			10:	slaytype := "Troll";
-			11:	slaytype := "Giantkin";
-			12:	slaytype := "Elemental";
-			13:	slaytype := "Undead";
-			14:	slaytype := "Daemon";
-			15:	slaytype := "Dragonkin";
-		endcase
-	endif
-
-	var multiplier;
-	var istype := 0;
-	foreach	creature in SplitWords(slaytype)
-		if(def_type == creature)
-			multiplier := 2;
-			istype := 1;
-			break;
-		elseif ((creature == "Human") and !defender.npctemplate )
-			multiplier := 1.5;
-			istype := 1;
-			break;
-		endif
-	endforeach
-	
-	rawdamage := RecalcDmg( attacker , defender , weapon , armor ,  CInt(basedamage*multiplier), 1);
-	DealDamage( attacker , defender , weapon , armor , basedamage ,rawdamage);
+    //Slayer checks moved to RecalcPhysicalDmg called by RecalcDmg - No additional logic is required here
+    //This script does nothing special when compared to mainhit, EXCEPT is piercing
+	rawdamage := RecalcDmg(attacker, defender, weapon, armor, basedamage, 1); //NOTE: All slayer scripts items are piercing
+	DealDamage(attacker, defender, weapon, armor, basedamage, rawdamage);
 
 endprogram
-
