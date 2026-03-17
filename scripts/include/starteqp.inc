@@ -4363,11 +4363,14 @@ function ApplyMiscSkillMod( item )
 		elseif (power < 85000)
 			n := 25;
 		// 14% chance of invincibility
-		else//if (power < 99950)
+		elseif (power < 99950)
+			//Print("N30 Item Generated!");
 			n := 30;
 		//1% chance of legendary
-		// else
-		// 	n := 50;
+		else
+			// Print("N50 Item Generated!");
+			// Print("Power Roll Generated: "+power);
+		 	n := 50;
 		endif
 
 	elseif (magiclevel == 10)
