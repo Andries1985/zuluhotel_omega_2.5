@@ -36,7 +36,8 @@ program spellstrikescript(attacker, defender, weapon, armor, basedamage, rawdama
 
 	// Range limit.
 	var dist := Distance( attacker, defender );
-	if( (dist < 1) || (dist > 14 ) )
+	//if( (dist < 1) || (dist > 14 ) )
+	if( dist > 14  )
 		return;
 	endif
 

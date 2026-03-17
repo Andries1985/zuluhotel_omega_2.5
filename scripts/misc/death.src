@@ -25,6 +25,12 @@ program npcdeath(corpse)
 			Start_Script("misc/deathgate", {corpse, spawnpoint});
 		endif
 	endif
+	
+	if( GetObjProperty(corpse, "iChampSpawn") )
+		ProcessChampSpawnCorpse(corpse);
+		zapstorageareas(corpse);
+		return DestroyItem(corpse);
+	endif
 
 	var masterserials := GetObjProperty( corpse, "master" );
 	var masters;
@@ -180,10 +186,6 @@ program npcdeath(corpse)
 		DestroyItem(corpse);
 	endif
 		
-	if(GetObjProperty(corpse, "iChampSpawn"))
-		ProcessChampSpawnCorpse(corpse);
-	endif
-
 	if(GetObjProperty(corpse, "Champion"))
 		ProcessChampionCorpse(corpse);
 	endif

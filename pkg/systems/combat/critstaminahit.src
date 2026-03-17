@@ -37,7 +37,13 @@ program critstaminahit(attacker, defender, weapon, armor, basedamage, rawdamage)
 	endif
 
 	if(crithit)
-		rawdamage := CInt(rawdamage * 2);
+		if (GetObjProperty(attacker, CLASSEID_BLADESINGER))
+			//Print("Bladesinger critical hit! Damage doubled to: " + rawdamage);
+			rawdamage := CInt(rawdamage * 2);
+		else
+			//Print("Critical hit! Damage increased by 50% from: " + rawdamage);
+			rawdamage := CInt(rawdamage * 1.5);
+		endif
 		PrintTextAbovePrivate( attacker, "Critical hit!", attacker, _DEFAULT_TEXT_FONT, 1172 );
 	endif
 

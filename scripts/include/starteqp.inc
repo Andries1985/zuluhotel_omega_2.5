@@ -4363,8 +4363,11 @@ function ApplyMiscSkillMod( item )
 		elseif (power < 85000)
 			n := 25;
 		// 14% chance of invincibility
-		else
+		elseif (power < 99000)
 			n := 30;
+		// 1% chance of legendary
+		else
+			n := 50;
 
 		endif
 
@@ -4391,9 +4394,9 @@ function ApplyMiscSkillMod( item )
 			n := 25;
 
 		// 69% chance of invincibility
-		elseif (power < 99000)
+		elseif (power < 97500)
 			n := 30;
-		// 1% chance of legendary
+		// 2.5% chance of legendary
 		else
 			n := 50;
 
@@ -4422,9 +4425,9 @@ function ApplyMiscSkillMod( item )
 			n := 25;
 
 		// 18% chance of invincibility
-		elseif (power < 98000)
+		elseif (power < 95000)
 			n := 30;
-		// 2% chance of legendary
+		// 5% chance of legendary
 		else
 			n := 50;
 
