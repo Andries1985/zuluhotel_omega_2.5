@@ -425,7 +425,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Warrior reduction: "+basedamage, FONT_NORMAL, 2555 );
 			endif
-		elseif( GetObjProperty( attacker, CLASSEID_BLADESINGER ) )
+		elseif( GetObjProperty( defender, CLASSEID_BLADESINGER ) )
 			if( !attacker.isA(POLCLASS_NPC) )
 				defenderlevel := max(0, defenderlevel-1);
 			endif

@@ -487,7 +487,10 @@ function CarveLogs( character, logs )
 						multiplier := Cint( multiplier * ClasseBonus( character ,CLASSEID_CRAFTER ) );
 					endif
 
-					multiplier	:= 50 + multiplier;
+					//Old Value
+					//multiplier	:= 50 + multiplier;
+					//New Value to bring it in line with other crafting, and should make exceptional not worse than normal
+					multiplier	:= 100 + multiplier;
 					var newquality := Cint(theitem.quality * multiplier);
 					newquality := Cdbl(newquality);
 					newquality := newquality / 100;
