@@ -4363,12 +4363,11 @@ function ApplyMiscSkillMod( item )
 		elseif (power < 85000)
 			n := 25;
 		// 14% chance of invincibility
-		elseif (power < 99000)
+		else//if (power < 99950)
 			n := 30;
-		// 1% chance of legendary
-		else
-			n := 50;
-
+		//1% chance of legendary
+		// else
+		// 	n := 50;
 		endif
 
 	elseif (magiclevel == 10)
@@ -4460,11 +4459,11 @@ function ApplyMiscSkillMod( item )
 	SetObjProperty( item , "skilladv" , skillid );
 	SetObjProperty( item , "skilladvamount" , amount );
 
-if(n == 50)
-	if(skillid == SKILLID_ALCHEMY or skillid == SKILLID_MAGERY or skillid == SKILLID_ITEMID or skillid == SKILLID_EVALINT or skillid == SKILLID_INSCRIPTION or skillid == SKILLID_MAGICRESISTANCE or skillid == SKILLID_MEDITATION or skillid == SKILLID_SPIRITSPEAK)
-		EraseObjProperty( item , "ArBonus");
-	endif
-endif
+// if(n == 50)
+// 	if(skillid == SKILLID_ALCHEMY or skillid == SKILLID_MAGERY or skillid == SKILLID_ITEMID or skillid == SKILLID_EVALINT or skillid == SKILLID_INSCRIPTION or skillid == SKILLID_MAGICRESISTANCE or skillid == SKILLID_MEDITATION or skillid == SKILLID_SPIRITSPEAK)
+// 		EraseObjProperty( item , "ArBonus");
+// 	endif
+// endif
 
 endfunction
 
