@@ -12,9 +12,9 @@ program mainhit(attacker, defender, weapon, armor, basedamage, rawdamage)
 			rawdamage	:= attacker[6];
 			attacker 	:= attacker[1];
 		endif
-		
+
+		//Slayer checks will apply in RecalcDmg IF the weapon has a SlayType property
 	    rawdamage := RecalcDmg( attacker , defender , weapon , armor , basedamage );
 
 	    DealDamage( attacker , defender , weapon , armor , basedamage , rawdamage );
 endprogram
-

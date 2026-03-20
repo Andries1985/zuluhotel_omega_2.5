@@ -56,7 +56,8 @@ program trielementalscript(attacker, defender, weapon, armor, basedamage, rawdam
 		//Print("Spell damage after resist in TriScript: " + spelldmg);
 
         // 30% dmg nerf for mages, Paladins and Mystic Archers
-        if(GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_PALADIN) || GetObjProperty( attacker , CLASSEID_MYSTIC_ARCHER))
+        //if(GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_PALADIN) || GetObjProperty( attacker , CLASSEID_MYSTIC_ARCHER))
+        if(GetObjProperty( attacker , CLASSEID_MAGE) || GetObjProperty( attacker , CLASSEID_MYSTIC_ARCHER))
             spelldmg *= 0.7;
         endif
 
