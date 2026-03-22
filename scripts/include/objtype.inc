@@ -48,6 +48,7 @@ const UOBJ_SPELLBOOK        := 0x0EFA;
 
 const UOBJ_POISON_POTION    := 0x0F0A;
 const UOBJ_EMPTY_BOTTLE     := 0x0F0E;
+const UOBJ_EMPTY_FLASK		:= 0x183A;
 
 const UOBJ_GEM_START        := 0x0F0F;
 const UOBJ_GEM_END          := 0x0f30;

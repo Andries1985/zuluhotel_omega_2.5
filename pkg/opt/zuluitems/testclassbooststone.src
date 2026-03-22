@@ -230,6 +230,13 @@ program testclassbooststone( who )
 
     foreach skill in GetClasseSkills( classid )
         SetBaseSkill(who, skill, skillamount);
+        if( classid == CLASSEID_THIEF )
+            SetBaseSkill(who, SKILLID_DETECTINGHIDDEN, skillamount);
+        elseif( classid == CLASSEID_CRAFTER )
+            SetBaseSkill(who, SKILLID_MAGERY, skillamount);
+        elseif( classid == CLASSEID_RANGER )
+            SetBaseSkill(who, SKILLID_FORENSICS, skillamount);
+        endif
     endforeach
 
     SetBaseStrength(who, 150);

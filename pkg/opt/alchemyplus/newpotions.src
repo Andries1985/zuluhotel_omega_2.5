@@ -27,7 +27,8 @@ program use_product (me, what)
 	endif
 
 	// Toadstool - Below code doesn't work, no idea who did it
-	if (cint(GetObjProperty(what,"itemtype"))==33)
+	if (GetObjProperty(what,"itemtype") == 33)
+		//Print("Tamla Heal Potion used");
 		SetObjProperty( me , "#potion" , ReadGameClock() + (DELAY_BETWEEN_DRINK*2) );
 	endif
 
@@ -46,6 +47,7 @@ program use_product (me, what)
 			endif
 
 			if( NukeTotemIngredient(me,item) )
+				//Print("Nuked Totems, now doing effect");
 				DoEffect( me , item , what );
 			endif
 		endif
@@ -55,8 +57,11 @@ endprogram
 
 function FindItemType(what)
 
-	var itemtype := cint(GetObjProperty(what,"itemtype"));
+	UnloadConfigFile("alchemyplus");
+
 	var items := ReadConfigFile( "alchemyplus" );
+	var itemtype := GetObjProperty(what,"itemtype");
+
 	return FindConfigElem(items,itemtype);
 
 endfunction
@@ -137,8 +142,9 @@ function DoInvisEffect( me , what )
 endfunction
 
 function DoCunningEffect( me , item , what )
+	//Print("Doing cunning effect");
 
-	var strength	 := GetPotionStr( item , what );
+	var strength := GetPotionStr( item , what );
 	var mod_amount := RandomDiceStr(strength+"d10");
 	var duration   := strength * 20;
 	if( CanMod( me , "int" ) )
@@ -149,7 +155,7 @@ function DoCunningEffect( me , item , what )
 endfunction
 
 // AGAIN, dispel pots don't have TrueMage prop. Don't need to alter it YET
-function DoDispel( me , what)
+function DoDispel( me , unused what)
 
 	PlayObjectCenteredEffect(me, 
                                SPELL_EFFECT_ID,
@@ -162,14 +168,14 @@ function DoDispel( me , what)
 	endif
 	SendSysmessage( me , "All the magical effects active on this creature have been wiped." );
 
-	// THIS IS NEVER HIT
-	if( GetObjProperty( what , "ByTrueMage" ) )
-		EraseObjProperty( what , "ByTrueMage" );
-		SendSysMessage( me , "This potion is so potent, that only half of it is needed to remove all magic property's on you." ); 
-		ReleaseItem( what );
-	else
-		SubtractAmount(what, 1);
-	endif
+	// // THIS IS NEVER HIT
+	// if( GetObjProperty( what , "ByTrueMage" ) )
+	// 	EraseObjProperty( what , "ByTrueMage" );
+	// 	SendSysMessage( me , "This potion is so potent, that only half of it is needed to remove all magic property's on you." ); 
+	// 	ReleaseItem( what );
+	// else
+	// 	SubtractAmount(what, 1);
+	// endif
 
 endfunction
 
@@ -177,10 +183,10 @@ endfunction
 function DoProtectionEffect( me , item , what )
 
 	var strength	 := GetPotionStr( item , what );
-	var mod_amount := RandomDiceStr(strength+"d2");
+	var mod_amount := RandomDiceStr( strength + "d2" );
 	var duration   := strength * 15;
 	if( CanMod( me , "ar" ) )
-		DoTempMod(me, "ar", mod_amount, duration);
+		DoTempMod( me, "ar", mod_amount, duration );
 	endif
 	SubtractAmount(what, 1);
 
@@ -188,11 +194,12 @@ endfunction
 
 function DoBlessEffect( me , item , what )
 
-	var strength	 := GetPotionStr( item , what );
-	var mod_amount := RandomDiceStr(strength+"d3");
+	var strength := GetPotionStr( item , what );
+	var mod_amount := RandomDiceStr( strength + "d3" );
 	var duration   := strength * 15;
-	if( CanMod( me , "all" ) )
-		DoTempMod(me, "all", mod_amount, duration);
+	//if( CanMod( me , "all" ) )
+	if( CanMod( me , "all" ) && CanMod( me , "ebless" ) && CanMod( me, "poly"))
+		DoTempMod( me, "all", mod_amount, duration );
 	endif
 	SubtractAmount(what, 1);
 
@@ -234,17 +241,14 @@ function DoBadThingTo(me, HowBad)
 		PrintTextAbovePrivate(me,"Gah!  That did not work!",me);
 		DestroyItem(GetEquipmentByLayer(me,LAYER_HAIR));
 		DestroyItem(GetEquipmentByLayer(me,LAYER_BEARD));
-		
+	elseif (HowBad < 10)
+		PrintTextAbovePrivate(me,"Doh!",me);
+		DoPersistedMod(me,"color",Random(47)+1301,me.color,200+Random(400) );
 	elseif (HowBad < 12)
 		PrintTextAbovePrivate(me,"Ugh... Your don't feel so well...",me);
 		if( CanMod( me , "all" ) )
 			DoTempMod(me,"all", 0-(Random(20)+1),200+Random(400) );
 		endif
-		
-	elseif (HowBad < 10)
-		PrintTextAbovePrivate(me,"Doh!",me);
-		DoPersistedMod(me,"color",Random(47)+1301,me.color,200+Random(400) );
-
 	else
 		var x := cint(HowBad/4);
 		SetPoison(me, x, "Gack! You've been poisoned!");
@@ -259,7 +263,8 @@ function DoPolyEffect( me , item , what )
 	var newcolor 	 := 1401+(strength*10)+critter;
 	var mod_amount := (strength*5)+critter;
 	var duration 	 := strength * 120;
-	if( CanMod( me , "poly" ) )
+	//if( CanMod( me , "poly" ) )
+	if( CanMod( me , "all" ) && CanMod( me , "ebless" ) && CanMod( me, "poly"))
 		DoTempMod( me , "poly" , mod_amount , duration );
 		if( CanMod( me , "color" , 1 ) )
 			DoPersistedMod( me , "color" , newcolor , me.color,duration );

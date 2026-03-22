@@ -280,6 +280,15 @@ function carve_corpse(character, cadaver)
 			if( got_one )
 				SendSysMessage( character , "You place the items in your pack." );
 			endif
+
+			var classlevel := GetClasseLevel( character );
+			//Print("Class Level: " + classlevel);
+			var rare_chance := CInt( Cdbl(1 + ClasseBonusByLevel( classlevel )) * 100 );
+			//Print("Rare Chance: " + rare_chance);
+			if( Random(10000) < rare_chance )
+				SendSysMessage( character , "You find a rare item on the corpse!", 3, 57 );
+				CreateItemInContainer( character.backpack , 0x2147 ); //talisman brain
+			endif
 		else
 			SendSysmessage( character, "You cannot cut up this corpse." );
 			EraseObjProperty( cadaver , "cut" );

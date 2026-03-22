@@ -293,7 +293,8 @@ function GetClasseSkills( classeid )
 						 SKILLID_VETERINARY };
 
 		CLASSEID_THIEF:			
-				return { SKILLID_DETECTINGHIDDEN,
+				return { //SKILLID_DETECTINGHIDDEN,
+						 SKILLID_ALCHEMY,
 						 SKILLID_HIDING		,
 						 SKILLID_LOCKPICKING	,
 						 SKILLID_POISONING	,
@@ -399,7 +400,7 @@ function GetMaxCircleForClasse( classeid )
 	case( classeid )
 		CLASSEID_BARD:			return 1;
 		CLASSEID_BLADESINGER:	return 1;
-		CLASSEID_CRAFTER:		return 1;
+		CLASSEID_CRAFTER:		return 7;
 		CLASSEID_MAGE:			return 0;
 		CLASSEID_MYSTIC_ARCHER:	return 0;
 		CLASSEID_PALADIN:		return 0;
@@ -451,6 +452,14 @@ function HaveInvalidSkillEnchantmentForClasse( item , classeid )
 	endif
 
 	if( classeid == CLASSEID_RANGER && skillnum == SKILLID_FORENSICS )
+		ret := 0;
+	endif
+
+	if( classeid == CLASSEID_THIEF && skillnum == SKILLID_DETECTINGHIDDEN )
+		ret := 0;
+	endif
+
+	if( classeid == CLASSEID_CRAFTER && skillnum == SKILLID_MAGERY )
 		ret := 0;
 	endif
 
@@ -589,7 +598,7 @@ function IsBladesinger( who )
 endfunction
 
 function IsCrafter( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CRAFTER ) );
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CRAFTER ), 0, 1, 0 );
 endfunction
 
 function IsMage( who )
@@ -605,11 +614,11 @@ function IsPaladin( who )
 endfunction
 
 function IsRanger( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_RANGER ) );
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_RANGER ), 1, 0, 0 );
 endfunction
 
 function IsThief( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_THIEF ) );
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_THIEF ), 0, 0, 1 );
 endfunction
 
 function IsWarrior( who )
@@ -621,7 +630,7 @@ function IsPowerplayer( who )
 endfunction
 
 
-function IsFromThatClasse( who , classe_skills , forensicsallowed := 0)
+function IsFromThatClasse( who , classe_skills , forensicsallowed := 0, mageryallowed := 0, detectinghiddenallowed := 0 )
 
 	var classe	:= 0;
 	var total	:= 0;
@@ -629,8 +638,18 @@ function IsFromThatClasse( who , classe_skills , forensicsallowed := 0)
 	var amount := 0;
 
 	for i := 0 to SKILLID__HIGHEST
-		if(forensicsallowed)
+		if(forensicsallowed  == 1)
 			if(i != SKILLID_FORENSICS)	//Ignores forensics from spec calculation
+				amount := GetEffectiveSkill( who , i );
+				total := total + amount;
+			endif
+		elseif(mageryallowed == 1)
+			if(i != SKILLID_MAGERY)		//Ignores magery from spec calculation
+				amount := GetEffectiveSkill( who , i );
+				total := total + amount;
+			endif
+		elseif(detectinghiddenallowed == 1)
+			if(i != SKILLID_DETECTINGHIDDEN)	//Ignores detecting hidden from spec calculation
 				amount := GetEffectiveSkill( who , i );
 				total := total + amount;
 			endif
@@ -788,9 +807,13 @@ function AssignClasse( character )
 	foreach classe in GetClasseIds()
 		EraseObjProperty( character , classe );
 		if(classe == "IsRanger")
-			t := IsFromThatClasse( character , GetClasseSkills(classe), 1 );
+			t := IsFromThatClasse( character , GetClasseSkills(classe), 1, 0, 0 );
+		elseif(classe == "IsCrafter")
+			t := IsFromThatClasse( character , GetClasseSkills( classe ), 0, 1, 0 );
+		elseif(classe == "IsThief")
+			t := IsFromThatClasse( character , GetClasseSkills( classe ), 0, 0, 1 );
 		else
-			t := IsFromThatClasse( character , GetClasseSkills( classe ) );
+			t := IsFromThatClasse( character , GetClasseSkills( classe ), 0, 0, 0 );
 		endif
 		if( t )
 			SetObjProperty( character , classe , t );

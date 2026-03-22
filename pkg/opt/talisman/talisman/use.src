@@ -7,8 +7,9 @@ use basic;
 //include "include/namingbyenchant";
 include "../pkg/opt/talisman/include/talismanid";
 
+
 // how many seconds between ID
-var BASE_DELAY := 60;
+var BASE_DELAY := 30;
 
 program dotalismanid( who )
 

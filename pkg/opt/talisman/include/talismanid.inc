@@ -9,6 +9,7 @@ include "include/classes";
 //include "include/chests";
 //include ":containers:checks";
 
+
 function TalismanID( who, delay )
 
 	var the_item;

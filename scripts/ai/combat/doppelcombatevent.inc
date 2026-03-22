@@ -109,7 +109,7 @@ function check_for_change()
 			SetHP(me, GetStrength(me)); 
 			var parm := splitwords(graphics[num_changes]);
 			var form := cint(parm[1]);
-			print ("graphic is " + form);
+			//print ("graphic is " + form);
 			var clr := cint(parm[2]);
 			will_cast := cint(parm[4]);
 			will_breathe := cint(parm[3]);

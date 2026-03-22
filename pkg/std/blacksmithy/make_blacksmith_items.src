@@ -92,41 +92,41 @@ program use_hammer( character, hammer )
 	endif
 
  	if (IsBone(use_on))
-	SendSysMessage( character, "What ingots would you like to use?" );
-	var bone := use_on;
-	use_on := Target( character, TGTOPT_CHECK_LOS );
-	
-	if( !use_on )
-		return;
-	endif
+		SendSysMessage( character, "What ingots would you like to use?" );
+		var bone := use_on;
+		use_on := Target( character, TGTOPT_CHECK_LOS );
+		
+		if( !use_on )
+			return;
+		endif
 
-	if( !Accessible( character , use_on ) )
-		SendSysMessage( character , "You can't reach that." );
-		return;
-	endif
+		if( !Accessible( character , use_on ) )
+			SendSysMessage( character , "You can't reach that." );
+			return;
+		endif
 
-	if( !ReserveItem(use_on) )
-		return;
-	endif
+		if( !ReserveItem(use_on) )
+			return;
+		endif
 
-	if( !IsInContainer( character.backpack , use_on ) )
-		SendSysmessage( character, "That item has to be in your backpack." );
-		return;
-	endif
+		if( !IsInContainer( character.backpack , use_on ) )
+			SendSysmessage( character, "That item has to be in your backpack." );
+			return;
+		endif
 
-	if ( !IsIngot(use_on) )
-		SendSysMessage( character, "You must select ingots!" );
-		return;
-	endif
-		var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1 );
- 	foreach item in Near_Items
-	  	if ((item.objtype == UOBJ_ANVIL1) or (item.objtype == UOBJ_ANVIL2))
-	   		MakeBoneItems( character , use_on , bone );
-	   		return;
-	  	endif
- 	endforeach
+		if ( !IsIngot(use_on) )
+			SendSysMessage( character, "You must select ingots!" );
+			return;
+		endif
+			var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+		foreach item in Near_Items
+			if ((item.objtype == UOBJ_ANVIL1) or (item.objtype == UOBJ_ANVIL2))
+				MakeBoneItems( character , use_on , bone );
+				return;
+			endif
+		endforeach
 
-	SendSysmessage( character , "You must be near an anvil to smith items!" );
+		SendSysmessage( character , "You must be near an anvil to smith items!" );
 	endif
 
 	if( !IsIngot(use_on) ) 

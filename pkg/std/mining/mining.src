@@ -439,7 +439,78 @@ function DoSomething( character , tool )
 
 		95:	
 
-		96:	
+		96:	if( Random(15) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
+					case(RandomInt(8))
+						0:	objtype := 0x213f;
+							amount := 2;
+							msg := "You find two dark sapphire gems!";
+							break;
+						1:	objtype := 0x2140;
+							amount := 2;
+							msg := "You find two turquoise gems!";
+							break;
+						2:	objtype := 0x2141;
+							amount := 2;
+							msg := "You find two perfect emerald gems!";
+							break;
+						3:	objtype := 0x2142;
+							amount := 2;
+							msg := "You find two ecru citrine gems!";
+							break;
+						4:	objtype := 0x2143;
+							amount := 2;
+							msg := "You find two white pearl gems!";
+							break;
+						5:	objtype := 0x2144;
+							amount := 2;
+							msg := "You find two fire ruby gems!";
+							break;
+						6:	objtype := 0x2145;
+							amount := 2;
+							msg := "You find two blue diamond gems!";
+							break;
+						7:	objtype := 0x2146;
+							amount := 2;
+							msg := "You find two brilliant amber gems!";
+							break;
+					endcase
+				elseif( Random(30) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
+					case(RandomInt(8))
+						0:	objtype := 0x213f;
+							amount := 2;
+							msg := "You find a dark sapphire gem!";
+							break;
+						1:	objtype := 0x2140;
+							amount := 2;
+							msg := "You find a turquoise gem!";
+							break;
+						2:	objtype := 0x2141;
+							amount := 2;
+							msg := "You find a perfect emerald gem!";
+							break;
+						3:	objtype := 0x2142;
+							amount := 2;
+							msg := "You find an ecru citrine gem!";
+							break;
+						4:	objtype := 0x2143;
+							amount := 2;
+							msg := "You find a white pearl gem!";
+							break;
+						5:	objtype := 0x2144;
+							amount := 2;
+							msg := "You find a fire ruby gem!";
+							break;
+						6:	objtype := 0x2145;
+							amount := 2;
+							msg := "You find a blue diamond gem!";
+							break;
+						7:	objtype := 0x2146;
+							amount := 2;
+							msg := "You find a brilliant amber gem!";
+							break;
+					endcase
+				endif
+				break;
 
 		97:	if( Random(5) < 1 )
 				objtype := 0x0F25;
@@ -472,6 +543,36 @@ function DoSomething( character , tool )
 				endif
 			endif
 			break;
+		
+		104: if( Random(15) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
+				case(RandomInt(3))
+					0:	objtype := 0xc53b;
+						amount := 2;
+						msg := "You find two strange looking blue gem!";
+						break;
+					1:	objtype := 0xc53c;
+						amount := 2;
+						msg := "You find two strange looking red gem!";
+						break;
+					2:	objtype := 0xc53d;
+						amount := 2;
+						msg := "You find two glowing bright white gem!";
+						break;
+				endcase
+			elseif( Random(40) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
+				case(RandomInt(3))
+					0:	objtype := 0xc53b;
+						msg := "You find a strange looking blue gem!";
+						break;
+					1:	objtype := 0xc53c;
+						msg := "You find a strange looking red gem!";
+						break;
+					2:	objtype := 0xc53d;
+						msg := "You find a glowing bright white gem!";
+						break;
+				endcase
+			endif
+			break;
 			
 		105: if( Random(5) < 1 )
 				objtype := 0x0F30;
@@ -500,40 +601,83 @@ function DoSomething( character , tool )
 			endif
 			break;	
 		
-		107:	if( Random(15) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
-					case(RandomInt(3))
-						0:	objtype := 0xc53b;
+		107:	if( Random(10) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
+					case(RandomInt(8))
+						0:	objtype := 0x213f;
 							amount := 2;
-							msg := "You find two strange looking blue gem!";
+							msg := "You find two dark sapphire gems!";
 							break;
-						1:	objtype := 0xc53c;
+						1:	objtype := 0x2140;
 							amount := 2;
-							msg := "You find two strange looking red gem!";
+							msg := "You find two turquoise gems!";
 							break;
-						2:	objtype := 0xc53d;
+						2:	objtype := 0x2141;
 							amount := 2;
-							msg := "You find two glowing bright white gem!";
+							msg := "You find two perfect emerald gems!";
+							break;
+						3:	objtype := 0x2142;
+							amount := 2;
+							msg := "You find two ecru citrine gems!";
+							break;
+						4:	objtype := 0x2143;
+							amount := 2;
+							msg := "You find two white pearl gems!";
+							break;
+						5:	objtype := 0x2144;
+							amount := 2;
+							msg := "You find two fire ruby gems!";
+							break;
+						6:	objtype := 0x2145;
+							amount := 2;
+							msg := "You find two blue diamond gems!";
+							break;
+						7:	objtype := 0x2146;
+							amount := 2;
+							msg := "You find two brilliant amber gems!";
 							break;
 					endcase
-				elseif( Random(40) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
-					case(RandomInt(3))
-						0:	objtype := 0xc53b;
-							msg := "You find a strange looking blue gem!";
+				elseif( Random(25) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
+					case(RandomInt(8))
+						0:	objtype := 0x213f;
+							amount := 2;
+							msg := "You find a dark sapphire gem!";
 							break;
-						1:	objtype := 0xc53c;
-							msg := "You find a strange looking red gem!";
+						1:	objtype := 0x2140;
+							amount := 2;
+							msg := "You find a turquoise gem!";
 							break;
-						2:	objtype := 0xc53d;
-							msg := "You find a glowing bright white gem!";
+						2:	objtype := 0x2141;
+							amount := 2;
+							msg := "You find a perfect emerald gem!";
+							break;
+						3:	objtype := 0x2142;
+							amount := 2;
+							msg := "You find an ecru citrine gem!";
+							break;
+						4:	objtype := 0x2143;
+							amount := 2;
+							msg := "You find a white pearl gem!";
+							break;
+						5:	objtype := 0x2144;
+							amount := 2;
+							msg := "You find a fire ruby gem!";
+							break;
+						6:	objtype := 0x2145;
+							amount := 2;
+							msg := "You find a blue diamond gem!";
+							break;
+						7:	objtype := 0x2146;
+							amount := 2;
+							msg := "You find a brilliant amber gem!";
 							break;
 					endcase
 				endif
-			break;
+				break;
 
 		108:	if( Random(5) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
 					objtype := 0xc53b;
 					amount := 2;
-					msg := "You find two strange looking blue gem!";
+					msg := "You find two strange looking blue gems!";
 				elseif( Random(20) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
 					objtype := 0xc53b;
 					msg := "You find a strange looking blue gem!";
@@ -543,7 +687,7 @@ function DoSomething( character , tool )
 		109:	if( Random(10) < 1  && !IsInGuardedArea(character) && !IsInSafeArea(character) )
 					objtype := 0xc53c;
 					amount := 2;
-					msg := "You find two strange looking red gem!";
+					msg := "You find two strange looking red gems!";
 				elseif( Random(30) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
 					objtype := 0xc53c;
 					msg := "You find a strange looking red gem!";
@@ -553,7 +697,7 @@ function DoSomething( character , tool )
 		110:	if( Random(15) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
 					objtype := 0xc53d;
 					amount := 2;
-					msg := "You find two glowing bright white gem!";
+					msg := "You find two glowing bright white gems!";
 				elseif( Random(40) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
 					objtype := 0xc53d;
 					msg := "You find a glowing bright white gem!";
