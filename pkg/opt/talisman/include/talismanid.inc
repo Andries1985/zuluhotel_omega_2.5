@@ -1,7 +1,8 @@
 use uo;
 use os;
+use polsys;
 
-//include "include/client";
+include "include/client";
 include "include/namingbyenchant";
 include "include/classes";
 //include "include/skillpoints";
@@ -10,7 +11,7 @@ include "include/classes";
 //include ":containers:checks";
 
 
-function TalismanID( who, delay )
+function TalismanID( who, delay, talisman )
 
 	var the_item;
 	delay := 4;
@@ -26,7 +27,8 @@ function TalismanID( who, delay )
 			delay := 0;
 		endif
     elseif ( GetObjProperty( who , CLASSEID_CRAFTER ) )
-		skillID := GetEffectiveSkill( who, SKILLID_ARMSLORE );
+		skillID := CInt(GetEffectiveSkill( who, SKILLID_ARMSLORE ));
+		Print("Crafter's Arms Lore: " + skillID);
 		if( skillID >= 100)
 			delay := 0;
 		endif
@@ -128,7 +130,10 @@ function TalismanID( who, delay )
 						ReleaseItem( the_item );
 						return 1;
 					endif
-					ItemID(who,item);
+					if( !ItemID(who, item, talisman) )
+						ReleaseItem( the_item );
+						return 1;
+					endif
 					sleepms(Max(delay*1000,MIN_DELAYMS));
 				endforeach
 			endif
@@ -160,14 +165,24 @@ function TalismanID( who, delay )
 		return 1;
 	endif
 
-	ItemID(who,the_item);
-
+	ItemID(who, the_item, talisman);
 	ReleaseItem( the_item );
 	return 1;
 	
 endfunction
 
-function ItemID(who,the_item)
+function ItemID(who, the_item, talisman)
+
+	if( !talisman )
+		SendSysMessage( who, "You need a talisman of identification to do that.", FONT_NORMAL, 2595 );
+		return 0;
+	endif
+
+	var idcharges := CInt(GetObjProperty(talisman, "idcharges"));
+	if( idcharges < 1 )
+		SendSysMessage( who, "Your talisman has no identification charges left.", FONT_NORMAL, 2595 );
+		return 0;
+	endif
 
 	ReserveItem( the_item );
 	if( !ReserveItem( the_item ) )
@@ -184,16 +199,17 @@ function ItemID(who,the_item)
 		if( !IsIDable( the_item ) )
 			SendSysmessage( who , "This is a normal item." );
 			SetObjProperty( the_item , "IDed" , 1 );
+			SetObjProperty( talisman, "idcharges", idcharges - 1 );
 			ReleaseItem( the_item );
 			//Print("Normal Item.");
 			//Print("Releasing item...");
 			return 1;
-		elseif( !CheckSkill( who , SKILLID_ITEMID , -2 , thepoints ) )
-			SendSysmessage (who, "I'm not sure . . .");
-			ReleaseItem( the_item );
-			//Print("Failed ID.");
-			//Print("Releasing item...");
-			return 1;
+		// elseif( !CheckSkill( who , SKILLID_ITEMID , -2 , thepoints ) )
+		// 	SendSysmessage (who, "I'm not sure . . .");
+		// 	ReleaseItem( the_item );
+		// 	//Print("Failed ID.");
+		// 	//Print("Releasing item...");
+		// 	return 1;
 		endif
 	endif 
 
@@ -212,6 +228,7 @@ function ItemID(who,the_item)
 	endif
 	
 	SetObjProperty( the_item , "IDed" , 1 );
+	SetObjProperty( talisman, "idcharges", idcharges - 1 );
 
 	ReleaseItem( the_item );
 	//Print("Item IDed.");

@@ -54,19 +54,27 @@ program alchemyplus ( character, myburner )
 	//if it doesn't use up a bottle, we can just make it without a container
 	if( !current_potion.consume_bottle )
 		potion_container := "no container needed";
-		
+		//Print("No bottle needed: " + potion_container);
+
 	//this one doesn't need a container
 	elseif( current_potion.itemtype == 36 )
 		potion_container := "no container needed";
 	
 	//Flask for the Talisman Item
-	elseif( current_potion.itemtype == 40 )
-		potion_container := found_empty_flask;
-		
+    elseif( current_potion.itemtype == 40 )
+        if( found_empty_flask )
+            potion_container := found_empty_flask;
+            //Print("Flask: " + potion_container);
+        else
+            SendSysMessage(character, "You need an empty flask to make that potion.");
+            return;
+        endif
+
 	//if the potion can't be made in a keg and we found a bottle, automatically select the bottle
 	elseif( found_empty_bottle )
 		potion_container := found_empty_bottle;
-		
+		//Print("Bottle: " + potion_container);
+
 	//if it can't be made in a keg and we didn't find any bottles, ask to select bottles
 	else
 		//choose bottles
@@ -168,18 +176,29 @@ program alchemyplus ( character, myburner )
 
 			var correct := ReturnTruePotion(current_potion.itemtype, level);
 			
-			created_potion := CreateItemInContainer(character.backpack, correct ,1);
+			
 
 			//destroy a bottle, if needed
-			if (current_potion.consume_bottle || current_potion.consume_flask) 
+			if (current_potion.consume_bottle && current_potion.itemtype != 40) 
+				//Print("Consuming bottle");
 				SubtractAmount (potion_container, 1);
 				if (!potion_container)
 					SendSysMessage (character, "You run out of bottles.");
 					AutoLoop_finish();
 					return;
 				endif
+			elseif (current_potion.consume_flask && current_potion.itemtype == 40)
+				//Print("Consuming flask");
+				SubtractAmount (potion_container, 1);
+				if (!potion_container)
+					SendSysMessage (character, "You run out of flasks.");
+					AutoLoop_finish();
+					return;
+				endif
 			endif
-			
+
+			created_potion := CreateItemInContainer(character.backpack, correct, 1);
+
 		else
 			PlaySoundEffect(character, current_potion.failnoise);
 		endif

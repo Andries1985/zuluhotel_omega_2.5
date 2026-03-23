@@ -593,13 +593,34 @@ endfunction
 
 function IsLog( item )
 
-	if(( item.objtype >= UOBJ_LOGS_START  and item.objtype <= UOBJ_LOGS_END ) or ( item.objtype == UOBJ_LOGS_GODDESS ) or ( item.objtype  == UOBJ_LOGS ))
+	if(( item.objtype >= UOBJ_LOGS_START and item.objtype <= UOBJ_LOGS_END ) or ( item.objtype == UOBJ_LOGS_GODDESS ) or ( item.objtype  == UOBJ_LOGS ))
 		return 1;
 	else
 		return 0;
 	endif
 
 endfunction
+
+function IsGem( item )
+
+	if( item.objtype >= UOBJ_GEM1_START and item.objtype <= UOBJ_GEM1_END )
+		return 1;
+	else
+		return 0;
+	endif
+
+endfunction
+
+function IsGem2( item )
+
+	if( item.objtype >= UOBJ_GEM2_START and item.objtype <= UOBJ_GEM2_END )
+		return 1;
+	else
+		return 0;
+	endif
+
+endfunction
+
 
 function IsMinable( theobj , othertype )
 

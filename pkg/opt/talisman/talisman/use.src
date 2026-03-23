@@ -1,6 +1,7 @@
 use uo;
 use os;
 use basic;
+use polsys;
 
 //include "include/client";
 //include "include/skillpoints";
@@ -11,7 +12,7 @@ include "../pkg/opt/talisman/include/talismanid";
 // how many seconds between ID
 var BASE_DELAY := 30;
 
-program dotalismanid( who )
+program dotalismanid( who, talisman )
 
     var lastid := GetObjProperty(who, "#LastID");
 
@@ -25,7 +26,10 @@ program dotalismanid( who )
         return 0;
     endif
     
-    TalismanID(who,delay);
+    TalismanID(who, delay, talisman);
+    if( talisman )
+        IncRevision( talisman );
+    endif
 
     SetObjProperty(who, "#LastID", ReadGameClock());
 

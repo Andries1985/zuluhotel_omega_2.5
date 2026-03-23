@@ -368,7 +368,7 @@ endfunction
 
 
 
-function MineForOre( character , use_on , info , tool )
+function MineForOre( character , use_on , unused info , tool )
 	
 	var initial_x	:= character.x;
 	var initial_y	:= character.y;
@@ -439,7 +439,7 @@ function DoSomething( character , tool )
 
 		95:	
 
-		96:	if( Random(15) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
+		96:	if( Random(5) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
 					case(RandomInt(8))
 						0:	objtype := 0x213f;
 							amount := 2;
@@ -474,7 +474,7 @@ function DoSomething( character , tool )
 							msg := "You find two brilliant amber gems!";
 							break;
 					endcase
-				elseif( Random(30) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
+				elseif( Random(15) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
 					case(RandomInt(8))
 						0:	objtype := 0x213f;
 							amount := 2;
@@ -601,7 +601,7 @@ function DoSomething( character , tool )
 			endif
 			break;	
 		
-		107:	if( Random(10) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
+		107:	if( Random(5) < 1 && !IsInGuardedArea(character) && !IsInSafeArea(character) )
 					case(RandomInt(8))
 						0:	objtype := 0x213f;
 							amount := 2;
@@ -636,7 +636,7 @@ function DoSomething( character , tool )
 							msg := "You find two brilliant amber gems!";
 							break;
 					endcase
-				elseif( Random(25) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
+				elseif( Random(15) < 1 && (IsInGuardedArea(character) || IsInSafeArea(character)) )
 					case(RandomInt(8))
 						0:	objtype := 0x213f;
 							amount := 2;

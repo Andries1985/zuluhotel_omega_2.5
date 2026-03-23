@@ -43,6 +43,12 @@ program itemdata(parms)
 		prop.values := array {charges};
 		allprops.append(prop);
 	endif
+	var idcharges := GetObjProperty(xObject, "idcharges");
+	if(idcharges)
+		prop.clilocid := 1060741; //Charges: ~1_VAL~
+		prop.values := array {idcharges};
+		allprops.append(prop);
+	endif
 	if(!CanBeIDed(xObject))
 		prop.clilocid := 1038000; // Unidentified
 		prop.values := array {};
