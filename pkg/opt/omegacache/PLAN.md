@@ -207,13 +207,13 @@ TBD — suggested starting values (conservative, can be increased):
 
 | House Size | Secures | Suggested Cabinets |
 |---|---|---|
-| Small (0x6064-0x606E, 0x6070-0x6072) | 1 | 1 |
-| Medium (0x6074, 0x608D) | 3-4 | 1 |
-| Large (0x6076, 0x6078, 0x608C) | 6 | 2 |
-| Mansion (0x607A) | 15 | 2 |
-| Castle (0x607C) | 20 | 3 |
-| Fortress (0x607E) | 25 | 3 |
-| Keep (0x6BB8) | 1 | 1 |
+| Small (0x6064-0x606E, 0x6070-0x6072) | [ ] 1 | 1 |
+| Medium (0x6074, 0x608D) | 3-4 | [ ] 1 |
+| Large (0x6076, 0x6078, 0x608C) | [ ] 6 | [ ] 2 |
+| Mansion (0x607A) | [ ] 15 | [ ] 2 |
+| Castle (0x607C) | [ ] 20 | [ ] 3 |
+| Fortress (0x607E) | [ ] 25 | [ ] 3 |
+| Keep (0x6BB8) | [ ] 1 | 1 |
 | Custom multi-houses (0xA3E0-0xA3F0) | 3-22 | 1-3 (scale with secures) |
 
 Since all cabinets share one storage pool, the limit mainly controls how many physical access points the player can place, not storage capacity.
@@ -289,27 +289,27 @@ Categories defined in `categories.cfg`. Full item listings per category are in t
 
 | Category | Group | Count |
 |---|---|---|
-| Cloth & Fibre | Crafting | 4 |
-| Hides | Crafting | 18 |
-| Ingots | Crafting | 34 |
-| Logs | Crafting | 26 |
-| Mining Materials | Crafting | 2 |
-| Ores | Crafting | 34 |
-| Seeds | Crafting | 11 |
-| Codex Damnorum Scrolls | Mage | 16 |
-| Earth Book Scrolls | Mage | 16 |
-| Holy Book Scrolls | Mage | 16 |
-| Potions | Mage | 23 |
-| Song Book Scrolls | Mage | 20 |
+| Cloth & Fibre | Crafting | [ ] 4 |
+| Hides | Crafting | [ ] 18 |
+| Ingots | Crafting | [ ] 34 |
+| Logs | Crafting | [ ] 26 |
+| Mining Materials | Crafting | [ ] 2 |
+| Ores | Crafting | [ ] 34 |
+| Seeds | Crafting | [ ] 11 |
+| Codex Damnorum Scrolls | Mage | [ ] 16 |
+| Earth Book Scrolls | Mage | [ ] 16 |
+| Holy Book Scrolls | Mage | [ ] 16 |
+| Potions | Mage | [ ] 23 |
+| Song Book Scrolls | Mage | [ ] 20 |
 | Spellbook Scrolls | Mage | 64 |
-| Ammo | General | 7 |
+| Ammo | General | [ ] 7 |
 | Food | General | ~42 |
-| Gems | General | 9 |
-| Money | General | 1 |
-| Raw Herbs | General | 4 |
-| Reagents | General | 26 |
-| Special Items | Special | 5 |
-| Miscellaneous | Misc | 6 |
+| Gems | General | [ ] 9 |
+| Money | General | [ ] 1 |
+| Raw Herbs | General | [ ] 4 |
+| Reagents | General | [ ] 26 |
+| Special Items | Special | [ ] 5 |
+| Miscellaneous | Misc | [ ] 6 |
 
 **Blacklisted items** (in `blacklist.cfg`): Gold Ingot (`0x1BE9` — not a real item, graphic used by clay), Zulu Coin (`0x3B9A` — doesn't exist).
 
@@ -949,32 +949,165 @@ All commands registered as player-level in `config/cmds.cfg`.
 
 ---
 
-## Implementation Order
+## Implementation Plan
+
+Each phase is broken into milestones that deliver a testable, functional increment. Milestones within a phase are sequential — each builds on the previous. Phases can be delivered independently.
+
+**Tracking**: Tasks are marked with `[ ]` (pending) or `[x]` (complete) as work progresses.
+
+**Changelog**: At the end of every milestone, update `pkg/opt/omegacache/changelog.md` with:
+- A PR-style summary of what was done in that milestone
+- Verification steps for manual functional, integration, and feature testing
+- Entries are ordered newest at bottom (append-only)
+
+---
 
 ### Phase 1: Core Omega Cache
-1. **Move `CanStack()`** to `scripts/include/canstack.inc`, update `packethook.src` to include from new location
-2. **Shared access check** — `FindAccessibleCabinet()` function (cabinet proximity + house privileges), used by all features
-3. **Data layer** (`omegacache.inc` rewrite) — core DataFile functions, `BuildItemKey()` with MD5 hash, `IsEligibleForStorage()` with blacklist, full property storage on elements (including weight, color, CProps)
-4. **Housing integration** — deed system, house limits (`maxnumomegacache`/`numomegacache`), `houseserial` linking, extend `AssignDefaultContainers()` + `GetMaxProps()` + lazy-init check in `sign.src`
-5. **House sign display** — add "Number of Omega Caches: used/max" line to sign gump layout and data arrays
-6. **Access control** — reuse secure container privilege checks (VIEW_SECURE, ADD_TO_SECURE, REMOVE_FROM_SECURE)
-7. **Item definitions** — rework `itemdesc.cfg` (Item not Container, remove lock/gump properties), add deed item definition, verify objtype availability
-8. **Deposit mechanism** — data-driven, blacklist-based eligibility, no arbitrary limits, deposit-all with warning prompt
-9. **Withdrawal mechanism** — multi-stack, weight-aware with full parent chain validation, per-stack DataFile debit, destination container targeting
-10. **Gump redesign** — dynamic from `categories.cfg` + DataFile with "Miscellaneous / Other" for uncategorized items, keep current visual style initially
-11. **Cabinet lifecycle** — deed placement, destruction blocking, house demolition warning
-12. **Macro commands** — `.cache deposit`, `.cache withdraw <amount>` with target cursor (no gump)
-13. **Testing** — deposit/withdraw cycles, concurrent access, weight edge cases, multi-cabinet houses, permission checks, macro command flows
-14. **Gump review** — evaluate and potentially redesign the gump layout
+
+#### Milestone 1.1 — Foundation
+Non-player-facing. Builds the core libraries and item definitions that all subsequent milestones depend on.
+
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 1 | Move `CanStack()` to `scripts/include/canstack.inc` | Shared include, `packethook.src` updated to use it |
+| [ ] 2 | Data layer (`omegacache.inc` rewrite) | `BuildItemKey()`, `BuildDefaultKey()`, `OpenHouseStore()`, `DepositItem()`, `WithdrawItem()`, `GetStoredAmount()`, `GetStoredAmountByObjtype()`, `IsStoreEmpty()`, `IsEligibleForStorage()` |
+| [ ] 3 | Shared access check | `FindAccessibleCabinet()` function |
+| [ ] 4 | Item definitions | Rework `itemdesc.cfg` (Item not Container), add deed definition, verify deed objtype availability |
+| [ ] 5 | Blacklist | `blacklist.cfg` with Gold Ingot and Zulu Coin |
+
+**Testable**: Data layer functions can be exercised via GM commands or test scripts — create items, build keys, deposit/withdraw from DataFile, verify element contents on disk.
+
+#### Milestone 1.2 — Housing & Placement
+Player-facing. Players can place and remove Omega Caches in houses.
+
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 6 | Housing integration | Extend `AssignDefaultContainers()` + `GetMaxProps()` with `numomegacache`/`maxnumomegacache`, lazy-init check in `sign.src` |
+| [ ] 7 | House sign display | "Number of Omega Caches: used/max" line in sign gump |
+| [ ] 8 | Access control | Privilege checks (VIEW_SECURE, ADD_TO_SECURE, REMOVE_FROM_SECURE) integrated into `FindAccessibleCabinet()` |
+| [ ] 9 | Deed placement script | `placecache.src` — house check, limit check, targeting, cabinet creation with `houseserial` CProp |
+| [ ] 10 | Destruction script | `destroycache.src` — block if DataFile non-empty, re-credit `numomegacache` counter |
+| [ ] 11 | House demolition warning | Yellow system message before existing YesNo, DataFile cleanup after demolition |
+
+**Testable**: GM creates a deed, player places it in a house, house sign shows count, destruction is blocked while items exist (seed test data via GM), demolition warning fires.
+
+#### Milestone 1.3 — Deposit & Withdraw
+Player-facing. The core feature is usable — players can store and retrieve items.
+
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 12 | Deposit — single item | Target an item, validate eligibility, `BuildItemKey()`, `DepositItem()`, destroy item, report |
+| [ ] 13 | Deposit — container | Target a container, enumerate all eligible items, deposit and destroy each, summary report |
+| [ ] 14 | Deposit — deposit-all | Deposit all eligible items from backpack + child containers, warning prompt |
+| [ ] 15 | Withdrawal — basic | Select item from gump, enter quantity, create in backpack, per-stack DataFile debit with re-credit on failure |
+| [ ] 16 | Withdrawal — destination targeting | Player targets a destination container instead of defaulting to backpack |
+| [ ] 17 | Withdrawal — weight validation | Full parent chain weight check, max withdrawable calculation, error reporting |
+| [ ] 18 | Withdrawal — multi-stack | Create multiple stacks when amount exceeds stack_limit (60000) |
+
+**Testable**: Deposit items via gump and verify DataFile on disk. Withdraw items and verify they appear in the correct container with correct properties. Test weight limits, multi-stack, partial failures.
+
+#### Milestone 1.4 — Gump & Commands
+Player-facing. Full UI and macro support.
+
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 19 | Gump — category menu | Dynamic from `categories.cfg` + `df.Keys()`, deferred loading by category, "Miscellaneous / Other" for uncategorized items |
+| [ ] 20 | Gump — item display | Per-category item rows with icon, name, quantity, text entry, take button. Variant display for items with non-default properties. |
+| [ ] 21 | Gump — deposit buttons | "Add Item to Omega Cache" and "Deposit All" buttons integrated into gump |
+| [ ] 22 | `.cache` command | Opens gump, registered as player-level command |
+| [ ] 23 | `.cache deposit` command | Deposit-all from backpack (no gump), deposit with target (container or single item) |
+| [ ] 24 | `.cache withdraw` command | Target item type, specify amount, withdraw to backpack (no gump). Prompt explains targeting requirement. |
+
+**Testable**: Full player flow — open gump, browse categories, deposit via gump and commands, withdraw via gump and commands. Verify macro-friendliness (`.cache deposit` + `.cache withdraw` with no gump interaction).
+
+#### Milestone 1.5 — Polish & Testing
+Stabilisation pass.
+
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 25 | Integration testing | Deposit/withdraw cycles, concurrent access (two players same cache), weight edge cases, multi-cabinet houses |
+| [ ] 26 | Permission testing | Owner, co-owner, friend with/without privileges, GM access, non-friend rejection |
+| [ ] 27 | Edge cases | Empty DataFile, zero-quantity requests, full container, weightless items, items on blacklist, uncategorized items |
+| [ ] 28 | Macro flow testing | `.cache deposit` → `.cache withdraw` chains, verify clean output messages |
+| [ ] 29 | Gump review | Evaluate visual layout, consider redesign if needed |
+
+**Testable**: All test scenarios pass. Feature is stable for live deployment.
+
+---
 
 ### Phase 2: Crafting Integration
-15. **Crafting resource manager** — `resourcemanager.inc` using `FindAccessibleCabinet()`, `ConsumeFromStore()` with fast-path + prefix fallback, craft script modifications
+
+#### Milestone 2.1 — Resource Manager
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 30 | `resourcemanager.inc` | `GetAvailableResource()` (enumerate all backpack stacks + cache), `ConsumeResource()` (backpack-first, then cache), `ConsumeFromStore()` (fast-path + prefix fallback) |
+| [ ] 31 | `FindHouseStore()` integration | Uses `FindAccessibleCabinet()` for proximity + privilege check |
+
+**Testable**: Call `GetAvailableResource()` and `ConsumeResource()` from test scripts, verify backpack-first consumption and cache fallback.
+
+#### Milestone 2.2 — Craft Script Modifications
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 32 | Blacksmithy | Replace `FindItemInContainer` + `SubtractAmount` with `GetAvailableResource` + `ConsumeResource` |
+| [ ] 33 | Tailoring | Same pattern |
+| [ ] 34 | Carpentry | Same pattern (handles dual resources) |
+| [ ] 35 | Alchemy | Same pattern |
+| [ ] 36 | Bowcraft | Same pattern |
+| [ ] 37 | Cooking | Same pattern |
+| [ ] 38 | Inscription | Same pattern |
+
+**Testable**: Craft items while standing near an Omega Cache. Verify resources consumed from backpack first, then from cache. Verify "Used X from your Omega Cache" message. Verify crafting without a nearby cache still works (backpack-only fallback).
+
+#### Milestone 2.3 — Crafting Testing
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 39 | Integration testing | Craft with mixed sources (some in backpack, some in cache), craft until cache depleted, craft away from cache (backpack-only) |
+| [ ] 40 | Edge cases | Insufficient total resources, cache with only variant items, multiple ore types in cache |
+
+---
 
 ### Phase 3: Loadout System
-16. **Loadout data layer** — DataFile per character, slot CRUD operations
-17. **Loadout gump** — create, edit (editable quantities, add via target, remove per row), save from baseline
-18. **Loadout apply** — reconcile container with cabinet store (withdraw deficits, deposit surpluses), lost container error handling
-19. **`.loadout` command** — register player command, slot activation, apply-all (no gump, macro-friendly)
+
+#### Milestone 3.1 — Loadout Data Layer
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 41 | Loadout DataFile | Per-character DataFile at `data/ds/omegacache/loadouts_<charserial>.txt` |
+| [ ] 42 | Slot CRUD | Create slot (name, container serial), delete slot, update slot properties |
+| [ ] 43 | Item management | Add item to slot (by full key), remove item from slot, update quantity |
+
+**Testable**: Create/edit/delete loadout slots via test scripts, verify DataFile contents on disk.
+
+#### Milestone 3.2 — Loadout Gump
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 44 | Slot list view | List of 10 slots with name, container name, item count. Radio select, pagination. |
+| [ ] 45 | Create flow | Target container, name the loadout, save empty slot |
+| [ ] 46 | Edit view | All items in slot with icon, name, editable quantity, remove button per row |
+| [ ] 47 | Add item | Targeting cursor, `BuildItemKey()`, record with current amount as default |
+| [ ] 48 | Save from baseline | Read all eligible items in container, record `key -> amount` for each |
+| [ ] 49 | Change container | Re-target a different container |
+| [ ] 50 | Save button | Commit all quantity changes from text fields |
+
+**Testable**: Full gump flow — create loadout, add items, edit quantities, save from baseline, change container.
+
+#### Milestone 3.3 — Loadout Apply
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 51 | Apply logic | Build key-to-amount map of container, compare against loadout definition, withdraw deficits, deposit surpluses |
+| [ ] 52 | Container validation | Weight/item limits, partial fill with warning |
+| [ ] 53 | Lost container handling | Error message if container not found |
+| [ ] 54 | Summary report | "+300 Ginseng, -50 Sulphurous Ash returned to storage" |
+
+**Testable**: Apply loadout with items above/below/at target. Verify container contents match definition. Test with missing container, full container, weight-limited container.
+
+#### Milestone 3.4 — Loadout Commands & Testing
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 55 | `.loadout` command | Opens gump, registered as player-level command |
+| [ ] 56 | `.loadout 1-10` command | Apply specific slot (no gump) |
+| [ ] 57 | `.loadout all` command | Apply all defined slots in sequence |
+| [ ] 58 | Integration testing | Apply after farming run, apply after PvP death, apply with empty cache, apply all with mixed slots |
+| [ ] 59 | Macro flow testing | `.loadout all` chains, verify clean output messages |
 
 ---
 
