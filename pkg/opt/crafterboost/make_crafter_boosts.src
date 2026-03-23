@@ -131,8 +131,9 @@ function MakeUpgrade(character, start_material, smithyretort)
 	var material_quality := material_cfg[mat2_type].Quality;
 	var char_bkpk := character.backpack;
 	var mat2_color := material2.color;
+	var empty_flask;
 	AutoLoop_init(character);
-	while(AutoLoop_more() && FindSubstance(char_bkpk, mat2_type, mat2_qty) && FindSubstance(char_bkpk, mat1_type, mat1_qty) && !character.dead)
+	while(AutoLoop_more() && FindSubstance(char_bkpk, mat2_type, mat2_qty) && FindSubstance(char_bkpk, mat1_type, mat1_qty) && ((product_type != 0x8B05) || FindSubstance(char_bkpk, 0x1832, 1)) && !character.dead)
 		sendDiff( character , final_diff );
 
 		PlaySoundEffect(character, SFX_1C9);
@@ -148,6 +149,21 @@ function MakeUpgrade(character, start_material, smithyretort)
 		endif
 
 		if(CheckSkill(character, skilltype, final_diff, points))
+			if( product_type == 0x8B05 )
+				empty_flask := FindObjtypeInContainer(char_bkpk, 0x1832);
+				if( !empty_flask )
+					SendSysMessage( character , "You need at least 1 empty flask." );
+					return 0;
+				endif
+				if( !Accessible( character , empty_flask ) or !empty_flask.movable )
+					SendSysMessage( character , "You can't reach the empty flask." );
+					return 0;
+				endif
+				if( !ReserveItem( empty_flask ) )
+					return 0;
+				endif
+			endif
+
 			if (!ConsumeSubstance( char_bkpk, mat1_type, mat1_qty ))
 				SendSysMessage( character , "Something went wrong when consuming the"+mat1_name+".");
 				return 0;
@@ -155,6 +171,9 @@ function MakeUpgrade(character, start_material, smithyretort)
 			if (!ConsumeSubstance( char_bkpk, mat2_type, mat2_qty ))
 				SendSysMessage( character , "Something went wrong when consuming the"+mat2_name+".");
 				return 0;
+			endif
+			if( product_type == 0x8B05 )
+				SubtractAmount( empty_flask, 1 );
 			endif
 			var newitem := CreateItemInBackpack(character, product_type);
 			if (!newitem)
@@ -252,6 +271,9 @@ function MakeUpgrade(character, start_material, smithyretort)
 		if (!FindSubstance(char_bkpk, mat1_type, mat1_qty))
 			SendSysMessage( character , "You need at least "+mat1_qty+" "+mat1_name+"." );
 		endif
+	endif
+	if( product_type == 0x8B05 and !FindSubstance(char_bkpk, 0x1832, 1) )
+		SendSysMessage( character , "You need at least 1 empty flask." );
 	endif
 endfunction
 
