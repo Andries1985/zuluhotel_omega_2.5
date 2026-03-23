@@ -1,0 +1,4372 @@
+
+use uo;
+use os;
+use cfgfile;
+include "omegacache";
+include ":customhousing:house";
+include ":customhousing:housefriends";
+include "include/utility";
+
+var itemcfg := ReadConfigFile( "::itemdesc" );
+var alchcfg := ReadConfigFile( ":alchemyplus:alchemyplus" );
+const TEXT_HUE_BASE := 242;
+const TEXT_HUE_BASE_TWO := 262;
+const BTN_ID_ADD_ITEM := 1993;
+const TEXT_HUE_TAKE_ID := 2600;
+
+program choozeprize( who, item )
+
+  if ( who.multi )
+	var house := who.multi;
+	if ( FindHouseSign( house ) )
+	  if ( not IsAFriend( FindHouseSign( house ), who ) )
+		SendSysMessage( who, "You can't use item from a non friendly house." );
+		return;
+	  endif
+	endif
+  else
+	SendSysMessage( who, "You can't use item from outside." );
+	return;
+  endif
+
+  detach();
+  var charpack := who.backpack;
+
+  var gump := GFCreateGump( 25, 65 );
+
+  var reagsmandrake := MandrakeRoot( item );
+  var reagsginsengs := Ginsengs( item );
+  var reagsgarlic := Garlic( item );
+  var reagsnightshade := Nightshade( item );
+  var reagssulphurousAsh := SulphurousAsh( item );
+  var reagsspiderSilk := SpiderSilk( item );
+  var reagsBlackPearl := BlackPearl( item );
+  var reagsBloodMoss := BloodMoss( item );
+  var reagsBatwing := Batwing( item );
+  var reagsBlackmoor := Blackmoor( item );
+  var reagsBloodspawn := Bloodspawn( item );
+  var reagsVialOfBlood := VialOfBlood( item );
+  var reagsBone := Bone( item );
+  var reagsBrimstone := Brimstone( item );
+  var reagsDaemonBone := DaemonBone( item );
+  var reagsFertileDirt := FertileDirt( item );
+  var reagsDragonsBlood := DragonsBlood( item );
+  var reagsExecutionersCap := ExecutionersCap( item );
+  var reagsEyeOfNewt := EyeOfNewt( item );
+  var reagsObsidian := Obsidian( item );
+  var reagsPigIron := PigIron( item );
+  var reagsPumice := Pumice( item );
+  var reagsSerpentsScales := SerpentsScales( item );
+  var reagsVolcanicAsh := VolcanicAsh( item );
+  var reagsDeadwood := Deadwood( item );
+  var reagsWormsHeart := WormsHeart( item );
+
+  var gemStarsapphire := Starsapphire( item );
+  var gemEmerald := Emerald( item );
+  var gemSapphire := Sapphire( item );
+  var gemRuby := Ruby( item );
+  var gemCitrine := Citrine( item );
+  var gemAmethyst := Amethyst( item );
+  var gemTourmaline := Tourmaline( item );
+  var gemAmber := Amber( item );
+  var gemDiamond := Diamond( item );
+
+  var resIronIngot := IronIngot( item );
+  var resCopperIngot := CopperIngot( item );
+  var resBlackDwarfIngot := BlackDwarfIngot( item );
+  var resPaganIngot := PaganIngot( item );
+  var resSilverIngot := SilverIngot( item );
+  var resSpectralIngot := SpectralIngot( item );
+  var resLavaRockIngot := LavaRockIngot( item );
+  var resIceRockIngot := IceRockIngot( item );
+  var resMythrilIngot := MythrilIngot( item );
+  var resBasiliskIngot := BasiliskIngot( item );
+  var resSunIngot := SunIngot( item );
+  var resDaedraIngot := DaedraIngot( item );
+  var resDoomIngot := DoomIngot( item );
+  var resNewZuluIngot := NewZuluIngot( item );
+  var resParadise := Paradise( item );
+  var resHell := Hell( item );
+  var resVoid := Void( item );
+  var resEnchanted := Enchanted( item );
+  var resboltofcloth := boltofcloth( item );
+  var rescloth := cloth( item );
+  var reswool := wool( item );
+  var resclay := clay( item );
+  var resgoldingot := goldingot( item );
+  var reshides := hides( item );
+  var reslizardhide := lizardhide( item );
+  var resimphide := imphide( item );
+  var restrollhide := trollhide( item );
+  var resterathanhide := terathanhide( item );
+  var resnecromancerhide := necromancerhide( item );
+  var resicehide := icehide( item );
+  var reslichehide := lichehide( item );
+  var resdaemonhide := daemonhide( item );
+  var resbalronhide := balronhide( item );
+  var ressoulthreads := soulthreads( item );
+  var resdrakehide := drakehide( item );
+  var resdragonhide := dragonhide( item );
+  var reswyvernhide := wyvernhide( item );
+  var reswyrmhide := wyrmhide( item );
+  var rescelestialhide := celestialhide( item );
+  var resgolddragonhide := golddragonhide( item );
+  var reslogs := logs( item );
+  var resbirchlog := birchlog( item );
+  var rescherrylog := cherrylog( item );
+  var resswamplog := swamplog( item );
+  var resoaklog := oaklog( item );
+  var reshardrangerlog := hardrangerlog( item );
+  var resjadelog := jadelog( item );
+  var resstormteallog := stormteallog( item );
+  var resblizzardlog := blizzardlog( item );
+  var resvulcaniclog := vulcaniclog( item );
+  var resvampiriclog := vampiriclog( item );
+  var reszululogs := zululogs( item );
+  var resdarknesslog := darknesslog( item );
+  var reselvenlog := elvenlog( item );
+  var resglass := glass( item );
+
+  var resbottleofliquor := bottleofliquor( item );
+  var resbottleofale := bottleofale( item );
+  var resbottleofwine := bottleofwine( item );
+  var respitcherofale := pitcherofale( item );
+  var respitcherofcider := pitcherofcider( item );
+  var respitcherofliquor := pitcherofliquor( item );
+  var respitcherofwine := pitcherofwine( item );
+  var respitcherofwater := pitcherofwater( item );
+  var respitcherofmilk := pitcherofmilk( item );
+  var resglassofliquor := glassofliquor( item );
+  var resmugofale := mugofale( item );
+  var resglassofwine := glassofwine( item );
+  var resglassofcider := glassofcider( item );
+  var resglassofmilk := glassofmilk( item );
+  var resglassofwater := glassofwater( item );
+  var resflour := flour( item );
+  var resrawrib := rawrib( item );
+  var resrawfishsteak := rawfishsteak( item );
+  var resrawbird := rawbird( item );
+  var resrawham := rawham( item );
+  var resslabofbacon := slabofbacon( item );
+  var reslard := lard( item );
+  var resrawchickenleg := rawchickenleg( item );
+  var resrawlegoflamb := rawlegoflamb( item );
+  var reshoney := honey( item );
+  var rescoconut := coconut( item );
+  var respizzacrust := pizzacrust( item );
+  var respiecrust := piecrust( item );
+  var resfish2 := fish2( item );
+  var resfish3 := fish3( item );
+  var resfish4 := fish4( item );
+  var reswheelofcheese := wheelofcheese( item );
+  var resfriedchickenleg := friedchickenleg( item );
+  var rescookedlegoflamb := cookedlegoflamb( item );
+  var ressushi := sushi( item );
+  var resCookedFishSteak := CookedFishSteak( item );
+  var ressmokedsalmon := smokedsalmon( item );
+  var rescookedbird := cookedbird( item );
+  var resCookedRib := CookedRib( item );
+  var resmagicfish1 := magicfish1( item );
+  var resmagicfish2 := magicfish2( item );
+  var resmagicfish3 := magicfish3( item );
+  var resmagicfish4 := magicfish4( item );
+  var resmagicfish5 := magicfish5( item );
+  var resmagicfish6 := magicfish6( item );
+  var resmagicfish7 := magicfish7( item );
+  var resmagicfish8 := magicfish8( item );
+  var respancakes := pancakes( item );
+  var resmincemeatpie := mincemeatpie( item );
+  var reschickenpotpie := chickenpotpie( item );
+  var reslemonherbfish := lemonherbfish( item );
+  var resonion := onion( item );
+
+  var goldgoldcoin := Goldcoin( item );
+  var goldzulucoin := zulucoin( item );
+
+  var potLHEALPOTION := LHEALPOTION( item );
+  var potHEALPOTION := HEALPOTION( item );
+  var potGHEALPOTION := GHEALPOTION( item );
+  var potLPOISONPOTION := LPOISONPOTION( item );
+  var potPOISONPOTION := POISONPOTION( item );
+  var potGRPOISONPOTION := GRPOISONPOTION( item );
+  var potGREXPLOSIONPOTION := GREXPLOSIONPOTION( item );
+  var potLEXPLOSIONPOTION := LEXPLOSIONPOTION( item );
+  var potEXPLOSIONPOTION := EXPLOSIONPOTION( item );
+  var potLAGILITYPOTION := LAGILITYPOTION( item );
+  var potAGILITYPOTION := AGILITYPOTION( item );
+  var potGRAGILITYPOTION := GRAGILITYPOTION( item );
+  var potREFRESHPOTION := REFRESHPOTION( item );
+  var potFULLREFRESHPOTION := FULLREFRESHPOTION( item );
+  var potLSTRENGTHPOTION := LSTRENGTHPOTION( item );
+  var potSTRENGTHPOTION := STRENGTHPOTION( item );
+  var potGRSTRENGTHPOTION := GRSTRENGTHPOTION( item );
+  var potLCUREPOTION := LCUREPOTION( item );
+  var potCUREPOTION := CUREPOTION( item );
+  var potGRCUREPOTION := GRCUREPOTION( item );
+  var potDEDLYPOISONPOTION := DEDLYPOISONPOTION( item );
+  var potLMINDPOTION := LMINDPOTION( item );
+  var potMINDPOTION := MINDPOTION( item );
+  var potGMINDPOTION := GMINDPOTION( item );
+  var potInvisibilityPotion := InvisibilityPotion( item );
+  var potFineIntellect := FineIntellect( item );
+  var potFabulousIntellect := FabulousIntellect( item );
+  var potFantasticIntellect := FantasticIntellect( item );
+  var potlesserMegoInvul := lesserMegoInvul( item );
+  var potMegoInvulnerabilitypotion := MegoInvulnerabilitypotion( item );
+  var potgreaterMegoInvulnerabilitypotion := greaterMegoInvulnerabilitypotion( item );
+  var potGrandMageRefreshElixir := GrandMageRefreshElixir( item );
+  var potHomericMightpotion := HomericMightpotion( item );
+  var potGreaterHomericMightpotion := GreaterHomericMightpotion( item );
+  var potTamlaHealpotion := TamlaHealpotion( item );
+  var potMinorTransmutation := MinorTransmutation( item );
+  var potMajorTransmutation := MajorTransmutation( item );
+  var potTotem := Totem( item );
+  var potElixer := Elixer( item );
+  var potGreatElixerium := GreatElixerium( item );
+  var potMegoElixerium := MegoElixerium( item );
+  var potDispelPotion := DispelPotion( item );
+
+  var Aammoarrow := ammoarrow( item );
+  var Aammobolt := ammobolt( item );
+  var Aammofire := ammofire( item );
+  var Aammoice := ammoice( item );
+  var Aammothrow := ammothrow( item );
+  var Aammogun := ammogun( item );
+  var Aammothunder := ammothunder( item );
+  var Aammoshaft := ammoshaft( item );
+  var Aammofeather := ammofeather( item );
+
+  var scAntidotescroll := Antidotescroll( item );
+  var scOwlsightscroll := Owlsightscroll( item );
+  var scShiftingearthscroll := Shiftingearthscroll( item );
+  var scSummonmammalsscroll := Summonmammalsscroll( item );
+  var scCalllightningscroll := Calllightningscroll( item );
+  var scEarthblessingscroll := Earthblessingscroll( item );
+  var scEarthportalscroll := Earthportalscroll( item );
+  var scNaturestouchscroll := Naturestouchscroll( item );
+  var scGustofairscroll := Gustofairscroll( item );
+  var scRisingfirescroll := Risingfirescroll( item );
+  var scShapeshiftscroll := Shapeshiftscroll( item );
+  var scIcestrikescroll := Icestrikescroll( item );
+  var scEarthspiritscroll := Earthspiritscroll( item );
+  var scFlamespiritscroll := Flamespiritscroll( item );
+  var scStormspiritscroll := Stormspiritscroll( item );
+  var scWaterspiritscroll := Waterspiritscroll( item );
+  var scControlUndeadScroll := ControlUndeadScroll( item );
+  var scDarknessScroll := DarknessScroll( item );
+  var scDecayingRayScroll := DecayingRayScroll( item );
+  var scSpectresTouchScroll := SpectresTouchScroll( item );
+  var scAbyssalFlameScroll := AbyssalFlameScroll( item );
+  var scAnimateDeadScroll := AnimateDeadScroll( item );
+  var scSacrificeScroll := SacrificeScroll( item );
+  var scWraithsBreathScroll := WraithsBreathScroll( item );
+  var scSorcerersBaneScroll := SorcerersBaneScroll( item );
+  var scSummonSpiritScroll := SummonSpiritScroll( item );
+  var scWraithformScroll := WraithformScroll( item );
+  var scWyvernStrikeScroll := WyvernStrikeScroll( item );
+  var scKillScroll := KillScroll( item );
+  var scLicheScroll := LicheScroll( item );
+  var scPlagueScroll := PlagueScroll( item );
+  var scSpellbindScroll := SpellbindScroll( item );
+  var scsongscroll1 := songscroll1( item );
+  var scsongscroll2 := songscroll2( item );
+  var scsongscroll3 := songscroll3( item );
+  var scsongscroll4 := songscroll4( item );
+  var scsongscroll5 := songscroll5( item );
+  var scsongscroll6 := songscroll6( item );
+  var scsongscroll7 := songscroll7( item );
+  var scsongscroll8 := songscroll8( item );
+  var scsongscroll9 := songscroll9( item );
+  var scsongscroll10 := songscroll10( item );
+  var scsongscroll11 := songscroll11( item );
+  var scsongscroll12 := songscroll12( item );
+  var scsongscroll13 := songscroll13( item );
+  var scsongscroll14 := songscroll14( item );
+  var scsongscroll15 := songscroll15( item );
+  var scsongscroll16 := songscroll16( item );
+  var scsongscroll17 := songscroll17( item );
+  var scsongscroll18 := songscroll18( item );
+  var scsongscroll19 := songscroll19( item );
+  var scsongscroll20 := songscroll20( item );
+  var scholyscroll1 := holyscroll1( item );
+  var scholyscroll2 := holyscroll2( item );
+  var scholyscroll3 := holyscroll3( item );
+  var scholyscroll4 := holyscroll4( item );
+  var scholyscroll5 := holyscroll5( item );
+  var scholyscroll6 := holyscroll6( item );
+  var scholyscroll7 := holyscroll7( item );
+  var scholyscroll8 := holyscroll8( item );
+  var scholyscroll9 := holyscroll9( item );
+
+  var miscblankscroll := blankscroll( item );
+  var miscblankmap := blankmap( item );
+  var misclockpick := lockpick( item );
+  var miscemptybottle := emptybottle( item );
+  var miscrecallrune := recallrune( item );
+  var misckindling := kindling( item );
+  var miscbandages := bandages( item );
+
+  var miscSymbolOfAbsorption := SymbolOfAbsorption( item );
+  var miscSymbolOfToxinsResistance := SymbolOfToxinsResistance( item );
+  var miscSymbolOfHealth := SymbolOfHealth( item );
+  var miscSymbolOfHeavenTouch := SymbolOfHeavenTouch( item );
+  var miscSymbolOfHellFire := SymbolOfHellFire( item );
+  var miscSymbolOfVanishing := SymbolOfVanishing( item );
+  var miscSymbolOfVengeance := SymbolOfVengeance( item );
+  var miscSymbolOfRecalling := SymbolOfRecalling( item );
+  var miscSymbolOfThunderStorm := SymbolOfThunderStorm( item );
+  var miscSymbolOfRegeneration := SymbolOfRegeneration( item );
+  var miscSymbolOfLifeStream := SymbolOfLifeStream( item );
+
+  var runeAirEnchantedRune := AirEnchantedRune( item );
+  var runeEarthEnchantedRune2 := EarthEnchantedRune2( item );
+  var runeFireEnchantedRune3 := FireEnchantedRune3( item );
+  var runeNecroEnchantedRune4 := NecroEnchantedRune4( item );
+  var runeWaterEnchantedRune5 := WaterEnchantedRune5( item );
+  var runeHolyEnchantedRune6 := HolyEnchantedRune6( item );
+  var runePoisonEnchantedRune7 := PoisonEnchantedRune7( item );
+  var runeDefenseEnchantedRune8 := DefenseEnchantedRune8( item );
+  var runeColdEnchantedRune9 := ColdEnchantedRune9( item );
+  var runeLightEnchantedRune10 := LightEnchantedRune10( item );
+  var runeDarkEnchantedRune11 := DarkEnchantedRune11( item );
+  var runeHealingEnchantedRune12 := HealingEnchantedRune12( item );
+
+  var runespeedEnchantedRune20 := speedEnchantedRune20( item );
+  var runemindEnchantedRune21 := mindEnchantedRune21( item );
+  var runestaminaEnchantedRune22 := staminaEnchantedRune22( item );
+
+  var runeanatomyEnchantedRune31 := anatomyEnchantedRune31( item );
+  var runefencingEnchantedRune72 := fencingEnchantedRune72( item );
+
+  var runehealingEnchantedRune47 := healingEnchantedRune47( item );
+  var runemaceEnchantedRune71 := maceEnchantedRune71( item );
+  var runeparryingEnchantedRune35 := parryingEnchantedRune35( item );
+  var runeswordEnchantedRune70 := swordEnchantedRune70( item );
+  var runetacticsEnchantedRune57 := tacticsEnchantedRune57( item );
+  var runewrestlingEnchantedRune73 := wrestlingEnchantedRune73( item );
+
+  var runeloreEnchantedRune32 := loreEnchantedRune32( item );
+  var runetamingEnchantedRune65 := tamingEnchantedRune65( item );
+  var runearcheryEnchantedRune61 := archeryEnchantedRune61( item );
+  var runecartEnchantedRune42 := cartEnchantedRune42( item );
+  var runefishingEnchantedRune48 := fishingEnchantedRune48( item );
+  var runetrackEnchantedRune68 := trackEnchantedRune68( item );
+  var runeveterEnchantedRune69 := veterEnchantedRune69( item );
+  var runecookingEnchantedRune43 := cookingEnchantedRune43( item );
+
+  var runealchemyEnchantedRune30 := alchemyEnchantedRune30( item );
+  var runeevalEnchantedRune46 := evalEnchantedRune46( item );
+  var runescribeEnchantedRune53 := scribeEnchantedRune53( item );
+  var runeitemidEnchantedRune33 := itemidEnchantedRune33( item );
+  var runemageryEnchantedRune55 := mageryEnchantedRune55( item );
+  var runemeditEnchantedRune76 := meditEnchantedRune76( item );
+  var runeresistEnchantedRune56 := resistEnchantedRune56( item );
+  var runespiritEnchantedRune62 := spiritEnchantedRune62( item );
+
+  var runebeggingEnchantedRune36 := beggingEnchantedRune36( item );
+  // var runemageryEnchantedRune55 := mageryEnchantedRune55(item);
+  var runeenticEnchantedRune45 := enticEnchantedRune45( item );
+  var runeherdingEnchantedRune50 := herdingEnchantedRune50( item );
+  var runemusicEnchantedRune59 := musicEnchantedRune59( item );
+  var runepeaceEnchantedRune39 := peaceEnchantedRune39( item );
+  var runeprovocEnchantedRune52 := provocEnchantedRune52( item );
+  // var runearcheryEnchantedRune61 := archeryEnchantedRune61(item);
+
+  var runedetectEnchantedRune44 := detectEnchantedRune44( item );
+  var runehidingEnchantedRune51 := hidingEnchantedRune51( item );
+  var runelockpickEnchantedRune54 := lockpickEnchantedRune54( item );
+  var runepoisonEnchantedRune60 := poisonEnchantedRune60( item );
+  var runesnoopEnchantedRune58 := snoopEnchantedRune58( item );
+  var runestealingEnchantedRune63 := stealingEnchantedRune63( item );
+  var runestealthEnchantedRune77 := stealthEnchantedRune77( item );
+
+  var runearmsloreEnchantedRune34 := armsloreEnchantedRune34( item );
+  var runebsEnchantedRune37 := bsEnchantedRune37( item );
+  var runebowcraftEnchantedRune38 := bowcraftEnchantedRune38( item );
+  var runecarpEnchantedRune41 := carpEnchantedRune41( item );
+  var runelumberEnchantedRune74 := lumberEnchantedRune74( item );
+  var runeminingEnchantedRune75 := miningEnchantedRune75( item );
+  var runetailoringEnchantedRune64 := tailoringEnchantedRune64( item );
+  var runetinkeringEnchantedRune67 := tinkeringEnchantedRune67( item );
+
+  var runecampingEnchantedRune40 := campingEnchantedRune40( item );
+  var runeforensicEnchantedRune49 := forensicEnchantedRune49( item );
+  var runeremovetrapEnchantedRune78 := removetrapEnchantedRune78( item );
+  var runetasteidEnchantedRune66 := tasteidEnchantedRune66( item );
+
+  var runecastspeedupgrade := castspeedupgrade( item );
+  var runehitupgrade := hitupgrade( item );
+  var runedamagebonus := damagebonus( item );
+  var runearmorupgrade := armorupgrade( item );
+
+  GFPage( gump, 0 );
+  GFResizePic( gump, 115, 11, 39925, 473, 809 );
+  GFResizePic( gump, 129, 28, 1579, 446, 776 );
+  GFResizePic( gump, 140, 38, 39925, 197, 116 );
+  GFResizePic( gump, 158, 50, 1579, 160, 91 );
+  GFTilePic( gump, 169, 52, 5011, 0 );
+  GFTextLine( gump, 210, 63, TEXT_HUE_BASE, "Reagents" );
+  GFAddButton( gump, 257, 103, 4029, 4030, GF_PAGE_BTN, 100 );
+  GFResizePic( gump, 140, 166, 39925, 197, 116 );
+  GFResizePic( gump, 158, 178, 1579, 160, 91 );
+  GFTilePic( gump, 169, 180, 5001, 0 );
+  GFTextLine( gump, 210, 191, TEXT_HUE_BASE, "Resources" );
+  GFAddButton( gump, 257, 231, 4029, 4030, GF_PAGE_BTN, 300 );
+  GFResizePic( gump, 140, 294, 39925, 197, 116 );
+  GFResizePic( gump, 158, 306, 1579, 160, 91 );
+  GFTilePic( gump, 166, 308, 21924, 0 );
+  GFTextLine( gump, 210, 319, TEXT_HUE_BASE, "Potions" );
+  GFAddButton( gump, 257, 359, 4029, 4030, GF_PAGE_BTN, 600 );
+  GFResizePic( gump, 360, 422, 39925, 197, 116 );
+  GFResizePic( gump, 378, 434, 1579, 160, 91 );
+  GFTextLine( gump, 430, 447, TEXT_HUE_BASE, "Miscellaneous" );
+  GFAddButton( gump, 477, 487, 4029, 4030, GF_PAGE_BTN, 800 );
+  GFTilePic( gump, 169, 308, 21941, 0 );
+  GFResizePic( gump, 140, 422, 39925, 197, 116 );
+  GFResizePic( gump, 158, 434, 1579, 160, 91 );
+  GFTilePic( gump, 170, 436, 21924, 0 );
+  GFTextLine( gump, 210, 447, TEXT_HUE_BASE, "Ammo" );
+  GFAddButton( gump, 257, 487, 4029, 4030, GF_PAGE_BTN, 700 );
+  GFTilePic( gump, 171, 436, 21947, 0 );
+  GFResizePic( gump, 140, 550, 39925, 197, 116 );
+  GFResizePic( gump, 158, 562, 1579, 160, 91 );
+  GFTilePic( gump, 169, 564, 21924, 0 );
+  GFTextLine( gump, 210, 575, TEXT_HUE_BASE, "Mage Scrolls" );
+  GFAddButton( gump, 257, 615, 4029, 4030, GF_PAGE_BTN, 900 );
+  GFTilePic( gump, 169, 564, 21987, 0 );
+  GFResizePic( gump, 360, 38, 39925, 197, 116 );
+  GFResizePic( gump, 378, 50, 1579, 160, 91 );
+  GFTilePic( gump, 389, 90, 21553, 0 );
+  GFTextLine( gump, 430, 63, TEXT_HUE_BASE, "Gems" );
+  GFAddButton( gump, 477, 103, 4029, 4030, GF_PAGE_BTN, 200 );
+  GFResizePic( gump, 360, 166, 39925, 197, 116 );
+  GFResizePic( gump, 378, 178, 1579, 160, 91 );
+  GFTilePic( gump, 389, 180, 5003, 0 );
+  GFTextLine( gump, 430, 191, TEXT_HUE_BASE, "Food" );
+  GFAddButton( gump, 477, 231, 4029, 4030, GF_PAGE_BTN, 400 );
+  GFResizePic( gump, 360, 294, 39925, 197, 116 );
+  GFResizePic( gump, 378, 306, 1579, 160, 91 );
+  GFTextLine( gump, 430, 319, TEXT_HUE_BASE, "Money" );
+  GFAddButton( gump, 477, 359, 4029, 4030, GF_PAGE_BTN, 500 );
+  GFTilePic( gump, 384, 327, 26384, 0 );
+  GFTilePic( gump, 387, 474, 6184, 0 );
+  GFTilePic( gump, 415, 368, 15258, 0 );
+  GFTilePic( gump, 391, 445, 21874, 0 );
+  GFResizePic( gump, 360, 550, 39925, 197, 116 );
+  GFResizePic( gump, 378, 562, 1579, 160, 91 );
+  GFTextLine( gump, 430, 575, TEXT_HUE_BASE, "Enchanted Scrolls" );
+  GFAddButton( gump, 477, 615, 4029, 4030, GF_PAGE_BTN, 1000 );
+  GFTilePic( gump, 382, 571, 9686, 0 );
+  GFTilePic( gump, 388, 608, 15842, 0 );
+  GFTilePic( gump, 402, 610, 15842, 0 );
+  GFTilePic( gump, 395, 107, 3855, 0 );
+  GFTilePic( gump, 388, 92, 3881, 0 );
+  GFTilePic( gump, 392, 99, 3871, 0 );
+  GFTilePic( gump, 384, 104, 3856, 0 );
+  GFTilePic( gump, 426, 362, 3823, 0 );
+  GFTilePic( gump, 402, 481, 5355, 0 );
+  GFTilePic( gump, 412, 473, 3616, 0 );
+  GFResizePic( gump, 152, 676, 39925, 397, 111 );
+  GFResizePic( gump, 178, 685, 1579, 350, 92 );
+  GFAddButton( gump, 395, 652, 40037, 40037, GF_CLOSE_BTN, 1993 );
+  GFTextLine( gump, 267, 717, TEXT_HUE_BASE, "Add Item To Drawer" );
+
+  //////////////// page REAGENTS
+  GFPage( gump, 100 );
+  GFResizePic( gump, 588, 11, 39925, 408, 669 );
+  GFResizePic( gump, 607, 25, 1579, 367, 638 );
+  GFTilePic( gump, 612, 331, 3960, 0 );
+  GFTilePic( gump, 612, 361, 3961, 0 );
+  GFTilePic( gump, 612, 91, 3962, 0 );
+  GFTilePic( gump, 612, 121, 3963, 0 );
+  GFTilePic( gump, 794, 91, 3964, 0 );
+  GFTilePic( gump, 794, 241, 3965, 0 );
+  GFTilePic( gump, 794, 121, 3966, 0 );
+  GFTilePic( gump, 794, 151, 3967, 0 );
+  GFTilePic( gump, 794, 181, 3968, 0 );
+  GFTilePic( gump, 794, 211, 3969, 0 );
+  GFTilePic( gump, 794, 271, 3970, 0 );
+  GFTilePic( gump, 794, 301, 3971, 0 );
+  GFTilePic( gump, 612, 181, 3973, 0 );
+  GFTilePic( gump, 612, 151, 3972, 0 );
+  GFTilePic( gump, 612, 211, 3974, 0 );
+  GFTilePic( gump, 794, 331, 3975, 0 );
+  GFTilePic( gump, 612, 241, 3976, 0 );
+  GFTilePic( gump, 612, 391, 3977, 0 );
+  GFTilePic( gump, 794, 391, 3978, 0 );
+  GFTilePic( gump, 794, 361, 3979, 0 );
+  GFTilePic( gump, 612, 271, 3980, 0 );
+  GFTilePic( gump, 612, 301, 3981, 0 );
+  GFTilePic( gump, 612, 420, 0x0F8E, 0 );
+  GFTilePic( gump, 612, 450, 0x0F8F, 0 );
+  GFTilePic( gump, 794, 420, 0x0F90, 0 );
+  GFTilePic( gump, 794, 450, 0x0F91, 0 );
+  GFTextLine( gump, 657, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 657, 91, TEXT_HUE_BASE, reagsBlackPearl );
+  GFTextEntry( gump, 727, 91, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F7A ); /// bp
+  GFTextLine( gump, 837, 91, TEXT_HUE_BASE, reagsBloodspawn );
+  GFTextEntry( gump, 907, 91, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F7C ); // bloodspawn
+  GFTextLine( gump, 836, 117, TEXT_HUE_BASE, reagsBone );
+  GFTextEntry( gump, 907, 121, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F7E ); // bone
+  GFTextLine( gump, 837, 151, TEXT_HUE_BASE, reagsBrimstone );
+  GFTextEntry( gump, 907, 151, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F7F ); // brimstone
+  GFTextLine( gump, 837, 181, TEXT_HUE_BASE, reagsDaemonBone );
+  GFTextEntry( gump, 907, 181, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F80 ); // daemon bone
+  GFTextLine( gump, 837, 211, TEXT_HUE_BASE, reagsFertileDirt );
+  GFTextEntry( gump, 906, 207, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F81 ); // fertile dirt
+  GFTextLine( gump, 837, 241, TEXT_HUE_BASE, reagsVialOfBlood );
+  GFTextEntry( gump, 907, 241, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F7D ); // vial of blood
+  GFTextLine( gump, 837, 271, TEXT_HUE_BASE, reagsDragonsBlood );
+  GFTextEntry( gump, 907, 271, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F82 ); // dragons blood
+  GFTextLine( gump, 837, 301, TEXT_HUE_BASE, reagsExecutionersCap );
+  GFTextEntry( gump, 907, 301, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F83 ); // ex caps
+  GFTextLine( gump, 837, 331, TEXT_HUE_BASE, reagsEyeOfNewt );
+  GFTextEntry( gump, 907, 331, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F87 ); // eyes of newt
+  GFTextLine( gump, 837, 361, TEXT_HUE_BASE, reagsPumice );
+  GFTextEntry( gump, 907, 361, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F8B ); // pumices
+  GFTextLine( gump, 837, 391, TEXT_HUE_BASE, reagsPigIron );
+  GFTextEntry( gump, 907, 391, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F8A ); // pig irons
+  GFTextLine( gump, 657, 121, TEXT_HUE_BASE, reagsBloodMoss );
+  GFTextEntry( gump, 727, 121, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F7B ); // bm
+  GFTextLine( gump, 657, 151, TEXT_HUE_BASE, reagsgarlic );
+  GFTextEntry( gump, 727, 151, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F84 ); // garlic
+  GFTextLine( gump, 657, 181, TEXT_HUE_BASE, reagsginsengs );
+  GFTextEntry( gump, 727, 181, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F85 ); // ginseng
+  GFTextLine( gump, 657, 211, TEXT_HUE_BASE, reagsmandrake );
+  GFTextEntry( gump, 727, 211, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F86 ); // mr
+  GFTextLine( gump, 657, 241, TEXT_HUE_BASE, reagsnightshade );
+  GFTextEntry( gump, 727, 241, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F88 ); // ns
+  GFTextLine( gump, 657, 271, TEXT_HUE_BASE, reagssulphurousAsh );
+  GFTextEntry( gump, 727, 271, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F8C ); // sa
+  GFTextLine( gump, 657, 301, TEXT_HUE_BASE, reagsspiderSilk );
+  GFTextEntry( gump, 727, 301, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F8D ); // ss
+  GFTextLine( gump, 657, 331, TEXT_HUE_BASE, reagsBatwing );
+  GFTextEntry( gump, 727, 331, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F78 ); // batwings
+  GFTextLine( gump, 658, 361, TEXT_HUE_BASE, reagsBlackmoor );
+  GFTextEntry( gump, 727, 361, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F79 ); // blackmoors
+  GFTextLine( gump, 660, 391, TEXT_HUE_BASE, reagsObsidian );
+  GFTextEntry( gump, 727, 391, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F89 ); // obsidian
+  GFTextLine( gump, 660, 420, TEXT_HUE_BASE, reagsSerpentsScales );
+  GFTextEntry( gump, 727, 420, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F8E ); // SerpentsScales
+  GFTextLine( gump, 660, 450, TEXT_HUE_BASE, reagsVolcanicAsh );
+  GFTextEntry( gump, 727, 450, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F8F ); // VolcanicAsh
+  GFTextLine( gump, 837, 420, TEXT_HUE_BASE, reagsDeadwood );
+  GFTextEntry( gump, 907, 420, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F90 ); // Deadwood
+  GFTextLine( gump, 837, 450, TEXT_HUE_BASE, reagsWormsHeart );
+  GFTextEntry( gump, 907, 450, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F91 ); // WormsHeart
+  GFTextLine( gump, 727, 51, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 837, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 907, 51, TEXT_HUE_BASE, "Take" );
+  GFResizePic( gump, 614, 541, 39925, 350, 116 );
+  GFResizePic( gump, 635, 551, 1579, 308, 99 );
+  GFTextLine( gump, 757, 615, TEXT_HUE_BASE, "Take Items" );
+  GFAddButton( gump, 716, 515, 40035, 40035, GF_CLOSE_BTN, 133 );
+
+  GFPage( gump, 200 );
+  GFResizePic( gump, 588, 11, 39925, 408, 403 );
+  GFResizePic( gump, 607, 25, 1579, 367, 375 );
+  GFTilePic( gump, 811, 125, 3888, 0 );
+  GFTilePic( gump, 626, 93, 3855, 0 );
+  GFTilePic( gump, 626, 123, 3856, 0 );
+  GFTilePic( gump, 626, 186, 3859, 0 );
+  GFTilePic( gump, 610, 147, 3857, 0 );
+  GFTilePic( gump, 626, 215, 3861, 0 );
+  GFTilePic( gump, 811, 186, 3862, 0 );
+  GFTilePic( gump, 811, 154, 3864, 0 );
+  GFTilePic( gump, 811, 94, 3877, 0 );
+  GFTextEntry( gump, 658, 51, 50, 20, TEXT_HUE_BASE, "Quantity", 0 );
+  GFTextLine( gump, 658, 91, TEXT_HUE_BASE, gemStarsapphire );
+  GFTextEntry( gump, 728, 91, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F0F );
+  GFTextLine( gump, 838, 91, TEXT_HUE_BASE, gemAmber );
+  GFTextEntry( gump, 908, 91, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F25 );
+  GFTextLine( gump, 837, 121, TEXT_HUE_BASE, gemDiamond );
+  GFTextEntry( gump, 908, 121, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F30 );
+  GFTextLine( gump, 838, 151, TEXT_HUE_BASE, gemTourmaline );
+  GFTextEntry( gump, 908, 151, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F18 );
+  GFTextLine( gump, 838, 181, TEXT_HUE_BASE, gemAmethyst );
+  GFTextEntry( gump, 908, 181, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F16 );
+  GFTextLine( gump, 658, 121, TEXT_HUE_BASE, gemEmerald );
+  GFTextEntry( gump, 728, 121, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F10 );
+  GFTextLine( gump, 658, 151, TEXT_HUE_BASE, gemSapphire );
+  GFTextEntry( gump, 728, 151, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F11 );
+  GFTextLine( gump, 658, 181, TEXT_HUE_BASE, gemRuby );
+  GFTextEntry( gump, 728, 181, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F13 );
+  GFTextLine( gump, 658, 211, TEXT_HUE_BASE, gemCitrine );
+  GFTextEntry( gump, 728, 211, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F15 );
+
+  GFTextLine( gump, 728, 51, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 838, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 908, 51, TEXT_HUE_BASE, "Take" );
+  GFResizePic( gump, 619, 265, 39925, 344, 119 );
+  GFResizePic( gump, 638, 278, 1579, 307, 96 );
+  GFAddButton( gump, 716, 240, 40035, 40035, GF_CLOSE_BTN, 233 );
+  GFTextLine( gump, 756, 342, TEXT_HUE_BASE, "Take Items" );
+
+  GFPage( gump, 300 );
+  GFResizePic( gump, 588, 11, 39925, 605, 833 );
+  GFResizePic( gump, 607, 25, 1579, 562, 800 );
+  GFTextLine( gump, 658, 90, TEXT_HUE_BASE, resIronIngot );
+  GFTextEntry( gump, 727, 90, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x6011 );
+  GFTextLine( gump, 658, 120, TEXT_HUE_BASE, resCopperIngot );
+  GFTextEntry( gump, 727, 120, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x6012 );
+  GFTextLine( gump, 658, 150, TEXT_HUE_BASE, resBlackDwarfIngot );
+  GFTextEntry( gump, 727, 210, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x6015 );
+  GFTextLine( gump, 658, 210, TEXT_HUE_BASE, resSilverIngot );
+  GFTextEntry( gump, 727, 180, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x6014 );
+  GFTextLine( gump, 658, 180, TEXT_HUE_BASE, resPaganIngot );
+  GFTextEntry( gump, 727, 150, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x6013 );
+  GFTextLine( gump, 658, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 730, 51, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 838, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 908, 51, TEXT_HUE_BASE, "Take" );
+  GFResizePic( gump, 621, 694, 39925, 536, 119 );
+  GFResizePic( gump, 641, 707, 1579, 498, 96 );
+  GFAddButton( gump, 807, 668, 40035, 40035, GF_CLOSE_BTN, 333 );
+  GFTextLine( gump, 846, 773, TEXT_HUE_BASE, "Take Items" );
+  GFTextLine( gump, 658, 240, TEXT_HUE_BASE, resSpectralIngot );
+  GFTextEntry( gump, 727, 240, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x6016 );
+  GFTextLine( gump, 658, 270, TEXT_HUE_BASE, resLavaRockIngot );
+  GFTextEntry( gump, 727, 270, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x6017 );
+  GFTextLine( gump, 658, 300, TEXT_HUE_BASE, resIceRockIngot );
+  GFTextEntry( gump, 727, 360, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc511 );
+  GFTextLine( gump, 658, 360, TEXT_HUE_BASE, resBasiliskIngot );
+  GFTextEntry( gump, 727, 330, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc510 );
+  GFTextLine( gump, 658, 330, TEXT_HUE_BASE, resMythrilIngot );
+  GFTextEntry( gump, 727, 300, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x6018 );
+  GFTextLine( gump, 658, 390, TEXT_HUE_BASE, resSunIngot );
+  GFTextEntry( gump, 727, 390, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc512 );
+  GFTextLine( gump, 658, 420, TEXT_HUE_BASE, resDaedraIngot );
+  GFTextEntry( gump, 727, 420, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc513 );
+  GFTextLine( gump, 658, 510, TEXT_HUE_BASE, resParadise );
+  GFTextEntry( gump, 727, 510, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc516 );
+  GFTextLine( gump, 658, 480, TEXT_HUE_BASE, resNewZuluIngot );
+  GFTextEntry( gump, 727, 480, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc515 );
+  GFTextLine( gump, 658, 450, TEXT_HUE_BASE, resDoomIngot );
+  GFTextEntry( gump, 727, 450, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc514 );
+  GFTextLine( gump, 658, 540, TEXT_HUE_BASE, resHell );
+  GFTextEntry( gump, 727, 540, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc517 );
+  GFTextLine( gump, 658, 570, TEXT_HUE_BASE, resVoid );
+  GFTextEntry( gump, 727, 570, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc518 );
+  GFTextLine( gump, 658, 600, TEXT_HUE_BASE, resEnchanted );
+  GFTextEntry( gump, 727, 600, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd04a );
+  GFTextLine( gump, 837, 90, TEXT_HUE_BASE, resboltofcloth );
+  GFTextEntry( gump, 906, 90, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0F95 );
+  GFTextLine( gump, 837, 120, TEXT_HUE_BASE, rescloth );
+  GFTextEntry( gump, 906, 120, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1765 );
+  GFTextLine( gump, 837, 150, TEXT_HUE_BASE, reswool );
+  GFTextEntry( gump, 906, 210, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xee20 );
+  GFTextLine( gump, 837, 210, TEXT_HUE_BASE, resglass );
+  GFTextEntry( gump, 906, 180, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xee19 );
+  GFTextLine( gump, 837, 180, TEXT_HUE_BASE, resclay );
+  GFTextEntry( gump, 906, 150, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0df8 );
+  GFTextLine( gump, 838, 240, TEXT_HUE_BASE, resgoldingot );
+  GFTextEntry( gump, 907, 240, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1be9 );
+  GFTextLine( gump, 838, 270, TEXT_HUE_BASE, reshides );
+  GFTextEntry( gump, 907, 270, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1078 );
+  GFTextLine( gump, 838, 300, TEXT_HUE_BASE, reslizardhide );
+  GFTextEntry( gump, 907, 360, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7022 );
+  GFTextLine( gump, 838, 360, TEXT_HUE_BASE, restrollhide );
+  GFTextEntry( gump, 907, 330, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7021 );
+  GFTextLine( gump, 838, 330, TEXT_HUE_BASE, resimphide );
+  GFTextEntry( gump, 907, 300, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7020 );
+  GFTextLine( gump, 838, 390, TEXT_HUE_BASE, resterathanhide );
+  GFTextEntry( gump, 907, 390, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x702d );
+  GFTextLine( gump, 838, 420, TEXT_HUE_BASE, resnecromancerhide );
+  GFTextEntry( gump, 907, 420, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7023 );
+  GFTextLine( gump, 838, 450, TEXT_HUE_BASE, resicehide );
+  GFTextEntry( gump, 907, 510, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7028 );
+  GFTextLine( gump, 838, 510, TEXT_HUE_BASE, resdaemonhide );
+  GFTextEntry( gump, 907, 480, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7026 );
+  GFTextLine( gump, 838, 480, TEXT_HUE_BASE, reslichehide );
+  GFTextEntry( gump, 907, 450, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7025 );
+  GFTextLine( gump, 838, 540, TEXT_HUE_BASE, resbalronhide );
+  GFTextEntry( gump, 907, 540, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x702a );
+  GFTextLine( gump, 838, 570, TEXT_HUE_BASE, ressoulthreads );
+  GFTextEntry( gump, 907, 570, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x702e );
+  GFTextLine( gump, 838, 600, TEXT_HUE_BASE, resdrakehide );
+  GFTextEntry( gump, 907, 600, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7024 );
+
+  GFTextLine( gump, 1013, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 1084, 51, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 1012, 90, TEXT_HUE_BASE, resdragonhide );
+  GFTextEntry( gump, 1081, 90, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7027 );
+  GFTextLine( gump, 1012, 120, TEXT_HUE_BASE, reswyvernhide );
+  GFTextEntry( gump, 1081, 120, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x702f );
+  GFTextLine( gump, 1012, 150, TEXT_HUE_BASE, reswyrmhide );
+  GFTextEntry( gump, 1081, 210, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x702c );
+  GFTextLine( gump, 1012, 210, TEXT_HUE_BASE, resgolddragonhide );
+  GFTextEntry( gump, 1081, 180, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x702b );
+  GFTextLine( gump, 1012, 180, TEXT_HUE_BASE, rescelestialhide );
+  GFTextEntry( gump, 1081, 150, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7029 );
+  GFTextLine( gump, 1013, 240, TEXT_HUE_BASE, reslogs );
+  GFTextEntry( gump, 1082, 240, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1BDD );
+  GFTextLine( gump, 1013, 270, TEXT_HUE_BASE, resbirchlog );
+  GFTextEntry( gump, 1082, 270, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7300 );
+  GFTextLine( gump, 1013, 300, TEXT_HUE_BASE, rescherrylog );
+  GFTextEntry( gump, 1082, 360, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7303 );
+  GFTextLine( gump, 1013, 360, TEXT_HUE_BASE, resoaklog );
+  GFTextEntry( gump, 1082, 330, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7302 );
+  GFTextLine( gump, 1013, 330, TEXT_HUE_BASE, resswamplog );
+  GFTextEntry( gump, 1082, 300, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7301 );
+  GFTextLine( gump, 1013, 390, TEXT_HUE_BASE, reshardrangerlog );
+  GFTextEntry( gump, 1082, 390, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7304 );
+  GFTextLine( gump, 1013, 420, TEXT_HUE_BASE, resjadelog );
+  GFTextEntry( gump, 1082, 420, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7305 );
+  GFTextLine( gump, 1013, 450, TEXT_HUE_BASE, resstormteallog );
+  GFTextEntry( gump, 1082, 510, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7308 );
+  GFTextLine( gump, 1013, 510, TEXT_HUE_BASE, resvulcaniclog );
+  GFTextEntry( gump, 1082, 480, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7307 );
+  GFTextLine( gump, 1013, 480, TEXT_HUE_BASE, resblizzardlog );
+  GFTextEntry( gump, 1082, 450, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7306 );
+  GFTextLine( gump, 1013, 540, TEXT_HUE_BASE, resvampiriclog );
+  GFTextEntry( gump, 1082, 540, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x7309 );
+  GFTextLine( gump, 1013, 570, TEXT_HUE_BASE, reszululogs );
+  GFTextEntry( gump, 1082, 570, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x730a );
+  GFTextLine( gump, 1013, 600, TEXT_HUE_BASE, resdarknesslog );
+  GFTextEntry( gump, 1082, 600, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x730b );
+  GFTextLine( gump, 1013, 630, TEXT_HUE_BASE, reselvenlog );
+  GFTextEntry( gump, 1082, 630, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x730c );
+
+  GFTilePic( gump, 773, 61, 3995, 0 );
+  GFTilePic( gump, 790, 114, 5991, 0 );
+  GFTilePic( gump, 782, 149, 3576, 0 );
+  GFTilePic( gump, 780, 176, 7158, 1545 );
+  GFTilePic( gump, 780, 206, 7158, 2419 );
+  GFTilePic( gump, 780, 236, 7146, 0 );
+  GFTilePic( gump, 788, 260, 4216, 0 );
+  GFTilePic( gump, 788, 290, 4216, 2130 );
+  GFTilePic( gump, 788, 320, 4216, 1646 );
+  GFTilePic( gump, 788, 350, 4216, 1354 );
+  GFTilePic( gump, 788, 380, 4216, 1285 );
+  GFTilePic( gump, 788, 410, 4216, 84 );
+  GFTilePic( gump, 788, 440, 4216, 1170 );
+  GFTilePic( gump, 788, 470, 4216, 1174 );
+  GFTilePic( gump, 788, 500, 4216, 1282 );
+  GFTilePic( gump, 788, 530, 4216, 1157 );
+  GFTilePic( gump, 788, 570, 3576, 3000 );
+  GFTilePic( gump, 788, 600, 9909, 1158 );
+
+  GFTilePic( gump, 608, 89, 7152, 0 );
+  GFTilePic( gump, 608, 119, 7152, 1538 );
+  GFTilePic( gump, 608, 149, 7152, 1061 );
+  GFTilePic( gump, 608, 179, 7152, 1292 );
+  GFTilePic( gump, 608, 209, 7152, 1001 );
+  GFTilePic( gump, 608, 239, 7152, 1155 );
+  GFTilePic( gump, 608, 269, 7152, 1158 );
+  GFTilePic( gump, 608, 299, 7152, 1255 );
+  GFTilePic( gump, 608, 329, 7152, 1170 );
+  GFTilePic( gump, 608, 359, 7152, 1159 );
+  GFTilePic( gump, 608, 389, 7152, 1300 );
+  GFTilePic( gump, 608, 419, 7152, 1172 );
+  GFTilePic( gump, 608, 449, 7152, 1183 );
+  GFTilePic( gump, 608, 479, 7152, 1160 );
+  GFTilePic( gump, 608, 509, 7152, 1790 );
+  GFTilePic( gump, 608, 539, 7152, 2780 );
+  GFTilePic( gump, 608, 569, 7152, 2830 );
+  GFTilePic( gump, 608, 599, 7152, 1472 );
+
+  GFTilePic( gump, 973, 629, 7137, 1176 );
+  GFTilePic( gump, 973, 599, 7137, 1157 );
+  GFTilePic( gump, 971, 569, 7137, 1160 );
+  GFTilePic( gump, 971, 539, 7137, 1170 );
+  GFTilePic( gump, 971, 509, 7137, 1645 );
+  GFTilePic( gump, 971, 479, 7137, 1161 );
+  GFTilePic( gump, 971, 449, 7137, 1346 );
+  GFTilePic( gump, 971, 419, 7137, 1159 );
+  GFTilePic( gump, 971, 389, 7137, 515 );
+  GFTilePic( gump, 971, 359, 7137, 1045 );
+  GFTilePic( gump, 971, 329, 7137, 1162 );
+  GFTilePic( gump, 971, 299, 7137, 1620 );
+  GFTilePic( gump, 971, 269, 7137, 1285 );
+  GFTilePic( gump, 970, 237, 7137, 0 );
+  GFTilePic( gump, 968, 86, 9906, 1172 );
+  GFTilePic( gump, 967, 118, 9909, 1162 );
+  GFTilePic( gump, 968, 148, 9906, 1159 );
+  GFTilePic( gump, 968, 179, 9909, 1181 );
+  GFTilePic( gump, 966, 207, 9907, 2243 );
+
+  GFPage( gump, 400 );
+  GFResizePic( gump, 588, 11, 39925, 577, 788 );
+  GFResizePic( gump, 607, 25, 1579, 550, 760 );
+  GFResizePic( gump, 615, 655, 39925, 536, 119 );
+  GFResizePic( gump, 635, 668, 1579, 498, 96 );
+
+  GFTextEntry( gump, 830, 734, 124, 20, TEXT_HUE_TAKE_ID, "Take Items", 0 );
+  GFTilePic( gump, 609, 93, 0x1F7D, 0 );
+  GFTilePic( gump, 614, 126, 0x1f9e, 0 );
+  GFTilePic( gump, 609, 152, 2459, 0 );
+  GFTilePic( gump, 609, 184, 2463, 0 );
+  GFTilePic( gump, 609, 212, 2503, 0 );
+  GFTilePic( gump, 620, 241, 8086, 0 );
+  GFTilePic( gump, 619, 273, 8088, 0 );
+  GFTilePic( gump, 619, 303, 8092, 0 );
+  GFTilePic( gump, 612, 333, 8090, 0 );
+  GFTilePic( gump, 614, 364, 2477, 0 );
+  GFTilePic( gump, 617, 398, 8069, 0 );
+  GFTilePic( gump, 617, 428, 2542, 0 );
+  GFTilePic( gump, 617, 455, 8077, 0 );
+  GFTilePic( gump, 617, 485, 8073, 0 );
+  GFTilePic( gump, 616, 514, 8081, 0 );
+  GFTilePic( gump, 619, 540, 4165, 0 );
+  GFTilePic( gump, 616, 600, 2545, 0 );
+  GFTilePic( gump, 784, 99, 2426, 0 );
+  GFTilePic( gump, 790, 125, 2489, 0 );
+  GFTilePic( gump, 790, 156, 2505, 0 );
+  GFTilePic( gump, 791, 184, 2422, 0 );
+  GFTilePic( gump, 803, 212, 7818, 0 );
+  GFTilePic( gump, 787, 510, 2430, 0 );
+  GFTilePic( gump, 791, 304, 2540, 0 );
+  GFTilePic( gump, 791, 248, 5639, 0 );
+  GFTilePic( gump, 790, 277, 5641, 0 );
+  GFTilePic( gump, 614, 568, 3181, 0 );
+  GFTilePic( gump, 786, 337, 5926, 0 );
+  GFTilePic( gump, 966, 153, 2487, 0 );
+  GFTilePic( gump, 964, 97, 2427, 0 );
+  GFTilePic( gump, 964, 183, 2546, 0 );
+  GFTilePic( gump, 790, 574, 5642, 0 );
+  GFTilePic( gump, 965, 126, 7710, 0 );
+  GFTilePic( gump, 962, 447, 10162, 0 );
+  GFTilePic( gump, 961, 477, 10171, 0 );
+  GFTilePic( gump, 788, 544, 5640, 0 );
+  GFTilePic( gump, 960, 535, 10172, 0 );
+  GFTilePic( gump, 962, 505, 10166, 0 );
+  GFTilePic( gump, 788, 606, 2426, 0 );
+  GFTilePic( gump, 789, 364, 4227, 0 );
+  GFTilePic( gump, 793, 395, 5644, 0 );
+  GFTilePic( gump, 788, 398, 2510, 0 );
+  GFTilePic( gump, 785, 440, 2509, 0 );
+  GFTilePic( gump, 789, 461, 2511, 0 );
+  GFTextLine( gump, 1011, 93, TEXT_HUE_BASE, resCookedFishSteak );
+  GFTextEntry( gump, 1083, 93, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x097b );
+  GFTextLine( gump, 1011, 123, TEXT_HUE_BASE, ressmokedsalmon );
+  GFTextEntry( gump, 1083, 123, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1e1e );
+  GFTextLine( gump, 1011, 154, TEXT_HUE_BASE, rescookedbird );
+  GFTextEntry( gump, 1083, 153, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09b7 );
+  GFTextLine( gump, 1011, 183, TEXT_HUE_BASE, resCookedRib );
+  GFTextEntry( gump, 1083, 183, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09f2 );
+  GFTextLine( gump, 1012, 212, TEXT_HUE_BASE, resmagicfish1 );
+  GFTextEntry( gump, 1084, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xA368 );
+  GFTextLine( gump, 1011, 242, TEXT_HUE_BASE, resmagicfish2 );
+  GFTextEntry( gump, 1083, 242, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xA369 );
+  GFTextLine( gump, 1011, 273, TEXT_HUE_BASE, resmagicfish3 );
+  GFTextEntry( gump, 1083, 272, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xA36A );
+  GFTextLine( gump, 1011, 303, TEXT_HUE_BASE, resmagicfish4 );
+  GFTextEntry( gump, 1083, 303, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xA36B );
+  GFTextLine( gump, 1011, 333, TEXT_HUE_BASE, resmagicfish5 );
+  GFTextEntry( gump, 1083, 333, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xA36C );
+  GFTextLine( gump, 1011, 363, TEXT_HUE_BASE, resmagicfish6 );
+  GFTextEntry( gump, 1083, 363, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xA36D );
+  GFTextLine( gump, 1011, 394, TEXT_HUE_BASE, resmagicfish7 );
+  GFTextEntry( gump, 1083, 393, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xA36E );
+  GFTextLine( gump, 1011, 423, TEXT_HUE_BASE, resmagicfish8 );
+  GFTextEntry( gump, 1083, 423, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xA36F );
+  GFTextLine( gump, 1012, 452, TEXT_HUE_BASE, respancakes );
+  GFTextEntry( gump, 1084, 452, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc912 );
+  GFTextLine( gump, 1011, 481, TEXT_HUE_BASE, resmincemeatpie );
+  GFTextEntry( gump, 1083, 482, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc942 );
+  GFTextLine( gump, 1011, 512, TEXT_HUE_BASE, reschickenpotpie );
+  GFTextEntry( gump, 1083, 512, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc943 );
+  GFTextLine( gump, 659, 93, TEXT_HUE_BASE, resglassofcider );
+  GFTextEntry( gump, 731, 93, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1F7D );
+  GFTextLine( gump, 659, 123, TEXT_HUE_BASE, respitcherofwater );
+  GFTextEntry( gump, 731, 123, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1f9e );
+  GFTextLine( gump, 659, 154, TEXT_HUE_BASE, resbottleofliquor );
+  GFTextEntry( gump, 731, 153, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x099B );
+  GFTextLine( gump, 659, 183, TEXT_HUE_BASE, resbottleofale );
+  GFTextEntry( gump, 731, 183, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x099F );
+  GFTextLine( gump, 660, 212, TEXT_HUE_BASE, resbottleofwine );
+  GFTextEntry( gump, 732, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09C7 );
+  GFTextLine( gump, 659, 242, TEXT_HUE_BASE, respitcherofale );
+  GFTextEntry( gump, 731, 242, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1f96 );
+  GFTextLine( gump, 659, 273, TEXT_HUE_BASE, respitcherofcider );
+  GFTextEntry( gump, 731, 272, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1f98 );
+  GFTextLine( gump, 659, 303, TEXT_HUE_BASE, respitcherofwine );
+  GFTextEntry( gump, 731, 303, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1f9c );
+  GFTextLine( gump, 659, 333, TEXT_HUE_BASE, respitcherofliquor );
+  GFTextEntry( gump, 731, 333, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1f9a );
+  GFTextLine( gump, 659, 363, TEXT_HUE_BASE, respitcherofmilk );
+  GFTextEntry( gump, 731, 363, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09ad );
+  GFTextLine( gump, 659, 394, TEXT_HUE_BASE, resglassofliquor );
+  GFTextEntry( gump, 731, 393, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1F85 );
+  GFTextLine( gump, 659, 423, TEXT_HUE_BASE, resmugofale );
+  GFTextEntry( gump, 731, 423, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09EE );
+  GFTextLine( gump, 660, 452, TEXT_HUE_BASE, resglassofwine );
+  GFTextEntry( gump, 732, 452, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1F8D );
+  GFTextLine( gump, 659, 482, TEXT_HUE_BASE, resglassofmilk );
+  GFTextEntry( gump, 731, 482, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1F89 );
+  GFTextLine( gump, 659, 513, TEXT_HUE_BASE, resglassofwater );
+  GFTextEntry( gump, 731, 512, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1F91 );
+  GFTextLine( gump, 659, 542, TEXT_HUE_BASE, resflour );
+  GFTextEntry( gump, 731, 542, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1045 );
+  GFTextLine( gump, 837, 93, TEXT_HUE_BASE, resrawfishsteak );
+  GFTextEntry( gump, 909, 93, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x097a );
+  GFTextLine( gump, 837, 123, TEXT_HUE_BASE, resrawbird );
+  GFTextEntry( gump, 909, 123, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09b9 );
+  GFTextLine( gump, 837, 154, TEXT_HUE_BASE, resrawham );
+  GFTextEntry( gump, 909, 153, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09c9 );
+  GFTextLine( gump, 837, 183, TEXT_HUE_BASE, resslabofbacon );
+  GFTextEntry( gump, 909, 183, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x0976 );
+  GFTextLine( gump, 838, 212, TEXT_HUE_BASE, reslard );
+  GFTextEntry( gump, 910, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1e8a );
+  GFTextLine( gump, 837, 242, TEXT_HUE_BASE, resrawchickenleg );
+  GFTextEntry( gump, 909, 242, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1607 );
+  GFTextLine( gump, 837, 273, TEXT_HUE_BASE, resrawlegoflamb );
+  GFTextEntry( gump, 909, 272, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1609 );
+  GFTextLine( gump, 837, 303, TEXT_HUE_BASE, reshoney );
+  GFTextEntry( gump, 909, 303, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09ec );
+  GFTextLine( gump, 837, 333, TEXT_HUE_BASE, rescoconut );
+  GFTextEntry( gump, 909, 333, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1726 );
+  GFTextLine( gump, 837, 363, TEXT_HUE_BASE, respizzacrust );
+  GFTextEntry( gump, 909, 363, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc803 );
+  GFTextLine( gump, 837, 394, TEXT_HUE_BASE, respiecrust );
+  GFTextEntry( gump, 909, 393, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc804 );
+  GFTextLine( gump, 837, 423, TEXT_HUE_BASE, resfish2 );
+  GFTextEntry( gump, 909, 422, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09cd );
+  GFTextLine( gump, 838, 452, TEXT_HUE_BASE, resfish3 );
+  GFTextEntry( gump, 910, 452, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x09ce );
+  GFTextLine( gump, 837, 542, TEXT_HUE_BASE, resfriedchickenleg );
+  GFTextEntry( gump, 909, 542, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x1608 );
+  GFTextLine( gump, 837, 572, TEXT_HUE_BASE, rescookedlegoflamb );
+  GFTextEntry( gump, 909, 572, 40, 20, TEXT_HUE_TAKE_ID, "0", 0x160a );
+  GFTextLine( gump, 837, 602, TEXT_HUE_BASE, ressushi );
+  GFTextEntry( gump, 909, 602, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xc923 );
+  GFTextLine( gump, 658, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 838, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 1013, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 731, 51, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 908, 51, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 1084, 51, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 659, 571, TEXT_HUE_BASE, resonion );
+  GFTextEntry( gump, 731, 572, 43, 20, TEXT_HUE_TAKE_ID, "0", 0x0c6d );
+  GFTextLine( gump, 659, 601, TEXT_HUE_BASE, resrawrib );
+  GFTextEntry( gump, 731, 602, 34, 20, TEXT_HUE_TAKE_ID, "0", 0x09f1 );
+  GFTextLine( gump, 838, 482, TEXT_HUE_BASE, resfish4 );
+  GFTextLine( gump, 837, 512, TEXT_HUE_BASE, reswheelofcheese );
+  GFTextEntry( gump, 909, 482, 39, 20, TEXT_HUE_TAKE_ID, "0", 0x09cf );
+  GFTextEntry( gump, 909, 512, 43, 20, TEXT_HUE_TAKE_ID, "0", 0x097E );
+  GFTextLine( gump, 1011, 542, TEXT_HUE_BASE, reslemonherbfish );
+  GFTextEntry( gump, 1083, 542, 35, 20, TEXT_HUE_TAKE_ID, "0", 0x27bc );
+  GFTilePic( gump, 970, 201, 3542, 0 );
+  GFTilePic( gump, 958, 234, 3542, 41 );
+  GFTilePic( gump, 972, 263, 3542, 51 );
+  GFTilePic( gump, 960, 295, 3542, 61 );
+  GFTilePic( gump, 972, 321, 3542, 91 );
+  GFTilePic( gump, 961, 356, 3542, 9 );
+  GFTilePic( gump, 974, 384, 3542, 1001 );
+  GFTilePic( gump, 964, 416, 3542, 21 );
+  GFAddButton( gump, 791, 629, 40035, 40035, GF_CLOSE_BTN, 444 );
+
+  GFPage( gump, 500 );
+  GFResizePic( gump, 588, 11, 39925, 243, 306 );
+  GFResizePic( gump, 607, 25, 1579, 217, 281 );
+  GFResizePic( gump, 618, 181, 39925, 197, 119 );
+  GFResizePic( gump, 630, 191, 1579, 170, 96 );
+  GFAddButton( gump, 624, 159, 40035, 40035, GF_CLOSE_BTN, 555 );
+  GFTilePic( gump, 609, 93, 3823, 0 );
+  GFTilePic( gump, 611, 126, 15258, 0 );
+  GFTextLine( gump, 659, 93, TEXT_HUE_BASE, goldGoldcoin );
+  GFTextEntry( gump, 731, 93, 80, 20, TEXT_HUE_TAKE_ID, "0", 0xdf0b );
+  GFTextLine( gump, 659, 123, TEXT_HUE_BASE, goldZulucoin );
+  GFTextEntry( gump, 731, 123, 80, 20, TEXT_HUE_TAKE_ID, "0", 0x3b9a );
+  GFTextLine( gump, 658, 51, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 691, 257, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 730, 51, TEXT_HUE_BASE, "Take" );
+
+  GFPage( gump, 600 );
+  GFResizePic( gump, 588, 11, 39925, 548, 669 );
+  GFResizePic( gump, 607, 25, 1579, 516, 646 );
+  GFResizePic( gump, 614, 540, 39925, 504, 119 );
+  GFResizePic( gump, 630, 552, 1579, 474, 96 );
+  GFAddButton( gump, 787, 522, 40035, 40035, GF_CLOSE_BTN, 666 );
+  GFTextLine( gump, 658, 41, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 730, 41, TEXT_HUE_BASE, "Take" );
+  GFTilePic( gump, 616, 85, 3852, 0 );
+  GFTilePic( gump, 616, 205, 3850, 0 );
+  GFTilePic( gump, 616, 325, 3853, 0 );
+  GFTilePic( gump, 776, 85, 3848, 0 );
+  GFTilePic( gump, 616, 415, 3851, 0 );
+  GFTilePic( gump, 776, 175, 3849, 0 );
+  GFTilePic( gump, 936, 201, 3846, 0 );
+  GFTilePic( gump, 936, 115, 3847, 0 );
+  GFTilePic( gump, 610, 475, 3625, 0 );
+  GFTilePic( gump, 778, 265, 3626, 0 );
+  GFTilePic( gump, 936, 325, 3627, 0 );
+  GFTilePic( gump, 936, 295, 3836, 0x486 );
+  GFTilePic( gump, 774, 409, 6188, 133 );
+  GFTilePic( gump, 616, 175, 3852, 155 );
+  GFTilePic( gump, 616, 145, 3852, 0 );
+  GFTilePic( gump, 616, 115, 3852, 0 );
+  GFTilePic( gump, 616, 265, 3850, 0 );
+  GFTilePic( gump, 616, 235, 3850, 0 );
+  GFTilePic( gump, 616, 295, 3850, 0 );
+  GFTilePic( gump, 616, 385, 3853, 0 );
+  GFTilePic( gump, 616, 353, 3853, 0 );
+  GFTilePic( gump, 776, 145, 3848, 0 );
+  GFTilePic( gump, 776, 115, 3848, 0 );
+  GFTilePic( gump, 616, 445, 3851, 0 );
+  GFTilePic( gump, 776, 235, 3849, 0 );
+  GFTilePic( gump, 776, 205, 3849, 0 );
+  GFTilePic( gump, 936, 261, 3846, 0 );
+  GFTilePic( gump, 936, 231, 3846, 0 );
+  GFTilePic( gump, 936, 175, 3847, 0 );
+  GFTilePic( gump, 936, 145, 3847, 0 );
+  GFTilePic( gump, 778, 325, 3626, 0 );
+  GFTilePic( gump, 778, 295, 3626, 0 );
+  GFTilePic( gump, 936, 355, 3627, 0 );
+  GFTilePic( gump, 936, 385, 3627, 0 );
+  GFTilePic( gump, 774, 437, 6188, 133 );
+  GFTilePic( gump, 775, 355, 3627, 0 );
+  GFTilePic( gump, 775, 385, 3627, 0 );
+  GFTilePic( gump, 936, 65, 8409, 746 );
+  GFTilePic( gump, 923, 473, 3624, 0 );
+  GFTilePic( gump, 923, 443, 3624, 0 );
+  GFTilePic( gump, 922, 415, 3624, 0 );
+  GFTilePic( gump, 777, 472, 3852, 3853 );
+  GFTextLine( gump, 830, 41, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 892, 41, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 981, 41, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 1054, 41, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 839, 619, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 658, 85, TEXT_HUE_BASE, potLHEALPOTION );
+  GFTextLine( gump, 658, 115, TEXT_HUE_BASE, potHEALPOTION );
+  GFTextLine( gump, 658, 145, TEXT_HUE_BASE, potGHEALPOTION );
+  GFTextLine( gump, 658, 175, TEXT_HUE_BASE, potTamlaHealpotion );
+  GFTextLine( gump, 658, 205, TEXT_HUE_BASE, potLPOISONPOTION );
+  GFTextLine( gump, 658, 235, TEXT_HUE_BASE, potPOISONPOTION );
+  GFTextLine( gump, 658, 265, TEXT_HUE_BASE, potGRPOISONPOTION );
+  GFTextLine( gump, 658, 295, TEXT_HUE_BASE, potDEDLYPOISONPOTION );
+  GFTextLine( gump, 658, 325, TEXT_HUE_BASE, potLEXPLOSIONPOTION );
+  GFTextLine( gump, 658, 355, TEXT_HUE_BASE, potEXPLOSIONPOTION );
+  GFTextLine( gump, 658, 385, TEXT_HUE_BASE, potGREXPLOSIONPOTION );
+  GFTextLine( gump, 658, 415, TEXT_HUE_BASE, potREFRESHPOTION );
+  GFTextLine( gump, 658, 445, TEXT_HUE_BASE, potFULLREFRESHPOTION );
+  GFTextLine( gump, 658, 475, TEXT_HUE_BASE, potInvisibilityPotion );
+  GFTextEntry( gump, 730, 85, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc01 );
+  GFTextEntry( gump, 730, 115, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc02 );
+  GFTextEntry( gump, 730, 145, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc03 );
+  GFTextEntry( gump, 730, 175, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba7 );
+  GFTextEntry( gump, 730, 205, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc04 );
+  GFTextEntry( gump, 730, 235, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc05 );
+  GFTextEntry( gump, 730, 265, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc06 );
+  GFTextEntry( gump, 730, 295, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc17 );
+  GFTextEntry( gump, 730, 325, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc08 );
+  GFTextEntry( gump, 730, 355, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc09 );
+  GFTextEntry( gump, 730, 385, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc07 );
+  GFTextEntry( gump, 730, 415, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc0e );
+  GFTextEntry( gump, 730, 445, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc0f );
+  GFTextEntry( gump, 730, 475, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xab9d );
+  GFTextLine( gump, 830, 85, TEXT_HUE_BASE, potLAGILITYPOTION );
+  GFTextLine( gump, 830, 115, TEXT_HUE_BASE, potGRAGILITYPOTION );
+  GFTextLine( gump, 830, 145, TEXT_HUE_BASE, potAGILITYPOTION );
+  GFTextLine( gump, 830, 175, TEXT_HUE_BASE, potLSTRENGTHPOTION );
+  GFTextLine( gump, 830, 205, TEXT_HUE_BASE, potSTRENGTHPOTION );
+  GFTextLine( gump, 830, 235, TEXT_HUE_BASE, potGRSTRENGTHPOTION );
+  GFTextLine( gump, 830, 265, TEXT_HUE_BASE, potFineIntellect );
+  GFTextLine( gump, 830, 295, TEXT_HUE_BASE, potFabulousIntellect );
+  GFTextLine( gump, 830, 325, TEXT_HUE_BASE, potFantasticIntellect );
+  GFTextLine( gump, 830, 355, TEXT_HUE_BASE, potMinorTransmutation );
+  GFTextLine( gump, 830, 385, TEXT_HUE_BASE, potMajorTransmutation );
+  GFTextLine( gump, 830, 415, TEXT_HUE_BASE, potHomericMightpotion );
+  GFTextLine( gump, 830, 445, TEXT_HUE_BASE, potGreaterHomericMightpotion );
+  GFTextLine( gump, 830, 475, TEXT_HUE_BASE, potDispelPotion );
+  GFTextEntry( gump, 892, 85, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc0b );
+  GFTextEntry( gump, 892, 115, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc0d );
+  GFTextEntry( gump, 892, 145, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc0c );
+  GFTextEntry( gump, 892, 175, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc10 );
+  GFTextEntry( gump, 892, 205, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc11 );
+  GFTextEntry( gump, 892, 235, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc12 );
+  GFTextEntry( gump, 892, 265, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xab9e );
+  GFTextEntry( gump, 892, 295, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xab9f );
+  GFTextEntry( gump, 892, 325, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba0 );
+  GFTextEntry( gump, 892, 355, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba8 );
+  GFTextEntry( gump, 892, 385, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba9 );
+  GFTextEntry( gump, 892, 415, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba5 );
+  GFTextEntry( gump, 892, 445, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba6 );
+  GFTextEntry( gump, 892, 475, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xabae );
+  GFTextLine( gump, 981, 85, TEXT_HUE_BASE, potTotem );
+  GFTextLine( gump, 981, 115, TEXT_HUE_BASE, potLCUREPOTION );
+  GFTextLine( gump, 981, 145, TEXT_HUE_BASE, potCUREPOTION );
+  GFTextLine( gump, 981, 175, TEXT_HUE_BASE, potGRCUREPOTION );
+  GFTextLine( gump, 981, 205, TEXT_HUE_BASE, potLMINDPOTION );
+  GFTextLine( gump, 981, 235, TEXT_HUE_BASE, potMINDPOTION );
+  GFTextLine( gump, 981, 265, TEXT_HUE_BASE, potGMINDPOTION );
+  GFTextLine( gump, 981, 295, TEXT_HUE_BASE, potGrandMageRefreshElixir );
+  GFTextLine( gump, 981, 325, TEXT_HUE_BASE, potlesserMegoInvul );
+  GFTextLine( gump, 981, 355, TEXT_HUE_BASE, potMegoInvulnerabilitypotion );
+  GFTextLine( gump, 981, 385, TEXT_HUE_BASE, potgreaterMegoInvulnerabilitypotion );
+  GFTextLine( gump, 981, 415, TEXT_HUE_BASE, potElixer );
+  GFTextLine( gump, 981, 445, TEXT_HUE_BASE, potGreatElixerium );
+  GFTextLine( gump, 981, 475, TEXT_HUE_BASE, potMegoElixerium );
+  GFTextEntry( gump, 1053, 85, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xabaa );
+  GFTextEntry( gump, 1053, 115, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc14 );
+  GFTextEntry( gump, 1053, 145, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc15 );
+  GFTextEntry( gump, 1053, 175, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdc16 );
+  GFTextEntry( gump, 1053, 205, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdce6 );
+  GFTextEntry( gump, 1053, 235, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdce7 );
+  GFTextEntry( gump, 1053, 265, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xdce8 );
+  GFTextEntry( gump, 1053, 295, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba4 );
+  GFTextEntry( gump, 1053, 325, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba1 );
+  GFTextEntry( gump, 1053, 355, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba2 );
+  GFTextEntry( gump, 1053, 385, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xaba3 );
+  GFTextEntry( gump, 1053, 415, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xabab );
+  GFTextEntry( gump, 1053, 445, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xabac );
+  GFTextEntry( gump, 1053, 475, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xabad );
+
+  GFPage( gump, 700 );
+  GFResizePic( gump, 588, 11, 39925, 226, 498 );
+  GFResizePic( gump, 607, 25, 1579, 196, 475 );
+  GFResizePic( gump, 615, 373, 39925, 184, 119 );
+  GFResizePic( gump, 630, 387, 1579, 153, 93 );
+  GFAddButton( gump, 627, 360, 40035, 40035, GF_CLOSE_BTN, 777 );
+  GFTextLine( gump, 658, 41, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 730, 41, TEXT_HUE_BASE, "Take" );
+  GFTilePic( gump, 616, 86, 3903, 0 );
+  GFTilePic( gump, 612, 205, 7163, 0 );
+  GFTilePic( gump, 610, 325, 7121, 0 );
+  GFTilePic( gump, 616, 175, 3903, 1172 );
+  GFTilePic( gump, 616, 145, 3903, 1170 );
+  GFTilePic( gump, 613, 115, 7163, 0 );
+  GFTilePic( gump, 611, 265, 16954, 0 );
+  GFTilePic( gump, 618, 226, 13156, 1282 );
+  GFTilePic( gump, 614, 295, 7124, 0 );
+  GFTextLine( gump, 684, 453, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 658, 85, TEXT_HUE_BASE, Aammoarrow );
+  GFTextLine( gump, 658, 115, TEXT_HUE_BASE, Aammobolt );
+  GFTextLine( gump, 658, 145, TEXT_HUE_BASE, Aammoice );
+  GFTextLine( gump, 658, 175, TEXT_HUE_BASE, Aammofire );
+  GFTextLine( gump, 658, 205, TEXT_HUE_BASE, Aammothunder );
+  GFTextLine( gump, 658, 235, TEXT_HUE_BASE, Aammothrow );
+  GFTextLine( gump, 658, 265, TEXT_HUE_BASE, Aammogun );
+  GFTextLine( gump, 658, 295, TEXT_HUE_BASE, Aammoshaft );
+  GFTextLine( gump, 658, 325, TEXT_HUE_BASE, Aammofeather );
+  GFTextEntry( gump, 730, 85, 55, 20, TEXT_HUE_TAKE_ID, "0", 0x0f3f );
+  GFTextEntry( gump, 730, 115, 55, 20, TEXT_HUE_TAKE_ID, "0", 0x1bfb );
+  GFTextEntry( gump, 730, 145, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xb200 );
+  GFTextEntry( gump, 730, 175, 55, 20, TEXT_HUE_TAKE_ID, "0", 0x6051 );
+  GFTextEntry( gump, 730, 205, 55, 20, TEXT_HUE_TAKE_ID, "0", 0x824e );
+  GFTextEntry( gump, 730, 235, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xbbb1 );
+  GFTextEntry( gump, 730, 265, 55, 20, TEXT_HUE_TAKE_ID, "0", 0xd90f );
+  GFTextEntry( gump, 730, 295, 55, 20, TEXT_HUE_TAKE_ID, "0", 0x1BD4 );
+  GFTextEntry( gump, 730, 325, 55, 20, TEXT_HUE_TAKE_ID, "0", 0x1bd1 );
+  GFPage( gump, 900 );
+  GFResizePic( gump, 588, 11, 39925, 246, 291 );
+  GFResizePic( gump, 607, 25, 1579, 220, 270 );
+  GFTextLine( gump, 683, 42, TEXT_HUE_BASE, "Select Book" );
+  GFTilePic( gump, 616, 83, 0x3e20, 0x48a );
+  GFTilePic( gump, 616, 133, 15820, 0x66D );
+  GFTilePic( gump, 616, 183, 15901, 1926 );
+  GFTilePic( gump, 616, 233, 15901, 1956 );
+  GFTextLine( gump, 662, 83, TEXT_HUE_BASE, "Earth Book" );
+  GFTextLine( gump, 662, 133, TEXT_HUE_BASE, "Codex Damnorum" );
+  GFTextLine( gump, 662, 183, TEXT_HUE_BASE, "Song Book" );
+  GFTextLine( gump, 662, 233, TEXT_HUE_BASE, "Holy Book" );
+  GFAddButton( gump, 771, 83, 5824, 5828, GF_PAGE_BTN, 2100 );
+  GFAddButton( gump, 771, 133, 5824, 5828, GF_PAGE_BTN, 2200 );
+  GFAddButton( gump, 771, 183, 5824, 5828, GF_PAGE_BTN, 2300 );
+  GFAddButton( gump, 771, 233, 5824, 5828, GF_PAGE_BTN, 2400 );
+
+  GFPage( gump, 2100 );
+  GFResizePic( gump, 588, 11, 39925, 443, 490 );
+  GFResizePic( gump, 607, 25, 1579, 415, 470 );
+  GFResizePic( gump, 613, 371, 39925, 404, 119 );
+  GFResizePic( gump, 627, 383, 1579, 375, 96 );
+  GFAddButton( gump, 746, 346, 40035, 40035, GF_CLOSE_BTN, 1111 );
+  GFTextLine( gump, 802, 440, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 760, 30, TEXT_HUE_BASE, "Earth Book Scrolls" );
+  GFTilePic( gump, 645, 85, 8800, 0x48a );
+  GFTilePic( gump, 645, 115, 8801, 0x48a );
+  GFTilePic( gump, 645, 145, 8801, 0x48a );
+  GFTilePic( gump, 645, 175, 8800, 0x48a );
+  GFTilePic( gump, 645, 205, 8800, 0x48a );
+  GFTilePic( gump, 645, 295, 8800, 0x48a );
+  GFTilePic( gump, 645, 265, 8801, 0x48a );
+  GFTilePic( gump, 645, 235, 8800, 0x48a );
+  GFTextLine( gump, 679, 59, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 745, 59, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 875, 59, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 941, 59, TEXT_HUE_BASE, "Take" );
+  GFTilePic( gump, 836, 85, 8800, 0x48a );
+  GFTilePic( gump, 836, 295, 8800, 0x48a );
+  GFTilePic( gump, 836, 145, 8800, 0x48a );
+  GFTilePic( gump, 836, 265, 8800, 0x48a );
+  GFTilePic( gump, 836, 235, 8800, 0x48a );
+  GFTilePic( gump, 836, 205, 8800, 0x48a );
+  GFTilePic( gump, 836, 175, 8800, 0x48a );
+  GFTilePic( gump, 836, 115, 8800, 0x48a );
+  GFTextLine( gump, 679, 84, TEXT_HUE_BASE, scAntidotescroll );
+  GFTextEntry( gump, 745, 85, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB101 );
+  GFTextLine( gump, 679, 115, TEXT_HUE_BASE, scOwlsightscroll );
+  GFTextEntry( gump, 745, 115, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB102 );
+  GFTextLine( gump, 679, 145, TEXT_HUE_BASE, scShiftingearthscroll );
+  GFTextEntry( gump, 745, 145, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB103 );
+  GFTextLine( gump, 679, 175, TEXT_HUE_BASE, scSummonmammalsscroll );
+  GFTextEntry( gump, 745, 175, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB104 );
+  GFTextLine( gump, 679, 205, TEXT_HUE_BASE, scCalllightningscroll );
+  GFTextEntry( gump, 745, 205, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB105 );
+  GFTextLine( gump, 679, 235, TEXT_HUE_BASE, scEarthblessingscroll );
+  GFTextEntry( gump, 745, 235, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB106 );
+  GFTextLine( gump, 679, 265, TEXT_HUE_BASE, scEarthportalscroll );
+  GFTextEntry( gump, 745, 265, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB107 );
+  GFTextLine( gump, 679, 295, TEXT_HUE_BASE, scNaturestouchscroll );
+  GFTextEntry( gump, 745, 295, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB108 );
+  GFTextLine( gump, 874, 85, TEXT_HUE_BASE, scGustofairscroll );
+  GFTextEntry( gump, 941, 85, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB109 );
+  GFTextLine( gump, 875, 115, TEXT_HUE_BASE, scRisingfirescroll );
+  GFTextEntry( gump, 941, 115, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB10A );
+  GFTextLine( gump, 875, 145, TEXT_HUE_BASE, scShapeshiftscroll );
+  GFTextEntry( gump, 941, 145, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB10B );
+  GFTextLine( gump, 875, 175, TEXT_HUE_BASE, scIcestrikescroll );
+  GFTextEntry( gump, 941, 175, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB10C );
+  GFTextLine( gump, 875, 205, TEXT_HUE_BASE, scEarthspiritscroll );
+  GFTextEntry( gump, 941, 205, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB10D );
+  GFTextLine( gump, 875, 235, TEXT_HUE_BASE, scFlamespiritscroll );
+  GFTextEntry( gump, 941, 235, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB10E );
+  GFTextLine( gump, 875, 265, TEXT_HUE_BASE, scStormspiritscroll );
+  GFTextEntry( gump, 941, 265, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB10F );
+  GFTextLine( gump, 875, 295, TEXT_HUE_BASE, scWaterspiritscroll );
+  GFTextEntry( gump, 941, 295, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xB110 );
+  GFTextLine( gump, 614, 84, 1668, "Ant" );
+  GFTextLine( gump, 614, 115, 1668, "Owl" );
+  GFTextLine( gump, 614, 145, 1668, "Shift" );
+  GFTextLine( gump, 614, 175, 1668, "SMam" );
+  GFTextLine( gump, 614, 205, 1668, "Call" );
+  GFTextLine( gump, 614, 235, 1668, "Ebless" );
+  GFTextLine( gump, 614, 265, 1668, "Eport" );
+  GFTextLine( gump, 614, 295, 1668, "Ntouch" );
+  GFTextLine( gump, 809, 85, 1668, "Gust" );
+  GFTextLine( gump, 810, 115, 1668, "Rising" );
+  GFTextLine( gump, 810, 145, 1668, "Shape" );
+  GFTextLine( gump, 810, 175, 1668, "Ice" );
+  GFTextLine( gump, 810, 205, 1668, "Earth" );
+  GFTextLine( gump, 810, 235, 1668, "Flame" );
+  GFTextLine( gump, 810, 265, 1668, "Storm" );
+  GFTextLine( gump, 810, 295, 1668, "Water" );
+
+  GFPage( gump, 2200 );
+  GFResizePic( gump, 588, 11, 39925, 443, 490 );
+  GFResizePic( gump, 607, 25, 1579, 415, 470 );
+  GFResizePic( gump, 613, 371, 39925, 404, 119 );
+  GFResizePic( gump, 627, 383, 1579, 375, 96 );
+  GFAddButton( gump, 746, 346, 40035, 40035, GF_CLOSE_BTN, 1111 );
+  GFTextLine( gump, 802, 440, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 760, 30, TEXT_HUE_BASE, "Codex Damnorum Scrolls" );
+  GFTilePic( gump, 645, 85, 8800, 0x66D );
+  GFTilePic( gump, 645, 115, 8800, 0x66D );
+  GFTilePic( gump, 645, 145, 8800, 0x66D );
+  GFTilePic( gump, 645, 175, 8800, 0x66D );
+  GFTilePic( gump, 645, 205, 8800, 0x66D );
+  GFTilePic( gump, 645, 295, 8801, 0x66D );
+  GFTilePic( gump, 645, 265, 8801, 0x66D );
+  GFTilePic( gump, 645, 235, 8801, 0x66D );
+  GFTextLine( gump, 679, 59, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 745, 59, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 875, 59, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 941, 59, TEXT_HUE_BASE, "Take" );
+  GFTilePic( gump, 836, 85, 8801, 0x66D );
+  GFTilePic( gump, 836, 295, 8800, 0x66D );
+  GFTilePic( gump, 836, 145, 8801, 0x66D );
+  GFTilePic( gump, 836, 265, 8800, 0x66D );
+  GFTilePic( gump, 836, 235, 8800, 0x66D );
+  GFTilePic( gump, 836, 205, 8800, 0x66D );
+  GFTilePic( gump, 836, 175, 8801, 0x66D );
+  GFTilePic( gump, 836, 115, 8801, 0x66D );
+  GFTextLine( gump, 679, 84, TEXT_HUE_BASE, scControlUndeadScroll );
+  GFTextEntry( gump, 745, 85, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA101 );
+  GFTextLine( gump, 679, 115, TEXT_HUE_BASE, scDarknessScroll );
+  GFTextEntry( gump, 745, 115, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA102 );
+  GFTextLine( gump, 679, 145, TEXT_HUE_BASE, scDecayingRayScroll );
+  GFTextEntry( gump, 745, 145, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA103 );
+  GFTextLine( gump, 679, 175, TEXT_HUE_BASE, scSpectresTouchScroll );
+  GFTextEntry( gump, 745, 175, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA104 );
+  GFTextLine( gump, 679, 205, TEXT_HUE_BASE, scAbyssalFlameScroll );
+  GFTextEntry( gump, 745, 205, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA105 );
+  GFTextLine( gump, 679, 235, TEXT_HUE_BASE, scAnimateDeadScroll );
+  GFTextEntry( gump, 745, 235, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA106 );
+  GFTextLine( gump, 679, 265, TEXT_HUE_BASE, scSacrificeScroll );
+  GFTextEntry( gump, 745, 265, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA107 );
+  GFTextLine( gump, 679, 295, TEXT_HUE_BASE, scWraithsBreathScroll );
+  GFTextEntry( gump, 745, 295, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA108 );
+  GFTextLine( gump, 874, 85, TEXT_HUE_BASE, scSorcerersBaneScroll );
+  GFTextEntry( gump, 941, 85, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA109 );
+  GFTextLine( gump, 875, 115, TEXT_HUE_BASE, scSummonSpiritScroll );
+  GFTextEntry( gump, 941, 115, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA10A );
+  GFTextLine( gump, 875, 145, TEXT_HUE_BASE, scWraithformScroll );
+  GFTextEntry( gump, 941, 145, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA10B );
+  GFTextLine( gump, 875, 175, TEXT_HUE_BASE, scWyvernStrikeScroll );
+  GFTextEntry( gump, 941, 175, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA10C );
+  GFTextLine( gump, 875, 205, TEXT_HUE_BASE, scKillScroll );
+  GFTextEntry( gump, 941, 205, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA10D );
+  GFTextLine( gump, 875, 235, TEXT_HUE_BASE, scLicheScroll );
+  GFTextEntry( gump, 941, 235, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA10E );
+  GFTextLine( gump, 875, 265, TEXT_HUE_BASE, scPlagueScroll );
+  GFTextEntry( gump, 941, 265, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA10F );
+  GFTextLine( gump, 875, 295, TEXT_HUE_BASE, scSpellbindScroll );
+  GFTextEntry( gump, 941, 295, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xA110 );
+  GFTextLine( gump, 614, 84, 1668, "CUnd" );
+  GFTextLine( gump, 614, 115, 1668, "Darkn" );
+  GFTextLine( gump, 614, 145, 1668, "DRay" );
+  GFTextLine( gump, 614, 175, 1668, "STouch" );
+  GFTextLine( gump, 614, 205, 1668, "AbFla" );
+  GFTextLine( gump, 614, 235, 1668, "Anima" );
+  GFTextLine( gump, 614, 265, 1668, "Sacrif" );
+  GFTextLine( gump, 614, 295, 1668, "WBre" );
+  GFTextLine( gump, 809, 85, 1668, "SBane" );
+  GFTextLine( gump, 810, 115, 1668, "SSpir" );
+  GFTextLine( gump, 810, 145, 1668, "WForm" );
+  GFTextLine( gump, 810, 175, 1668, "WStr" );
+  GFTextLine( gump, 810, 205, 1668, "Kill" );
+  GFTextLine( gump, 810, 235, 1668, "Liche" );
+  GFTextLine( gump, 810, 265, 1668, "Plague" );
+  GFTextLine( gump, 810, 295, 1668, "SBind" );
+
+  GFPage( gump, 2300 );
+  GFResizePic( gump, 588, 11, 39925, 438, 513 );
+  GFResizePic( gump, 607, 25, 1579, 404, 490 );
+  GFResizePic( gump, 610, 389, 39925, 394, 119 );
+  GFResizePic( gump, 624, 401, 1579, 365, 96 );
+  GFAddButton( gump, 746, 374, 40035, 40035, GF_CLOSE_BTN, 1111 );
+  GFTextLine( gump, 802, 468, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 760, 34, TEXT_HUE_BASE, "Song Book Scrolls" );
+  GFTilePic( gump, 645, 85, 8827, 1926 );
+  GFTilePic( gump, 645, 115, 8827, 1926 );
+  GFTilePic( gump, 645, 145, 8827, 1926 );
+  GFTilePic( gump, 645, 175, 8827, 1926 );
+  GFTilePic( gump, 645, 205, 8827, 1926 );
+  GFTilePic( gump, 645, 295, 8827, 1926 );
+  GFTilePic( gump, 645, 265, 8827, 1926 );
+  GFTilePic( gump, 645, 235, 8827, 1926 );
+  GFTilePic( gump, 645, 355, 8827, 1926 );
+  GFTilePic( gump, 645, 325, 8827, 1926 );
+  GFTextLine( gump, 679, 58, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 745, 59, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 875, 58, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 941, 59, TEXT_HUE_BASE, "Take" );
+  GFTilePic( gump, 836, 85, 8827, 1926 );
+  GFTilePic( gump, 836, 295, 8827, 1926 );
+  GFTilePic( gump, 836, 145, 8827, 1926 );
+  GFTilePic( gump, 836, 265, 8827, 1926 );
+  GFTilePic( gump, 836, 235, 8827, 1926 );
+  GFTilePic( gump, 836, 205, 8827, 1926 );
+  GFTilePic( gump, 836, 175, 8827, 1926 );
+  GFTilePic( gump, 836, 115, 8827, 1926 );
+  GFTilePic( gump, 836, 355, 8827, 1926 );
+  GFTilePic( gump, 836, 325, 8827, 1926 );
+  GFTextLine( gump, 679, 84, TEXT_HUE_BASE, scsongscroll1 );
+  GFTextEntry( gump, 735, 85, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6178 );
+  GFTextLine( gump, 679, 115, TEXT_HUE_BASE, scsongscroll2 );
+  GFTextEntry( gump, 735, 115, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6179 );
+  GFTextLine( gump, 679, 145, TEXT_HUE_BASE, scsongscroll3 );
+  GFTextEntry( gump, 735, 145, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x617a );
+  GFTextLine( gump, 679, 175, TEXT_HUE_BASE, scsongscroll4 );
+  GFTextEntry( gump, 735, 175, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x617b );
+  GFTextLine( gump, 679, 205, TEXT_HUE_BASE, scsongscroll5 );
+  GFTextEntry( gump, 735, 205, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x617c );
+  GFTextLine( gump, 679, 235, TEXT_HUE_BASE, scsongscroll6 );
+  GFTextEntry( gump, 735, 235, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x617d );
+  GFTextLine( gump, 679, 265, TEXT_HUE_BASE, scsongscroll7 );
+  GFTextEntry( gump, 735, 265, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x617e );
+  GFTextLine( gump, 679, 295, TEXT_HUE_BASE, scsongscroll8 );
+  GFTextEntry( gump, 735, 295, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x617f );
+  GFTextLine( gump, 679, 325, TEXT_HUE_BASE, scsongscroll9 );
+  GFTextEntry( gump, 735, 325, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6180 );
+  GFTextLine( gump, 679, 355, TEXT_HUE_BASE, scsongscroll10 );
+  GFTextEntry( gump, 735, 355, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6181 );
+  GFTextLine( gump, 874, 85, TEXT_HUE_BASE, scsongscroll11 );
+  GFTextEntry( gump, 931, 85, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6182 );
+  GFTextLine( gump, 875, 115, TEXT_HUE_BASE, scsongscroll12 );
+  GFTextEntry( gump, 931, 115, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6183 );
+  GFTextLine( gump, 875, 145, TEXT_HUE_BASE, scsongscroll13 );
+  GFTextEntry( gump, 931, 145, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6184 );
+  GFTextLine( gump, 875, 175, TEXT_HUE_BASE, scsongscroll14 );
+  GFTextEntry( gump, 931, 175, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6185 );
+  GFTextLine( gump, 875, 205, TEXT_HUE_BASE, scsongscroll15 );
+  GFTextEntry( gump, 931, 205, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6186 );
+  GFTextLine( gump, 875, 235, TEXT_HUE_BASE, scsongscroll16 );
+  GFTextEntry( gump, 931, 235, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6187 );
+  GFTextLine( gump, 875, 265, TEXT_HUE_BASE, scsongscroll17 );
+  GFTextEntry( gump, 931, 265, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6188 );
+  GFTextLine( gump, 875, 295, TEXT_HUE_BASE, scsongscroll18 );
+  GFTextEntry( gump, 931, 295, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6189 );
+  GFTextLine( gump, 875, 325, TEXT_HUE_BASE, scsongscroll19 );
+  GFTextEntry( gump, 931, 325, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x618a );
+  GFTextLine( gump, 875, 355, TEXT_HUE_BASE, scsongscroll20 );
+  GFTextEntry( gump, 931, 355, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x618b );
+  GFTextLine( gump, 614, 84, 1668, "Shield" );
+  GFTextLine( gump, 614, 115, 1668, "Regen" );
+  GFTextLine( gump, 614, 145, 1668, "Prot" );
+  GFTextLine( gump, 614, 175, 1668, "Calm" );
+  GFTextLine( gump, 614, 205, 1668, "Submis" );
+  GFTextLine( gump, 614, 235, 1668, "Weak" );
+  GFTextLine( gump, 614, 265, 1668, "Curat" );
+  GFTextLine( gump, 614, 295, 1668, "Mentis" );
+  GFTextLine( gump, 614, 325, 1668, "Divina" );
+  GFTextLine( gump, 614, 355, 1668, "Haste" );
+  GFTextLine( gump, 810, 85, 1668, "Defens" );
+  GFTextLine( gump, 810, 115, 1668, "Glory" );
+  GFTextLine( gump, 810, 145, 1668, "Cloak" );
+  GFTextLine( gump, 810, 175, 1668, "Life" );
+  GFTextLine( gump, 810, 205, 1668, "Earth" );
+  GFTextLine( gump, 810, 235, 1668, "Air" );
+  GFTextLine( gump, 810, 265, 1668, "Fire" );
+  GFTextLine( gump, 810, 295, 1668, "Water" );
+  GFTextLine( gump, 810, 325, 1668, "Fright" );
+  GFTextLine( gump, 810, 355, 1668, "Salvat" );
+
+  GFPage( gump, 2400 );
+  GFResizePic( gump, 588, 11, 39925, 342, 497 );
+  GFResizePic( gump, 607, 25, 1579, 308, 470 );
+  GFResizePic( gump, 608, 370, 39925, 303, 119 );
+  GFResizePic( gump, 632, 381, 1579, 268, 96 );
+  GFAddButton( gump, 704, 353, 40035, 40035, GF_CLOSE_BTN, 1111 );
+  GFTextLine( gump, 761, 446, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 714, 32, TEXT_HUE_BASE, "Holy Book Scrolls" );
+  GFTilePic( gump, 694, 87, 8827, 1956 );
+  GFTilePic( gump, 694, 117, 8827, 1956 );
+  GFTilePic( gump, 694, 147, 8827, 1956 );
+  GFTilePic( gump, 694, 175, 8827, 1956 );
+  GFTilePic( gump, 694, 207, 8827, 1956 );
+  GFTilePic( gump, 694, 237, 8827, 1956 );
+  GFTilePic( gump, 696, 265, 8827, 1956 );
+  GFTilePic( gump, 694, 297, 8827, 1956 );
+  GFTilePic( gump, 694, 327, 8827, 1956 );
+  GFTextLine( gump, 752, 58, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 832, 58, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 751, 83, TEXT_HUE_BASE, scholyscroll1 );
+  GFTextEntry( gump, 832, 83, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6167 );
+  GFTextLine( gump, 751, 113, TEXT_HUE_BASE, scholyscroll2 );
+  GFTextEntry( gump, 832, 113, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6168 );
+  GFTextLine( gump, 751, 143, TEXT_HUE_BASE, scholyscroll3 );
+  GFTextEntry( gump, 832, 143, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6169 );
+  GFTextLine( gump, 751, 173, TEXT_HUE_BASE, scholyscroll4 );
+  GFTextEntry( gump, 832, 173, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x616a );
+  GFTextLine( gump, 751, 203, TEXT_HUE_BASE, scholyscroll5 );
+  GFTextEntry( gump, 832, 203, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x616b );
+  GFTextLine( gump, 751, 233, TEXT_HUE_BASE, scholyscroll6 );
+  GFTextEntry( gump, 832, 233, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x616c );
+  GFTextLine( gump, 751, 263, TEXT_HUE_BASE, scholyscroll7 );
+  GFTextEntry( gump, 832, 263, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x616d );
+  GFTextLine( gump, 751, 293, TEXT_HUE_BASE, scholyscroll8 );
+  GFTextEntry( gump, 832, 293, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x616e );
+  GFTextLine( gump, 751, 323, TEXT_HUE_BASE, scholyscroll9 );
+  GFTextEntry( gump, 832, 323, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x616f );
+  GFTextLine( gump, 635, 83, 1668, "GFest" );
+  GFTextLine( gump, 635, 113, 1668, "AAura" );
+  GFTextLine( gump, 635, 143, 1668, "HReflect" );
+  GFTextLine( gump, 635, 173, 1668, "RCurse" );
+  GFTextLine( gump, 635, 203, 1668, "WGod" );
+  GFTextLine( gump, 635, 233, 1668, "DFury" );
+  GFTextLine( gump, 635, 263, 1668, "AStorm" );
+  GFTextLine( gump, 635, 293, 1668, "SGuard" );
+  GFTextLine( gump, 635, 323, 1668, "Apocalypse" );
+
+  GFPage( gump, 800 );
+  GFResizePic( gump, 588, 11, 39925, 492, 545 );
+  GFResizePic( gump, 606, 25, 1579, 464, 516 );
+  GFResizePic( gump, 616, 414, 39925, 213, 119 );
+  GFResizePic( gump, 628, 425, 1579, 186, 96 );
+  GFAddButton( gump, 653, 397, 40035, 40035, GF_CLOSE_BTN, 888 );
+  GFTextLine( gump, 710, 490, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 669, 43, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 749, 43, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 668, 80, TEXT_HUE_BASE, miscblankscroll );
+  GFTextEntry( gump, 737, 83, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x0E34 );
+  GFTextLine( gump, 668, 120, TEXT_HUE_BASE, miscblankmap );
+  GFTextEntry( gump, 737, 120, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x6001 );
+  GFTextLine( gump, 668, 160, TEXT_HUE_BASE, misclockpick );
+  GFTextEntry( gump, 737, 160, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x14fb );
+  GFTextLine( gump, 668, 200, TEXT_HUE_BASE, miscemptybottle );
+  GFTextEntry( gump, 737, 200, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xF0E );
+  GFTextLine( gump, 668, 240, TEXT_HUE_BASE, miscrecallrune );
+  GFTextEntry( gump, 737, 240, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x1f14 );
+  GFTextLine( gump, 668, 280, TEXT_HUE_BASE, misckindling );
+  GFTextEntry( gump, 737, 280, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x0de1 );
+  GFTextLine( gump, 668, 320, TEXT_HUE_BASE, miscbandages );
+  GFTextEntry( gump, 737, 320, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x0e21 );
+  GFTilePic( gump, 616, 80, 3636, 0 );
+  GFTilePic( gump, 616, 120, 5355, 0 );
+  GFTilePic( gump, 616, 200, 3854, 0 );
+  GFTilePic( gump, 612, 166, 5371, 0 );
+  GFTilePic( gump, 616, 240, 7956, 0 );
+  GFTilePic( gump, 616, 280, 3553, 0 );
+  GFTilePic( gump, 616, 320, 3617, 0 );
+  GFTextLine( gump, 893, 43, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 973, 43, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 892, 90, TEXT_HUE_BASE, miscSymbolOfAbsorption );
+  GFTextEntry( gump, 961, 93, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x181d );
+  GFTextLine( gump, 892, 130, TEXT_HUE_BASE, miscSymbolOfToxinsResistance );
+  GFTextEntry( gump, 961, 130, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x181e );
+  GFTextLine( gump, 892, 170, TEXT_HUE_BASE, miscSymbolOfHealth );
+  GFTextEntry( gump, 961, 170, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x181f );
+  GFTextLine( gump, 892, 210, TEXT_HUE_BASE, miscSymbolOfHeavenTouch );
+  GFTextEntry( gump, 961, 210, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x1821 );
+  GFTextLine( gump, 892, 250, TEXT_HUE_BASE, miscSymbolOfHellFire );
+  GFTextEntry( gump, 961, 250, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x1822 );
+  GFTextLine( gump, 892, 290, TEXT_HUE_BASE, miscSymbolOfVanishing );
+  GFTextEntry( gump, 961, 290, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x1823 );
+  GFTextLine( gump, 892, 330, TEXT_HUE_BASE, miscSymbolOfVengeance );
+  GFTextEntry( gump, 961, 330, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x1824 );
+  GFTilePic( gump, 840, 80, 6173, 0 );
+  GFTilePic( gump, 840, 120, 6174, 0 );
+  GFTilePic( gump, 840, 200, 6177, 0 );
+  GFTilePic( gump, 840, 160, 6175, 0 );
+  GFTilePic( gump, 840, 240, 6178, 0 );
+  GFTilePic( gump, 840, 280, 6179, 0 );
+  GFTilePic( gump, 840, 320, 6180, 0 );
+  GFTextLine( gump, 892, 372, TEXT_HUE_BASE, miscSymbolOfRecalling );
+  GFTextEntry( gump, 961, 372, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x1825 );
+  GFTextLine( gump, 892, 412, TEXT_HUE_BASE, miscSymbolOfThunderStorm );
+  GFTextEntry( gump, 961, 412, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x1826 );
+  GFTextLine( gump, 892, 452, TEXT_HUE_BASE, miscSymbolOfRegeneration );
+  GFTextEntry( gump, 961, 452, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x1827 );
+  GFTextLine( gump, 892, 492, TEXT_HUE_BASE, miscSymbolOfLifeStream );
+  GFTextEntry( gump, 961, 492, 60, 20, TEXT_HUE_TAKE_ID, "0", 0x1828 );
+  GFTilePic( gump, 840, 362, 6177, 0 );
+  GFTilePic( gump, 840, 402, 6178, 0 );
+  GFTilePic( gump, 840, 442, 6179, 0 );
+  GFTilePic( gump, 840, 482, 6180, 0 );
+
+  GFPage( gump, 1000 );
+  GFResizePic( gump, 588, 11, 39925, 219, 298 );
+  GFResizePic( gump, 606, 25, 1579, 193, 278 );
+  GFTextLine( gump, 661, 39, TEXT_HUE_BASE, "Select Item" );
+  GFTilePic( gump, 616, 70, 0x571C, 0 );
+  GFTilePic( gump, 611, 120, 0x25d6, 0 );
+  GFTilePic( gump, 611, 170, 0x2D92, 0 );
+  GFTilePic( gump, 614, 220, 15842, 0 );
+  GFTextLine( gump, 662, 80, TEXT_HUE_BASE, "Protections" );
+  GFTextLine( gump, 665, 130, TEXT_HUE_BASE, "Attributes" );
+  GFTextLine( gump, 669, 180, TEXT_HUE_BASE, "Skills" );
+  GFTextLine( gump, 668, 230, TEXT_HUE_BASE, "Upgrade" );
+  GFAddButton( gump, 742, 75, 5824, 5828, GF_PAGE_BTN, 3000 );
+  GFAddButton( gump, 742, 130, 5824, 5828, GF_PAGE_BTN, 3100 );
+  GFAddButton( gump, 742, 180, 5824, 5828, GF_PAGE_BTN, 3200 );
+  GFAddButton( gump, 742, 230, 5824, 5828, GF_PAGE_BTN, 3300 );
+
+  GFPage( gump, 3000 );
+  GFResizePic( gump, 588, 11, 39925, 377, 711 );
+  GFResizePic( gump, 606, 25, 1579, 354, 687 );
+  GFResizePic( gump, 612, 589, 39925, 344, 119 );
+  GFResizePic( gump, 622, 601, 1579, 317, 96 );
+  GFAddButton( gump, 705, 574, 40035, 40035, GF_CLOSE_BTN, 999 );
+  GFTextLine( gump, 764, 669, TEXT_HUE_BASE, "Take" );
+  GFTilePic( gump, 700, 82, 0x25d6, 2020 );
+  GFTilePic( gump, 700, 122, 0x25d6, 2021 );
+  GFTilePic( gump, 700, 162, 0x25d6, 2022 );
+  GFTilePic( gump, 700, 202, 0x25d6, 2023 );
+  GFTilePic( gump, 700, 242, 0x25d6, 2024 );
+  GFTilePic( gump, 700, 282, 0x25d6, 2025 );
+  GFTilePic( gump, 700, 327, 0x25d6, 2026 );
+  GFTilePic( gump, 700, 367, 0x25d6, 2027 );
+  GFTilePic( gump, 700, 407, 0x25d6, 2028 );
+  GFTilePic( gump, 700, 447, 0x25d6, 2029 );
+  GFTilePic( gump, 700, 487, 0x25d6, 2030 );
+  GFTilePic( gump, 700, 527, 0x25d6, 2031 );
+
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runeAirEnchantedRune );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd05c );
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runeEarthEnchantedRune2 );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd05d );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runeFireEnchantedRune3 );
+  GFTextEntry( gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd05e );
+  GFTextLine( gump, 786, 212, TEXT_HUE_BASE, runeNecroEnchantedRune4 );
+  GFTextEntry( gump, 856, 212, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd05f );
+  GFTextLine( gump, 786, 252, TEXT_HUE_BASE, runeWaterEnchantedRune5 );
+  GFTextEntry( gump, 856, 252, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd060 );
+  GFTextLine( gump, 786, 292, TEXT_HUE_BASE, runeHolyEnchantedRune6 );
+  GFTextEntry( gump, 856, 292, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd061 );
+  GFTextLine( gump, 786, 337, TEXT_HUE_BASE, runePoisonEnchantedRune7 );
+  GFTextEntry( gump, 856, 337, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd062 );
+  GFTextLine( gump, 786, 377, TEXT_HUE_BASE, runeDefenseEnchantedRune8 );
+  GFTextEntry( gump, 856, 377, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd063 );
+  GFTextLine( gump, 786, 417, TEXT_HUE_BASE, runeColdEnchantedRune9 );
+  GFTextEntry( gump, 856, 417, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd064 );
+  GFTextLine( gump, 786, 457, TEXT_HUE_BASE, runeLightEnchantedRune10 );
+  GFTextEntry( gump, 856, 457, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd065 );
+  GFTextLine( gump, 786, 497, TEXT_HUE_BASE, runeDarkEnchantedRune11 );
+  GFTextEntry( gump, 856, 497, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd066 );
+  GFTextLine( gump, 786, 537, TEXT_HUE_BASE, runeHealingEnchantedRune12 );
+  GFTextEntry( gump, 856, 537, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd067 );
+  GFTextLine( gump, 619, 92, 1668, "Air" );
+  GFTextLine( gump, 619, 132, 1668, "Earth" );
+  GFTextLine( gump, 619, 172, 1668, "Fire" );
+  GFTextLine( gump, 619, 212, 1668, "Necro" );
+  GFTextLine( gump, 619, 252, 1668, "Water" );
+  GFTextLine( gump, 619, 292, 1668, "Holy" );
+  GFTextLine( gump, 619, 337, 1668, "Poison" );
+  GFTextLine( gump, 619, 377, 1668, "Defense" );
+  GFTextLine( gump, 619, 417, 1668, "Cold" );
+  GFTextLine( gump, 619, 457, 1668, "Light" );
+  GFTextLine( gump, 619, 497, 1668, "Dark" );
+  GFTextLine( gump, 619, 537, 1668, "Healing" );
+
+  GFPage( gump, 3100 );
+  GFResizePic( gump, 588, 11, 39925, 377, 358 );
+  GFResizePic( gump, 606, 25, 1579, 346, 333 );
+  GFResizePic( gump, 609, 231, 39925, 339, 121 );
+  GFResizePic( gump, 618, 246, 1579, 314, 95 );
+  GFAddButton( gump, 704, 218, 40035, 40035, GF_CLOSE_BTN, 999 );
+  GFTextLine( gump, 763, 313, TEXT_HUE_BASE, "Take" );
+  GFTilePic( gump, 700, 82, 22300, 2032 );
+  GFTilePic( gump, 700, 122, 22300, 2033 );
+  GFTilePic( gump, 700, 162, 22300, 20234 );
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runespeedEnchantedRune20 );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd068 );
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runemindEnchantedRune21 );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd069 );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runestaminaEnchantedRune22 );
+  GFTextEntry( gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd06a );
+  GFTextLine( gump, 619, 92, 1668, "Speed" );
+  GFTextLine( gump, 619, 132, 1668, "Mind" );
+  GFTextLine( gump, 619, 172, 1668, "Stamina" );
+
+  GFPage( gump, 3200 );
+  GFResizePic( gump, 588, 11, 39925, 219, 502 );
+  GFResizePic( gump, 606, 25, 1579, 193, 479 );
+  GFTextLine( gump, 658, 39, TEXT_HUE_BASE, "Category Skills" );
+  GFTextLine( gump, 625, 80, TEXT_HUE_BASE, "Warrior" );
+  GFTextLine( gump, 625, 130, TEXT_HUE_BASE, "Ranger" );
+  GFTextLine( gump, 625, 180, TEXT_HUE_BASE, "Mage" );
+  GFTextLine( gump, 625, 230, TEXT_HUE_BASE, "Bard" );
+  GFAddButton( gump, 742, 80, 5824, 5828, GF_PAGE_BTN, 3210 );
+  GFAddButton( gump, 742, 130, 5824, 5828, GF_PAGE_BTN, 3220 );
+  GFAddButton( gump, 742, 180, 5824, 5828, GF_PAGE_BTN, 3230 );
+  GFAddButton( gump, 742, 230, 5824, 5828, GF_PAGE_BTN, 3240 );
+  GFTextLine( gump, 625, 280, TEXT_HUE_BASE, "Thief" );
+  GFTextLine( gump, 625, 330, TEXT_HUE_BASE, "Crafter" );
+  // 	GFTextLine(gump, 625, 380, TEXT_HUE_BASE, "Hunter");
+  GFTextLine( gump, 625, 380, TEXT_HUE_BASE, "Other" );
+  GFAddButton( gump, 742, 280, 5824, 5828, GF_PAGE_BTN, 3250 );
+  GFAddButton( gump, 742, 330, 5824, 5828, GF_PAGE_BTN, 3260 );
+  // 	GFAddButton(gump, 742, 380, 5824, 5828, GF_PAGE_BTN, 3270);
+  GFAddButton( gump, 742, 380, 5824, 5828, GF_PAGE_BTN, 3280 );
+
+  GFPage( gump, 3210 );
+  GFResizePic( gump, 588, 11, 39925, 377, 568 );
+  GFResizePic( gump, 606, 25, 1579, 346, 540 );
+  GFResizePic( gump, 609, 444, 39925, 339, 118 );
+  GFResizePic( gump, 618, 456, 1579, 314, 95 );
+  GFAddButton( gump, 704, 428, 40035, 40035, GF_CLOSE_BTN, 911 );
+  GFTextLine( gump, 763, 523, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runeanatomyEnchantedRune31 );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd06d );
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runefencingEnchantedRune72 );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd096 );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runehealingEnchantedRune47 );
+  GFTextEntry( gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd07d );
+  GFTextLine( gump, 786, 212, TEXT_HUE_BASE, runemaceEnchantedRune71 );
+  GFTextEntry( gump, 856, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd095 );
+  GFTextLine( gump, 786, 252, TEXT_HUE_BASE, runeparryingEnchantedRune35 );
+  GFTextEntry( gump, 856, 252, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd071 );
+  GFTextLine( gump, 786, 292, TEXT_HUE_BASE, runeswordEnchantedRune70 );
+  GFTextEntry( gump, 856, 292, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd094 );
+  GFTextLine( gump, 786, 332, TEXT_HUE_BASE, runetacticsEnchantedRune57 );
+  GFTextEntry( gump, 856, 332, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd087 );
+  GFTextLine( gump, 786, 372, TEXT_HUE_BASE, runewrestlingEnchantedRune73 );
+  GFTextEntry( gump, 856, 372, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd097 );
+  GFTilePic( gump, 700, 82, 0x2D92, 2037 );
+  GFTilePic( gump, 700, 122, 0x2D92, 2078 );
+  GFTilePic( gump, 700, 162, 0x2D92, 2031 );
+  GFTilePic( gump, 700, 202, 0x2D92, 2077 );
+  GFTilePic( gump, 700, 242, 0x2D92, 2041 );
+  GFTilePic( gump, 700, 282, 0x2D92, 2076 );
+  GFTilePic( gump, 700, 322, 0x2D92, 2063 );
+  GFTilePic( gump, 700, 362, 0x2D92, 2079 );
+  GFTextLine( gump, 619, 92, 1668, "Anatomy" );
+  GFTextLine( gump, 619, 132, 1668, "Fencing" );
+  GFTextLine( gump, 619, 172, 1668, "Healing" );
+  GFTextLine( gump, 619, 212, 1668, "Mace" );
+  GFTextLine( gump, 619, 252, 1668, "Parry" );
+  GFTextLine( gump, 619, 292, 1668, "Sword" );
+  GFTextLine( gump, 619, 332, 1668, "Tactics" );
+  GFTextLine( gump, 619, 372, 1668, "Wrestling" );
+
+  GFPage( gump, 3220 );
+  GFResizePic( gump, 588, 11, 39925, 377, 568 );
+  GFResizePic( gump, 606, 25, 1579, 346, 540 );
+  GFResizePic( gump, 609, 444, 39925, 339, 118 );
+  GFResizePic( gump, 618, 456, 1579, 314, 95 );
+  GFAddButton( gump, 704, 428, 40035, 40035, GF_CLOSE_BTN, 917 );
+  GFTextLine( gump, 763, 523, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runeloreEnchantedRune32 );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd06e );
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runetamingEnchantedRune65 );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd08f );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runearcheryEnchantedRune61 );
+  GFTextEntry( gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd08b );
+  GFTextLine( gump, 786, 212, TEXT_HUE_BASE, runecartEnchantedRune42 );
+  GFTextEntry( gump, 856, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd078 );
+  GFTextLine( gump, 786, 252, TEXT_HUE_BASE, runefishingEnchantedRune48 );
+  GFTextEntry( gump, 856, 252, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd07e );
+  GFTextLine( gump, 786, 292, TEXT_HUE_BASE, runetrackEnchantedRune68 );
+  GFTextEntry( gump, 856, 292, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd092 );
+  GFTextLine( gump, 786, 332, TEXT_HUE_BASE, runeveterEnchantedRune69 );
+  GFTextEntry( gump, 856, 332, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd093 );
+  GFTextLine( gump, 786, 372, TEXT_HUE_BASE, runecookingEnchantedRune43 );
+  GFTextEntry( gump, 856, 372, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd079 );
+  GFTilePic( gump, 700, 82, 0x2D92, 2038 );
+  GFTilePic( gump, 700, 122, 0x2D92, 2071 );
+  GFTilePic( gump, 700, 162, 0x2D92, 2067 );
+  GFTilePic( gump, 700, 202, 0x2D92, 2048 );
+  GFTilePic( gump, 700, 242, 0x2D92, 2054 );
+  GFTilePic( gump, 700, 282, 0x2D92, 2074 );
+  GFTilePic( gump, 700, 322, 0x2D92, 2075 );
+  GFTilePic( gump, 700, 362, 0x2D92, 2049 );
+  GFTextLine( gump, 619, 92, 1668, "Lore" );
+  GFTextLine( gump, 619, 132, 1668, "Taming" );
+  GFTextLine( gump, 619, 172, 1668, "Archery" );
+  GFTextLine( gump, 619, 212, 1668, "Cartography" );
+  GFTextLine( gump, 619, 252, 1668, "Fishing" );
+  GFTextLine( gump, 619, 292, 1668, "Tracking" );
+  GFTextLine( gump, 619, 332, 1668, "Veterinary" );
+  GFTextLine( gump, 619, 372, 1668, "Cooking" );
+
+  GFPage( gump, 3230 );
+  GFResizePic( gump, 588, 11, 39925, 377, 568 );
+  GFResizePic( gump, 606, 25, 1579, 346, 540 );
+  GFResizePic( gump, 609, 444, 39925, 339, 118 );
+  GFResizePic( gump, 618, 456, 1579, 314, 95 );
+  GFAddButton( gump, 704, 428, 40035, 40035, GF_CLOSE_BTN, 915 );
+  GFTextLine( gump, 763, 523, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runealchemyEnchantedRune30 );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd06c );
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runeevalEnchantedRune46 );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd07c );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runescribeEnchantedRune53 );
+  GFTextEntry( gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd083 );
+  GFTextLine( gump, 786, 212, TEXT_HUE_BASE, runeitemidEnchantedRune33 );
+  GFTextEntry( gump, 856, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd06f );
+  GFTextLine( gump, 786, 252, TEXT_HUE_BASE, runemageryEnchantedRune55 );
+  GFTextEntry( gump, 856, 252, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd085 );
+  GFTextLine( gump, 786, 292, TEXT_HUE_BASE, runemeditEnchantedRune76 );
+  GFTextEntry( gump, 856, 292, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd09a );
+  GFTextLine( gump, 786, 332, TEXT_HUE_BASE, runeresistEnchantedRune56 );
+  GFTextEntry( gump, 856, 332, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd086 );
+  GFTextLine( gump, 786, 372, TEXT_HUE_BASE, runespiritEnchantedRune62 );
+  GFTextEntry( gump, 856, 372, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd08c );
+  GFTilePic( gump, 700, 82, 0x2D92, 2036 );
+  GFTilePic( gump, 700, 122, 0x2D92, 2052 );
+  GFTilePic( gump, 700, 162, 0x2D92, 2059 );
+  GFTilePic( gump, 700, 202, 0x2D92, 2039 );
+  GFTilePic( gump, 700, 242, 0x2D92, 2061 );
+  GFTilePic( gump, 700, 282, 0x2D92, 2082 );
+  GFTilePic( gump, 700, 322, 0x2D92, 2062 );
+  GFTilePic( gump, 700, 362, 0x2D92, 2068 );
+  GFTextLine( gump, 619, 92, 1668, "Alchemy" );
+  GFTextLine( gump, 619, 132, 1668, "Eval" );
+  GFTextLine( gump, 619, 172, 1668, "Scribe" );
+  GFTextLine( gump, 619, 212, 1668, "ItemId" );
+  GFTextLine( gump, 619, 252, 1668, "Magery" );
+  GFTextLine( gump, 619, 292, 1668, "Medit" );
+  GFTextLine( gump, 619, 332, 1668, "Resist" );
+  GFTextLine( gump, 619, 372, 1668, "Spirit" );
+
+  GFPage( gump, 3240 );
+  GFResizePic( gump, 588, 11, 39925, 377, 568 );
+  GFResizePic( gump, 606, 25, 1579, 346, 540 );
+  GFResizePic( gump, 609, 444, 39925, 339, 118 );
+  GFResizePic( gump, 618, 456, 1579, 314, 95 );
+  GFAddButton( gump, 704, 428, 40035, 40035, GF_CLOSE_BTN, 914 );
+  GFTextLine( gump, 763, 523, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runebeggingEnchantedRune36 );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd072 );
+  // 	GFTextLine(gump, 786, 132, TEXT_HUE_BASE, runemageryEnchantedRune55);
+  // 	GFTextEntry(gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd085);
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runeenticEnchantedRune45 );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd07b );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runeherdingEnchantedRune50 );
+  GFTextEntry( gump, 856, 172, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd080 );
+  GFTextLine( gump, 786, 212, TEXT_HUE_BASE, runemusicEnchantedRune59 );
+  GFTextEntry( gump, 856, 212, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd089 );
+  GFTextLine( gump, 786, 252, TEXT_HUE_BASE, runepeaceEnchantedRune39 );
+  GFTextEntry( gump, 856, 252, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd075 );
+  GFTextLine( gump, 786, 292, TEXT_HUE_BASE, runeprovocEnchantedRune52 );
+  GFTextEntry( gump, 856, 292, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd082 );
+  // 	GFTextLine(gump, 786, 332, TEXT_HUE_BASE,runearcheryEnchantedRune61);
+  // 	GFTextEntry(gump, 856, 332, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd08);
+  GFTilePic( gump, 700, 82, 0x2D92, 2042 );
+  // 	GFTilePic(gump, 700, 122, 0x2D92, 2061);
+  GFTilePic( gump, 700, 122, 0x2D92, 2051 );
+  GFTilePic( gump, 700, 162, 0x2D92, 2056 );
+  GFTilePic( gump, 700, 202, 0x2D92, 2065 );
+  GFTilePic( gump, 700, 242, 0x2D92, 2045 );
+  GFTilePic( gump, 700, 282, 0x2D92, 2058 );
+  // 	GFTilePic(gump, 700, 332, 0x2D92, 2067);
+  GFTextLine( gump, 619, 92, 1668, "Begging" );
+  // 	GFTextLine(gump, 619, 132, 1668, "Magery");
+  GFTextLine( gump, 619, 132, 1668, "Enticement" );
+  GFTextLine( gump, 619, 172, 1668, "Herding" );
+  GFTextLine( gump, 619, 212, 1668, "Music" );
+  GFTextLine( gump, 619, 252, 1668, "Peace" );
+  GFTextLine( gump, 619, 292, 1668, "Provoc" );
+  // 	GFTextLine(gump, 619, 332, 1668, "Archery");
+
+  GFPage( gump, 3250 );
+  GFResizePic( gump, 588, 11, 39925, 377, 568 );
+  GFResizePic( gump, 606, 25, 1579, 346, 540 );
+  GFResizePic( gump, 609, 444, 39925, 339, 118 );
+  GFResizePic( gump, 618, 456, 1579, 314, 95 );
+  GFAddButton( gump, 704, 428, 40035, 40035, GF_CLOSE_BTN, 912 );
+  GFTextLine( gump, 763, 523, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runedetectEnchantedRune44 );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd07a );
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runehidingEnchantedRune51 );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd081 );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runelockpickEnchantedRune54 );
+  GFTextEntry( gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd084 );
+  GFTextLine( gump, 786, 212, TEXT_HUE_BASE, runepoisonEnchantedRune60 );
+  GFTextEntry( gump, 856, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd08a );
+  // GFTextLine(gump, 786, 252, TEXT_HUE_BASE,runefencingEnchantedRune722 );
+  // GFTextEntry(gump, 856, 252, 60, 20, TEXT_HUE_TAKE_ID, "0",0xd096 );
+  GFTextLine( gump, 786, 252, TEXT_HUE_BASE, runesnoopEnchantedRune58 );
+  GFTextEntry( gump, 856, 252, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd088 );
+  GFTextLine( gump, 786, 292, TEXT_HUE_BASE, runestealingEnchantedRune63 );
+  GFTextEntry( gump, 856, 292, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd08d );
+  GFTextLine( gump, 786, 332, TEXT_HUE_BASE, runestealthEnchantedRune77 );
+  GFTextEntry( gump, 856, 332, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd09b );
+  GFTilePic( gump, 700, 82, 0x2D92, 2050 );
+  GFTilePic( gump, 700, 122, 0x2D92, 2057 );
+  GFTilePic( gump, 700, 162, 0x2D92, 2060 );
+  GFTilePic( gump, 700, 202, 0x2D92, 2066 );
+  // 	GFTilePic(gump, 700, 242, 0x2D92, 2078);
+  GFTilePic( gump, 700, 242, 0x2D92, 2064 );
+  GFTilePic( gump, 700, 282, 0x2D92, 2069 );
+  GFTilePic( gump, 700, 332, 0x2D92, 2083 );
+  GFTextLine( gump, 619, 92, 1668, "Detect" );
+  GFTextLine( gump, 619, 132, 1668, "Hiding" );
+  GFTextLine( gump, 619, 172, 1668, "Lockpicking" );
+  GFTextLine( gump, 619, 212, 1668, "Poisoning" );
+  // GFTextLine(gump, 619, 252, 1668, "Fencing");
+  GFTextLine( gump, 619, 252, 1668, "Snooping" );
+  GFTextLine( gump, 619, 292, 1668, "Stealing" );
+  GFTextLine( gump, 619, 332, 1668, "Stealth" );
+
+  GFPage( gump, 3260 );
+  GFResizePic( gump, 588, 11, 39925, 377, 568 );
+  GFResizePic( gump, 606, 25, 1579, 346, 540 );
+  GFResizePic( gump, 609, 444, 39925, 339, 118 );
+  GFResizePic( gump, 618, 456, 1579, 314, 95 );
+  GFAddButton( gump, 704, 428, 40035, 40035, GF_CLOSE_BTN, 913 );
+  GFTextLine( gump, 763, 523, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runearmsloreEnchantedRune34 );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd070 );
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runebsEnchantedRune37 );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd073 );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runebowcraftEnchantedRune38 );
+  GFTextEntry( gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd074 );
+  GFTextLine( gump, 786, 212, TEXT_HUE_BASE, runecarpEnchantedRune41 );
+  GFTextEntry( gump, 856, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd077 );
+  GFTextLine( gump, 786, 252, TEXT_HUE_BASE, runelumberEnchantedRune74 );
+  GFTextEntry( gump, 856, 252, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd098 );
+  GFTextLine( gump, 786, 292, TEXT_HUE_BASE, runeminingEnchantedRune75 );
+  GFTextEntry( gump, 856, 292, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd099 );
+  GFTextLine( gump, 786, 332, TEXT_HUE_BASE, runetailoringEnchantedRune64 );
+  GFTextEntry( gump, 856, 332, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd08e );
+  GFTextLine( gump, 786, 372, TEXT_HUE_BASE, runetinkeringEnchantedRune67 );
+  GFTextEntry( gump, 856, 372, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd091 );
+  GFTilePic( gump, 700, 82, 0x2D92, 2040 );
+  GFTilePic( gump, 700, 122, 0x2D92, 2043 );
+  GFTilePic( gump, 700, 162, 0x2D92, 2044 );
+  GFTilePic( gump, 700, 202, 0x2D92, 2047 );
+  GFTilePic( gump, 700, 242, 0x2D92, 2080 );
+  GFTilePic( gump, 700, 282, 0x2D92, 2081 );
+  GFTilePic( gump, 700, 322, 0x2D92, 2070 );
+  GFTilePic( gump, 700, 362, 0x2D92, 2073 );
+  GFTextLine( gump, 619, 92, 1668, "Arms lore" );
+  GFTextLine( gump, 619, 132, 1668, "Blacksmithy" );
+  GFTextLine( gump, 619, 172, 1668, "Bowcraft" );
+  GFTextLine( gump, 619, 212, 1668, "Carpentry" );
+  GFTextLine( gump, 619, 252, 1668, "Lumber" );
+  GFTextLine( gump, 619, 292, 1668, "Mining" );
+  GFTextLine( gump, 619, 332, 1668, "Tailoring" );
+  GFTextLine( gump, 619, 372, 1668, "Tinkering" );
+
+  /* GFPage(gump, 3270);
+	GFResizePic(gump, 588, 11, 39925, 377, 768);
+	GFResizePic(gump, 606, 25, 1579, 346, 740);
+	GFResizePic(gump, 609, 644, 39925, 339, 118);
+	GFResizePic(gump, 618, 656, 1579, 314, 95);
+	GFAddButton(gump, 704, 628, 40035, 40035, GF_CLOSE_BTN, 916);
+	GFTextLine(gump, 763, 723, TEXT_HUE_BASE, "Take");
+	GFTextLine(gump, 786, 52, TEXT_HUE_BASE, "Quantity");
+	GFTextLine(gump, 856, 52, TEXT_HUE_BASE, "Take");
+
+	GFTextLine(gump, 786, 92, TEXT_HUE_BASE,runeparryingEnchantedRune35);
+	GFTextEntry(gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd071);
+	GFTextLine(gump, 786, 132, TEXT_HUE_BASE,runemageryEnchantedRune55);
+	GFTextEntry(gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd085);
+	GFTextLine(gump, 786, 172, TEXT_HUE_BASE, runemeditEnchantedRune76);
+	GFTextEntry(gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd09a);
+	GFTextLine(gump, 786, 212, TEXT_HUE_BASE, runeresistEnchantedRune56);
+	GFTextEntry(gump, 856, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd086);
+	GFTextLine(gump, 786, 252, TEXT_HUE_BASE, runefencingEnchantedRune72);
+	GFTextEntry(gump, 856, 252, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd096);
+	GFTextLine(gump, 786, 292, TEXT_HUE_BASE, runearcheryEnchantedRune61);
+	GFTextEntry(gump, 856, 292, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd08b);
+	GFTextLine(gump, 786, 332, TEXT_HUE_BASE, runeswordEnchantedRune70);
+	GFTextEntry(gump, 856, 332, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd094);
+	GFTextLine(gump, 786, 372, TEXT_HUE_BASE, runemaceEnchantedRune71);
+	GFTextEntry(gump, 856, 372, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd095);
+	GFTextLine(gump, 786, 412, TEXT_HUE_BASE, runetacticsEnchantedRune57);
+	GFTextEntry(gump, 856, 412, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd087);
+	GFTextLine(gump, 786, 452, TEXT_HUE_BASE, runehealingEnchantedRune47);
+	GFTextEntry(gump, 856, 452, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd07d);
+	GFTextLine(gump, 786, 492, TEXT_HUE_BASE, runestealthEnchantedRune77);
+	GFTextEntry(gump, 856, 492, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd09b);
+	GFTextLine(gump, 786, 532, TEXT_HUE_BASE, runehidingEnchantedRune51);
+	GFTextEntry(gump, 856, 532, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd081);
+
+
+
+	GFTilePic(gump, 700, 82, 0x2D92, 2041);
+	GFTilePic(gump, 700, 122, 0x2D92, 2061);
+	GFTilePic(gump, 700, 162, 0x2D92, 2082);
+	GFTilePic(gump, 700, 202, 0x2D92, 2062);
+	GFTilePic(gump, 700, 242, 0x2D92, 2078);
+	GFTilePic(gump, 700, 282, 0x2D92, 2067);
+	GFTilePic(gump, 700, 322, 0x2D92, 2076);
+	GFTilePic(gump, 700, 362, 0x2D92, 2077);
+	GFTilePic(gump, 700, 402, 0x2D92, 2063);
+	GFTilePic(gump, 700, 442, 0x2D92, 2031);
+	GFTilePic(gump, 700, 482, 0x2D92, 2083);
+	GFTilePic(gump, 700, 522, 0x2D92, 2057);
+
+
+
+	GFTextLine(gump, 619, 92, 1668, "Parry");
+	GFTextLine(gump, 619, 132, 1668, "Magery");
+	GFTextLine(gump, 619, 172, 1668, "Medit");
+	GFTextLine(gump, 619, 212, 1668, "Resist");
+	GFTextLine(gump, 619, 252, 1668, "Fencing");
+	GFTextLine(gump, 619, 292, 1668, "Archery");
+	GFTextLine(gump, 619, 332, 1668, "Sword");
+	GFTextLine(gump, 619, 372, 1668, "Mace");
+	GFTextLine(gump, 619, 412, 1668, "Tactics");
+	GFTextLine(gump, 619, 452, 1668, "Healing");
+	GFTextLine(gump, 619, 492, 1668, "Stealth");
+	GFTextLine(gump, 619, 532, 1668, "Hiding");
+*/
+  GFPage( gump, 3280 );
+  GFResizePic( gump, 588, 11, 39925, 377, 368 );
+  GFResizePic( gump, 606, 25, 1579, 346, 340 );
+  GFResizePic( gump, 609, 244, 39925, 339, 118 );
+  GFResizePic( gump, 618, 256, 1579, 314, 95 );
+  GFAddButton( gump, 704, 228, 40035, 40035, GF_CLOSE_BTN, 999 );
+  GFTextLine( gump, 763, 323, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runecampingEnchantedRune40 );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd076 );
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runeforensicEnchantedRune49 );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd07f );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runeremovetrapEnchantedRune78 );
+  GFTextEntry( gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xd09c );
+  GFTextLine( gump, 786, 212, TEXT_HUE_BASE, runetasteidEnchantedRune66 );
+  GFTextEntry( gump, 856, 212, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xd090 );
+  GFTilePic( gump, 700, 82, 0x2D92, 2046 );
+  GFTilePic( gump, 700, 122, 0x2D92, 2055 );
+  GFTilePic( gump, 700, 162, 0x2D92, 2084 );
+  GFTilePic( gump, 700, 202, 0x2D92, 2072 );
+  GFTextLine( gump, 619, 92, 1668, "Camping" );
+  GFTextLine( gump, 619, 132, 1668, "Forensic" );
+  GFTextLine( gump, 619, 172, 1668, "Remove Trap" );
+  GFTextLine( gump, 619, 212, 1668, "Taste Id" );
+
+  GFPage( gump, 3300 );
+  GFResizePic( gump, 588, 11, 39925, 377, 418 );
+  GFResizePic( gump, 606, 25, 1579, 346, 390 );
+  GFResizePic( gump, 609, 294, 39925, 339, 118 );
+  GFResizePic( gump, 618, 306, 1579, 314, 95 );
+  GFAddButton( gump, 704, 278, 40035, 40035, GF_CLOSE_BTN, 999 );
+  GFTextLine( gump, 763, 373, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 52, TEXT_HUE_BASE, "Quantity" );
+  GFTextLine( gump, 856, 52, TEXT_HUE_BASE, "Take" );
+  GFTextLine( gump, 786, 92, TEXT_HUE_BASE, runecastspeedupgrade );
+  GFTextEntry( gump, 856, 92, 40, 20, TEXT_HUE_TAKE_ID, "0", 0xf022 );
+  GFTextLine( gump, 786, 132, TEXT_HUE_BASE, runehitupgrade );
+  GFTextEntry( gump, 856, 132, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xf025 );
+  GFTextLine( gump, 786, 172, TEXT_HUE_BASE, runedamagebonus );
+  GFTextEntry( gump, 856, 172, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xf028 );
+  GFTextLine( gump, 786, 212, TEXT_HUE_BASE, runearmorupgrade );
+  GFTextEntry( gump, 856, 212, 60, 20, TEXT_HUE_TAKE_ID, "0", 0xf029 );
+  GFTilePic( gump, 750, 82, 0x3DE2, 2434 );
+  GFTilePic( gump, 750, 122, 0x3DE2, 2245 );
+  GFTilePic( gump, 750, 162, 0x3DE2, 2830 );
+  GFTilePic( gump, 750, 202, 0x3DE2, 2972 );
+  GFTextLine( gump, 619, 92, 1668, "Casting Speed" );
+  GFTextLine( gump, 619, 132, 1668, "Hit Chance" );
+  GFTextLine( gump, 619, 172, 1668, "Magic Damage" );
+  GFTextLine( gump, 619, 212, 1668, "Armor Upgrade" );
+
+  var result := GFSendGump( who, gump );
+
+  // print("result-1: " + result[0]);
+
+  var pressed_buttons_id := result[0];
+
+  case ( pressed_buttons_id )
+	BTN_ID_ADD_ITEM: rescollect( who, item );
+	//// 133 - Reagents menu
+	133:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+	  // print("doing regs!");
+	  // var res := normal_regs_menu(who,item);
+	  // print ("res: " + res[0]);
+	  // get all 7 text entry values
+	  // var x := 1;
+	  //  for (x := 1; x<= 7; x++)
+	  //    print("text-entry ["+x+"] : " + GFExtractData(res, x) );
+
+	  // this will also need Cint and checking for errors
+	  // as you can put anything in 0
+	  // endfor
+
+	  var regObjtypes := array{ 0x0F85, 0x0F86, 0x0F84, 0x0F88, 0x0F8C, 0x0F8D, 0x0F7A, 0x0F7B, 0x0F78,
+						  	  0x0F79, 0x0F7C, 0x0F7D, 0x0F7E, 0x0F7F, 0x0F80, 0x0F81, 0x0F82, 0x0F83,
+						  	  0x0F87, 0x0F89, 0x0F8A, 0x0F8B, 0x0F8E, 0x0F8F, 0x0F90, 0x0F91 };
+	  var regPropertyNames := dictionary{ 0x0F85 -> "Ginsengs",
+										  0x0F86 -> "MandrakeRoot",
+										  0x0F84 -> "Garlic",
+										  0x0F88 -> "Nightshade",
+										  0x0F8C -> "SulphurousAsh",
+										  0x0F8D -> "SpiderSilk",
+										  0x0F7A -> "BlackPearl",
+										  0x0F7B -> "BloodMoss",
+										  0x0F78 -> "Batwing",
+										  0x0F79 -> "Blackmoor",
+										  0x0F7C -> "Bloodspawn",
+										  0x0F7D -> "VialOfBlood",
+										  0x0F7E -> "Bone",
+										  0x0F7F -> "Brimstone",
+										  0x0F80 -> "DaemonBone",
+										  0x0F81 -> "FertileDirt",
+										  0x0F82 -> "DragonsBlood",
+										  0x0F83 -> "ExecutionersCap",
+										  0x0F87 -> "EyeOfNewt",
+										  0x0F89 -> "Obsidian",
+										  0x0F8A -> "PigIron",
+										  0x0F8B -> "Pumice",
+										  0x0F8E -> "SerpentsScales",
+										  0x0F8F -> "VolcanicAsh",
+										  0x0F90 -> "Deadwood",
+										  0x0F91 -> "WormsHeart" };
+
+	  foreach itemObjtype in ( regObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// 	if (charpack.weight > 45001)
+		// 	SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// 	return;
+		// 	endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := regPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	233:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+	  var gemObjtypes := array{ 0x0F0F, 0x0F10, 0x0F11, 0x0F13, 0x0F15, 0x0F16, 0x0F18, 0x0F25,
+							 0x0F30 };
+	  var gemPropertyNames := dictionary{ 0x0F0F -> "Starsapphire",
+										  0x0F10 -> "Emerald",
+										  0x0F11 -> "Sapphire",
+										  0x0F13 -> "Ruby",
+										  0x0F15 -> "Citrine",
+										  0x0F16 -> "Amethyst",
+										  0x0F18 -> "Tourmaline",
+										  0x0F25 -> "Amber",
+										  0x0F30 -> "Diamond" };
+
+	  foreach itemObjtype in ( gemObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := gemPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	333:
+
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var resObjtypes := array{ 0x6011,
+						  	  0x6012,
+						  	  0x6013,
+						  	  0x6014,
+						  	  0x6015,
+						  	  0x6016,
+						  	  0x6017,
+						  	  0x6018,
+						  	  0xc510,
+						  	  0xc511,
+						  	  0xc512,
+						  	  0xc513,
+						  	  0xc514,
+						  	  0xc515,
+						  	  0xc516,
+						  	  0xc517,
+						  	  0xc518,
+						  	  0xd04a,
+						  	  0x0F95,
+						  	  0x1765,
+						  	  0x0df8,
+						  	  0xee19,
+						  	  0x1be9,
+						  	  0x1078,
+						  	  0x7020,
+						  	  0x7021,
+						  	  0x7022,
+						  	  0x702d,
+						  	  0x7023,
+						  	  0x7025,
+						  	  0x7026,
+						  	  0x7028,
+						  	  0x702a,
+						  	  0x702e,
+						  	  0x7024,
+						  	  0x7027,
+						  	  0x702f,
+						  	  0x7029,
+						  	  0x702b,
+						  	  0x702c,
+						  	  0x1BDD,
+						  	  0x7300,
+						  	  0x7301,
+						  	  0x7302,
+						  	  0x7303,
+						  	  0x7304,
+						  	  0x7305,
+						  	  0x7306,
+						  	  0x7307,
+						  	  0x7308,
+						  	  0x7309,
+						  	  0x730a,
+						  	  0x730b,
+						  	  0x730c,
+						  	  0xee20 };
+
+	  var resPropertyNames := dictionary{ 0x6011 -> "IronIngot",
+										  0x6012 -> "CopperIngot",
+										  0x6013 -> "BlackDwarfIngot",
+										  0x6014 -> "PaganIngot",
+										  0x6015 -> "SilverIngot",
+										  0x6016 -> "SpectralIngot",
+										  0x6017 -> "LavaRockIngot",
+										  0x6018 -> "IceRockIngot",
+										  0xc510 -> "MythrilIngot",
+										  0xc511 -> "BasiliskIngot",
+										  0xc512 -> "SunIngot",
+										  0xc513 -> "DaedraIngot",
+										  0xc514 -> "DoomIngot",
+										  0xc515 -> "NewZuluIngot",
+										  0xc516 -> "Paradise",
+										  0xc517 -> "Hell",
+										  0xc518 -> "Void",
+										  0xd04a -> "Enchanted",
+										  0x0F95 -> "boltofcloth",
+										  0x1765 -> "cloth",
+										  0x0df8 -> "wool",
+										  0xee19 -> "clay",
+										  0x1be9 -> "goldingot",
+										  0x1078 -> "hides",
+										  0x7020 -> "lizardhide",
+										  0x7021 -> "imphide",
+										  0x7022 -> "trollhide",
+										  0x702d -> "terathanhide",
+										  0x7023 -> "necromancerhide",
+										  0x7025 -> "icehide",
+										  0x7026 -> "lichehide",
+										  0x7028 -> "daemonhide",
+										  0x702a -> "balronhide",
+										  0x702e -> "soulthreads",
+										  0x7024 -> "drakehide",
+										  0x7027 -> "dragonhide",
+										  0x702f -> "wyvernhide",
+										  0x7029 -> "wyrmhide",
+										  0x702b -> "celestialhide",
+										  0x702c -> "golddragonhide",
+										  0x1BDD -> "logs",
+										  0x7300 -> "birchlog",
+										  0x7301 -> "cherrylog",
+										  0x7302 -> "swamplog",
+										  0x7303 -> "oaklog",
+										  0x7304 -> "hardrangerlog",
+										  0x7305 -> "jadelog",
+										  0x7306 -> "stormteallog",
+										  0x7307 -> "blizzardlog",
+										  0x7308 -> "vulcaniclog",
+										  0x7309 -> "vampiriclog",
+										  0x730a -> "zululog",
+										  0x730b -> "darknesslog",
+										  0x730c -> "elvenlog",
+										  0xee20 -> "glass" };
+
+	  foreach itemObjtype in ( resObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+
+		// if (charpack.weight > 45001)
+		// 	SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// 	return;
+		// endif
+
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := resPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	// 0x09a7   0x09a7 -> "emptypitcher"          // 0x1f81 {0x1f81 -> "emptyglass",
+	444:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+	  var eatObjtypes := array{ 0x099B,
+						  	  0x099F,
+						  	  0x09C7,
+						  	  0x1f96,
+						  	  0x1f98,
+						  	  0x1f9a,
+						  	  0x1f9c,
+						  	  0x1f9e,
+						  	  0x09ad,
+						  	  0x1F85,
+						  	  0x09EE,
+						  	  0x1F8D,
+						  	  0x1F7D,
+						  	  0x1F89,
+						  	  0x1F91,
+						  	  0x1045,
+						  	  0x09f1,
+						  	  0x097a,
+						  	  0x09b9,
+						  	  0x09c9,
+						  	  0x0976,
+						  	  0x1e8a,
+						  	  0x1607,
+						  	  0x1609,
+						  	  0x09ec,
+						  	  0x1726,
+						  	  0xc803,
+						  	  0xc804,
+						  	  0x09cd,
+						  	  0x09ce,
+						  	  0x09cf,
+						  	  0x097E,
+						  	  0x1608,
+						  	  0x160a,
+						  	  0xc923,
+						  	  0x097b,
+						  	  0x1e1e,
+						  	  0x09b7,
+						  	  0x09f2,
+						  	  0xA368,
+						  	  0xA369,
+						  	  0xA36A,
+						  	  0xA36B,
+						  	  0xA36C,
+						  	  0xA36D,
+						  	  0xA36E,
+						  	  0xA36F,
+						  	  0xc912,
+						  	  0xc942,
+						  	  0xc943,
+						  	  0x27bc,
+						  	  0x0c6d };
+
+	  var eatPropertyNames := dictionary{ 0x099B -> "bottleofliquor",
+										  0x099F -> "bottleofale",
+										  0x09C7 -> "bottleofwine",
+										  0x1f96 -> "pitcherofale",
+										  0x1f98 -> "pitcherofcider",
+										  0x1f9a -> "pitcherofliquor",
+										  0x1f9c -> "pitcherofwine",
+										  0x1f9e -> "pitcherofwater",
+										  0x09ad -> "pitcherofmilk",
+										  0x1F85 -> "glassofliquor",
+										  0x09EE -> "mugofale",
+										  0x1F8D -> "glassofwine",
+										  0x1F7D -> "glassofcider",
+										  0x1F89 -> "glassofmilk",
+										  0x1F91 -> "glassofwater",
+										  0x1045 -> "flour",
+										  0x09f1 -> "rawrib",
+										  0x097a -> "rawfishsteak",
+										  0x09b9 -> "rawbird",
+										  0x09c9 -> "rawham",
+										  0x0976 -> "slabofbacon",
+										  0x1e8a -> "lard",
+										  0x1607 -> "rawchickenleg",
+										  0x1609 -> "rawlegoflamb",
+										  0x09ec -> "honey",
+										  0x1726 -> "coconut",
+										  0xc803 -> "pizzacrust",
+										  0xc804 -> "piecrust",
+										  0x09cd -> "fish2",
+										  0x09ce -> "fish3",
+										  0x09cf -> "fish4",
+										  0x097E -> "wheelofcheese",
+										  0x1608 -> "friedchickenleg",
+										  0x160a -> "cookedlegoflamb",
+										  0xc923 -> "sushi",
+										  0x097b -> "CookedFishSteak",
+										  0x1e1e -> "smokedsalmon",
+										  0x09b7 -> "cookedbird",
+										  0x09f2 -> "CookedRib",
+										  0xA368 -> "magicfish1",
+										  0xA369 -> "magicfish2",
+										  0xA36A -> "magicfish3",
+										  0xA36B -> "magicfish4",
+										  0xA36C -> "magicfish5",
+										  0xA36D -> "magicfish6",
+										  0xA36E -> "magicfish7",
+										  0xA36F -> "magicfish8",
+										  0xc912 -> "pancakes",
+										  0xc942 -> "mincemeatpie",
+										  0xc943 -> "chickenpotpie",
+										  0x27bc -> "lemonherbfish",
+										  0x0c6d -> "onion" };
+
+	  foreach itemObjtype in ( eatObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// 	if (charpack.weight > 45001)
+		// 	SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// 	return;
+		// 	endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := eatPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	555:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var goldObjtypes := array{ 0xdf0b, 0x3b9a };
+	  var goldPropertyNames := dictionary{ 0xdf0b -> "Goldcoin", 0x3b9a -> "zulucoin" };
+
+	  foreach itemObjtype in ( goldObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( amount > 0 )
+		  // I have this I can create
+		  var propName := goldPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			if ( itemObjtype == 0xdf0b )
+			  if ( amount > 60000 )
+				var receipt := CreateItemInContainer( who.backpack, 0xdf0c, 1 );
+				if ( receipt )
+				  if ( currentAmount == amount )
+					EraseObjProperty( item, propName );
+				  else
+					SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				  endif
+				  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+				  // receipt.name := "Bank receipt for the amount of " + CInt(amount);
+				  SetObjProperty( receipt, "gold_amount", amount );
+				  SetObjProperty( receipt, "tooltips_note", GetObjProperty( receipt, "gold_amount" ) );
+				else
+				  PrintTextAbovePrivate( who, "Couldn't create that: " + receipt.errortext, who );
+				endif
+			  else
+				var gold_coins := CreateItemInContainer( who.backpack, 0xeed, amount );
+				if ( gold_coins )
+				  if ( currentAmount == amount )
+					EraseObjProperty( item, propName );
+				  else
+					SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				  endif
+				  SendSysMessage( who, "You have received " + amount + " gold coins." );
+				else
+				  PrintTextAbovePrivate( who, "Couldn't create gold coins", who );
+				endif
+			  endif
+			endif
+
+			if ( itemObjtype == 0x3b9a )
+			  var receipt2 := CreateItemInContainer( who.backpack, 0x3b9a, amount );
+
+			  if ( receipt2 )
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + receipt2.errortext, who );
+			  endif
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+
+		endif
+	  endforeach
+
+	666:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var potionObjtypes := array{ 0xdc01,
+							 	  0xdc02,
+							 	  0xdc03,
+							 	  0xdc04,
+							 	  0xdc05,
+							 	  0xdc06,
+							 	  0xdc07,
+							 	  0xdc08,
+							 	  0xdc09,
+							 	  0xdc0b,
+							 	  0xdc0c,
+							 	  0xdc0d,
+							 	  0xdc0e,
+							 	  0xdc0f,
+							 	  0xdc10,
+							 	  0xdc11,
+							 	  0xdc12,
+							 	  0xdc14,
+							 	  0xdc15,
+							 	  0xdc16,
+							 	  0xdc17,
+							 	  0xdce6,
+							 	  0xdce7,
+							 	  0xdce8,
+							 	  0xab9d,
+							 	  0xab9e,
+							 	  0xab9f,
+							 	  0xaba0,
+							 	  0xaba1,
+							 	  0xaba2,
+							 	  0xaba3,
+							 	  0xaba4,
+							 	  0xaba5,
+							 	  0xaba6,
+							 	  0xaba7,
+							 	  0xaba8,
+							 	  0xaba9,
+							 	  0xabaa,
+							 	  0xabab,
+							 	  0xabac,
+							 	  0xabad,
+							 	  0xabae };
+
+	  var potionPropertyNames := dictionary{ 0xdc01 -> "LHEALPOTION",
+									   	  0xdc02 -> "HEALPOTION",
+									   	  0xdc03 -> "GHEALPOTION",
+									   	  0xdc04 -> "LPOISONPOTION",
+									   	  0xdc05 -> "POISONPOTION",
+									   	  0xdc06 -> "GRPOISONPOTION",
+									   	  0xdc07 -> "GREXPLOSIONPOTION",
+									   	  0xdc08 -> "LEXPLOSIONPOTION",
+									   	  0xdc09 -> "EXPLOSIONPOTION",
+									   	  0xdc0b -> "LAGILITYPOTION",
+									   	  0xdc0c -> "AGILITYPOTION",
+									   	  0xdc0d -> "GRAGILITYPOTION",
+									   	  0xdc0e -> "REFRESHPOTION",
+									   	  0xdc0f -> "FULLREFRESHPOTION",
+									   	  0xdc10 -> "LSTRENGTHPOTION",
+									   	  0xdc11 -> "STRENGTHPOTION",
+									   	  0xdc12 -> "GRSTRENGTHPOTION",
+									   	  0xdc14 -> "LCUREPOTION",
+									   	  0xdc15 -> "CUREPOTION",
+									   	  0xdc16 -> "GRCUREPOTION",
+									   	  0xdc17 -> "DEDLYPOISONPOTION",
+									   	  0xdce6 -> "LMINDPOTION",
+									   	  0xdce7 -> "MINDPOTION",
+									   	  0xdce8 -> "GMINDPOTION",
+									   	  0xab9d -> "InvisibilityPotion",
+									   	  0xab9e -> "FineIntellect",
+									   	  0xab9f -> "FabulousIntellect",
+									   	  0xaba0 -> "FantasticIntellect",
+									   	  0xaba1 -> "lesserMegoInvul",
+									   	  0xaba2 -> "MegoInvulnerabilitypotion",
+									   	  0xaba3 -> "greaterMegoInvulnerabilitypotion",
+									   	  0xaba4 -> "GrandMageRefreshElixir",
+									   	  0xaba5 -> "HomericMightpotion",
+									   	  0xaba6 -> "GreaterHomericMightpotion",
+									   	  0xaba7 -> "TamlaHealpotion",
+									   	  0xaba8 -> "MinorTransmutation",
+									   	  0xaba9 -> "MajorTransmutation",
+									   	  0xabaa -> "Totem",
+									   	  0xabab -> "Elixer",
+									   	  0xabac -> "GreatElixerium",
+									   	  0xabad -> "MegoElixerium",
+									   	  0xabae -> "DispelPotion" };
+
+	  foreach itemObjtype in ( potionObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := potionPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+
+			if ( itemObjtype == 0xdc01 )
+
+			  var lhealpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc01, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( lhealpot, who.backpack, 10, 10, 0 );
+			  if ( lhealpot )
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				lhealpot.name := "Light Heal Potion";
+				if ( GetObjProperty( item, "ByTrueMageLHeal" ) )
+				  SetObjProperty( lhealpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageLHeal" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + lhealpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + lhealpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc02 )
+			  var healpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc02, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( healpot, who.backpack, 10, 10, 0 );
+			  if ( healpot )
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				healpot.name := "Heal Potion";
+				if ( GetObjProperty( item, "ByTrueMageHeal" ) )
+				  SetObjProperty( healpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageHeal" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + healpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + healpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc03 )
+
+			  var ghealpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc03, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( ghealpot, who.backpack, 10, 10, 0 );
+			  if ( ghealpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				ghealpot.name := "Greater Heal Potion";
+				if ( GetObjProperty( item, "ByTrueMageGHeal" ) )
+				  SetObjProperty( ghealpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageGHeal" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + ghealpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + ghealpot.errortext, who );
+			  endif
+
+			endif
+
+			if ( itemObjtype == 0xdc04 )
+
+			  var lpoisonpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc04, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( lpoisonpot, who.backpack, 10, 10, 0 );
+			  if ( lpoisonpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				lpoisonpot.name := "Lesser Poison Potion";
+				if ( GetObjProperty( item, "ByTrueMageLPoison" ) )
+				  SetObjProperty( lpoisonpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageLPoison" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + lpoisonpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + lpoisonpot.errortext, who );
+			  endif
+
+			endif
+
+			if ( itemObjtype == 0xdc05 )
+
+			  var poisonpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc05, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( poisonpot, who.backpack, 10, 10, 0 );
+			  if ( poisonpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				poisonpot.name := "Poison Potion";
+				if ( GetObjProperty( item, "ByTrueMagePoison" ) )
+				  SetObjProperty( poisonpot, "ByTrueMage", GetObjProperty( item, "ByTrueMagePoison" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + poisonpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + poisonpot.errortext, who );
+			  endif
+
+			endif
+
+			if ( itemObjtype == 0xdc06 )
+
+			  var gpoisonpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc06, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( gpoisonpot, who.backpack, 10, 10, 0 );
+
+			  if ( gpoisonpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				gpoisonpot.name := "Greater Poison Potion";
+				if ( GetObjProperty( item, "ByTrueMageGPoison" ) )
+
+				  SetObjProperty( gpoisonpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageGPoison" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + gpoisonpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + gpoisonpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc07 )
+
+			  var gexplpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc07, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( gexplpot, who.backpack, 10, 10, 0 );
+			  if ( gexplpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				gexplpot.name := "Greater Explosion Potion";
+				if ( GetObjProperty( item, "ByTrueMageGExpl" ) )
+
+				  SetObjProperty( gexplpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageGExpl" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + gexplpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + gexplpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc08 )
+
+			  var lexplpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc08, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( lexplpot, who.backpack, 10, 10, 0 );
+			  if ( lexplpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				lexplpot.name := "Lesser Explosion Potion";
+				if ( GetObjProperty( item, "ByTrueMageLExpl" ) )
+
+				  SetObjProperty( lexplpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageLExpl" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + lexplpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + lexplpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc09 )
+
+			  var explpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc09, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( explpot, who.backpack, 10, 10, 0 );
+			  if ( explpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				explpot.name := "Explosion Potion";
+				if ( GetObjProperty( item, "ByTrueMageExpl" ) )
+
+				  SetObjProperty( explpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageExpl" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + explpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + explpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc0b )
+
+			  var lagilpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc0b, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( lagilpot, who.backpack, 10, 10, 0 );
+			  if ( lagilpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				lagilpot.name := "Lesser Agility Potion";
+				if ( GetObjProperty( item, "ByTrueMageLagil" ) )
+
+				  SetObjProperty( lagilpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageLagil" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + lagilpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + lagilpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc0c )
+
+			  var agilpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc0c, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( agilpot, who.backpack, 10, 10, 0 );
+			  if ( agilpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				agilpot.name := "Agility Potion";
+				if ( GetObjProperty( item, "ByTrueMageAgil" ) )
+
+				  SetObjProperty( agilpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageAgil" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + agilpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + agilpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc0d )
+
+			  var gagilpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc0d, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( gagilpot, who.backpack, 10, 10, 0 );
+			  if ( gagilpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				gagilpot.name := "Greater Agility Potion";
+				if ( GetObjProperty( item, "ByTrueMageGagil" ) )
+
+				  SetObjProperty( gagilpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageGagil" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + gagilpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + gagilpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc0e )
+
+			  var refreshpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc0e, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( refreshpot, who.backpack, 10, 10, 0 );
+			  if ( refreshpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				refreshpot.name := "Refresh Potion";
+				if ( GetObjProperty( item, "ByTrueMageRefresh" ) )
+
+				  SetObjProperty( refreshpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageRefresh" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + refreshpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + refreshpot.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xdc0f )
+
+			  var frefreshpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc0f, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( frefreshpot, who.backpack, 10, 10, 0 );
+			  if ( frefreshpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				frefreshpot.name := "Full Refresh Potion";
+				if ( GetObjProperty( item, "ByTrueMageFRefresh" ) )
+
+				  SetObjProperty( frefreshpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageFRefresh" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + frefreshpot.name +
+								" in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + frefreshpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc10 )
+
+			  var lstrpotion := CreateItemAtLocation( 5128, 1772, 0, 0xdc10, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( lstrpotion, who.backpack, 10, 10, 0 );
+			  if ( lstrpotion )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				lstrpotion.name := "Lesser Strength Potion";
+				if ( GetObjProperty( item, "ByTrueMageLstrpot" ) )
+
+				  SetObjProperty( lstrpotion, "ByTrueMage", GetObjProperty( item, "ByTrueMageLstrpot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + lstrpotion.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + lstrpotion.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xdc11 )
+
+			  var strpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc11, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( strpot, who.backpack, 10, 10, 0 );
+			  if ( strpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				strpot.name := "Strength Potion";
+				if ( GetObjProperty( item, "ByTrueMageStrpot" ) )
+
+				  SetObjProperty( strpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageStrpot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + strpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + strpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc12 )
+
+			  var gstrpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc12, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( gstrpot, who.backpack, 10, 10, 0 );
+			  if ( gstrpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				gstrpot.name := "Greater Strength Potion";
+				if ( GetObjProperty( item, "ByTrueMageGStrpot" ) )
+
+				  SetObjProperty( gstrpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageGStrpot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + gstrpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + gstrpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc14 )
+
+			  var lcurepot := CreateItemAtLocation( 5128, 1772, 0, 0xdc14, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( lcurepot, who.backpack, 10, 10, 0 );
+			  if ( lcurepot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				lcurepot.name := "Lesser Cure Potion";
+				if ( GetObjProperty( item, "ByTrueMageLcurepot" ) )
+
+				  SetObjProperty( lcurepot, "ByTrueMage", GetObjProperty( item, "ByTrueMageLcurepot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + lcurepot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + lcurepot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc15 )
+
+			  var curepot := CreateItemAtLocation( 5128, 1772, 0, 0xdc15, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( curepot, who.backpack, 10, 10, 0 );
+			  if ( curepot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				curepot.name := "Cure Potion";
+				if ( GetObjProperty( item, "ByTrueMageCurepot" ) )
+
+				  SetObjProperty( curepot, "ByTrueMage", GetObjProperty( item, "ByTrueMageCurepot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + curepot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + curepot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc16 )
+
+			  var gcurepot := CreateItemAtLocation( 5128, 1772, 0, 0xdc16, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( gcurepot, who.backpack, 10, 10, 0 );
+			  if ( gcurepot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				gcurepot.name := "Greater Cure Potion";
+				if ( GetObjProperty( item, "ByTrueMageGCurepot" ) )
+
+				  SetObjProperty( gcurepot, "ByTrueMage", GetObjProperty( item, "ByTrueMageGCurepot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + gcurepot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + gcurepot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdc17 )
+
+			  var dpoisonpot := CreateItemAtLocation( 5128, 1772, 0, 0xdc17, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( dpoisonpot, who.backpack, 10, 10, 0 );
+			  if ( dpoisonpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				dpoisonpot.name := "Deadly Poison Potion";
+				if ( GetObjProperty( item, "ByTrueMageDpoisonpot" ) )
+
+				  SetObjProperty( dpoisonpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageDpoisonpot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + dpoisonpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + dpoisonpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdce6 )
+
+			  var lmindpoti := CreateItemAtLocation( 5128, 1772, 0, 0xdce6, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( lmindpoti, who.backpack, 10, 10, 0 );
+			  if ( lmindpoti )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				lmindpoti.name := "Lesser Mind Potion";
+				if ( GetObjProperty( item, "ByTrueMageLMindpotion" ) )
+
+				  SetObjProperty( lmindpoti, "ByTrueMage", GetObjProperty( item, "ByTrueMageLMindpotion" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + lmindpoti.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + lmindpoti.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdce7 )
+
+			  var mindpot := CreateItemAtLocation( 5128, 1772, 0, 0xdce7, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( mindpot, who.backpack, 10, 10, 0 );
+			  if ( mindpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				mindpot.name := "Mind Potion";
+				if ( GetObjProperty( item, "ByTrueMageMindpotion" ) )
+
+				  SetObjProperty( mindpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageMindpotion" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + mindpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + mindpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xdce8 )
+
+			  var gmindpot := CreateItemAtLocation( 5128, 1772, 0, 0xdce8, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( gmindpot, who.backpack, 10, 10, 0 );
+			  if ( gmindpot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				gmindpot.name := "Greater Mind Potion";
+				if ( GetObjProperty( item, "ByTrueMageGMindpotion" ) )
+
+				  SetObjProperty( gmindpot, "ByTrueMage", GetObjProperty( item, "ByTrueMageGMindpotion" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + gmindpot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + gmindpot.errortext, who );
+			  endif
+			endif
+
+			if ( itemObjtype == 0xab9d )
+
+			  var invispotion2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( invispotion2, who.backpack, 10, 10, 0 );
+			  if ( invispotion2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				invispotion2.graphic := 3625;
+				invispotion2.name := "An Invisibility Potion";
+				SetObjProperty( invispotion2, "itemtype", 23 );
+				if ( GetObjProperty( item, "ByTrueMageInvispot" ) )
+
+				  SetObjProperty( invispotion2, "ByTrueMage", GetObjProperty( item, "ByTrueMageInvispot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + invispotion2.name +
+								" in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + invispotion2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xab9e )
+
+			  var FineIntellect2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+														  realm := _DEFAULT_REALM );
+			  MoveItemToContainer( FineIntellect2, who.backpack, 10, 10, 0 );
+			  if ( FineIntellect2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				FineIntellect2.graphic := 3626;
+				FineIntellect2.name := "Phandel's Fine Intellect";
+				SetObjProperty( FineIntellect2, "itemtype", 24 );
+				if ( GetObjProperty( item, "ByTrueMagefineint" ) )
+
+				  SetObjProperty( FineIntellect2, "ByTrueMage", GetObjProperty( item, "ByTrueMagefineint" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + FineIntellect2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + FineIntellect2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xab9f )
+
+			  var FabulousIntellect2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+															  realm := _DEFAULT_REALM );
+			  MoveItemToContainer( FabulousIntellect2, who.backpack, 10, 10, 0 );
+			  if ( FabulousIntellect2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				FabulousIntellect2.graphic := 3626;
+
+				FabulousIntellect2.name := "Phandel's Fabulous Intellect";
+				SetObjProperty( FabulousIntellect2, "itemtype", 25 );
+				if ( GetObjProperty( item, "ByTrueMagefabint" ) )
+
+				  SetObjProperty( FabulousIntellect2, "ByTrueMage", GetObjProperty( item, "ByTrueMagefabint" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + FabulousIntellect2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + FabulousIntellect2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba0 )
+
+			  var FantasticIntellect2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+															   realm := _DEFAULT_REALM );
+			  MoveItemToContainer( FantasticIntellect2, who.backpack, 10, 10, 0 );
+			  if ( FantasticIntellect2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				FantasticIntellect2.graphic := 3626;
+
+				FantasticIntellect2.name := "Phandel's Fantastic Intellect";
+				SetObjProperty( FantasticIntellect2, "itemtype", 26 );
+				if ( GetObjProperty( item, "ByTrueMagefanint" ) )
+
+				  SetObjProperty( FantasticIntellect2, "ByTrueMage", GetObjProperty( item, "ByTrueMagefanint" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + FantasticIntellect2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + FantasticIntellect2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba1 )
+
+			  var lesserMegoInvul2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+												   realm := _DEFAULT_REALM );
+			  MoveItemToContainer( lesserMegoInvul2, who.backpack, 10, 10, 0 );
+			  if ( lesserMegoInvul2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				lesserMegoInvul2.graphic := 3627;
+
+				lesserMegoInvul2.name := "a lesser Mego Invulnerability potion";
+				SetObjProperty( lesserMegoInvul2, "itemtype", 27 );
+				if ( GetObjProperty( item, "ByTrueMagelinv" ) )
+
+				  SetObjProperty( lesserMegoInvul2, "ByTrueMage", GetObjProperty( item, "ByTrueMagelinv" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + lesserMegoInvul2.name
+								+ " in quantity " + amount + "." );
+
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + lesserMegoInvul2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba2 )
+
+			  var MegoInvulnerabilitypotion2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+																	  realm := _DEFAULT_REALM );
+			  MoveItemToContainer( MegoInvulnerabilitypotion2, who.backpack, 10, 10, 0 );
+			  if ( MegoInvulnerabilitypotion2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				MegoInvulnerabilitypotion2.graphic := 3627;
+
+				MegoInvulnerabilitypotion2.name := "a Mego Invulnerability potion";
+				SetObjProperty( MegoInvulnerabilitypotion2, "itemtype", 28 );
+				if ( GetObjProperty( item, "ByTrueMageMinv" ) )
+
+				  SetObjProperty( MegoInvulnerabilitypotion2, "ByTrueMage",
+								  GetObjProperty( item, "ByTrueMageMinv" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + MegoInvulnerabilitypotion2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + MegoInvulnerabilitypotion2.errortext,
+									   who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba3 )
+
+			  var greaterMegoInvulnerabilitypotion2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+																			 realm := _DEFAULT_REALM );
+			  MoveItemToContainer( greaterMegoInvulnerabilitypotion2, who.backpack, 10, 10, 0 );
+			  if ( greaterMegoInvulnerabilitypotion2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				greaterMegoInvulnerabilitypotion2.graphic := 3627;
+
+				greaterMegoInvulnerabilitypotion2.name := "a greater Mego Invulnerability potion";
+				SetObjProperty( greaterMegoInvulnerabilitypotion2, "itemtype", 29 );
+				if ( GetObjProperty( item, "ByTrueMageGMinv" ) )
+				  SetObjProperty( greaterMegoInvulnerabilitypotion2, "ByTrueMage",
+								  GetObjProperty( item, "ByTrueMageGMinv" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + greaterMegoInvulnerabilitypotion2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + greaterMegoInvulnerabilitypotion2.errortext,
+									   who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba4 )
+
+			  var GrandMageRefreshElixir2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+																   realm := _DEFAULT_REALM );
+			  MoveItemToContainer( GrandMageRefreshElixir2, who.backpack, 10, 10, 0 );
+			  if ( GrandMageRefreshElixir2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				GrandMageRefreshElixir2.graphic := 0xefc;
+
+				GrandMageRefreshElixir2.color := 0x486;
+				GrandMageRefreshElixir2.name := "Grand Mage Refresh Elixir";
+				SetObjProperty( GrandMageRefreshElixir2, "itemtype", 30 );
+				if ( GetObjProperty( item, "ByTrueMagegmrefresh" ) )
+				  SetObjProperty( GrandMageRefreshElixir2, "ByTrueMage",
+								  GetObjProperty( item, "ByTrueMagegmrefresh" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + GrandMageRefreshElixir2.name
+								+ " in quantity " + amount + "." );
+
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + GrandMageRefreshElixir2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba5 )
+
+			  var HomericMightpotion2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+															   realm := _DEFAULT_REALM );
+			  MoveItemToContainer( HomericMightpotion2, who.backpack, 10, 10, 0 );
+			  if ( HomericMightpotion2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				HomericMightpotion2.graphic := 6188;
+
+				HomericMightpotion2.color := 133;
+				HomericMightpotion2.name := "a Homeric Might potion";
+				SetObjProperty( HomericMightpotion2, "itemtype", 31 );
+				if ( GetObjProperty( item, "ByTrueMageHompot" ) )
+				  SetObjProperty( HomericMightpotion2, "ByTrueMage", GetObjProperty( item, "ByTrueMageHompot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + HomericMightpotion2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + HomericMightpotion2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba6 )
+
+			  var GHomericMightpotion2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+													   realm := _DEFAULT_REALM );
+			  MoveItemToContainer( GHomericMightpotion2, who.backpack, 10, 10, 0 );
+			  if ( GHomericMightpotion2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				GHomericMightpotion2.graphic := 6188;
+				GHomericMightpotion2.color := 133;
+				GHomericMightpotion2.name := "a Greater Homeric Might potion";
+				SetObjProperty( GHomericMightpotion2, "itemtype", 32 );
+				if ( GetObjProperty( item, "ByTrueMageGHompot" ) )
+				  SetObjProperty( GHomericMightpotion2, "ByTrueMage",
+								  GetObjProperty( item, "ByTrueMageGHompot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + GHomericMightpotion2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + GHomericMightpotion2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba7 )
+
+			  var talmapot := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( talmapot, who.backpack, 10, 10, 0 );
+
+			  if ( talmapot )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				talmapot.graphic := 0x0f0c;
+				talmapot.color := 155;
+				talmapot.name := "a Tamla Heal potion";
+				SetObjProperty( talmapot, "itemtype", 33 );
+				if ( GetObjProperty( item, "ByTrueMagetalmpot" ) )
+				  SetObjProperty( talmapot, "ByTrueMage", GetObjProperty( item, "ByTrueMagetalmpot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + talmapot.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + talmapot.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba8 )
+
+			  var MinorTransmutation2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+															   realm := _DEFAULT_REALM );
+			  MoveItemToContainer( MinorTransmutation2, who.backpack, 10, 10, 0 );
+			  if ( MinorTransmutation2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				MinorTransmutation2.graphic := 0xe2b;
+				MinorTransmutation2.color := 155;
+				MinorTransmutation2.name := "Taint's Minor Transmutation";
+				SetObjProperty( MinorTransmutation2, "itemtype", 34 );
+				if ( GetObjProperty( item, "ByTrueMagemintrans" ) )
+				  SetObjProperty( MinorTransmutation2, "ByTrueMage",
+								  GetObjProperty( item, "ByTrueMagemintrans" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + MinorTransmutation2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + MinorTransmutation2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xaba9 )
+
+			  var MajorTransmutation2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+															   realm := _DEFAULT_REALM );
+			  MoveItemToContainer( MajorTransmutation2, who.backpack, 10, 10, 0 );
+			  if ( MajorTransmutation2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				MajorTransmutation2.graphic := 0xe2b;
+				MajorTransmutation2.color := 155;
+				MajorTransmutation2.name := "Taint's Major Transmutation";
+				SetObjProperty( MajorTransmutation2, "itemtype", 35 );
+				if ( GetObjProperty( item, "ByTrueMagemajtrans" ) )
+				  SetObjProperty( MajorTransmutation2, "ByTrueMage",
+								  GetObjProperty( item, "ByTrueMagemajtrans" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + MajorTransmutation2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + MajorTransmutation2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xabaa )
+
+			  var Totem2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( Totem2, who.backpack, 10, 10, 0 );
+			  if ( Totem2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				Totem2.graphic := 0x20d9;
+
+				Totem2.name := "Totem";
+				SetObjProperty( Totem2, "itemtype", 36 );
+				if ( GetObjProperty( item, "ByTrueMageTotem" ) )
+				  SetObjProperty( Totem2, "ByTrueMage", GetObjProperty( item, "ByTrueMageTotem" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + Totem2.name + " in quantity "
+								+ amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + Totem2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xabab )
+
+			  var Elixer2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( Elixer2, who.backpack, 10, 10, 0 );
+			  if ( Elixer2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				Elixer2.graphic := 0xe28;
+				Elixer2.name := "Elixer";
+				SetObjProperty( Elixer2, "itemtype", 37 );
+				if ( GetObjProperty( item, "ByTrueMageElixer" ) )
+				  SetObjProperty( Elixer2, "ByTrueMage", GetObjProperty( item, "ByTrueMageElixer" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + Elixer2.name + " in quantity "
+								+ amount + "." );
+
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + Elixer2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xabac )
+
+			  var GreatElixerium2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+														   realm := _DEFAULT_REALM );
+			  MoveItemToContainer( GreatElixerium2, who.backpack, 10, 10, 0 );
+			  if ( GreatElixerium2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				GreatElixerium2.graphic := 0xe28;
+
+				GreatElixerium2.name := "Great Elixerium";
+				SetObjProperty( GreatElixerium2, "itemtype", 39 );
+				if ( GetObjProperty( item, "ByTrueMagegElixer" ) )
+				  SetObjProperty( GreatElixerium2, "ByTrueMage", GetObjProperty( item, "ByTrueMagegElixer" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + GreatElixerium2.name
+								+ " in quantity " + amount + "." );
+
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + GreatElixerium2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xabad )
+
+			  var MegoElixerium2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount,
+														  realm := _DEFAULT_REALM );
+			  MoveItemToContainer( MegoElixerium2, who.backpack, 10, 10, 0 );
+			  if ( MegoElixerium2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				MegoElixerium2.graphic := 0xe28;
+
+				MegoElixerium2.name := "Mego Elixerium";
+				SetObjProperty( MegoElixerium2, "itemtype", 40 );
+				if ( GetObjProperty( item, "ByTrueMageMElixer" ) )
+
+				  SetObjProperty( MegoElixerium2, "ByTrueMage", GetObjProperty( item, "ByTrueMageMElixer" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + MegoElixerium2.name
+								+ " in quantity " + amount + "." );
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + MegoElixerium2.errortext, who );
+			  endif
+			endif
+			if ( itemObjtype == 0xabae )
+
+			  var DispelPotion2 := CreateItemAtLocation( 5128, 1772, 0, 0x7059, amount, realm := _DEFAULT_REALM );
+			  MoveItemToContainer( DispelPotion2, who.backpack, 10, 10, 0 );
+			  if ( DispelPotion2 )
+
+				if ( currentAmount == amount )
+				  EraseObjProperty( item, propName );
+				else
+				  SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+				endif
+				DispelPotion2.graphic := 0x0f0c;
+				DispelPotion2.color := 1282;
+				DispelPotion2.name := "a Dispel Potion";
+				SetObjProperty( DispelPotion2, "itemtype", 43 );
+				if ( GetObjProperty( item, "ByTrueMagedispot" ) )
+				  SetObjProperty( DispelPotion2, "ByTrueMage", GetObjProperty( item, "ByTrueMagedispot" ) );
+				endif
+				SendSysMessage( who, "You have received the item " + DispelPotion2.name
+								+ " in quantity " + amount + "." );
+
+			  else
+				PrintTextAbovePrivate( who, "Couldn't create that: " + DispelPotion2.errortext, who );
+			  endif
+
+			endif
+
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+
+		  endif
+
+		endif
+
+	  endforeach
+
+	777:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+	  var ammoObjtypes := array{ 0x0f3f, 0x1bfb, 0x6051, 0xb200, 0x824e,
+						   	  0xbbb1, 0xd90f, 0x1BD4, 0x1bd1 };
+	  var ammoPropertyNames := dictionary{ 0x0f3f -> "ammoarrow",
+									 	  0x1bfb -> "ammobolt",
+									 	  0x6051 -> "ammofire",
+									 	  0xb200 -> "ammoice",
+									 	  0x824e -> "ammothunder",
+									 	  0xbbb1 -> "ammothrow",
+									 	  0xd90f -> "ammogun",
+									 	  0x1BD4 -> "ammoshaft",
+									 	  0x1bd1 -> "ammofeather" };
+
+	  foreach itemObjtype in ( ammoObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := ammoPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	1111:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+	  var scrObjtypes := array{ 0xB101,
+						  	  0xB102,
+						  	  0xB103,
+						  	  0xB104,
+						  	  0xB105,
+						  	  0xB106,
+						  	  0xB107,
+						  	  0xB108,
+						  	  0xB109,
+						  	  0xB10a,
+						  	  0xB10b,
+						  	  0xB10c,
+						  	  0xB10d,
+						  	  0xB10e,
+						  	  0xB10f,
+						  	  0xB110,
+						  	  0xA101,
+						  	  0xA102,
+						  	  0xA103,
+						  	  0xA104,
+						  	  0xA105,
+						  	  0xA106,
+						  	  0xA107,
+						  	  0xA108,
+						  	  0xA109,
+						  	  0xA10a,
+						  	  0xA10b,
+						  	  0xA10c,
+						  	  0xA10d,
+						  	  0xA10e,
+						  	  0xA10f,
+						  	  0xA110,
+						  	  0x6178,
+						  	  0x6179,
+						  	  0x617a,
+						  	  0x617b,
+						  	  0x617c,
+						  	  0x617d,
+						  	  0x617e,
+						  	  0x617f,
+						  	  0x6180,
+						  	  0x6181,
+						  	  0x6182,
+						  	  0x6183,
+						  	  0x6184,
+						  	  0x6185,
+						  	  0x6186,
+						  	  0x6187,
+						  	  0x6188,
+						  	  0x6189,
+						  	  0x618a,
+						  	  0x618b,
+						  	  0x6167,
+						  	  0x6168,
+						  	  0x6169,
+						  	  0x616a,
+						  	  0x616b,
+						  	  0x616c,
+						  	  0x616d,
+						  	  0x616e,
+						  	  0x616f };
+
+	  /* 0x1f2d,0x1f2e,0x1f2f,0x1f30,0x1f31,0x1f32,0x1f33,0x1f34,0x1f35,0x1f36,0x1f37,0x1f38,
+		0x1f39,0x1f3a,0x1f3b,0x1f3c,0x1f3d,0x1f3e,0x1f3f,0x1f40,0x1f41,0x1f42,0x1f43,0x1f44,
+		0x1f45,0x1f46,0x1f47,0x1f48,0x1f49,0x1f4a,0x1f4b,0x1f4c,0x1f4d,0x1f4e,0x1f4f,0x1f50,
+		0x1f51,0x1f52,0x1f53,0x1f54,0x1f55,0x1f56,0x1f57,0x1f58,0x1f59,0x1f5a,0x1f5b,0x1f5c,
+		0x1f5d,0x1f5e,0x1f5f,0x1f60,0x1f61,0x1f62,0x1f63,0x1f64,0x1f65,0x1f66,0x1f67,0x1f68,
+		0x1f69,0x1f6a,0x1f6b,0x1f6c, */
+	  /* 0x1f2d -> "reactivearmorscroll", 0x1f2e -> "clumsyscroll",0x1f2f -> "createfoodscroll",
+			0x1f30 -> "feeblemindscroll",0x1f31 -> "healscroll",0x1f32 -> "magicarrowscroll",0x1f33 -> "nightsightscroll",0x1f34 -> "weakenscroll",
+			0x1f35 -> "agilityscroll",0x1f36 -> "cunningscroll",0x1f37 -> "curescroll",0x1f38 -> "harmscroll",0x1f39 -> "magictrapscroll",
+			0x1f3a -> "magicuntrapscroll",0x1f3b -> "protectionscroll",0x1f3c -> "strengthscroll",0x1f3d -> "blessscroll",0x1f3e -> "fireballscroll",
+			0x1f3f -> "magiclockscroll",0x1f40 -> "poisonscroll",0x1f41 -> "telekinesisscroll",0x1f42 -> "teleportscroll",0x1f43 -> "magicunlockscroll",
+			0x1f44 -> "wallofstonescroll",0x1f45 -> "archcurescroll",0x1f46 -> "archprotectionscroll",0x1f47 -> "cursecroll",0x1f48 -> "firefieldscroll",
+			0x1f49 -> "greaterhealscroll",0x1f4a -> "lightningscroll",0x1f4b -> "manadrainscroll",0x1f4c -> "recallscroll",0x1f4d -> "bladespiritscroll",
+			0x1f4e -> "dispelfieldscroll",0x1f4f -> "incognitoscroll",0x1f50 -> "magicrelfectscroll",0x1f51 -> "mindblastscroll",0x1f52 -> "paralyzescroll",
+			0x1f53 -> "poisonfieldscroll",0x1f54 -> "summoncreaturescroll",0x1f55 -> "dispelscroll",0x1f56 -> "energyboltscroll",0x1f57 -> "explosionscroll",
+			0x1f58 -> "invisibilityscroll",0x1f59 -> "markscroll",0x1f5a -> "masscursescroll",0x1f5b -> "paralyzefieldscroll",0x1f5c -> "revealscroll",
+			0x1f5d -> "chainlightningscroll",0x1f5e -> "energyfieldscroll",0x1f5f -> "flamestrikescroll",0x1f60 -> "gatetravelscroll",0x1f61 -> "manavampirescroll",
+			0x1f62 -> "massdispelscroll",0x1f63 -> "meteorswarmscroll",0x1f64 -> "polymorphscroll",0x1f65 -> "earthquakescroll",0x1f66 -> "energyvortexscroll",
+			0x1f67 -> "resurrectionscroll",0x1f68 -> "summonairelemscroll",0x1f69 -> "summondaemonscroll",0x1f6a -> "summonearthelemscroll",0x1f6b -> "summonfireelemscroll",
+			0x1f6c -> "summonwaterelemscroll", */
+	  var scrPropertyNames := dictionary{ 0xB101 -> "Antidotescroll",
+										  0xB102 -> "Owlsightscroll",
+										  0xB103 -> "Shiftingearthscroll",
+										  0xB104 -> "Summonmammalsscroll",
+										  0xB105 -> "Calllightningscroll",
+										  0xB106 -> "Earthblessingscroll",
+										  0xB107 -> "Earthportalscroll",
+										  0xB108 -> "Naturestouchscroll",
+										  0xB109 -> "Gustofairscroll",
+										  0xB10A -> "Risingfirescroll",
+										  0xB10B -> "Shapeshiftscroll",
+										  0xB10C -> "Icestrikescroll",
+										  0xB10D -> "Earthspiritscroll",
+										  0xB10E -> "Flamespiritscroll",
+										  0xB10F -> "Stormspiritscroll",
+										  0xB110 -> "Waterspiritscroll",
+										  0xA101 -> "ControlUndeadScroll",
+										  0xA102 -> "DarknessScroll",
+										  0xA103 -> "DecayingRayScroll",
+										  0xA104 -> "SpectresTouchScroll",
+										  0xA105 -> "AbyssalFlameScroll",
+										  0xA106 -> "AnimateDeadScroll",
+										  0xA107 -> "SacrificeScroll",
+										  0xA108 -> "WraithsBreathScroll",
+										  0xA109 -> "SorcerersBaneScroll",
+										  0xA10A -> "SummonSpiritScroll",
+										  0xA10B -> "WraithformScroll",
+										  0xA10C -> "WyvernStrikeScroll",
+										  0xA10D -> "KillScroll",
+										  0xA10E -> "LicheScroll",
+										  0xA10F -> "PlagueScroll",
+										  0xA110 -> "SpellbindScroll",
+										  0x6178 -> "songscroll1",
+										  0x6179 -> "songscroll2",
+										  0x617a -> "songscroll3",
+										  0x617b -> "songscroll4",
+										  0x617c -> "songscroll5",
+										  0x617d -> "songscroll6",
+										  0x617e -> "songscroll7",
+										  0x617f -> "songscroll8",
+										  0x6180 -> "songscroll9",
+										  0x6181 -> "songscroll10",
+										  0x6182 -> "songscroll11",
+										  0x6183 -> "songscroll12",
+										  0x6184 -> "songscroll13",
+										  0x6185 -> "songscroll14",
+										  0x6186 -> "songscroll15",
+										  0x6187 -> "songscroll16",
+										  0x6188 -> "songscroll17",
+										  0x6189 -> "songscroll18",
+										  0x618a -> "songscroll19",
+										  0x618b -> "songscroll20",
+										  0x6167 -> "holyscroll1",
+										  0x6168 -> "holyscroll2",
+										  0x6169 -> "holyscroll3",
+										  0x616a -> "holyscroll4",
+										  0x616b -> "holyscroll5",
+										  0x616c -> "holyscroll6",
+										  0x616d -> "holyscroll7",
+										  0x616e -> "holyscroll8",
+										  0x616f -> "holyscroll9" };
+
+	  foreach itemObjtype in ( scrObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// 		endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := scrPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	888:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+	  var miscObjtypes := array{ 0x0E34, 0x6001, 0x14fb, 0xF0E, 0x1f14, 0x0de1, 0x0e21, 0x181d, 0x181e,
+						   	  0x181f, 0x1821, 0x1822, 0x1823, 0x1824, 0x1825, 0x1826, 0x1827, 0x1828 };
+	  var miscPropertyNames := dictionary{ 0x0E34 -> "blankscroll",
+									 	  0x6001 -> "blankmap",
+									 	  0x14fb -> "lockpick",
+									 	  0xF0E -> "emptybottle",
+									 	  0x1f14 -> "recallrune",
+									 	  0x0de1 -> "kindling",
+									 	  0x0e21 -> "bandages",
+									 	  0x181d -> "SymbolOfAbsorption",
+									 	  0x181e -> "SymbolOfToxinsResistance",
+									 	  0x181f -> "SymbolOfHealth",
+									 	  0x1821 -> "SymbolOfHeavenTouch",
+									 	  0x1822 -> "SymbolOfHellFire",
+									 	  0x1823 -> "SymbolOfVanishing",
+									 	  0x1824 -> "SymbolOfVengeance",
+									 	  0x1825 -> "SymbolOfRecalling",
+									 	  0x1826 -> "SymbolOfThunderStorm",
+									 	  0x1827 -> "SymbolOfRegeneration",
+									 	  0x1828 -> "SymbolOfLifeStream" };
+
+	  foreach itemObjtype in ( miscObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := miscPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	911:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var rune1Objtypes := array{ 0xd06d, 0xd096, 0xd07d, 0xd095, 0xd071, 0xd094, 0xd087, 0xd097 };
+
+	  var rune1PropertyNames := dictionary{ 0xd06d -> "anatomyEnchantedRune31",
+									  	  0xd096 -> "fencingEnchantedRune72",
+									  	  0xd07d -> "healingEnchantedRune47",
+									  	  0xd095 -> "maceEnchantedRune71",
+									  	  0xd071 -> "parryingEnchantedRune35",
+									  	  0xd094 -> "swordEnchantedRune70",
+									  	  0xd087 -> "tacticsEnchantedRune57",
+									  	  0xd097 -> "wrestlingEnchantedRune73" };
+
+	  foreach itemObjtype in ( rune1Objtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := rune1PropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	912:
+
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var rune2Objtypes := array{ 0xd07a, 0xd081, 0xd084, 0xd08a, 0xd088, 0xd08d, 0xd09b, 0xd096 };
+
+	  var rune2PropertyNames := dictionary{ 0xd07a -> "detectEnchantedRune44",
+									  	  0xd081 -> "hidingEnchantedRune51",
+									  	  0xd084 -> "lockpickEnchantedRune54",
+									  	  0xd08a -> "poisonEnchantedRune60",
+									  	  0xd088 -> "snoopEnchantedRune58",
+									  	  0xd08d -> "stealingEnchantedRune63",
+									  	  0xd09b -> "stealthEnchantedRune77",
+									  	  0xd096 -> "fencingEnchantedRune72" };
+
+	  foreach itemObjtype in ( rune2Objtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := rune2PropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	913:
+
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var rune3Objtypes := array{ 0xd070, 0xd073, 0xd074, 0xd077, 0xd098, 0xd099, 0xd08e, 0xd091 };
+
+	  var rune3PropertyNames := dictionary{ 0xd070 -> "armsloreEnchantedRune34",
+									  	  0xd073 -> "bsEnchantedRune37",
+									  	  0xd074 -> "bowcraftEnchantedRune38",
+									  	  0xd077 -> "carpEnchantedRune41",
+									  	  0xd098 -> "lumberEnchantedRune74",
+									  	  0xd099 -> "miningEnchantedRune75",
+									  	  0xd08e -> "tailoringEnchantedRune64",
+									  	  0xd091 -> "tinkeringEnchantedRune67" };
+
+	  foreach itemObjtype in ( rune3Objtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := rune3PropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	914:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var rune4Objtypes := array{ 0xd072, 0xd07b, 0xd080, 0xd089, 0xd075, 0xd082, 0xd08b, 0xd085 };
+
+	  var rune4PropertyNames := dictionary{ 0xd072 -> "beggingEnchantedRune36",
+									  	  0xd07b -> "enticEnchantedRune45",
+									  	  0xd080 -> "herdingEnchantedRune50",
+									  	  0xd089 -> "musicEnchantedRune59",
+									  	  0xd075 -> "peaceEnchantedRune39",
+									  	  0xd082 -> "provocEnchantedRune52",
+									  	  0xd08b -> "archeryEnchantedRune61",
+									  	  0xd085 -> "mageryEnchantedRune55" };
+
+	  foreach itemObjtype in ( rune4Objtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := rune4PropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	915:
+
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var rune5Objtypes := array{ 0xd06c, 0xd07c, 0xd083, 0xd06f, 0xd085, 0xd09a, 0xd086, 0xd08c };
+
+	  var rune5PropertyNames := dictionary{ 0xd06c -> "alchemyEnchantedRune30",
+									  	  0xd07c -> "evalEnchantedRune46",
+									  	  0xd083 -> "scribeEnchantedRune53",
+									  	  0xd06f -> "itemidEnchantedRune33",
+									  	  0xd085 -> "mageryEnchantedRune55",
+									  	  0xd09a -> "meditEnchantedRune76",
+									  	  0xd086 -> "resistEnchantedRune56",
+									  	  0xd08c -> "spiritEnchantedRune62" };
+
+	  foreach itemObjtype in ( rune5Objtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := rune5PropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	916:
+
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var rune6Objtypes := array{ 0xd096, 0xd07d, 0xd095, 0xd071, 0xd094, 0xd087,
+								  0xd085, 0xd08b, 0xd09b, 0xd081 };
+
+	  var rune6PropertyNames := dictionary{ 0xd096 -> "fencingEnchantedRune72",
+									  	  0xd07d -> "healingEnchantedRune47",
+									  	  0xd095 -> "maceEnchantedRune71",
+									  	  0xd071 -> "parryingEnchantedRune35",
+									  	  0xd094 -> "swordEnchantedRune70",
+									  	  0xd087 -> "tacticsEnchantedRune57",
+									  	  0xd09b -> "stealthEnchantedRune77",
+									  	  0xd081 -> "hidingEnchantedRune51",
+									  	  0xd085 -> "mageryEnchantedRune55",
+									  	  0xd08b -> "archeryEnchantedRune61" };
+
+	  foreach itemObjtype in ( rune6Objtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		////if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := rune6PropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	917:
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var rune7Objtypes := array{ 0xd06e, 0xd08f, 0xd08b, 0xd078, 0xd07e, 0xd092, 0xd093, 0xd079 };
+
+	  var rune7PropertyNames := dictionary{ 0xd06e -> "loreEnchantedRune32",
+									  	  0xd08f -> "tamingEnchantedRune65",
+									  	  0xd08b -> "archeryEnchantedRune61",
+									  	  0xd078 -> "cartEnchantedRune42",
+									  	  0xd07e -> "fishingEnchantedRune48",
+									  	  0xd092 -> "trackEnchantedRune68",
+									  	  0xd093 -> "veterEnchantedRune69",
+									  	  0xd079 -> "cookingEnchantedRune43" };
+
+	  foreach itemObjtype in ( rune7Objtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := rune7PropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+
+	999:
+
+	  if ( coordist( item.x, item.y, who.x, who.y ) > 6 )
+		SendSysMessage( who, "The box is too far away" );
+		return;
+	  endif
+
+	  var updtObjtypes := array{ 0xd05c, 0xd05d, 0xd05e, 0xd05f, 0xd060, 0xd061, 0xd062, 0xd063,
+						   	  0xd064, 0xd065, 0xd066, 0xd067, 0xd068, 0xd069, 0xd06a, 0xd076,
+						   	  0xd07f, 0xd09c, 0xd090, 0xf022, 0xf025, 0xf028, 0xf029 };
+
+	  var updtPropertyNames := dictionary{ 0xd05c -> "AirEnchantedRune",
+									 	  0xd05d -> "EarthEnchantedRune2",
+									 	  0xd05e -> "FireEnchantedRune3",
+									 	  0xd05f -> "NecroEnchantedRune4",
+									 	  0xd060 -> "WaterEnchantedRune5",
+									 	  0xd061 -> "HolyEnchantedRune6",
+									 	  0xd062 -> "PoisonEnchantedRune7",
+									 	  0xd063 -> "DefenseEnchantedRune8",
+									 	  0xd064 -> "ColdEnchantedRune9",
+									 	  0xd065 -> "LightEnchantedRune10",
+									 	  0xd066 -> "DarkEnchantedRune11",
+									 	  0xd067 -> "HealingEnchantedRune12",
+									 	  0xd068 -> "speedEnchantedRune20",
+									 	  0xd069 -> "mindEnchantedRune21",
+									 	  0xd06a -> "staminaEnchantedRune22",
+									 	  0xd076 -> "campingEnchantedRune40",
+									 	  0xd07f -> "forensicEnchantedRune49",
+									 	  0xd09c -> "removetrapEnchantedRune78",
+									 	  0xd090 -> "tasteidEnchantedRune66",
+									 	  0xf022 -> "castspeedupgrade",
+									 	  0xf025 -> "hitupgrade",
+									 	  0xf028 -> "damagebonus",
+									 	  0xf029 -> "armorupgrade" };
+
+	  foreach itemObjtype in ( updtObjtypes )
+		var amount := Cint( GFExtractData( result, itemObjtype ) );
+		var itemName := itemcfg[itemObjtype].Name; // you probably want description (Desc) and not name :)
+		// if (charpack.weight > 45001)
+		// SendSysMessage(who,"Your backpack weighs too much. Free contents up to 45000 weight.");
+		// return;
+		// endif
+		if ( ( amount > 0 ) and ( amount <= 60000 ) )
+
+		  // I have this I can create
+		  var propName := updtPropertyNames[itemObjtype];
+		  var currentAmount := CInt( GetObjProperty( item, propName ) );
+
+		  if ( currentAmount > 0 and amount <= currentAmount )
+			var newitem := CreateItemInBackpack( who, itemObjtype, amount );
+			if ( newitem )
+			  if ( currentAmount == amount )
+				EraseObjProperty( item, propName );
+			  else
+				SetObjProperty( item, propName, CInt( GetObjProperty( item, propName ) - amount ) );
+			  endif
+			  SendSysMessage( who, "You have received the item " + itemName + " in quantity " + amount + "." );
+			else
+			  PrintTextAbovePrivate( who, "Couldn't create that: " + newitem.errortext, who );
+			endif
+		  else
+			SendSysMessage( who, "Invalid number to get the item " + itemName + "remaining quantity "
+				   + GetObjProperty( item, propName ) + "." );
+		  endif
+		endif
+	  endforeach
+	default:
+  // return pressed_buttons_id;
+  endcase
+
+endprogram
