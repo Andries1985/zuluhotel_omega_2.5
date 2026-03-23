@@ -142,3 +142,72 @@ Core deposit and withdrawal logic. The feature is functionally complete — play
 17. Deposit items with CProps (e.g., special potion) → withdraw → verify CProps intact
 18. Deposit a recolored item → withdraw → verify color preserved
 
+---
+
+## Milestone 1.4 — Gump & Commands (2026-03-24)
+
+### Summary
+
+Full player-facing UI and macro command support. The feature is now complete for end-to-end player use.
+
+**Files created:**
+- `scripts/textcmd/player/cache.src` — `.cache` command with subcommands: `deposit`, `deposit target`, `list`, `list <category>`, `withdraw <amount>`, and no-arg (open gump)
+
+**Files modified:**
+- `pkg/opt/omegacache/omegacache.src` — Full rewrite with gump UI. Uses struct-style gump API (`:gumps:gumps` + `:gumps:gumps_ex`). Contains: `BuildCategoryMap()`, `ShowCategoryMenu()`, `ShowItemList()`, main gump loop with re-send pattern for deferred category loading. Paginated item list with prev/next buttons.
+- `pkg/opt/omegacache/omegacache.inc` — Added shared functions: `LoadCategoryLookup()` (centralised category/objtype/icon lookup using integer keys), `GetCategoryObjtypes()`, `GetItemDisplayName()`, `GetObjtypeFromKey()`. Moved deposit/withdraw/prompt functions here from omegacache.src to eliminate duplication with cache.src.
+
+### Key Design Decisions
+
+- **Struct gump API** (`:gumps:gumps` with `GFCreateGump`/`GFSendGump`) — the newer, complete API where all functions take a gump struct by reference. Used over the legacy global-variable API (`:gumps:old-gumps`).
+- **Re-send pattern** for category navigation: clicking a category closes the gump and re-sends with that category's items. Only the viewed category's elements are read from DataFile.
+- **Pagination** with `GFPage` for item lists exceeding 14 items per page. Prev/Next buttons and page indicator on each page. Back/Deposit buttons on page 0 (visible on all pages).
+- **Button ID scheme**: Categories = 100+index, Take buttons = 1000+index, fixed IDs for Deposit Item (1), Deposit All (2), Back (3). Text entry IDs match button IDs for `GFExtractData` lookup.
+- **Integer-based objtype comparison**: All category lookups use `CInt()` to avoid `Hex()` format mismatches (uppercase, leading zeros). `LoadCategoryLookup()` stores `CInt(objtype) -> category_name`.
+- **No code duplication**: All deposit/withdraw/prompt logic lives in `omegacache.inc`. Both `omegacache.src` (gump) and `cache.src` (command) call the same shared functions.
+- **Per-operation privilege checks**: Gump open requires VIEW_SECURE, deposit requires ADD_TO_SECURE, withdrawal requires REMOVE_FROM_SECURE. Checked at each operation, not just at gump open.
+- **Config function correction**: Uses `ListConfigElemProps(elem)` for property names from config elements, not `GetConfigStringKeys()` which is for top-level section keys.
+
+### Verification Steps
+
+**Functional:**
+1. Double-click placed Omega Cache — verify gump opens with category menu
+2. Verify categories show correct item counts from DataFile
+3. Verify empty categories are hidden (not shown)
+4. Click a category — verify item list shows with tile icons, names, quantities
+5. Category with >14 items — verify pagination with Prev/Next buttons and page indicator
+6. Enter amount in text field, click Take — verify destination prompt, then items withdrawn
+7. Click "Deposit Item" — verify targeting loop starts, items deposited, gump re-opens with updated counts
+8. Click "Deposit All" — verify all backpack items deposited, gump re-opens
+9. Click "Back" from item list — verify returns to category menu
+10. Close gump (right-click) — verify script exits cleanly
+
+**Commands:**
+11. `.cache` — verify gump opens (same as double-click)
+12. `.cache deposit` — verify all backpack items deposited, no gump
+13. `.cache deposit target` — verify targeting loop, no gump
+14. `.cache list` — verify category summary with counts
+15. `.cache list reagents` — verify item list for specific category
+16. `.cache list unknowncategory` — verify error message
+17. `.cache withdraw 100` — verify target prompt, then withdrawal to backpack
+18. `.cache withdraw` (no amount) — verify usage message
+19. `.cache` away from a cache — verify "must be near" message
+
+**Permissions:**
+20. Friend with VIEW_SECURE only — verify can open gump, cannot deposit or withdraw
+21. Friend with ADD_TO_SECURE — verify can deposit
+22. Friend with REMOVE_FROM_SECURE — verify can withdraw
+23. `.cache deposit` without ADD_TO_SECURE privilege — verify rejection
+
+**Integration:**
+24. Deposit via gump → withdraw via `.cache withdraw` — verify data consistency
+25. Deposit via `.cache deposit` → view in gump — verify categories updated
+26. Variant items (non-default CProps) — verify variant display in item list shows CProp info
+27. Multiple categories with items — verify navigation between categories works
+28. `.cache list` → `.cache list <category>` — verify counts match between summary and detail
+
+**Macro:**
+29. `.cache deposit` then `.cache withdraw 500` in sequence — verify both work without gump interaction
+30. `.cache list` output — verify parseable text format
+31. Verify all command output messages are clear text (parseable by macro tools)
+

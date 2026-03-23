@@ -1,8 +1,7 @@
 // omegacache.src — Omega Cache main use-script
 //
 // Triggered when a player double-clicks a placed Omega Cache Container.
-// Handles deposit and withdrawal operations.
-// Gump UI is built in Milestone 1.4 — this file provides the core logic.
+// Provides gump UI for browsing, depositing, and withdrawing items.
 
 use uo;
 use os;
@@ -10,9 +9,25 @@ use math;
 use cfgfile;
 
 include ":omegacache:omegacache";
+include ":gumps:gumps";
+include ":gumps:gumps_ex";
 
-const ADD_TO_SECURE := 3;
-const REMOVE_FROM_SECURE := 4;
+// ============================================================
+// Constants
+// ============================================================
+
+// VIEW_SECURE, ADD_TO_SECURE, REMOVE_FROM_SECURE from :housing:utility (via omegacache.inc)
+
+const TEXT_HUE := 242;
+const TEXT_HUE_HIGHLIGHT := 53;
+const TEXT_HUE_QTY := 55;
+
+// Button IDs
+const BTN_DEPOSIT_ITEM := 1;
+const BTN_DEPOSIT_ALL := 2;
+const BTN_BACK := 3;
+const BTN_CATEGORY_BASE := 100;    // 100 + category_index
+const BTN_TAKE_BASE := 1000;       // 1000 + item_index
 
 // ============================================================
 // Entry Point
@@ -22,8 +37,8 @@ program use_omegacache(who, item)
 
 	_debug_who := who;
 
-	// Access check
-	var access := FindAccessibleContainer(who, array{});
+	// Access check — VIEW_SECURE to open
+	var access := FindAccessibleContainer(who, array{VIEW_SECURE});
 	if(!access)
 		SendSysMessage(who, "You cannot access this.");
 		return;
@@ -35,261 +50,302 @@ program use_omegacache(who, item)
 		return;
 	endif
 
-	// Placeholder — gump will be built in Milestone 1.4
-	// For now, the script is callable but the gump interaction
-	// will be added later. Deposit and withdraw functions below
-	// are ready to be called from the gump.
-	SendSysMessage(who, "Omega Cache is operational. Gump coming soon.");
+	detach();
+
+	// Main gump loop
+	var view := "categories";
+	var category_map := dictionary;
+	var current_keys := array{};
+	var cat_lookup := LoadCategoryLookup();
+
+	while(1)
+		// Rebuild category map each iteration (data may have changed)
+		category_map := BuildCategoryMap(df);
+
+		var result;
+		if(view == "categories")
+			result := ShowCategoryMenu(who, category_map, cat_lookup.cat_icons);
+		else
+			result := ShowItemList(who, df, view, category_map, current_keys);
+		endif
+
+		if(!result or result[0] == 0)
+			break;  // Gump closed
+		endif
+
+		var btn := result[0];
+
+		// Handle button press
+		if(btn == BTN_DEPOSIT_ITEM)
+			if(FindAccessibleContainer(who, array{ADD_TO_SECURE}))
+				DoDepositTargeting(who, df);
+			else
+				SendSysMessage(who, "You don't have permission to deposit items.");
+			endif
+
+		elseif(btn == BTN_DEPOSIT_ALL)
+			if(FindAccessibleContainer(who, array{ADD_TO_SECURE}))
+				DoDepositAll(who, df);
+			else
+				SendSysMessage(who, "You don't have permission to deposit items.");
+			endif
+
+		elseif(btn == BTN_BACK)
+			view := "categories";
+
+		elseif(btn >= BTN_CATEGORY_BASE and btn < BTN_TAKE_BASE)
+			var cat_index := btn - BTN_CATEGORY_BASE;
+			var cat_names := category_map.keys();
+			if(cat_index >= 1 and cat_index <= cat_names.size())
+				view := cat_names[cat_index];
+			endif
+
+		elseif(btn >= BTN_TAKE_BASE)
+			if(!FindAccessibleContainer(who, array{REMOVE_FROM_SECURE}))
+				SendSysMessage(who, "You don't have permission to withdraw items.");
+			else
+				var item_index := btn - BTN_TAKE_BASE;
+				if(item_index >= 1 and item_index <= current_keys.size())
+					var key := current_keys[item_index];
+					var amount_str := GFExtractData(result, btn);
+					var amount := CInt(amount_str);
+					if(amount > 0)
+						var dest := PromptDestination(who);
+						DoWithdraw(who, df, key, amount, dest);
+					else
+						SendSysMessage(who, "Enter an amount to withdraw.");
+					endif
+				endif
+			endif
+		endif
+
+		sleepms(200);
+	endwhile
 
 endprogram
 
 // ============================================================
-// Deposit Functions
+// Category Map Builder
 // ============================================================
 
-// Deposits a single item into the cache.
-// Returns 1 on success, 0 on failure.
-function DepositSingleItem(who, df, item)
-	if(!IsEligibleForStorage(item))
-		SendSysMessage(who, "That item cannot be stored.");
-		return 0;
-	endif
+function BuildCategoryMap(df)
+	var keys := df.Keys();
+	var cat_map := dictionary;
 
-	var key := BuildItemKey(item);
-	var desc := item.desc;
-	var amt := item.amount;
-	DepositItem(df, key, item);
-	DestroyItem(item);
-	SendSysMessage(who, "Deposited: " + amt + " " + desc);
-	return 1;
+	var lookup := LoadCategoryLookup();
+	var cat_names := lookup.cat_names;
+	var objtype_to_cat := lookup.objtype_to_cat;
+
+	// Initialize empty arrays for all categories
+	foreach cat_name in cat_names
+		cat_map[cat_name] := array{};
+	endforeach
+
+	// Classify each stored key
+	foreach key in keys
+		var objtype_int := CInt(GetObjtypeFromKey(key));
+		var cat_name := objtype_to_cat[objtype_int];
+		if(!cat_name)
+			cat_name := "Other";
+			if(!cat_map["Other"])
+				cat_map["Other"] := array{};
+			endif
+		endif
+		cat_map[cat_name].append(key);
+	endforeach
+
+	return cat_map;
 endfunction
 
-// Deposits all eligible items from a container.
-// Returns total number of items deposited.
-function DepositFromContainer(who, df, container)
-	var deposited := dictionary;
-	var skipped := 0;
-	var total_deposited := 0;
+// ============================================================
+// Gump: Category Menu
+// ============================================================
 
-	// Build list first to avoid modifying container during iteration
-	var items_to_deposit := array{};
-	foreach thing in EnumerateItemsInContainer(container)
-		// Skip sub-containers themselves, only deposit stackable items
-		if(!thing.isa(POLCLASS_CONTAINER))
-			if(IsEligibleForStorage(thing))
-				items_to_deposit.append(thing);
-			else
-				skipped := skipped + 1;
+function ShowCategoryMenu(who, category_map, cat_icons)
+	var gump := GFCreateGump(25, 25);
+
+	GFResizePic(gump, 0, 0, 9200, 450, 500);
+	GFResizePic(gump, 10, 10, 3000, 430, 480);
+
+	GFTextLine(gump, 140, 15, TEXT_HUE_HIGHLIGHT, "Omega Cache");
+
+	var cat_names := category_map.keys();
+	var cat_index := 0;
+	var display_row := 0;
+
+	foreach cat_name in cat_names
+		cat_index := cat_index + 1;
+		var items := category_map[cat_name];
+		var count := items.size();
+
+		if(count <= 0)
+			continue;
+		endif
+
+		display_row := display_row + 1;
+
+		var col_x;
+		var row_y;
+		if(display_row <= 11)
+			col_x := 30;
+			row_y := 50 + ((display_row - 1) * 28);
+		else
+			col_x := 240;
+			row_y := 50 + ((display_row - 12) * 28);
+		endif
+
+		var icon := cat_icons[cat_name];
+		if(icon)
+			GFTilePic(gump, col_x, row_y - 3, icon);
+		endif
+
+		var btn_id := BTN_CATEGORY_BASE + cat_index;
+		var label := cat_name + " (" + count + ")";
+		GFAddButton(gump, col_x + 25, row_y, 4005, 4007, GF_CLOSE_BTN, btn_id);
+		GFTextLine(gump, col_x + 60, row_y, TEXT_HUE, label);
+	endforeach
+
+	// Deposit buttons at bottom
+	GFAddButton(gump, 30, 455, 4005, 4007, GF_CLOSE_BTN, BTN_DEPOSIT_ITEM);
+	GFTextLine(gump, 65, 455, TEXT_HUE_HIGHLIGHT, "Deposit Item");
+
+	GFAddButton(gump, 240, 455, 4005, 4007, GF_CLOSE_BTN, BTN_DEPOSIT_ALL);
+	GFTextLine(gump, 275, 455, TEXT_HUE_HIGHLIGHT, "Deposit All");
+
+	return GFSendGump(who, gump);
+endfunction
+
+// ============================================================
+// Gump: Item List (per category)
+// ============================================================
+
+function ShowItemList(who, df, category_name, category_map, byref out_keys)
+	var keys := category_map[category_name];
+	if(!keys)
+		keys := array{};
+	endif
+
+	var gump := GFCreateGump(25, 25);
+
+	// Page 0 — always visible (background, title, bottom buttons)
+	GFPage(gump, 0);
+	GFResizePic(gump, 0, 0, 9200, 500, 500);
+	GFResizePic(gump, 10, 10, 3000, 480, 480);
+
+	GFTextLine(gump, 130, 15, TEXT_HUE_HIGHLIGHT, "Omega Cache - " + category_name);
+
+	// Back and Deposit buttons on page 0 (visible on all pages)
+	GFAddButton(gump, 30, 460, 4014, 4016, GF_CLOSE_BTN, BTN_BACK);
+	GFTextLine(gump, 65, 460, TEXT_HUE, "Back");
+
+	GFAddButton(gump, 350, 460, 4005, 4007, GF_CLOSE_BTN, BTN_DEPOSIT_ITEM);
+	GFTextLine(gump, 385, 460, TEXT_HUE_HIGHLIGHT, "Deposit");
+
+	// Filter to only keys with qty > 0 and build display list
+	var display_keys := array{};
+	foreach key in keys
+		var elem := df.FindElement(key);
+		if(elem)
+			var qty := CInt(elem.GetProp("qty"));
+			if(qty > 0)
+				display_keys.append(key);
 			endif
 		endif
 	endforeach
+	out_keys := display_keys;
 
-	// Now deposit and destroy
-	foreach thing in items_to_deposit
-		var key := BuildItemKey(thing);
-		var desc := thing.desc;
-		var amt := thing.amount;
+	// Pagination constants
+	var items_per_page := 14;
+	var total_items := display_keys.size();
+	var total_pages := 1;
+	if(total_items > items_per_page)
+		total_pages := CInt(Ceil(CDbl(total_items) / CDbl(items_per_page)));
+	endif
 
-		DepositItem(df, key, thing);
-		DestroyItem(thing);
+	var page_num := 0;
+	var item_index := 0;
 
-		if(!deposited[desc])
-			deposited[desc] := amt;
-		else
-			deposited[desc] := deposited[desc] + amt;
+	foreach key in display_keys
+		item_index := item_index + 1;
+
+		// Start a new gump page when needed
+		var page_item := ((item_index - 1) % items_per_page) + 1;
+		if(page_item == 1)
+			page_num := page_num + 1;
+			GFPage(gump, page_num);
+
+			// Column headers on each page
+			GFTextLine(gump, 55, 42, TEXT_HUE, "Item");
+			GFTextLine(gump, 280, 42, TEXT_HUE, "Stored");
+			GFTextLine(gump, 345, 42, TEXT_HUE, "Amt");
+			GFTextLine(gump, 415, 42, TEXT_HUE, "Take");
+
+			// Page nav buttons and indicator
+			if(page_num > 1)
+				GFAddButton(gump, 150, 435, 4014, 4016, GF_PAGE_BTN, page_num - 1);
+				GFTextLine(gump, 170, 435, TEXT_HUE, "Prev");
+			endif
+			GFTextLine(gump, 220, 435, TEXT_HUE, "Page " + page_num + "/" + total_pages);
+			if(page_num < total_pages)
+				GFAddButton(gump, 310, 435, 4005, 4007, GF_PAGE_BTN, page_num + 1);
+				GFTextLine(gump, 330, 435, TEXT_HUE, "Next");
+			endif
 		endif
-		total_deposited := total_deposited + amt;
+
+		var row_y := 65 + ((page_item - 1) * 25);
+
+		var elem := df.FindElement(key);
+		var qty := CInt(elem.GetProp("qty"));
+		var objtype := CInt(elem.GetProp("objtype"));
+		var desc_info := GetItemDescriptor(objtype);
+
+		// Item name
+		var item_name := GetItemDisplayName(objtype);
+
+		// Variant display — show first CProp if non-default
+		var propnames := elem.PropNames();
+		foreach pname in propnames
+			if(pname[1,6] == "cprop_")
+				var cprop_name := pname[7, len(pname)];
+				var cprop_val := elem.GetProp(pname);
+				item_name := item_name + " [" + cprop_name + "=" + CStr(cprop_val) + "]";
+				break;
+			endif
+		endforeach
+
+		// Tile icon
+		var graphic := objtype;
+		if(desc_info and desc_info.Graphic)
+			graphic := CInt(desc_info.Graphic);
+		endif
+		var color := 0;
+		if(elem.GetProp("color"))
+			color := CInt(elem.GetProp("color"));
+		elseif(desc_info and desc_info.Color)
+			color := CInt(desc_info.Color);
+		endif
+		GFTilePic(gump, 20, row_y - 5, graphic, color);
+
+		// Item name
+		GFTextCrop(gump, 55, row_y, 220, 20, TEXT_HUE, item_name);
+
+		// Quantity
+		GFTextLine(gump, 280, row_y, TEXT_HUE_QTY, CStr(qty));
+
+		// Text entry for withdraw amount — use item_index as ID
+		var btn_id := BTN_TAKE_BASE + item_index;
+		GFTextEntry(gump, 340, row_y, 60, 20, TEXT_HUE, "0", btn_id);
+
+		// Take button
+		GFAddButton(gump, 420, row_y, 4005, 4007, GF_CLOSE_BTN, btn_id);
 	endforeach
 
-	// Summary report
-	if(total_deposited > 0)
-		var parts := array{};
-		foreach desc in (deposited.keys())
-			parts.append(deposited[desc] + " " + desc);
-		endforeach
-		var summary := "";
-		var i := 1;
-		foreach part in parts
-			if(i > 1)
-				summary := summary + ", ";
-			endif
-			summary := summary + part;
-			i := i + 1;
-		endforeach
-		SendSysMessage(who, "Deposited: " + summary);
-	else
-		SendSysMessage(who, "No eligible items to deposit.");
+	if(total_items == 0)
+		GFPage(gump, 1);
+		GFTextLine(gump, 160, 200, TEXT_HUE, "No items in this category.");
 	endif
 
-	if(skipped > 0)
-		SendSysMessage(who, CStr(skipped) + " item(s) could not be stored.");
-	endif
-
-	return total_deposited;
+	return GFSendGump(who, gump);
 endfunction
 
-// Deposit with targeting loop — handles single items and containers.
-function DoDepositTargeting(who, df)
-	var target;
-	while(1)
-		SendSysMessage(who, "Target an item or container to deposit. Press ESC to stop.");
-		target := Target(who);
-		if(!target)
-			break;
-		endif
-
-		if(target.isa(POLCLASS_CONTAINER))
-			DepositFromContainer(who, df, target);
-		else
-			DepositSingleItem(who, df, target);
-		endif
-	endwhile
-endfunction
-
-// Deposit all eligible items from backpack and child containers.
-function DoDepositAll(who, df)
-	SendSysMessage(who, "Depositing all eligible items from your backpack...");
-	var total := DepositFromContainer(who, df, who.backpack);
-	if(total == 0)
-		SendSysMessage(who, "No eligible items found in your backpack.");
-	endif
-	return total;
-endfunction
-
-// ============================================================
-// Withdraw Functions
-// ============================================================
-
-// Withdraws items from the cache to a destination container.
-// Handles multi-stack, weight validation, and per-stack debit.
-// Returns total amount actually withdrawn.
-function DoWithdraw(who, df, key, amount, destination)
-	_debug_who := who;
-
-	var elem := df.FindElement(key);
-	if(!elem)
-		SendSysMessage(who, "That item is no longer in the cache.");
-		return 0;
-	endif
-
-	var available := CInt(elem.GetProp("qty"));
-	if(amount <= 0)
-		SendSysMessage(who, "Invalid amount.");
-		return 0;
-	endif
-	if(amount > available)
-		amount := available;
-		SendSysMessage(who, "Only " + available + " available. Withdrawing all.");
-	endif
-
-	var objtype := CInt(elem.GetProp("objtype"));
-	var desc_info := GetItemDescriptor(objtype);
-	var item_weight := CDbl(elem.GetProp("weight"));
-
-	// Stack limit for this item type
-	var stack_limit := 60000;
-	if(desc_info and desc_info.StackLimit)
-		stack_limit := CInt(desc_info.StackLimit);
-	endif
-
-	// Weight validation
-	var max_by_weight := GetMaxWithdrawableByWeight(destination, item_weight, amount);
-	if(max_by_weight < amount)
-		if(max_by_weight <= 0)
-			SendSysMessage(who, "The destination cannot hold any more weight.");
-			return 0;
-		endif
-		SendSysMessage(who, "Weight limit: can only withdraw " + max_by_weight + " (requested " + amount + ").");
-		amount := max_by_weight;
-	endif
-
-	// Calculate stacks needed
-	var stacks_needed := CInt(Ceil(CDbl(amount) / CDbl(stack_limit)));
-
-	// Item slot validation — check destination has room
-	// (approximate — count existing items)
-	if(destination.max_items > 0)
-		var current_items := 0;
-		foreach thing in EnumerateItemsInContainer(destination, ENUMERATE_ROOT_ONLY)
-			current_items := current_items + 1;
-		endforeach
-		var slots_available := destination.max_items - current_items;
-		if(stacks_needed > slots_available)
-			// Reduce to what fits
-			var max_stacks := slots_available;
-			if(max_stacks <= 0)
-				SendSysMessage(who, "The destination container is full.");
-				return 0;
-			endif
-			amount := max_stacks * stack_limit;
-			if(amount > available)
-				amount := available;
-			endif
-			stacks_needed := max_stacks;
-			SendSysMessage(who, "Container slot limit: withdrawing " + amount + " (" + stacks_needed + " stack(s)).");
-		endif
-	endif
-
-	// Create items — create first, then debit
-	var total_withdrawn := 0;
-	var remaining := amount;
-
-	while(remaining > 0)
-		var this_stack := remaining;
-		if(this_stack > stack_limit)
-			this_stack := stack_limit;
-		endif
-
-		// Create the item
-		var newitem := RecreateItem(destination, elem, this_stack);
-		if(!newitem or newitem.errortext)
-			SendSysMessage(who, "Failed to create item. Stopping withdrawal.");
-			break;
-		endif
-
-		// Debit the DataFile (re-read elem in case it changed)
-		WithdrawItem(df, key, this_stack);
-
-		total_withdrawn := total_withdrawn + this_stack;
-		remaining := remaining - this_stack;
-
-		// Re-fetch element for next iteration (may have been modified)
-		elem := df.FindElement(key);
-		if(!elem and remaining > 0)
-			SendSysMessage(who, "Cache depleted unexpectedly. Stopping.");
-			break;
-		endif
-	endwhile
-
-	// Report
-	if(total_withdrawn > 0)
-		var item_name := "";
-		if(desc_info)
-			item_name := desc_info.Desc;
-		else
-			item_name := Hex(objtype);
-		endif
-		var stacks_created := CInt(Ceil(CDbl(total_withdrawn) / CDbl(stack_limit)));
-		if(stacks_created > 1)
-			SendSysMessage(who, "Withdrawn: " + total_withdrawn + " " + item_name + " (" + stacks_created + " stacks).");
-		else
-			SendSysMessage(who, "Withdrawn: " + total_withdrawn + " " + item_name + ".");
-		endif
-	endif
-
-	return total_withdrawn;
-endfunction
-
-// Prompts for a destination container, defaulting to backpack on ESC.
-function PromptDestination(who)
-	SendSysMessage(who, "Target a container to receive items, or press ESC for your backpack.");
-	var dest := Target(who);
-	if(!dest)
-		dest := who.backpack;
-		SendSysMessage(who, "Using your backpack.");
-	elseif(!dest.isa(POLCLASS_CONTAINER))
-		SendSysMessage(who, "That is not a container. Using your backpack.");
-		dest := who.backpack;
-	endif
-	return dest;
-endfunction
+// Deposit and withdraw functions are in omegacache.inc (shared with cache.src command)

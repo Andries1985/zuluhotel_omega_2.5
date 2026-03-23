@@ -8,6 +8,7 @@ use os;
 use cfgfile;
 use polsys;
 use basic;
+use math;
 
 include "include/canstack";
 include "include/client";
@@ -85,6 +86,80 @@ function GetNonDefaultProperties(item)
 	endforeach
 
 	return props;
+endfunction
+
+// Reads categories.cfg and builds lookups:
+//   cat_names: array of category names
+//   objtype_to_cat: dictionary of CInt(objtype) -> category_name
+//   cat_icons: dictionary of category_name -> icon tile id
+// Returns struct{ cat_names, objtype_to_cat, cat_icons }
+function LoadCategoryLookup()
+	var cat_cfg := ReadConfigFile(":omegacache:categories");
+	var categories_elem := FindConfigElem(cat_cfg, "Categories");
+	var icons_elem := FindConfigElem(cat_cfg, "Icons");
+	var cat_names := array{};
+	var objtype_to_cat := dictionary;
+	var cat_icons := dictionary;
+
+	if(categories_elem)
+		cat_names := ListConfigElemProps(categories_elem);
+	endif
+
+	foreach cat_name in cat_names
+		var cat_elem := FindConfigElem(cat_cfg, cat_name);
+		if(cat_elem)
+			var objtypes := ListConfigElemProps(cat_elem);
+			foreach ot in objtypes
+				objtype_to_cat[CInt(ot)] := cat_name;
+			endforeach
+		endif
+		if(icons_elem)
+			cat_icons[cat_name] := CInt(GetConfigString(icons_elem, cat_name));
+		endif
+	endforeach
+
+	return struct{ cat_names := cat_names, objtype_to_cat := objtype_to_cat, cat_icons := cat_icons };
+endfunction
+
+// Returns the set of objtypes (as CInt keys) for a given category name.
+// Returns dictionary of CInt(objtype) -> 1, or empty dictionary if not found.
+function GetCategoryObjtypes(cat_name)
+	var cat_cfg := ReadConfigFile(":omegacache:categories");
+	var cat_elem := FindConfigElem(cat_cfg, cat_name);
+	var result := dictionary;
+	if(cat_elem)
+		var objtypes := ListConfigElemProps(cat_elem);
+		foreach ot in objtypes
+			result[CInt(ot)] := 1;
+		endforeach
+	endif
+	return result;
+endfunction
+
+// Returns a display name for an objtype, using itemdesc Desc or Name.
+// Falls back to Hex(objtype) if no descriptor found.
+// Optionally accepts a pre-fetched descriptor to avoid redundant lookups.
+function GetItemDisplayName(objtype, desc_info := 0)
+	if(!desc_info)
+		desc_info := GetItemDescriptor(objtype);
+	endif
+	if(desc_info)
+		if(desc_info.Desc and desc_info.Desc != "")
+			return desc_info.Desc;
+		elseif(desc_info.Name and desc_info.Name != "")
+			return desc_info.Name;
+		endif
+	endif
+	return Hex(objtype);
+endfunction
+
+// Extracts the objtype string prefix from a DataFile key ("0xABCD|hash" -> "0xABCD").
+function GetObjtypeFromKey(key)
+	var pipe_pos := Find(key, "|", 1);
+	if(pipe_pos > 0)
+		return key[1, pipe_pos - 1];
+	endif
+	return key;
 endfunction
 
 // Returns "objtype|md5hash" for an item.
@@ -240,7 +315,11 @@ endfunction
 function RecreateItem(container, elem, amount)
 	var objtype := CInt(elem.GetProp("objtype"));
 	var newitem := CreateItemInContainer(container, objtype, amount);
-	if(!newitem or newitem.errortext)
+	if(!newitem)
+		OmegaCacheDebug("RecreateItem: FAILED to create " + Hex(objtype) + " x" + amount + " - returned 0");
+		return newitem;
+	endif
+	if(newitem.errortext)
 		OmegaCacheDebug("RecreateItem: FAILED to create " + Hex(objtype) + " x" + amount + " - " + newitem.errortext);
 		return newitem;
 	endif
@@ -430,4 +509,231 @@ function FindAccessibleContainer(who, required_privileges)
 
 	OmegaCacheDebug("FindAccessibleContainer: no accessible cache found for " + who.name);
 	return 0;
+endfunction
+
+// ============================================================
+// Deposit Operations
+// ============================================================
+
+// Deposits a single item into the cache.
+function DepositSingleItem(who, df, item)
+	if(!IsEligibleForStorage(item))
+		SendSysMessage(who, "That item cannot be stored.");
+		return 0;
+	endif
+
+	var key := BuildItemKey(item);
+	var desc := item.desc;
+	var amt := item.amount;
+	DepositItem(df, key, item);
+	DestroyItem(item);
+	SendSysMessage(who, "Deposited: " + amt + " " + desc);
+	return 1;
+endfunction
+
+// Deposits all eligible items from a container.
+function DepositFromContainer(who, df, container)
+	var deposited := dictionary;
+	var skipped := 0;
+	var total_deposited := 0;
+
+	var items_to_deposit := array{};
+	foreach thing in EnumerateItemsInContainer(container)
+		if(!thing.isa(POLCLASS_CONTAINER))
+			if(IsEligibleForStorage(thing))
+				items_to_deposit.append(thing);
+			else
+				skipped := skipped + 1;
+			endif
+		endif
+	endforeach
+
+	foreach thing in items_to_deposit
+		var key := BuildItemKey(thing);
+		var desc := thing.desc;
+		var amt := thing.amount;
+
+		DepositItem(df, key, thing);
+		DestroyItem(thing);
+
+		if(!deposited[desc])
+			deposited[desc] := amt;
+		else
+			deposited[desc] := deposited[desc] + amt;
+		endif
+		total_deposited := total_deposited + amt;
+	endforeach
+
+	if(total_deposited > 0)
+		var parts := array{};
+		foreach desc in (deposited.keys())
+			parts.append(deposited[desc] + " " + desc);
+		endforeach
+		var summary := "";
+		var i := 1;
+		foreach part in parts
+			if(i > 1)
+				summary := summary + ", ";
+			endif
+			summary := summary + part;
+			i := i + 1;
+		endforeach
+		SendSysMessage(who, "Deposited: " + summary);
+	else
+		SendSysMessage(who, "No eligible items to deposit.");
+	endif
+
+	if(skipped > 0)
+		SendSysMessage(who, CStr(skipped) + " item(s) could not be stored.");
+	endif
+
+	return total_deposited;
+endfunction
+
+// Deposit with targeting loop.
+function DoDepositTargeting(who, df)
+	var target;
+	while(1)
+		SendSysMessage(who, "Target an item or container to deposit. Press ESC to stop.");
+		target := Target(who);
+		if(!target)
+			break;
+		endif
+
+		if(target.isa(POLCLASS_CONTAINER))
+			DepositFromContainer(who, df, target);
+		else
+			DepositSingleItem(who, df, target);
+		endif
+	endwhile
+endfunction
+
+// Deposit all eligible items from backpack.
+function DoDepositAll(who, df)
+	SendSysMessage(who, "Depositing all eligible items from your backpack...");
+	var total := DepositFromContainer(who, df, who.backpack);
+	if(total == 0)
+		SendSysMessage(who, "No eligible items found in your backpack.");
+	endif
+	return total;
+endfunction
+
+// ============================================================
+// Withdraw Operations
+// ============================================================
+
+// Withdraws items from the cache to a destination container.
+function DoWithdraw(who, df, key, amount, destination)
+	_debug_who := who;
+
+	var elem := df.FindElement(key);
+	if(!elem)
+		SendSysMessage(who, "That item is no longer in the cache.");
+		return 0;
+	endif
+
+	var available := CInt(elem.GetProp("qty"));
+	if(amount <= 0)
+		SendSysMessage(who, "Invalid amount.");
+		return 0;
+	endif
+	if(amount > available)
+		amount := available;
+		SendSysMessage(who, "Only " + available + " available. Withdrawing all.");
+	endif
+
+	var objtype := CInt(elem.GetProp("objtype"));
+	var desc_info := GetItemDescriptor(objtype);
+	var item_weight := CDbl(elem.GetProp("weight"));
+
+	var stack_limit := 60000;
+	if(desc_info and desc_info.StackLimit)
+		stack_limit := CInt(desc_info.StackLimit);
+	endif
+
+	var max_by_weight := GetMaxWithdrawableByWeight(destination, item_weight, amount);
+	if(max_by_weight < amount)
+		if(max_by_weight <= 0)
+			SendSysMessage(who, "The destination cannot hold any more weight.");
+			return 0;
+		endif
+		SendSysMessage(who, "Weight limit: can only withdraw " + max_by_weight + " (requested " + amount + ").");
+		amount := max_by_weight;
+	endif
+
+	var stacks_needed := CInt(Ceil(CDbl(amount) / CDbl(stack_limit)));
+
+	if(destination.max_items > 0)
+		var current_items := 0;
+		foreach thing in EnumerateItemsInContainer(destination, ENUMERATE_ROOT_ONLY)
+			current_items := current_items + 1;
+		endforeach
+		var slots_available := destination.max_items - current_items;
+		if(stacks_needed > slots_available)
+			var max_stacks := slots_available;
+			if(max_stacks <= 0)
+				SendSysMessage(who, "The destination container is full.");
+				return 0;
+			endif
+			amount := max_stacks * stack_limit;
+			if(amount > available)
+				amount := available;
+			endif
+			stacks_needed := max_stacks;
+			SendSysMessage(who, "Container slot limit: withdrawing " + amount + " (" + stacks_needed + " stack(s)).");
+		endif
+	endif
+
+	var total_withdrawn := 0;
+	var remaining := amount;
+
+	while(remaining > 0)
+		var this_stack := remaining;
+		if(this_stack > stack_limit)
+			this_stack := stack_limit;
+		endif
+
+		var newitem := RecreateItem(destination, elem, this_stack);
+		if(!newitem or (newitem and newitem.errortext))
+			SendSysMessage(who, "Failed to create item. Stopping withdrawal.");
+			break;
+		endif
+
+		WithdrawItem(df, key, this_stack);
+
+		total_withdrawn := total_withdrawn + this_stack;
+		remaining := remaining - this_stack;
+
+		elem := df.FindElement(key);
+		if(!elem and remaining > 0)
+			SendSysMessage(who, "Cache depleted unexpectedly. Stopping.");
+			break;
+		endif
+	endwhile
+
+	if(total_withdrawn > 0)
+		var item_name := GetItemDisplayName(objtype, desc_info);
+		var stacks_created := CInt(Ceil(CDbl(total_withdrawn) / CDbl(stack_limit)));
+		if(stacks_created > 1)
+			SendSysMessage(who, "Withdrawn: " + total_withdrawn + " " + item_name + " (" + stacks_created + " stacks).");
+		else
+			SendSysMessage(who, "Withdrawn: " + total_withdrawn + " " + item_name + ".");
+		endif
+	endif
+
+	return total_withdrawn;
+endfunction
+
+// Prompts for a destination container, defaulting to backpack on ESC.
+function PromptDestination(who)
+	SendSysMessage(who, "Target a container to receive items, or press ESC for your backpack.");
+	var dest := Target(who);
+	if(!dest)
+		dest := who.backpack;
+		SendSysMessage(who, "Using your backpack.");
+	elseif(!dest.isa(POLCLASS_CONTAINER))
+		SendSysMessage(who, "That is not a container. Using your backpack.");
+		dest := who.backpack;
+	endif
+	return dest;
 endfunction

@@ -1,0 +1,222 @@
+// cache.src — .cache command
+//
+// .cache                    — opens the Omega Cache gump (same as double-clicking)
+// .cache deposit            — deposit all from backpack (no gump)
+// .cache deposit target     — deposit with targeting cursor
+// .cache list               — list categories with counts
+// .cache list <category>    — list items in category with quantities
+// .cache withdraw <amount>  — target item type, withdraw to backpack
+
+use uo;
+use os;
+use math;
+
+include "include/client";
+include "include/omegacache_utils";
+include ":omegacache:omegacache";
+
+program textcmd_cache(who, text)
+
+	_debug_who := who;
+
+	text := CStr(text);
+	text := Lower(text);
+
+	// Determine required privilege based on subcommand
+	var required_privs := array{VIEW_SECURE};
+	if(text == "deposit" or text == "deposit target")
+		required_privs := array{ADD_TO_SECURE};
+	elseif(text[1,8] == "withdraw")
+		required_privs := array{REMOVE_FROM_SECURE};
+	endif
+
+	var access := FindAccessibleContainer(who, required_privs);
+	if(!access)
+		SendSysMessage(who, "You must be near an Omega Cache Container in a house you have access to.");
+		return;
+	endif
+
+	var df := access.df;
+	if(!df)
+		SendSysMessage(who, "Failed to open storage.");
+		return;
+	endif
+
+	if(text == "deposit")
+		DoDepositAll(who, df);
+
+	elseif(text == "deposit target")
+		DoDepositTargeting(who, df);
+
+	elseif(text[1,8] == "withdraw")
+		var amount_str := text[10, len(text)];
+		var amount := CInt(amount_str);
+		if(amount <= 0)
+			SendSysMessage(who, "Usage: .cache withdraw <amount>");
+			SendSysMessage(who, "Then target an item of the type you wish to withdraw.");
+			return;
+		endif
+
+		SendSysMessage(who, "Target an item of the type you wish to withdraw.");
+		var target := Target(who);
+		if(!target)
+			SendSysMessage(who, "Cancelled.");
+			return;
+		endif
+
+		if(!target.stackable)
+			SendSysMessage(who, "That item type is not stackable.");
+			return;
+		endif
+
+		var key := BuildItemKey(target);
+		DoWithdraw(who, df, key, amount, who.backpack);
+
+	elseif(text == "list")
+		DoListCategories(who, df);
+
+	elseif(text[1,5] == "list ")
+		var cat_name := text[6, len(text)];
+		DoListCategory(who, df, cat_name);
+
+	elseif(!text or text == "")
+		var cache_item := access.container;
+		if(cache_item)
+			start_script(":omegacache:omegacache", {who, cache_item});
+		endif
+
+	else
+		SendSysMessage(who, "Usage:");
+		SendSysMessage(who, "  .cache                    - open the Omega Cache");
+		SendSysMessage(who, "  .cache deposit            - deposit all from backpack");
+		SendSysMessage(who, "  .cache deposit target     - deposit with targeting");
+		SendSysMessage(who, "  .cache list               - list categories");
+		SendSysMessage(who, "  .cache list <category>    - list items in category");
+		SendSysMessage(who, "  .cache withdraw <amount>  - withdraw to backpack");
+	endif
+
+endprogram
+
+// Deposit, withdraw, and prompt functions are in omegacache.inc (shared include).
+
+// ============================================================
+// List Functions
+// ============================================================
+
+function DoListCategories(who, df)
+	var lookup := LoadCategoryLookup();
+	var cat_names := lookup.cat_names;
+	var objtype_to_cat := lookup.objtype_to_cat;
+
+	if(cat_names.size() == 0)
+		SendSysMessage(who, "No categories configured.");
+		return;
+	endif
+
+	var keys := df.Keys();
+
+	// Count items per category
+	var cat_counts := dictionary;
+	var cat_qty := dictionary;
+	var other_count := 0;
+	var other_qty := 0;
+
+	foreach key in keys
+		var objtype_int := CInt(GetObjtypeFromKey(key));
+
+		var elem := df.FindElement(key);
+		var qty := 0;
+		if(elem)
+			qty := CInt(elem.GetProp("qty"));
+		endif
+		if(qty <= 0)
+			continue;
+		endif
+
+		var cat_name := objtype_to_cat[objtype_int];
+		if(cat_name)
+			if(!cat_counts[cat_name])
+				cat_counts[cat_name] := 0;
+				cat_qty[cat_name] := 0;
+			endif
+			cat_counts[cat_name] := cat_counts[cat_name] + 1;
+			cat_qty[cat_name] := cat_qty[cat_name] + qty;
+		else
+			other_count := other_count + 1;
+			other_qty := other_qty + qty;
+		endif
+	endforeach
+
+	SendSysMessage(who, "=== Omega Cache Contents ===");
+	foreach cat_name in cat_names
+		var count := cat_counts[cat_name];
+		var qty := cat_qty[cat_name];
+		if(count and count > 0)
+			SendSysMessage(who, "  " + cat_name + ": " + count + " type(s), " + qty + " total");
+		endif
+	endforeach
+	if(other_count > 0)
+		SendSysMessage(who, "  Other: " + other_count + " type(s), " + other_qty + " total");
+	endif
+	if(keys.size() == 0)
+		SendSysMessage(who, "  (empty)");
+	endif
+endfunction
+
+function DoListCategory(who, df, cat_name_input)
+	var lookup := LoadCategoryLookup();
+	var cat_names := lookup.cat_names;
+
+	if(cat_names.size() == 0)
+		SendSysMessage(who, "No categories configured.");
+		return;
+	endif
+
+	// Find matching category (case-insensitive)
+	var matched_cat := "";
+	foreach cat_name in cat_names
+		if(Lower(cat_name) == Lower(cat_name_input))
+			matched_cat := cat_name;
+			break;
+		endif
+	endforeach
+
+	if(!matched_cat or matched_cat == "")
+		SendSysMessage(who, "Unknown category: " + cat_name_input);
+		SendSysMessage(who, "Use .cache list to see available categories.");
+		return;
+	endif
+
+	var cat_objtypes := GetCategoryObjtypes(matched_cat);
+	if(cat_objtypes.size() == 0)
+		SendSysMessage(who, "Category has no items configured.");
+		return;
+	endif
+
+	// Find matching keys in DataFile
+	var keys := df.Keys();
+	var found := 0;
+
+	SendSysMessage(who, "=== " + matched_cat + " ===");
+	foreach key in keys
+		var objtype_int := CInt(GetObjtypeFromKey(key));
+
+		if(cat_objtypes[objtype_int])
+			var elem := df.FindElement(key);
+			if(elem)
+				var qty := CInt(elem.GetProp("qty"));
+				if(qty <= 0)
+					continue;
+				endif
+				var objtype := CInt(elem.GetProp("objtype"));
+				var item_name := GetItemDisplayName(objtype);
+				SendSysMessage(who, "  " + item_name + ": " + qty);
+				found := found + 1;
+			endif
+		endif
+	endforeach
+
+	if(found == 0)
+		SendSysMessage(who, "  (empty)");
+	endif
+endfunction

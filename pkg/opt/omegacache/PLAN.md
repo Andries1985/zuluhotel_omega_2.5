@@ -448,7 +448,7 @@ endfunction
 
 **New approach**: Build gump pages dynamically from `categories.cfg`:
 
-**Parsing note**: `categories.cfg` uses objtypes as property names with empty string values (e.g., property name `"0x0F85"`, value `""`). To read items in a category, use `GetConfigStringKeys(elem)` to get all property names (objtypes) from the section element, then iterate. Do not use `GetConfigString()` — the values are empty.
+**Parsing note**: `categories.cfg` uses objtypes as property names with empty string values (e.g., property name `"0x0F85"`, value `""`). To read items in a category, use `ListConfigElemProps(elem)` to get all property names (objtypes) from the section element, then iterate. Do not use `GetConfigString()` — the values are empty.
 
 1. Read categories and their items from `categories.cfg`
 2. For each category, query DataFile for stored quantities
@@ -937,6 +937,8 @@ All repeatable actions must be executable via text commands with **no gump inter
 | `.cache deposit` | Deposit all eligible items from backpack + child containers | No |
 | `.cache deposit` (with target) | Target a container (deposits all eligible contents) or a single stackable item | Target only |
 | `.cache withdraw <amount>` | Target an item of the type to withdraw, then specify amount. Item is used for type identification only (not consumed). If you have no instance of the item to target, use the `.cache` gump instead. Prompt: "Target an item of the type you wish to withdraw." | Target only |
+| `.cache list` | List all categories with item type counts and total quantities | No |
+| `.cache list <category>` | List items in a specific category with quantities | No |
 | `.loadout` | Open loadout management gump | Yes |
 | `.loadout 1-10` | Apply a specific loadout | No |
 | `.loadout all` | Apply all defined loadouts in sequence | No |
@@ -1013,12 +1015,12 @@ Player-facing. Full UI and macro support.
 
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 19 | Gump — category menu | Dynamic from `categories.cfg` + `df.Keys()`, deferred loading by category, "Miscellaneous / Other" for uncategorized items |
-| [ ] 20 | Gump — item display | Per-category item rows with icon, name, quantity, text entry, take button. Variant display for items with non-default properties. |
-| [ ] 21 | Gump — deposit buttons | "Add Item to Omega Cache" and "Deposit All" buttons integrated into gump |
-| [ ] 22 | `.cache` command | Opens gump, registered as player-level command |
-| [ ] 23 | `.cache deposit` command | Deposit-all from backpack (no gump), deposit with target (container or single item) |
-| [ ] 24 | `.cache withdraw` command | Target item type, specify amount, withdraw to backpack (no gump). Prompt explains targeting requirement. |
+| [x] 19 | Gump — category menu | `ShowCategoryMenu()` — dynamic from `categories.cfg` + `df.Keys()`, two-column layout, icons, item counts, "Other" for uncategorized |
+| [x] 20 | Gump — item display | `ShowItemList()` — per-category rows with tile icon, name, variant CProps, quantity, text entry, take button |
+| [x] 21 | Gump — deposit buttons | "Deposit Item" and "Deposit All" buttons on both category menu and item list |
+| [x] 22 | `.cache` command | `scripts/textcmd/player/cache.src` — opens gump via `start_script` |
+| [x] 23 | `.cache deposit` command | `.cache deposit` (all from backpack) and `.cache deposit target` (targeting loop) |
+| [x] 24 | `.cache withdraw` command | `.cache withdraw <amount>` — target item type, withdraw to backpack |
 
 **Testable**: Full player flow — open gump, browse categories, deposit via gump and commands, withdraw via gump and commands. Verify macro-friendliness (`.cache deposit` + `.cache withdraw` with no gump interaction).
 
@@ -1140,3 +1142,14 @@ Stabilisation pass.
 | Weight storage | Per-unit weight via `GetItemDescriptor(objtype).Weight`, stored as element property |
 | Macro support | All repeatable actions via text commands, no gump required |
 | Complex items as separate phase | Removed — compound keys and property serialization built into Phase 1 from day one |
+
+
+## Prompts
+
+```
+OK, redo a review of the current implementation, the current shard files and the plan and deliver critique and short comings in our plan or the full implementation as it stands. Check that the plan, implementation and changelog is consistent. Check for incorrect assumptions, logic errors, bugs, type castings etc. Also, look for repeated logic in this module, the modal and the textcmd `.cache` and make sure you don't have additional logic repeating which should be centralized
+```
+
+```
+Ok, now with Milestone 1.2. Draw up a detailed plan on how you want to implement this and what you want to do here and propose it for approval
+```
