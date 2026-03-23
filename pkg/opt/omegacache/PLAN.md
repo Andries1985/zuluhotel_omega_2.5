@@ -101,7 +101,7 @@ An item is eligible for storage if it passes the same checks as our `CanStack()`
 
 **Note on scripts**: POL's core `can_add_to_self()` does NOT check `usescript`, `equipscript`, or `snoopscript`. Our `CanStack()` is intentionally **stricter** — items with different per-instance script overrides produce different hashes and are stored separately. This prevents loss of script overrides during deposit/withdrawal. The scripts are accessible via `item.usescript`, `item.equipscript`, `item.snoopscript` and are stored on the DataFile element for restoration.
 
-POL's stacking guarantee means: **if two items can stack, they are identical in every meaningful property.** The `BuildItemKey()` function captures this full identity as an `"objtype|md5hash"` key. All item properties (color, quality, flags, CProps, weight) are stored on the DataFile element at deposit time and restored on withdrawal. Items with the same objtype but different properties produce different hashes and are stored as separate entries.
+POL's stacking guarantee means: **if two items can stack, they are identical in every meaningful property.** The `BuildItemKey()` function captures item identity as an `"objtype|md5hash"` key by hashing only properties that differ from itemdesc defaults. Only non-default properties are stored on the DataFile element for restoration on withdrawal — recreated items inherit defaults naturally from `CreateItemInContainer()`. Items with the same objtype but different overrides produce different hashes and are stored as separate entries.
 
 `IsEligibleForStorage()` checks that the item is stackable and not on the blacklist. Any stackable item is accepted — the key/hash system handles identity and property preservation automatically.
 
@@ -287,35 +287,35 @@ After demolition completes, clean up the DataFile (delete all elements, unload).
 
 Categories defined in `categories.cfg`. Full item listings per category are in the config file. Summary:
 
-| Category | Items | Count |
+| Category | Group | Count |
 |---|---|---|
-| Reagents | All 26 standard reagents | 26 |
-| Raw Herbs | Raw mandrake, raw garlic, raw nightshade, raw ginseng | 4 |
-| Gems | Star Sapphire through Diamond | 9 |
-| Ores | Iron Ore through Radiant Diamond Ore | 34 |
-| Ingots | Iron Ingot through Radiant Diamond Ingot | 34 |
-| Logs | Plain log + 13 tiers | 14 |
-| Hides | Plain hide + 16 tiers | 17 |
-| Cloth & Fibre | Cotton, flax, wool, cloth, bolt of cloth | 5 |
-| Mining Materials | Clay, glass, enchanted | 3 |
-| Seeds | Farming seeds (flax, cotton, garlic, mandrake, nightshade, ginseng) + botanik seeds (grapevine, apple, peach, pear, banana) | 11 |
-| Food | All raw/cooked food, drinks, fish | ~40 |
-| Money | Gold coin | 1 |
-| Potions | 24 standard potions + special potions (0x7059) | 25 |
-| Ammo | Arrow, bolt, fire, ice, thunder, throwable, gun, shaft, feather | 9 |
-| Spellbook Scrolls | 64 standard magery scrolls (0x1F2D-0x1F6C) | 64 |
-| Earth Book Scrolls | 16 earth/druid magic scrolls | 16 |
-| Codex Damnorum Scrolls | 16 necromancy scrolls | 16 |
-| Song Book Scrolls | 20 bard song scrolls | 20 |
-| Holy Book Scrolls | 9 paladin holy scrolls | 9 |
-| Special Items | Omega Tokens, Transcendence Scrolls | 2 |
-| Miscellaneous | Bandages, blank scrolls, lockpicks, symbols, etc. | 18 |
-
-**Removed categories** (items don't exist on shard): ProtectionRunes, AttributeRunes, SkillCategories, UpgradeRunes, EarthBook, CodexDamnorum, SongBook, HolyBook.
+| Cloth & Fibre | Crafting | 4 |
+| Hides | Crafting | 18 |
+| Ingots | Crafting | 34 |
+| Logs | Crafting | 26 |
+| Mining Materials | Crafting | 2 |
+| Ores | Crafting | 34 |
+| Seeds | Crafting | 11 |
+| Codex Damnorum Scrolls | Mage | 16 |
+| Earth Book Scrolls | Mage | 16 |
+| Holy Book Scrolls | Mage | 16 |
+| Potions | Mage | 23 |
+| Song Book Scrolls | Mage | 20 |
+| Spellbook Scrolls | Mage | 64 |
+| Ammo | General | 7 |
+| Food | General | ~42 |
+| Gems | General | 9 |
+| Money | General | 1 |
+| Raw Herbs | General | 4 |
+| Reagents | General | 26 |
+| Special Items | Special | 5 |
+| Miscellaneous | Misc | 6 |
 
 **Blacklisted items** (in `blacklist.cfg`): Gold Ingot (`0x1BE9` — not a real item, graphic used by clay), Zulu Coin (`0x3B9A` — doesn't exist).
 
 Any stackable item not in a defined category and not blacklisted is displayed under "Miscellaneous / Other" in the gump.
+
+**Note on stackability verification**: Most items have been confirmed stackable via itemdesc or in-game behaviour. Since `IsEligibleForStorage()` checks `item.stackable` at runtime (from tiledata flags), any non-stackable item in `categories.cfg` would simply be rejected at deposit — no bug, just an unused category entry. Full tiledata verification of all items is a low-priority follow-up.
 
 ### 1.1 Data Layer
 
@@ -324,19 +324,19 @@ Create a shared include (`omegacache.inc` rewrite) with these core functions:
 ```
 // Key generation
 BuildItemKey(item)               // Returns "objtype|md5hash" — always includes hash.
-                                 // Collects ALL CanStack() properties: color, quality,
-                                 // flags (newbie, insured, cursed), weight_multiplier_mod,
-                                 // and all CProps sorted alphabetically by name.
-                                 // Builds canonical string, MD5Encrypt()s it.
-                                 // Items with identical objtype but different color, quality,
-                                 // flags, or CProps produce different hashes and are stored
-                                 // as separate entries. The hash captures the full stacking
-                                 // identity — objtype alone is never sufficient.
+                                 // Collects only properties explicitly set on the item
+                                 // (differing from itemdesc defaults): color, graphic,
+                                 // quality, flags, weight_multiplier_mod, scripts, + all
+                                 // CProps. Sorts alphabetically, builds canonical string,
+                                 // MD5Encrypt()s it. Items with no overrides hash to
+                                 // MD5("") — a constant. Items with any override produce
+                                 // a different hash. Hash matches what the element stores.
 
-BuildDefaultKey(objtype)         // Returns "objtype|md5hash" for a standard item with
-                                 // default properties (itemdesc color, quality 1.0, no flags,
-                                 // no CProps). Used by crafting for fast-path lookups when
-                                 // no physical item is available to call BuildItemKey() on.
+BuildDefaultKey(objtype)         // Returns "objtype|md5hash" where md5hash is the hash
+                                 // of an empty canonical string (no overrides).
+                                 // Equivalent to: objtype + "|" + MD5Encrypt("")
+                                 // Used by crafting for fast-path lookups when no physical
+                                 // item is available to call BuildItemKey() on.
 
 // Cabinet DataFile management
 OpenHouseStore(cabinet)          // Reads houseserial from cabinet, returns DataFile handle.
@@ -346,7 +346,8 @@ CloseHouseStore(house_serial)    // Unloads DataFile from memory
 // Transactions — all keyed by "objtype|hash"
 DepositItem(df, key, item)       // Add item.amount to qty. On first deposit for this key,
                                  // stores per-unit weight (via GetItemDescriptor(item.objtype).Weight)
-                                 // and all CanStack() properties on the element for recreation.
+                                 // and only non-default properties on the element for recreation.
+                                 // Properties matching itemdesc defaults are omitted.
 WithdrawItem(df, key, amount)    // Subtract quantity, returns amount actually withdrawn
 GetStoredAmount(df, key)         // Query current quantity
 GetStoredAmountByObjtype(df, objtype)  // Sum qty across all keys matching objtype prefix.
@@ -429,8 +430,8 @@ function GetMaxWithdrawableByWeight(destination, elem, requested_amount)
 
     // Walk up the full parent chain
     while (container)
-        var available_weight := container.max_weight - container.weight;
-        var fits := CInt(available_weight / item_weight);
+        var available_weight := CDbl(container.max_weight) - CDbl(container.weight);
+        var fits := CInt(available_weight / item_weight);  // truncates down — intentional
         if (fits < max_by_weight)
             max_by_weight := fits;
         endif
@@ -447,6 +448,8 @@ endfunction
 
 **New approach**: Build gump pages dynamically from `categories.cfg`:
 
+**Parsing note**: `categories.cfg` uses objtypes as property names with empty string values (e.g., property name `"0x0F85"`, value `""`). To read items in a category, use `GetConfigStringKeys(elem)` to get all property names (objtypes) from the section element, then iterate. Do not use `GetConfigString()` — the values are empty.
+
 1. Read categories and their items from `categories.cfg`
 2. For each category, query DataFile for stored quantities
 3. Only show items that have stock > 0 (or show all with "0" for empty)
@@ -457,7 +460,64 @@ endfunction
 
 **Note**: Keep the current visual style for now. Schedule a follow-up step to evaluate and potentially redesign the gump layout after the core functionality is working.
 
-### 1.5 Cabinet Lifecycle
+### 1.5 Item Definitions (`itemdesc.cfg`)
+
+The current `itemdesc.cfg` defines the cache as a `Container` with lock scripts and container dimensions. This needs to be reworked — the Omega Cache is not a physical container that players open. It's a furniture item with a use-script that opens a gump.
+
+**Current definition (to be replaced):**
+```
+Container 0xdf0a    // Wrong — should be Item, not Container
+{
+    ControlScript ::lockchests  // Wrong — not a lockable chest
+    Gump 0                      // Wrong — no container gump needed
+    MinX/MaxX/MinY/MaxY         // Wrong — no container dimensions needed
+    movable 1                   // Wrong — should be immovable once placed
+}
+```
+
+**Revised Omega Cache item:**
+```
+Item 0xDF0A
+{
+    Name            OmegaCacheContainer
+    Desc            Omega Crate of Wonders
+    Graphic         42789
+    Weight          250
+    Movable         0
+    Script          omegacache
+    DestroyScript   :omegacache:destroycache
+    cprop   tooltips_note   sAn resource cache infused with Omega energy able to store vast amounts of items
+}
+```
+
+- `Item` not `Container` — no physical container UI
+- Keep existing Name/Desc (player-visible, configurable)
+- Keep tooltips_note CProp for client tooltip display
+- `Movable 0` — placed via deed, secured to house
+- `Script omegacache` — opens the cache gump on use (replaces `homecollector`)
+- `DestroyScript` — custom script to block destruction if items are stored, re-credits `numomegacache` on house
+- Removed: `ControlScript`, `Gump`, `MinX/MaxX/MinY/MaxY` (not a container)
+
+**Omega Cache Deed:**
+```
+Item 0xDF0B
+{
+    Name            OmegaCacheDeed
+    Desc            An Omega Cache Deed
+    Graphic         0x14F0
+    Weight          1
+    Movable         1
+    Script          :omegacache:placecache
+}
+```
+
+- Objtype `0xDF0B` — TBD, needs to be confirmed as unused on the shard
+- Graphic `0x14F0` — standard deed graphic (same as house deeds)
+- `Script :omegacache:placecache` — handles placement flow (house check, limit check, targeting, creation)
+
+**Note**: The Name and Desc fields are player-visible and can be changed at any time without code changes. The objtype for the deed needs verification against existing shard items to avoid collisions.
+
+### 1.6 Cabinet Lifecycle
 
 - **Deed creation**: Cabinet Deeds can be crafted (carpentry or tinkering TBD) or GM-granted. Deed item defined in `itemdesc.cfg`.
 - **Placement**: Player uses deed inside their house. Script validates house ownership/co-ownership, checks `numomegacache` limit, creates cabinet item at target location with `houseserial` CProp. Deed is destroyed.
@@ -726,19 +786,20 @@ Each character gets a DataFile for their loadout definitions:
 **Applying a loadout** (`.loadout 1` or gump button):
 1. Access check: `FindAccessibleCabinet(who, array{ADD_TO_SECURE, REMOVE_FROM_SECURE})` — player needs both deposit and withdraw privileges since sync goes both ways
 2. Find the loadout's target container by serial in player's backpack
-3. For each item type in the loadout definition:
-   - Count current amount of that objtype in the container
+3. Build a key-to-amount map of the container's current contents: for each item in the container, call `BuildItemKey(item)` and sum amounts by key. This matches by full `"objtype|hash"` key, not just objtype — a recolored variant won't be counted toward a default variant's target.
+4. For each key in the loadout definition:
+   - Compare current amount (from the key map) against target amount
    - If below target: withdraw the deficit from the cabinet DataFile, create items in the container
-   - If above target: subtract the surplus from the container stacks, deposit into the cabinet DataFile
-4. Respect container weight/item limits — if the container can't hold the full loadout, fill what fits and warn
-5. Items in the container that are **not** in the loadout definition are left untouched
-6. Report summary: "Loadout 'PvP Reagents' applied: +300 Ginseng, +150 Black Pearl, -50 Sulphurous Ash returned to storage."
+   - If above target: find matching items in container by key, subtract the surplus, deposit into the cabinet DataFile
+5. Respect container weight/item limits — if the container can't hold the full loadout, fill what fits and warn
+6. Items in the container that are **not** in the loadout definition are left untouched
+7. Report summary: "Loadout 'PvP Reagents' applied: +300 Ginseng, +150 Black Pearl, -50 Sulphurous Ash returned to storage."
 
 **Saving from baseline** (shortcut for initial setup):
 1. Player fills a container with exactly the amounts they want
 2. Opens loadout gump, creates a new loadout pointing to that container
 3. Clicks "Save from Current Contents"
-4. Script reads all eligible items in the container, records each `objtype -> amount` as the loadout definition
+4. Script reads all eligible items in the container, calls `BuildItemKey(item)` for each, records `key -> amount` as the loadout definition
 5. This is the fastest way to set up a loadout — arrange once, save, restock forever
 
 ### Gump Design
@@ -784,13 +845,16 @@ If a loadout's target container is destroyed, lost, or traded, `SystemFindObject
 The `CanStack()` function (moved to `scripts/include/canstack.inc`) defines exactly which properties make two items "the same." Every item stored in the cabinet uses a key format that captures the full stacking identity: `"objtype|md5hash"`.
 
 **Key generation** (`BuildItemKey(item)`):
-1. Collect all properties that `CanStack()` checks: color, quality, flags (newbie, insured, cursed), weight_multiplier_mod, scripts (usescript, equipscript, snoopscript), and all CProps
-2. Sort CProps alphabetically by name
-3. Build a canonical string: `"color=0x0|cursed=0|equipscript=|insured=0|itemtype=23|newbie=0|quality=1.0|snoopscript=|usescript=dragoneggs|wmm=0"`
-4. Hash it: `MD5Encrypt(canonical_string)` (built-in, `polsys.em`)
-5. DataFile element key: `"0x7059|a3f2b8c1d4e5..."` (objtype + "|" + MD5)
+1. Collect only properties that are **explicitly set on the item** (differ from itemdesc defaults): color, graphic, quality, flags (newbie, insured, cursed), weight_multiplier_mod, scripts (usescript, equipscript, snoopscript). Compare each against `GetItemDescriptor(item.objtype)` — omit if matching.
+2. Collect all CProps (these are always per-instance, never inherited from itemdesc).
+3. Sort all collected property names alphabetically.
+4. Build a canonical string from only the non-default properties: e.g., `"cprop_itemtype=23"` (a special potion with one CProp override) or `""` (a standard iron ingot with no overrides).
+5. Hash it: `MD5Encrypt(canonical_string)` (built-in, `polsys.em`). An empty string produces a constant hash.
+6. DataFile element key: `"0x7059|a3f2b8c1d4e5..."` (objtype + "|" + MD5)
 
-For standard items with default properties, items of the same objtype will produce the same hash. But items with non-default color, quality, flags, or any CProps will produce a different hash even with the same objtype — and are correctly stored as separate entries. The hash captures the full `CanStack()` identity from day one. There is no distinction between "simple" and "complex" items at the key or storage level.
+Standard items with no overrides all produce the same constant hash (MD5 of empty string). Items with any non-default property produce a different hash. The hash captures **what's special about this item**, not its full state — matching exactly what the element stores.
+
+`BuildDefaultKey(objtype)` is simply `objtype + "|" + MD5Encrypt("")` — no need to read itemdesc at all.
 
 **Why MD5 hash for the key**:
 - Fixed-length, consistent key regardless of CProp count or value complexity
@@ -802,32 +866,41 @@ For standard items with default properties, items of the same objtype will produ
 
 ### DataFile Element Structure
 
-The hash is only for lookup/identity. The actual item properties are stored on the DataFile element so items can be recreated on withdrawal:
+The hash is only for lookup/identity. The DataFile element stores the objtype, weight, and **only properties that differ from itemdesc defaults**. Properties that match the itemdesc are omitted — the recreated item inherits them naturally from `CreateItemInContainer()`. This ensures cached items behave identically to non-cached items (inheriting from itemdesc, not carrying per-instance overrides).
 
 ```
 // DataFile element key: "0x7059|a3f2b8c1d4e5..."
-// Properties:
+//
+// Properties (always present):
 //   qty = 50
 //   objtype = 0x7059
 //   weight = 0.25                (per-unit weight via GetItemDescriptor(objtype).Weight)
-//   color = 0x0
-//   quality = 1.0
-//   newbie = 0
-//   insured = 0
-//   cursed = 0
-//   weight_multiplier_mod = 0
-//   usescript = dragoneggs       (per-instance script, empty if itemdesc default)
-//   equipscript =                (per-instance equip script)
-//   snoopscript =                (per-instance snoop script)
-//   cprop_itemtype = 23          (each CProp stored as cprop_<name>)
+//
+// Properties compared against itemdesc (omitted if matching GetItemDescriptor(objtype)):
+//   color = 0x123                (omitted if matches itemdesc Color)
+//   graphic = 0x1234             (omitted if matches itemdesc Graphic / objtype)
+//   quality = 2.0                (omitted if matches itemdesc Quality)
+//   usescript = customscript     (omitted if matches itemdesc Script)
+//   equipscript = customequip    (omitted if matches itemdesc EquipScript)
+//   snoopscript = customsnoop    (omitted if matches itemdesc SnoopScript)
+//
+// Properties with fixed defaults (omitted if at default value):
+//   newbie = 1                   (default: 0)
+//   insured = 1                  (default: 0)
+//   cursed = 1                   (default: 0)
+//   weight_multiplier_mod = 2    (default: 0)
+//
+// CProps (always per-instance, stored if present):
+//   cprop_itemtype = 23
 //   cprop_SpellID = i81
 ```
 
-All properties are stored at deposit time from the physical item. On withdrawal, items are recreated and all properties restored:
-1. `CreateItemInContainer(container, objtype, amount)`
-2. Set color, quality, flags if they differ from itemdesc defaults
-3. Set usescript, equipscript, snoopscript if they differ from itemdesc defaults
-4. Restore each CProp from the stored `cprop_*` properties
+**Important**: Both the hash and the element store only non-default values — they are always in sync. On withdrawal:
+1. `CreateItemInContainer(container, objtype, amount)` — item inherits all itemdesc defaults
+2. Only set properties that are explicitly stored on the element (non-defaults)
+3. Restore each CProp from stored `cprop_*` properties
+
+This means a standard iron ingot's element only has `qty`, `objtype`, and `weight` — no overrides needed. A recolored or script-overridden item stores the specific differences.
 
 ### Gump Display Strategy
 
@@ -863,7 +936,7 @@ All repeatable actions must be executable via text commands with **no gump inter
 | `.cache` | Open the Omega Cache browse/withdraw gump | Yes |
 | `.cache deposit` | Deposit all eligible items from backpack + child containers | No |
 | `.cache deposit` (with target) | Target a container (deposits all eligible contents) or a single stackable item | Target only |
-| `.cache withdraw <amount>` | Target an item of the type to withdraw, then specify amount. Item is used for type identification only (not consumed). | Target only |
+| `.cache withdraw <amount>` | Target an item of the type to withdraw, then specify amount. Item is used for type identification only (not consumed). If you have no instance of the item to target, use the `.cache` gump instead. Prompt: "Target an item of the type you wish to withdraw." | Target only |
 | `.loadout` | Open loadout management gump | Yes |
 | `.loadout 1-10` | Apply a specific loadout | No |
 | `.loadout all` | Apply all defined loadouts in sequence | No |
@@ -885,22 +958,23 @@ All commands registered as player-level in `config/cmds.cfg`.
 4. **Housing integration** — deed system, house limits (`maxnumomegacache`/`numomegacache`), `houseserial` linking, extend `AssignDefaultContainers()` + `GetMaxProps()` + lazy-init check in `sign.src`
 5. **House sign display** — add "Number of Omega Caches: used/max" line to sign gump layout and data arrays
 6. **Access control** — reuse secure container privilege checks (VIEW_SECURE, ADD_TO_SECURE, REMOVE_FROM_SECURE)
-7. **Deposit mechanism** — data-driven, blacklist-based eligibility, no arbitrary limits, deposit-all with warning prompt
-8. **Withdrawal mechanism** — multi-stack, weight-aware with full parent chain validation, per-stack DataFile debit, destination container targeting
-9. **Gump redesign** — dynamic from `categories.cfg` + DataFile with "Miscellaneous / Other" for uncategorized items, keep current visual style initially
-10. **Cabinet lifecycle** — deed placement, destruction blocking, house demolition warning
-11. **Macro commands** — `.cache deposit`, `.cache withdraw <amount>` with target cursor (no gump)
-12. **Testing** — deposit/withdraw cycles, concurrent access, weight edge cases, multi-cabinet houses, permission checks, macro command flows
-13. **Gump review** — evaluate and potentially redesign the gump layout
+7. **Item definitions** — rework `itemdesc.cfg` (Item not Container, remove lock/gump properties), add deed item definition, verify objtype availability
+8. **Deposit mechanism** — data-driven, blacklist-based eligibility, no arbitrary limits, deposit-all with warning prompt
+9. **Withdrawal mechanism** — multi-stack, weight-aware with full parent chain validation, per-stack DataFile debit, destination container targeting
+10. **Gump redesign** — dynamic from `categories.cfg` + DataFile with "Miscellaneous / Other" for uncategorized items, keep current visual style initially
+11. **Cabinet lifecycle** — deed placement, destruction blocking, house demolition warning
+12. **Macro commands** — `.cache deposit`, `.cache withdraw <amount>` with target cursor (no gump)
+13. **Testing** — deposit/withdraw cycles, concurrent access, weight edge cases, multi-cabinet houses, permission checks, macro command flows
+14. **Gump review** — evaluate and potentially redesign the gump layout
 
 ### Phase 2: Crafting Integration
-14. **Crafting resource manager** — `resourcemanager.inc` using `FindAccessibleCabinet()`, `ConsumeFromStore()` with fast-path + prefix fallback, craft script modifications
+15. **Crafting resource manager** — `resourcemanager.inc` using `FindAccessibleCabinet()`, `ConsumeFromStore()` with fast-path + prefix fallback, craft script modifications
 
 ### Phase 3: Loadout System
-15. **Loadout data layer** — DataFile per character, slot CRUD operations
-16. **Loadout gump** — create, edit (editable quantities, add via target, remove per row), save from baseline
-17. **Loadout apply** — reconcile container with cabinet store (withdraw deficits, deposit surpluses), lost container error handling
-18. **`.loadout` command** — register player command, slot activation, apply-all (no gump, macro-friendly)
+16. **Loadout data layer** — DataFile per character, slot CRUD operations
+17. **Loadout gump** — create, edit (editable quantities, add via target, remove per row), save from baseline
+18. **Loadout apply** — reconcile container with cabinet store (withdraw deficits, deposit surpluses), lost container error handling
+19. **`.loadout` command** — register player command, slot activation, apply-all (no gump, macro-friendly)
 
 ---
 
