@@ -431,6 +431,7 @@ function MakeAndProcessMenu( who , ingots , orediff )
 			AddMenuItem( menu , 0x13C4 , "Chainmail" );
 			AddMenuItem( menu , 0x13EC , "Ringmail" );
 			AddMenuItem( menu , 0x1412 , "Helmets" );
+			AddMenuItem( menu , 0x2641 , "Dragon Armor" );
 			break;
 
 		2:	break;
