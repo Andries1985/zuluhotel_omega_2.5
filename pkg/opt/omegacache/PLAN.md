@@ -18,8 +18,9 @@ Original author: DeiviD (deivid@neverlands.org), package renamed from `resources
 
 - **`homecollector.src`** (~2000+ lines): Main script. Opens a multi-page gump with hardcoded category tabs (Reagents, Gems, Resources, Food, Money, Potions, Ammo, Scrolls, Runes). Handles withdrawal via text entry fields per item row.
 - **`omegacache.inc`** (~4400 lines): Contains ~300 individual getter functions (one per item type returning `CInt(GetObjProperty(item, "X"))`), a massive `store_collection_item()` case statement for deposits, and the `rescollect()` targeting function.
-- **`collector.cfg`**: Defines all item categories, their objtypes, display names, and gump icons.
-- **`itemdesc.cfg`**: Defines the cabinet furniture item (`0xDF0A`, graphic 42789).
+- **`categories.cfg`**: Defines all item categories, their objtypes, display names, and gump icons.
+- **`itemdesc.cfg`**: Defines the physical cache furniture item (`0xDF0A`, graphic 42789). The player-visible Name and Desc are configurable here — the item can be renamed at any time without code changes.
+- **`blacklist.cfg`**: Items excluded from storage even if stackable.
 - **`pkg.cfg`**: Package definition.
 
 ### How It Currently Works
@@ -40,7 +41,7 @@ Original author: DeiviD (deivid@neverlands.org), package renamed from `resources
 6. **Special potions (0x7059)** share an objtype and differ by `itemtype` CProp — deposit/withdrawal likely collapses them into one bucket.
 7. **Runes and scrolls** have CProps (SpellID, enchantment data) that would be lost when stored as simple counts.
 8. **Massive code duplication**: The `.inc` file has a dedicated function per item type. The deposit case statement repeats the same 6-line pattern ~300 times. The gump builder hardcodes every row.
-9. **No data-driven design**: Adding a new item requires changes in `collector.cfg`, `omegacache.inc` (getter function + deposit case + whitelist entry), and `homecollector.src` (gump row + withdrawal case).
+9. **No data-driven design**: Adding a new item requires changes in `categories.cfg`, `omegacache.inc` (getter function + deposit case + whitelist entry), and `homecollector.src` (gump row + withdrawal case).
 
 ---
 
@@ -95,7 +96,10 @@ An item is eligible for storage if it passes the same checks as our `CanStack()`
 - `newbie` / `insured` / `cursed` flags match
 - `quality` match
 - `weight_multiplier_mod` match
+- `usescript` / `equipscript` / `snoopscript` match (stricter than POL core — see below)
 - **All CProps must match**
+
+**Note on scripts**: POL's core `can_add_to_self()` does NOT check `usescript`, `equipscript`, or `snoopscript`. Our `CanStack()` is intentionally **stricter** — items with different per-instance script overrides produce different hashes and are stored separately. This prevents loss of script overrides during deposit/withdrawal. The scripts are accessible via `item.usescript`, `item.equipscript`, `item.snoopscript` and are stored on the DataFile element for restoration.
 
 POL's stacking guarantee means: **if two items can stack, they are identical in every meaningful property.** The `BuildItemKey()` function captures this full identity as an `"objtype|md5hash"` key. All item properties (color, quality, flags, CProps, weight) are stored on the DataFile element at deposit time and restored on withdrawal. Items with the same objtype but different properties produce different hashes and are stored as separate entries.
 
@@ -281,21 +285,37 @@ After demolition completes, clean up the DataFile (delete all elements, unload).
 
 ### Scope
 
-Items confirmed to have **no CProps** and unique objtypes per tier:
+Categories defined in `categories.cfg`. Full item listings per category are in the config file. Summary:
 
 | Category | Items | Count |
 |---|---|---|
-| Reagents | Ginseng, Mandrake, Garlic, Nightshade, Sulphurous Ash, Spider Silk, Black Pearl, Blood Moss, Batwing, Blackmoor, Bloodspawn, Vial of Blood, Bone, Brimstone, Daemon Bone, Fertile Dirt, Dragon's Blood, Executioner's Cap, Eye of Newt, Obsidian, Pig Iron, Pumice, Serpent's Scales, Volcanic Ash, Deadwood, Worm's Heart | 26 |
-| Gems | Star Sapphire, Emerald, Sapphire, Ruby, Citrine, Amethyst, Tourmaline, Amber, Diamond | 9 |
-| Ingots | Iron through Void (each tier has unique objtype 0x6011-0x6018, 0xC510-0xC518, 0xD04A) | 22+ |
-| Logs | Plain log + 13 tiers (0x1BDD, 0x7300-0x730C) | 14 |
-| Hides | Plain hide + 15 tiers (0x1078, 0x7020-0x702F) | 16 |
-| Cloth/Fibre | Bolt of cloth, cloth, wool | 3 |
-| Other Resources | Clay, glass, gold ingot | 3 |
+| Reagents | All 26 standard reagents | 26 |
+| Raw Herbs | Raw mandrake, raw garlic, raw nightshade, raw ginseng | 4 |
+| Gems | Star Sapphire through Diamond | 9 |
+| Ores | Iron Ore through Radiant Diamond Ore | 34 |
+| Ingots | Iron Ingot through Radiant Diamond Ingot | 34 |
+| Logs | Plain log + 13 tiers | 14 |
+| Hides | Plain hide + 16 tiers | 17 |
+| Cloth & Fibre | Cotton, flax, wool, cloth, bolt of cloth | 5 |
+| Mining Materials | Clay, glass, enchanted | 3 |
+| Seeds | Farming seeds (flax, cotton, garlic, mandrake, nightshade, ginseng) + botanik seeds (grapevine, apple, peach, pear, banana) | 11 |
+| Food | All raw/cooked food, drinks, fish | ~40 |
+| Money | Gold coin | 1 |
+| Potions | 24 standard potions + special potions (0x7059) | 25 |
 | Ammo | Arrow, bolt, fire, ice, thunder, throwable, gun, shaft, feather | 9 |
-| Money | Gold coin, Zulu coin | 2 |
-| Food | All raw and cooked food items | ~30 |
-| Miscellaneous | Blank scrolls, blank maps, lockpicks, empty bottles, recall runes, kindling, bandages | 7 |
+| Spellbook Scrolls | 64 standard magery scrolls (0x1F2D-0x1F6C) | 64 |
+| Earth Book Scrolls | 16 earth/druid magic scrolls | 16 |
+| Codex Damnorum Scrolls | 16 necromancy scrolls | 16 |
+| Song Book Scrolls | 20 bard song scrolls | 20 |
+| Holy Book Scrolls | 9 paladin holy scrolls | 9 |
+| Special Items | Omega Tokens, Transcendence Scrolls | 2 |
+| Miscellaneous | Bandages, blank scrolls, lockpicks, symbols, etc. | 18 |
+
+**Removed categories** (items don't exist on shard): ProtectionRunes, AttributeRunes, SkillCategories, UpgradeRunes, EarthBook, CodexDamnorum, SongBook, HolyBook.
+
+**Blacklisted items** (in `blacklist.cfg`): Gold Ingot (`0x1BE9` — not a real item, graphic used by clay), Zulu Coin (`0x3B9A` — doesn't exist).
+
+Any stackable item not in a defined category and not blacklisted is displayed under "Miscellaneous / Other" in the gump.
 
 ### 1.1 Data Layer
 
@@ -369,7 +389,7 @@ foreach thing in EnumerateItemsInContainer(target_container)
 endforeach
 ```
 
-Eligibility is driven by `CanStack()` logic at runtime — any stackable item not on the blacklist can be stored. Items not listed in `collector.cfg` categories are displayed under "Miscellaneous / Other".
+Eligibility is driven by `CanStack()` logic at runtime — any stackable item not on the blacklist can be stored. Items not listed in `categories.cfg` categories are displayed under "Miscellaneous / Other".
 
 ### 1.3 Withdrawal Mechanism
 
@@ -377,7 +397,7 @@ Eligibility is driven by `CanStack()` logic at runtime — any stackable item no
 
 **New approach**:
 
-1. Player opens gump, browses categories (built dynamically from `collector.cfg` + `df.Keys()` to show only items actually in stock).
+1. Player opens gump, browses categories (built dynamically from `categories.cfg` + `df.Keys()` to show only items actually in stock).
 2. Player enters a quantity and clicks withdraw.
 3. Access check: player must have `REMOVE_FROM_SECURE` privilege (or be owner/co-owner).
 4. **Destination container**: Player targets a container to receive items. Default prompt suggests backpack, but any accessible container is valid.
@@ -425,9 +445,9 @@ endfunction
 
 **Current problem**: Every gump row is hardcoded — adding an item means editing 3+ places.
 
-**New approach**: Build gump pages dynamically from `collector.cfg`:
+**New approach**: Build gump pages dynamically from `categories.cfg`:
 
-1. Read categories and their items from `collector.cfg`
+1. Read categories and their items from `categories.cfg`
 2. For each category, query DataFile for stored quantities
 3. Only show items that have stock > 0 (or show all with "0" for empty)
 4. Each row: icon (from itemdesc graphic) | item name (from itemdesc) | stored quantity | text entry field | take button
@@ -764,9 +784,9 @@ If a loadout's target container is destroyed, lost, or traded, `SystemFindObject
 The `CanStack()` function (moved to `scripts/include/canstack.inc`) defines exactly which properties make two items "the same." Every item stored in the cabinet uses a key format that captures the full stacking identity: `"objtype|md5hash"`.
 
 **Key generation** (`BuildItemKey(item)`):
-1. Collect all properties that `CanStack()` checks: color, quality, flags (newbie, insured, cursed), weight_multiplier_mod, and all CProps
+1. Collect all properties that `CanStack()` checks: color, quality, flags (newbie, insured, cursed), weight_multiplier_mod, scripts (usescript, equipscript, snoopscript), and all CProps
 2. Sort CProps alphabetically by name
-3. Build a canonical string: `"color=0x0|cursed=0|insured=0|itemtype=23|newbie=0|quality=1.0|wmm=0"`
+3. Build a canonical string: `"color=0x0|cursed=0|equipscript=|insured=0|itemtype=23|newbie=0|quality=1.0|snoopscript=|usescript=dragoneggs|wmm=0"`
 4. Hash it: `MD5Encrypt(canonical_string)` (built-in, `polsys.em`)
 5. DataFile element key: `"0x7059|a3f2b8c1d4e5..."` (objtype + "|" + MD5)
 
@@ -796,6 +816,9 @@ The hash is only for lookup/identity. The actual item properties are stored on t
 //   insured = 0
 //   cursed = 0
 //   weight_multiplier_mod = 0
+//   usescript = dragoneggs       (per-instance script, empty if itemdesc default)
+//   equipscript =                (per-instance equip script)
+//   snoopscript =                (per-instance snoop script)
 //   cprop_itemtype = 23          (each CProp stored as cprop_<name>)
 //   cprop_SpellID = i81
 ```
@@ -803,7 +826,8 @@ The hash is only for lookup/identity. The actual item properties are stored on t
 All properties are stored at deposit time from the physical item. On withdrawal, items are recreated and all properties restored:
 1. `CreateItemInContainer(container, objtype, amount)`
 2. Set color, quality, flags if they differ from itemdesc defaults
-3. Restore each CProp from the stored `cprop_*` properties
+3. Set usescript, equipscript, snoopscript if they differ from itemdesc defaults
+4. Restore each CProp from the stored `cprop_*` properties
 
 ### Gump Display Strategy
 
@@ -811,7 +835,7 @@ When building the gump, each item row needs: name, icon, color, quantity, and ca
 
 | Data Needed | Source | Requires Reading Element? |
 |---|---|---|
-| Category (for grouping) | Parse objtype prefix from key → look up in `collector.cfg`. Items not in any category go to "Miscellaneous / Other". | No |
+| Category (for grouping) | Parse objtype prefix from key → look up in `categories.cfg`. Items not in any category go to "Miscellaneous / Other". | No |
 | Item name | Parse objtype prefix → look up in itemdesc for base name. For variants (different hash for same objtype), read element CProps for specifics (e.g., "Invisibility Potion" vs "Special Potion") | Only for variant display |
 | Icon/graphic | Parse objtype prefix → look up in itemdesc | No |
 | Color/hue | Read from element if stored (non-default), otherwise itemdesc default | Only for non-default color |
@@ -820,7 +844,7 @@ When building the gump, each item row needs: name, icon, color, quantity, and ca
 **Deferred loading by category**:
 
 1. `df.Keys()` — get all keys (lightweight, just key strings)
-2. Parse objtype prefix from each key → look up category in `collector.cfg` → build `category -> array of keys` mapping. Keys whose objtype is not in any category go to "Miscellaneous / Other".
+2. Parse objtype prefix from each key → look up category in `categories.cfg` → build `category -> array of keys` mapping. Keys whose objtype is not in any category go to "Miscellaneous / Other".
 3. Show category menu with item type counts per category (`len(keys_array)`) — **no element reads yet**
 4. Player selects a category → **only then** read `qty` (and CProp display data for variants) for keys in that category
 
@@ -863,7 +887,7 @@ All commands registered as player-level in `config/cmds.cfg`.
 6. **Access control** — reuse secure container privilege checks (VIEW_SECURE, ADD_TO_SECURE, REMOVE_FROM_SECURE)
 7. **Deposit mechanism** — data-driven, blacklist-based eligibility, no arbitrary limits, deposit-all with warning prompt
 8. **Withdrawal mechanism** — multi-stack, weight-aware with full parent chain validation, per-stack DataFile debit, destination container targeting
-9. **Gump redesign** — dynamic from `collector.cfg` + DataFile with "Miscellaneous / Other" for uncategorized items, keep current visual style initially
+9. **Gump redesign** — dynamic from `categories.cfg` + DataFile with "Miscellaneous / Other" for uncategorized items, keep current visual style initially
 10. **Cabinet lifecycle** — deed placement, destruction blocking, house demolition warning
 11. **Macro commands** — `.cache deposit`, `.cache withdraw <amount>` with target cursor (no gump)
 12. **Testing** — deposit/withdraw cycles, concurrent access, weight edge cases, multi-cabinet houses, permission checks, macro command flows
