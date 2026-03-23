@@ -18,6 +18,17 @@ include ":housing:utility";
 // ============================================================
 
 const OMEGACACHE_OBJTYPE := 0xDF0A;
+const OMEGACACHE_DEBUG_HUE := 53;
+
+// Module-level debug target. Set by calling scripts before operations
+// so that helper functions can send debug messages to the player.
+var _debug_who := 0;
+
+function OmegaCacheDebug(msg)
+	if(DEBUG_MODE and _debug_who)
+		SendSysMessage(_debug_who, "[OmegaCache] " + msg, 3, OMEGACACHE_DEBUG_HUE);
+	endif
+endfunction
 
 // ============================================================
 // Key Generation
@@ -102,9 +113,7 @@ function BuildItemKey(item)
 	endforeach
 
 	var key := Hex(item.objtype) + "|" + MD5Encrypt(canonical);
-	if(DEBUG_MODE)
-		Print("[OmegaCache] BuildItemKey: objtype=" + Hex(item.objtype) + " canonical='" + canonical + "' key=" + key);
-	endif
+	OmegaCacheDebug("BuildItemKey: objtype=" + Hex(item.objtype) + " canonical='" + canonical + "' key=" + key);
 	return key;
 endfunction
 
@@ -130,9 +139,7 @@ function OpenHouseStore(cabinet)
 	var df := OpenDataFile(dfname);
 	if(!df)
 		df := CreateDataFile(dfname, DF_KEYTYPE_STRING);
-		if(DEBUG_MODE)
-			Print("[OmegaCache] OpenHouseStore: Created new DataFile " + dfname);
-		endif
+		OmegaCacheDebug("OpenHouseStore: Created new DataFile " + dfname);
 	endif
 	return df;
 endfunction
@@ -170,9 +177,7 @@ function DepositItem(df, key, item)
 		endforeach
 	endif
 
-	if(DEBUG_MODE)
-		Print("[OmegaCache] DepositItem: key=" + key + " added=" + item.amount + " total=" + (current_qty + item.amount));
-	endif
+	OmegaCacheDebug("DepositItem: key=" + key + " added=" + item.amount + " total=" + (current_qty + item.amount));
 	return current_qty + item.amount;
 endfunction
 
@@ -196,9 +201,7 @@ function WithdrawItem(df, key, amount)
 		elem.SetProp("qty", available - take);
 	endif
 
-	if(DEBUG_MODE)
-		Print("[OmegaCache] WithdrawItem: key=" + key + " requested=" + amount + " withdrawn=" + take + " remaining=" + (available - take));
-	endif
+	OmegaCacheDebug("WithdrawItem: key=" + key + " requested=" + amount + " withdrawn=" + take + " remaining=" + (available - take));
 	return take;
 endfunction
 
@@ -249,9 +252,7 @@ var _omegacache_blacklist := 0;
 // Must be stackable and not on the blacklist.
 function IsEligibleForStorage(item)
 	if(!item.stackable)
-		if(DEBUG_MODE)
-			Print("[OmegaCache] IsEligibleForStorage: " + Hex(item.objtype) + " rejected — not stackable");
-		endif
+		OmegaCacheDebug("IsEligibleForStorage: " + Hex(item.objtype) + " rejected - not stackable");
 		return 0;
 	endif
 
@@ -262,9 +263,7 @@ function IsEligibleForStorage(item)
 
 	if(_omegacache_blacklist)
 		if(FindConfigElem(_omegacache_blacklist, item.objtype))
-			if(DEBUG_MODE)
-				Print("[OmegaCache] IsEligibleForStorage: " + Hex(item.objtype) + " rejected — blacklisted");
-			endif
+			OmegaCacheDebug("IsEligibleForStorage: " + Hex(item.objtype) + " rejected - blacklisted");
 			return 0;
 		endif
 	endif
@@ -280,9 +279,8 @@ endfunction
 // and validates house access privileges.
 // Returns struct{ container, house, df } or 0.
 function FindAccessibleContainer(who, required_privileges)
-	if(DEBUG_MODE)
-		Print("[OmegaCache] FindAccessibleContainer: searching near " + who.name + " at " + who.x + "," + who.y + "," + who.z);
-	endif
+	_debug_who := who;
+	OmegaCacheDebug("FindAccessibleContainer: searching near " + who.name + " at " + who.x + "," + who.y + "," + who.z);
 	var nearby := ListItemsNearLocation(who.x, who.y, who.z, 4, who.realm);
 	foreach item in nearby
 		if(item.objtype == OMEGACACHE_OBJTYPE)
@@ -332,8 +330,6 @@ function FindAccessibleContainer(who, required_privileges)
 		endif
 	endforeach
 
-	if(DEBUG_MODE)
-		Print("[OmegaCache] FindAccessibleContainer: no accessible cache found for " + who.name);
-	endif
+	OmegaCacheDebug("FindAccessibleContainer: no accessible cache found for " + who.name);
 	return 0;
 endfunction
