@@ -11,13 +11,13 @@ use basic;
 
 include "include/canstack";
 include "include/client";
+include "include/omegacache_utils";
 include ":housing:utility";
 
 // ============================================================
 // Constants
 // ============================================================
 
-const OMEGACACHE_OBJTYPE := 0xDF0A;
 const OMEGACACHE_DEBUG_HUE := 53;
 
 // Module-level debug target. Set by calling scripts before operations
@@ -128,6 +128,7 @@ endfunction
 // ============================================================
 
 // Opens (or creates) the house's Omega Cache DataFile.
+// Thin wrapper — reads houseserial from cabinet CProp, delegates to shared utils.
 // Returns the DataFile handle, or 0 on failure.
 function OpenHouseStore(cabinet)
 	var house_serial := GetObjProperty(cabinet, "houseserial");
@@ -135,18 +136,9 @@ function OpenHouseStore(cabinet)
 		return 0;
 	endif
 
-	var dfname := ":omegacache:house_" + house_serial;
-	var df := OpenDataFile(dfname);
-	if(!df)
-		df := CreateDataFile(dfname, DF_KEYTYPE_STRING);
-		OmegaCacheDebug("OpenHouseStore: Created new DataFile " + dfname);
-	endif
+	var df := OpenOmegaCacheStore(house_serial);
+	OmegaCacheDebug("OpenHouseStore: opened for house serial " + house_serial);
 	return df;
-endfunction
-
-// Unloads the house's DataFile from memory.
-function CloseHouseStore(house_serial)
-	UnloadDataFile(":omegacache:house_" + house_serial);
 endfunction
 
 // ============================================================
@@ -236,11 +228,7 @@ function GetAllStored(df)
 	return df.Keys();
 endfunction
 
-// Returns 1 if no items are stored, 0 otherwise.
-function IsStoreEmpty(df)
-	var keys := df.Keys();
-	return (keys.size() == 0);
-endfunction
+// IsStoreEmpty — use IsOmegaCacheEmpty(house_serial) from omegacache_utils.inc
 
 // ============================================================
 // Validation

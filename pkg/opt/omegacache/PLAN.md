@@ -984,12 +984,12 @@ Player-facing. Players can place and remove Omega Caches in houses.
 
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 6 | Housing integration | Extend `AssignDefaultContainers()` + `GetMaxProps()` with `numomegacache`/`maxnumomegacache`, lazy-init check in `sign.src` |
-| [ ] 7 | House sign display | "Number of Omega Caches: used/max" line in sign gump |
-| [ ] 8 | Access control | Privilege checks (VIEW_SECURE, ADD_TO_SECURE, REMOVE_FROM_SECURE) integrated into `FindAccessibleContainer()` |
-| [ ] 9 | Deed placement script | `placecache.src` — house check, limit check, targeting, cabinet creation with `houseserial` CProp |
-| [ ] 10 | Destruction script | `destroycache.src` — block if DataFile non-empty, re-credit `numomegacache` counter |
-| [ ] 11 | House demolition warning | Yellow system message before existing YesNo, DataFile cleanup after demolition |
+| [x] 6 | Housing integration | Extend `AssignDefaultContainers()` + `GetMaxProps()` with `numomegacache`/`maxnumomegacache`, lazy-init check in `sign.src` |
+| [x] 7 | House sign display | "Number of Omega Caches: used/max" line in sign gump |
+| [x] 8 | Access control | Privilege checks (VIEW_SECURE, ADD_TO_SECURE, REMOVE_FROM_SECURE) integrated into `FindAccessibleContainer()` — completed in Milestone 1.1 |
+| [x] 9 | Deed placement script | `placecache.src` — house check, limit check, targeting, cabinet creation with `houseserial` CProp |
+| [x] 10 | Destruction/removal | `destroycache.src` (DestroyScript safety net) + "Remove Omega Cache" button in House Management gump |
+| [x] 11 | House demolition warning | Yellow system message before existing YesNo, DataFile cleanup after demolition |
 
 **Testable**: GM creates a deed, player places it in a house, house sign shows count, destruction is blocked while items exist (seed test data via GM), demolition warning fires.
 

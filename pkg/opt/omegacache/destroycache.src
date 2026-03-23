@@ -1,0 +1,41 @@
+// destroycache.src — Omega Cache DestroyScript
+//
+// Safety net: blocks destruction if the house's Omega Cache DataFile
+// contains stored items. Re-credits numomegacache on the house when
+// destruction is allowed.
+//
+// Primary removal path is through House Management gump.
+// This script handles GM deletion, script deletion, and other edge cases.
+
+use uo;
+use os;
+
+include "include/client";
+include "include/omegacache_utils";
+
+program destroy_omegacache(item)
+
+	var house_serial := GetObjProperty(item, "houseserial");
+
+	// If no house link, allow destruction (orphaned item)
+	if(!house_serial)
+		return 1;
+	endif
+
+	// Block if cache has stored items
+	if(!IsOmegaCacheEmpty(house_serial))
+		// Can't send message from DestroyScript (no player reference)
+		// but blocking prevents the destruction
+		return 0;
+	endif
+
+	// Re-credit the house's omega cache slot
+	var house := SystemFindObjectBySerial(CInt(house_serial));
+	if(house)
+		var current := CInt(GetObjProperty(house, "numomegacache"));
+		SetObjProperty(house, "numomegacache", current + 1);
+	endif
+
+	return 1;
+
+endprogram
