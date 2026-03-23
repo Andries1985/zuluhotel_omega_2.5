@@ -606,7 +606,7 @@ endfunction
 
 // Uses the shared access check — player must be near a cabinet with privileges
 function FindHouseStore(who)
-    var access := FindAccessibleCabinet(who, array{REMOVE_FROM_SECURE});
+    var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
     if (!access)
         return 0;
     endif
@@ -710,7 +710,7 @@ ConsumeResource(who, ingot_objtype, material);
 All features that interact with the Omega Cache store (direct use, crafting, loadouts) must use the same access validation. This is a single shared function:
 
 ```
-// FindAccessibleCabinet(who, required_privileges)
+// FindAccessibleContainer(who, required_privileges)
 // Returns: struct{ cabinet, house, df } or 0
 //
 // Checks:
@@ -724,8 +724,8 @@ All features that interact with the Omega Cache store (direct use, crafting, loa
 // 5. Open and return the house's DataFile
 //
 // Usage:
-//   var access := FindAccessibleCabinet(who, array{REMOVE_FROM_SECURE});
-//   var access := FindAccessibleCabinet(who, array{ADD_TO_SECURE, REMOVE_FROM_SECURE});
+//   var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
+//   var access := FindAccessibleContainer(who, array{ADD_TO_SECURE, REMOVE_FROM_SECURE});
 ```
 
 This replaces the earlier `FindHouseStore(who)` and `FindNearbyCabinet(who)` concepts with a single, stricter function. "Within interaction range of a cabinet" is more specific than "inside a house" — the player must be near a physical cabinet, and that cabinet must belong to a house they have access to.
@@ -784,7 +784,7 @@ Each character gets a DataFile for their loadout definitions:
 - "Change Container" button to re-target a different container
 
 **Applying a loadout** (`.loadout 1` or gump button):
-1. Access check: `FindAccessibleCabinet(who, array{ADD_TO_SECURE, REMOVE_FROM_SECURE})` — player needs both deposit and withdraw privileges since sync goes both ways
+1. Access check: `FindAccessibleContainer(who, array{ADD_TO_SECURE, REMOVE_FROM_SECURE})` — player needs both deposit and withdraw privileges since sync goes both ways
 2. Find the loadout's target container by serial in player's backpack
 3. Build a key-to-amount map of the container's current contents: for each item in the container, call `BuildItemKey(item)` and sum amounts by key. This matches by full `"objtype|hash"` key, not just objtype — a recolored variant won't be counted toward a default variant's target.
 4. For each key in the loadout definition:
@@ -945,7 +945,7 @@ All commands registered as player-level in `config/cmds.cfg`.
 
 **Design principle**: A macro can chain `.loadout all` after recalling home, or `.cache deposit` after a farming run, with zero gump interaction. Commands print clear success/failure messages for macro tools to parse.
 
-**Access check applies to commands too** — all commands require `FindAccessibleCabinet()` proximity check.
+**Access check applies to commands too** — all commands require `FindAccessibleContainer()` proximity check.
 
 ---
 
@@ -969,11 +969,11 @@ Non-player-facing. Builds the core libraries and item definitions that all subse
 
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 1 | Move `CanStack()` to `scripts/include/canstack.inc` | Shared include, `packethook.src` updated to use it |
-| [ ] 2 | Data layer (`omegacache.inc` rewrite) | `BuildItemKey()`, `BuildDefaultKey()`, `OpenHouseStore()`, `DepositItem()`, `WithdrawItem()`, `GetStoredAmount()`, `GetStoredAmountByObjtype()`, `IsStoreEmpty()`, `IsEligibleForStorage()` |
-| [ ] 3 | Shared access check | `FindAccessibleCabinet()` function |
-| [ ] 4 | Item definitions | Rework `itemdesc.cfg` (Item not Container), add deed definition, verify deed objtype availability |
-| [ ] 5 | Blacklist | `blacklist.cfg` with Gold Ingot and Zulu Coin |
+| [x] 1 | Move `CanStack()` to `scripts/include/canstack.inc` | Shared include, `packethook.src` updated to use it |
+| [x] 2 | Data layer (`omegacache.inc` rewrite) | `BuildItemKey()`, `BuildDefaultKey()`, `OpenHouseStore()`, `DepositItem()`, `WithdrawItem()`, `GetStoredAmount()`, `GetStoredAmountByObjtype()`, `IsStoreEmpty()`, `IsEligibleForStorage()` |
+| [x] 3 | Shared access check | `FindAccessibleContainer()` function |
+| [x] 4 | Item definitions | Rework `itemdesc.cfg` (Item not Container), add deed definition, verify deed objtype `0xDF0B` confirmed available |
+| [x] 5 | Blacklist | `blacklist.cfg` with Gold Ingot and Zulu Coin, format verified |
 
 **Testable**: Data layer functions can be exercised via GM commands or test scripts — create items, build keys, deposit/withdraw from DataFile, verify element contents on disk.
 
@@ -984,7 +984,7 @@ Player-facing. Players can place and remove Omega Caches in houses.
 |---|---|---|
 | [ ] 6 | Housing integration | Extend `AssignDefaultContainers()` + `GetMaxProps()` with `numomegacache`/`maxnumomegacache`, lazy-init check in `sign.src` |
 | [ ] 7 | House sign display | "Number of Omega Caches: used/max" line in sign gump |
-| [ ] 8 | Access control | Privilege checks (VIEW_SECURE, ADD_TO_SECURE, REMOVE_FROM_SECURE) integrated into `FindAccessibleCabinet()` |
+| [ ] 8 | Access control | Privilege checks (VIEW_SECURE, ADD_TO_SECURE, REMOVE_FROM_SECURE) integrated into `FindAccessibleContainer()` |
 | [ ] 9 | Deed placement script | `placecache.src` — house check, limit check, targeting, cabinet creation with `houseserial` CProp |
 | [ ] 10 | Destruction script | `destroycache.src` — block if DataFile non-empty, re-credit `numomegacache` counter |
 | [ ] 11 | House demolition warning | Yellow system message before existing YesNo, DataFile cleanup after demolition |
@@ -1041,7 +1041,7 @@ Stabilisation pass.
 | # | Task | Deliverable |
 |---|---|---|
 | [ ] 30 | `resourcemanager.inc` | `GetAvailableResource()` (enumerate all backpack stacks + cache), `ConsumeResource()` (backpack-first, then cache), `ConsumeFromStore()` (fast-path + prefix fallback) |
-| [ ] 31 | `FindHouseStore()` integration | Uses `FindAccessibleCabinet()` for proximity + privilege check |
+| [ ] 31 | `FindHouseStore()` integration | Uses `FindAccessibleContainer()` for proximity + privilege check |
 
 **Testable**: Call `GetAvailableResource()` and `ConsumeResource()` from test scripts, verify backpack-first consumption and cache fallback.
 
