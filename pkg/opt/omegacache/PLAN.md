@@ -998,13 +998,13 @@ Player-facing. The core feature is usable — players can store and retrieve ite
 
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 12 | Deposit — single item | Target an item, validate eligibility, `BuildItemKey()`, `DepositItem()`, destroy item, report |
-| [ ] 13 | Deposit — container | Target a container, enumerate all eligible items, deposit and destroy each, summary report |
-| [ ] 14 | Deposit — deposit-all | Deposit all eligible items from backpack + child containers, warning prompt |
-| [ ] 15 | Withdrawal — basic | Select item from gump, enter quantity, create in backpack, per-stack DataFile debit with re-credit on failure |
-| [ ] 16 | Withdrawal — destination targeting | Player targets a destination container instead of defaulting to backpack |
-| [ ] 17 | Withdrawal — weight validation | Full parent chain weight check, max withdrawable calculation, error reporting |
-| [ ] 18 | Withdrawal — multi-stack | Create multiple stacks when amount exceeds stack_limit (60000) |
+| [x] 12 | Deposit — single item | `DepositSingleItem()` — validate, build key, deposit, destroy, report |
+| [x] 13 | Deposit — container | `DepositFromContainer()` — enumerate, deposit each, summary report with skip count |
+| [x] 14 | Deposit — deposit-all | `DoDepositAll()` — targets backpack, same container logic |
+| [x] 15 | Withdrawal — basic | `DoWithdraw()` — create-first-then-debit, per-stack loop, `RecreateItem()` for property restoration |
+| [x] 16 | Withdrawal — destination targeting | `PromptDestination()` — target container or ESC for backpack |
+| [x] 17 | Withdrawal — weight validation | `GetMaxWithdrawableByWeight()` — full parent chain walk, item slot check |
+| [x] 18 | Withdrawal — multi-stack | Stack loop in `DoWithdraw()` using `GetItemDescriptor().StackLimit` |
 
 **Testable**: Deposit items via gump and verify DataFile on disk. Withdraw items and verify they appear in the correct container with correct properties. Test weight limits, multi-stack, partial failures.
 

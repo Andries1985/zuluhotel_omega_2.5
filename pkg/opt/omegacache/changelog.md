@@ -95,3 +95,50 @@ Player-facing milestone. Players can place and remove Omega Caches in houses via
 17. Multiple caches in one house — verify all share same storage pool (same house_serial DataFile)
 18. Verify existing housing features still work (lockdowns, secures, teleporters) — no regressions from layout changes
 
+---
+
+## Milestone 1.3 — Deposit & Withdraw (2026-03-24)
+
+### Summary
+
+Core deposit and withdrawal logic. The feature is functionally complete — players can store and retrieve items. Gump UI comes in Milestone 1.4.
+
+**Files created:**
+- `pkg/opt/omegacache/omegacache.src` — Main use-script for cache interaction. Contains: `DepositSingleItem()`, `DepositFromContainer()`, `DoDepositTargeting()`, `DoDepositAll()`, `DoWithdraw()`, `PromptDestination()`
+
+**Files modified:**
+- `pkg/opt/omegacache/omegacache.inc` — Added: `RecreateItem()` (restores item from DataFile element properties including color, graphic, quality, flags, scripts, CProps), `ReCreditItem()` (undo debit on failure), `GetMaxWithdrawableByWeight()` (full parent chain weight walk)
+
+### Key Design Decisions
+
+- **Create-first-then-debit**: Items are created in the destination before debiting the DataFile. If creation fails, no debit happened — prevents item loss. The inverse (debit-first) would risk items disappearing if creation fails.
+- **Deposit builds item list first**: `DepositFromContainer()` enumerates all eligible items into an array before destroying any, avoiding iteration-during-modification issues.
+- **Stack limit per item type**: Uses `GetItemDescriptor(objtype).StackLimit` when available, falls back to 60000.
+- **Weight validation walks full parent chain**: `GetMaxWithdrawableByWeight()` checks available weight at every container level up to the root.
+
+### Verification Steps
+
+**Functional:**
+1. Double-click a placed Omega Cache — verify "Omega Cache is operational" message (placeholder, gump in 1.4)
+2. Call `DepositSingleItem()` with a stackable item — verify item destroyed, DataFile element created with correct qty/objtype/weight
+3. Call `DepositSingleItem()` with a non-stackable item — verify "cannot be stored" rejection
+4. Call `DepositSingleItem()` with a blacklisted item — verify rejection
+5. Call `DepositFromContainer()` on a bag of mixed items — verify eligible items deposited, summary shows correct counts, ineligible items remain with skip count
+6. Call `DoDepositAll()` — verify all eligible items from backpack deposited
+7. Deposit same item type twice — verify qty accumulates on same DataFile element
+
+**Integration:**
+8. Call `DoWithdraw()` for 100 iron ingots — verify item appears in destination with correct objtype/amount
+9. Withdraw an item that had non-default color — verify recreated item has the correct color
+10. Withdraw an item that had CProps — verify CProps restored on recreated item
+11. Withdraw 120,000 of an item (stack_limit=60000) — verify 2 stacks created
+12. Withdraw into a container near its weight limit — verify partial withdrawal with message
+13. Withdraw into a full container (max_items reached) — verify "container is full" message
+14. `PromptDestination()` — target a bag, verify items go there. ESC, verify items go to backpack.
+15. Withdraw all of an item — verify DataFile element is deleted
+
+**Feature:**
+16. Full deposit-withdraw cycle: deposit 500 iron ingots → verify DataFile → withdraw 200 → verify 300 remain → withdraw 300 → verify element deleted
+17. Deposit items with CProps (e.g., special potion) → withdraw → verify CProps intact
+18. Deposit a recolored item → withdraw → verify color preserved
+

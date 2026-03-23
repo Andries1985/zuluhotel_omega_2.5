@@ -1,0 +1,295 @@
+// omegacache.src — Omega Cache main use-script
+//
+// Triggered when a player double-clicks a placed Omega Cache Container.
+// Handles deposit and withdrawal operations.
+// Gump UI is built in Milestone 1.4 — this file provides the core logic.
+
+use uo;
+use os;
+use math;
+use cfgfile;
+
+include ":omegacache:omegacache";
+
+const ADD_TO_SECURE := 3;
+const REMOVE_FROM_SECURE := 4;
+
+// ============================================================
+// Entry Point
+// ============================================================
+
+program use_omegacache(who, item)
+
+	_debug_who := who;
+
+	// Access check
+	var access := FindAccessibleContainer(who, array{});
+	if(!access)
+		SendSysMessage(who, "You cannot access this.");
+		return;
+	endif
+
+	var df := access.df;
+	if(!df)
+		SendSysMessage(who, "Failed to open storage.");
+		return;
+	endif
+
+	// Placeholder — gump will be built in Milestone 1.4
+	// For now, the script is callable but the gump interaction
+	// will be added later. Deposit and withdraw functions below
+	// are ready to be called from the gump.
+	SendSysMessage(who, "Omega Cache is operational. Gump coming soon.");
+
+endprogram
+
+// ============================================================
+// Deposit Functions
+// ============================================================
+
+// Deposits a single item into the cache.
+// Returns 1 on success, 0 on failure.
+function DepositSingleItem(who, df, item)
+	if(!IsEligibleForStorage(item))
+		SendSysMessage(who, "That item cannot be stored.");
+		return 0;
+	endif
+
+	var key := BuildItemKey(item);
+	var desc := item.desc;
+	var amt := item.amount;
+	DepositItem(df, key, item);
+	DestroyItem(item);
+	SendSysMessage(who, "Deposited: " + amt + " " + desc);
+	return 1;
+endfunction
+
+// Deposits all eligible items from a container.
+// Returns total number of items deposited.
+function DepositFromContainer(who, df, container)
+	var deposited := dictionary;
+	var skipped := 0;
+	var total_deposited := 0;
+
+	// Build list first to avoid modifying container during iteration
+	var items_to_deposit := array{};
+	foreach thing in EnumerateItemsInContainer(container)
+		// Skip sub-containers themselves, only deposit stackable items
+		if(!thing.isa(POLCLASS_CONTAINER))
+			if(IsEligibleForStorage(thing))
+				items_to_deposit.append(thing);
+			else
+				skipped := skipped + 1;
+			endif
+		endif
+	endforeach
+
+	// Now deposit and destroy
+	foreach thing in items_to_deposit
+		var key := BuildItemKey(thing);
+		var desc := thing.desc;
+		var amt := thing.amount;
+
+		DepositItem(df, key, thing);
+		DestroyItem(thing);
+
+		if(!deposited[desc])
+			deposited[desc] := amt;
+		else
+			deposited[desc] := deposited[desc] + amt;
+		endif
+		total_deposited := total_deposited + amt;
+	endforeach
+
+	// Summary report
+	if(total_deposited > 0)
+		var parts := array{};
+		foreach desc in (deposited.keys())
+			parts.append(deposited[desc] + " " + desc);
+		endforeach
+		var summary := "";
+		var i := 1;
+		foreach part in parts
+			if(i > 1)
+				summary := summary + ", ";
+			endif
+			summary := summary + part;
+			i := i + 1;
+		endforeach
+		SendSysMessage(who, "Deposited: " + summary);
+	else
+		SendSysMessage(who, "No eligible items to deposit.");
+	endif
+
+	if(skipped > 0)
+		SendSysMessage(who, CStr(skipped) + " item(s) could not be stored.");
+	endif
+
+	return total_deposited;
+endfunction
+
+// Deposit with targeting loop — handles single items and containers.
+function DoDepositTargeting(who, df)
+	var target;
+	while(1)
+		SendSysMessage(who, "Target an item or container to deposit. Press ESC to stop.");
+		target := Target(who);
+		if(!target)
+			break;
+		endif
+
+		if(target.isa(POLCLASS_CONTAINER))
+			DepositFromContainer(who, df, target);
+		else
+			DepositSingleItem(who, df, target);
+		endif
+	endwhile
+endfunction
+
+// Deposit all eligible items from backpack and child containers.
+function DoDepositAll(who, df)
+	SendSysMessage(who, "Depositing all eligible items from your backpack...");
+	var total := DepositFromContainer(who, df, who.backpack);
+	if(total == 0)
+		SendSysMessage(who, "No eligible items found in your backpack.");
+	endif
+	return total;
+endfunction
+
+// ============================================================
+// Withdraw Functions
+// ============================================================
+
+// Withdraws items from the cache to a destination container.
+// Handles multi-stack, weight validation, and per-stack debit.
+// Returns total amount actually withdrawn.
+function DoWithdraw(who, df, key, amount, destination)
+	_debug_who := who;
+
+	var elem := df.FindElement(key);
+	if(!elem)
+		SendSysMessage(who, "That item is no longer in the cache.");
+		return 0;
+	endif
+
+	var available := CInt(elem.GetProp("qty"));
+	if(amount <= 0)
+		SendSysMessage(who, "Invalid amount.");
+		return 0;
+	endif
+	if(amount > available)
+		amount := available;
+		SendSysMessage(who, "Only " + available + " available. Withdrawing all.");
+	endif
+
+	var objtype := CInt(elem.GetProp("objtype"));
+	var desc_info := GetItemDescriptor(objtype);
+	var item_weight := CDbl(elem.GetProp("weight"));
+
+	// Stack limit for this item type
+	var stack_limit := 60000;
+	if(desc_info and desc_info.StackLimit)
+		stack_limit := CInt(desc_info.StackLimit);
+	endif
+
+	// Weight validation
+	var max_by_weight := GetMaxWithdrawableByWeight(destination, item_weight, amount);
+	if(max_by_weight < amount)
+		if(max_by_weight <= 0)
+			SendSysMessage(who, "The destination cannot hold any more weight.");
+			return 0;
+		endif
+		SendSysMessage(who, "Weight limit: can only withdraw " + max_by_weight + " (requested " + amount + ").");
+		amount := max_by_weight;
+	endif
+
+	// Calculate stacks needed
+	var stacks_needed := CInt(Ceil(CDbl(amount) / CDbl(stack_limit)));
+
+	// Item slot validation — check destination has room
+	// (approximate — count existing items)
+	if(destination.max_items > 0)
+		var current_items := 0;
+		foreach thing in EnumerateItemsInContainer(destination, ENUMERATE_ROOT_ONLY)
+			current_items := current_items + 1;
+		endforeach
+		var slots_available := destination.max_items - current_items;
+		if(stacks_needed > slots_available)
+			// Reduce to what fits
+			var max_stacks := slots_available;
+			if(max_stacks <= 0)
+				SendSysMessage(who, "The destination container is full.");
+				return 0;
+			endif
+			amount := max_stacks * stack_limit;
+			if(amount > available)
+				amount := available;
+			endif
+			stacks_needed := max_stacks;
+			SendSysMessage(who, "Container slot limit: withdrawing " + amount + " (" + stacks_needed + " stack(s)).");
+		endif
+	endif
+
+	// Create items — create first, then debit
+	var total_withdrawn := 0;
+	var remaining := amount;
+
+	while(remaining > 0)
+		var this_stack := remaining;
+		if(this_stack > stack_limit)
+			this_stack := stack_limit;
+		endif
+
+		// Create the item
+		var newitem := RecreateItem(destination, elem, this_stack);
+		if(!newitem or newitem.errortext)
+			SendSysMessage(who, "Failed to create item. Stopping withdrawal.");
+			break;
+		endif
+
+		// Debit the DataFile (re-read elem in case it changed)
+		WithdrawItem(df, key, this_stack);
+
+		total_withdrawn := total_withdrawn + this_stack;
+		remaining := remaining - this_stack;
+
+		// Re-fetch element for next iteration (may have been modified)
+		elem := df.FindElement(key);
+		if(!elem and remaining > 0)
+			SendSysMessage(who, "Cache depleted unexpectedly. Stopping.");
+			break;
+		endif
+	endwhile
+
+	// Report
+	if(total_withdrawn > 0)
+		var item_name := "";
+		if(desc_info)
+			item_name := desc_info.Desc;
+		else
+			item_name := Hex(objtype);
+		endif
+		var stacks_created := CInt(Ceil(CDbl(total_withdrawn) / CDbl(stack_limit)));
+		if(stacks_created > 1)
+			SendSysMessage(who, "Withdrawn: " + total_withdrawn + " " + item_name + " (" + stacks_created + " stacks).");
+		else
+			SendSysMessage(who, "Withdrawn: " + total_withdrawn + " " + item_name + ".");
+		endif
+	endif
+
+	return total_withdrawn;
+endfunction
+
+// Prompts for a destination container, defaulting to backpack on ESC.
+function PromptDestination(who)
+	SendSysMessage(who, "Target a container to receive items, or press ESC for your backpack.");
+	var dest := Target(who);
+	if(!dest)
+		dest := who.backpack;
+		SendSysMessage(who, "Using your backpack.");
+	elseif(!dest.isa(POLCLASS_CONTAINER))
+		SendSysMessage(who, "That is not a container. Using your backpack.");
+		dest := who.backpack;
+	endif
+	return dest;
+endfunction

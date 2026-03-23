@@ -231,6 +231,116 @@ endfunction
 // IsStoreEmpty — use IsOmegaCacheEmpty(house_serial) from omegacache_utils.inc
 
 // ============================================================
+// Item Recreation (Withdrawal)
+// ============================================================
+
+// Recreates an item in a container from DataFile element properties.
+// Only sets non-default properties stored on the element.
+// Returns the created item, or error on failure.
+function RecreateItem(container, elem, amount)
+	var objtype := CInt(elem.GetProp("objtype"));
+	var newitem := CreateItemInContainer(container, objtype, amount);
+	if(!newitem or newitem.errortext)
+		OmegaCacheDebug("RecreateItem: FAILED to create " + Hex(objtype) + " x" + amount + " - " + newitem.errortext);
+		return newitem;
+	endif
+
+	// Restore non-default properties from element
+	var propnames := elem.PropNames();
+	foreach pname in propnames
+		var val := elem.GetProp(pname);
+
+		// Skip metadata properties
+		if(pname == "qty" or pname == "objtype" or pname == "weight")
+			continue;
+		endif
+
+		// Item properties compared against itemdesc
+		if(pname == "color")
+			newitem.color := CInt(val);
+		elseif(pname == "graphic")
+			newitem.graphic := CInt(val);
+		elseif(pname == "quality")
+			newitem.quality := CDbl(val);
+
+		// Script overrides
+		elseif(pname == "usescript")
+			newitem.usescript := CStr(val);
+		elseif(pname == "equipscript")
+			newitem.equipscript := CStr(val);
+		elseif(pname == "snoopscript")
+			newitem.snoopscript := CStr(val);
+
+		// Flags
+		elseif(pname == "newbie")
+			newitem.newbie := CInt(val);
+		elseif(pname == "insured")
+			newitem.insured := CInt(val);
+		elseif(pname == "cursed")
+			newitem.cursed := CInt(val);
+		elseif(pname == "weight_multiplier_mod")
+			newitem.weight_multiplier_mod := CDbl(val);
+
+		// CProps — prefix "cprop_"
+		elseif(pname[1,6] == "cprop_")
+			var cprop_name := pname[7, len(pname)];
+			SetObjProperty(newitem, cprop_name, val);
+		endif
+	endforeach
+
+	OmegaCacheDebug("RecreateItem: created " + Hex(objtype) + " x" + amount + " serial=" + newitem.serial);
+	return newitem;
+endfunction
+
+// Re-credits quantity to an existing element without needing a physical item.
+// Used when item creation fails during withdrawal to undo the debit.
+function ReCreditItem(df, key, amount)
+	var elem := df.FindElement(key);
+	if(!elem)
+		// Element was deleted by WithdrawItem — can't re-credit without full properties.
+		// This shouldn't happen if we create-first-then-debit.
+		OmegaCacheDebug("ReCreditItem: WARNING - element not found for key=" + key);
+		return 0;
+	endif
+	var current := CInt(elem.GetProp("qty"));
+	elem.SetProp("qty", current + amount);
+	OmegaCacheDebug("ReCreditItem: key=" + key + " re-credited " + amount + " new_total=" + (current + amount));
+	return current + amount;
+endfunction
+
+// ============================================================
+// Weight / Capacity Validation
+// ============================================================
+
+// Calculates the maximum amount withdrawable by weight, checking
+// the full container parent chain. Returns the constrained amount.
+function GetMaxWithdrawableByWeight(destination, item_weight, requested_amount)
+	if(item_weight <= 0)
+		return requested_amount;
+	endif
+
+	var max_by_weight := requested_amount;
+	var container := destination;
+
+	while(container)
+		if(container.max_weight > 0)
+			var available_weight := CDbl(container.max_weight) - CDbl(container.weight);
+			var fits := CInt(available_weight / item_weight);
+			if(fits < max_by_weight)
+				max_by_weight := fits;
+			endif
+		endif
+		container := container.container;
+	endwhile
+
+	if(max_by_weight < 0)
+		max_by_weight := 0;
+	endif
+
+	return max_by_weight;
+endfunction
+
+// ============================================================
 // Validation
 // ============================================================
 
