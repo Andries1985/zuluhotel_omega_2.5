@@ -987,19 +987,13 @@ function HouseFunctionRemoveOmegaCache(who, house)
 		return;
 	endif
 
-	// List all cache containers for this house (temp debug)
+	// Count cache containers via house.items (covers all Z levels)
 	var cache_count := 0;
-	var house_items := ListItemsNearLocation(itemt.x, itemt.y, itemt.z, 100, itemt.realm);
-	SendSysMessage(who, "[OmegaCache] Searching near targeted container at " + itemt.x + "," + itemt.y + "," + itemt.z + " found " + house_items.size() + " nearby items", 3, 53);
-	foreach nearby in house_items
+	foreach nearby in (house.items)
 		if(nearby.objtype == OMEGACACHE_OBJTYPE)
 			cache_count := cache_count + 1;
-			SendSysMessage(who, "[OmegaCache] Container #" + cache_count + " serial=" + nearby.serial + " at " + nearby.x + "," + nearby.y + "," + nearby.z + " graphic=" + Hex(nearby.graphic) + " houseserial=" + GetObjProperty(nearby, "houseserial"), 3, 53);
-		elseif(nearby.graphic == 0x0E43)
-			SendSysMessage(who, "[OmegaCache] Graphic match but wrong objtype: serial=" + nearby.serial + " objtype=" + Hex(nearby.objtype), 3, 53);
 		endif
 	endforeach
-	SendSysMessage(who, "[OmegaCache] Total containers found: " + cache_count + " empty=" + IsOmegaCacheEmpty(house.serial), 3, 53);
 
 	// Block removal of the last container if cache has stored items
 	if(!IsOmegaCacheEmpty(house.serial) and cache_count <= 1)
@@ -1349,11 +1343,10 @@ function RecountOmegaCaches(who, house)
 
 	var max_slots := GetMaxOmegaCacheForHouse(house.objtype);
 
-	// Count placed containers by searching near all house components
+	// Count placed containers via house.items (covers all Z levels)
 	var placed := 0;
-	var house_items := ListItemsNearLocation(who.x, who.y, who.z, 100, who.realm);
-	foreach item in house_items
-		if(item.objtype == OMEGACACHE_OBJTYPE and CInt(GetObjProperty(item, "houseserial")) == house.serial)
+	foreach item in (house.items)
+		if(item.objtype == OMEGACACHE_OBJTYPE)
 			placed := placed + 1;
 			SendSysMessage(who, "  #" + placed + " serial=" + item.serial + " at " + item.x + "," + item.y + "," + item.z + " graphic=" + Hex(item.graphic), 3, 53);
 		endif

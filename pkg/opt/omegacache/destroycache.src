@@ -22,12 +22,13 @@ program destroy_omegacache(item)
 		return 1;
 	endif
 
+	var house := SystemFindObjectBySerial(CInt(house_serial));
+
 	// Block destruction of the last container if cache has stored items
-	if(!IsOmegaCacheEmpty(house_serial))
+	if(!IsOmegaCacheEmpty(house_serial) and house)
 		var cache_count := 0;
-		var nearby_items := ListItemsNearLocation(item.x, item.y, item.z, 100, item.realm);
-		foreach nearby in nearby_items
-			if(nearby.objtype == OMEGACACHE_OBJTYPE and CInt(GetObjProperty(nearby, "houseserial")) == CInt(house_serial))
+		foreach nearby in (house.items)
+			if(nearby.objtype == OMEGACACHE_OBJTYPE)
 				cache_count := cache_count + 1;
 			endif
 		endforeach
@@ -38,7 +39,6 @@ program destroy_omegacache(item)
 	endif
 
 	// Re-credit the house's omega cache slot
-	var house := SystemFindObjectBySerial(CInt(house_serial));
 	if(house)
 		var current := CInt(GetObjProperty(house, "numomegacache"));
 		SetObjProperty(house, "numomegacache", current + 1);
