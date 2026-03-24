@@ -57,7 +57,11 @@ program track(who)
 			endif
 			var elem := FindConfigElem(config, mobile.npctemplate);
 			if(elem)
-				mobile_type := NormalizeTrackingType(GetObjProperty(mobile, "Type"));
+				if(GetObjProperty(mobile, "Boss") || GetObjProperty(mobile, "SuperBoss") || GetObjProperty(mobile, "Champion") || GetObjProperty(mobile, "LesserBoss"))
+					mobile_type := "Champion";
+				else
+					mobile_type := NormalizeTrackingType(GetObjProperty(mobile, "Type"));
+				endif
 				if(!mobile_type)
 					continue;
 				endif
@@ -93,7 +97,7 @@ program track(who)
 			if(!mobile.npctemplate)
 				continue;
 			endif
-			if(!GetObjProperty(mobile, "Boss") && !GetObjProperty(mobile, "SuperBoss"))
+			if(!GetObjProperty(mobile, "Boss") && !GetObjProperty(mobile, "SuperBoss") && !GetObjProperty(mobile, "Champion") && !GetObjProperty(mobile, "LesserBoss"))
 				var elem := FindConfigElem(config, mobile.npctemplate);
 				if(elem)
 					ttype := NormalizeTrackingType(GetObjProperty(mobile, "Type"));
@@ -104,26 +108,48 @@ program track(who)
 						AddMenuItem(track_menu, tiletype, mobile.name);
 					endif
 				endif
-			elseif(GetObjProperty(mobile, "Boss") && GetEffectiveSkill(who, SKILLID_TRACKING) >= 135)
+			elseif(GetObjProperty(mobile, "LesserBoss") && GetEffectiveSkill(who, SKILLID_TRACKING) >= 100)
 				var elem := FindConfigElem(config, mobile.npctemplate);
 				if(elem)
-					ttype := NormalizeTrackingType(GetObjProperty(mobile, "Type"));
+					ttype := NormalizeTrackingType("champion");
 					if(ttype == listtype)
 						menucount := menucount + 1;
 						critter_ids[menucount] := mobile;
-						tiletype := GetTrackingTypeIcon(ttype);
+						tiletype := GetTrackingTypeIcon(GetObjProperty(mobile, "Type"));
 						AddMenuItem(track_menu, tiletype, mobile.name);
 					endif
 				endif
-			elseif(GetObjProperty(mobile, "SuperBoss") && GetEffectiveSkill(who, SKILLID_TRACKING) >= 150)
+			elseif(GetObjProperty(mobile, "Boss") && GetEffectiveSkill(who, SKILLID_TRACKING) >= 125)
 				var elem := FindConfigElem(config, mobile.npctemplate);
 				if(elem)
-					ttype := NormalizeTrackingType(GetObjProperty(mobile, "Type"));
+					ttype := NormalizeTrackingType("champion");
 					if(ttype == listtype)
 						menucount := menucount + 1;
 						critter_ids[menucount] := mobile;
-						tiletype := GetTrackingTypeIcon(ttype);
+						tiletype := GetTrackingTypeIcon(GetObjProperty(mobile, "Type"));
+						AddMenuItem(track_menu, tiletype, mobile.name);
+					endif
+				endif
+			elseif( GetObjProperty(mobile, "SuperBoss") && GetEffectiveSkill(who, SKILLID_TRACKING) >= 140)
+				var elem := FindConfigElem(config, mobile.npctemplate);
+				if(elem)
+					ttype := NormalizeTrackingType("champion");
+					if(ttype == listtype)
+						menucount := menucount + 1;
+						critter_ids[menucount] := mobile;
+						tiletype := GetTrackingTypeIcon(GetObjProperty(mobile, "Type"));
 						AddMenuItem(track_menu, tiletype, mobile.name); 
+					endif
+				endif
+			elseif( GetObjProperty(mobile, "Champion") && GetEffectiveSkill(who, SKILLID_TRACKING) >= 150)
+				var elem := FindConfigElem(config, mobile.npctemplate);
+				if(elem)
+					ttype := NormalizeTrackingType("champion");
+					if(ttype == listtype)
+						menucount := menucount + 1;
+						critter_ids[menucount] := mobile;
+						tiletype := GetTrackingTypeIcon(GetObjProperty(mobile, "Type"));
+						AddMenuItem(track_menu, tiletype, mobile.name);
 					endif
 				endif
 			endif
@@ -206,52 +232,52 @@ function NormalizeTrackingType(value)
 	endif
 
 	case(Lower(value))
-		"animal":		return "Animal";
-		"animated":		return "Animated";
-		"beholder":		return "Beholder";
-		"champion":		return "Champion";
-		"daemon":		return "Daemon";
+		"animal":			return "Animal";
+		"animated":			return "Animated";
+		"beholder":			return "Beholder";
+		"champion":			return "Champion";
+		"daemon":			return "Daemon";
 		"dragonkin":		return "Dragonkin";
 		"elemental":		return "Elemental";
-		"ethereal":		return "Ethereal";
-		"gargoyle":		return "Gargoyle";
-		"giantkin":		return "Giantkin";
-		"human":		return "Human";
+		"ethereal":			return "Ethereal";
+		"gargoyle":			return "Gargoyle";
+		"giantkin":			return "Giantkin";
+		"human":			return "Human";
 		"miscellaneous":	return "Miscellaneous";
-		"ophidian":		return "Ophidian";
-		"orc":			return "Orc";
-		"plant":		return "Plant";
-		"ratkin":		return "Ratkin";
-		"slime":		return "Slime";
-		"terathan":		return "Terathan";
-		"troll":		return "Troll";
-		"undead":		return "Undead";
-		default:		return value;
+		"ophidian":			return "Ophidian";
+		"orc":				return "Orc";
+		"plant":			return "Plant";
+		"ratkin":			return "Ratkin";
+		"slime":			return "Slime";
+		"terathan":			return "Terathan";
+		"troll":			return "Troll";
+		"undead":			return "Undead";
+		default:			return value;
 	endcase
 endfunction
 
 function GetTrackingTypeIcon(value)
 	case(value)
-		"Animal":		return 0x20F6;
-		"Animated":		return 0x2236;
-		"Beholder":		return 0x20F4;
-		"Champion":		return 0x25F8;
-		"Daemon":		return 0x20D3;
+		"Animal":			return 0x20F6;
+		"Animated":			return 0x2236;
+		"Beholder":			return 0x20F4;
+		"Champion":			return 0x25F8;
+		"Daemon":			return 0x20D3;
 		"Dragonkin":		return 0x20D6;
 		"Elemental":		return 0x210B;
-		"Ethereal":		return 0x25DC;
-		"Gargoyle":		return 0x20D9;
-		"Giantkin":		return 0x20DF;
-		"Human":		return 0x2106;
+		"Ethereal":			return 0x25DC;
+		"Gargoyle":			return 0x20D9;
+		"Giantkin":			return 0x20DF;
+		"Human":			return 0x2106;
 		"Miscellaneous":	return 0x2100;
-		"Ophidian":		return 0x2134;
-		"Orc":			return 0x20E0;
-		"Plant":		return 0x20D2;
-		"Ratkin":		return 0x20E3;
-		"Slime":		return 0x20E8;
-		"Terathan":		return 0x212C;
-		"Troll":		return 0x20E9;
-		"Undead":		return 0x2109;
-		default:		return 0x2100;
+		"Ophidian":			return 0x2134;
+		"Orc":				return 0x20E0;
+		"Plant":			return 0x20D2;
+		"Ratkin":			return 0x20E3;
+		"Slime":			return 0x20E8;
+		"Terathan":			return 0x212C;
+		"Troll":			return 0x20E9;
+		"Undead":			return 0x2109;
+		default:			return 0x2100;
 	endcase
 endfunction
