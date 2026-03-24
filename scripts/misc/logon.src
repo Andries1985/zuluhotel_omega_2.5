@@ -14,6 +14,7 @@ const BANNED_IPS := ":ipban:bannedips";
 
 program logon( who )
 
+	EraseObjProperty(who, "#SettingPH");
 	var stafflevel := who.cmdlevel;
 
 	if(stafflevel > 0)
@@ -25,13 +26,13 @@ program logon( who )
 		SetObjProperty( who, "hunger", 1 );
 	endif
 
-	//This is a reset of karma and fame, can be removed after wipe.
-	var resetFameKarma := GetObjProperty(who, "RFK");
-	if(!who.cmdlevel && !resetFameKarma)
-		SetKarma(who, 0);
-		SetFame(who, 0);
-		SetObjProperty(who, "RFK", 1);
-	endif
+	// //This is a reset of karma and fame, can be removed after wipe.
+	// var resetFameKarma := GetObjProperty(who, "RFK");
+	// if(!who.cmdlevel && !resetFameKarma)
+	// 	SetKarma(who, 0);
+	// 	SetFame(who, 0);
+	// 	SetObjProperty(who, "RFK", 1);
+	// endif
 
 	RemoveLogoff( who );
 
