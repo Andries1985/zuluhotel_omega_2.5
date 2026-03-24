@@ -175,10 +175,10 @@ function DoListCategory(who, df, cat_name_input)
 		return;
 	endif
 
-	// Find matching category (case-insensitive)
+	// Find matching category (case-insensitive, matches raw or formatted name)
 	var matched_cat := "";
 	foreach cat_name in cat_names
-		if(Lower(cat_name) == Lower(cat_name_input))
+		if(Lower(cat_name) == Lower(cat_name_input) or Lower(FormatCategoryName(cat_name)) == Lower(cat_name_input))
 			matched_cat := cat_name;
 			break;
 		endif
