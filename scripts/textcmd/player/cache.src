@@ -24,6 +24,7 @@ program textcmd_cache(who, text)
 	else
 		text := Lower(CStr(text));
 	endif
+	OmegaCacheDebug("cache.src: text='" + text + "' len=" + len(text));
 
 	// Determine required privilege based on subcommand
 	var required_privs := array{VIEW_SECURE};
