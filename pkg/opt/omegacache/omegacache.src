@@ -39,8 +39,8 @@ const TXT_ENTRY_BASE := 2000;      // 2000 + item_index (text entry IDs, separat
 
 program use_omegacache(who, item)
 
+	SendSysMessage(who, "[OmegaCache] omegacache.src: ENTERED", 3, 53);
 	_debug_who := who;
-	OmegaCacheDebug("omegacache.src: ENTERED program, who=" + who.name);
 	OmegaCacheDebug("omegacache.src: item=" + item);
 	OmegaCacheDebug("omegacache.src: item.serial=" + item.serial + " item.objtype=" + item.objtype);
 
