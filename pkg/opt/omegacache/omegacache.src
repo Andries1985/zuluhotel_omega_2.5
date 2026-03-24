@@ -26,6 +26,7 @@ const TEXT_HUE_QTY := 55;
 const BTN_DEPOSIT_ITEM := 10;
 const BTN_DEPOSIT_ALL := 11;
 const BTN_BACK := 12;
+const BTN_WITHDRAW := 13;
 const BTN_CATEGORY_BASE := 100;    // 100 + category_index
 const BTN_TAKE_BASE := 1000;       // 1000 + item_index
 const TXT_ENTRY_BASE := 2000;      // 2000 + item_index (text entry IDs, separate from buttons)
@@ -100,6 +101,33 @@ program use_omegacache(who, item)
 
 		elseif(btn == BTN_BACK)
 			view := "categories";
+
+		elseif(btn == BTN_WITHDRAW)
+			if(!FindAccessibleContainer(who, array{REMOVE_FROM_SECURE}))
+				SendSysMessage(who, "You don't have permission to withdraw items.");
+			else
+				// Process all text entries with amounts > 0
+				var dest := 0;
+				var withdrew_any := 0;
+				var item_index := 0;
+				foreach key in current_keys
+					item_index := item_index + 1;
+					var txt_id := TXT_ENTRY_BASE + item_index;
+					var amount_str := GFExtractData(result, txt_id);
+					var amount := ParseDecimal(amount_str);
+					if(amount > 0)
+						// Prompt destination once on first withdrawal
+						if(!dest)
+							dest := PromptDestination(who);
+						endif
+						DoWithdraw(who, df, key, amount, dest);
+						withdrew_any := 1;
+					endif
+				endforeach
+				if(!withdrew_any)
+					SendSysMessage(who, "Enter amounts to withdraw.");
+				endif
+			endif
 
 		elseif(btn >= BTN_CATEGORY_BASE and btn < BTN_TAKE_BASE)
 			var cat_index := btn - BTN_CATEGORY_BASE;
@@ -180,9 +208,9 @@ function ShowCategoryMenu(who, category_map, cat_icons)
 	GFTextLine(gump, (490 - len(title) * 8) / 2, 15, TEXT_HUE_HIGHLIGHT, title);
 
 	// Deposit buttons (always visible)
-	GFAddButton(gump, 30, 510, 4005, 4007, GF_CLOSE_BTN, BTN_DEPOSIT_ITEM);
+	GFAddButton(gump, 30, 510, 4020, 4022, GF_CLOSE_BTN, BTN_DEPOSIT_ITEM);
 	GFTextLine(gump, 65, 510, TEXT_HUE_HIGHLIGHT, "Deposit Item");
-	GFAddButton(gump, 260, 510, 4005, 4007, GF_CLOSE_BTN, BTN_DEPOSIT_ALL);
+	GFAddButton(gump, 260, 510, 4020, 4022, GF_CLOSE_BTN, BTN_DEPOSIT_ALL);
 	GFTextLine(gump, 295, 510, TEXT_HUE_HIGHLIGHT, "Deposit All");
 
 	// Card grid: 2 columns x 5 rows = 10 per page
@@ -227,12 +255,12 @@ function ShowCategoryMenu(who, category_map, cat_icons)
 
 			if(total_pages > 1)
 				if(page_num > 1)
-					GFAddButton(gump, 160, 485, 4014, 4016, GF_PAGE_BTN, page_num - 1);
+					GFAddButton(gump, 160, 485, 9766, 9767, GF_PAGE_BTN, page_num - 1);
 					GFTextLine(gump, 180, 485, TEXT_HUE, "Prev");
 				endif
 				GFTextLine(gump, 215, 485, TEXT_HUE, "Page " + page_num + "/" + total_pages);
 				if(page_num < total_pages)
-					GFAddButton(gump, 310, 485, 4005, 4007, GF_PAGE_BTN, page_num + 1);
+					GFAddButton(gump, 310, 485, 9762, 9763, GF_PAGE_BTN, page_num + 1);
 					GFTextLine(gump, 335, 485, TEXT_HUE, "Next");
 				endif
 			endif
@@ -290,17 +318,19 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 
 	// Page 0 — always visible (background, title, bottom buttons)
 	GFPage(gump, 0);
-	GFResizePic(gump, 0, 0, 9270, 530, 520);
-	GFResizePic(gump, 10, 10, 9350, 510, 500);
+	GFResizePic(gump, 0, 0, 9270, 600, 520);
+	GFResizePic(gump, 10, 10, 9350, 580, 500);
 
 	var title := "Omega Cache - " + FormatCategoryName(category_name);
-	GFTextLine(gump, (530 - len(title) * 8) / 2, 15, TEXT_HUE_HIGHLIGHT, title);
+	GFTextLine(gump, (600 - len(title) * 8) / 2, 15, TEXT_HUE_HIGHLIGHT, title);
 
 	// Bottom buttons (always visible)
 	GFAddButton(gump, 30, 480, 4014, 4016, GF_CLOSE_BTN, BTN_BACK);
 	GFTextLine(gump, 65, 480, TEXT_HUE, "Back");
-	GFAddButton(gump, 380, 480, 4005, 4007, GF_CLOSE_BTN, BTN_DEPOSIT_ITEM);
-	GFTextLine(gump, 415, 480, TEXT_HUE_HIGHLIGHT, "Deposit");
+	GFAddButton(gump, 240, 480, 4005, 4007, GF_CLOSE_BTN, BTN_WITHDRAW);
+	GFTextLine(gump, 275, 480, TEXT_HUE_HIGHLIGHT, "Withdraw");
+	GFAddButton(gump, 440, 480, 4020, 4022, GF_CLOSE_BTN, BTN_DEPOSIT_ITEM);
+	GFTextLine(gump, 475, 480, TEXT_HUE_HIGHLIGHT, "Deposit");
 
 	// Filter to only keys with qty > 0
 	var display_keys := array{};
@@ -350,20 +380,20 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 
 			// Column headers
 			GFTextLine(gump, 68, 42, TEXT_HUE, "Item");
-			GFTextLine(gump, 300, 42, TEXT_HUE, "Stored");
-			GFTextLine(gump, 380, 42, TEXT_HUE, "Amount");
-			GFTextLine(gump, 470, 42, TEXT_HUE, "Take");
+			GFTextLine(gump, 258, 42, TEXT_HUE, "Stored");
+			GFTextLine(gump, 370, 42, TEXT_HUE, "Amount");
+			GFTextLine(gump, 540, 42, TEXT_HUE, "Take");
 
 			// Page nav (only when multiple pages)
 			if(total_pages > 1)
 				if(page_num > 1)
-					GFAddButton(gump, 160, 455, 4014, 4016, GF_PAGE_BTN, page_num - 1);
-					GFTextLine(gump, 180, 455, TEXT_HUE, "Prev");
+					GFAddButton(gump, 195, 455, 9766, 9767, GF_PAGE_BTN, page_num - 1);
+					GFTextLine(gump, 215, 455, TEXT_HUE, "Prev");
 				endif
-				GFTextLine(gump, 225, 455, TEXT_HUE, "Page " + page_num + "/" + total_pages);
+				GFTextLine(gump, 260, 455, TEXT_HUE, "Page " + page_num + "/" + total_pages);
 				if(page_num < total_pages)
-					GFAddButton(gump, 320, 455, 4005, 4007, GF_PAGE_BTN, page_num + 1);
-					GFTextLine(gump, 340, 455, TEXT_HUE, "Next");
+					GFAddButton(gump, 355, 455, 9762, 9763, GF_PAGE_BTN, page_num + 1);
+					GFTextLine(gump, 375, 455, TEXT_HUE, "Next");
 				endif
 			endif
 		endif
@@ -371,7 +401,7 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		var row_y := 65 + ((page_item - 1) * row_height);
 
 		// Row card panel (matches category card style)
-		GFResizePic(gump, 18, row_y - 2, 9350, 495, 32);
+		GFResizePic(gump, 18, row_y - 2, 9350, 565, 32);
 
 		var elem := df.FindElement(key);
 		var qty := CInt(elem.GetProp("qty"));
@@ -406,19 +436,19 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		GFTilePic(gump, 22, row_y, graphic, color);
 
 		// Item name
-		GFTextCrop(gump, 68, row_y + 7, 225, 20, TEXT_HUE, item_name);
+		GFTextCrop(gump, 68, row_y + 7, 185, 20, TEXT_HUE, item_name);
 
 		// Quantity
-		GFTextLine(gump, 300, row_y + 7, TEXT_HUE_QTY, FormatNumber(qty));
+		GFTextLine(gump, 258, row_y + 7, TEXT_HUE_QTY, FormatNumber(qty));
 
-		// Text entry with inset background
+		// Text entry with inset background (wide enough for 999,999,999)
 		var txt_id := TXT_ENTRY_BASE + item_index;
 		var btn_id := BTN_TAKE_BASE + item_index;
-		GFResizePic(gump, 377, row_y + 4, 5054, 68, 22);
-		GFTextEntry(gump, 380, row_y + 7, 60, 20, TEXT_HUE, "", txt_id);
+		GFResizePic(gump, 367, row_y + 4, 5054, 100, 22);
+		GFTextEntry(gump, 370, row_y + 7, 95, 20, TEXT_HUE, "", txt_id);
 
-		// Take button
-		GFAddButton(gump, 470, row_y + 7, 4005, 4007, GF_CLOSE_BTN, btn_id);
+		// Take button (per-row)
+		GFAddButton(gump, 540, row_y + 7, 2450, 2451, GF_CLOSE_BTN, btn_id);
 	endforeach
 
 	if(total_items == 0)
