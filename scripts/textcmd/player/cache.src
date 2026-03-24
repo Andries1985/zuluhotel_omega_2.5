@@ -58,18 +58,18 @@ program textcmd_cache(who, text)
 		endif
 
 		SendSysMessage(who, "Target an item of the type you wish to withdraw.");
-		var target := Target(who);
-		if(!target)
+		var tgt := Target(who);
+		if(!tgt)
 			SendSysMessage(who, "Cancelled.");
 			return;
 		endif
 
-		if(!target.stackable)
+		if(!tgt.stackable)
 			SendSysMessage(who, "That item type is not stackable.");
 			return;
 		endif
 
-		var key := BuildItemKey(target);
+		var key := BuildItemKey(tgt);
 		DoWithdraw(who, df, key, amount, who.backpack);
 
 	elseif(text == "list")

@@ -6,6 +6,7 @@
 
 use uo;
 use cfgfile;
+use datafile;
 
 const OMEGACACHE_OBJTYPE := 0xDF0A;
 const OMEGACACHE_DEED_OBJTYPE := 0xDF0B;

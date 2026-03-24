@@ -592,18 +592,18 @@ endfunction
 
 // Deposit with targeting loop.
 function DoDepositTargeting(who, df)
-	var target;
+	var tgt;
 	while(1)
 		SendSysMessage(who, "Target an item or container to deposit. Press ESC to stop.");
-		target := Target(who);
-		if(!target)
+		tgt := Target(who);
+		if(!tgt)
 			break;
 		endif
 
-		if(target.isa(POLCLASS_CONTAINER))
-			DepositFromContainer(who, df, target);
+		if(tgt.isa(POLCLASS_CONTAINER))
+			DepositFromContainer(who, df, tgt);
 		else
-			DepositSingleItem(who, df, target);
+			DepositSingleItem(who, df, tgt);
 		endif
 	endwhile
 endfunction
