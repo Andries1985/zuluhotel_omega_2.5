@@ -22,10 +22,10 @@ const TEXT_HUE := 242;
 const TEXT_HUE_HIGHLIGHT := 53;
 const TEXT_HUE_QTY := 55;
 
-// Button IDs
-const BTN_DEPOSIT_ITEM := 1;
-const BTN_DEPOSIT_ALL := 2;
-const BTN_BACK := 3;
+// Button IDs — start at 10 to avoid conflict with right-click close (0)
+const BTN_DEPOSIT_ITEM := 10;
+const BTN_DEPOSIT_ALL := 11;
+const BTN_BACK := 12;
 const BTN_CATEGORY_BASE := 100;    // 100 + category_index
 const BTN_TAKE_BASE := 1000;       // 1000 + item_index
 
