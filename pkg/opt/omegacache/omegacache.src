@@ -75,24 +75,14 @@ program use_omegacache(who, item)
 			break;  // Gump error
 		endif
 
-		// Find which button was pressed by scanning result keys.
-		// result[0] is unreliable when text entries exist (POL returns
-		// text entry data at key 0 on right-click close). Instead, check
-		// for known button IDs in the result keys.
-		var btn := 0;
-		foreach key in (result.keys())
-			var k := CInt(key);
-			if(k == BTN_DEPOSIT_ITEM or k == BTN_DEPOSIT_ALL or k == BTN_BACK)
-				btn := k;
-				break;
-			elseif(k >= BTN_CATEGORY_BASE and k < BTN_TAKE_BASE)
-				btn := k;
-				break;
-			elseif(k >= BTN_TAKE_BASE and k < TXT_ENTRY_BASE)
-				btn := k;
-				break;
-			endif
-		endforeach
+		// Determine which button was pressed.
+		// result[0] holds the button ID, but on gumps with text entries
+		// it can return text entry data on right-click close (e.g. "2001: ").
+		// Use result[0] first, then validate it's a real button ID.
+		var btn := CInt(result[0]);
+		if(btn >= TXT_ENTRY_BASE or btn < 0)
+			btn := 0;  // Text entry data, not a button
+		endif
 
 		if(btn < 1)
 			break;  // Gump closed (right-click or no button)
