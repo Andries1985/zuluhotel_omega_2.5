@@ -865,7 +865,7 @@ if(who.cmdlevel < 4)
 		"nodispose",
                 "noclose",
 
-                "resizepic 0 0 2600 250 370",
+                "resizepic 0 0 2600 250 392",
 
                 "button 35  50 2714 2715 1 0 1",  //Lock
                 "button 35  72 2714 2715 1 0 2",  //Unlock
@@ -879,8 +879,9 @@ if(who.cmdlevel < 4)
                 "button 35 248 2714 2715 1 0 10",  //Count teleporter
                 "button 35 270 2714 2715 1 0 11",  //Grant teleporter
                 "button 35 292 2714 2715 1 0 12",  //Lower amount teleporter
+                "button 35 314 2714 2715 1 0 14",  //Recount Omega Caches
 
-                "button 90 320 243 241 1 0 13",    //Cancel
+                "button 90 342 243 241 1 0 13",    //Cancel
 
                 "text   60  15   20 0",    //title
                 "text   70  50 2302 1",    //Lock
@@ -894,7 +895,8 @@ if(who.cmdlevel < 4)
         		"text   70 226 2302 9",     //Remove Omega Cache
         		"text   70 248 2302 10",     //Count teleporter
         		"text   70 270 2302 11",     //Grant teleporter
-        		"text   70 292 2302 12"     //Lower amount teleporter
+        		"text   70 292 2302 12",     //Lower amount teleporter
+        		"text   70 314 2302 13"     //Recount Omega Caches
   };
   endif
   
@@ -909,7 +911,7 @@ if(who.cmdlevel < 4)
 				"Reveal lost items",
 				"Add Teleporter",
 				"Remove Teleporter",
-				"Remove Omega Cache"
+				"Remove Cache Container"
   };
   else
   data1 := {
@@ -922,10 +924,11 @@ if(who.cmdlevel < 4)
 				"Reveal lost items",
 				"Add Teleporter",
 				"Remove Teleporter",
-				"Remove Omega Cache",
+				"Remove Cache Container",
 				"Count Teleporters",
 				"Grant More Teleporters",
-				"Grant Less Teleporters"
+				"Grant Less Teleporters",
+				"Recount Cache Containers"
   };
   endif
         var result;
@@ -951,6 +954,7 @@ if(who.cmdlevel < 4)
 						10:CountTeleporter (who, house);
 						11:GrantTeleporter (who, house, 1);
 						12:GrantTeleporter (who, house, 2);
+						14:RecountOmegaCaches (who, house);
                         13:ok := 0;
                 endcase
                 sleepms(400);
@@ -1334,6 +1338,31 @@ function CountTeleporter(who, house)
 		SendSysMessage( who, "The house has "+count+" teleporters placed and "+numtele+" left to place.");
 	endif
 
+
+endfunction
+
+function RecountOmegaCaches(who, house)
+
+	if(who.cmdlevel < 4 or !house)
+		return;
+	endif
+
+	var max_slots := GetMaxOmegaCacheForHouse(house.objtype);
+
+	// Count placed containers by searching near all house components
+	var placed := 0;
+	var house_items := ListItemsNearLocation(who.x, who.y, who.z, 100, who.realm);
+	foreach item in house_items
+		if(item.objtype == OMEGACACHE_OBJTYPE and CInt(GetObjProperty(item, "houseserial")) == house.serial)
+			placed := placed + 1;
+			SendSysMessage(who, "  #" + placed + " serial=" + item.serial + " at " + item.x + "," + item.y + "," + item.z + " graphic=" + Hex(item.graphic), 3, 53);
+		endif
+	endforeach
+
+	var remaining := max_slots - placed;
+	SetObjProperty(house, "numomegacache", remaining);
+	SetObjProperty(house, "maxnumomegacache", max_slots);
+	SendSysMessage(who, "Omega Caches: " + placed + " placed, " + remaining + "/" + max_slots + " slots available.");
 
 endfunction
 
