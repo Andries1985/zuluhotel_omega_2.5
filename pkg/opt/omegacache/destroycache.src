@@ -22,11 +22,22 @@ program destroy_omegacache(item)
 		return 1;
 	endif
 
-	// Block if cache has stored items
+	// Block destruction of the last container if cache has stored items
 	if(!IsOmegaCacheEmpty(house_serial))
-		// Can't send message from DestroyScript (no player reference)
-		// but blocking prevents the destruction
-		return 0;
+		var cache_count := 0;
+		var house := SystemFindObjectBySerial(CInt(house_serial));
+		if(house)
+			var house_items := ListItemsNearLocation(house.x, house.y, house.z, 50, house.realm);
+			foreach nearby in house_items
+				if(nearby.objtype == OMEGACACHE_OBJTYPE and CInt(GetObjProperty(nearby, "houseserial")) == CInt(house_serial))
+					cache_count := cache_count + 1;
+				endif
+			endforeach
+		endif
+		// count includes the item being destroyed, so <=1 means this is the last one
+		if(cache_count <= 1)
+			return 0;
+		endif
 	endif
 
 	// Re-credit the house's omega cache slot

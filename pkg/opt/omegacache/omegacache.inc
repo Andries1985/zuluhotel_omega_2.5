@@ -641,11 +641,11 @@ function DepositSingleItem(who, df, item)
 	endif
 
 	var key := BuildItemKey(item);
-	var desc := item.desc;
 	var amt := item.amount;
+	var name := GetItemDisplayName(item.objtype);
 	DepositItem(df, key, item);
 	DestroyItem(item);
-	SendSysMessage(who, "Deposited: " + FormatNumber(amt) + " " + desc);
+	SendSysMessage(who, "Deposited: " + FormatNumber(amt) + " " + name);
 	return 1;
 endfunction
 
