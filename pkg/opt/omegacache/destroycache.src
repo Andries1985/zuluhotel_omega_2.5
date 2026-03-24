@@ -25,15 +25,12 @@ program destroy_omegacache(item)
 	// Block destruction of the last container if cache has stored items
 	if(!IsOmegaCacheEmpty(house_serial))
 		var cache_count := 0;
-		var house := SystemFindObjectBySerial(CInt(house_serial));
-		if(house)
-			var house_items := ListItemsNearLocation(house.x, house.y, house.z, 50, house.realm);
-			foreach nearby in house_items
-				if(nearby.objtype == OMEGACACHE_OBJTYPE and CInt(GetObjProperty(nearby, "houseserial")) == CInt(house_serial))
-					cache_count := cache_count + 1;
-				endif
-			endforeach
-		endif
+		var nearby_items := ListItemsNearLocation(item.x, item.y, item.z, 100, item.realm);
+		foreach nearby in nearby_items
+			if(nearby.objtype == OMEGACACHE_OBJTYPE and CInt(GetObjProperty(nearby, "houseserial")) == CInt(house_serial))
+				cache_count := cache_count + 1;
+			endif
+		endforeach
 		// count includes the item being destroyed, so <=1 means this is the last one
 		if(cache_count <= 1)
 			return 0;

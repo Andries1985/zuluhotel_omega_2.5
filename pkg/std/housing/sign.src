@@ -985,8 +985,8 @@ function HouseFunctionRemoveOmegaCache(who, house)
 
 	// List all cache containers for this house (temp debug)
 	var cache_count := 0;
-	var house_items := ListItemsNearLocation(who.x, who.y, who.z, 100, who.realm);
-	SendSysMessage(who, "[OmegaCache] Searching near player at " + who.x + "," + who.y + "," + who.z + " found " + house_items.size() + " nearby items", 3, 53);
+	var house_items := ListItemsNearLocation(itemt.x, itemt.y, itemt.z, 100, itemt.realm);
+	SendSysMessage(who, "[OmegaCache] Searching near targeted container at " + itemt.x + "," + itemt.y + "," + itemt.z + " found " + house_items.size() + " nearby items", 3, 53);
 	foreach nearby in house_items
 		if(nearby.objtype == OMEGACACHE_OBJTYPE)
 			cache_count := cache_count + 1;
@@ -1004,7 +1004,11 @@ function HouseFunctionRemoveOmegaCache(who, house)
 	endif
 
 	// Destroy the cache and re-credit the slot
-	DestroyItem(itemt);
+	var destroy_result := DestroyItem(itemt);
+	if(!destroy_result)
+		SendSysMessage(who, "[OmegaCache] DestroyItem FAILED: " + destroy_result.errortext, 3, 53);
+		return;
+	endif
 	SetObjProperty(house, "numomegacache", CInt(GetObjProperty(house, "numomegacache")) + 1);
 	SendSysMessage(who, "Omega Cache removed.");
 
