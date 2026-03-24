@@ -481,7 +481,7 @@ Item 0xDF0A
 {
     Name            OmegaCacheContainer
     Desc            Omega Crate of Holding
-    Graphic         42789
+    Graphic         0x0E43
     Weight          250
     Movable         0
     Script          omegacache

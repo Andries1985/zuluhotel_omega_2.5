@@ -105,7 +105,7 @@ Const KEYRING := 0x1011;
 	"",
 	"Number of secure containers:",
 	"",
-	"Number of Omega Cache Containers:",
+	"Omega cache containers:",
 	"",
 	"Number of visits this building has had:",
 	"This house is improperly placed.",
