@@ -137,11 +137,14 @@ function LoadCategoryLookup()
 		cat_names := ListConfigElemProps(categories_elem);
 	endif
 
+	OmegaCacheDebug("LoadCategoryLookup: cat_names count=" + cat_names.size());
 	foreach cat_name in cat_names
 		var cat_elem := FindConfigElem(cat_cfg, cat_name);
 		if(cat_elem)
 			var objtypes := ListConfigElemProps(cat_elem);
+			OmegaCacheDebug("LoadCategoryLookup: " + cat_name + " has " + objtypes.size() + " objtypes");
 			foreach ot in objtypes
+				OmegaCacheDebug("  ot=" + ot + " CInt=" + CInt(ot));
 				objtype_to_cat[CInt(ot)] := cat_name;
 			endforeach
 		endif
@@ -189,10 +192,18 @@ function GetItemDisplayName(objtype, desc_info := 0)
 	// Strip all tiledata pluralization placeholders "%s"
 	var pos := Find(name, "%s", 1);
 	while(pos > 0)
-		name := name[1, pos - 1] + name[pos + 2, len(name)];
+		var before := "";
+		var after := "";
+		if(pos > 1)
+			before := name[1, pos - 1];
+		endif
+		if(pos + 2 <= len(name))
+			after := name[pos + 2, len(name)];
+		endif
+		name := before + after;
 		pos := Find(name, "%s", 1);
 	endwhile
-	// Trim trailing/leading whitespace left by removed placeholders
+	// Trim trailing/leading whitespace
 	while(len(name) > 0 and name[len(name)] == " ")
 		name := name[1, len(name) - 1];
 	endwhile
