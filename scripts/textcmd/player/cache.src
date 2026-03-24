@@ -84,20 +84,7 @@ program textcmd_cache(who, text)
 		DoListCategory(who, df, cat_name);
 
 	elseif(!text or text == "")
-		OmegaCacheDebug("cache.src: no-args branch reached");
-		var cache_item := access.container;
-		OmegaCacheDebug("cache.src: cache_item=" + cache_item + " serial=" + cache_item.serial + " objtype=" + Hex(cache_item.objtype));
-		if(cache_item)
-			OmegaCacheDebug("cache.src: calling start_script for omegacache");
-			var res := start_script(":omegacache:omegacache", {who, cache_item});
-			OmegaCacheDebug("cache.src: start_script returned: " + res + " errortext=" + res.errortext);
-			if(res.errortext)
-				SendSysMessage(who, "Error opening cache: " + res.errortext);
-			endif
-		else
-			OmegaCacheDebug("cache.src: no cache_item found");
-			SendSysMessage(who, "No cache container found.");
-		endif
+		RunOmegaCacheGump(who, df);
 
 	else
 		SendSysMessage(who, "Usage:");
