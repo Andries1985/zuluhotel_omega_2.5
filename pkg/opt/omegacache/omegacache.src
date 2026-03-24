@@ -80,6 +80,7 @@ program use_omegacache(who, item)
 		// it can return text entry data on right-click close (e.g. "2001: ").
 		// Use result[0] first, then validate it's a real button ID.
 		var btn := CInt(result[0]);
+		OmegaCacheDebug("Gump result[0]=" + CStr(result[0]) + " CInt=" + btn + " keys=" + CStr(result.keys()));
 		if(btn >= TXT_ENTRY_BASE or btn < 0)
 			btn := 0;  // Text entry data, not a button
 		endif
@@ -318,6 +319,19 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 			endif
 		endif
 	endforeach
+	// Sort display keys alphabetically by item name
+	var sort_list := array{};
+	foreach key in display_keys
+		var ot := CInt(GetObjtypeFromKey(key));
+		var name := Lower(GetItemDisplayName(ot));
+		sort_list.append(struct{ sort_name := name, sort_key := key });
+	endforeach
+	sort_list.sort(1);  // sort by first member (sort_name)
+	display_keys := array{};
+	foreach entry in sort_list
+		display_keys.append(entry.sort_key);
+	endforeach
+
 	out_keys := display_keys;
 
 	// Pagination — taller rows, fewer items per page
@@ -384,15 +398,10 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 			endif
 		endforeach
 
-		// Tile icon — use pile graphic for stacked items
+		// Tile icon
 		var graphic := objtype;
 		if(desc_info and desc_info.Graphic)
 			graphic := CInt(desc_info.Graphic);
-		endif
-		if(qty > 5)
-			graphic := graphic + 2;
-		elseif(qty > 1)
-			graphic := graphic + 1;
 		endif
 		var color := 0;
 		if(elem.GetProp("color"))

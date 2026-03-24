@@ -347,6 +347,7 @@ function DepositItem(df, key, item)
 		endforeach
 	endif
 
+
 	OmegaCacheDebug("DepositItem: key=" + key + " added=" + item.amount + " total=" + (current_qty + item.amount));
 	return current_qty + item.amount;
 endfunction
