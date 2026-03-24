@@ -203,7 +203,7 @@ function ShowCategoryMenu(who, category_map, cat_icons)
 		endif
 
 		var btn_id := BTN_CATEGORY_BASE + cat_index;
-		var label := cat_name + " (" + count + ")";
+		var label := FormatCategoryName(cat_name) + " (" + count + ")";
 		GFAddButton(gump, col_x + 25, row_y, 4005, 4007, GF_CLOSE_BTN, btn_id);
 		GFTextLine(gump, col_x + 60, row_y, TEXT_HUE, label);
 	endforeach
@@ -235,7 +235,7 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 	GFResizePic(gump, 0, 0, 9200, 500, 500);
 	GFResizePic(gump, 10, 10, 3000, 480, 480);
 
-	GFTextLine(gump, 130, 15, TEXT_HUE_HIGHLIGHT, "Omega Cache - " + category_name);
+	GFTextLine(gump, 130, 15, TEXT_HUE_HIGHLIGHT, "Omega Cache - " + FormatCategoryName(category_name));
 
 	// Back and Deposit buttons on page 0 (visible on all pages)
 	GFAddButton(gump, 30, 460, 4014, 4016, GF_CLOSE_BTN, BTN_BACK);

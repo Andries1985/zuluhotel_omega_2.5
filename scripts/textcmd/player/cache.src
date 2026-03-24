@@ -152,7 +152,7 @@ function DoListCategories(who, df)
 		var count := cat_counts[cat_name];
 		var qty := cat_qty[cat_name];
 		if(count and count > 0)
-			SendSysMessage(who, "  " + cat_name + ": " + count + " type(s), " + FormatNumber(qty) + " total");
+			SendSysMessage(who, "  " + FormatCategoryName(cat_name) + ": " + count + " type(s), " + FormatNumber(qty) + " total");
 		endif
 	endforeach
 	if(other_count > 0)
@@ -197,7 +197,7 @@ function DoListCategory(who, df, cat_name_input)
 	var keys := df.Keys();
 	var found := 0;
 
-	SendSysMessage(who, "=== " + matched_cat + " ===");
+	SendSysMessage(who, "=== " + FormatCategoryName(matched_cat) + " ===");
 	foreach key in keys
 		var objtype_int := CInt(GetObjtypeFromKey(key));
 

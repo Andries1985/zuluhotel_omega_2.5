@@ -63,6 +63,26 @@ function ParseDecimal(s)
 	return CInt(s);
 endfunction
 
+// Converts PascalCase to space-separated display name.
+// e.g., "SpellbookScrolls" -> "Spellbook Scrolls"
+//       "ClothAndFibre" -> "Cloth And Fibre"
+//       "RawHerbs" -> "Raw Herbs"
+function FormatCategoryName(name)
+	var result := "";
+	var i := 1;
+	while(i <= len(name))
+		var ch := name[i];
+		// Insert space before uppercase letter (except at start)
+		if(i > 1 and ch >= "A" and ch <= "Z")
+			result := result + " " + ch;
+		else
+			result := result + ch;
+		endif
+		i := i + 1;
+	endwhile
+	return result;
+endfunction
+
 // ============================================================
 // Key Generation
 // ============================================================
@@ -144,7 +164,6 @@ function LoadCategoryLookup()
 			var objtypes := ListConfigElemProps(cat_elem);
 			OmegaCacheDebug("LoadCategoryLookup: " + cat_name + " has " + objtypes.size() + " objtypes");
 			foreach ot in objtypes
-				OmegaCacheDebug("  ot=" + ot + " CInt=" + CInt(ot));
 				objtype_to_cat[CInt(ot)] := cat_name;
 			endforeach
 		endif
@@ -610,16 +629,16 @@ function DepositFromContainer(who, df, container)
 
 	foreach thing in items_to_deposit
 		var key := BuildItemKey(thing);
-		var desc := thing.desc;
+		var display_name := GetItemDisplayName(thing.objtype);
 		var amt := thing.amount;
 
 		DepositItem(df, key, thing);
 		DestroyItem(thing);
 
-		if(!deposited[desc])
-			deposited[desc] := amt;
+		if(!deposited[display_name])
+			deposited[display_name] := amt;
 		else
-			deposited[desc] := deposited[desc] + amt;
+			deposited[display_name] := deposited[display_name] + amt;
 		endif
 		total_deposited := total_deposited + amt;
 	endforeach
