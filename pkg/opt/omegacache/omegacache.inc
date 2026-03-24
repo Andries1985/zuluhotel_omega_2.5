@@ -236,7 +236,24 @@ function GetItemDisplayName(objtype, desc_info := 0)
 	while(len(name) > 0 and name[1] == " ")
 		name := name[2, len(name)];
 	endwhile
-	return name;
+	// Capitalize first letter of each word
+	var result := "";
+	var cap_next := 1;
+	var ci := 1;
+	while(ci <= len(name))
+		var ch := name[ci];
+		if(ch == " ")
+			cap_next := 1;
+			result := result + ch;
+		elseif(cap_next)
+			result := result + Upper(ch);
+			cap_next := 0;
+		else
+			result := result + ch;
+		endif
+		ci := ci + 1;
+	endwhile
+	return result;
 endfunction
 
 // Extracts the objtype string prefix from a DataFile key ("0xABCD|hash" -> "0xABCD").

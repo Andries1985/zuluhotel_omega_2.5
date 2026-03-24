@@ -171,8 +171,8 @@ function ShowCategoryMenu(who, category_map, cat_icons)
 
 	// Page 0 — always visible (background, title, bottom buttons)
 	GFPage(gump, 0);
-	GFResizePic(gump, 0, 0, 9200, 490, 550);
-	GFResizePic(gump, 10, 10, 3000, 470, 530);
+	GFResizePic(gump, 0, 0, 9270, 490, 550);
+	GFResizePic(gump, 10, 10, 9350, 470, 530);
 	GFTextLine(gump, 175, 15, TEXT_HUE_HIGHLIGHT, "Omega Cache");
 
 	// Deposit buttons (always visible)
@@ -286,8 +286,8 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 
 	// Page 0 — always visible (background, title, bottom buttons)
 	GFPage(gump, 0);
-	GFResizePic(gump, 0, 0, 9200, 530, 520);
-	GFResizePic(gump, 10, 10, 3000, 510, 500);
+	GFResizePic(gump, 0, 0, 9270, 530, 520);
+	GFResizePic(gump, 10, 10, 9350, 510, 500);
 
 	GFTextLine(gump, 140, 15, TEXT_HUE_HIGHLIGHT, "Omega Cache - " + FormatCategoryName(category_name));
 
@@ -351,6 +351,9 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		endif
 
 		var row_y := 65 + ((page_item - 1) * row_height);
+
+		// Row card panel (matches category card style)
+		GFResizePic(gump, 18, row_y - 2, 9350, 495, 32);
 
 		var elem := df.FindElement(key);
 		var qty := CInt(elem.GetProp("qty"));
