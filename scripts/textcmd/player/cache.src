@@ -85,7 +85,12 @@ program textcmd_cache(who, text)
 	elseif(!text or text == "")
 		var cache_item := access.container;
 		if(cache_item)
-			start_script(":omegacache:omegacache", {who, cache_item});
+			var res := start_script(":omegacache:omegacache", {who, cache_item});
+			if(res.errortext)
+				SendSysMessage(who, "Error opening cache: " + res.errortext);
+			endif
+		else
+			SendSysMessage(who, "No cache container found.");
 		endif
 
 	else
