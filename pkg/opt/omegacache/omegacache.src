@@ -409,7 +409,7 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 			GFTextLine(gump, 68, 42, TEXT_HUE, "Item");
 			GFTextLine(gump, 290, 42, TEXT_HUE, "Stored");
 			GFTextLine(gump, 400, 42, TEXT_HUE, "Amount");
-			GFTextLine(gump, 510, 42, TEXT_HUE, "Take");
+			GFTextLine(gump, 540, 42, TEXT_HUE, "Take");
 
 			// Page nav — balanced centering based on which buttons are visible
 			if(total_pages > 1)
@@ -448,7 +448,7 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		var row_y := 65 + ((page_item - 1) * row_height);
 
 		// Row card panel (matches category card style)
-		GFResizePic(gump, 18, row_y - 2, 9350, 545, 32);
+		GFResizePic(gump, 18, row_y - 2, 9350, 565, 32);
 
 		var elem := df.FindElement(key);
 		var qty := CInt(elem.GetProp("qty"));
@@ -495,7 +495,7 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		GFTextEntry(gump, 400, row_y + 7, 95, 20, TEXT_HUE, "", txt_id);
 
 		// Take button (per-row)
-		GFAddButton(gump, 510, row_y + 7, 4005, 4007, GF_CLOSE_BTN, btn_id);
+		GFAddButton(gump, 545, row_y + 7, 4005, 4007, GF_CLOSE_BTN, btn_id);
 	endforeach
 
 	if(total_items == 0)
