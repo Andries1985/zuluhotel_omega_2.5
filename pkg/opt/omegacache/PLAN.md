@@ -480,7 +480,7 @@ Container 0xdf0a    // Wrong — should be Item, not Container
 Item 0xDF0A
 {
     Name            OmegaCacheContainer
-    Desc            Omega Crate of Wonders
+    Desc            Omega Crate of Holding
     Graphic         42789
     Weight          250
     Movable         0
@@ -502,8 +502,8 @@ Item 0xDF0A
 ```
 Item 0xDF0B
 {
-    Name            OmegaCacheDeed
-    Desc            An Omega Cache Deed
+    Name            OmegaCacheContainerDeed
+    Desc            An Omega Crate of Holding Deed
     Graphic         0x14F0
     Weight          1
     Movable         1
