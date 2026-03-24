@@ -21,7 +21,7 @@ include ":gumps:gumps_ex";
 const TEXT_HUE := 242;
 const TEXT_HUE_HIGHLIGHT := 53;
 const TEXT_HUE_QTY := 55;
-const TEXT_HUE_WITHDRAW := 37;  // Red-ish — taking items out
+const TEXT_HUE_WITHDRAW := 90;  // Purple — taking items out
 const TEXT_HUE_DEPOSIT := 67;   // Green-ish — putting items in
 
 // Button IDs — start at 10 to avoid conflict with right-click close (0)
@@ -331,8 +331,8 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 	GFTextLine(gump, 65, 480, TEXT_HUE, "Back");
 	GFAddButton(gump, 240, 480, 4011, 4013, GF_CLOSE_BTN, BTN_DEPOSIT_ITEM);
 	GFTextLine(gump, 275, 480, TEXT_HUE_DEPOSIT, "Deposit");
-	GFAddButton(gump, 500, 480, 4017, 4019, GF_CLOSE_BTN, BTN_WITHDRAW);
-	GFTextLine(gump, 535, 480, TEXT_HUE_WITHDRAW, "Withdraw");
+	GFAddButton(gump, 470, 480, 4017, 4019, GF_CLOSE_BTN, BTN_WITHDRAW);
+	GFTextLine(gump, 505, 480, TEXT_HUE_WITHDRAW, "Withdraw");
 
 	// Filter to only keys with qty > 0
 	var display_keys := array{};
