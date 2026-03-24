@@ -21,7 +21,7 @@ include ":gumps:gumps_ex";
 const TEXT_HUE := 242;
 const TEXT_HUE_HIGHLIGHT := 53;
 const TEXT_HUE_QTY := 55;
-const TEXT_HUE_WITHDRAW := 90;  // Purple — taking items out
+const TEXT_HUE_WITHDRAW := 16;  // Purple — taking items out
 const TEXT_HUE_DEPOSIT := 67;   // Green-ish — putting items in
 
 // Button IDs — start at 10 to avoid conflict with right-click close (0)
@@ -83,7 +83,12 @@ program use_omegacache(who, item)
 		// Text entries can also pollute result[0] with values >= TXT_ENTRY_BASE.
 		var btn := CInt(result[0]);
 		if(btn < BTN_DEPOSIT_ITEM or btn >= TXT_ENTRY_BASE)
-			break;  // Gump closed or invalid button
+			if(view == "categories")
+				break;  // Close gump from category menu
+			else
+				view := "categories";  // Right-click on item list goes back
+				continue;
+			endif
 		endif
 
 		// Handle button press
@@ -255,15 +260,35 @@ function ShowCategoryMenu(who, category_map, cat_icons)
 			page_num := page_num + 1;
 			GFPage(gump, page_num);
 
+			// Page nav — balanced centering based on which buttons are visible
 			if(total_pages > 1)
-				if(page_num > 1)
-					GFAddButton(gump, 160, 485, 9766, 9767, GF_PAGE_BTN, page_num - 1);
-					GFTextLine(gump, 180, 485, TEXT_HUE, "Prev");
+				var has_prev := (page_num > 1);
+				var has_next := (page_num < total_pages);
+				var page_label := "Page " + page_num + "/" + total_pages;
+				var label_w := len(page_label) * 8;
+
+				var group_w := label_w;
+				if(has_prev)
+					group_w := group_w + 70;
 				endif
-				GFTextLine(gump, 215, 485, TEXT_HUE, "Page " + page_num + "/" + total_pages);
-				if(page_num < total_pages)
-					GFAddButton(gump, 310, 485, 9762, 9763, GF_PAGE_BTN, page_num + 1);
-					GFTextLine(gump, 335, 485, TEXT_HUE, "Next");
+				if(has_next)
+					group_w := group_w + 70;
+				endif
+
+				var nav_x := (490 - group_w) / 2;
+
+				if(has_prev)
+					GFAddButton(gump, nav_x, 485, 9766, 9767, GF_PAGE_BTN, page_num - 1);
+					GFTextLine(gump, nav_x + 20, 485, TEXT_HUE, "Prev");
+					nav_x := nav_x + 70;
+				endif
+
+				GFTextLine(gump, nav_x, 485, TEXT_HUE, page_label);
+				nav_x := nav_x + label_w + 10;
+
+				if(has_next)
+					GFAddButton(gump, nav_x, 485, 9762, 9763, GF_PAGE_BTN, page_num + 1);
+					GFTextLine(gump, nav_x + 20, 485, TEXT_HUE, "Next");
 				endif
 			endif
 		endif
@@ -331,8 +356,8 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 	GFTextLine(gump, 65, 480, TEXT_HUE, "Back");
 	GFAddButton(gump, 240, 480, 4011, 4013, GF_CLOSE_BTN, BTN_DEPOSIT_ITEM);
 	GFTextLine(gump, 275, 480, TEXT_HUE_DEPOSIT, "Deposit");
-	GFAddButton(gump, 470, 480, 4017, 4019, GF_CLOSE_BTN, BTN_WITHDRAW);
-	GFTextLine(gump, 505, 480, TEXT_HUE_WITHDRAW, "Withdraw");
+	GFAddButton(gump, 485, 480, 4017, 4019, GF_CLOSE_BTN, BTN_WITHDRAW);
+	GFTextLine(gump, 520, 480, TEXT_HUE_WITHDRAW, "Withdraw");
 
 	// Filter to only keys with qty > 0
 	var display_keys := array{};
@@ -386,17 +411,36 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 			GFTextLine(gump, 400, 42, TEXT_HUE, "Amount");
 			GFTextLine(gump, 510, 42, TEXT_HUE, "Take");
 
-			// Page nav (centered in 600px gump)
+			// Page nav — balanced centering based on which buttons are visible
 			if(total_pages > 1)
-				if(page_num > 1)
-					GFAddButton(gump, 220, 455, 9766, 9767, GF_PAGE_BTN, page_num - 1);
-					GFTextLine(gump, 240, 455, TEXT_HUE, "Prev");
-				endif
+				var has_prev := (page_num > 1);
+				var has_next := (page_num < total_pages);
 				var page_label := "Page " + page_num + "/" + total_pages;
-				GFTextLine(gump, (600 - len(page_label) * 8) / 2, 455, TEXT_HUE, page_label);
-				if(page_num < total_pages)
-					GFAddButton(gump, 355, 455, 9762, 9763, GF_PAGE_BTN, page_num + 1);
-					GFTextLine(gump, 375, 455, TEXT_HUE, "Next");
+				var label_w := len(page_label) * 8;
+
+				// Total width of nav group: [Prev 60] [gap 10] [label] [gap 10] [Next 60]
+				var group_w := label_w;
+				if(has_prev)
+					group_w := group_w + 70;  // button + text + gap
+				endif
+				if(has_next)
+					group_w := group_w + 70;
+				endif
+
+				var nav_x := (600 - group_w) / 2;
+
+				if(has_prev)
+					GFAddButton(gump, nav_x, 455, 9766, 9767, GF_PAGE_BTN, page_num - 1);
+					GFTextLine(gump, nav_x + 20, 455, TEXT_HUE, "Prev");
+					nav_x := nav_x + 70;
+				endif
+
+				GFTextLine(gump, nav_x, 455, TEXT_HUE, page_label);
+				nav_x := nav_x + label_w + 10;
+
+				if(has_next)
+					GFAddButton(gump, nav_x, 455, 9762, 9763, GF_PAGE_BTN, page_num + 1);
+					GFTextLine(gump, nav_x + 20, 455, TEXT_HUE, "Next");
 				endif
 			endif
 		endif

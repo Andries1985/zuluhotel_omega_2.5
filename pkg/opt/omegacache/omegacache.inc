@@ -56,6 +56,18 @@ endfunction
 // to prevent CInt from interpreting "010000" as hex/octal.
 function ParseDecimal(s)
 	s := CStr(s);
+	if(len(s) == 0)
+		return 0;
+	endif
+	// Validate all characters are digits
+	var i := 1;
+	while(i <= len(s))
+		var ch := s[i];
+		if(ch < "0" or ch > "9")
+			return 0;
+		endif
+		i := i + 1;
+	endwhile
 	// Strip leading zeros
 	while(len(s) > 1 and s[1] == "0")
 		s := s[2, len(s)];
