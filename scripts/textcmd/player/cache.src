@@ -50,7 +50,7 @@ program textcmd_cache(who, text)
 
 	elseif(text[1,8] == "withdraw")
 		var amount_str := text[10, len(text)];
-		var amount := CInt(amount_str);
+		var amount := ParseDecimal(amount_str);
 		if(amount <= 0)
 			SendSysMessage(who, "Usage: .cache withdraw <amount>");
 			SendSysMessage(who, "Then target an item of the type you wish to withdraw.");
@@ -152,11 +152,11 @@ function DoListCategories(who, df)
 		var count := cat_counts[cat_name];
 		var qty := cat_qty[cat_name];
 		if(count and count > 0)
-			SendSysMessage(who, "  " + cat_name + ": " + count + " type(s), " + qty + " total");
+			SendSysMessage(who, "  " + cat_name + ": " + count + " type(s), " + FormatNumber(qty) + " total");
 		endif
 	endforeach
 	if(other_count > 0)
-		SendSysMessage(who, "  Other: " + other_count + " type(s), " + other_qty + " total");
+		SendSysMessage(who, "  Other: " + other_count + " type(s), " + FormatNumber(other_qty) + " total");
 	endif
 	if(keys.size() == 0)
 		SendSysMessage(who, "  (empty)");
@@ -210,7 +210,7 @@ function DoListCategory(who, df, cat_name_input)
 				endif
 				var objtype := CInt(elem.GetProp("objtype"));
 				var item_name := GetItemDisplayName(objtype);
-				SendSysMessage(who, "  " + item_name + ": " + qty);
+				SendSysMessage(who, "  " + item_name + ": " + FormatNumber(qty));
 				found := found + 1;
 			endif
 		endif

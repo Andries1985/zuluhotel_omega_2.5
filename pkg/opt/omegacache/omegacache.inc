@@ -32,6 +32,38 @@ function OmegaCacheDebug(msg)
 endfunction
 
 // ============================================================
+// Utility
+// ============================================================
+
+// Formats a number with thousand separators (e.g., 300000 -> "300,000").
+function FormatNumber(num)
+	var s := CStr(CInt(num));
+	var result := "";
+	var count := 0;
+	var i := len(s);
+	while(i > 0)
+		if(count > 0 and (count % 3) == 0)
+			result := "," + result;
+		endif
+		result := s[i] + result;
+		count := count + 1;
+		i := i - 1;
+	endwhile
+	return result;
+endfunction
+
+// Parses a string as a base-10 integer, stripping leading zeros
+// to prevent CInt from interpreting "010000" as hex/octal.
+function ParseDecimal(s)
+	s := CStr(s);
+	// Strip leading zeros
+	while(len(s) > 1 and s[1] == "0")
+		s := s[2, len(s)];
+	endwhile
+	return CInt(s);
+endfunction
+
+// ============================================================
 // Key Generation
 // ============================================================
 
@@ -143,14 +175,31 @@ function GetItemDisplayName(objtype, desc_info := 0)
 	if(!desc_info)
 		desc_info := GetItemDescriptor(objtype);
 	endif
+	var name := "";
 	if(desc_info)
 		if(desc_info.Desc and desc_info.Desc != "")
-			return desc_info.Desc;
+			name := desc_info.Desc;
 		elseif(desc_info.Name and desc_info.Name != "")
-			return desc_info.Name;
+			name := desc_info.Name;
 		endif
 	endif
-	return Hex(objtype);
+	if(name == "")
+		return Hex(objtype);
+	endif
+	// Strip all tiledata pluralization placeholders "%s"
+	var pos := Find(name, "%s", 1);
+	while(pos > 0)
+		name := name[1, pos - 1] + name[pos + 2, len(name)];
+		pos := Find(name, "%s", 1);
+	endwhile
+	// Trim trailing/leading whitespace left by removed placeholders
+	while(len(name) > 0 and name[len(name)] == " ")
+		name := name[1, len(name) - 1];
+	endwhile
+	while(len(name) > 0 and name[1] == " ")
+		name := name[2, len(name)];
+	endwhile
+	return name;
 endfunction
 
 // Extracts the objtype string prefix from a DataFile key ("0xABCD|hash" -> "0xABCD").
@@ -527,7 +576,7 @@ function DepositSingleItem(who, df, item)
 	var amt := item.amount;
 	DepositItem(df, key, item);
 	DestroyItem(item);
-	SendSysMessage(who, "Deposited: " + amt + " " + desc);
+	SendSysMessage(who, "Deposited: " + FormatNumber(amt) + " " + desc);
 	return 1;
 endfunction
 
@@ -567,7 +616,7 @@ function DepositFromContainer(who, df, container)
 	if(total_deposited > 0)
 		var parts := array{};
 		foreach desc in (deposited.keys())
-			parts.append(deposited[desc] + " " + desc);
+			parts.append(FormatNumber(deposited[desc]) + " " + desc);
 		endforeach
 		var summary := "";
 		var i := 1;
@@ -639,7 +688,7 @@ function DoWithdraw(who, df, key, amount, destination)
 	endif
 	if(amount > available)
 		amount := available;
-		SendSysMessage(who, "Only " + available + " available. Withdrawing all.");
+		SendSysMessage(who, "Only " + FormatNumber(available) + " available. Withdrawing all.");
 	endif
 
 	var objtype := CInt(elem.GetProp("objtype"));
@@ -657,7 +706,7 @@ function DoWithdraw(who, df, key, amount, destination)
 			SendSysMessage(who, "The destination cannot hold any more weight.");
 			return 0;
 		endif
-		SendSysMessage(who, "Weight limit: can only withdraw " + max_by_weight + " (requested " + amount + ").");
+		SendSysMessage(who, "Weight limit: can only withdraw " + FormatNumber(max_by_weight) + " (requested " + FormatNumber(amount) + ").");
 		amount := max_by_weight;
 	endif
 
@@ -680,7 +729,7 @@ function DoWithdraw(who, df, key, amount, destination)
 				amount := available;
 			endif
 			stacks_needed := max_stacks;
-			SendSysMessage(who, "Container slot limit: withdrawing " + amount + " (" + stacks_needed + " stack(s)).");
+			SendSysMessage(who, "Container slot limit: withdrawing " + FormatNumber(amount) + " (" + stacks_needed + " stack(s)).");
 		endif
 	endif
 
@@ -715,9 +764,9 @@ function DoWithdraw(who, df, key, amount, destination)
 		var item_name := GetItemDisplayName(objtype, desc_info);
 		var stacks_created := CInt(Ceil(CDbl(total_withdrawn) / CDbl(stack_limit)));
 		if(stacks_created > 1)
-			SendSysMessage(who, "Withdrawn: " + total_withdrawn + " " + item_name + " (" + stacks_created + " stacks).");
+			SendSysMessage(who, "Withdrawn: " + FormatNumber(total_withdrawn) + " " + item_name + " (" + stacks_created + " stacks).");
 		else
-			SendSysMessage(who, "Withdrawn: " + total_withdrawn + " " + item_name + ".");
+			SendSysMessage(who, "Withdrawn: " + FormatNumber(total_withdrawn) + " " + item_name + ".");
 		endif
 	endif
 

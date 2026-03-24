@@ -69,11 +69,14 @@ program use_omegacache(who, item)
 			result := ShowItemList(who, df, view, category_map, current_keys);
 		endif
 
-		if(!result or result[0] == 0)
-			break;  // Gump closed
+		if(!result)
+			break;  // Gump error
 		endif
 
-		var btn := result[0];
+		var btn := CInt(result[0]);
+		if(btn < 1)
+			break;  // Gump closed (right-click or no button)
+		endif
 
 		// Handle button press
 		if(btn == BTN_DEPOSIT_ITEM)
@@ -108,7 +111,7 @@ program use_omegacache(who, item)
 				if(item_index >= 1 and item_index <= current_keys.size())
 					var key := current_keys[item_index];
 					var amount_str := GFExtractData(result, btn);
-					var amount := CInt(amount_str);
+					var amount := ParseDecimal(amount_str);
 					if(amount > 0)
 						var dest := PromptDestination(who);
 						DoWithdraw(who, df, key, amount, dest);
@@ -330,11 +333,11 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		GFTextCrop(gump, 55, row_y, 220, 20, TEXT_HUE, item_name);
 
 		// Quantity
-		GFTextLine(gump, 280, row_y, TEXT_HUE_QTY, CStr(qty));
+		GFTextLine(gump, 280, row_y, TEXT_HUE_QTY, FormatNumber(qty));
 
 		// Text entry for withdraw amount — use item_index as ID
 		var btn_id := BTN_TAKE_BASE + item_index;
-		GFTextEntry(gump, 340, row_y, 60, 20, TEXT_HUE, "0", btn_id);
+		GFTextEntry(gump, 340, row_y, 60, 20, TEXT_HUE, "", btn_id);
 
 		// Take button
 		GFAddButton(gump, 420, row_y, 4005, 4007, GF_CLOSE_BTN, btn_id);
