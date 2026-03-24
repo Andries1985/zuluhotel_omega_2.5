@@ -965,7 +965,7 @@ function HouseFunctionRemoveOmegaCache(who, house)
 		return;
 	endif
 
-	SendSysMessage(who, "Target the Omega Cache you wish to remove.");
+	SendSysMessage(who, "Target the Omega Cache Container you wish to remove.");
 	var itemt := Target(who);
 	if(!itemt)
 		SendSysMessage(who, "Cancelled.");
@@ -983,21 +983,22 @@ function HouseFunctionRemoveOmegaCache(who, house)
 		return;
 	endif
 
-	// Block removal of the last container if cache has stored items
-	if(!IsOmegaCacheEmpty(house.serial))
-		// Count how many cache containers this house still has
-		var cache_count := 0;
-		var house_items := ListItemsNearLocation(house.x, house.y, house.z, 50, house.realm);
-		foreach nearby in house_items
-			if(nearby.objtype == OMEGACACHE_OBJTYPE and CInt(GetObjProperty(nearby, "houseserial")) == house.serial)
-				cache_count := cache_count + 1;
-				SendSysMessage(who, "[OmegaCache] Found container serial=" + nearby.serial + " at " + nearby.x + "," + nearby.y + "," + nearby.z + " graphic=" + Hex(nearby.graphic), 3, 53);
-			endif
-		endforeach
-		if(cache_count <= 1)
-			SendSysMessage(who, "You must empty the Omega Cache Container before removing the last one.");
-			return;
+	// List all cache containers for this house (temp debug)
+	var cache_count := 0;
+	var house_items := ListItemsNearLocation(house.x, house.y, house.z, 50, house.realm);
+	SendSysMessage(who, "[OmegaCache] Searching near house " + house.serial + " at " + house.x + "," + house.y + "," + house.z + " found " + house_items.size() + " nearby items", 3, 53);
+	foreach nearby in house_items
+		if(nearby.objtype == OMEGACACHE_OBJTYPE and CInt(GetObjProperty(nearby, "houseserial")) == house.serial)
+			cache_count := cache_count + 1;
+			SendSysMessage(who, "[OmegaCache] Container #" + cache_count + " serial=" + nearby.serial + " at " + nearby.x + "," + nearby.y + "," + nearby.z + " graphic=" + Hex(nearby.graphic), 3, 53);
 		endif
+	endforeach
+	SendSysMessage(who, "[OmegaCache] Total containers found: " + cache_count + " empty=" + IsOmegaCacheEmpty(house.serial), 3, 53);
+
+	// Block removal of the last container if cache has stored items
+	if(!IsOmegaCacheEmpty(house.serial) and cache_count <= 1)
+		SendSysMessage(who, "You must empty the Omega Cache Container before removing the last one.");
+		return;
 	endif
 
 	// Destroy the cache and re-credit the slot
