@@ -75,18 +75,12 @@ program use_omegacache(who, item)
 			break;  // Gump error
 		endif
 
-		// Determine which button was pressed.
-		// result[0] holds the button ID, but on gumps with text entries
-		// it can return text entry data on right-click close (e.g. "2001: ").
-		// Use result[0] first, then validate it's a real button ID.
+		// result[0] holds the button ID. On right-click close POL returns
+		// 0 or 1. Our lowest real button ID is BTN_DEPOSIT_ITEM (10).
+		// Text entries can also pollute result[0] with values >= TXT_ENTRY_BASE.
 		var btn := CInt(result[0]);
-		OmegaCacheDebug("Gump result[0]=" + CStr(result[0]) + " CInt=" + btn + " keys=" + CStr(result.keys()));
-		if(btn >= TXT_ENTRY_BASE or btn < 0)
-			btn := 0;  // Text entry data, not a button
-		endif
-
-		if(btn < 1)
-			break;  // Gump closed (right-click or no button)
+		if(btn < BTN_DEPOSIT_ITEM or btn >= TXT_ENTRY_BASE)
+			break;  // Gump closed or invalid button
 		endif
 
 		// Handle button press
