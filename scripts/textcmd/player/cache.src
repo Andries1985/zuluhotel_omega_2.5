@@ -19,8 +19,11 @@ program textcmd_cache(who, text)
 
 	_debug_who := who;
 
-	text := CStr(text);
-	text := Lower(text);
+	if(!text or CStr(text) == "0")
+		text := "";
+	else
+		text := Lower(CStr(text));
+	endif
 
 	// Determine required privilege based on subcommand
 	var required_privs := array{VIEW_SECURE};

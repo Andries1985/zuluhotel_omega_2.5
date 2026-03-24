@@ -208,19 +208,26 @@ function GetItemDisplayName(objtype, desc_info := 0)
 	if(name == "")
 		return Hex(objtype);
 	endif
-	// Strip all tiledata pluralization placeholders "%s"
-	var pos := Find(name, "%s", 1);
+	// Strip all tiledata pluralization placeholders ("%s", "%es", lone "%")
+	var pos := Find(name, "%", 1);
 	while(pos > 0)
 		var before := "";
 		var after := "";
 		if(pos > 1)
 			before := name[1, pos - 1];
 		endif
-		if(pos + 2 <= len(name))
-			after := name[pos + 2, len(name)];
+		// Determine how many chars the placeholder spans
+		var skip := 1; // lone "%"
+		if(pos + 2 <= len(name) and name[pos + 1, pos + 2] == "es")
+			skip := 3; // "%es"
+		elseif(pos + 1 <= len(name) and name[pos + 1] == "s")
+			skip := 2; // "%s"
+		endif
+		if(pos + skip <= len(name))
+			after := name[pos + skip, len(name)];
 		endif
 		name := before + after;
-		pos := Find(name, "%s", 1);
+		pos := Find(name, "%", 1);
 	endwhile
 	// Trim trailing/leading whitespace
 	while(len(name) > 0 and name[len(name)] == " ")

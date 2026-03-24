@@ -28,6 +28,7 @@ const BTN_DEPOSIT_ALL := 11;
 const BTN_BACK := 12;
 const BTN_CATEGORY_BASE := 100;    // 100 + category_index
 const BTN_TAKE_BASE := 1000;       // 1000 + item_index
+const TXT_ENTRY_BASE := 2000;      // 2000 + item_index (text entry IDs, separate from buttons)
 
 // ============================================================
 // Entry Point
@@ -58,12 +59,13 @@ program use_omegacache(who, item)
 	var current_keys := array{};
 	var cat_lookup := LoadCategoryLookup();
 
-	while(1)
-		// Rebuild category map each iteration (data may have changed)
-		category_map := BuildCategoryMap(df);
+	category_map := BuildCategoryMap(df, cat_lookup);
 
+	while(1)
 		var result;
 		if(view == "categories")
+			// Rebuild category map when returning to the menu (data may have changed)
+			category_map := BuildCategoryMap(df, cat_lookup);
 			result := ShowCategoryMenu(who, category_map, cat_lookup.cat_icons);
 		else
 			result := ShowItemList(who, df, view, category_map, current_keys);
@@ -110,7 +112,8 @@ program use_omegacache(who, item)
 				var item_index := btn - BTN_TAKE_BASE;
 				if(item_index >= 1 and item_index <= current_keys.size())
 					var key := current_keys[item_index];
-					var amount_str := GFExtractData(result, btn);
+					var txt_id := TXT_ENTRY_BASE + item_index;
+					var amount_str := GFExtractData(result, txt_id);
 					var amount := ParseDecimal(amount_str);
 					if(amount > 0)
 						var dest := PromptDestination(who);
@@ -131,11 +134,10 @@ endprogram
 // Category Map Builder
 // ============================================================
 
-function BuildCategoryMap(df)
+function BuildCategoryMap(df, lookup)
 	var keys := df.Keys();
 	var cat_map := dictionary;
 
-	var lookup := LoadCategoryLookup();
 	var cat_names := lookup.cat_names;
 	var objtype_to_cat := lookup.objtype_to_cat;
 
@@ -280,7 +282,7 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 			// Column headers on each page
 			GFTextLine(gump, 55, 42, TEXT_HUE, "Item");
 			GFTextLine(gump, 280, 42, TEXT_HUE, "Stored");
-			GFTextLine(gump, 345, 42, TEXT_HUE, "Amt");
+			GFTextLine(gump, 335, 42, TEXT_HUE, "Amount");
 			GFTextLine(gump, 415, 42, TEXT_HUE, "Take");
 
 			// Page nav buttons and indicator
@@ -335,9 +337,10 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		// Quantity
 		GFTextLine(gump, 280, row_y, TEXT_HUE_QTY, FormatNumber(qty));
 
-		// Text entry for withdraw amount — use item_index as ID
+		// Text entry and Take button use separate ID ranges
+		var txt_id := TXT_ENTRY_BASE + item_index;
 		var btn_id := BTN_TAKE_BASE + item_index;
-		GFTextEntry(gump, 340, row_y, 60, 20, TEXT_HUE, "", btn_id);
+		GFTextEntry(gump, 340, row_y, 60, 20, TEXT_HUE, "", txt_id);
 
 		// Take button
 		GFAddButton(gump, 420, row_y, 4005, 4007, GF_CLOSE_BTN, btn_id);
