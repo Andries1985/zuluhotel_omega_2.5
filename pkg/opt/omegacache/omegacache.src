@@ -75,7 +75,25 @@ program use_omegacache(who, item)
 			break;  // Gump error
 		endif
 
-		var btn := CInt(result[0]);
+		// Find which button was pressed by scanning result keys.
+		// result[0] is unreliable when text entries exist (POL returns
+		// text entry data at key 0 on right-click close). Instead, check
+		// for known button IDs in the result keys.
+		var btn := 0;
+		foreach key in (result.keys())
+			var k := CInt(key);
+			if(k == BTN_DEPOSIT_ITEM or k == BTN_DEPOSIT_ALL or k == BTN_BACK)
+				btn := k;
+				break;
+			elseif(k >= BTN_CATEGORY_BASE and k < BTN_TAKE_BASE)
+				btn := k;
+				break;
+			elseif(k >= BTN_TAKE_BASE and k < TXT_ENTRY_BASE)
+				btn := k;
+				break;
+			endif
+		endforeach
+
 		if(btn < 1)
 			break;  // Gump closed (right-click or no button)
 		endif
@@ -173,7 +191,8 @@ function ShowCategoryMenu(who, category_map, cat_icons)
 	GFPage(gump, 0);
 	GFResizePic(gump, 0, 0, 9270, 490, 550);
 	GFResizePic(gump, 10, 10, 9350, 470, 530);
-	GFTextLine(gump, 175, 15, TEXT_HUE_HIGHLIGHT, "Omega Cache");
+	var title := "Omega Cache";
+	GFTextLine(gump, (490 - len(title) * 8) / 2, 15, TEXT_HUE_HIGHLIGHT, title);
 
 	// Deposit buttons (always visible)
 	GFAddButton(gump, 30, 510, 4005, 4007, GF_CLOSE_BTN, BTN_DEPOSIT_ITEM);
@@ -289,7 +308,8 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 	GFResizePic(gump, 0, 0, 9270, 530, 520);
 	GFResizePic(gump, 10, 10, 9350, 510, 500);
 
-	GFTextLine(gump, 140, 15, TEXT_HUE_HIGHLIGHT, "Omega Cache - " + FormatCategoryName(category_name));
+	var title := "Omega Cache - " + FormatCategoryName(category_name);
+	GFTextLine(gump, (530 - len(title) * 8) / 2, 15, TEXT_HUE_HIGHLIGHT, title);
 
 	// Bottom buttons (always visible)
 	GFAddButton(gump, 30, 480, 4014, 4016, GF_CLOSE_BTN, BTN_BACK);
@@ -374,10 +394,15 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 			endif
 		endforeach
 
-		// Tile icon
+		// Tile icon — use pile graphic for stacked items
 		var graphic := objtype;
 		if(desc_info and desc_info.Graphic)
 			graphic := CInt(desc_info.Graphic);
+		endif
+		if(qty > 5)
+			graphic := graphic + 2;
+		elseif(qty > 1)
+			graphic := graphic + 1;
 		endif
 		var color := 0;
 		if(elem.GetProp("color"))
