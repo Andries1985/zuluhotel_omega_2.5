@@ -1007,8 +1007,8 @@ function HouseFunctionRemoveOmegaCache(who, house)
 		SendSysMessage(who, "[OmegaCache] DestroyItem FAILED: " + destroy_result.errortext, 3, 53);
 		return;
 	endif
-	SetObjProperty(house, "numomegacache", CInt(GetObjProperty(house, "numomegacache")) + 1);
-	SendSysMessage(who, "Omega Cache removed.");
+	// Slot re-credit is handled by destroycache.src (DestroyScript)
+	SendSysMessage(who, "Omega Cache Container removed.");
 
 	if(DEBUG_MODE)
 		SendSysMessage(who, "[OmegaCache] Removed cache. Slots available: " + GetObjProperty(house, "numomegacache"), 3, 53);

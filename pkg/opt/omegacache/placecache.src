@@ -56,6 +56,9 @@ program place_omegacache(who, deed)
 	endif
 
 	// Create the Omega Cache item
+	// TODO: If using a directional graphic (e.g. chest-style), add an orientation
+	// selection gump before placement (East/South), similar to secure container placement.
+	// See HouseFunctionSecure in sign.src for the pattern.
 	var cache := CreateItemAtLocation(where.x, where.y, where.z, OMEGACACHE_OBJTYPE, 1);
 	if(!cache)
 		SendSysMessage(who, "Failed to create the Omega Cache.");
