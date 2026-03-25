@@ -1116,7 +1116,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [ ] 49 | Tailoring | Same pattern (hides/cloth). Single material, color applied to product. |
 | [ ] 50 | Carpentry | Dual material (logs + ingots/cloth), each with independent `ResourceRequest` and lease. Complex color inheritance. |
 | [ ] 51 | Alchemy | Reagents + bottles. Consumption during `CanMake()` uses same centralised function. |
-| [ ] 52 | Tinkering | Metal/components + gems. Multiple target steps, color/quality applied. |
+| [x] 52 | Tinkering | Metal/wood/glass/clay + gems + complex components. Cache entry point routes by objtype. Main loop uses ResourceRequest with leases. Complex items (axle+gears, clock, sextant) consume from cache. Totem/potion keg have cache variants. Keys/traps remain backpack-only (non-stackable). |
 | [ ] 53 | Bowcraft | Shafts + feathers. Simple Min() consumption, no AutoLoop. |
 | [ ] 54 | Cooking | Multi-ingredient recipe system. `destroy_all_ingredients()` calls `ConsumeResource` per ingredient. |
 | [ ] 55 | Inscription | Blank scrolls (loop) + gems (recharge loop). |
@@ -1134,6 +1134,11 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [ ] 61 | Lease expiry | Simulate long idle — verify lease expires, another player can consume. Verify expired lease cleaned up. |
 | [ ] 62 | No cache nearby | Craft away from any cache — verify all crafts still work exactly as before (pure backpack, no leases). |
 | [ ] 63 | Edge cases | Insufficient total resources, cache with variant items, concurrent crafters on same resource |
+| [ ] 64 | House demolition with items stored | Verify warning message, verify DataFile cleanup after demolition |
+| [ ] 65 | Two players accessing same cache | Verify concurrent access doesn't corrupt data, leases prevent over-consumption |
+| [ ] 66 | Multiple house types | Verify `who.multi` access control works for different house styles (multi-story, custom, keep, etc.) |
+| [ ] 67 | Redeed on container destroy | Verify deed returns to player backpack when container removed via house management |
+| [ ] 68 | Expired lease cleanup audit | Verify no flow exists where leases accumulate without cleanup — all entry points that touch DataFile sweep for expired RL# keys |
 
 ---
 

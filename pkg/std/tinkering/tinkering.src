@@ -17,6 +17,7 @@ include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
 include "include/chests";
+include "include/resourcemanager";
 
 const CARPENTER_SOUND	:= 0x23e;
 const UOBJECT_CHEST	:= 0x0e42;
@@ -53,6 +54,7 @@ program MakeTinkerItems( character , tool )
 	var points;
 	var itemname;
 	var sound;
+	var resourceRequest;
 
 	if( !ReserveItem( tool ) )
 		return;
@@ -62,6 +64,16 @@ program MakeTinkerItems( character , tool )
 
 	use_on := Target( character , TGTOPT_CHECK_LOS );
 	if( !use_on )
+		return;
+	endif
+
+	// Handle Omega Cache targeting — select material from cache gump
+	if(use_on.objtype == OMEGACACHE_OBJTYPE)
+		var cacheRequest := SelectMaterialFromCache(character);
+		if(!cacheRequest)
+			return;
+		endif
+		HandleCacheMaterial(character, cacheRequest);
 		return;
 	endif
 
@@ -85,7 +97,8 @@ program MakeTinkerItems( character , tool )
 		ressource_diff := cfg[use_on.objtype].Difficulty;
 		ressource_name := cfg[use_on.objtype].Name;
 		ressource_qual := cfg[use_on.objtype].Quality;
-	   	item_to_make := MakeAndProcessMenu( character , use_on , WOOD_ID );
+		resourceRequest := MakeBackpackRequest(character, use_on);
+	   	item_to_make := MakeAndProcessMenu( character , resourceRequest , WOOD_ID );
 	   	sound := CARPENTER_SOUND;
 
 	elseif((use_on.objtype ==  UOBJ_GOLD_INGOT   ) or
@@ -95,7 +108,8 @@ program MakeTinkerItems( character , tool )
 		ressource_diff := cfg[use_on.objtype].Difficulty;
 		ressource_name := cfg[use_on.objtype].Name;
 		ressource_qual := cfg[use_on.objtype].Quality;
-		item_to_make := MakeAndProcessMenu( character , use_on , METAL_ID );
+		resourceRequest := MakeBackpackRequest(character, use_on);
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , METAL_ID );
 		sound := SFX_ANVIL;
 
 	else
@@ -161,12 +175,14 @@ program MakeTinkerItems( character , tool )
 						break;
 
 
-			UOBJ_GLASS:		item_to_make := MakeAndProcessMenu( character , use_on , GLASS_ID );
+			UOBJ_GLASS:		resourceRequest := MakeBackpackRequest(character, use_on);
+						item_to_make := MakeAndProcessMenu( character , resourceRequest , GLASS_ID );
 						sound := SFX_GLASSBREAK4;
 						break;
 
 
-			UOBJ_CLAY:		item_to_make := MakeAndProcessMenu( character , use_on , CLAY_ID );
+			UOBJ_CLAY:		resourceRequest := MakeBackpackRequest(character, use_on);
+						item_to_make := MakeAndProcessMenu( character , resourceRequest , CLAY_ID );
 						sound := SFX_HAMMER;
 						break;
 
@@ -190,7 +206,10 @@ program MakeTinkerItems( character , tool )
 		return;
 	endif
 
-	TryToMakeItem( character , use_on , item_to_make , sound );
+	if(!resourceRequest)
+		resourceRequest := MakeBackpackRequest(character, use_on);
+	endif
+	TryToMakeItem( character , resourceRequest , item_to_make , sound );
 
 endprogram
 
@@ -337,7 +356,7 @@ function _Play_Sound( who , sfx )
 endfunction
 
 
-function MakeAndProcessMenu( who , ressource , id )
+function MakeAndProcessMenu( who , resourceRequest , id )
 
 	var skill := GetEffectiveSkill( who , SKILLID_TINKERING );
 
@@ -390,7 +409,7 @@ function MakeAndProcessMenu( who , ressource , id )
 
 	foreach key in elemkeys
 		if( tinker_cfg[key].Type == choice )
-			if( CanMake( who , key , ressource ) )
+			if( CanMake( who , key , resourceRequest ) )
 				AddMenuItem( menu , Cint(key) , tinker_cfg[key].Name );
 				can_make := 1;
 			endif
@@ -407,7 +426,7 @@ function MakeAndProcessMenu( who , ressource , id )
 endfunction
 
 
-function CanMake( who , key , ressource )
+function CanMake( who , key , resourceRequest )
 
 	var diff := tinker_cfg[key].Skill + Cint( ressource_diff / DIVIDER );
 	if( diff < 1 )
@@ -423,7 +442,7 @@ function CanMake( who , key , ressource )
 			material := CInt(Ceil(material/2));
 		endif
 
-		if( ressource.amount >= material )
+		if( GetAvailableResource(who, resourceRequest.objtype, resourceRequest.dataFileHandle).total >= material )
 			return 1;
 		endif
 	endif
@@ -433,7 +452,7 @@ function CanMake( who , key , ressource )
 endfunction
 
 
-function TryToMakeItem( character , ressource , to_make_objtype , sfx )
+function TryToMakeItem( character , resourceRequest , to_make_objtype , sfx )
 
 	var skill;
 	var element;
@@ -457,8 +476,11 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 		material := CInt(Ceil(material/2));
 	endif
 
+	// Lease cache resources for the first iteration
+	LeaseResource(character, resourceRequest, material);
+
 	AutoLoop_init( character );
-	while( AutoLoop_more() && ressource.amount >= material && NOT character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey).total >= material) && NOT character.dead)
 
 		//refreshing some stuff ;)
 		itemname := element.Name;
@@ -469,17 +491,17 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 			SendSysmessage( character , "Select a gem for this item." );
 			var thegem := Target( character , TGTOPT_CHECK_LOS );
 			if( !thegem )
-				return;
+				break;
 			endif
 
 			if( (thegem.objtype > 0xf30) or (thegem.objtype < 0xf0f) )
 				SendSysmessage( character , "That is not a gem!" );
-				return;
+				break;
 			endif
 
 			if( !Accessible( character , thegem ) )
 				SendSysmessage( character , "You can't reach that!" );
-				return;
+				break;
 			endif
 
 			var item_cfg := ReadConfigFile( ":*:itemdesc" );
@@ -569,23 +591,13 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 					SendSysmessage( character , "You create the item and place it in your pack." );
 				endif
 
-				if( ressource.objtype != UOBJ_GLASS and ressource.objtype != UOBJ_CLAY )
-					if( ressource.objtype == UOBJ_GOLD_INGOT and !undyeable )
+				if( resourceRequest.objtype != UOBJ_GLASS and resourceRequest.objtype != UOBJ_CLAY )
+					if( resourceRequest.objtype == UOBJ_GOLD_INGOT and !undyeable )
 						theitem.color := GOLD_COLOR;
 					elseif( !undyeable )
-						theitem.color := ressource.color;
+						theitem.color := resourceRequest.color;
 					endif
 				endif
-
-				/* Not Needed since price calculated in vendor AI based on quality
-				if( theitem.sellprice )
-					if( theitem.quality )
-						theitem.sellprice := Cint( Pow( theitem.sellprice , theitem.quality ) );
-					elseif( ressource_qual )
-						theitem.sellprice := Cint( Pow( theitem.sellprice , ressource_qual ) );
-					endif
-				endif
-				*/
 
 				theitem.hp := theitem.maxhp;
 				SetObjProperty( theitem , "BaseName" , itemname );
@@ -610,7 +622,7 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 				endif
 				endif
 			endif
-			SubtractAmount( ressource , material );
+			ConsumeResource( character , resourceRequest , material );
 		else
 			var tink := GetEffectiveSkill( character , SKILLID_TINKERING );
 			var destroy := 75 - Cint( tink / 2 );
@@ -626,12 +638,18 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 			if( destroy < 1 )
 				destroy	:= 1;
 			endif
-			
-			SubtractAmount( ressource , destroy );
-			SendSysmessage( character , "You destroyed " + destroy + " " + GetRessourceName( ressource ) + "." );
+
+			ConsumeResource( character , resourceRequest , destroy );
+			SendSysmessage( character , "You destroyed some resources." );
 		endif
 
+		// Extend lease for next iteration
+		if(!ExtendResourceLease(resourceRequest))
+			break;
+		endif
 	endwhile
+
+	ReleaseResourceLease(resourceRequest);
 	AutoLoop_finish();
 
 endfunction
@@ -1009,4 +1027,407 @@ function TryToMakeAContainerLockable( character , key )
 		DestroyItem( key );
 	endif
 
+endfunction
+
+
+// ============================================================
+// Cache-specific crafting functions
+// ============================================================
+
+// Routes a cache-selected material to the appropriate crafting path
+function HandleCacheMaterial(character, resourceRequest)
+	var ot := CInt(resourceRequest.objtype);
+	var item_to_make;
+	var sound;
+
+	// Check if it's a log type
+	if(IsLogObjtype(ot))
+		var cfg := ReadConfigFile( ":carpentry:carpentry" );
+		ressource_diff := cfg[ot].Difficulty;
+		ressource_name := cfg[ot].Name;
+		ressource_qual := cfg[ot].Quality;
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , WOOD_ID );
+		sound := CARPENTER_SOUND;
+
+	// Check if it's an ingot type
+	elseif(IsIngotObjtype(ot))
+		var cfg := ReadConfigFile( ":blacksmithy:blacksmithy" );
+		ressource_diff := cfg[ot].Difficulty;
+		ressource_name := cfg[ot].Name;
+		ressource_qual := cfg[ot].Quality;
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , METAL_ID );
+		sound := SFX_ANVIL;
+
+	// Complex component types — single craft, consume from cache
+	elseif(ot == UOBJ_AXLE)
+		TryToMakeComplexFromCache(character, resourceRequest, UOBJ_AXLE_AND_GEARS, UOBJ_GEARS, CARPENTER_SOUND);
+		return;
+	elseif(ot == UOBJ_GEARS)
+		TryToMakeComplexFromCache(character, resourceRequest, UOBJ_AXLE_AND_GEARS, UOBJ_AXLE, CARPENTER_SOUND);
+		return;
+	elseif(ot == UOBJ_CLOCK_FRAME)
+		TryToMakeComplexFromCache(character, resourceRequest, UOBJ_CLOCK, UOBJ_CLOCK_PARTS, SFX_ANVIL);
+		return;
+	elseif(ot == UOBJ_CLOCK_PARTS)
+		TryToMakeComplexFromCache(character, resourceRequest, UOBJ_CLOCK, UOBJ_CLOCK_FRAME, SFX_ANVIL);
+		return;
+	elseif(ot == UOBJ_SPRINGS)
+		TryToMakeComplexFromCache(character, resourceRequest, UOBJ_CLOCK_PARTS, UOBJ_AXLE_AND_GEARS, SFX_ANVIL);
+		return;
+	elseif(ot == UOBJ_AXLE_AND_GEARS)
+		// Need to select second component (springs or hinge)
+		SendSysMessage(character, "Select either some springs or a hinge.");
+		var thing := Target(character, TGTOPT_CHECK_LOS);
+		if(!thing)
+			return;
+		endif
+		var secondRequest;
+		if(thing.objtype == OMEGACACHE_OBJTYPE)
+			secondRequest := SelectMaterialFromCache(character);
+			if(!secondRequest)
+				return;
+			endif
+		else
+			if(!Accessible(character, thing) or !thing.movable)
+				SendSysmessage(character, "You can't reach that!");
+				return;
+			endif
+			if(!ReserveItem(thing))
+				return;
+			endif
+			secondRequest := MakeBackpackRequest(character, thing);
+		endif
+		var sot := CInt(secondRequest.objtype);
+		if(sot == UOBJ_SPRINGS)
+			TryToMakeComplexFromCache(character, resourceRequest, UOBJ_CLOCK_PARTS, 0, SFX_ANVIL, secondRequest);
+		elseif(sot == UOBJ_HINGE)
+			TryToMakeComplexFromCache(character, resourceRequest, UOBJ_SEXTANT_PARTS, 0, SFX_ANVIL, secondRequest);
+		else
+			SendSysMessage(character, "You must select either a hinge or springs.");
+		endif
+		return;
+	elseif(ot == UOBJ_HINGE)
+		TryToMakeComplexFromCache(character, resourceRequest, UOBJ_SEXTANT_PARTS, UOBJ_AXLE_AND_GEARS, SFX_ANVIL);
+		return;
+	elseif(ot == UOBJ_SEXTANT_PARTS)
+		TryToMakeComplexFromCache(character, resourceRequest, UOBJ_SEXTANT, 0, SFX_ANVIL);
+		return;
+
+	// Obsidian -> totem
+	elseif(ot == UOBJ_OBSIDIAN)
+		MakeTotemFromCache(character, resourceRequest);
+		return;
+
+	// Glass / Clay
+	elseif(ot == UOBJ_GLASS)
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , GLASS_ID );
+		sound := SFX_GLASSBREAK4;
+	elseif(ot == UOBJ_CLAY)
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , CLAY_ID );
+		sound := SFX_HAMMER;
+
+	// Empty bottles — potion keg path (cache support for bottles)
+	elseif(ot == UOBJ_EMPTY_BOTTLE)
+		TryToMakePotionKegFromCache(character, resourceRequest);
+		return;
+
+	else
+		SendSysMessage(character, "You don't know how to use that.");
+		return;
+	endif
+
+	item_to_make := item_to_make.objtype;
+	if(!item_to_make)
+		return;
+	endif
+
+	TryToMakeItem(character, resourceRequest, item_to_make, sound);
+endfunction
+
+
+// Complex item crafting from cache — consumes 1 of each component
+// If secondRequest is provided, it's already resolved; otherwise look up needed_objtype
+function TryToMakeComplexFromCache(character, firstRequest, to_be_done_objtype, needed_objtype, sfx, secondRequest := 0)
+
+	var have_it_qual := 1;
+
+	// Resolve second component if not already provided
+	if(!secondRequest and needed_objtype)
+		// Check cache first, then backpack
+		var avail := GetAvailableResource(character, needed_objtype, firstRequest.dataFileHandle);
+		if(avail.total < 1)
+			SendSysMessage(character, "You don't have the required component.");
+			return;
+		endif
+		// Build a request for the second component — prefer same source as first
+		if(avail.cache > 0 and firstRequest.dataFileHandle)
+			secondRequest := struct{
+				objtype              := CInt(needed_objtype),
+				key                  := 0,
+				color                := 0,
+				preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK },
+				dataFileHandle       := firstRequest.dataFileHandle,
+				leaseKey             := 0
+			};
+		elseif(avail.backpack > 0)
+			var bp_item := FindObjtypeInContainer(character.backpack, needed_objtype);
+			if(bp_item)
+				secondRequest := MakeBackpackRequest(character, bp_item);
+				have_it_qual := bp_item.quality;
+			endif
+		endif
+		if(!secondRequest)
+			SendSysMessage(character, "You don't have the required component.");
+			return;
+		endif
+	elseif(!needed_objtype)
+		// No second component needed (e.g., sextant from sextant parts)
+	endif
+
+	var element := FindConfigElem( tinker_cfg , to_be_done_objtype );
+	if(!element)
+		return;
+	endif
+
+	var itemname := element.Name;
+	var skill := element.Skill;
+	var points := Cint( skill * POINTS_MULTIPLIER );
+
+	_Play_Sound( character , sfx );
+	sendDiff( character , skill );
+
+	if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
+
+		var theitem := CreateItemInBackpack( character , to_be_done_objtype );
+		if( !theitem )
+			SendSysMessage( character , "Error in creation process." );
+			ConsumeResource(character, firstRequest, 1);
+			if(secondRequest)
+				ConsumeResource(character, secondRequest, 1);
+			endif
+			return;
+		endif
+
+		theitem.movable := 1;
+
+		// Quality for cache items defaults to 1 (no quality variant info in cache)
+		var first_qual := 1;
+		var result_qual := Cint( ( first_qual + have_it_qual ) / 2 );
+		if( theitem.quality and result_qual )
+			theitem.quality := result_qual;
+		endif
+
+		// Exceptional check (same as TryToMakeComplex)
+		var excep_ch := 10;
+		if( GetObjProperty( character , CLASSEID_CRAFTER ) )
+			excep_ch := Cint( excep_ch * ClasseBonus( character , CLASSEID_CRAFTER ) );
+		else
+			skill := skill + 20;
+		endif
+		if( skill < 90 )
+			skill := 90;
+		endif
+
+		if( element.Exceptional and (Random(100) < excep_ch) and CheckSkill( character , SKILLID_TINKERING , skill , 0 ) )
+			if( theitem.quality )
+				var armslore := GetEffectiveSkill( character , SKILLID_ARMSLORE );
+				var multiplier := 5 + Cint( armslore / 10 );
+				if( GetObjProperty( character , CLASSEID_CRAFTER ) )
+					multiplier := Cint( multiplier * ClasseBonus( character , CLASSEID_CRAFTER ) );
+				endif
+				multiplier := 100 + multiplier;
+				var newquality := Cint(theitem.quality * multiplier);
+				newquality := Cdbl(newquality);
+				newquality := newquality / 100;
+				theitem.quality := newquality;
+			endif
+
+			itemname := "Exceptional " + itemname;
+			SetObjProperty( theitem , "CraftedBy" , character.name );
+			SendSysmessage( character , "You make an exceptional item and put it in your pack" );
+			SetObjProperty( theitem , "IsExceptional" , 1 );
+			if( skill >= 130 )
+				SendSysmessage( character , "This masterpiece will make you famous around the world." );
+				AwardFame( character , FAME_BONUS );
+			elseif( GetObjProperty( character , CLASSEID_CRAFTER ) and skill >= 110 )
+				SendSysmessage( character , "This masterpiece will make you famous around the world." );
+				AwardFame( character , FAME_BONUS );
+			endif
+		else
+			SendSysmessage( character , "You create the item and place it in your pack." );
+		endif
+
+		theitem.color := firstRequest.color;
+		SetObjProperty( theitem , "BaseName" , itemname );
+		SetName( theitem , itemname );
+	else
+		SendSysmessage( character , "You fail to create the item and destroy the material." );
+	endif
+
+	// Consume both components
+	ConsumeResource(character, firstRequest, 1);
+	if(secondRequest)
+		ConsumeResource(character, secondRequest, 1);
+	endif
+
+endfunction
+
+
+// Totem crafting from cache — consumes obsidian
+function MakeTotemFromCache(character, resourceRequest)
+	var material := 100;
+	//Require half resources during Crafting PH
+	if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
+		material := CInt(Ceil(material/2));
+	endif
+
+	if(GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle).total < material)
+		sendsysmessage(character, "You don't have enough obsidian to make anything.");
+		return;
+	endif
+
+	if( GetEffectiveSkill( character , SKILLID_MAGERY ) < 70 )
+		SendSysMessage( character , "You're not a skilled enough mage to work with that." );
+		SendSysmessage( character , "You need atleast 70 magery to work with that.");
+		return;
+	endif
+
+	if(GetEffectiveSkill( character , SKILLID_TINKERING ) < 70)
+		SendSysMessage( character , "You're not a skilled enough tinker to work with that." );
+		SendSysmessage( character , "You need atleast 70 tinkering to work with that.");
+		return;
+	endif
+
+	_Play_Sound( character , SFX_GLASSBREAK4 );
+	ConsumeResource(character, resourceRequest, material);
+
+	sendDiff( character , 90);
+	sendSecDiff( character , 90);
+	if( !CheckSkill( character , SKILLID_MAGERY , 90 , 0 ) or !CheckSkill( character , SKILLID_TINKERING , 90 , 0 ) )
+		SendSysMessage( character , "You fail to make anything useful." );
+		return;
+	endif
+
+	var totem := CreateItemInContainer( character.backpack , 0x20d7 );
+	if( !totem )
+		SendSysMessage( character , "Your backpack is full!" );
+		return;
+	endif
+
+	totem.name := "an obsidian golem";
+	totem.color := 906;
+	SetObjProperty( totem , "critter" ,"earthelementallord" );
+	SetObjProperty( totem , "critcolor" , 1109 );
+	SetObjProperty( totem , "totemhp" , 170 );
+	totem.usescript := ":dundee:totem";
+	totem.decay := 0;
+	totem.movable := 1;
+
+endfunction
+
+
+// Potion keg crafting from cache — only bottles can come from cache
+function TryToMakePotionKegFromCache(character, bottleRequest)
+
+	var needed_bottles := 10;
+	//Require half resources during Crafting PH
+	if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
+		needed_bottles := CInt(Ceil(needed_bottles/2));
+	endif
+
+	if(GetAvailableResource(character, bottleRequest.objtype, bottleRequest.dataFileHandle).total < needed_bottles)
+		SendSysMessage(character, "You need at least 10 empty bottles.");
+		return;
+	endif
+
+	// Find remaining parts in backpack (keg, tap, lid are not stackable — backpack only)
+	var needed_parts := { UOBJ_KEG, UOBJ_BARREL_TAP, UOBJ_BARREL_LID };
+	var parts := array{};
+
+	foreach objtype in needed_parts
+		var have_it := FindObjtypeInContainer( character.backpack , objtype );
+		if( !have_it )
+			SendSysMessage( character , "You miss some parts to make the potion keg." );
+			return;
+		endif
+		if( objtype == UOBJ_KEG )
+			if( len( EnumerateItemsInContainer( have_it ) ) )
+				SendSysMessage( character , "The keg must be empty" );
+				return;
+			endif
+		endif
+		if( ReserveItem( have_it ) )
+			parts.append( have_it );
+		else
+			return;
+		endif
+	endforeach
+
+	var element := FindConfigElem( tinker_cfg , UOBJ_POTION_KEG );
+	if(!element)
+		return;
+	endif
+
+	var itemname := element.Name;
+	var skill := element.Skill;
+	var points := Cint( skill * POINTS_MULTIPLIER );
+
+	_Play_Sound( character , CARPENTER_SOUND );
+
+	// Consume bottles from cache/backpack
+	ConsumeResource(character, bottleRequest, needed_bottles);
+
+	// Destroy physical parts
+	var result_color;
+	foreach item in parts
+		if( item.color != 0 )
+			result_color := item.color;
+		endif
+		DestroyItem( item );
+	endforeach
+
+	sendDiff( character , skill );
+
+	if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
+		var theitem := CreateItemInBackpack( character , UOBJ_POTION_KEG );
+		if( !theitem )
+			SendSysMessage( character , "Error in creation process." );
+			return;
+		endif
+		theitem.movable := 1;
+		if( result_color )
+			theitem.color := result_color;
+		endif
+		SetName( theitem , itemname );
+		SendSysmessage( character , "You create the potion keg and place it in your pack." );
+	else
+		SendSysmessage( character , "You fail to create the item and destroy the material." );
+	endif
+
+endfunction
+
+
+// ============================================================
+// Objtype helper functions
+// ============================================================
+
+// Objtype-based check for log types (no item reference needed)
+function IsLogObjtype(objtype)
+	objtype := CInt(objtype);
+	if(( objtype >= UOBJ_LOGS_START and objtype <= UOBJ_LOGS_END ) or
+	   ( objtype == UOBJ_LOGS_GODDESS ) or ( objtype == UOBJ_LOGS ))
+		return 1;
+	endif
+	return 0;
+endfunction
+
+// Objtype-based check for ingot types (no item reference needed)
+function IsIngotObjtype(objtype)
+	objtype := CInt(objtype);
+	if(( objtype >= UOBJ_INGOTS_START  and objtype <= UOBJ_INGOTS_END  ) or
+	   ( objtype >= UOBJ_INGOTS2_START and objtype <= UOBJ_INGOTS2_END ) or
+	   ( objtype == UOBJ_GOLD_INGOT ))
+		return 1;
+	endif
+	return 0;
 endfunction

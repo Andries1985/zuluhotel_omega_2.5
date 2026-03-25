@@ -351,7 +351,24 @@ Leases reserve a specific quantity of a cache resource for a crafting execution,
 - **`ApplyMaterialProperties`**: Receives `ResourceRequest` struct (backwards-compatible)
 - **Helper functions**: `IsIngotObjtype(objtype)`, `IsBoneObjtype(objtype)` for cache selection validation
 
+### Tinkering Integration (Milestone 2.2)
+
+Tinkering is the most complex crafting skill — 4 material types (wood, metal, glass, clay), complex multi-component recipes, secondary components (gems, springs, hinges), and special paths (totem, potion keg, traps, lockable).
+
+**Changes to `pkg/std/tinkering/tinkering.src`:**
+
+- **Cache entry point**: Added `OMEGACACHE_OBJTYPE` check before accessibility/movable validation. `SelectMaterialFromCache` opens variant selection gump, then `HandleCacheMaterial` routes by objtype to the correct crafting path.
+- **`MakeAndProcessMenu`/`CanMake`**: Now accept `ResourceRequest` instead of physical item. `CanMake` uses `GetAvailableResource` for availability checks.
+- **`TryToMakeItem` (main loop)**: Full lease lifecycle — `LeaseResource` before loop, `GetAvailableResource` in condition, `ConsumeResource` for consumption, `ExtendResourceLease` each iteration, `ReleaseResourceLease` on exit. Gem targeting unchanged (physical targeting each loop iteration).
+- **New cache-specific functions**:
+  - `HandleCacheMaterial` — Routes cache selection to correct path based on objtype (logs→wood menu, ingots→metal menu, axle→complex, obsidian→totem, glass/clay→respective menus, bottles→potion keg)
+  - `TryToMakeComplexFromCache` — Complex item crafting (axle+gears, clock, sextant) consuming from cache. Second component auto-resolved from cache/backpack or via second `SelectMaterialFromCache` gump (for axle_and_gears→springs/hinge selection)
+  - `MakeTotemFromCache` — Obsidian totem consuming 100 units from cache
+  - `TryToMakePotionKegFromCache` — Bottles from cache, other parts (keg/tap/lid) from backpack only (non-stackable)
+  - `IsLogObjtype`/`IsIngotObjtype` — Objtype-range checks for routing
+- **Unchanged paths**: `SetTrap` (potions not stackable in cache context), `TryToMakeAContainerLockable` (keys not stackable), gem targeting in jewelry crafting (physical item per iteration)
+
 ### Remaining Craft Scripts (Milestone 2.2 continuation)
 
-Same pattern to apply to: tailoring, carpentry, tinkering, alchemy, bowcraft, cooking, inscription, cartography.
+Same pattern to apply to: tailoring, carpentry, alchemy, bowcraft, cooking, inscription, cartography.
 
