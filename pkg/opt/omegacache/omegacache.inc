@@ -388,35 +388,184 @@ function WithdrawItem(df, key, amount)
 	return take;
 endfunction
 
-// Query the stored quantity for a specific key.
-function GetStoredAmount(df, key)
+// Query the stored quantity for a specific key (lease-aware).
+// Pass exclude_lease_key to exclude a specific lease from the calculation
+// (e.g., the caller's own lease, so they can consume their reserved portion).
+function GetStoredAmount(df, key, exclude_lease_key := 0)
 	var elem := df.FindElement(key);
 	if(!elem)
 		return 0;
 	endif
-	return CInt(elem.GetProp("qty"));
+	var qty := CInt(elem.GetProp("qty"));
+	var leased := GetLeasedAmount(df, key, exclude_lease_key);
+	var available := qty - leased;
+	if(available < 0)
+		available := 0;
+	endif
+	return available;
 endfunction
 
-// Sum qty across all keys matching an objtype prefix.
-// Used by crafting which only knows the objtype, not the full key.
+// Sum qty across all keys matching an objtype prefix (lease-aware).
+// Skips RL# lease keys. Used by crafting which only knows the objtype.
 function GetStoredAmountByObjtype(df, objtype)
 	var prefix := Hex(objtype) + "|";
 	var prefix_len := len(prefix);
 	var total := 0;
 	foreach key in (df.Keys())
+		// Skip lease keys
+		if(key[1, 3] == "RL#")
+			continue;
+		endif
 		if(key[1, prefix_len] == prefix)
 			var elem := df.FindElement(key);
 			if(elem)
-				total := total + CInt(elem.GetProp("qty"));
+				var qty := CInt(elem.GetProp("qty"));
+				var leased := GetLeasedAmount(df, key);
+				var available := qty - leased;
+				if(available > 0)
+					total := total + available;
+				endif
 			endif
 		endif
 	endforeach
 	return total;
 endfunction
 
-// Returns all keys in the DataFile.
+// Returns all item keys in the DataFile (excludes lease keys).
 function GetAllStored(df)
-	return df.Keys();
+	var keys := df.Keys();
+	var item_keys := array{};
+	foreach key in keys
+		if(key[1, 3] != "RL#")
+			item_keys.append(key);
+		endif
+	endforeach
+	return item_keys;
+endfunction
+
+// ============================================================
+// Resource Leases
+// ============================================================
+
+const LEASE_PREFIX := "RL#";
+const LEASE_DEFAULT_TTL := 60;
+
+// Creates a lease reserving a quantity of a specific item key.
+// Returns the lease key string.
+function CreateLease(df, item_key, who, quantity, ttl := LEASE_DEFAULT_TTL)
+	var lease_id := CStr(who.serial) + "_" + CStr(GetPid());
+	var lease_key := LEASE_PREFIX + item_key + "|" + lease_id;
+
+	var elem := df.CreateElement(lease_key);
+	if(!elem)
+		// Element may already exist (re-lease)
+		elem := df.FindElement(lease_key);
+		if(!elem)
+			OmegaCacheDebug("CreateLease: FAILED to create element for " + lease_key);
+			return 0;
+		endif
+	endif
+
+	elem.SetProp("quantity", quantity);
+	elem.SetProp("expiry", ReadGameClock() + ttl);
+	OmegaCacheDebug("CreateLease: " + lease_key + " qty=" + quantity + " ttl=" + ttl);
+	return lease_key;
+endfunction
+
+// Extends an existing lease's TTL if the item still has enough quantity
+// (minus all other leases) to support this lease. If not, deletes the
+// lease and returns 0.
+function ExtendLease(df, lease_key, ttl := LEASE_DEFAULT_TTL)
+	var elem := df.FindElement(lease_key);
+	if(!elem)
+		OmegaCacheDebug("ExtendLease: lease not found (expired?) " + lease_key);
+		return 0;
+	endif
+
+	var lease_qty := CInt(elem.GetProp("quantity"));
+
+	// Extract the item key from the lease key: RL#<item_key>|<lease_id>
+	// Item key contains one |, so find the second | after RL#
+	var after_prefix := lease_key[4, len(lease_key)];  // strip "RL#"
+	// Find the last | to separate item_key from lease_id
+	var last_pipe := 0;
+	var i := len(after_prefix);
+	while(i > 0)
+		if(after_prefix[i] == "|")
+			last_pipe := i;
+			break;
+		endif
+		i := i - 1;
+	endwhile
+
+	if(last_pipe > 0)
+		var item_key := after_prefix[1, last_pipe - 1];
+		var item_elem := df.FindElement(item_key);
+		if(item_elem)
+			var raw_qty := CInt(item_elem.GetProp("qty"));
+			var total_leased := GetLeasedAmount(df, item_key);
+			// Available = raw qty - all leases (including this one)
+			// This lease is already counted in total_leased, so available
+			// for *other* use is raw_qty - total_leased. For this lease
+			// to be valid, raw_qty - (total_leased - lease_qty) >= lease_qty
+			// i.e., raw_qty - total_leased + lease_qty >= lease_qty
+			// i.e., raw_qty >= total_leased
+			if(raw_qty < total_leased)
+				// Not enough stock to sustain this lease
+				df.DeleteElement(lease_key);
+				OmegaCacheDebug("ExtendLease: insufficient stock, deleted " + lease_key);
+				return 0;
+			endif
+		else
+			// Item no longer exists
+			df.DeleteElement(lease_key);
+			OmegaCacheDebug("ExtendLease: item gone, deleted " + lease_key);
+			return 0;
+		endif
+	endif
+
+	elem.SetProp("expiry", ReadGameClock() + ttl);
+	return 1;
+endfunction
+
+// Releases (deletes) a lease.
+function ReleaseLease(df, lease_key)
+	if(lease_key)
+		df.DeleteElement(lease_key);
+		OmegaCacheDebug("ReleaseLease: " + lease_key);
+	endif
+endfunction
+
+// Returns the total leased amount for a specific item key.
+// Cleans up expired leases as it scans.
+// Pass exclude_lease_key to exclude a specific lease (e.g., the caller's own).
+function GetLeasedAmount(df, item_key, exclude_lease_key := 0)
+	var lease_prefix := LEASE_PREFIX + item_key + "|";
+	var lease_prefix_len := len(lease_prefix);
+	var total := 0;
+	var now := ReadGameClock();
+
+	foreach key in (df.Keys())
+		if(key[1, lease_prefix_len] == lease_prefix)
+			// Skip the excluded lease
+			if(exclude_lease_key and key == exclude_lease_key)
+				continue;
+			endif
+			var elem := df.FindElement(key);
+			if(elem)
+				var expiry := CInt(elem.GetProp("expiry"));
+				if(expiry < now)
+					// Expired — clean up
+					df.DeleteElement(key);
+					OmegaCacheDebug("GetLeasedAmount: cleaned expired lease " + key);
+				else
+					total := total + CInt(elem.GetProp("quantity"));
+				endif
+			endif
+		endif
+	endforeach
+
+	return total;
 endfunction
 
 // IsStoreEmpty — use IsOmegaCacheEmpty(house_serial) from omegacache_utils.inc
@@ -898,8 +1047,11 @@ function BuildCategoryMap(df, lookup)
 		cat_map[cat_name] := array{};
 	endforeach
 
-	// Classify each stored key
+	// Classify each stored key (skip lease keys)
 	foreach key in keys
+		if(key[1, 3] == "RL#")
+			continue;
+		endif
 		var objtype_int := CInt(GetObjtypeFromKey(key));
 		var cat_name := objtype_to_cat[objtype_int];
 		if(!cat_name)
@@ -1073,15 +1225,15 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 	GFAddButton(gump, 485, 480, 4017, 4019, GF_CLOSE_BTN, BTN_WITHDRAW);
 	GFTextLine(gump, 520, 480, TEXT_HUE_WITHDRAW, "Withdraw");
 
-	// Filter to only keys with qty > 0
+	// Filter to only keys with available qty > 0 (lease-aware)
 	var display_keys := array{};
 	foreach key in keys
-		var elem := df.FindElement(key);
-		if(elem)
-			var qty := CInt(elem.GetProp("qty"));
-			if(qty > 0)
-				display_keys.append(key);
-			endif
+		if(key[1, 3] == "RL#")
+			continue;
+		endif
+		var available := GetStoredAmount(df, key);
+		if(available > 0)
+			display_keys.append(key);
 		endif
 	endforeach
 	// Sort display keys alphabetically by item name
@@ -1165,7 +1317,7 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		GFResizePic(gump, 18, row_y - 2, 9350, 565, 32);
 
 		var elem := df.FindElement(key);
-		var qty := CInt(elem.GetProp("qty"));
+		var qty := GetStoredAmount(df, key);
 		var objtype := CInt(elem.GetProp("objtype"));
 		var desc_info := GetItemDescriptor(objtype);
 

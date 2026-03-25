@@ -33,7 +33,7 @@ const RM_ITEMS_PER_PAGE     := 10;
 
 // Returns total available amount of an objtype across backpack and cache.
 // Pass dataFileHandle if already resolved, or 0 to auto-detect.
-function GetAvailableResource(who, objtype, dataFileHandle := 0)
+function GetAvailableResource(who, objtype, dataFileHandle := 0, exclude_lease_key := 0)
 	objtype := CInt(objtype);
 
 	// Enumerate backpack
@@ -56,7 +56,7 @@ function GetAvailableResource(who, objtype, dataFileHandle := 0)
 
 	var cache_amount := 0;
 	if(dataFileHandle)
-		cache_amount := GetStoredAmountByObjtype(dataFileHandle, objtype);
+		cache_amount := GetStoredAmountByObjtype(dataFileHandle, objtype, exclude_lease_key);
 	endif
 
 	return struct{
@@ -73,9 +73,10 @@ endfunction
 // ============================================================
 
 // Consumes amount of a resource following the preferredSourceOrder in the ResourceRequest.
+// Uses resourceRequest.leaseKey to exclude the caller's own lease from availability checks.
 // Returns 1 on success, 0 on failure (insufficient resources).
 function ConsumeResource(who, resourceRequest, amount)
-	var res := GetAvailableResource(who, resourceRequest.objtype, resourceRequest.dataFileHandle);
+	var res := GetAvailableResource(who, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey);
 	if(res.total < amount)
 		SendSysMessage(who, "You don't have enough resources.");
 		return 0;
@@ -89,7 +90,7 @@ function ConsumeResource(who, resourceRequest, amount)
 		if(source == BACKPACK)
 			remaining := ConsumeFromBackpack(res.backpack_items, remaining);
 		elseif(source == OMEGA_CACHE and res.dataFileHandle)
-			var consumed := ConsumeFromCache(res.dataFileHandle, resourceRequest.key, resourceRequest.objtype, remaining);
+			var consumed := ConsumeFromCache(res.dataFileHandle, resourceRequest.key, resourceRequest.objtype, remaining, resourceRequest.leaseKey);
 			remaining := remaining - consumed;
 		endif
 	endforeach
@@ -119,18 +120,23 @@ function ConsumeFromBackpack(backpack_items, amount)
 endfunction
 
 // Consumes from cache DataFile — debits qty without creating physical items.
+// Lease-aware: only consumes from the unleased portion of each key.
 // If key is provided, tries that key first (variant-specific consumption).
 // Falls back to other keys matching the objtype prefix.
 // Returns total amount consumed.
-function ConsumeFromCache(dataFileHandle, key, objtype, amount)
+function ConsumeFromCache(dataFileHandle, key, objtype, amount, exclude_lease_key := 0)
 	var remaining := amount;
 	var consumed := 0;
 
 	// Try the specific key first (if provided)
 	if(key)
-		var taken := WithdrawItem(dataFileHandle, key, remaining);
-		consumed := consumed + taken;
-		remaining := remaining - taken;
+		var available := GetStoredAmount(dataFileHandle, key, exclude_lease_key);
+		if(available > 0)
+			var take := Min(remaining, available);
+			var taken := WithdrawItem(dataFileHandle, key, take);
+			consumed := consumed + taken;
+			remaining := remaining - taken;
+		endif
 	endif
 
 	// If still remaining, scan for other keys matching this objtype
@@ -141,19 +147,65 @@ function ConsumeFromCache(dataFileHandle, key, objtype, amount)
 			if(remaining <= 0)
 				break;
 			endif
-			// Skip the key we already tried
+			// Skip lease keys and the key we already tried
+			if(df_key[1, 3] == "RL#")
+				continue;
+			endif
 			if(key and df_key == key)
 				continue;
 			endif
 			if(df_key[1, prefix_len] == prefix)
-				var taken := WithdrawItem(dataFileHandle, df_key, remaining);
-				consumed := consumed + taken;
-				remaining := remaining - taken;
+				var available := GetStoredAmount(dataFileHandle, df_key, exclude_lease_key);
+				if(available > 0)
+					var take := Min(remaining, available);
+					var taken := WithdrawItem(dataFileHandle, df_key, take);
+					consumed := consumed + taken;
+					remaining := remaining - taken;
+				endif
 			endif
 		endforeach
 	endif
 
 	return consumed;
+endfunction
+
+// ============================================================
+// Lease Wrappers
+// ============================================================
+
+// Creates a lease on cache resources for the given ResourceRequest.
+// Sets resourceRequest.leaseKey on success.
+// Only leases if the request has a cache dataFileHandle.
+// Returns 1 on success, 0 if no lease needed/possible.
+function LeaseResource(who, byref resourceRequest, amount, ttl := LEASE_DEFAULT_TTL)
+	if(!resourceRequest.dataFileHandle)
+		resourceRequest.+leaseKey := 0;
+		return 0;
+	endif
+	var item_key := resourceRequest.key;
+	if(!item_key)
+		item_key := BuildDefaultKey(resourceRequest.objtype);
+	endif
+	var lease_key := CreateLease(resourceRequest.dataFileHandle, item_key, who, amount, ttl);
+	resourceRequest.+leaseKey := lease_key;
+	return lease_key;
+endfunction
+
+// Extends the lease on the ResourceRequest. Returns 1 on success, 0 if lease expired/deleted.
+function ExtendResourceLease(resourceRequest, ttl := LEASE_DEFAULT_TTL)
+	if(!resourceRequest.dataFileHandle or !resourceRequest.leaseKey)
+		return 0;
+	endif
+	return ExtendLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey, ttl);
+endfunction
+
+// Releases the lease on the ResourceRequest. Safe to call if no lease exists.
+function ReleaseResourceLease(byref resourceRequest)
+	if(!resourceRequest.dataFileHandle or !resourceRequest.leaseKey)
+		return;
+	endif
+	ReleaseLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey);
+	resourceRequest.leaseKey := 0;
 endfunction
 
 // ============================================================
@@ -174,11 +226,13 @@ function MakeBackpackRequest(who, item)
 		key                  := 0,
 		color                := item.color,
 		preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE },
-		dataFileHandle       := dataFileHandle
+		dataFileHandle       := dataFileHandle,
+		leaseKey             := 0
 	};
 endfunction
 
 // Opens a material selection gump from the cache. Player picks a variant.
+// Reserves the cache container to prevent concurrent modification.
 // Returns a ResourceRequest with cache-first priority, or 0 on cancel.
 function SelectMaterialFromCache(who)
 	var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
@@ -194,15 +248,15 @@ function SelectMaterialFromCache(who)
 		return 0;
 	endif
 
-	// Build list of keys with qty > 0
+	// Build list of keys with available qty > 0 (skip leases, lease-aware)
 	var valid_keys := array{};
 	foreach key in all_keys
-		var elem := df.FindElement(key);
-		if(elem)
-			var qty := CInt(elem.GetProp("qty"));
-			if(qty > 0)
-				valid_keys.append(key);
-			endif
+		if(key[1, 3] == "RL#")
+			continue;
+		endif
+		var available := GetStoredAmount(df, key);
+		if(available > 0)
+			valid_keys.append(key);
 		endif
 	endforeach
 
@@ -291,7 +345,7 @@ function SelectMaterialFromCache(who)
 		GFResizePic(gump, 18, row_y - 2, 9350, 465, 32);
 
 		var elem := df.FindElement(key);
-		var qty := CInt(elem.GetProp("qty"));
+		var qty := GetStoredAmount(df, key);
 		var objtype := CInt(elem.GetProp("objtype"));
 		var desc_info := GetItemDescriptor(objtype);
 
@@ -367,6 +421,7 @@ function SelectMaterialFromCache(who)
 		key                  := selected_key,
 		color                := selected_color,
 		preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK },
-		dataFileHandle       := df
+		dataFileHandle       := df,
+		leaseKey             := 0
 	};
 endfunction

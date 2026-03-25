@@ -40,6 +40,7 @@ include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
 include ":crafting:craftingfunctions";
+include "include/resourcemanager";
 
 const DIVIDER		:= 3;
 const APPEAR_AT		:= -10;
@@ -86,91 +87,140 @@ program use_hammer( character, hammer )
 
 	endif
 	
-	if( !IsInContainer( character.backpack , use_on ) )
-		SendSysmessage( character, "That item has to be in your backpack." );
-		return;
-	endif
-
- 	if (IsBone(use_on))
-	SendSysMessage( character, "What ingots would you like to use?" );
-	var bone := use_on;
-	use_on := Target( character, TGTOPT_CHECK_LOS );
-	
-	if( !use_on )
-		return;
-	endif
-
-	if( !Accessible( character , use_on ) )
-		SendSysMessage( character , "You can't reach that." );
-		return;
-	endif
-
-	if( !ReserveItem(use_on) )
-		return;
-	endif
-
-	if( !IsInContainer( character.backpack , use_on ) )
-		SendSysmessage( character, "That item has to be in your backpack." );
-		return;
-	endif
-
-	if ( !IsIngot(use_on) )
-		SendSysMessage( character, "You must select ingots!" );
-		return;
-	endif
-		var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1 );
- 	foreach item in Near_Items
-	  	if ((item.objtype == UOBJ_ANVIL1) or (item.objtype == UOBJ_ANVIL2))
-	   		MakeBoneItems( character , use_on , bone );
-	   		return;
-	  	endif
- 	endforeach
-
-	SendSysmessage( character , "You must be near an anvil to smith items!" );
-	endif
-
-	if( !IsIngot(use_on) ) 
-		if ( !IsBone(use_on) )
-			SendSysMessage( character, "You don't know how to use that." );
+	// Handle Omega Cache targeting — select material from cache gump
+	if(use_on.objtype == OMEGACACHE_OBJTYPE)
+		var resourceRequest := SelectMaterialFromCache(character);
+		if(!resourceRequest)
 			return;
 		endif
+		// Determine if the selected material is bone or ingot
+		if(IsBoneObjtype(resourceRequest.objtype))
+			// Bone selected from cache — need ingots too
+			SendSysMessage(character, "What ingots would you like to use?");
+			var ingot_target := Target(character, TGTOPT_CHECK_LOS);
+			if(!ingot_target)
+				return;
+			endif
+			var ingotRequest;
+			if(ingot_target.objtype == OMEGACACHE_OBJTYPE)
+				ingotRequest := SelectMaterialFromCache(character);
+				if(!ingotRequest)
+					return;
+				endif
+			elseif(IsIngot(ingot_target))
+				if(!IsInContainer(character.backpack, ingot_target))
+					SendSysmessage(character, "That item has to be in your backpack.");
+					return;
+				endif
+				ingotRequest := MakeBackpackRequest(character, ingot_target);
+			else
+				SendSysMessage(character, "You must select ingots!");
+				return;
+			endif
+			var Near_Items := ListItemsNearLocation(character.x, character.y, character.z, 1);
+			foreach item in Near_Items
+				if(item.objtype == UOBJ_ANVIL1 or item.objtype == UOBJ_ANVIL2)
+					MakeBoneItems(character, ingotRequest, resourceRequest);
+					return;
+				endif
+			endforeach
+			SendSysmessage(character, "You must be near an anvil to smith items!");
+		elseif(IsIngotObjtype(resourceRequest.objtype))
+			var Near_Items := ListItemsNearLocation(character.x, character.y, character.z, 1);
+			foreach item in Near_Items
+				if(item.objtype == UOBJ_ANVIL1 or item.objtype == UOBJ_ANVIL2)
+					MakeBlacksmithItems(character, resourceRequest);
+					return;
+				endif
+			endforeach
+			SendSysmessage(character, "You must be near an anvil to smith items!");
+		else
+			SendSysMessage(character, "You don't know how to use that.");
+		endif
+		return;
 	endif
 
-	//   **Anvil finding snippet.  Inserted by Ingot Head
- 	if (IsIngot(use_on))
-		var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+	if( !IsInContainer( character.backpack , use_on ) )
+		SendSysmessage( character, "That item has to be in your backpack." );
+		return;
+	endif
+
+	if(IsBone(use_on))
+		SendSysMessage(character, "What ingots would you like to use?");
+		var bone := use_on;
+		var boneRequest := MakeBackpackRequest(character, bone);
+		use_on := Target(character, TGTOPT_CHECK_LOS);
+
+		if(!use_on)
+			return;
+		endif
+
+		var ingotRequest;
+		if(use_on.objtype == OMEGACACHE_OBJTYPE)
+			ingotRequest := SelectMaterialFromCache(character);
+			if(!ingotRequest)
+				return;
+			endif
+		else
+			if(!Accessible(character, use_on))
+				SendSysMessage(character, "You can't reach that.");
+				return;
+			endif
+			if(!ReserveItem(use_on))
+				return;
+			endif
+			if(!IsInContainer(character.backpack, use_on))
+				SendSysmessage(character, "That item has to be in your backpack.");
+				return;
+			endif
+			if(!IsIngot(use_on))
+				SendSysMessage(character, "You must select ingots!");
+				return;
+			endif
+			ingotRequest := MakeBackpackRequest(character, use_on);
+		endif
+
+		var Near_Items := ListItemsNearLocation(character.x, character.y, character.z, 1);
 		foreach item in Near_Items
-			if ((item.objtype == UOBJ_ANVIL1) or (item.objtype == UOBJ_ANVIL2))
-				MakeBlacksmithItems( character , use_on );
+			if(item.objtype == UOBJ_ANVIL1 or item.objtype == UOBJ_ANVIL2)
+				MakeBoneItems(character, ingotRequest, boneRequest);
 				return;
 			endif
 		endforeach
-		SendSysmessage( character , "You must be near an anvil to smith items!" );
+		SendSysmessage(character, "You must be near an anvil to smith items!");
+	elseif(IsIngot(use_on))
+		var ingotRequest := MakeBackpackRequest(character, use_on);
+		var Near_Items := ListItemsNearLocation(character.x, character.y, character.z, 1);
+		foreach item in Near_Items
+			if(item.objtype == UOBJ_ANVIL1 or item.objtype == UOBJ_ANVIL2)
+				MakeBlacksmithItems(character, ingotRequest);
+				return;
+			endif
+		endforeach
+		SendSysmessage(character, "You must be near an anvil to smith items!");
+	else
+		SendSysMessage(character, "You don't know how to use that.");
 	endif
 
 endprogram
 
-function MakeBlacksmithItems( character, ingots )
+function MakeBlacksmithItems( character, ingotRequest )
 
 	if( !smith_cfg )
 		SendSysmessage(character, "Could not open blacksmith.cfg");
 		return;
 	endif
 
-	var orediff := smith_cfg[ingots.objtype].Difficulty;
-	var orename := smith_cfg[ingots.objtype].Name;
+	var orediff := smith_cfg[ingotRequest.objtype].Difficulty;
+	var orename := smith_cfg[ingotRequest.objtype].Name;
 	if( GetEffectiveSkill( character , SKILLID_BLACKSMITHY ) < orediff )
 		sendDiff( character , orediff );
 		SendSysmessage( character, "You aren't skilled enough to craft anything from " + orename + " ingots yet." );
 		return;
 	endif
 
-	if( !ReserveItem( ingots ) )
-		return;
-	endif
-
 	var material;       //amount of material needed to create the item
-	var product_type := MakeAndProcessMenu( character , ingots , orediff );
+	var product_type := MakeAndProcessMenu( character , ingotRequest , orediff );
 	if ( !product_type )
 	  	return 0;
 	endif
@@ -208,10 +258,13 @@ function MakeBlacksmithItems( character, ingots )
 	if( excep_diff < 90 )
 		excep_diff := 90;
 	endif
-	
+
+	// Lease cache resources for the first iteration
+	LeaseResource(character, ingotRequest, material);
+
 	AutoLoop_init( character );
-	while( AutoLoop_more() && (ingots.amount >= material) && !character.dead)
-	
+	while( AutoLoop_more() && (GetAvailableResource(character, ingotRequest.objtype, ingotRequest.dataFileHandle, ingotRequest.leaseKey).total >= material) && !character.dead)
+
 		sendDiff( character , skill );
 
 		PlaySoundEffect(character, SFX_ANVIL);
@@ -224,10 +277,10 @@ function MakeBlacksmithItems( character, ingots )
 		endif
 
 		var product_desc := GetItemDescriptor(CInt(product_type));
-		if( CheckSkill( character , SKILLID_BLACKSMITHY , skill , points ) )		
+		if( CheckSkill( character , SKILLID_BLACKSMITHY , skill , points ) )
 			if ( (Random(100) < excep_ch) && CheckSkill( character, SKILLID_BLACKSMITHY, excep_diff, 0) )
 
-				ApplyMaterialProperties(product_desc, ingots, 1, character, SKILLID_BLACKSMITHY);				
+				ApplyMaterialProperties(product_desc, ingotRequest, 1, character, SKILLID_BLACKSMITHY);
 
 				SendSysmessage( character , "You make an exceptional item and put it in your pack." );
 				if( excep_diff >= 130 )
@@ -239,11 +292,11 @@ function MakeBlacksmithItems( character, ingots )
 				endif
 			else
 				//Made a normal item
-				ApplyMaterialProperties(product_desc, ingots, 0, character, SKILLID_BLACKSMITHY);
+				ApplyMaterialProperties(product_desc, ingotRequest, 0, character, SKILLID_BLACKSMITHY);
 				SendSysmessage( character , "You create the item and place it in your pack." );
 			endif
 
-			SubtractAmount( ingots , material );
+			ConsumeResource( character , ingotRequest , material );
 			var product := CreateItemInBackpack( character , product_desc );
 			product.hp := product.maxhp;
 			if(GetObjProperty(product, "IsExceptional"))
@@ -269,38 +322,41 @@ function MakeBlacksmithItems( character, ingots )
 			if( destroy < 1 )
 				destroy	:= 1;
 			endif
-			SubtractAmount( ingots , destroy );
+			ConsumeResource( character , ingotRequest , destroy );
 			SendSysmessage( character , "You destroyed " + destroy + " " + orename + " ingots." );
 		endif
+
+		// Extend lease for next iteration
+		if(!ExtendResourceLease(ingotRequest))
+			break;
+		endif
 	endwhile
+
+	ReleaseResourceLease(ingotRequest);
 	AutoLoop_finish();
 
 endfunction
 
-function MakeBoneItems( character, ingots, bone )
+function MakeBoneItems( character, ingotRequest, boneRequest )
 
 	if( !smith_cfg )
 		SendSysmessage(character, "Could not open blacksmith.cfg");
 		return;
 	endif
 
-	var orediff := smith_cfg[ingots.objtype].Difficulty;
-	var orename := smith_cfg[ingots.objtype].Name;
+	var orediff := smith_cfg[ingotRequest.objtype].Difficulty;
+	var orename := smith_cfg[ingotRequest.objtype].Name;
 	if( GetEffectiveSkill( character , SKILLID_BLACKSMITHY ) < orediff )
 		sendDiff( character , orediff );
 		SendSysmessage( character, "You aren't skilled enough to craft anything from " + orename + " ingots yet." );
 		return;
 	endif
 
-	if( !ReserveItem( ingots ) )
-		return;
-	endif
-
 	var material;       //amount of material needed to create the item
-	
+
 	var itemname;
 
-	var product_type := MakeAndProcessBone( character , ingots , bone , orediff );
+	var product_type := MakeAndProcessBone( character , ingotRequest , boneRequest , orediff );
 	if ( !product_type )
 	  	return 0;
 	endif
@@ -338,8 +394,12 @@ function MakeBoneItems( character, ingots, bone )
 		excep_diff := 90;
 	endif
 
+	// Lease cache resources for the first iteration
+	LeaseResource(character, ingotRequest, material);
+	LeaseResource(character, boneRequest, material);
+
 	AutoLoop_init( character );
-	while( AutoLoop_more() && (ingots.amount >= material) && (bone.amount >= material) && !character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, ingotRequest.objtype, ingotRequest.dataFileHandle, ingotRequest.leaseKey).total >= material) && (GetAvailableResource(character, boneRequest.objtype, boneRequest.dataFileHandle, boneRequest.leaseKey).total >= material) && !character.dead)
 
 		sendDiff( character , skill );
 
@@ -361,7 +421,7 @@ function MakeBoneItems( character, ingots, bone )
 
 			if ( (Random(100) < excep_ch) and CheckSkill( character , SKILLID_BLACKSMITHY , excep_diff , 0 ) )
 
-				ApplyMaterialProperties(product_desc, ingots, 1, character, SKILLID_BLACKSMITHY);
+				ApplyMaterialProperties(product_desc, ingotRequest, 1, character, SKILLID_BLACKSMITHY);
 
 				SendSysmessage( character , "You make an exceptional item and put it in your pack." );
 				if( excep_diff >= 130 )
@@ -373,12 +433,12 @@ function MakeBoneItems( character, ingots, bone )
 				endif
 			else
 				//Made a normal item
-				ApplyMaterialProperties(product_desc, ingots, 0, character, SKILLID_BLACKSMITHY);
+				ApplyMaterialProperties(product_desc, ingotRequest, 0, character, SKILLID_BLACKSMITHY);
 				SendSysmessage( character , "You create the item and place it in your pack." );
 			endif
 
-			SubtractAmount( ingots , material );
-			SubtractAmount( bone , material );
+			ConsumeResource( character , ingotRequest , material );
+			ConsumeResource( character , boneRequest , material );
 			var product := CreateItemInBackpack( character , product_desc );
 			product.hp := product.maxhp;
 		else
@@ -396,16 +456,24 @@ function MakeBoneItems( character, ingots, bone )
 			if( destroy < 1 )
 				destroy	:= 1;
 			endif
-			SubtractAmount( ingots , destroy );
-			SubtractAmount( bone , destroy );
-			SendSysmessage( character , "You destroyed " + destroy + " " + orename + " ingots and " + destroy + "bones.");
+			ConsumeResource( character , ingotRequest , destroy );
+			ConsumeResource( character , boneRequest , destroy );
+			SendSysmessage( character , "You destroyed " + destroy + " " + orename + " ingots and " + destroy + " bones.");
+		endif
+
+		// Extend leases for next iteration
+		if(!ExtendResourceLease(ingotRequest) or !ExtendResourceLease(boneRequest))
+			break;
 		endif
 	endwhile
+
+	ReleaseResourceLease(ingotRequest);
+	ReleaseResourceLease(boneRequest);
 	AutoLoop_finish();
 
 endfunction
 
-function MakeAndProcessMenu( who , ingots , orediff )
+function MakeAndProcessMenu( who , ingotRequest , orediff )
 
 	var elemkeys := GetConfigStringKeys( smith_cfg );
 	var can_make;
@@ -459,7 +527,7 @@ function MakeAndProcessMenu( who , ingots , orediff )
 
 	foreach key in elemkeys
 		if( smith_cfg[key].Type == choice )
-			if( CanMake( who , key , ingots , orediff ) )
+			if( CanMake( who , key , ingotRequest , orediff ) )
 				AddMenuItem( menu , Cint(key) , smith_cfg[key].Name );
 				can_make := 1;
 			endif
@@ -476,7 +544,7 @@ function MakeAndProcessMenu( who , ingots , orediff )
 endfunction
 
 
-function MakeAndProcessBone( who , ingots , bone, orediff )
+function MakeAndProcessBone( who , ingotRequest , boneRequest, orediff )
 
 	var elemkeys := GetConfigStringKeys( smith_cfg );
 	var can_make;
@@ -484,12 +552,12 @@ function MakeAndProcessBone( who , ingots , bone, orediff )
 	var choice;
 
 	choice := 99;
-	
+
 	menu := CreateMenu( "What would you like to make?" );
 
 	foreach key in elemkeys
 		if( smith_cfg[key].Type == choice )
-			if( CanMakeBone( who , key , ingots , bone , orediff ) )
+			if( CanMakeBone( who , key , ingotRequest , boneRequest , orediff ) )
 				AddMenuItem( menu , Cint(key) , smith_cfg[key].Name );
 				can_make := 1;
 			endif
@@ -505,7 +573,7 @@ function MakeAndProcessBone( who , ingots , bone, orediff )
 
 endfunction
 
-function CanMake( who , key , ingots , orediff )
+function CanMake( who , key , ingotRequest , orediff )
 
 	var diff := smith_cfg[key].Skill + Cint( orediff / DIVIDER );
 	if( diff < 1 )
@@ -515,7 +583,7 @@ function CanMake( who , key , ingots , orediff )
 	endif
 
 	if( GetEffectiveSkill( who , SKILLID_BLACKSMITHY ) >= ( diff + APPEAR_AT ) )
-		if( ingots.amount >= smith_cfg[key].Material )
+		if( GetAvailableResource(who, ingotRequest.objtype, ingotRequest.dataFileHandle).total >= smith_cfg[key].Material )
 			return 1;
 		endif
 	endif
@@ -524,7 +592,7 @@ function CanMake( who , key , ingots , orediff )
 
 endfunction
 
-function CanMakeBone( who , key , ingots , bone , orediff )
+function CanMakeBone( who , key , ingotRequest , boneRequest , orediff )
 
 	var diff := smith_cfg[key].Skill + Cint( orediff / DIVIDER );
 	if( diff < 1 )
@@ -535,12 +603,11 @@ function CanMakeBone( who , key , ingots , bone , orediff )
 
 	if( GetEffectiveSkill( who , SKILLID_BLACKSMITHY ) >= ( diff + APPEAR_AT ) )
 		if( GetEffectiveSkill( who , SKILLID_TINKERING ) >= ( diff + APPEAR_AT ) )
-			if( ingots.amount >= smith_cfg[key].Material )
-				if( bone.amount >= smith_cfg[key].Material )
+			if( GetAvailableResource(who, ingotRequest.objtype, ingotRequest.dataFileHandle).total >= smith_cfg[key].Material )
+				if( GetAvailableResource(who, boneRequest.objtype, boneRequest.dataFileHandle).total >= smith_cfg[key].Material )
 					return 1;
 				endif
 			endif
-
 		endif
 	endif
 	return 0;
@@ -555,4 +622,24 @@ function IsBone( what )
 		default:	return 0;
 	endcase
 
+endfunction
+
+// Objtype-based checks for cache selections (no item reference needed)
+function IsIngotObjtype( objtype )
+	objtype := CInt(objtype);
+	if(( objtype >= UOBJ_INGOTS_START  and objtype <= UOBJ_INGOTS_END  ) or
+	   ( objtype >= UOBJ_INGOTS2_START and objtype <= UOBJ_INGOTS2_END ) or
+	   ( objtype == UOBJ_GOLD_INGOT ))
+		return 1;
+	endif
+	return 0;
+endfunction
+
+function IsBoneObjtype( objtype )
+	// Bone items have graphic 0xf7e — check via itemdesc
+	var desc := GetItemDescriptor(CInt(objtype));
+	if(desc and desc.Graphic == 0xf7e)
+		return 1;
+	endif
+	return 0;
 endfunction
