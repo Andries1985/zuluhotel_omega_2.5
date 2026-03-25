@@ -253,3 +253,32 @@ Stabilisation pass addressing bugs found during testing. Major refactors to gump
 **Files created:**
 - `scripts/textcmd/admin/nukeserial.src` — Admin command to destroy items by serial, with omega cache slot recalculation.
 
+---
+
+## Milestone 2.1 — Resource Manager (2026-03-25)
+
+### Summary
+
+Centralised resource management for crafting integration. Creates `scripts/include/resourcemanager.inc` — a shared include that all crafting skills will use to consume materials from both backpack and Omega Cache transparently.
+
+**Files created:**
+- `scripts/include/resourcemanager.inc` — Centralised resource lookup and consumption with `ResourceRequest` pattern
+
+### Key Design Decisions
+
+- **ResourceRequest struct**: Carries `objtype`, `key` (full DataFile key for variant-specific consumption), `color` (for crafting product properties), `preferredSourceOrder` (array of source constants), and `dataFileHandle`.
+- **Variant-aware**: Crafting scripts read `material.Color` to set product color via `ApplyMaterialProperties()`. The `SelectMaterialFromCache` gump shows each variant as a separate row with colored tile icons. `ConsumeFromCache` debits the specific key first, then falls back to other keys matching the objtype prefix.
+- **preferredSourceOrder**: An ordered array (`array{ OMEGA_CACHE, BACKPACK }` or `array{ BACKPACK, OMEGA_CACHE }`) that `ConsumeResource` iterates to determine depletion order. Extensible for future sources.
+- **No special cases**: Every material type (ingots, bottles, scrolls, reagents, food) goes through the same functions. No "utility" vs "primary" distinction.
+
+### Functions
+
+| Function | Purpose |
+|---|---|
+| `GetAvailableResource(who, objtype, dataFileHandle)` | Query total available across backpack + cache |
+| `ConsumeResource(who, resourceRequest, amount)` | Consume following `preferredSourceOrder` |
+| `ConsumeFromBackpack(backpack_items, amount)` | Deplete physical items via `SubtractAmount` |
+| `ConsumeFromCache(dataFileHandle, key, objtype, amount)` | Debit DataFile qty, specific key first then prefix scan |
+| `MakeBackpackRequest(who, item)` | Build backpack-first `ResourceRequest` from targeted physical item |
+| `SelectMaterialFromCache(who)` | Variant-aware selection gump, returns cache-first `ResourceRequest` |
+

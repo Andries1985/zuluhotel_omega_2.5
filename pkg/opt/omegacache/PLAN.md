@@ -1099,9 +1099,9 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 #### Milestone 2.1 — Resource Manager
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 41 | `resourcemanager.inc` | `GetAvailableResource()`, `ConsumeResource()`, `ConsumeFromBackpack()`, `ConsumeFromCache()` — centralised resource lookup and consumption with `ResourceRequest` pattern |
-| [ ] 42 | `SelectMaterialFromCache()` | Material selection gump when player targets cache container — returns `ResourceRequest` struct |
-| [ ] 43 | `ConsumeFromCache()` | Debit DataFile qty without creating physical items — fast path with `BuildDefaultKey`, fallback prefix scan via `GetStoredAmountByObjtype` |
+| [x] 41 | `resourcemanager.inc` | `GetAvailableResource()`, `ConsumeResource()`, `ConsumeFromBackpack()`, `ConsumeFromCache()`, `MakeBackpackRequest()` — centralised resource lookup and consumption with `ResourceRequest` pattern |
+| [x] 42 | `SelectMaterialFromCache()` | Variant-aware material selection gump with colored tile icons — returns `ResourceRequest` struct with key, color, and cache-first source order |
+| [x] 43 | `ConsumeFromCache()` | Debit DataFile qty without creating physical items — specific key first, then prefix scan fallback |
 
 **Testable**: Call `GetAvailableResource()` and `ConsumeResource()` from test scripts. Verify backpack-first and cache-first consumption. Verify fallback between sources.
 
