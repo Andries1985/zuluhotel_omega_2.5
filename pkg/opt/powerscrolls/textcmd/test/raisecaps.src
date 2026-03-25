@@ -3,6 +3,7 @@ use uo;
 include "include/attributes";
 include ":gumps:include/gumps";
 include "include/itemutil";
+include ":staff:include/staff";
 
 Program tss( who ) 
 
@@ -85,6 +86,7 @@ Program tss( who )
 				matrix[result[0]] := 20;
 			endif
 			SetObjProperty(mobile, "pScrollMatrix", matrix);
+			LogCommand(who, GetProcess(GetPid()).name, mobile.name+"/"+mobile.serial, "Raised "+skillName+" by 5");
 			
 			PlayObjectCenteredEffectEx(mobile, 0x33EA, 0x1, 10);
 			PlayObjectCenteredEffectEx(mobile, 0x373A, 0x1, 10);
