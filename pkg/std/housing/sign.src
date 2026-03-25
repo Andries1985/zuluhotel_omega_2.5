@@ -1001,14 +1001,21 @@ function HouseFunctionRemoveOmegaCache(who, house)
 		return;
 	endif
 
-	// Destroy the cache and re-credit the slot
+	// Remove the cache and return a deed to the player's backpack
+	var deed := CreateItemInContainer(who.backpack, OMEGACACHE_DEED_OBJTYPE, 1);
+	if(!deed)
+		SendSysMessage(who, "Your backpack is full. Free up space first.");
+		return;
+	endif
+
 	var destroy_result := DestroyItem(itemt);
 	if(!destroy_result)
 		SendSysMessage(who, "[OmegaCache] DestroyItem FAILED: " + destroy_result.errortext, 3, 53);
+		DestroyItem(deed);
 		return;
 	endif
 	// Slot re-credit is handled by destroycache.src (DestroyScript)
-	SendSysMessage(who, "Omega Cache Container removed.");
+	SendSysMessage(who, "Omega Cache Container removed. A deed has been placed in your backpack.");
 
 	if(DEBUG_MODE)
 		SendSysMessage(who, "[OmegaCache] Removed cache. Slots available: " + GetObjProperty(house, "numomegacache"), 3, 53);

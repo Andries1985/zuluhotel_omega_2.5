@@ -576,6 +576,15 @@ endfunction
 function FindAccessibleContainer(who, required_privileges)
 	_debug_who := who;
 	OmegaCacheDebug("FindAccessibleContainer: searching near " + who.name + " at " + who.x + "," + who.y + "," + who.z);
+
+	OmegaCacheDebug("FindAccessibleContainer: who.multi=" + who.multi + " multi.serial=" + who.multi.serial + " cmdlevel=" + who.cmdlevel);
+
+	// Must be inside a house
+	if(!who.multi and who.cmdlevel < 4)
+		OmegaCacheDebug("FindAccessibleContainer: player is not inside a house");
+		return 0;
+	endif
+
 	var nearby := ListItemsNearLocation(who.x, who.y, who.z, 4, who.realm);
 	foreach item in nearby
 		if(item.objtype == OMEGACACHE_OBJTYPE)
@@ -586,6 +595,12 @@ function FindAccessibleContainer(who, required_privileges)
 
 			var house := SystemFindObjectBySerial(CInt(house_serial));
 			if(!house)
+				continue;
+			endif
+
+			// Must be inside the same house the cache belongs to
+			if(who.multi.serial != house.serial and who.cmdlevel < 4)
+				OmegaCacheDebug("FindAccessibleContainer: multi mismatch who.multi.serial=" + who.multi.serial + " house.serial=" + house.serial);
 				continue;
 			endif
 
@@ -1221,6 +1236,13 @@ endfunction
 // Runs the interactive gump loop for browsing/depositing/withdrawing.
 // Called by both the use-script (double-click) and the .cache text command.
 function RunOmegaCacheGump(who, df)
+	// Block multiple gump instances
+	if(CInt(GetObjProperty(who, "#omegacache_open")) > ReadGameClock())
+		SendSysMessage(who, "You already have the Omega Cache open.");
+		return;
+	endif
+	SetObjProperty(who, "#omegacache_open", ReadGameClock() + 600);
+
 	var view := "categories";
 	var category_map := dictionary;
 	var current_keys := array{};
@@ -1322,4 +1344,6 @@ function RunOmegaCacheGump(who, df)
 
 		sleepms(200);
 	endwhile
+
+	EraseObjProperty(who, "#omegacache_open");
 endfunction
