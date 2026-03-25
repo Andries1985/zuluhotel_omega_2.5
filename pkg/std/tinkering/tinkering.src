@@ -17,6 +17,7 @@ include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
 include "include/chests";
+include "include/omegacache_utils";
 include "include/resourcemanager";
 
 const CARPENTER_SOUND	:= 0x23e;
@@ -494,19 +495,33 @@ function TryToMakeItem( character , resourceRequest , to_make_objtype , sfx )
 				break;
 			endif
 
-			if( (thegem.objtype > 0xf30) or (thegem.objtype < 0xf0f) )
-				SendSysmessage( character , "That is not a gem!" );
-				break;
-			endif
-
-			if( !Accessible( character , thegem ) )
-				SendSysmessage( character , "You can't reach that!" );
-				break;
-			endif
-
 			var item_cfg := ReadConfigFile( ":*:itemdesc" );
-			itemname := item_cfg[thegem.objtype].Name + " " + itemname;
-			SubtractAmount( thegem , 1 );
+			// Handle cache-sourced gems
+			if(thegem.objtype == OMEGACACHE_OBJTYPE)
+				var gemRequest := SelectMaterialFromCache(character);
+				if(!gemRequest)
+					break;
+				endif
+				if((CInt(gemRequest.objtype) > 0xf30) or (CInt(gemRequest.objtype) < 0xf0f))
+					SendSysmessage(character, "That is not a gem!");
+					break;
+				endif
+				itemname := item_cfg[gemRequest.objtype].Name + " " + itemname;
+				ConsumeResource(character, gemRequest, 1);
+			else
+				if( (thegem.objtype > 0xf30) or (thegem.objtype < 0xf0f) )
+					SendSysmessage( character , "That is not a gem!" );
+					break;
+				endif
+
+				if( !Accessible( character , thegem ) )
+					SendSysmessage( character , "You can't reach that!" );
+					break;
+				endif
+
+				itemname := item_cfg[thegem.objtype].Name + " " + itemname;
+				SubtractAmount( thegem , 1 );
+			endif
 		endif
 
 		_Play_Sound( character , sfx );
@@ -952,27 +967,6 @@ function TryToMakePotionKeg( character , use_on )
 endfunction
 
 
-function GetRessourceName( ressource )
-
-	var t_name := ressource.desc;
-
-	if( ressource.amount > 1 )
-		var i := len( t_name );
-		var amt := ressource.amount;
-		var count := 2;
-		while( Cint(amt / 10) )
-			count := count + 1;
-			amt := Cint( amt / 10 );
-		endwhile
-
-		t_name := t_name[count+1 , i - count];
-	endif
-
-	return t_name;
-
-endfunction
-
-
 function TryToMakeAContainerLockable( character , key )
 
 	var lock_id := GetObjProperty( key , "lockid" );
@@ -1045,7 +1039,11 @@ function HandleCacheMaterial(character, resourceRequest)
 		var cfg := ReadConfigFile( ":carpentry:carpentry" );
 		ressource_diff := cfg[ot].Difficulty;
 		ressource_name := cfg[ot].Name;
-		ressource_qual := cfg[ot].Quality;
+		if(resourceRequest.quality)
+			ressource_qual := resourceRequest.quality;
+		else
+			ressource_qual := cfg[ot].Quality;
+		endif
 		item_to_make := MakeAndProcessMenu( character , resourceRequest , WOOD_ID );
 		sound := CARPENTER_SOUND;
 
@@ -1054,7 +1052,11 @@ function HandleCacheMaterial(character, resourceRequest)
 		var cfg := ReadConfigFile( ":blacksmithy:blacksmithy" );
 		ressource_diff := cfg[ot].Difficulty;
 		ressource_name := cfg[ot].Name;
-		ressource_qual := cfg[ot].Quality;
+		if(resourceRequest.quality)
+			ressource_qual := resourceRequest.quality;
+		else
+			ressource_qual := cfg[ot].Quality;
+		endif
 		item_to_make := MakeAndProcessMenu( character , resourceRequest , METAL_ID );
 		sound := SFX_ANVIL;
 
@@ -1161,10 +1163,21 @@ function TryToMakeComplexFromCache(character, firstRequest, to_be_done_objtype, 
 		endif
 		// Build a request for the second component — prefer same source as first
 		if(avail.cache > 0 and firstRequest.dataFileHandle)
+			// Find the actual cache key for this objtype
+			var cache_key := 0;
+			var prefix := Hex(CInt(needed_objtype)) + "|";
+			var prefix_len := len(prefix);
+			foreach dk in (firstRequest.dataFileHandle.Keys())
+				if(dk[1, 3] != "RL#" and dk[1, prefix_len] == prefix)
+					cache_key := dk;
+					break;
+				endif
+			endforeach
 			secondRequest := struct{
 				objtype              := CInt(needed_objtype),
-				key                  := 0,
+				key                  := cache_key,
 				color                := 0,
+				quality              := 0,
 				preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK },
 				dataFileHandle       := firstRequest.dataFileHandle,
 				leaseKey             := 0
@@ -1210,8 +1223,14 @@ function TryToMakeComplexFromCache(character, firstRequest, to_be_done_objtype, 
 
 		theitem.movable := 1;
 
-		// Quality for cache items defaults to 1 (no quality variant info in cache)
-		var first_qual := 1;
+		// Quality: use cache-stored quality if present, else fall back to config
+		var first_qual := firstRequest.quality;
+		if(!first_qual)
+			first_qual := ressource_qual;
+		endif
+		if(!first_qual)
+			first_qual := 1;
+		endif
 		var result_qual := Cint( ( first_qual + have_it_qual ) / 2 );
 		if( theitem.quality and result_qual )
 			theitem.quality := result_qual;
@@ -1257,7 +1276,11 @@ function TryToMakeComplexFromCache(character, firstRequest, to_be_done_objtype, 
 			SendSysmessage( character , "You create the item and place it in your pack." );
 		endif
 
-		theitem.color := firstRequest.color;
+		if(firstRequest.objtype == UOBJ_GOLD_INGOT)
+			theitem.color := GOLD_COLOR;
+		else
+			theitem.color := firstRequest.color;
+		endif
 		SetObjProperty( theitem , "BaseName" , itemname );
 		SetName( theitem , itemname );
 	else

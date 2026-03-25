@@ -17,6 +17,7 @@ include ":gumps:yesno";
 include "food";
 include "include/autoloop";
 include "include/difficulty";
+include "include/omegacache_utils";
 include "include/resourcemanager";
 
 //load the food dictionary.  This makes the recipe definitions in cooking.cfg much more understandable
@@ -252,6 +253,7 @@ function destroy_all_ingredients(character, current_recipe)
 						objtype              := CInt(ing_objtype),
 						key                  := 0,
 						color                := 0,
+						quality              := 0,
 						preferredSourceOrder := array{ OMEGA_CACHE },
 						dataFileHandle       := cooking_cache_df,
 						leaseKey             := 0

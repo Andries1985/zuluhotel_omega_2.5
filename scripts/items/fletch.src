@@ -4,6 +4,7 @@ include "include/client";
 include "include/objtype";
 include "include/utility";
 include "include/skillpoints";
+include "include/omegacache_utils";
 include "include/resourcemanager";
 
 

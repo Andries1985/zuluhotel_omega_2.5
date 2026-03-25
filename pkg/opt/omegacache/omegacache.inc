@@ -407,7 +407,7 @@ endfunction
 
 // Sum qty across all keys matching an objtype prefix (lease-aware).
 // Skips RL# lease keys. Used by crafting which only knows the objtype.
-function GetStoredAmountByObjtype(df, objtype)
+function GetStoredAmountByObjtype(df, objtype, exclude_lease_key := 0)
 	var prefix := Hex(objtype) + "|";
 	var prefix_len := len(prefix);
 	var total := 0;
@@ -420,7 +420,7 @@ function GetStoredAmountByObjtype(df, objtype)
 			var elem := df.FindElement(key);
 			if(elem)
 				var qty := CInt(elem.GetProp("qty"));
-				var leased := GetLeasedAmount(df, key);
+				var leased := GetLeasedAmount(df, key, exclude_lease_key);
 				var available := qty - leased;
 				if(available > 0)
 					total := total + available;

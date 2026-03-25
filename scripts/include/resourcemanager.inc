@@ -225,6 +225,7 @@ function MakeBackpackRequest(who, item)
 		objtype              := CInt(item.objtype),
 		key                  := 0,
 		color                := item.color,
+		quality              := CDbl(item.quality),
 		preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE },
 		dataFileHandle       := dataFileHandle,
 		leaseKey             := 0
@@ -414,12 +415,23 @@ function SelectMaterialFromCache(who)
 	var selected_color := 0;
 	if(selected_elem.GetProp("color"))
 		selected_color := CInt(selected_elem.GetProp("color"));
+	else
+		// Fall back to default color from item descriptor
+		var desc_info := GetItemDescriptor(selected_objtype);
+		if(desc_info and desc_info.Color)
+			selected_color := CInt(desc_info.Color);
+		endif
+	endif
+	var selected_quality := 0;
+	if(selected_elem.GetProp("quality"))
+		selected_quality := CDbl(selected_elem.GetProp("quality"));
 	endif
 
 	return struct{
 		objtype              := selected_objtype,
 		key                  := selected_key,
 		color                := selected_color,
+		quality              := selected_quality,
 		preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK },
 		dataFileHandle       := df,
 		leaseKey             := 0

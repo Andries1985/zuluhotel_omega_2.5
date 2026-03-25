@@ -26,6 +26,7 @@ include "include/random";
 include "include/autoloop";
 include "include/difficulty";
 include "include/math";
+include "include/omegacache_utils";
 include "include/resourcemanager";
 
 
@@ -1171,6 +1172,9 @@ function CreateScroll( character , skill , points , blankscroll , scrollobjtype 
 		endif
 	elseif( GetAmount ( blankscroll ) == 0 )
 		SendSysMessage( character , "You don't have any more blank scrolls." );
+		if(scrollRequest)
+			ReleaseResourceLease(scrollRequest);
+		endif
 		Autoloop_finish ();
 		return;
 	endif
@@ -1178,6 +1182,9 @@ function CreateScroll( character , skill , points , blankscroll , scrollobjtype 
 	/*** Second check if there's enough mana left ***/
 	if( GetMana(character) < manacost )
 		SendSysMessage( character , "You don't have enough mana." );
+		if(scrollRequest)
+			ReleaseResourceLease(scrollRequest);
+		endif
 		Autoloop_finish ();
 		return;
 	else

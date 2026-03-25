@@ -13,14 +13,17 @@ function ApplyMaterialProperties(byref product_desc, material, is_exceptional, c
 	// Support both physical items and ResourceRequest structs
 	var mat_objtype;
 	var mat_color;
+	var mat_quality;
 	if(material.preferredSourceOrder)
-		// ResourceRequest struct — color is lowercase
+		// ResourceRequest struct — lowercase fields
 		mat_objtype := material.objtype;
 		mat_color := material.color;
+		mat_quality := material.quality;
 	else
-		// Physical item — Color is uppercase (POL item property)
+		// Physical item — uppercase POL properties
 		mat_objtype := material.objtype;
 		mat_color := material.Color;
+		mat_quality := CDbl(material.quality);
 	endif
 
 	var material_cfg;
@@ -40,7 +43,12 @@ function ApplyMaterialProperties(byref product_desc, material, is_exceptional, c
 	var material_desc := material_cfg[mat_objtype];
 
 	product_desc.Desc := material_desc.Name +" "+product_desc.Desc;
-	product_desc.Quality := material_desc.Quality;
+	// Use stored quality if present, else fall back to config
+	if(mat_quality)
+		product_desc.Quality := mat_quality;
+	else
+		product_desc.Quality := material_desc.Quality;
+	endif
 
 	if( mat_objtype == UOBJ_GOLD_INGOT )
 		product_desc.Color := GOLD_COLOR;

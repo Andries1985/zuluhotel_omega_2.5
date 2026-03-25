@@ -28,6 +28,7 @@ include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
 include "include/chests";
+include "include/omegacache_utils";
 include "include/resourcemanager";
 
 const GOLD_COLOR	:= 0x0033;
@@ -80,7 +81,11 @@ program MakeCarpentryItems( character, tool )
 		if(IsLogObjtype(ot))
 			ressource_diff := carpenter_cfg[ot].Difficulty;
 			ressource_name := carpenter_cfg[ot].Name;
-			ressource_qual := carpenter_cfg[ot].Quality;
+			if(cacheRequest.quality)
+				ressource_qual := cacheRequest.quality;
+			else
+				ressource_qual := carpenter_cfg[ot].Quality;
+			endif
 			logRequest := cacheRequest;
 			item := MakeAndProcessMenu(character, cacheRequest, ID_LOGS);
 		elseif(IsIngotObjtype(ot))
@@ -89,10 +94,12 @@ program MakeCarpentryItems( character, tool )
 			use_with_diff := cfg[ot].Difficulty;
 			use_with_qual := cfg[ot].Quality;
 			secondaryRequest := cacheRequest;
-			item := MakeAndProcessMenu(character, cacheRequest, ID_INGOTS);
+			var cache_use_on := use_on;
+			item := MakeAndProcessMenu(character, cache_use_on, ID_INGOTS);
 		elseif(IsClothObjtype(ot))
 			secondaryRequest := cacheRequest;
-			item := MakeAndProcessMenu(character, cacheRequest, ID_CLOTH);
+			var cache_use_on := use_on;
+			item := MakeAndProcessMenu(character, cache_use_on, ID_CLOTH);
 		elseif(ot == 0xBA2A)
 			MakeYoungOakStaffFromCache(character, cacheRequest);
 			return;
@@ -701,7 +708,11 @@ function MakeAndProcessMenu( character , byref use_on , id )
 			logRequest := cacheLogRequest;
 			ressource_diff := carpenter_cfg[cacheLogRequest.objtype].Difficulty;
 			ressource_name := carpenter_cfg[cacheLogRequest.objtype].Name;
-			ressource_qual := carpenter_cfg[cacheLogRequest.objtype].Quality;
+			if(cacheLogRequest.quality)
+				ressource_qual := cacheLogRequest.quality;
+			else
+				ressource_qual := carpenter_cfg[cacheLogRequest.objtype].Quality;
+			endif
 		elseif( (second_res.objtype == UOBJ_LOGS) or (second_res.objtype == UOBJ_LOGS_GODDESS) or ((second_res.objtype >= UOBJ_LOGS_START) and (second_res.objtype <= UOBJ_LOGS_END)) )
 
 			if( !Accessible( character , second_res ) )
@@ -846,27 +857,6 @@ function CanMake( who , key , ressource )
 	endif
 
 	return 0;
-
-endfunction
-
-
-function GetRessourceName( ressource )
-
-	var t_name := ressource.desc;
-
-	if( ressource.amount > 1 )
-		var i := len( t_name );
-		var amt := ressource.amount;
-		var count := 2;
-		while( Cint(amt / 10) )
-			count := count + 1;
-			amt := Cint( amt / 10 );
-		endwhile
-
-		t_name := t_name[count+1 , i - count];
-	endif
-
-	return t_name;
 
 endfunction
 

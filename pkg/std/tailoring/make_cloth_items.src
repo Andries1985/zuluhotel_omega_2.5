@@ -24,6 +24,7 @@ include "util/repair";
 include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
+include "include/omegacache_utils";
 include "include/resourcemanager";
 
 const SCISSORS_SOUND    := 0x0249;
@@ -66,12 +67,20 @@ program use_sewing_kit( character, sewing_kit )
 		if(IsHide(ot))
 			resource_diff := tailor_cfg[ot].Difficulty;
 			resource_name := tailor_cfg[ot].Name;
-			resource_qual := tailor_cfg[ot].Quality;
+			if(cacheRequest.quality)
+				resource_qual := cacheRequest.quality;
+			else
+				resource_qual := tailor_cfg[ot].Quality;
+			endif
 			item := MakeAndProcessMenu(character, cacheRequest, ID_HIDES);
 		elseif(ot == UOBJ_MUTLI_CLOTH)
 			resource_diff := tailor_cfg[ot].Difficulty;
 			resource_name := tailor_cfg[ot].Name;
-			resource_qual := tailor_cfg[ot].Quality;
+			if(cacheRequest.quality)
+				resource_qual := cacheRequest.quality;
+			else
+				resource_qual := tailor_cfg[ot].Quality;
+			endif
 			item := MakeAndProcessMenu(character, cacheRequest, ID_CLOTH);
 		else
 			SendSysMessage(character, "You don't know how to use that.");
@@ -416,27 +425,6 @@ function TryToMakeItem( character, resourceRequest, to_make_objtype )
 
 	ReleaseResourceLease(resourceRequest);
 	AutoLoop_finish();
-
-endfunction
-
-
-function GetresourceName( resource )
-
-	var t_name := resource.desc;
-
-	if( resource.amount > 1 )
-		var i := len( t_name );
-		var amt := resource.amount;
-		var count := 2;
-		while( Cint(amt / 10) )
-			count := count + 1;
-			amt := Cint( amt / 10 );
-		endwhile
-
-		t_name := t_name[count+1, i - count];
-	endif
-
-	return t_name;
 
 endfunction
 

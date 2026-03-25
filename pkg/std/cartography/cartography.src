@@ -5,6 +5,7 @@ include "include/objtype";
 include "include/client";
 include "include/classes";
 include "include/difficulty";
+include "include/omegacache_utils";
 include "include/resourcemanager";
 
 const POINTS_MULTIPLIER := 15;

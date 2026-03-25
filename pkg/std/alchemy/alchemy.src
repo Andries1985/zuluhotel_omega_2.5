@@ -23,6 +23,7 @@ include "include/objtype";
 include "include/classes";
 include "include/itemutil";
 include "include/autoloop";
+include "include/omegacache_utils";
 include "include/resourcemanager";
 
 
@@ -537,6 +538,7 @@ function GetBottleFromCache(user, resourceRequest)
 				objtype              := CInt(UOBJ_EMPTY_BOTTLE),
 				key                  := 0,
 				color                := 0,
+				quality              := 0,
 				preferredSourceOrder := array{ OMEGA_CACHE },
 				dataFileHandle       := resourceRequest.dataFileHandle,
 				leaseKey             := 0
