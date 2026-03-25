@@ -366,7 +366,8 @@ Tinkering is the most complex crafting skill — 4 material types (wood, metal, 
   - `MakeTotemFromCache` — Obsidian totem consuming 100 units from cache
   - `TryToMakePotionKegFromCache` — Bottles from cache, other parts (keg/tap/lid) from backpack only (non-stackable)
   - `IsLogObjtype`/`IsIngotObjtype` — Objtype-range checks for routing
-- **Unchanged paths**: `SetTrap` (potions not stackable in cache context), `TryToMakeAContainerLockable` (keys not stackable), gem targeting in jewelry crafting (physical item per iteration)
+- **Unchanged paths**: `SetTrap` (potions not stackable in cache context), `TryToMakeAContainerLockable` (keys not stackable)
+- **Gem cache support**: Jewelry crafting (0x1085-0x108a, 0x1535) allows targeting cache for gems — opens `SelectMaterialFromCache` gump per iteration. Falls back to physical `SubtractAmount` for backpack gems.
 
 ### Tailoring Integration (Milestone 2.2)
 
@@ -443,4 +444,72 @@ Blank maps with variable consumption (1 for simple, 10 for complex).
 - Unified `ConsumeMap(who, blank, amount)` function routes to `ConsumeResource` or `SubtractAmount`
 - `makeNewmap` uses `GetAvailableResource` for batch material validation when cache-sourced
 - No leases needed (single craft, no loop)
+
+---
+
+## Milestone 2.2 — Code Review & Bug Fixes (2026-03-25)
+
+### Summary
+
+Three-pass code review of the entire crafting integration. Found and fixed critical bugs, structural inconsistencies, and missing fields. No regressions detected in backpack-only crafting paths.
+
+### Critical Bugs Fixed
+
+1. **`GetStoredAmountByObjtype` missing `exclude_lease_key` parameter** — Function accepted only 2 params but `resourcemanager.inc` called it with 3. The caller's own lease was double-subtracted from availability, causing crafting loops to break early. Fixed by adding `exclude_lease_key := 0` default parameter and passing it through to `GetLeasedAmount`.
+
+2. **Inscription missing lease release on early exits** — `CreateScroll` loop created a lease before the loop, but early returns (mana depleted, blank scrolls exhausted) did not release it. Orphaned leases blocked cache resources until TTL expiry (60s). Fixed by adding `ReleaseResourceLease(scrollRequest)` before each early return inside the loop.
+
+3. **Missing `quality` field on ResourceRequest struct** — The struct was created without quality in `MakeBackpackRequest`, `SelectMaterialFromCache`, and 3 inline struct creations (alchemy bottles, tinkering second component, cooking ingredients). Quality from cache items was silently lost. Fixed by adding `quality` field to all struct creation sites.
+
+4. **Missing default color fallback in `SelectMaterialFromCache`** — When an item's color matched the itemdesc default, it wasn't stored in the DataFile. The returned ResourceRequest had `color=0`, causing crafted products to lose their material color (e.g., New Zulu ingots). Fixed by falling back to `GetItemDescriptor(objtype).Color` when no stored color exists.
+
+### Structural Fixes
+
+5. **`ApplyMaterialProperties` type-unsafe quality access** — Accessed `material.quality` (lowercase) which works for ResourceRequest structs but would fail for physical items (which use `.Quality` uppercase). Fixed by extracting `mat_quality` with case-correct field access based on struct type detection, matching the existing `mat_color` pattern.
+
+6. **Carpentry `MakeAndProcessMenu` byref corruption** — When ingots/cloth selected from cache first, the `cacheRequest` struct was passed byref as `use_on`, then overwritten with a physical item inside the function. Fixed by passing a `cache_use_on` copy variable instead.
+
+7. **Tinkering complex items cache key=0** — `TryToMakeComplexFromCache` built a second component ResourceRequest with `key := 0` for cache-sourced items, forcing `ConsumeFromCache` to use prefix scan (could consume wrong variant). Fixed by scanning DataFile keys to find the actual matching key.
+
+8. **Quality not read from cache items** — All crafting entry points read quality from skill config only, ignoring quality stored on cache items. Fixed by checking `resourceRequest.quality` first (from DataFile), falling back to config when 0. Applied to tinkering, tailoring, carpentry entry points and `ApplyMaterialProperties`.
+
+### Minor Fixes
+
+9. **Explicit `include "include/omegacache_utils"` added** — All 8 crafting scripts relied on transitive include for `OMEGACACHE_OBJTYPE`. Added explicit includes to: tinkering, tailoring, carpentry, alchemy, bowcraft, cooking, inscription, cartography.
+
+10. **Tinkering gem cache support added** — Jewelry crafting gem targeting now supports targeting the cache container, opening `SelectMaterialFromCache` to select gem variant. Uses `ConsumeResource` for cache gems, `SubtractAmount` for backpack gems.
+
+11. **Gold ingot color in tinkering complex path** — `TryToMakeComplexFromCache` didn't check for `UOBJ_GOLD_INGOT` special case. Fixed with explicit `GOLD_COLOR` assignment.
+
+12. **Dead code removed** — `GetRessourceName`/`GetresourceName` functions removed from tinkering, tailoring, and carpentry (no callers after conversion to `ConsumeResource`).
+
+### Confirmed Not Bugs (Investigated)
+
+- **Carpentry dual-material cache flow**: `MakeAndProcessMenu` DOES prompt for logs when ingots/cloth selected first (line 693-695). Both materials can come from cache. Not a bug.
+- **Tinkering builder mark in complex path**: Backpack path has `ToggleBuildMark` check commented out (always sets CraftedBy). Cache path matches. Not a bug.
+- **Lease quantity not tracking consumption**: By design — lease reserves fixed per-iteration cost. `ExtendLease` validates stock sufficiency each iteration, catching depletion. Correct for fixed-cost-per-iteration crafting.
+- **Container destroyed during crafting**: DataFile handle remains valid (keyed by house serial, not container serial). Container is just an access point. Not a practical issue.
+- **Cooking `create_extra_returns` loop condition**: Pre-existing bug (`==` vs `<=`), not introduced by Omega Cache changes.
+
+### Files Modified
+
+- `pkg/opt/omegacache/omegacache.inc` — Added `exclude_lease_key` to `GetStoredAmountByObjtype`
+- `scripts/include/resourcemanager.inc` — Added `quality` field to ResourceRequest in `MakeBackpackRequest` and `SelectMaterialFromCache`. Added default color fallback via `GetItemDescriptor`.
+- `pkg/systems/crafting/include/craftingfunctions.inc` — Added `mat_quality` extraction with type-safe field access. Quality fallback from ResourceRequest to config.
+- `pkg/std/tinkering/tinkering.src` — Quality/color/gem cache fixes. Removed dead code. Added explicit include.
+- `pkg/std/tailoring/make_cloth_items.src` — Quality fallback. Removed dead code. Added explicit include.
+- `pkg/std/carpentry/carpentry.src` — Byref fix, quality fallback. Removed dead code. Added explicit include.
+- `pkg/std/alchemy/alchemy.src` — Quality field on inline struct. Added explicit include.
+- `pkg/std/cooking/cooking.src` — Quality field on inline struct. Added explicit include.
+- `pkg/std/inscription/inscription.src` — Lease release on early exits. Added explicit include.
+- `pkg/std/cartography/cartography.src` — Added explicit include.
+- `scripts/items/fletch.src` — Added explicit include.
+
+### Lessons Learned
+
+- **Struct fields must be consistent**: When adding a field to a struct (like `quality`), ALL creation sites must be updated — including inline structs in crafting scripts, not just the builders in `resourcemanager.inc`.
+- **Default property fallback is essential**: Items deposited with default properties (color, quality) don't store those properties in the DataFile. The ResourceRequest must fall back to `GetItemDescriptor` or skill config to avoid losing material properties on crafted products.
+- **Lease release on ALL exit paths**: Any function that creates a lease must release it on every possible exit — including error returns, mana checks, and loop breaks. A lease cleanup audit should be part of every crafting integration.
+- **byref parameters with struct types**: Passing a struct byref to a function that reassigns the parameter will corrupt the original struct. Pass a copy when the function may overwrite the parameter.
+- **Review agents produce false positives**: Automated review found 4 false positives out of 12 issues in the third pass. Manual verification of each finding is essential before acting on it.
 

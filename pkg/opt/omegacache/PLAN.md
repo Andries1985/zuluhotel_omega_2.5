@@ -1124,6 +1124,27 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 
 **Testable**: For each craft: target cache to select material, craft item, verify depletion from cache. Target physical item, craft until backpack depleted, verify fallback to cache. Craft away from cache — verify backpack-only still works. Verify leases created/extended/released correctly during AutoLoop.
 
+#### Milestone 2.2b — Code Review & Bug Fixes
+| # | Task | Deliverable |
+|---|---|---|
+| [x] 56a | `GetStoredAmountByObjtype` lease exclusion | Added `exclude_lease_key` parameter — was silently ignored, causing crafters' own leases to double-subtract from availability |
+| [x] 56b | Inscription lease release | Added `ReleaseResourceLease` on mana/scroll depletion early exits inside `CreateScroll` loop |
+| [x] 56c | ResourceRequest `quality` field | Added `quality` to struct definition, `MakeBackpackRequest`, `SelectMaterialFromCache`, and 3 inline struct creations. Quality fallback: cache-stored → config → 1 |
+| [x] 56d | Default color fallback | `SelectMaterialFromCache` now falls back to `GetItemDescriptor(objtype).Color` when DataFile has no stored color (fixes New Zulu ingots etc.) |
+| [x] 56e | `ApplyMaterialProperties` type safety | Extracts `mat_quality` with case-correct field access for both ResourceRequest (lowercase) and physical items (uppercase) |
+| [x] 56f | Carpentry byref corruption | Fixed `MakeAndProcessMenu` receiving cache struct byref — pass copy variable for ingot/cloth cache paths |
+| [x] 56g | Tinkering complex cache key | Scan DataFile keys for actual matching key instead of `key=0` prefix fallback |
+| [x] 56h | Tinkering gem cache support | Jewelry gem targeting now supports cache via `SelectMaterialFromCache` per iteration |
+| [x] 56i | Explicit includes | Added `include "include/omegacache_utils"` to all 8 crafting scripts |
+| [x] 56j | Dead code cleanup | Removed unused `GetRessourceName`/`GetresourceName` from tinkering, tailoring, carpentry |
+
+**Key lessons:**
+- Struct fields must be added to ALL creation sites (builders AND inline literals)
+- Default-property items don't store color/quality in DataFile — ResourceRequest must fall back to `GetItemDescriptor` or skill config
+- Lease release required on EVERY exit path from a leased loop — mana checks, stock exhaustion, error returns
+- byref parameters with struct types: pass a copy if the function may overwrite the parameter
+- Automated review produces false positives (~33% in third pass) — manual verification essential
+
 #### Milestone 2.3 — Crafting Testing
 | # | Task | Deliverable |
 |---|---|---|
