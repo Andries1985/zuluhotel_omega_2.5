@@ -1,19 +1,13 @@
 // nukeserial.src — Destroy an item by serial number
 // Usage: .nukeserial <serial>
-//        .nukeserial <serial> resetcache  — also reset house omega cache slots
 
 use uo;
 use polsys;
 
-include "include/omegacache_utils";
-
 program nukeserial(who, text)
-	var parms := SplitWords(text);
-	var serial := CInt(parms[1]);
-	var reset_cache := (parms[2] == "resetcache");
-
+	var serial := CInt(text);
 	if(!serial)
-		SendSysMessage(who, "Usage: .nukeserial <serial> [resetcache]");
+		SendSysMessage(who, "Usage: .nukeserial <serial>");
 		return;
 	endif
 
@@ -23,31 +17,9 @@ program nukeserial(who, text)
 		return;
 	endif
 
-	SendSysMessage(who, "Found: " + obj.desc + " objtype=" + Hex(obj.objtype) + " at " + obj.x + "," + obj.y + "," + obj.z + " graphic=" + Hex(obj.graphic));
+	SendSysMessage(who, "Found: " + obj.desc + " objtype=" + Hex(obj.objtype) + " at " + obj.x + "," + obj.y + "," + obj.z);
 
-	// If it's an omega cache container and resetcache requested, recalculate house slots
-	if(obj.objtype == OMEGACACHE_OBJTYPE and reset_cache)
-		var house_serial := GetObjProperty(obj, "houseserial");
-		if(house_serial)
-			var house := SystemFindObjectBySerial(CInt(house_serial));
-			if(house)
-				var max_slots := GetMaxOmegaCacheForHouse(house.objtype);
-				// Count existing containers excluding the one we're about to destroy
-				var placed := 0;
-				var nearby := ListItemsNearLocation(obj.x, obj.y, obj.z, 100, obj.realm);
-				foreach item in nearby
-					if(item.objtype == OMEGACACHE_OBJTYPE and CInt(GetObjProperty(item, "houseserial")) == CInt(house_serial) and item.serial != obj.serial)
-						placed := placed + 1;
-					endif
-				endforeach
-				var remaining := max_slots - placed;
-				SetObjProperty(house, "numomegacache", remaining);
-				SendSysMessage(who, "Reset omega cache slots: " + placed + " placed, " + remaining + "/" + max_slots + " available");
-			endif
-		endif
-	endif
-
-	// Erase the houseserial CProp so DestroyScript treats it as orphaned
+	// Erase houseserial so DestroyScripts treat it as orphaned
 	EraseObjProperty(obj, "houseserial");
 	var res := DestroyItem(obj);
 	if(res)

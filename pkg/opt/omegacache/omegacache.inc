@@ -171,12 +171,10 @@ function LoadCategoryLookup()
 		cat_names := ListConfigElemProps(categories_elem);
 	endif
 
-	OmegaCacheDebug("LoadCategoryLookup: cat_names count=" + cat_names.size());
 	foreach cat_name in cat_names
 		var cat_elem := FindConfigElem(cat_cfg, cat_name);
 		if(cat_elem)
 			var objtypes := ListConfigElemProps(cat_elem);
-			OmegaCacheDebug("LoadCategoryLookup: " + cat_name + " has " + objtypes.size() + " objtypes");
 			foreach ot in objtypes
 				objtype_to_cat[CInt(ot)] := cat_name;
 			endforeach
@@ -329,7 +327,7 @@ function OpenHouseStore(cabinet)
 	endif
 
 	var df := OpenOmegaCacheStore(house_serial);
-	OmegaCacheDebug("OpenHouseStore: opened for house serial " + house_serial);
+	OmegaCacheDebug("OpenHouseStore: house_serial=" + house_serial + " df=" + df);
 	return df;
 endfunction
 
@@ -575,13 +573,8 @@ endfunction
 // Returns struct{ container, house, df } or 0.
 function FindAccessibleContainer(who, required_privileges)
 	_debug_who := who;
-	OmegaCacheDebug("FindAccessibleContainer: searching near " + who.name + " at " + who.x + "," + who.y + "," + who.z);
-
-	OmegaCacheDebug("FindAccessibleContainer: who.multi=" + who.multi + " multi.serial=" + who.multi.serial + " cmdlevel=" + who.cmdlevel);
-
 	// Must be inside a house
 	if(!who.multi and who.cmdlevel < 4)
-		OmegaCacheDebug("FindAccessibleContainer: player is not inside a house");
 		return 0;
 	endif
 
@@ -600,7 +593,6 @@ function FindAccessibleContainer(who, required_privileges)
 
 			// Must be inside the same house the cache belongs to
 			if(who.multi.serial != house.serial and who.cmdlevel < 4)
-				OmegaCacheDebug("FindAccessibleContainer: multi mismatch who.multi.serial=" + who.multi.serial + " house.serial=" + house.serial);
 				continue;
 			endif
 

@@ -211,3 +211,45 @@ Full player-facing UI and macro command support. The feature is now complete for
 30. `.cache list` output — verify parseable text format
 31. Verify all command output messages are clear text (parseable by macro tools)
 
+---
+
+## Milestone 1.5 — Bug Fixes & Polish (2026-03-25)
+
+### Summary
+
+Stabilisation pass addressing bugs found during testing. Major refactors to gump architecture, access control, container lifecycle, and house management integration.
+
+**Bug fixes:**
+
+1. **`.cache` command failed to open gump** — `start_script` from a textcmd could not send gumps to the player. Fix: moved all gump code (constants, `BuildCategoryMap`, `ShowCategoryMenu`, `ShowItemList`, main loop) into `omegacache.inc` as `RunOmegaCacheGump()`. Both `omegacache.src` (double-click) and `cache.src` (`.cache` command) now call it directly inline, matching the pattern used by `.reags` and `.showcaps`.
+
+2. **Deposit message showed duplicate stack count** — `DepositSingleItem` used `item.desc` which includes the stack amount (e.g., "14 Radiant Nimbus Diamond Ingots"), then prepended `FormatNumber(amt)` again. Fix: switched to `GetItemDisplayName(item.objtype)`.
+
+3. **Container removal blocked by Z-level mismatch** — `ListItemsNearLocation` searched from house sign coordinates (z=3) but containers were at z=49. Both `sign.src` and `destroycache.src` failed to find containers, causing false "must empty" blocks and double slot re-crediting. Fix: switched all container counting to `house.items` iteration which covers all Z levels.
+
+4. **Double slot re-crediting on removal** — Both `sign.src` (HouseFunctionRemoveOmegaCache) and `destroycache.src` (DestroyScript) incremented `numomegacache`. Fix: removed re-credit from `sign.src`; DestroyScript is the single source of truth.
+
+5. **Could not remove non-last containers while items stored** — The empty check blocked removal of ANY container if the shared DataFile had items. Fix: count containers via `house.items`; only block removal of the last one.
+
+6. **Outside house access** — Players could access the cache from outside the house. Fix: added `who.multi` check and house serial match in `FindAccessibleContainer()` (GMs exempt).
+
+7. **Multiple gump instances** — Players could open multiple cache gumps simultaneously. Fix: added `#omegacache_open` temp CProp guard with 10-minute timeout, cleared on gump close.
+
+**Enhancements:**
+
+- **Redeed on removal** — Removing a container via House Management now returns a deed to the player's backpack instead of just destroying it.
+- **Recount Omega Caches** — New GM-only button in House Management gump. Counts containers via `house.items`, resets `numomegacache` and `maxnumomegacache` to correct values. Follows the same pattern as "Count Teleporters".
+- **`.nukeserial` admin command** — New admin textcmd to destroy items by serial number, with optional `resetcache` flag to recalculate house omega cache slots.
+- **Placement orientation TODO** — Added note in `placecache.src` for future directional graphic support (East/South selection like secure containers).
+
+**Files modified:**
+- `pkg/opt/omegacache/omegacache.inc` — Added `:gumps:gumps` and `:gumps:gumps_ex` includes. Moved all gump code here: constants, `BuildCategoryMap()`, `ShowCategoryMenu()`, `ShowItemList()`, `RunOmegaCacheGump()`. Fixed `DepositSingleItem` to use `GetItemDisplayName`. Added `who.multi` + house serial match checks in `FindAccessibleContainer()`. Added `#omegacache_open` duplicate gump guard.
+- `pkg/opt/omegacache/omegacache.src` — Stripped to minimal: access check, `detach()`, `RunOmegaCacheGump()` call.
+- `scripts/textcmd/player/cache.src` — Replaced `start_script` with direct `RunOmegaCacheGump()` call.
+- `pkg/opt/omegacache/destroycache.src` — Switched container counting to `house.items`. Only blocks destruction of last container when items stored.
+- `pkg/opt/omegacache/placecache.src` — Added TODO note for directional graphic orientation selection.
+- `pkg/std/housing/sign.src` — Fixed container counting to use `house.items`. Removed double slot re-credit. Added redeed on removal. Added "Recount Cache Containers" GM button and `RecountOmegaCaches()` function. Renamed menu labels to "Cache Container".
+
+**Files created:**
+- `scripts/textcmd/admin/nukeserial.src` — Admin command to destroy items by serial, with omega cache slot recalculation.
+

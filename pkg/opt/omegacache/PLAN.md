@@ -522,7 +522,7 @@ Item 0xDF0B
 - **Deed creation**: Cabinet Deeds can be crafted (carpentry or tinkering TBD) or GM-granted. Deed item defined in `itemdesc.cfg`.
 - **Placement**: Player uses deed inside their house. Script validates house ownership/co-ownership, checks `numomegacache` limit, creates cabinet item at target location with `houseserial` CProp. Deed is destroyed.
 - **First use**: `OpenDataFile()` is called. If the DataFile doesn't exist for this house yet, `CreateDataFile()` initialises it.
-- **Destruction**: Blocked if the house's DataFile contains any stored items. Player receives message: "You must empty the Omega Cache before removing it." If the house has multiple cabinets, individual cabinets can be removed as long as at least one remains while items are stored.
+- **Destruction**: Only the last container is blocked from removal if the house's DataFile contains stored items. Non-last containers can be freely removed and return a deed to the player's backpack. The DestroyScript counts containers via `house.items` and is the single source of truth for slot re-crediting. A "Recount Cache Containers" GM tool in House Management can fix slot counts if they get out of sync.
 - **House demolition**: Same rules as Secure Containers — all cabinets and stored items are lost. Add a warning during demolition if the DataFile is non-empty: "Warning: Your Omega Caches contain items that will be lost."
 
 ---
@@ -1067,24 +1067,35 @@ Player-facing. Full UI and macro support.
 | [x] 19 | Gump — category menu | `ShowCategoryMenu()` — dynamic from `categories.cfg` + `df.Keys()`, two-column layout, icons, item counts, "Other" for uncategorized |
 | [x] 20 | Gump — item display | `ShowItemList()` — per-category rows with tile icon, name, variant CProps, quantity, text entry, take button |
 | [x] 21 | Gump — deposit buttons | "Deposit Item" and "Deposit All" buttons on both category menu and item list |
-| [x] 22 | `.cache` command | `scripts/textcmd/player/cache.src` — opens gump via `start_script` |
+| [x] 22 | `.cache` command | `scripts/textcmd/player/cache.src` — calls `RunOmegaCacheGump()` directly (inline, not via `start_script`) |
 | [x] 23 | `.cache deposit` command | `.cache deposit` (all from backpack) and `.cache deposit target` (targeting loop) |
 | [x] 24 | `.cache withdraw` command | `.cache withdraw <amount>` — target item type, withdraw to backpack |
 
 **Testable**: Full player flow — open gump, browse categories, deposit via gump and commands, withdraw via gump and commands. Verify macro-friendliness (`.cache deposit` + `.cache withdraw` with no gump interaction).
 
-#### Milestone 1.5 — Polish & Testing
-Stabilisation pass.
+#### Milestone 1.5 — Bug Fixes & Polish (2026-03-25)
+Stabilisation pass. Bug fixes and enhancements found during testing.
 
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 25 | Integration testing | Deposit/withdraw cycles, concurrent access (two players same cache), weight edge cases, multi-cabinet houses |
-| [ ] 26 | Permission testing | Owner, co-owner, friend with/without privileges, GM access, non-friend rejection |
-| [ ] 27 | Edge cases | Empty DataFile, zero-quantity requests, full container, weightless items, items on blacklist, uncategorized items |
-| [ ] 28 | Macro flow testing | `.cache deposit` → `.cache withdraw` chains, verify clean output messages |
-| [ ] 29 | Gump review | Evaluate visual layout, consider redesign if needed |
+| [x] 25 | `.cache` gump fix | Moved gump code to `.inc` as `RunOmegaCacheGump()`, called inline instead of via `start_script` |
+| [x] 26 | Deposit message fix | Use `GetItemDisplayName()` instead of `item.desc` to avoid duplicate stack count |
+| [x] 27 | Container counting fix | Switch from `ListItemsNearLocation` to `house.items` for reliable multi-Z-level search |
+| [x] 28 | Slot re-credit fix | Single source of truth in `destroycache.src`, removed duplicate in `sign.src` |
+| [x] 29 | Non-last container removal | Allow removal of non-last containers when items stored; only block last one |
+| [x] 30 | Outside house access block | `who.multi` check + house serial match in `FindAccessibleContainer()` |
+| [x] 31 | Duplicate gump prevention | `#omegacache_open` temp CProp guard with timeout |
+| [x] 32 | Redeed on removal | Return deed to backpack instead of destroying container outright |
+| [x] 33 | Recount GM tool | "Recount Cache Containers" button in House Management (GM-only) |
+| [x] 34 | `.nukeserial` admin command | Destroy items by serial with optional cache slot recalculation |
+| [ ] 35 | Access control testing | Outside house, through walls, friend permissions (VIEW/ADD/REMOVE), GM bypass |
+| [ ] 36 | Redeed on removal | Verify deed returned to backpack on removal, blocked if backpack full |
+| [ ] 37 | House demolition with items | Verify warning shown, DataFile cleaned up after demolition |
+| [ ] 38 | Two players same cache | Concurrent access — both browsing, one deposits while other withdraws, verify data consistency |
+| [ ] 39 | Multiple house types | Verify `who.multi` check works across different house types (small, large, castle, custom multi-houses) |
+| [ ] 40 | Orientation selection | TODO: directional graphic placement (East/South) if using chest-style graphic |
 
-**Testable**: All test scenarios pass. Feature is stable for live deployment.
+**Testable**: Core bug fixes verified. Remaining: access control edge cases, permission matrix, house demolition, concurrent access, multi-house-type validation, orientation selection if graphic changes.
 
 ---
 
