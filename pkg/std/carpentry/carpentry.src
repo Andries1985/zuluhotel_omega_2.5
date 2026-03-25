@@ -28,6 +28,7 @@ include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
 include "include/chests";
+include "include/resourcemanager";
 
 const GOLD_COLOR	:= 0x0033;
 const CARPENTER_SOUND	:= 0x23e;
@@ -51,6 +52,8 @@ var use_with;
 var use_with_diff := 0;
 var use_with_qual := 1;
 var use_with_name;
+var logRequest;
+var secondaryRequest;
 
 
 program MakeCarpentryItems( character, tool )
@@ -64,6 +67,43 @@ program MakeCarpentryItems( character, tool )
 	var item;
 
 	if( !use_on )
+		return;
+	endif
+
+	// Handle Omega Cache targeting
+	if(use_on.objtype == OMEGACACHE_OBJTYPE)
+		var cacheRequest := SelectMaterialFromCache(character);
+		if(!cacheRequest)
+			return;
+		endif
+		var ot := CInt(cacheRequest.objtype);
+		if(IsLogObjtype(ot))
+			ressource_diff := carpenter_cfg[ot].Difficulty;
+			ressource_name := carpenter_cfg[ot].Name;
+			ressource_qual := carpenter_cfg[ot].Quality;
+			logRequest := cacheRequest;
+			item := MakeAndProcessMenu(character, cacheRequest, ID_LOGS);
+		elseif(IsIngotObjtype(ot))
+			var cfg := ReadConfigFile(":blacksmithy:blacksmithy");
+			use_with_name := cfg[ot].Name;
+			use_with_diff := cfg[ot].Difficulty;
+			use_with_qual := cfg[ot].Quality;
+			secondaryRequest := cacheRequest;
+			item := MakeAndProcessMenu(character, cacheRequest, ID_INGOTS);
+		elseif(IsClothObjtype(ot))
+			secondaryRequest := cacheRequest;
+			item := MakeAndProcessMenu(character, cacheRequest, ID_CLOTH);
+		elseif(ot == 0xBA2A)
+			MakeYoungOakStaffFromCache(character, cacheRequest);
+			return;
+		else
+			SendSysMessage(character, "You don't know how to use that.");
+			return;
+		endif
+		if(!item)
+			return;
+		endif
+		TryToCreateItem(character, use_on, item);
 		return;
 	endif
 
@@ -88,6 +128,7 @@ program MakeCarpentryItems( character, tool )
 		ressource_diff := carpenter_cfg[use_on.objtype].Difficulty;
 		ressource_name := carpenter_cfg[use_on.objtype].Name;
 		ressource_qual := carpenter_cfg[use_on.objtype].Quality;
+		logRequest := MakeBackpackRequest(character, use_on);
 		item := MakeAndProcessMenu( character , use_on , ID_LOGS );
 
 	elseif( IsIngot(use_on) )
@@ -96,10 +137,12 @@ program MakeCarpentryItems( character, tool )
 	   	use_with_name := cfg[use_on.objtype].Name;
 		use_with_diff := cfg[use_on.objtype].Difficulty;
 		use_with_qual := cfg[use_on.objtype].Quality;
+		secondaryRequest := MakeBackpackRequest(character, use_on);
 		item := MakeAndProcessMenu( character , use_on , ID_INGOTS );
 
 	elseif( IsCloth(use_on) )
 		use_with := use_on;
+		secondaryRequest := MakeBackpackRequest(character, use_on);
 		item := MakeAndProcessMenu( character , use_on , ID_CLOTH );
 
 	elseif( use_on.objtype == 0xBA2A )
@@ -119,6 +162,31 @@ program MakeCarpentryItems( character, tool )
 	TryToCreateItem( character , use_on , item );
 
 endprogram
+
+
+// Objtype-based checks for cache routing
+function IsLogObjtype(objtype)
+	objtype := CInt(objtype);
+	if(( objtype >= UOBJ_LOGS_START and objtype <= UOBJ_LOGS_END ) or
+	   ( objtype == UOBJ_LOGS_GODDESS ) or ( objtype == UOBJ_LOGS ))
+		return 1;
+	endif
+	return 0;
+endfunction
+
+function IsIngotObjtype(objtype)
+	objtype := CInt(objtype);
+	if(( objtype >= UOBJ_INGOTS_START  and objtype <= UOBJ_INGOTS_END  ) or
+	   ( objtype >= UOBJ_INGOTS2_START and objtype <= UOBJ_INGOTS2_END ) or
+	   ( objtype == UOBJ_GOLD_INGOT ))
+		return 1;
+	endif
+	return 0;
+endfunction
+
+function IsClothObjtype(objtype)
+	return (CInt(objtype) == UOBJ_MUTLI_CLOTH);
+endfunction
 
 
 function TryToCreateKeg( character , use_on )
@@ -240,7 +308,7 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 
 	if( element )
 		material := element.Material;
-		if( use_with )
+		if( use_with or secondaryRequest )
 			material2 := element.CoMaterial;
 		endif
 	else
@@ -249,27 +317,40 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 	//Require half resources during Crafting PH
 	if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
 		material := CInt(Ceil(material/2));
-		if( use_with )
+		if( use_with or secondaryRequest )
 			material2 := CInt(Ceil(material2/2));
 		endif
 	endif
 
+	// Build logRequest if not already set (backpack path)
+	if(!logRequest)
+		logRequest := MakeBackpackRequest(character, use_on);
+	endif
+
+	// Lease cache resources for the first iteration
+	LeaseResource(character, logRequest, material);
+	if(secondaryRequest and material2)
+		LeaseResource(character, secondaryRequest, material2);
+	endif
+
 	AutoLoop_init( character );
-	while( AutoLoop_more() && use_on.amount >= material && NOT character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, logRequest.objtype, logRequest.dataFileHandle, logRequest.leaseKey).total >= material) && NOT character.dead)
 	
 	// check for comaterial
-	if( use_with )
-		if( use_with.amount >= material2 )
-			// refreshing skill2 stuff
+	if( secondaryRequest and material2 )
+		if( GetAvailableResource(character, secondaryRequest.objtype, secondaryRequest.dataFileHandle, secondaryRequest.leaseKey).total >= material2 )
 			skillid2 := element.CoSkillid;
 			skill2 := element.CoSkill;
 		else
-			AutoLoop_finish();
-			return;
+			break;
 		endif
-	elseif( material2 && use_with.amount < material2 )
-		AutoLoop_finish();
-		return;
+	elseif( use_with and material2 )
+		if( use_with.amount >= material2 )
+			skillid2 := element.CoSkillid;
+			skill2 := element.CoSkill;
+		else
+			break;
+		endif
 	endif
 
 	// refreshing stuff =)
@@ -332,20 +413,25 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 		if( to_be_destroyed < 1 )
 			to_be_destroyed	:= 1;
 		endif
-		
-		SubtractAmount( use_on , to_be_destroyed );
-		var res_name1 := GetRessourceName( use_on );
 
-		if( use_with )
-			var res_name2 := GetRessourceName( use_with );
+		ConsumeResource( character , logRequest , to_be_destroyed );
+
+		if( secondaryRequest and material2 )
 			var to_be_destroyed2	:= Cint( material2 * destroy / 100 );
 			if( to_be_destroyed2 < 1 )
 				to_be_destroyed2	:= 1;
 			endif
-			SubtractAmount( use_with , to_be_destroyed2 );	
-			SendSysmessage( character , "You destroyed " + to_be_destroyed + " " + res_name1 + " and " + to_be_destroyed2 + " " + res_name2 + "." );
+			ConsumeResource( character , secondaryRequest , to_be_destroyed2 );
+			SendSysmessage( character , "You destroyed some resources." );
+		elseif( use_with )
+			var to_be_destroyed2	:= Cint( material2 * destroy / 100 );
+			if( to_be_destroyed2 < 1 )
+				to_be_destroyed2	:= 1;
+			endif
+			SubtractAmount( use_with , to_be_destroyed2 );
+			SendSysmessage( character , "You destroyed some resources." );
 		else
-			SendSysmessage( character , "You destroyed " + to_be_destroyed + " " + res_name1 + "." );
+			SendSysmessage( character , "You destroyed some resources." );
 		endif
 
 	// if first check goes OK then GO ON
@@ -363,23 +449,24 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 				destroy	:= 50;
 			endif
 
-			var res_name1 := GetRessourceName( use_on );
-			var res_name2 := GetRessourceName( use_with );
-
 			var to_be_destroyed	:= Cint( material * destroy / 100 );
 			if( to_be_destroyed < 1 )
 				to_be_destroyed	:= 1;
 			endif
-			
-			SubtractAmount( use_on , to_be_destroyed );
-		
+
+			ConsumeResource( character , logRequest , to_be_destroyed );
+
 			var to_be_destroyed2	:= Cint( material2 * destroy / 100 );
 			if( to_be_destroyed2 < 1 )
 				to_be_destroyed2	:= 1;
 			endif
-			
-			SubtractAmount( use_with , to_be_destroyed2 );
-			SendSysmessage( character , "You destroyed " + to_be_destroyed + " " + res_name1 + " and " + to_be_destroyed2 + " " + res_name2 + "." );
+
+			if(secondaryRequest)
+				ConsumeResource( character , secondaryRequest , to_be_destroyed2 );
+			elseif(use_with)
+				SubtractAmount( use_with , to_be_destroyed2 );
+			endif
+			SendSysmessage( character , "You destroyed some resources." );
 
 
 		// if second check goes ok as well or there is no second check GO ON
@@ -524,12 +611,12 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 		endif
 
 		var result_color;
-		if( use_with and (use_with.color != 0) and (use_with.objtype != UOBJ_GOLD_INGOT) )
-			if( use_with.objtype == UOBJ_GOLD_INGOT )
-				result_color := GOLD_COLOR;
-			else
-				result_color := use_with.color;
-			endif
+		if( secondaryRequest and secondaryRequest.color and (secondaryRequest.objtype != UOBJ_GOLD_INGOT) )
+			result_color := secondaryRequest.color;
+		elseif( use_with and (use_with.color != 0) and (use_with.objtype != UOBJ_GOLD_INGOT) )
+			result_color := use_with.color;
+		elseif( logRequest.color )
+			result_color := logRequest.color;
 		elseif( use_on.color != 0 )
 			result_color := use_on.color;
 		endif
@@ -540,14 +627,20 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 
 			/******* colored fishing pole (item type 0x0dbf) *******/
 			if (theitem.objtype == 0x0dbf)
+				if(logRequest.color)
+					theitem.color := logRequest.color;
+				else
 					theitem.color := use_on.color;
+				endif
 			endif
 			/************************************/
 
 		SetName( theitem , itemname );
-		
-		SubtractAmount( use_on , material );
-		if( use_with )
+
+		ConsumeResource( character , logRequest , material );
+		if( secondaryRequest and material2 )
+			ConsumeResource( character , secondaryRequest , material2 );
+		elseif( use_with )
 			SubtractAmount( use_with , material2 );
 		endif
 
@@ -558,7 +651,22 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 	// endif for second check else
 	endif
 
+	// Extend leases for next iteration
+	if(!ExtendResourceLease(logRequest))
+		break;
+	endif
+	if(secondaryRequest and material2)
+		if(!ExtendResourceLease(secondaryRequest))
+			break;
+		endif
+	endif
+
 	endwhile
+
+	ReleaseResourceLease(logRequest);
+	if(secondaryRequest)
+		ReleaseResourceLease(secondaryRequest);
+	endif
 	AutoLoop_finish();
 
 endfunction
@@ -583,20 +691,33 @@ function MakeAndProcessMenu( character , byref use_on , id )
 			return;
 		endif
 
-		if( !Accessible( character , second_res ) )
-			SendSysMessage( character , "You can't reach that." );
-			return;
-		endif
+		// Handle cache targeting for logs
+		if(second_res.objtype == OMEGACACHE_OBJTYPE)
+			var cacheLogRequest := SelectMaterialFromCache(character);
+			if(!cacheLogRequest or !IsLogObjtype(CInt(cacheLogRequest.objtype)))
+				SendSysMessage(character, "You must choose some logs.");
+				return;
+			endif
+			logRequest := cacheLogRequest;
+			ressource_diff := carpenter_cfg[cacheLogRequest.objtype].Difficulty;
+			ressource_name := carpenter_cfg[cacheLogRequest.objtype].Name;
+			ressource_qual := carpenter_cfg[cacheLogRequest.objtype].Quality;
+		elseif( (second_res.objtype == UOBJ_LOGS) or (second_res.objtype == UOBJ_LOGS_GODDESS) or ((second_res.objtype >= UOBJ_LOGS_START) and (second_res.objtype <= UOBJ_LOGS_END)) )
 
-		if( !ReserveItem( second_res ) )
-			return;
-		endif
+			if( !Accessible( character , second_res ) )
+				SendSysMessage( character , "You can't reach that." );
+				return;
+			endif
 
-		if( (second_res.objtype == UOBJ_LOGS) or (second_res.objtype == UOBJ_LOGS_GODDESS) or ((second_res.objtype >= UOBJ_LOGS_START) and (second_res.objtype <= UOBJ_LOGS_END)) )
+			if( !ReserveItem( second_res ) )
+				return;
+			endif
+
 			use_on := second_res;
 			ressource_diff := carpenter_cfg[second_res.objtype].Difficulty;
 			ressource_name := carpenter_cfg[second_res.objtype].Name;
 			ressource_qual := carpenter_cfg[second_res.objtype].Quality;
+			logRequest := MakeBackpackRequest(character, second_res);
 
 			if( !IsInContainer( character.backpack , use_on ) )
 				SendSysmessage( character, "That item has to be in your backpack." );
@@ -684,7 +805,14 @@ function CanMake( who , key , ressource )
 		if(GetGlobalProperty("PHC") || GetObjProperty(who, "#PPHC"))
 			material := CInt(Ceil(material/2));
 		endif
-		if( ressource.amount >= material )
+		// Check primary material (logs) availability
+		var log_avail := 0;
+		if(logRequest)
+			log_avail := GetAvailableResource(who, logRequest.objtype, logRequest.dataFileHandle).total;
+		else
+			log_avail := ressource.amount;
+		endif
+		if( log_avail >= material )
 			var skillid2 := carpenter_cfg[key].CoSkillid;
 			if( skillid2 )
 				var diff2 := carpenter_cfg[key].CoSkill + Cint( use_with_diff / DIVIDER );
@@ -700,8 +828,14 @@ function CanMake( who , key , ressource )
 					if(GetGlobalProperty("PHC") || GetObjProperty(who, "#PPHC"))
 						material2 := CInt(Ceil(material2/2));
 					endif
-
-					if( use_with.amount >= material2 )
+					// Check secondary material availability
+					var sec_avail := 0;
+					if(secondaryRequest)
+						sec_avail := GetAvailableResource(who, secondaryRequest.objtype, secondaryRequest.dataFileHandle).total;
+					elseif(use_with)
+						sec_avail := use_with.amount;
+					endif
+					if( sec_avail >= material2 )
 						return 1;
 					endif
 				endif
@@ -764,6 +898,39 @@ function MakeYoungOakStaff( character , oak )
 		SendSysMessage( character , "You successfully crafted a young oak staff." );
 	else
 		SendSysMessage( character , "You failed in your attemp to create a young oak staff." );
+	endif
+
+endfunction
+
+
+// Young oak staff crafting from cache
+function MakeYoungOakStaffFromCache(character, resourceRequest)
+	var ammount_required := 15;
+	//Require half resources during Crafting PH
+	if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
+		ammount_required := CInt(Ceil(ammount_required/2));
+	endif
+
+	if(GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle).total < ammount_required)
+		SendSysMessage(character, "You don't have enough young oak wood to make a staff.");
+		return;
+	endif
+
+	PlaySoundEffect(character, CARPENTER_SOUND);
+	Sleep(2);
+	PlaySoundEffect(character, CARPENTER_SOUND);
+	Sleep(2);
+	PlaySoundEffect(character, CARPENTER_SOUND);
+	Sleep(2);
+
+	var diff := 100;
+	SendSysmessage(character, "Difficulty: " + diff);
+	ConsumeResource(character, resourceRequest, ammount_required);
+	if(CheckSkill(character, cint(SKILLID_CARPENTRY), cint(diff), cint(diff * POINTS_MULTIPLIER)))
+		CreateItemInBackpack(character, 0xBA28);
+		SendSysMessage(character, "You successfully crafted a young oak staff.");
+	else
+		SendSysMessage(character, "You failed in your attemp to create a young oak staff.");
 	endif
 
 endfunction

@@ -23,6 +23,7 @@ include "include/objtype";
 include "include/classes";
 include "include/itemutil";
 include "include/autoloop";
+include "include/resourcemanager";
 
 
 const SFX_GRIND        := 0x0243;
@@ -60,6 +61,47 @@ program use_mortar( user, mortar )
 
 	var use_on := Target( user, TGTOPT_CHECK_LOS );
 	if( !use_on )
+		return;
+	endif
+
+	// Handle Omega Cache targeting
+	if(use_on.objtype == OMEGACACHE_OBJTYPE)
+		var cacheRequest := SelectMaterialFromCache(user);
+		if(!cacheRequest)
+			return;
+		endif
+		if(!IsReagent_ObjType(CInt(cacheRequest.objtype)))
+			SendSysMessage(user, "That's not a reagent!");
+			return;
+		endif
+		var elem := conf[cacheRequest.objtype];
+		if(!elem)
+			SendSysmessage(user, "You don't know any recipe that use this reagent.");
+			return;
+		endif
+		var possibles := GetConfigStringArray(elem, "potion");
+		if(!len(possibles))
+			SendSysmessage(user, "You don't know any recipe that use this reagent.");
+			return;
+		endif
+		var menu := CreateMenu("Select a potion to make");
+		var num_possibilities;
+		var mage := GetObjProperty(user, CLASSEID_MAGE);
+		foreach potion_type in possibles
+			if(CanMakeFromCache(user, potion_type, cacheRequest, mage))
+				AddMenuItem(menu, conf[potion_type].objtype, potion_type);
+				num_possibilities := 1;
+			endif
+		endforeach
+		if(!num_possibilities)
+			SendSysMessage(user, "You can't make any potions!");
+			return;
+		endif
+		var choice := SelectMenuItem2(user, menu).index;
+		if(!choice)
+			return;
+		endif
+		TryToMakePotionFromCache(user, mortar, possibles[choice], cacheRequest, mage);
 		return;
 	endif
 
@@ -432,5 +474,156 @@ endcase
 
 return type;
 
+endfunction
+
+
+// ============================================================
+// Cache-specific alchemy functions
+// ============================================================
+
+// Objtype-based reagent check (no item reference needed)
+function IsReagent_ObjType(objtype)
+	objtype := CInt(objtype);
+	if(objtype >= UOBJ_REAGENT_START and objtype <= UOBJ_REAGENT_END)
+		return 1;
+	endif
+	return 0;
+endfunction
+
+// Cache-aware CanMake — checks availability without consuming
+function CanMakeFromCache(user, potion, resourceRequest, mage, usereg := 0)
+
+	var skillneeded := conf[potion].skill;
+	var amount_needed := conf[potion].reagent_amount;
+
+	if(mage)
+		amount_needed := CInt(ceil(amount_needed / ClasseBonus(user, CLASSEID_MAGE)));
+		if(GetGlobalProperty("PHC") || GetObjProperty(user, "#PPHC"))
+			amount_needed := CInt(ceil(amount_needed / 2));
+		endif
+		if(amount_needed < 1)
+			amount_needed := 1;
+		endif
+	endif
+
+	if(GetEffectiveSkill(user, SKILLID_ALCHEMY) >= (skillneeded + APPEAR_AT))
+		var avail := GetAvailableResource(user, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey).total;
+		if(avail >= amount_needed)
+			if(usereg > 0)
+				ConsumeResource(user, resourceRequest, amount_needed);
+			endif
+			return 1;
+		endif
+	endif
+	return 0;
+
+endfunction
+
+// Cache-aware bottle consumption
+function GetBottleFromCache(user, resourceRequest)
+	// Try backpack first
+	var bottle := FindItemInContainer(user.backpack, UOBJ_EMPTY_BOTTLE);
+	if(bottle)
+		if(ReserveItem(bottle))
+			SubtractAmount(bottle, 1);
+			return 1;
+		endif
+	endif
+	// Try cache
+	if(resourceRequest.dataFileHandle)
+		var avail := GetStoredAmountByObjtype(resourceRequest.dataFileHandle, UOBJ_EMPTY_BOTTLE);
+		if(avail > 0)
+			var bottleRequest := struct{
+				objtype              := CInt(UOBJ_EMPTY_BOTTLE),
+				key                  := 0,
+				color                := 0,
+				preferredSourceOrder := array{ OMEGA_CACHE },
+				dataFileHandle       := resourceRequest.dataFileHandle,
+				leaseKey             := 0
+			};
+			return ConsumeResource(user, bottleRequest, 1);
+		endif
+	endif
+	return 0;
+endfunction
+
+// Main cache alchemy loop
+function TryToMakePotionFromCache(user, mortar, potion, resourceRequest, mage)
+
+	var bonus := 0;
+	var difficulty := conf[potion].skill;
+	var i;
+	var product := conf[potion].objtype;
+
+	if(mage)
+		var itemcfg := ReadConfigFile("itemdesc");
+		var base := itemcfg[product].Strength;
+		bonus := CInt(base * ClasseBonus(user, CLASSEID_MAGE)) - base;
+		if(!bonus)
+			bonus := 1;
+		endif
+	endif
+
+	// Calculate amount per iteration for leasing
+	var amount_needed := conf[potion].reagent_amount;
+	if(mage)
+		amount_needed := CInt(ceil(amount_needed / ClasseBonus(user, CLASSEID_MAGE)));
+		if(GetGlobalProperty("PHC") || GetObjProperty(user, "#PPHC"))
+			amount_needed := CInt(ceil(amount_needed / 2));
+		endif
+		if(amount_needed < 1)
+			amount_needed := 1;
+		endif
+	endif
+
+	// Lease cache resources for the first iteration
+	LeaseResource(user, resourceRequest, amount_needed);
+
+	SendSysmessage(user, "Difficulty: " + difficulty);
+	AutoLoop_init(user);
+	SendSysMessage(user, "You start grinding reagents...");
+
+	product := ReturnTruePotion(product, bonus);
+
+	while(AutoLoop_more() && NOT user.dead)
+
+		if(CanMakeFromCache(user, potion, resourceRequest, mage, usereg := 1))
+
+			for(i := 1; i <= NUM_PERFORM; i := i + 1)
+				PlaySoundEffect(user, SFX_GRIND);
+				PerformAction(user, ANIM_SALUTE);
+				Sleepms(ANIM_DELAY_MS);
+			endfor
+
+			if(CheckSkill(user, SKILLID_ALCHEMY, difficulty, difficulty * POINT_MULTIPLIER))
+				if(GetBottleFromCache(user, resourceRequest))
+					CreateItemInContainer(mortar.container, product, 1);
+					PlaySoundEffect(user, SFX_POUR);
+				else
+					SendSysMessage(user, "With no bottles, you are forced to store the mixture in your mortar");
+					SetObjProperty(mortar, "contents", product);
+					SendSysMessage(user, "You stop griding reagents.");
+					ReleaseResourceLease(resourceRequest);
+					AutoLoop_finish();
+					return;
+				endif
+			else
+				PlaySoundEffect(user, SFX_POUR);
+				PrintTextAbovePrivate(user, "You pour out the useless mixture", user);
+			endif
+
+		else
+			break;
+		endif
+
+		// Extend lease for next iteration
+		if(!ExtendResourceLease(resourceRequest))
+			break;
+		endif
+	endwhile
+
+	SendSysMessage(user, "You stop griding reagents.");
+	ReleaseResourceLease(resourceRequest);
+	AutoLoop_finish();
 
 endfunction

@@ -24,6 +24,7 @@ include "util/repair";
 include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
+include "include/resourcemanager";
 
 const SCISSORS_SOUND    := 0x0249;
 const ID_HIDES          := 1;
@@ -46,11 +47,41 @@ program use_sewing_kit( character, sewing_kit )
 	endif
 
 	var item;
+	var resourceRequest;
 
 	SendSysmessage( character, "What would you like to use that on?" );
 	var use_on := Target( character, TGTOPT_CHECK_LOS );
 
 	if( !use_on )
+		return;
+	endif
+
+	// Handle Omega Cache targeting
+	if(use_on.objtype == OMEGACACHE_OBJTYPE)
+		var cacheRequest := SelectMaterialFromCache(character);
+		if(!cacheRequest)
+			return;
+		endif
+		var ot := CInt(cacheRequest.objtype);
+		if(IsHide(ot))
+			resource_diff := tailor_cfg[ot].Difficulty;
+			resource_name := tailor_cfg[ot].Name;
+			resource_qual := tailor_cfg[ot].Quality;
+			item := MakeAndProcessMenu(character, cacheRequest, ID_HIDES);
+		elseif(ot == UOBJ_MUTLI_CLOTH)
+			resource_diff := tailor_cfg[ot].Difficulty;
+			resource_name := tailor_cfg[ot].Name;
+			resource_qual := tailor_cfg[ot].Quality;
+			item := MakeAndProcessMenu(character, cacheRequest, ID_CLOTH);
+		else
+			SendSysMessage(character, "You don't know how to use that.");
+			return;
+		endif
+		item := item.objtype;
+		if(!item)
+			return;
+		endif
+		TryToMakeItem(character, cacheRequest, item);
 		return;
 	endif
 
@@ -76,10 +107,12 @@ program use_sewing_kit( character, sewing_kit )
 		FortifyHat( character, use_on );
 
 	elseif( IsHide( use_on.objtype ) )
-		item := MakeAndProcessMenu( character, use_on, ID_HIDES );
+		resourceRequest := MakeBackpackRequest(character, use_on);
+		item := MakeAndProcessMenu( character, resourceRequest, ID_HIDES );
 
 	elseif( use_on.objtype == UOBJ_MUTLI_CLOTH )
-		item := MakeAndProcessMenu( character, use_on, ID_CLOTH );
+		resourceRequest := MakeBackpackRequest(character, use_on);
+		item := MakeAndProcessMenu( character, resourceRequest, ID_CLOTH );
 
 	elseif( use_on.hp and use_on.quality and tailor_cfg[use_on.graphic] )
 		repair_item( character, use_on, SKILLID_TAILORING );
@@ -88,21 +121,24 @@ program use_sewing_kit( character, sewing_kit )
 		SendSysMessage( character, "You don't know how to use those items together." );
 	endif
 
-	
+
 	item := item.objtype;
 	if( !item )
 		return;
 	endif
 
-	TryToMakeItem( character, use_on, item );
+	if(!resourceRequest)
+		resourceRequest := MakeBackpackRequest(character, use_on);
+	endif
+	TryToMakeItem( character, resourceRequest, item );
 
 return;
 endprogram
 
 
-function MakeAndProcessMenu( character, use_on, id )
+function MakeAndProcessMenu( character, resourceRequest, id )
 
-	resource_diff := tailor_cfg[use_on.objtype].Difficulty;
+	resource_diff := tailor_cfg[resourceRequest.objtype].Difficulty;
 
 	var skill := GetEffectiveSkill( character, SKILLID_TAILORING );
 	if( skill < resource_diff )
@@ -111,8 +147,8 @@ function MakeAndProcessMenu( character, use_on, id )
 		return;
 	endif
 
-	resource_name := tailor_cfg[use_on.objtype].Name;
-	resource_qual := tailor_cfg[use_on.objtype].Quality;
+	resource_name := tailor_cfg[resourceRequest.objtype].Name;
+	resource_qual := tailor_cfg[resourceRequest.objtype].Quality;
 
 	var elemkeys := GetConfigStringKeys( tailor_cfg );
 	var can_make;
@@ -152,7 +188,7 @@ function MakeAndProcessMenu( character, use_on, id )
 
 	foreach key in elemkeys
 		if( tailor_cfg[key].Type == choice )
-			if( CanMake( character, key, use_on ) )
+			if( CanMake( character, key, resourceRequest ) )
 				AddMenuItem( menu, Cint(key), tailor_cfg[key].Name );
 				can_make := 1;
 			endif
@@ -168,7 +204,7 @@ function MakeAndProcessMenu( character, use_on, id )
 
 endfunction
 
-function CanMake( who, key, resource )
+function CanMake( who, key, resourceRequest )
 
 	var diff := tailor_cfg[key].Skill + Cint( resource_diff / DIVIDER );
 	if( diff < 1 )
@@ -178,7 +214,7 @@ function CanMake( who, key, resource )
 	endif
 
 	if( GetEffectiveSkill( who, SKILLID_TAILORING ) >= ( diff + APPEAR_AT ) )
-		if( resource.amount >= tailor_cfg[key].Material )
+		if( GetAvailableResource(who, resourceRequest.objtype, resourceRequest.dataFileHandle).total >= tailor_cfg[key].Material )
 			return 1;
 		endif
 	endif
@@ -187,7 +223,7 @@ function CanMake( who, key, resource )
 
 endfunction
 
-function TryToMakeItem( character, resource, to_make_objtype )
+function TryToMakeItem( character, resourceRequest, to_make_objtype )
 
 	var material;
 	var itemname;
@@ -228,8 +264,11 @@ function TryToMakeItem( character, resource, to_make_objtype )
 		excep_diff := 90;
 	endif
 
+	// Lease cache resources for the first iteration
+	LeaseResource(character, resourceRequest, material);
+
 	AutoLoop_init( character );
-	while( AutoLoop_more() && ( resource.amount >= material ) && NOT character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey).total >= material) && NOT character.dead)
 
 		sendDiff( character , skill );
 
@@ -240,16 +279,17 @@ function TryToMakeItem( character, resource, to_make_objtype )
 		if( CheckSkill( character, SKILLID_TAILORING, skill, points ) )
 
 			var theitem;
+			var consume_amount := material;
 			if( to_make_objtype == UOBJ_BANDAGE )
-				material := resource.amount;
-				theitem := CreateItemInBackpack( character, to_make_objtype, CInt( material / 4 ) );
+				consume_amount := GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey).total;
+				theitem := CreateItemInBackpack( character, to_make_objtype, CInt( consume_amount / 4 ) );
 			else
 				theitem := CreateItemInBackpack( character, to_make_objtype );
 			endif
 
 			if( theitem )
 
-				var cprops   := GetConfigStringArray( tailor_cfg[resource.objtype], "CProp" );
+				var cprops   := GetConfigStringArray( tailor_cfg[resourceRequest.objtype], "CProp" );
 
 				if( resource_name )
 					itemname := resource_name + " " + itemname;
@@ -337,17 +377,15 @@ function TryToMakeItem( character, resource, to_make_objtype )
 				endif
 
 				theitem.hp := theitem.maxhp;
-				theitem.color := resource.color;
-				SetObjProperty( theitem , "CraftedWith", resource.objtype );
-				SubtractAmount( resource, material );
+				theitem.color := resourceRequest.color;
+				SetObjProperty( theitem , "CraftedWith", resourceRequest.objtype );
+				ConsumeResource( character, resourceRequest, consume_amount );
 				SetObjProperty( theitem, "BaseName", itemname );
 				SetName( theitem, itemname );
 				IncRevision(theitem);
 			else
-				SubtractAmount( resource, material );
-			//	AutoLoop_finish();
+				ConsumeResource( character, resourceRequest, consume_amount );
 				SendSysmessage( character, "Your backpack is full." );
-			//	return;
 			endif
 		else
 			var tail := GetEffectiveSkill( character, SKILLID_TAILORING );
@@ -364,13 +402,19 @@ function TryToMakeItem( character, resource, to_make_objtype )
 			if( destroy < 1 )
 				destroy	:= 1;
 			endif
-			
-			SubtractAmount( resource, destroy );
-			SendSysmessage( character, "You destroyed " + destroy + " " + GetresourceName( resource ) + "." );
 
+			ConsumeResource( character, resourceRequest, destroy );
+			SendSysmessage( character, "You destroyed some resources." );
+
+		endif
+
+		// Extend lease for next iteration
+		if(!ExtendResourceLease(resourceRequest))
+			break;
 		endif
 	endwhile
 
+	ReleaseResourceLease(resourceRequest);
 	AutoLoop_finish();
 
 endfunction

@@ -368,7 +368,79 @@ Tinkering is the most complex crafting skill — 4 material types (wood, metal, 
   - `IsLogObjtype`/`IsIngotObjtype` — Objtype-range checks for routing
 - **Unchanged paths**: `SetTrap` (potions not stackable in cache context), `TryToMakeAContainerLockable` (keys not stackable), gem targeting in jewelry crafting (physical item per iteration)
 
-### Remaining Craft Scripts (Milestone 2.2 continuation)
+### Tailoring Integration (Milestone 2.2)
 
-Same pattern to apply to: tailoring, carpentry, alchemy, bowcraft, cooking, inscription, cartography.
+Single material (hides or cloth). Same pattern as blacksmithy.
+
+**Changes to `pkg/std/tailoring/make_cloth_items.src`:**
+- Added `include "include/resourcemanager"` and cache entry point
+- `MakeAndProcessMenu`/`CanMake` accept ResourceRequest, use `GetAvailableResource`
+- `TryToMakeItem` uses full lease lifecycle (LeaseResource/ExtendResourceLease/ReleaseResourceLease)
+- Bandage special case uses `GetAvailableResource` for "consume all" amount
+- `resource.color`/`resource.objtype` replaced with `resourceRequest.color`/`resourceRequest.objtype`
+
+### Carpentry Integration (Milestone 2.2)
+
+Dual material (logs + optional ingots/cloth). Most complex integration due to global `use_with` pattern.
+
+**Changes to `pkg/std/carpentry/carpentry.src`:**
+- Added `include "include/resourcemanager"` and cache entry point with routing for logs/ingots/cloth/young oak
+- Global `logRequest` and `secondaryRequest` track ResourceRequests for primary and secondary materials
+- `MakeAndProcessMenu` supports cache targeting for the secondary log selection (when ingots/cloth selected first)
+- `CanMake` checks `GetAvailableResource` for both primary and secondary
+- `TryToCreateItem` uses dual independent leases, `ConsumeResource` for both materials in success/failure paths
+- Color inheritance updated for cache-sourced materials
+- `MakeYoungOakStaffFromCache` added for cache path
+- `IsLogObjtype`/`IsIngotObjtype`/`IsClothObjtype` helpers added
+
+### Alchemy Integration (Milestone 2.2)
+
+Unique consumption pattern — reagents consumed inside `CanMake()` before skill check.
+
+**Changes to `pkg/std/alchemy/alchemy.src`:**
+- Separate cache functions: `CanMakeFromCache`, `TryToMakePotionFromCache`, `GetBottleFromCache`, `IsReagent_ObjType`
+- Original backpack path completely untouched — cache path is parallel
+- `GetBottleFromCache` checks backpack first, then cache for empty bottles
+- Lease lifecycle in `TryToMakePotionFromCache` loop
+
+### Bowcraft/Fletching Integration (Milestone 2.2)
+
+Simple dual material (shafts + feathers), no loop.
+
+**Changes to `scripts/items/fletch.src`:**
+- Both shafts and feathers can be sourced from cache via `SelectMaterialFromCache`
+- `GetAvailableResource` replaces `GetAmount`/`.amount` checks
+- `ConsumeResource` replaces `SubtractAmount` for both materials
+- No leases needed (single craft, no loop)
+
+### Cooking Integration (Milestone 2.2)
+
+Multi-ingredient recipe system with dictionary-based lookups.
+
+**Changes to `pkg/std/cooking/cooking.src`:**
+- Global `cooking_cache_df` set when player targets cache container
+- `check_for_all_ingredients`: checks cache via `GetStoredAmountByObjtype` as fallback when backpack insufficient
+- `destroy_all_ingredients`: consumes from backpack first, cache remainder via inline `ConsumeResource`
+- Recipe filter bypassed when targeting cache (`original_ingredient_objtype == 0`) — shows all available recipes
+- Special materials (water, milk, cheese) remain backpack-only
+
+### Inscription Integration (Milestone 2.2)
+
+Blank scroll loop with mana gating.
+
+**Changes to `pkg/std/inscription/inscription.src`:**
+- Global `scrollRequest` set when player targets cache and selects blank scrolls
+- `CreateScroll` loop uses `GetAvailableResource`/`ConsumeResource` when `scrollRequest` is set
+- Lease lifecycle: `LeaseResource` before loop, `ExtendResourceLease` each iteration, `ReleaseResourceLease` on exit
+- Enchanting and recharging paths unchanged (gem targeting is physical)
+
+### Cartography Integration (Milestone 2.2)
+
+Blank maps with variable consumption (1 for simple, 10 for complex).
+
+**Changes to `pkg/std/cartography/cartography.src`:**
+- Global `mapRequest` set when player targets cache and selects blank maps
+- Unified `ConsumeMap(who, blank, amount)` function routes to `ConsumeResource` or `SubtractAmount`
+- `makeNewmap` uses `GetAvailableResource` for batch material validation when cache-sourced
+- No leases needed (single craft, no loop)
 

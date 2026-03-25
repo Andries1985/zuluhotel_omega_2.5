@@ -17,6 +17,7 @@ include ":gumps:yesno";
 include "food";
 include "include/autoloop";
 include "include/difficulty";
+include "include/resourcemanager";
 
 //load the food dictionary.  This makes the recipe definitions in cooking.cfg much more understandable
 food_dictionary := define_food_dictionary();
@@ -24,9 +25,24 @@ food_dictionary := define_food_dictionary();
 //this is used to make sure that all recipes presented use the ingredient that was originally selected
 var original_ingredient_objtype := 0;
 
+// Omega Cache datafile handle — set when player targets cache, 0 otherwise
+var cooking_cache_df := 0;
+
 program cook ( character, ingredient )
 
-	original_ingredient_objtype := ingredient.objtype;
+	// Handle Omega Cache targeting — set cache handle for ingredient lookups
+	if(ingredient.objtype == OMEGACACHE_OBJTYPE)
+		var access := FindAccessibleContainer(character, array{REMOVE_FROM_SECURE});
+		if(!access)
+			SendSysmessage(character, "You must be near an Omega Cache Container you have access to.");
+			return;
+		endif
+		cooking_cache_df := access.df;
+		// Show all recipes (no specific ingredient filter)
+		original_ingredient_objtype := 0;
+	else
+		original_ingredient_objtype := ingredient.objtype;
+	endif
 
 	//Go to a function that creates a menu and lets the user choose what to make
 	var current_recipe := select_recipe(character);
@@ -219,10 +235,32 @@ function destroy_all_ingredients(character, current_recipe)
 
 		//otherwise, its just a normal ingredient
 		else
-			//use the FindObjtypeInContainer function to find what we need 
-			var found_ingredient := FindObjtypeInContainer(character.backpack, food_dictionary[current_ingredient[1]]);
-			//Then, we subtract what we need from the stack
-			SubtractAmount(found_ingredient, ingredient_quantity );
+			var ing_objtype := food_dictionary[current_ingredient[1]];
+			var found_ingredient := FindObjtypeInContainer(character.backpack, ing_objtype);
+			if(found_ingredient and found_ingredient.amount >= ingredient_quantity)
+				SubtractAmount(found_ingredient, ingredient_quantity);
+			elseif(cooking_cache_df)
+				// Consume from backpack first, then cache for remainder
+				var remaining := ingredient_quantity;
+				if(found_ingredient and found_ingredient.amount > 0)
+					var bp_take := Min(remaining, found_ingredient.amount);
+					SubtractAmount(found_ingredient, bp_take);
+					remaining := remaining - bp_take;
+				endif
+				if(remaining > 0)
+					var cacheRequest := struct{
+						objtype              := CInt(ing_objtype),
+						key                  := 0,
+						color                := 0,
+						preferredSourceOrder := array{ OMEGA_CACHE },
+						dataFileHandle       := cooking_cache_df,
+						leaseKey             := 0
+					};
+					ConsumeResource(character, cacheRequest, remaining);
+				endif
+			elseif(found_ingredient)
+				SubtractAmount(found_ingredient, ingredient_quantity);
+			endif
 		endif
 
 	endfor
@@ -385,23 +423,32 @@ function check_for_all_ingredients (character, current_recipe)
 
 		else
 			//use the FindObjtypeInContainer function to try to find what we need quickly.  If it
-			//fails, or finds less of the ingredient than we need, fail this recipe.  Otherwise, reserve
-			//what was found and try the next ingredient
-			var found_ingredient := FindObjtypeInContainer(character.backpack, food_dictionary [current_ingredient[1]]);
+			//fails, or finds less of the ingredient than we need, check cache as fallback.
+			var ing_objtype := food_dictionary[current_ingredient[1]];
+			var found_ingredient := FindObjtypeInContainer(character.backpack, ing_objtype);
 
-			if (!found_ingredient)
-				return 0;
-			elseif (found_ingredient.amount < ingredient_quantity)
-				return 0;
-			else
+			if(found_ingredient and found_ingredient.amount >= ingredient_quantity)
 				if(!ReserveItem(found_ingredient)) return 0; endif
+			elseif(cooking_cache_df)
+				// Check cache for this ingredient
+				var cache_avail := GetStoredAmountByObjtype(cooking_cache_df, ing_objtype);
+				var bp_avail := 0;
+				if(found_ingredient)
+					bp_avail := found_ingredient.amount;
+				endif
+				if((bp_avail + cache_avail) < ingredient_quantity)
+					return 0;
+				endif
+			else
+				return 0;
 			endif
 		endif
 	endfor
 
 	//It appears we've made it through all of the ingredients.  Return success if the originally selected
 	//ingredient was used in this recipe.  Otherwise, fail.
-	if (used_selected_ingredient)
+	//When targeting cache (original_ingredient_objtype == 0), skip this filter — show all available recipes.
+	if (used_selected_ingredient or !original_ingredient_objtype)
 		return 1;
 	else
 		return 0;

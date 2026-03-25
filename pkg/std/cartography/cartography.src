@@ -5,29 +5,44 @@ include "include/objtype";
 include "include/client";
 include "include/classes";
 include "include/difficulty";
+include "include/resourcemanager";
 
 const POINTS_MULTIPLIER := 15;
 
+// Cache ResourceRequest for blank maps — set when player targets cache
+var mapRequest := 0;
+
 program go_go_gadget_map( who, blank )
 
-	if (blank.objtype<>0x6001)
-	foreach item in EnumerateItemsInContainer(who.backpack)
-	if (item.objtype ==0x6001)
-	blank:=item;
-	break;
-	endif
-	endforeach
+	// Handle Omega Cache targeting
+	if(blank.objtype == OMEGACACHE_OBJTYPE)
+		mapRequest := SelectMaterialFromCache(who);
+		if(!mapRequest or CInt(mapRequest.objtype) != 0x6001)
+			SendSysmessage(who, "You must select blank maps.");
+			return;
+		endif
+	else
+		if (blank.objtype<>0x6001)
+		foreach item in EnumerateItemsInContainer(who.backpack)
+		if (item.objtype ==0x6001)
+		blank:=item;
+		break;
+		endif
+		endforeach
+		endif
+
+		if (blank.objtype<>0x6001) SendSysmessage( who , "You have no blank maps" ); return; endif
 	endif
 
-	if (blank.objtype<>0x6001) SendSysmessage( who , "You have no blank maps" ); return; endif
-	
 	var nextmsg :=CInt(GetObjProperty(who, "nextMap")), secclock:=ReadGameClock();
 	if ( secclock < nextmsg)
 		SendSysMessage( who, "You have to wait " + (nextmsg-secclock) + " seconds to make another map.");
 		return;
 	endif
 
-	if(!ReserveItem(blank)) return; endif
+	if(!mapRequest)
+		if(!ReserveItem(blank)) return; endif
+	endif
 
 	var choice := SelectMenuItem2( who , "Cartography");
 
@@ -37,7 +52,7 @@ program go_go_gadget_map( who, blank )
 
 	var props;
 	var difficulty;
-	
+
 	case (choice.index)
 		1: 	difficulty := 20;
 			sendDiff( who , difficulty );
@@ -46,10 +61,10 @@ program go_go_gadget_map( who, blank )
 				makemap( who , props , blank );
 			else
 				SendSysmessage( who , "You are not familiar enough with the area to draw the map" );
-				SubtractAmount( blank, 1 );
+				ConsumeMap(who, blank, 1);
 			endif
 			break;
-		
+
 		2: 	difficulty := 50;
 			sendDiff( who , difficulty );
 			if( CheckSkill( who, SKILLID_CARTOGRAPHY , difficulty , Cint(difficulty * POINTS_MULTIPLIER) ))
@@ -57,10 +72,10 @@ program go_go_gadget_map( who, blank )
 				makemap( who , props , blank );
 			else
 				SendSysmessage( who , "You are not familiar enough with the area to draw the map" );
-				SubtractAmount( blank, 1 );
+				ConsumeMap(who, blank, 1);
 			endif
 			break;
-		
+
 		3:	difficulty := 80;
 			sendDiff( who , difficulty );
 			if( CheckSkill( who, SKILLID_CARTOGRAPHY , difficulty , Cint(difficulty * POINTS_MULTIPLIER) ))
@@ -68,10 +83,10 @@ program go_go_gadget_map( who, blank )
 				makemap( who , props , blank );
 			else
 				SendSysmessage( who , "You are not familiar enough with the area to draw the map" );
-				SubtractAmount( blank, 1 );
+				ConsumeMap(who, blank, 1);
 			endif
 			break;
-		
+
 		4:	difficulty := 110;
 			sendDiff( who , difficulty );
 			if( CheckSkill( who, SKILLID_CARTOGRAPHY , difficulty , Cint(difficulty * POINTS_MULTIPLIER) ))
@@ -79,13 +94,13 @@ program go_go_gadget_map( who, blank )
 			else
 				SendSysmessage( who , "You are not familiar enough with the area to draw the map" );
 				if(!GetGlobalProperty("PHC") && !GetObjProperty(who, "#PPHC"))
-					SubtractAmount( blank, 5 );
+					ConsumeMap(who, blank, 5);
 				else
-					SubtractAmount( blank, 2 );
+					ConsumeMap(who, blank, 2);
 				endif
 			endif
 			break;
-		
+
 		5:	difficulty := 110;
 			sendDiff( who , difficulty );
 			if( CheckSkill( who, SKILLID_CARTOGRAPHY , difficulty , Cint(difficulty * POINTS_MULTIPLIER) ))
@@ -93,21 +108,30 @@ program go_go_gadget_map( who, blank )
 			else
 				SendSysmessage( who , "You are not familiar enough with the area to draw the map" );
 				if(!GetGlobalProperty("PHC") && !GetObjProperty(who, "#PPHC"))
-					SubtractAmount( blank, 5 );
+					ConsumeMap(who, blank, 5);
 				else
-					SubtractAmount( blank, 2 );
+					ConsumeMap(who, blank, 2);
 				endif
 			endif
 			break;
-			
+
 		default: SendSysmessage( who , "Oh Sh!t ... " );
 	endcase
 
 	SetObjProperty(who, "nextMap", ReadGameClock() + 3);
 endprogram
 
+// Unified consumption function — uses cache or backpack
+function ConsumeMap(who, blank, amount)
+	if(mapRequest)
+		ConsumeResource(who, mapRequest, amount);
+	else
+		SubtractAmount(blank, amount);
+	endif
+endfunction
+
 function makemap( who, mapdef , blank )
-	
+
 	// Toadstool 19/04/2012
 	// Alteration to allow world maps to stack
 	// Their props don't alter like other maps.
@@ -127,7 +151,7 @@ function makemap( who, mapdef , blank )
 	map.gumpwidth := mapdef[6];
 	map.gumpheight := mapdef[7];
 	SendSysmessage( who , "You carefully scribe a detailed map and place it in your pack." );
-	SubtractAmount( blank, 1 );
+	ConsumeMap(who, blank, 1);
 endfunction
 
 function makeNewmap( who, blank, choice )
@@ -136,14 +160,22 @@ function makeNewmap( who, blank, choice )
 	if(GetGlobalProperty("PHC") || GetObjProperty(who, "#PPHC"))
 		material := Ceil(material/2);
 	endif
-	if(blank.amount < material)
-		sendsysmessage(who, "You don't have enough materials to do that.");
-		return;
-	endif
-	var remove := SubtractAmount( blank, material );
-	if(!remove)
-		sendsysmessage(who, "Cancelled.");
-		return;
+	if(mapRequest)
+		if(GetAvailableResource(who, mapRequest.objtype, mapRequest.dataFileHandle).total < material)
+			sendsysmessage(who, "You don't have enough materials to do that.");
+			return;
+		endif
+		ConsumeResource(who, mapRequest, material);
+	else
+		if(blank.amount < material)
+			sendsysmessage(who, "You don't have enough materials to do that.");
+			return;
+		endif
+		var remove := SubtractAmount( blank, material );
+		if(!remove)
+			sendsysmessage(who, "Cancelled.");
+			return;
+		endif
 	endif
 	if(choice == 1)
 		CreateItemInBackpack( who, 0x3D71 );

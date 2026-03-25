@@ -1113,14 +1113,14 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | # | Task | Deliverable |
 |---|---|---|
 | [x] 48 | Blacksmithy | Full `ResourceRequest` + lease integration. Cache targeting, dual material (ingots + bone), `IsIngotObjtype`/`IsBoneObjtype` helpers. |
-| [ ] 49 | Tailoring | Same pattern (hides/cloth). Single material, color applied to product. |
-| [ ] 50 | Carpentry | Dual material (logs + ingots/cloth), each with independent `ResourceRequest` and lease. Complex color inheritance. |
-| [ ] 51 | Alchemy | Reagents + bottles. Consumption during `CanMake()` uses same centralised function. |
+| [x] 49 | Tailoring | Single material (hides/cloth). ResourceRequest with leases in AutoLoop. CProps from hide config applied to product. Bandage special case uses all available material. |
+| [x] 50 | Carpentry | Dual material (logs + ingots/cloth), independent ResourceRequests and leases. Cache targeting for both primary and secondary materials. Color inheritance cache-aware. Young oak staff has cache variant. |
+| [x] 51 | Alchemy | Separate cache functions (CanMakeFromCache, TryToMakePotionFromCache, GetBottleFromCache). Reagents consumed inside CanMake before skill check. Bottles consumed from backpack-first, cache fallback. |
 | [x] 52 | Tinkering | Metal/wood/glass/clay + gems + complex components. Cache entry point routes by objtype. Main loop uses ResourceRequest with leases. Complex items (axle+gears, clock, sextant) consume from cache. Totem/potion keg have cache variants. Keys/traps remain backpack-only (non-stackable). |
-| [ ] 53 | Bowcraft | Shafts + feathers. Simple Min() consumption, no AutoLoop. |
-| [ ] 54 | Cooking | Multi-ingredient recipe system. `destroy_all_ingredients()` calls `ConsumeResource` per ingredient. |
-| [ ] 55 | Inscription | Blank scrolls (loop) + gems (recharge loop). |
-| [ ] 56 | Cartography | Blank maps. Asymmetric consumption (failure vs success). |
+| [x] 53 | Bowcraft/Fletching | Dual material (shafts + feathers). Both can be sourced from cache. No loop, no leases. Simple ConsumeResource for both on success/failure. |
+| [x] 54 | Cooking | Multi-ingredient recipe system. Global `cooking_cache_df` set when targeting cache. `check_for_all_ingredients` checks cache as fallback. `destroy_all_ingredients` consumes from backpack first, cache remainder. Special materials (water/milk/cheese) remain backpack-only. |
+| [x] 55 | Inscription | Global `scrollRequest` for cache-sourced blank scrolls. `CreateScroll` loop uses GetAvailableResource/ConsumeResource when set, with lease lifecycle. Enchanting/recharging paths unchanged. |
+| [x] 56 | Cartography | Global `mapRequest` for cache-sourced blank maps. Unified `ConsumeMap` function routes to ConsumeResource or SubtractAmount. `makeNewmap` checks GetAvailableResource for batch validation. No loop, no leases. |
 
 **Testable**: For each craft: target cache to select material, craft item, verify depletion from cache. Target physical item, craft until backpack depleted, verify fallback to cache. Craft away from cache — verify backpack-only still works. Verify leases created/extended/released correctly during AutoLoop.
 
