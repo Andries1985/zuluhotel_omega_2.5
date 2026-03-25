@@ -531,30 +531,31 @@ Item 0xDF0B
 
 ### Goal
 
-Allow crafting scripts to consume resources directly from a nearby Omega Cache, and allow players to select materials from the cache when crafting — without needing to withdraw first.
+Allow crafting scripts to consume resources directly from a nearby Omega Cache — without needing to withdraw first. All crafting skills are included: blacksmithy, tailoring, carpentry, alchemy, tinkering, bowcraft, cooking, inscription, and cartography.
+
+### Design Principles
+
+1. **Centralise, don't replicate.** Resource availability checking and consumption logic lives in a single shared include (`scripts/include/resourcemanager.inc`). Crafting scripts call centralised functions instead of each implementing their own cache logic.
+2. **Uniform treatment.** Every material — whether it's ingots, bottles, blank scrolls, reagents, or food ingredients — goes through the same consumption function. There are no special cases for "utility" vs "primary" materials.
+3. **Smart consumption, not interception.** Crafting scripts replace their `SubtractAmount` and amount-check calls with cache-aware equivalents. The decision logic is built into the consumption function, not bolted on around existing calls.
+4. **Smelting/meltdown excluded.** Output from smelting ore or melting down items goes to the backpack as normal — no auto-deposit to cache.
 
 ### Current Crafting Pattern
 
-All crafting scripts (blacksmithy, tailoring, carpentry, alchemy) follow the same pattern:
+All crafting scripts follow the same pattern:
 
 1. Player uses crafting tool → prompted to **target** material
 2. Player targets a **physical item** (e.g., ingots, hides, logs)
 3. The targeted item's **objtype determines the material type** — difficulty, quality, color, name prefix, elemental properties are all read from crafting config keyed by objtype
 4. Script validates amount: `item.amount >= material_cost`
 5. Script consumes: `SubtractAmount(item, material_cost)`
-6. Some crafts (carpentry) require **multiple targeting steps** — e.g., target ingots, then target logs
+6. Some crafts (carpentry, blacksmithy) require **multiple targeting steps** — e.g., target ingots, then target logs
 
-There is no centralised resource consumption function — each craft calls `SubtractAmount()` directly on item references. Material type identification uses range-based helpers like `IsIngot()`, `IsHide()`, `IsLog()` in `scripts/include/itemutil.inc`.
-
-### Problem: Material Selection From Virtual Storage
-
-The existing crafting flow requires targeting a physical item to select the material type. Items stored in the Omega Cache are virtual (DataFile entries, not world items) — they cannot be targeted.
-
-This is not just about resource depletion (which the Resource Manager handles). The crafting scripts need to know **which specific material type** the player wants to use (e.g., Iron Ingots vs Bronze Ingots), and that selection currently happens via targeting.
+There is no centralised resource consumption function — each craft calls `SubtractAmount()` directly on physical item references. Material type identification uses range-based helpers like `IsIngot()`, `IsHide()`, `IsLog()` in `scripts/include/itemutil.inc`.
 
 ### Approach: Cache Container as Target
 
-When a crafting script prompts "What would you like to use that on?", the player can **target the Omega Cache container** instead of a physical item. The crafting script detects the target is an Omega Cache (by objtype), validates access, and opens a **material selection gump** — the same category → item list flow used for the withdrawal UI.
+When a crafting script prompts "What would you like to use that on?", the player can **target the Omega Cache container** instead of a physical item. The crafting script detects the target is an Omega Cache (by objtype), validates access, and opens a **material selection gump**.
 
 **Material selection flow:**
 1. Player uses crafting tool
@@ -562,38 +563,47 @@ When a crafting script prompts "What would you like to use that on?", the player
 3. Player targets the **Omega Cache container** (the physical furniture item)
 4. Script detects `target.objtype == OMEGACACHE_OBJTYPE`
 5. Access validation (same `FindAccessibleContainer` rules)
-6. Full category → item list gump opens (unfiltered — all categories shown, crafting script decides validity)
-7. Player selects a material type
-8. Script returns: objtype, material properties (from crafting config), available quantity, and a flag indicating the material was **sourced from the cache**
-9. Crafting script validates the selection (e.g., blacksmithy checks `IsIngot(objtype)`)
-10. For multi-material crafts (carpentry), the player can target the cache again for the second material
+6. Material selection gump opens — player picks a material type
+7. Script returns a `ResourceRequest` struct with the selected objtype and cache-first source order
+8. Crafting script validates the selection (e.g., blacksmithy checks `IsIngot(objtype)`)
+9. For multi-material crafts (carpentry), the player can target the cache again for the second material — each material gets its own `ResourceRequest` independently
 
-**This reuses the existing gump infrastructure** from Phase 1 — categories.cfg, the category/item list gumps, and the DataFile query functions.
+**Targeting happens once** at the start of crafting. The AutoLoop then depletes from the selected source on each cycle using the `ResourceRequest` set during targeting.
 
-### Depletion Priority
+### ResourceRequest and Depletion Priority
 
-The depletion order depends on **how the material was sourced**:
+A `ResourceRequest` is a struct set during material targeting that controls what to consume and in what order:
 
-**Materials explicitly selected from the cache** (player targeted the cache container):
-→ Deplete from **cache first**, then backpack
+**Player targeted the Omega Cache container** → source order: `array{ OMEGA_CACHE, BACKPACK }`
+**Player targeted a physical item** → source order: `array{ BACKPACK, OMEGA_CACHE }`
 
-**All other materials** (auto-consumed reagents, secondary costs, items found by objtype):
-→ Deplete from **backpack first**, then cache (if cache is in range and access passes)
+This applies to every material uniformly. The consumption function iterates the source order array, depleting from the first source until exhausted, then moving to the next.
 
-This applies universally — even if the player targeted a physical item from their backpack, secondary costs (like reagents in inscription) will spill over to the cache if the backpack runs out and a cache is nearby. The cache proximity check is passive and automatic.
+```
+// Source constants
+const OMEGA_CACHE := 1;
+const BACKPACK := 2;
+
+// ResourceRequest struct — set during targeting, used throughout the crafting loop
+struct{
+    objtype                // the material objtype selected
+    preferredSourceOrder   // array{ OMEGA_CACHE, BACKPACK } or array{ BACKPACK, OMEGA_CACHE }
+    dataFileHandle         // DataFile handle (or 0 if no cache available)
+}
+```
 
 ### Resource Manager Include
 
-Create a shared include that wraps resource lookup and consumption:
+Create a shared include that centralises all resource lookup and consumption:
 
 ```
-// include/resourcemanager.inc
+// scripts/include/resourcemanager.inc
 
-const CONSUME_BACKPACK_FIRST := 1;  // default — backpack then cache
-const CONSUME_CACHE_FIRST := 2;     // for items explicitly selected from cache
+const OMEGA_CACHE := 1;
+const BACKPACK := 2;
 
-// Find total available amount from backpack + nearby cache
-function GetAvailableResource(who, objtype)
+// Get total available amount across all sources
+function GetAvailableResource(who, objtype, dataFileHandle := 0)
     var backpack_amount := 0;
     var backpack_items := array{};
     foreach thing in EnumerateItemsInContainer(who.backpack)
@@ -603,92 +613,96 @@ function GetAvailableResource(who, objtype)
         endif
     endforeach
 
-    var cabinet_amount := 0;
-    var df := FindHouseStore(who);
-    if (df)
-        cabinet_amount := GetStoredAmountByObjtype(df, objtype);
+    var cache_amount := 0;
+    if (!dataFileHandle)
+        var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
+        if (access)
+            dataFileHandle := access.df;
+        endif
+    endif
+    if (dataFileHandle)
+        cache_amount := GetStoredAmountByObjtype(dataFileHandle, objtype);
     endif
 
-    return struct{ total := backpack_amount + cabinet_amount,
+    return struct{ total := backpack_amount + cache_amount,
                    backpack := backpack_amount,
-                   cabinet := cabinet_amount,
+                   cache := cache_amount,
                    backpack_items := backpack_items,
-                   store := df };
+                   dataFileHandle := dataFileHandle };
 endfunction
 
-// Consume amount with configurable priority
-function ConsumeResource(who, objtype, amount, priority := CONSUME_BACKPACK_FIRST)
-    var res := GetAvailableResource(who, objtype);
+// Consume amount following the source order in ResourceRequest
+function ConsumeResource(who, resourceRequest, amount)
+    var res := GetAvailableResource(who, resourceRequest.objtype, resourceRequest.dataFileHandle);
     if (res.total < amount)
         return error{ errortext := "Insufficient resources" };
     endif
 
     var remaining := amount;
-
-    if (priority == CONSUME_CACHE_FIRST)
-        // Cache first, then backpack
-        if (remaining > 0 and res.store)
-            var consumed := ConsumeFromStore(res.store, objtype, remaining);
+    foreach source in (resourceRequest.preferredSourceOrder)
+        if (remaining <= 0) break; endif
+        if (source == BACKPACK)
+            remaining := ConsumeFromBackpack(res.backpack_items, remaining);
+        elseif (source == OMEGA_CACHE and res.dataFileHandle)
+            var consumed := ConsumeFromCache(res.dataFileHandle, resourceRequest.objtype, remaining);
             remaining := remaining - consumed;
-            if (consumed > 0)
-                SendSysMessage(who, "Used " + consumed + " from your Omega Cache.");
-            endif
         endif
-        foreach stack in res.backpack_items
-            if (remaining <= 0) break; endif
-            var take := Min(remaining, stack.amount);
-            SubtractAmount(stack, take);
-            remaining := remaining - take;
-        endforeach
-    else
-        // Backpack first, then cache
-        foreach stack in res.backpack_items
-            if (remaining <= 0) break; endif
-            var take := Min(remaining, stack.amount);
-            SubtractAmount(stack, take);
-            remaining := remaining - take;
-        endforeach
-        if (remaining > 0 and res.store)
-            var consumed := ConsumeFromStore(res.store, objtype, remaining);
-            remaining := remaining - consumed;
-            if (consumed > 0)
-                SendSysMessage(who, "Used " + consumed + " from your Omega Cache.");
-            endif
-        endif
-    endif
+    endforeach
 
     return 1;
 endfunction
 
-// Select material from cache via gump — returns struct with objtype and properties
-function SelectMaterialFromCache(who, cache_item)
-    // Validate access
-    // Open category → item list gump (unfiltered)
-    // Player selects an item type
-    // Return struct{ objtype, available_qty, from_cache := 1 }
-    // Caller (crafting script) decides if the selected objtype is valid
+// Consume from physical backpack items via SubtractAmount
+function ConsumeFromBackpack(backpack_items, amount)
+    var remaining := amount;
+    foreach stack in backpack_items
+        if (remaining <= 0) break; endif
+        var take := remaining;
+        if (take > stack.amount) take := stack.amount; endif
+        SubtractAmount(stack, take);
+        remaining := remaining - take;
+    endforeach
+    return remaining;
 endfunction
 
-function FindHouseStore(who)
+// Consume from cache DataFile — debits qty without creating physical items
+function ConsumeFromCache(dataFileHandle, objtype, amount)
+    // Fast path: try default key (no overrides)
+    // Fallback: prefix scan for objtype matches
+    // Debit via WithdrawItem() which decrements qty / deletes element at 0
+    // Returns actual amount consumed
+endfunction
+
+// Build a ResourceRequest from targeting a physical item (backpack-first)
+function MakeBackpackRequest(who, objtype)
+    var dataFileHandle := 0;
     var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
-    if (!access) return 0; endif
-    return access.df;
+    if (access)
+        dataFileHandle := access.df;
+    endif
+    return struct{ objtype := objtype,
+                   preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE },
+                   dataFileHandle := dataFileHandle };
 endfunction
 
-function ConsumeFromStore(df, objtype, amount)
-    // Same as before — fast path with BuildDefaultKey, fallback prefix scan
+// Select material from cache via gump — returns ResourceRequest (cache-first)
+function SelectMaterialFromCache(who)
+    // Validate access via FindAccessibleContainer
+    // Open material selection gump (unfiltered categories)
+    // Player picks a material type
+    // Return struct{ objtype, preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK }, dataFileHandle }
+    // or 0 on cancel
 endfunction
 ```
 
 ### Integration with Existing Crafts
 
-Each crafting script adds a branch for the Omega Cache target alongside existing material checks:
+Each crafting script replaces its direct `SubtractAmount` and amount-check calls with the centralised resource manager functions:
 
 **Before:**
 ```
 var use_on := Target(who);
 if (IsIngot(use_on))
-    // proceed with use_on.objtype as material type
     var material_cost := GetCost(recipe);
     if (use_on.amount < material_cost)
         SendSysMessage(who, "Not enough ingots.");
@@ -702,82 +716,63 @@ if (IsIngot(use_on))
 include "include/resourcemanager";
 // ...
 var use_on := Target(who);
-var consume_priority := CONSUME_BACKPACK_FIRST;
+var resourceRequest;
 
 if (use_on.objtype == OMEGACACHE_OBJTYPE)
-    // Player targeted the cache — open material selection gump
-    var selection := SelectMaterialFromCache(who, use_on);
-    if (!selection) return; endif
-    use_on_objtype := selection.objtype;
-    consume_priority := CONSUME_CACHE_FIRST;
+    resourceRequest := SelectMaterialFromCache(who);
+    if (!resourceRequest) return; endif
 elseif (IsIngot(use_on))
-    use_on_objtype := use_on.objtype;
+    resourceRequest := MakeBackpackRequest(who, use_on.objtype);
 else
     SendSysMessage(who, "You can't use that.");
     return;
 endif
 
 // Material properties from crafting config (unchanged)
-var orediff := smith_cfg[use_on_objtype].Difficulty;
-var orename := smith_cfg[use_on_objtype].Name;
+var orediff := smith_cfg[resourceRequest.objtype].Difficulty;
+var orename := smith_cfg[resourceRequest.objtype].Name;
 
-// Check availability
-var available := GetAvailableResource(who, use_on_objtype);
+// Check availability (replaces use_on.amount >= material)
+var available := GetAvailableResource(who, resourceRequest.objtype, resourceRequest.dataFileHandle);
 if (available.total < material_cost)
     SendSysMessage(who, "Not enough ingots.");
     return;
 endif
 
-// Consume with appropriate priority
-ConsumeResource(who, use_on_objtype, material_cost, consume_priority);
+// Consume (replaces SubtractAmount(use_on, material_cost))
+ConsumeResource(who, resourceRequest, material_cost);
 ```
 
-For multi-material crafts (carpentry), each targeting step can independently target the cache or a physical item. Each gets its own `consume_priority`.
+For multi-material crafts (carpentry, blacksmithy bone armor), each targeting step produces its own `ResourceRequest`. The player can independently choose cache or physical item for each material.
 
 ### Affected Scripts
 
-| Script | Resource Types |
-|---|---|
-| `pkg/std/blacksmithy/make_blacksmith_items.src` | Ingots, Bones |
-| `pkg/std/tailoring/make_cloth_items.src` | Hides, Cloth |
-| `pkg/std/carpentry/carpentry.src` | Logs, Ingots, Cloth |
-| `pkg/std/alchemy/alchemy.src` | Reagents, Bottles |
-| `pkg/std/bowcraft/` | Logs, Shafts, Feathers |
-| `pkg/std/cooking/` | Food items |
-| `pkg/std/inscription/` | Blank scrolls, Reagents |
+| Script | Primary Materials | Secondary Materials | Dual Material |
+|---|---|---|---|
+| `pkg/std/blacksmithy/make_blacksmith_items.src` | Ingots | Bone (bone armor) | Yes |
+| `pkg/std/tailoring/make_cloth_items.src` | Hides, Cloth | — | No |
+| `pkg/std/carpentry/carpentry.src` | Logs | Ingots, Cloth | Yes |
+| `pkg/std/alchemy/alchemy.src` | Reagents | Bottles | No |
+| `pkg/std/tinkering/tinkering.src` | Metal/Components | — | No |
+| `pkg/std/bowcraft/` | Logs, Shafts, Feathers | — | No |
+| `pkg/std/cooking/cooking.src` | Food items | Water, Milk, Cheese | No |
+| `pkg/std/inscription/inscription.src` | Blank Scrolls | Gems (recharge) | No |
+| `pkg/std/cartography/cartography.src` | Blank Maps | — | No |
+
+**Excluded:** `blacksmithy/blacksmithy.src` (smelting), `blacksmithy/meltdown.src` (recycling) — these produce materials, not consume them for crafting.
 
 ### Considerations
 
 - **Unfiltered gump**: The material selection gump shows all categories — it does not filter by craft type. The crafting script validates the selection after the fact. This keeps the gump generic and reusable.
-- **Proximity check**: Player must be within interaction range of an Omega Cache item in a house where they have the required privileges.
-- **Passive cache spillover**: Even when the player targets a physical item (not the cache), secondary material costs automatically spill over to the cache if the backpack runs out and a cache is nearby with valid access. This is transparent to the player.
-- **Multiple caches**: Storage is per-house (not per-cache), so all caches share the same DataFile automatically.
+- **Cooking complexity**: Cooking uses a recipe system with multiple ingredients per recipe. Each ingredient goes through the same `ConsumeResource` function — the recipe handler calls it once per ingredient type.
+- **Failure material loss**: On crafting failure, all crafts destroy a percentage of materials (75 - skill/2, max 50%). The lost amount is consumed via the same `ConsumeResource` call with the same `ResourceRequest` — if the material came from cache, the loss is debited from the cache.
+- **AutoLoop integration**: The `ResourceRequest` set during targeting persists for the entire batch crafting loop. Each iteration calls `GetAvailableResource` to check availability and `ConsumeResource` to debit.
 - **Feedback**: When resources are consumed from the cache, inform the player: "Used 50 iron ingots from your Omega Cache."
+- **Proximity**: `FindAccessibleContainer` (from Phase 1) handles all access validation — must be inside the house, within range, with required privileges.
 
 ### Shared Access Check
 
-All features that interact with the Omega Cache store (direct use, crafting, loadouts) must use the same access validation. This is a single shared function:
-
-```
-// FindAccessibleContainer(who, required_privileges)
-// Returns: struct{ cabinet, house, df } or 0
-//
-// Checks:
-// 1. Find any Omega Cache item (objtype 0xDF0A) within interaction range of player
-// 2. Read houseserial from the cabinet
-// 3. Verify the house exists
-// 4. Check player has required privileges on that house:
-//    - Owner or Co-owner: always passes
-//    - GM+ (cmdlevel >= 4): always passes
-//    - Friend: must have each privilege in required_privileges array
-// 5. Open and return the house's DataFile
-//
-// Usage:
-//   var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
-//   var access := FindAccessibleContainer(who, array{ADD_TO_SECURE, REMOVE_FROM_SECURE});
-```
-
-This replaces the earlier `FindHouseStore(who)` and `FindNearbyCabinet(who)` concepts with a single, stricter function. "Within interaction range of a cabinet" is more specific than "inside a house" — the player must be near a physical cabinet, and that cabinet must belong to a house they have access to.
+All features that interact with the Omega Cache store (direct use, crafting, loadouts) use the same access validation via `FindAccessibleContainer()` in `omegacache.inc`. This was established in Phase 1 and includes `who.multi` house membership check, house serial match, and privilege validation.
 
 ---
 
@@ -1104,29 +1099,36 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 #### Milestone 2.1 — Resource Manager
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 30 | `resourcemanager.inc` | `GetAvailableResource()` (enumerate all backpack stacks + cache), `ConsumeResource()` (backpack-first, then cache), `ConsumeFromStore()` (fast-path + prefix fallback) |
-| [ ] 31 | `FindHouseStore()` integration | Uses `FindAccessibleContainer()` for proximity + privilege check |
+| [ ] 41 | `resourcemanager.inc` | `GetAvailableResource()`, `ConsumeResource()`, `ConsumeFromBackpack()`, `ConsumeFromCache()` — centralised resource lookup and consumption with `ResourceRequest` pattern |
+| [ ] 42 | `SelectMaterialFromCache()` | Material selection gump when player targets cache container — returns `ResourceRequest` struct |
+| [ ] 43 | `ConsumeFromCache()` | Debit DataFile qty without creating physical items — fast path with `BuildDefaultKey`, fallback prefix scan via `GetStoredAmountByObjtype` |
 
-**Testable**: Call `GetAvailableResource()` and `ConsumeResource()` from test scripts, verify backpack-first consumption and cache fallback.
+**Testable**: Call `GetAvailableResource()` and `ConsumeResource()` from test scripts. Verify backpack-first and cache-first consumption. Verify fallback between sources.
 
 #### Milestone 2.2 — Craft Script Modifications
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 32 | Blacksmithy | Replace `FindItemInContainer` + `SubtractAmount` with `GetAvailableResource` + `ConsumeResource` |
-| [ ] 33 | Tailoring | Same pattern |
-| [ ] 34 | Carpentry | Same pattern (handles dual resources) |
-| [ ] 35 | Alchemy | Same pattern |
-| [ ] 36 | Bowcraft | Same pattern |
-| [ ] 37 | Cooking | Same pattern |
-| [ ] 38 | Inscription | Same pattern |
+| [ ] 44 | Blacksmithy | Replace amount checks + `SubtractAmount` with `GetAvailableResource` + `ConsumeResource`. Handle dual material (ingots + bone). |
+| [ ] 45 | Tailoring | Same pattern (hides/cloth) |
+| [ ] 46 | Carpentry | Same pattern. Handle dual material (logs + ingots/cloth), each with independent `ResourceRequest`. |
+| [ ] 47 | Alchemy | Same pattern (reagents + bottles). Consumption during `CanMake()` uses same centralised function. |
+| [ ] 48 | Tinkering | Same pattern (metal/components) |
+| [ ] 49 | Bowcraft | Same pattern (logs, shafts, feathers) |
+| [ ] 50 | Cooking | Same pattern. Recipe system calls `ConsumeResource` per ingredient type. |
+| [ ] 51 | Inscription | Same pattern (blank scrolls, gems for recharge) |
+| [ ] 52 | Cartography | Same pattern (blank maps) |
 
-**Testable**: Craft items while standing near an Omega Cache. Verify resources consumed from backpack first, then from cache. Verify "Used X from your Omega Cache" message. Verify crafting without a nearby cache still works (backpack-only fallback).
+**Testable**: For each craft: target cache to select material, craft item, verify depletion from cache. Target physical item, craft until backpack depleted, verify fallback to cache. Craft away from cache — verify backpack-only still works.
 
 #### Milestone 2.3 — Crafting Testing
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 39 | Integration testing | Craft with mixed sources (some in backpack, some in cache), craft until cache depleted, craft away from cache (backpack-only) |
-| [ ] 40 | Edge cases | Insufficient total resources, cache with only variant items, multiple ore types in cache |
+| [ ] 53 | Mixed source crafting | Craft with some materials in backpack, some in cache. Verify correct depletion order per `ResourceRequest`. |
+| [ ] 54 | Dual material crafts | Carpentry/blacksmithy: one material from cache, other from backpack. Verify independent `ResourceRequest` per material. |
+| [ ] 55 | Failure material loss | Craft and fail — verify percentage loss debited from correct source based on `ResourceRequest`. |
+| [ ] 56 | AutoLoop batch | Batch craft 20+ items. Verify `ResourceRequest` persists, availability checked each cycle, depletion works across cache/backpack boundary. |
+| [ ] 57 | No cache nearby | Craft away from any cache — verify all crafts still work exactly as before (pure backpack). |
+| [ ] 58 | Edge cases | Insufficient total resources, cache with variant items, multiple material types of same category in cache |
 
 ---
 
@@ -1135,42 +1137,42 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 #### Milestone 3.1 — Loadout Data Layer
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 41 | Loadout DataFile | Per-character DataFile at `data/ds/omegacache/loadouts_<charserial>.txt` |
-| [ ] 42 | Slot CRUD | Create slot (name, container serial), delete slot, update slot properties |
-| [ ] 43 | Item management | Add item to slot (by full key), remove item from slot, update quantity |
+| [ ] 59 | Loadout DataFile | Per-character DataFile at `data/ds/omegacache/loadouts_<charserial>.txt` |
+| [ ] 60 | Slot CRUD | Create slot (name, container serial), delete slot, update slot properties |
+| [ ] 61 | Item management | Add item to slot (by full key), remove item from slot, update quantity |
 
 **Testable**: Create/edit/delete loadout slots via test scripts, verify DataFile contents on disk.
 
 #### Milestone 3.2 — Loadout Gump
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 44 | Slot list view | List of 10 slots with name, container name, item count. Radio select, pagination. |
-| [ ] 45 | Create flow | Target container, name the loadout, save empty slot |
-| [ ] 46 | Edit view | All items in slot with icon, name, editable quantity, remove button per row |
-| [ ] 47 | Add item | Targeting cursor, `BuildItemKey()`, record with current amount as default |
-| [ ] 48 | Save from baseline | Read all eligible items in container, record `key -> amount` for each |
-| [ ] 49 | Change container | Re-target a different container |
-| [ ] 50 | Save button | Commit all quantity changes from text fields |
+| [ ] 62 | Slot list view | List of 10 slots with name, container name, item count. Radio select, pagination. |
+| [ ] 63 | Create flow | Target container, name the loadout, save empty slot |
+| [ ] 64 | Edit view | All items in slot with icon, name, editable quantity, remove button per row |
+| [ ] 65 | Add item | Targeting cursor, `BuildItemKey()`, record with current amount as default |
+| [ ] 66 | Save from baseline | Read all eligible items in container, record `key -> amount` for each |
+| [ ] 67 | Change container | Re-target a different container |
+| [ ] 68 | Save button | Commit all quantity changes from text fields |
 
 **Testable**: Full gump flow — create loadout, add items, edit quantities, save from baseline, change container.
 
 #### Milestone 3.3 — Loadout Apply
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 51 | Apply logic | Build key-to-amount map of container, compare against loadout definition, withdraw deficits, deposit surpluses |
-| [ ] 52 | Container validation | Weight/item limits, partial fill with warning |
-| [ ] 53 | Lost container handling | Error message if container not found |
-| [ ] 54 | Summary report | "+300 Ginseng, -50 Sulphurous Ash returned to storage" |
+| [ ] 69 | Apply logic | Build key-to-amount map of container, compare against loadout definition, withdraw deficits, deposit surpluses |
+| [ ] 70 | Container validation | Weight/item limits, partial fill with warning |
+| [ ] 71 | Lost container handling | Error message if container not found |
+| [ ] 72 | Summary report | "+300 Ginseng, -50 Sulphurous Ash returned to storage" |
 
 **Testable**: Apply loadout with items above/below/at target. Verify container contents match definition. Test with missing container, full container, weight-limited container.
 
 #### Milestone 3.4 — Loadout Commands & Testing
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 55 | `.loadout` command | Opens gump, registered as player-level command |
-| [ ] 56 | `.loadout 1-10` command | Apply specific slot (no gump) |
-| [ ] 57 | `.loadout all` command | Apply all defined slots in sequence |
-| [ ] 58 | Integration testing | Apply after farming run, apply after PvP death, apply with empty cache, apply all with mixed slots |
+| [ ] 73 | `.loadout` command | Opens gump, registered as player-level command |
+| [ ] 74 | `.loadout 1-10` command | Apply specific slot (no gump) |
+| [ ] 75 | `.loadout all` command | Apply all defined slots in sequence |
+| [ ] 76 | Integration testing | Apply after farming run, apply after PvP death, apply with empty cache, apply all with mixed slots |
 | [ ] 59 | Macro flow testing | `.loadout all` chains, verify clean output messages |
 
 ---
