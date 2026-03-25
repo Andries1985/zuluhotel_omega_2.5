@@ -255,30 +255,103 @@ Stabilisation pass addressing bugs found during testing. Major refactors to gump
 
 ---
 
-## Milestone 2.1 — Resource Manager (2026-03-25)
+## Milestone 2.1 — Resource Manager & Lease System (2026-03-25)
 
 ### Summary
 
-Centralised resource management for crafting integration. Creates `scripts/include/resourcemanager.inc` — a shared include that all crafting skills will use to consume materials from both backpack and Omega Cache transparently.
+Centralised resource management and lease system for crafting integration. Creates `scripts/include/resourcemanager.inc` and adds lease functions to `pkg/opt/omegacache/omegacache.inc`. All crafting skills use these to consume materials from both backpack and Omega Cache transparently, with leases preventing concurrent consumption conflicts.
 
 **Files created:**
-- `scripts/include/resourcemanager.inc` — Centralised resource lookup and consumption with `ResourceRequest` pattern
+- `scripts/include/resourcemanager.inc` — Centralised resource lookup, consumption, and lease wrappers with `ResourceRequest` pattern
+
+**Files modified:**
+- `pkg/opt/omegacache/omegacache.inc` — Added resource lease system (`CreateLease`, `ExtendLease`, `ReleaseLease`, `GetLeasedAmount`). Made `GetStoredAmount` and `GetStoredAmountByObjtype` lease-aware. Added RL# key filtering to `BuildCategoryMap`, `ShowItemList`, `GetAllStored`.
+- `pkg/systems/crafting/include/craftingfunctions.inc` — Made `ApplyMaterialProperties` backwards-compatible with `ResourceRequest` structs (reads `.objtype`/`.color` from struct or `.objtype`/`.Color` from physical item).
+- `pkg/std/blacksmithy/make_blacksmith_items.src` — First craft script integration. Full `ResourceRequest` pattern with cache targeting, lease lifecycle in AutoLoop, dual-material bone armor support.
+
+### ResourceRequest Struct
+
+```
+struct{
+    objtype              // CInt objtype of the material
+    key                  // full DataFile key "0xABCD|hash" (0 if backpack-sourced)
+    color                // material color for crafting product properties
+    preferredSourceOrder // array{ OMEGA_CACHE, BACKPACK } or array{ BACKPACK, OMEGA_CACHE }
+    dataFileHandle       // DataFile handle (0 if no cache available)
+    leaseKey             // lease key string (0 if no active lease)
+}
+```
+
+- Built by `MakeBackpackRequest(who, item)` (backpack-first) or `SelectMaterialFromCache(who)` (cache-first via gump)
+- `leaseKey` is set by `LeaseResource()` and read by all consumption/availability functions
+- Passed `byref` to `LeaseResource` and `ReleaseResourceLease` which mutate `leaseKey`
+
+### Resource Lease System
+
+Leases reserve a specific quantity of a cache resource for a crafting execution, preventing concurrent consumers from depleting each other's materials.
+
+**Lease key format:** `RL#<item_key>|<who.serial>_<GetPid()>`
+- Example: `RL#0x1BF2|d41d8cd98f00b204|1073742185_4527`
+- Stored as DataFile elements with `quantity` and `expiry` properties
+- TTL: 60 seconds default, extended each crafting loop iteration
+
+**Lease lifecycle in crafting:**
+1. Before loop: `LeaseResource(who, resourceRequest, material)` — creates lease, sets `resourceRequest.leaseKey`
+2. Each iteration: consume from unleased portion, then `ExtendResourceLease(resourceRequest)` — extends TTL if enough stock remains, else deletes lease and breaks loop
+3. Loop ends: `ReleaseResourceLease(resourceRequest)` — deletes lease, clears `leaseKey`
+
+**Lease-aware functions:**
+- `GetStoredAmount(df, key, exclude_lease_key)` — returns `qty - leased`, optionally excluding caller's own lease
+- `GetStoredAmountByObjtype(df, objtype, exclude_lease_key)` — same, across all keys matching objtype
+- `GetLeasedAmount(df, item_key, exclude_lease_key)` — sums active leases, cleans expired ones, optionally excludes one
+- `ConsumeFromCache` — caps withdrawal to unleased amount per key
+- `ExtendLease` — validates item still has enough stock (qty >= total_leased) before extending; deletes lease if insufficient
+
+**Why not ReserveItem:** `ReserveItem` locks an entire physical item or container — too coarse. Leases are quantity-specific, key-specific, TTL-based, and allow multiple concurrent consumers on different materials or quantities.
 
 ### Key Design Decisions
 
-- **ResourceRequest struct**: Carries `objtype`, `key` (full DataFile key for variant-specific consumption), `color` (for crafting product properties), `preferredSourceOrder` (array of source constants), and `dataFileHandle`.
 - **Variant-aware**: Crafting scripts read `material.Color` to set product color via `ApplyMaterialProperties()`. The `SelectMaterialFromCache` gump shows each variant as a separate row with colored tile icons. `ConsumeFromCache` debits the specific key first, then falls back to other keys matching the objtype prefix.
 - **preferredSourceOrder**: An ordered array (`array{ OMEGA_CACHE, BACKPACK }` or `array{ BACKPACK, OMEGA_CACHE }`) that `ConsumeResource` iterates to determine depletion order. Extensible for future sources.
 - **No special cases**: Every material type (ingots, bottles, scrolls, reagents, food) goes through the same functions. No "utility" vs "primary" distinction.
+- **Own-lease exclusion**: When checking availability or consuming, the caller's own lease is excluded via `exclude_lease_key` so the caller can consume their reserved portion.
+- **Expired lease cleanup**: `GetLeasedAmount` opportunistically deletes expired leases during scans.
 
 ### Functions
 
+**resourcemanager.inc:**
+
 | Function | Purpose |
 |---|---|
-| `GetAvailableResource(who, objtype, dataFileHandle)` | Query total available across backpack + cache |
-| `ConsumeResource(who, resourceRequest, amount)` | Consume following `preferredSourceOrder` |
+| `GetAvailableResource(who, objtype, df, exclude_lease_key)` | Query total available across backpack + cache (lease-aware) |
+| `ConsumeResource(who, resourceRequest, amount)` | Consume following `preferredSourceOrder`, excludes own lease |
 | `ConsumeFromBackpack(backpack_items, amount)` | Deplete physical items via `SubtractAmount` |
-| `ConsumeFromCache(dataFileHandle, key, objtype, amount)` | Debit DataFile qty, specific key first then prefix scan |
+| `ConsumeFromCache(df, key, objtype, amount, exclude_lease_key)` | Debit DataFile qty from unleased portion |
 | `MakeBackpackRequest(who, item)` | Build backpack-first `ResourceRequest` from targeted physical item |
 | `SelectMaterialFromCache(who)` | Variant-aware selection gump, returns cache-first `ResourceRequest` |
+| `LeaseResource(who, byref resourceRequest, amount, ttl)` | Create lease, set `resourceRequest.leaseKey` |
+| `ExtendResourceLease(resourceRequest, ttl)` | Extend lease TTL if stock sufficient |
+| `ReleaseResourceLease(byref resourceRequest)` | Delete lease, clear `leaseKey` |
+
+**omegacache.inc (new):**
+
+| Function | Purpose |
+|---|---|
+| `CreateLease(df, item_key, who, quantity, ttl)` | Create lease DataFile element, return lease key |
+| `ExtendLease(df, lease_key, ttl)` | Extend TTL if item has sufficient stock, else delete |
+| `ReleaseLease(df, lease_key)` | Delete lease element |
+| `GetLeasedAmount(df, item_key, exclude_lease_key)` | Sum active leases, clean expired, optionally exclude one |
+
+### Blacksmithy Integration (first craft script)
+
+- **Entry point**: Cache targeting branch added — `SelectMaterialFromCache` for ingots and/or bone
+- **`MakeBlacksmithItems(character, ingotRequest)`**: Takes `ResourceRequest`, leases before loop, extends each iteration, releases on exit
+- **`MakeBoneItems(character, ingotRequest, boneRequest)`**: Dual `ResourceRequest`, independent leases for ingots and bone
+- **`CanMake`/`CanMakeBone`**: Use `GetAvailableResource` instead of `ingots.amount`
+- **`ApplyMaterialProperties`**: Receives `ResourceRequest` struct (backwards-compatible)
+- **Helper functions**: `IsIngotObjtype(objtype)`, `IsBoneObjtype(objtype)` for cache selection validation
+
+### Remaining Craft Scripts (Milestone 2.2 continuation)
+
+Same pattern to apply to: tailoring, carpentry, tinkering, alchemy, bowcraft, cooking, inscription, cartography.
 

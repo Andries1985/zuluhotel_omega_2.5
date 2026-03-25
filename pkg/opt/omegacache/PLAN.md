@@ -1096,39 +1096,44 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 
 ### Phase 2: Crafting Integration
 
-#### Milestone 2.1 — Resource Manager
+#### Milestone 2.1 — Resource Manager & Lease System
 | # | Task | Deliverable |
 |---|---|---|
 | [x] 41 | `resourcemanager.inc` | `GetAvailableResource()`, `ConsumeResource()`, `ConsumeFromBackpack()`, `ConsumeFromCache()`, `MakeBackpackRequest()` — centralised resource lookup and consumption with `ResourceRequest` pattern |
 | [x] 42 | `SelectMaterialFromCache()` | Variant-aware material selection gump with colored tile icons — returns `ResourceRequest` struct with key, color, and cache-first source order |
-| [x] 43 | `ConsumeFromCache()` | Debit DataFile qty without creating physical items — specific key first, then prefix scan fallback |
+| [x] 43 | `ConsumeFromCache()` | Lease-aware — caps withdrawal to unleased portion per key, excludes caller's own lease |
+| [x] 44 | Lease system in `omegacache.inc` | `CreateLease`, `ExtendLease` (validates stock), `ReleaseLease`, `GetLeasedAmount` (cleans expired). Lease key format: `RL#<item_key>\|<serial>_<pid>` |
+| [x] 45 | Lease-aware data layer | `GetStoredAmount` and `GetStoredAmountByObjtype` subtract leased amounts (with `exclude_lease_key`). `BuildCategoryMap`, `ShowItemList`, `GetAllStored` filter `RL#` keys. |
+| [x] 46 | Lease wrappers in `resourcemanager.inc` | `LeaseResource` (sets `resourceRequest.leaseKey` via byref), `ExtendResourceLease`, `ReleaseResourceLease`. `leaseKey` lives on `ResourceRequest` struct. |
+| [x] 47 | `ApplyMaterialProperties` compatibility | Backwards-compatible with `ResourceRequest` struct — reads `.objtype`/`.color` or `.objtype`/`.Color` based on struct type detection |
 
-**Testable**: Call `GetAvailableResource()` and `ConsumeResource()` from test scripts. Verify backpack-first and cache-first consumption. Verify fallback between sources.
+**Testable**: Call `GetAvailableResource()` and `ConsumeResource()` from test scripts. Verify backpack-first and cache-first consumption. Verify fallback between sources. Verify leases prevent concurrent over-consumption. Verify expired lease cleanup.
 
 #### Milestone 2.2 — Craft Script Modifications
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 44 | Blacksmithy | Replace amount checks + `SubtractAmount` with `GetAvailableResource` + `ConsumeResource`. Handle dual material (ingots + bone). |
-| [ ] 45 | Tailoring | Same pattern (hides/cloth) |
-| [ ] 46 | Carpentry | Same pattern. Handle dual material (logs + ingots/cloth), each with independent `ResourceRequest`. |
-| [ ] 47 | Alchemy | Same pattern (reagents + bottles). Consumption during `CanMake()` uses same centralised function. |
-| [ ] 48 | Tinkering | Same pattern (metal/components) |
-| [ ] 49 | Bowcraft | Same pattern (logs, shafts, feathers) |
-| [ ] 50 | Cooking | Same pattern. Recipe system calls `ConsumeResource` per ingredient type. |
-| [ ] 51 | Inscription | Same pattern (blank scrolls, gems for recharge) |
-| [ ] 52 | Cartography | Same pattern (blank maps) |
+| [x] 48 | Blacksmithy | Full `ResourceRequest` + lease integration. Cache targeting, dual material (ingots + bone), `IsIngotObjtype`/`IsBoneObjtype` helpers. |
+| [ ] 49 | Tailoring | Same pattern (hides/cloth). Single material, color applied to product. |
+| [ ] 50 | Carpentry | Dual material (logs + ingots/cloth), each with independent `ResourceRequest` and lease. Complex color inheritance. |
+| [ ] 51 | Alchemy | Reagents + bottles. Consumption during `CanMake()` uses same centralised function. |
+| [ ] 52 | Tinkering | Metal/components + gems. Multiple target steps, color/quality applied. |
+| [ ] 53 | Bowcraft | Shafts + feathers. Simple Min() consumption, no AutoLoop. |
+| [ ] 54 | Cooking | Multi-ingredient recipe system. `destroy_all_ingredients()` calls `ConsumeResource` per ingredient. |
+| [ ] 55 | Inscription | Blank scrolls (loop) + gems (recharge loop). |
+| [ ] 56 | Cartography | Blank maps. Asymmetric consumption (failure vs success). |
 
-**Testable**: For each craft: target cache to select material, craft item, verify depletion from cache. Target physical item, craft until backpack depleted, verify fallback to cache. Craft away from cache — verify backpack-only still works.
+**Testable**: For each craft: target cache to select material, craft item, verify depletion from cache. Target physical item, craft until backpack depleted, verify fallback to cache. Craft away from cache — verify backpack-only still works. Verify leases created/extended/released correctly during AutoLoop.
 
 #### Milestone 2.3 — Crafting Testing
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 53 | Mixed source crafting | Craft with some materials in backpack, some in cache. Verify correct depletion order per `ResourceRequest`. |
-| [ ] 54 | Dual material crafts | Carpentry/blacksmithy: one material from cache, other from backpack. Verify independent `ResourceRequest` per material. |
-| [ ] 55 | Failure material loss | Craft and fail — verify percentage loss debited from correct source based on `ResourceRequest`. |
-| [ ] 56 | AutoLoop batch | Batch craft 20+ items. Verify `ResourceRequest` persists, availability checked each cycle, depletion works across cache/backpack boundary. |
-| [ ] 57 | No cache nearby | Craft away from any cache — verify all crafts still work exactly as before (pure backpack). |
-| [ ] 58 | Edge cases | Insufficient total resources, cache with variant items, multiple material types of same category in cache |
+| [ ] 57 | Mixed source crafting | Craft with some materials in backpack, some in cache. Verify correct depletion order per `ResourceRequest`. |
+| [ ] 58 | Dual material crafts | Carpentry/blacksmithy: one material from cache, other from backpack. Verify independent `ResourceRequest` and leases per material. |
+| [ ] 59 | Failure material loss | Craft and fail — verify percentage loss debited from correct source based on `ResourceRequest`. |
+| [ ] 60 | AutoLoop batch with leases | Batch craft 20+ items. Verify lease extends each iteration, released on exit. Verify another player sees reduced availability during lease. |
+| [ ] 61 | Lease expiry | Simulate long idle — verify lease expires, another player can consume. Verify expired lease cleaned up. |
+| [ ] 62 | No cache nearby | Craft away from any cache — verify all crafts still work exactly as before (pure backpack, no leases). |
+| [ ] 63 | Edge cases | Insufficient total resources, cache with variant items, concurrent crafters on same resource |
 
 ---
 
