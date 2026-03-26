@@ -179,7 +179,7 @@ endfunction
 // Returns 1 on success, 0 if no lease needed/possible.
 function LeaseResource(who, byref resourceRequest, amount, ttl := LEASE_DEFAULT_TTL)
 	if(!resourceRequest.dataFileHandle)
-		resourceRequest.+leaseKey := 0;
+		resourceRequest.leaseKey := 0;
 		return 0;
 	endif
 	// Only lease if we have a specific cache key to lease against.
@@ -187,11 +187,11 @@ function LeaseResource(who, byref resourceRequest, amount, ttl := LEASE_DEFAULT_
 	// since physical items are consumed directly via SubtractAmount.
 	var item_key := resourceRequest.key;
 	if(!item_key)
-		resourceRequest.+leaseKey := 0;
+		resourceRequest.leaseKey := 0;
 		return 0;
 	endif
 	var lease_key := CreateLease(resourceRequest.dataFileHandle, item_key, who, amount, ttl);
-	resourceRequest.+leaseKey := lease_key;
+	resourceRequest.leaseKey := lease_key;
 	return lease_key;
 endfunction
 
