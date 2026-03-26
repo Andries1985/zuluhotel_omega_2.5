@@ -205,7 +205,9 @@ endfunction
 
 // Releases the lease on the ResourceRequest. Safe to call if no lease exists.
 function ReleaseResourceLease(byref resourceRequest)
+	OmegaCacheDebug("ReleaseResourceLease: leaseKey=" + resourceRequest.leaseKey + " df=" + resourceRequest.dataFileHandle);
 	if(!resourceRequest.dataFileHandle or !resourceRequest.leaseKey)
+		OmegaCacheDebug("ReleaseResourceLease: skipped (no df or no leaseKey)");
 		return;
 	endif
 	ReleaseLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey);

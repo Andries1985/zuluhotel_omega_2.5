@@ -205,6 +205,7 @@ program use_hammer( character, hammer )
 endprogram
 
 function MakeBlacksmithItems( character, ingotRequest )
+	_debug_who := character;
 
 	if( !smith_cfg )
 		SendSysmessage(character, "Could not open blacksmith.cfg");
