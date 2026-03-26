@@ -82,7 +82,8 @@ program textcmd_cache(who, text)
 		var cat_name := text[6, len(text)];
 		DoListCategory(who, df, cat_name);
 
-	elseif(text == "dump" and who.cmdlevel >= 4)
+	elseif(text == "dump")
+		SendSysMessage(who, "DEBUG: cmdlevel=" + who.cmdlevel);
 		DoCacheDump(who, df);
 
 	elseif(!text or text == "")
