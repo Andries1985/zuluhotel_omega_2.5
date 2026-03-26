@@ -1053,9 +1053,18 @@ function BuildCategoryMap(df, lookup)
 		cat_map[cat_name] := array{};
 	endforeach
 
-	// Classify each stored key (skip lease keys)
+	// Classify each stored key — clean expired leases, skip active leases
+	var now := ReadGameClock();
 	foreach key in keys
 		if(key[1, 3] == "RL#")
+			var elem := df.FindElement(key);
+			if(elem)
+				var expiry := CInt(elem.GetProp("expiry"));
+				if(expiry and expiry < now)
+					df.DeleteElement(key);
+					OmegaCacheDebug("BuildCategoryMap: cleaned expired lease " + key);
+				endif
+			endif
 			continue;
 		endif
 		var objtype_int := CInt(GetObjtypeFromKey(key));

@@ -196,9 +196,13 @@ function LeaseResource(who, byref resourceRequest, amount, ttl := LEASE_DEFAULT_
 endfunction
 
 // Extends the lease on the ResourceRequest. Returns 1 on success, 0 if lease expired/deleted.
+// Returns 1 (success) when no lease exists — backpack-only path doesn't need a lease.
 function ExtendResourceLease(resourceRequest, ttl := LEASE_DEFAULT_TTL)
-	if(!resourceRequest.dataFileHandle or !resourceRequest.leaseKey)
-		return 0;
+	if(!resourceRequest.leaseKey)
+		return 1;  // No lease to extend — not an error
+	endif
+	if(!resourceRequest.dataFileHandle)
+		return 1;
 	endif
 	return ExtendLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey, ttl);
 endfunction

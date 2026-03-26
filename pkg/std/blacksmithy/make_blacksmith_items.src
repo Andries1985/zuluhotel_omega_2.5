@@ -329,12 +329,9 @@ function MakeBlacksmithItems( character, ingotRequest )
 		endif
 
 		// Extend lease for next iteration
-		OmegaCacheDebug("Before ExtendResourceLease: leaseKey=" + ingotRequest.leaseKey);
 		if(!ExtendResourceLease(ingotRequest))
-			OmegaCacheDebug("ExtendResourceLease failed, breaking");
 			break;
 		endif
-		OmegaCacheDebug("After ExtendResourceLease: leaseKey=" + ingotRequest.leaseKey);
 	endwhile
 
 	OmegaCacheDebug("Before ReleaseResourceLease: leaseKey=" + ingotRequest.leaseKey);
