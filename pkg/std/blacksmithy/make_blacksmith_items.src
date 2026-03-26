@@ -262,6 +262,7 @@ function MakeBlacksmithItems( character, ingotRequest )
 
 	// Lease cache resources for the first iteration
 	LeaseResource(character, ingotRequest, material);
+	OmegaCacheDebug("After LeaseResource: leaseKey=" + ingotRequest.leaseKey);
 
 	AutoLoop_init( character );
 	while( AutoLoop_more() && (GetAvailableResource(character, ingotRequest.objtype, ingotRequest.dataFileHandle, ingotRequest.leaseKey).total >= material) && !character.dead)
@@ -328,11 +329,15 @@ function MakeBlacksmithItems( character, ingotRequest )
 		endif
 
 		// Extend lease for next iteration
+		OmegaCacheDebug("Before ExtendResourceLease: leaseKey=" + ingotRequest.leaseKey);
 		if(!ExtendResourceLease(ingotRequest))
+			OmegaCacheDebug("ExtendResourceLease failed, breaking");
 			break;
 		endif
+		OmegaCacheDebug("After ExtendResourceLease: leaseKey=" + ingotRequest.leaseKey);
 	endwhile
 
+	OmegaCacheDebug("Before ReleaseResourceLease: leaseKey=" + ingotRequest.leaseKey);
 	ReleaseResourceLease(ingotRequest);
 	AutoLoop_finish();
 
