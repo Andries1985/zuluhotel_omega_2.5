@@ -70,24 +70,26 @@ program use_hammer( character, hammer )
 		return;
 	endif
 
-	if( !ReserveItem(use_on) )
-		return;
+	// Repair path — requires ReserveItem
+	if(use_on.objtype != OMEGACACHE_OBJTYPE)
+		if( !ReserveItem(use_on) )
+			return;
+		endif
+
+		if( smith_cfg[use_on.graphic] && use_on.hp && use_on.quality)
+			var near := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+			foreach thing in near
+				if ((thing.objtype == UOBJ_ANVIL1) or (thing.objtype == UOBJ_ANVIL2))
+					repair_item( character, use_on, SKILLID_BLACKSMITHY );
+					return;
+				endif
+			endforeach
+			SendSysmessage( character , "You must be near an anvil to repair items!" );
+			return;
+		endif
 	endif
 
-	if( smith_cfg[use_on.graphic] && use_on.hp && use_on.quality)
-		var near := ListItemsNearLocation( character.x , character.y , character.z , 1 );
- 		foreach thing in near
-	  		if ((thing.objtype == UOBJ_ANVIL1) or (thing.objtype == UOBJ_ANVIL2))
-	   			repair_item( character, use_on, SKILLID_BLACKSMITHY );
-	   			return;
-	  		endif
- 		endforeach
-		SendSysmessage( character , "You must be near an anvil to repair items!" );
-		return;
-
-	endif
-	
-	// Handle Omega Cache targeting — select material from cache gump
+	// Handle Omega Cache targeting — no ReserveItem needed (uses leases instead)
 	if(use_on.objtype == OMEGACACHE_OBJTYPE)
 		var resourceRequest := SelectMaterialFromCache(character);
 		if(!resourceRequest)
@@ -265,7 +267,7 @@ function MakeBlacksmithItems( character, ingotRequest )
 	OmegaCacheDebug("After LeaseResource: leaseKey=" + ingotRequest.leaseKey);
 
 	AutoLoop_init( character );
-	while( AutoLoop_more() && (GetAvailableResource(character, ingotRequest.objtype, ingotRequest.dataFileHandle, ingotRequest.leaseKey).total >= material) && !character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, ingotRequest).total >= material) && !character.dead)
 
 		sendDiff( character , skill );
 
@@ -279,6 +281,12 @@ function MakeBlacksmithItems( character, ingotRequest )
 		endif
 
 		var product_desc := GetItemDescriptor(CInt(product_type));
+		// Verify materials are still available before crafting
+		if(GetAvailableResource(character, ingotRequest).total < material)
+			SendSysMessage(character, "You don't have enough " + orename + " ingots.");
+			break;
+		endif
+
 		if( CheckSkill( character , SKILLID_BLACKSMITHY , skill , points ) )
 			if ( (Random(100) < excep_ch) && CheckSkill( character, SKILLID_BLACKSMITHY, excep_diff, 0) )
 
@@ -335,6 +343,9 @@ function MakeBlacksmithItems( character, ingotRequest )
 	endwhile
 
 	OmegaCacheDebug("Before ReleaseResourceLease: leaseKey=" + ingotRequest.leaseKey);
+	if(GetAvailableResource(character, ingotRequest).total < material)
+		SendSysMessage(character, "You don't have enough " + orename + " ingots to continue.");
+	endif
 	ReleaseResourceLease(ingotRequest);
 	AutoLoop_finish();
 
@@ -402,7 +413,7 @@ function MakeBoneItems( character, ingotRequest, boneRequest )
 	LeaseResource(character, boneRequest, material);
 
 	AutoLoop_init( character );
-	while( AutoLoop_more() && (GetAvailableResource(character, ingotRequest.objtype, ingotRequest.dataFileHandle, ingotRequest.leaseKey).total >= material) && (GetAvailableResource(character, boneRequest.objtype, boneRequest.dataFileHandle, boneRequest.leaseKey).total >= material) && !character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, ingotRequest).total >= material) && (GetAvailableResource(character, boneRequest).total >= material) && !character.dead)
 
 		sendDiff( character , skill );
 
@@ -586,7 +597,7 @@ function CanMake( who , key , ingotRequest , orediff )
 	endif
 
 	if( GetEffectiveSkill( who , SKILLID_BLACKSMITHY ) >= ( diff + APPEAR_AT ) )
-		if( GetAvailableResource(who, ingotRequest.objtype, ingotRequest.dataFileHandle).total >= smith_cfg[key].Material )
+		if( GetAvailableResource(who, ingotRequest).total >= smith_cfg[key].Material )
 			return 1;
 		endif
 	endif
@@ -606,8 +617,8 @@ function CanMakeBone( who , key , ingotRequest , boneRequest , orediff )
 
 	if( GetEffectiveSkill( who , SKILLID_BLACKSMITHY ) >= ( diff + APPEAR_AT ) )
 		if( GetEffectiveSkill( who , SKILLID_TINKERING ) >= ( diff + APPEAR_AT ) )
-			if( GetAvailableResource(who, ingotRequest.objtype, ingotRequest.dataFileHandle).total >= smith_cfg[key].Material )
-				if( GetAvailableResource(who, boneRequest.objtype, boneRequest.dataFileHandle).total >= smith_cfg[key].Material )
+			if( GetAvailableResource(who, ingotRequest).total >= smith_cfg[key].Material )
+				if( GetAvailableResource(who, boneRequest).total >= smith_cfg[key].Material )
 					return 1;
 				endif
 			endif

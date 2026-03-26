@@ -32,9 +32,10 @@ const RM_ITEMS_PER_PAGE     := 10;
 // ============================================================
 
 // Returns total available amount of an objtype across backpack and cache.
-// Pass dataFileHandle if already resolved, or 0 to auto-detect.
-function GetAvailableResource(who, objtype, dataFileHandle := 0, exclude_lease_key := 0)
-	objtype := CInt(objtype);
+function GetAvailableResource(who, resourceRequest)
+	var objtype := CInt(resourceRequest.objtype);
+	var dataFileHandle := resourceRequest.dataFileHandle;
+	var exclude_lease_key := resourceRequest.leaseKey;
 
 	// Enumerate backpack
 	var backpack_amount := 0;
@@ -76,7 +77,7 @@ endfunction
 // Uses resourceRequest.leaseKey to exclude the caller's own lease from availability checks.
 // Returns 1 on success, 0 on failure (insufficient resources).
 function ConsumeResource(who, resourceRequest, amount)
-	var res := GetAvailableResource(who, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey);
+	var res := GetAvailableResource(who, resourceRequest);
 	if(res.total < amount)
 		SendSysMessage(who, "You don't have enough resources.");
 		return 0;
@@ -223,12 +224,14 @@ endfunction
 // ============================================================
 
 // Builds a ResourceRequest from a targeted physical item (backpack-first).
-// Checks for a nearby cache for fallback consumption.
+// Checks for a nearby cache for fallback consumption (unless autodraw is disabled).
 function MakeBackpackRequest(who, item)
 	var dataFileHandle := 0;
-	var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
-	if(access)
-		dataFileHandle := access.df;
+	if(!GetObjProperty(who, "omegacache_no_autodraw"))
+		var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
+		if(access)
+			dataFileHandle := access.df;
+		endif
 	endif
 
 	return struct{

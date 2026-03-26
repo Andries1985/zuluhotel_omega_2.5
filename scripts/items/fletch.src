@@ -51,8 +51,8 @@ program on_fletch( character, shafts )
 
     var choice := SelectMenuItem2( character , "fletching" );
 
-    var shaft_avail := GetAvailableResource(character, shaftRequest.objtype, shaftRequest.dataFileHandle).total;
-    var feather_avail := GetAvailableResource(character, featherRequest.objtype, featherRequest.dataFileHandle).total;
+    var shaft_avail := GetAvailableResource(character, shaftRequest).total;
+    var feather_avail := GetAvailableResource(character, featherRequest).total;
 
     if(shaft_avail > 0 and feather_avail > 0)
         if (CheckSkill( character,

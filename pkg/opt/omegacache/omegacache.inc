@@ -700,7 +700,6 @@ var _omegacache_blacklist := 0;
 // Must be stackable and not on the blacklist.
 function IsEligibleForStorage(item)
 	if(!item.stackable)
-		OmegaCacheDebug("IsEligibleForStorage: " + Hex(item.objtype) + " rejected - not stackable");
 		return 0;
 	endif
 
@@ -711,7 +710,6 @@ function IsEligibleForStorage(item)
 
 	if(_omegacache_blacklist)
 		if(FindConfigElem(_omegacache_blacklist, item.objtype))
-			OmegaCacheDebug("IsEligibleForStorage: " + Hex(item.objtype) + " rejected - blacklisted");
 			return 0;
 		endif
 	endif
@@ -787,7 +785,6 @@ function FindAccessibleContainer(who, required_privileges)
 		endif
 	endforeach
 
-	OmegaCacheDebug("FindAccessibleContainer: no accessible cache found for " + who.name);
 	return 0;
 endfunction
 

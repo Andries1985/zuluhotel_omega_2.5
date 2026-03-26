@@ -83,8 +83,11 @@ program MakeTinkerItems( character , tool )
 		return;
 	endif
 
-	if( !ReserveItem( use_on ) )
-		return;
+	// Cache containers use leases instead of ReserveItem
+	if(use_on.objtype != OMEGACACHE_OBJTYPE)
+		if( !ReserveItem( use_on ) )
+			return;
+		endif
 	endif
 
 	if( !IsInContainer( character.backpack , use_on ) )
@@ -141,6 +144,11 @@ program MakeTinkerItems( character , tool )
 			UOBJ_AXLE_AND_GEARS:	SendSysMessage( character , "Select either some springs or a hinge." );
 						var thing := Target( character , TGTOPT_CHECK_LOS );
 						if( !thing )
+							break;
+						endif
+
+						if(thing.objtype == OMEGACACHE_OBJTYPE)
+							SendSysmessage(character, "Use the cache directly as your material source for complex items.");
 							break;
 						endif
 
@@ -443,7 +451,7 @@ function CanMake( who , key , resourceRequest )
 			material := CInt(Ceil(material/2));
 		endif
 
-		if( GetAvailableResource(who, resourceRequest.objtype, resourceRequest.dataFileHandle).total >= material )
+		if( GetAvailableResource(who, resourceRequest).total >= material )
 			return 1;
 		endif
 	endif
@@ -481,7 +489,7 @@ function TryToMakeItem( character , resourceRequest , to_make_objtype , sfx )
 	LeaseResource(character, resourceRequest, material);
 
 	AutoLoop_init( character );
-	while( AutoLoop_more() && (GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey).total >= material) && NOT character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, resourceRequest).total >= material) && NOT character.dead)
 
 		//refreshing some stuff ;)
 		itemname := element.Name;
@@ -537,6 +545,12 @@ function TryToMakeItem( character , resourceRequest , to_make_objtype , sfx )
 		points	:= Cint( (skill + Cint(element.Material / 3)) * POINTS_MULTIPLIER );
 
 		SendSysmessage( character , "Difficulty: "+skill );
+
+		// Verify materials are still available before attempting craft
+		if(GetAvailableResource(character, resourceRequest).total < material)
+			SendSysMessage(character, "You don't have enough materials.");
+			break;
+		endif
 
 		if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
 
@@ -1156,7 +1170,8 @@ function TryToMakeComplexFromCache(character, firstRequest, to_be_done_objtype, 
 	// Resolve second component if not already provided
 	if(!secondRequest and needed_objtype)
 		// Check cache first, then backpack
-		var avail := GetAvailableResource(character, needed_objtype, firstRequest.dataFileHandle);
+		var temp_request := struct{ objtype := CInt(needed_objtype), dataFileHandle := firstRequest.dataFileHandle, leaseKey := 0 };
+		var avail := GetAvailableResource(character, temp_request);
 		if(avail.total < 1)
 			SendSysMessage(character, "You don't have the required component.");
 			return;
@@ -1304,7 +1319,7 @@ function MakeTotemFromCache(character, resourceRequest)
 		material := CInt(Ceil(material/2));
 	endif
 
-	if(GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle).total < material)
+	if(GetAvailableResource(character, resourceRequest).total < material)
 		sendsysmessage(character, "You don't have enough obsidian to make anything.");
 		return;
 	endif
@@ -1358,7 +1373,7 @@ function TryToMakePotionKegFromCache(character, bottleRequest)
 		needed_bottles := CInt(Ceil(needed_bottles/2));
 	endif
 
-	if(GetAvailableResource(character, bottleRequest.objtype, bottleRequest.dataFileHandle).total < needed_bottles)
+	if(GetAvailableResource(character, bottleRequest).total < needed_bottles)
 		SendSysMessage(character, "You need at least 10 empty bottles.");
 		return;
 	endif

@@ -1208,6 +1208,21 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 
 ---
 
+### Future: Artisan's Hammer of Signus — Exceptional Crafting Bonus
+
+Similar to how Xarafax and Omere's doubles drop rates on mining and lumberjacking, the Artisan's Hammer of Signus should increase the player's chance of crafting an exceptional item across all crafting skills. When equipped (or in backpack — TBD), the `excep_ch` value used in the `Random(100) < excep_ch` check should be boosted. This affects blacksmithy, tailoring, carpentry, tinkering, and any other skill with an exceptional quality path.
+
+**Tasks:**
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 80 | Identify Artisan's Hammer objtype and current implementation | Find the item in itemdesc.cfg, check if it has any existing crafting effects |
+| [ ] 81 | Define the boost mechanic | Determine boost amount (e.g., double `excep_ch`, flat bonus, or multiplier). Align with Xarafax/Omere pattern for consistency |
+| [ ] 82 | Centralise exceptional chance calculation | Extract `excep_ch` calculation into a shared function in `craftingfunctions.inc` that checks for the Hammer and applies the bonus |
+| [ ] 83 | Apply to all crafting skills | Ensure blacksmithy, tailoring, carpentry, tinkering, and any other skill with exceptional items uses the shared function |
+| [ ] 84 | Testing | Verify with and without Hammer equipped. Verify boost amount is correct. Verify no regression on existing exceptional crafting |
+
+---
+
 ## Decisions Log
 
 | Question | Decision |

@@ -1166,7 +1166,7 @@ function CreateScroll( character , skill , points , blankscroll , scrollobjtype 
 
 	/*** First check if there are at least one scroll. Maybe previous iterations had burned out all the scrolls ***/
 	if(scrollRequest)
-		if(GetAvailableResource(character, scrollRequest.objtype, scrollRequest.dataFileHandle, scrollRequest.leaseKey).total < 1)
+		if(GetAvailableResource(character, scrollRequest).total < 1)
 			SendSysMessage(character, "You don't have any more blank scrolls.");
 			break;
 		endif

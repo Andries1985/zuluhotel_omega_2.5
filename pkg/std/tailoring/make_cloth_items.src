@@ -57,7 +57,57 @@ program use_sewing_kit( character, sewing_kit )
 		return;
 	endif
 
-	// Handle Omega Cache targeting
+	if( !Accessible( character, use_on ) )
+		SendSysMessage( character, "You can't reach that." );
+		return;
+	endif
+
+	// Non-cache path — requires ReserveItem
+	if(use_on.objtype != OMEGACACHE_OBJTYPE)
+		if( !ReserveItem(use_on) )
+			return;
+		endif
+
+		if( !IsInContainer( character.backpack, use_on ) )
+			SendSysmessage( character, "That item has to be in your backpack." );
+			return;
+		endif
+
+		if(!use_on.hp && use_on.quality && tailor_items[use_on.objtype])
+			use_on.hp := 1;
+		endif
+
+		if( IsHat( use_on ) and use_on.hp == use_on.maxhp )
+			FortifyHat( character, use_on );
+
+		elseif( IsHide( use_on.objtype ) )
+			resourceRequest := MakeBackpackRequest(character, use_on);
+			item := MakeAndProcessMenu( character, resourceRequest, ID_HIDES );
+
+		elseif( use_on.objtype == UOBJ_MUTLI_CLOTH )
+			resourceRequest := MakeBackpackRequest(character, use_on);
+			item := MakeAndProcessMenu( character, resourceRequest, ID_CLOTH );
+
+		elseif( use_on.hp and use_on.quality and tailor_cfg[use_on.graphic] )
+			repair_item( character, use_on, SKILLID_TAILORING );
+
+		else
+			SendSysMessage( character, "You don't know how to use those items together." );
+		endif
+
+		item := item.objtype;
+		if( !item )
+			return;
+		endif
+
+		if(!resourceRequest)
+			resourceRequest := MakeBackpackRequest(character, use_on);
+		endif
+		TryToMakeItem( character, resourceRequest, item );
+		return;
+	endif
+
+	// Handle Omega Cache targeting — no ReserveItem needed (uses leases instead)
 	if(use_on.objtype == OMEGACACHE_OBJTYPE)
 		var cacheRequest := SelectMaterialFromCache(character);
 		if(!cacheRequest)
@@ -93,53 +143,6 @@ program use_sewing_kit( character, sewing_kit )
 		TryToMakeItem(character, cacheRequest, item);
 		return;
 	endif
-
-	if( !Accessible( character, use_on ) )
-		SendSysMessage( character, "You can't reach that." );
-		return;
-	endif
-
-	if( !ReserveItem(use_on) )
-		return;
-	endif
-
-	if( !IsInContainer( character.backpack, use_on ) )
-		SendSysmessage( character, "That item has to be in your backpack." );
-		return;
-	endif
-
-	if(!use_on.hp && use_on.quality && tailor_items[use_on.objtype])
-		use_on.hp := 1;
-	endif
-
-	if( IsHat( use_on ) and use_on.hp == use_on.maxhp )
-		FortifyHat( character, use_on );
-
-	elseif( IsHide( use_on.objtype ) )
-		resourceRequest := MakeBackpackRequest(character, use_on);
-		item := MakeAndProcessMenu( character, resourceRequest, ID_HIDES );
-
-	elseif( use_on.objtype == UOBJ_MUTLI_CLOTH )
-		resourceRequest := MakeBackpackRequest(character, use_on);
-		item := MakeAndProcessMenu( character, resourceRequest, ID_CLOTH );
-
-	elseif( use_on.hp and use_on.quality and tailor_cfg[use_on.graphic] )
-		repair_item( character, use_on, SKILLID_TAILORING );
-
-	else
-		SendSysMessage( character, "You don't know how to use those items together." );
-	endif
-
-
-	item := item.objtype;
-	if( !item )
-		return;
-	endif
-
-	if(!resourceRequest)
-		resourceRequest := MakeBackpackRequest(character, use_on);
-	endif
-	TryToMakeItem( character, resourceRequest, item );
 
 return;
 endprogram
@@ -223,7 +226,7 @@ function CanMake( who, key, resourceRequest )
 	endif
 
 	if( GetEffectiveSkill( who, SKILLID_TAILORING ) >= ( diff + APPEAR_AT ) )
-		if( GetAvailableResource(who, resourceRequest.objtype, resourceRequest.dataFileHandle).total >= tailor_cfg[key].Material )
+		if( GetAvailableResource(who, resourceRequest).total >= tailor_cfg[key].Material )
 			return 1;
 		endif
 	endif
@@ -277,7 +280,13 @@ function TryToMakeItem( character, resourceRequest, to_make_objtype )
 	LeaseResource(character, resourceRequest, material);
 
 	AutoLoop_init( character );
-	while( AutoLoop_more() && (GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey).total >= material) && NOT character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, resourceRequest).total >= material) && NOT character.dead)
+
+		// Verify materials are still available before crafting
+		if(GetAvailableResource(character, resourceRequest).total < material)
+			SendSysMessage(character, "You don't have enough materials.");
+			break;
+		endif
 
 		sendDiff( character , skill );
 
@@ -290,7 +299,7 @@ function TryToMakeItem( character, resourceRequest, to_make_objtype )
 			var theitem;
 			var consume_amount := material;
 			if( to_make_objtype == UOBJ_BANDAGE )
-				consume_amount := GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey).total;
+				consume_amount := GetAvailableResource(character, resourceRequest).total;
 				theitem := CreateItemInBackpack( character, to_make_objtype, CInt( consume_amount / 4 ) );
 			else
 				theitem := CreateItemInBackpack( character, to_make_objtype );

@@ -341,11 +341,11 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 	endif
 
 	AutoLoop_init( character );
-	while( AutoLoop_more() && (GetAvailableResource(character, logRequest.objtype, logRequest.dataFileHandle, logRequest.leaseKey).total >= material) && NOT character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, logRequest).total >= material) && NOT character.dead)
 	
 	// check for comaterial
 	if( secondaryRequest and material2 )
-		if( GetAvailableResource(character, secondaryRequest.objtype, secondaryRequest.dataFileHandle, secondaryRequest.leaseKey).total >= material2 )
+		if( GetAvailableResource(character, secondaryRequest).total >= material2 )
 			skillid2 := element.CoSkillid;
 			skill2 := element.CoSkill;
 		else
@@ -375,6 +375,18 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 	if( !GetObjProperty( character, CLASSEID_CRAFTER ))
 		PlaySoundEffect( character , sfx );
 		Sleep (2);
+	endif
+
+	// Re-check resource availability before committing to skill check
+	if(GetAvailableResource(character, logRequest).total < material)
+		SendSysMessage(character, "You don't have enough materials.");
+		break;
+	endif
+	if(secondaryRequest and material2)
+		if(GetAvailableResource(character, secondaryRequest).total < material2)
+			SendSysMessage(character, "You don't have enough materials.");
+			break;
+		endif
 	endif
 
 	skill := skill + Cint( ressource_diff / DIVIDER );
@@ -819,7 +831,7 @@ function CanMake( who , key , ressource )
 		// Check primary material (logs) availability
 		var log_avail := 0;
 		if(logRequest)
-			log_avail := GetAvailableResource(who, logRequest.objtype, logRequest.dataFileHandle).total;
+			log_avail := GetAvailableResource(who, logRequest).total;
 		else
 			log_avail := ressource.amount;
 		endif
@@ -842,7 +854,7 @@ function CanMake( who , key , ressource )
 					// Check secondary material availability
 					var sec_avail := 0;
 					if(secondaryRequest)
-						sec_avail := GetAvailableResource(who, secondaryRequest.objtype, secondaryRequest.dataFileHandle).total;
+						sec_avail := GetAvailableResource(who, secondaryRequest).total;
 					elseif(use_with)
 						sec_avail := use_with.amount;
 					endif
@@ -901,7 +913,7 @@ function MakeYoungOakStaffFromCache(character, resourceRequest)
 		ammount_required := CInt(Ceil(ammount_required/2));
 	endif
 
-	if(GetAvailableResource(character, resourceRequest.objtype, resourceRequest.dataFileHandle).total < ammount_required)
+	if(GetAvailableResource(character, resourceRequest).total < ammount_required)
 		SendSysMessage(character, "You don't have enough young oak wood to make a staff.");
 		return;
 	endif

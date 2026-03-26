@@ -162,7 +162,7 @@ function makeNewmap( who, blank, choice )
 		material := Ceil(material/2);
 	endif
 	if(mapRequest)
-		if(GetAvailableResource(who, mapRequest.objtype, mapRequest.dataFileHandle).total < material)
+		if(GetAvailableResource(who, mapRequest).total < material)
 			sendsysmessage(who, "You don't have enough materials to do that.");
 			return;
 		endif

@@ -116,12 +116,14 @@ program use_mortar( user, mortar )
 		return;
 	endif
 
-	if( !ReserveItem( use_on ) )
-		return;
-	endif
+	if(use_on.objtype != OMEGACACHE_OBJTYPE)
+		if( !ReserveItem( use_on ) )
+			return;
+		endif
 
-	if( !ReserveContainers( user, use_on.container ) )
-		return;
+		if( !ReserveContainers( user, use_on.container ) )
+			return;
+		endif
 	endif
 
 	var elem := conf[use_on.objtype];
@@ -508,7 +510,7 @@ function CanMakeFromCache(user, potion, resourceRequest, mage, usereg := 0)
 	endif
 
 	if(GetEffectiveSkill(user, SKILLID_ALCHEMY) >= (skillneeded + APPEAR_AT))
-		var avail := GetAvailableResource(user, resourceRequest.objtype, resourceRequest.dataFileHandle, resourceRequest.leaseKey).total;
+		var avail := GetAvailableResource(user, resourceRequest).total;
 		if(avail >= amount_needed)
 			if(usereg > 0)
 				ConsumeResource(user, resourceRequest, amount_needed);
@@ -589,7 +591,14 @@ function TryToMakePotionFromCache(user, mortar, potion, resourceRequest, mage)
 
 	while(AutoLoop_more() && NOT user.dead)
 
-		if(CanMakeFromCache(user, potion, resourceRequest, mage, usereg := 1))
+		// Pre-check availability before committing to this iteration
+		var avail := GetAvailableResource(user, resourceRequest).total;
+		if(avail < amount_needed)
+			SendSysMessage(user, "You don't have enough reagents.");
+			break;
+		endif
+
+		if(CanMakeFromCache(user, potion, resourceRequest, mage, usereg := 0))
 
 			for(i := 1; i <= NUM_PERFORM; i := i + 1)
 				PlaySoundEffect(user, SFX_GRIND);
@@ -599,6 +608,7 @@ function TryToMakePotionFromCache(user, mortar, potion, resourceRequest, mage)
 
 			if(CheckSkill(user, SKILLID_ALCHEMY, difficulty, difficulty * POINT_MULTIPLIER))
 				if(GetBottleFromCache(user, resourceRequest))
+					ConsumeResource(user, resourceRequest, amount_needed);
 					CreateItemInContainer(mortar.container, product, 1);
 					PlaySoundEffect(user, SFX_POUR);
 				else
@@ -610,6 +620,8 @@ function TryToMakePotionFromCache(user, mortar, potion, resourceRequest, mage)
 					return;
 				endif
 			else
+				// Failed skill check — consume reagents (wasted attempt)
+				ConsumeResource(user, resourceRequest, amount_needed);
 				PlaySoundEffect(user, SFX_POUR);
 				PrintTextAbovePrivate(user, "You pour out the useless mixture", user);
 			endif

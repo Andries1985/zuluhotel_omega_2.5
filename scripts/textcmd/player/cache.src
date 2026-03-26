@@ -25,6 +25,12 @@ program textcmd_cache(who, text)
 		text := Lower(CStr(text));
 	endif
 
+	// Commands that don't require cache proximity
+	if(text == "autodraw")
+		DoToggleAutodraw(who);
+		return;
+	endif
+
 	// Determine required privilege based on subcommand
 	var required_privs := array{VIEW_SECURE};
 	if(text == "deposit" or text == "deposit target")
@@ -82,8 +88,7 @@ program textcmd_cache(who, text)
 		var cat_name := text[6, len(text)];
 		DoListCategory(who, df, cat_name);
 
-	elseif(text == "dump")
-		SendSysMessage(who, "DEBUG: cmdlevel=" + who.cmdlevel);
+	elseif(text == "dump" and who.cmdlevel >= 4)
 		DoCacheDump(who, df);
 
 	elseif(!text or text == "")
@@ -97,11 +102,23 @@ program textcmd_cache(who, text)
 		SendSysMessage(who, "  .cache list               - list categories");
 		SendSysMessage(who, "  .cache list <category>    - list items in category");
 		SendSysMessage(who, "  .cache withdraw <amount>  - withdraw to backpack");
+		SendSysMessage(who, "  .cache autodraw           - toggle auto-draw from cache");
 	endif
 
 endprogram
 
 // Deposit, withdraw, and prompt functions are in omegacache.inc (shared include).
+
+function DoToggleAutodraw(who)
+	var current := GetObjProperty(who, "omegacache_no_autodraw");
+	if(current)
+		EraseObjProperty(who, "omegacache_no_autodraw");
+		SendSysMessage(who, "Omega Cache auto-draw enabled. Crafting will draw from the cache when backpack runs out.");
+	else
+		SetObjProperty(who, "omegacache_no_autodraw", 1);
+		SendSysMessage(who, "Omega Cache auto-draw disabled. Crafting will only use items from your backpack.");
+	endif
+endfunction
 
 // ============================================================
 // List Functions
