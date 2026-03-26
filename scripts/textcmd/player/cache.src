@@ -82,6 +82,9 @@ program textcmd_cache(who, text)
 		var cat_name := text[6, len(text)];
 		DoListCategory(who, df, cat_name);
 
+	elseif(text == "dump" and who.cmdlevel >= 4)
+		DoCacheDump(who, df);
+
 	elseif(!text or text == "")
 		RunOmegaCacheGump(who, df);
 
@@ -122,6 +125,9 @@ function DoListCategories(who, df)
 	var other_qty := 0;
 
 	foreach key in keys
+		if(key[1, 3] == "RL#")
+			continue;
+		endif
 		var objtype_int := CInt(GetObjtypeFromKey(key));
 
 		var elem := df.FindElement(key);
@@ -163,6 +169,35 @@ function DoListCategories(who, df)
 	endif
 endfunction
 
+function DoCacheDump(who, df)
+	var keys := df.Keys();
+	SendSysMessage(who, "=== Raw DataFile Dump (" + keys.size() + " keys) ===");
+	foreach key in keys
+		var elem := df.FindElement(key);
+		if(!elem)
+			SendSysMessage(who, "  [" + key + "] (no element)");
+			continue;
+		endif
+		var props := elem.PropNames();
+		var prop_str := "";
+		foreach pname in props
+			var val := elem.GetProp(pname);
+			if(prop_str != "")
+				prop_str := prop_str + ", ";
+			endif
+			prop_str := prop_str + pname + "=" + CStr(val);
+		endforeach
+		if(key[1, 3] == "RL#")
+			SendSysMessage(who, "  LEASE [" + key + "] " + prop_str);
+		else
+			SendSysMessage(who, "  ITEM  [" + key + "] " + prop_str);
+		endif
+	endforeach
+	if(keys.size() == 0)
+		SendSysMessage(who, "  (empty)");
+	endif
+endfunction
+
 function DoListCategory(who, df, cat_name_input)
 	var lookup := LoadCategoryLookup();
 	var cat_names := lookup.cat_names;
@@ -199,6 +234,9 @@ function DoListCategory(who, df, cat_name_input)
 
 	SendSysMessage(who, "=== " + FormatCategoryName(matched_cat) + " ===");
 	foreach key in keys
+		if(key[1, 3] == "RL#")
+			continue;
+		endif
 		var objtype_int := CInt(GetObjtypeFromKey(key));
 
 		if(cat_objtypes[objtype_int])

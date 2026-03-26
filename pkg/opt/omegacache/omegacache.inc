@@ -302,15 +302,21 @@ function BuildItemKey(item)
 		i := i + 1;
 	endforeach
 
+	// POL's MD5Encrypt rejects empty strings — use a space as sentinel for "no properties"
+	if(!canonical or canonical == "")
+		canonical := " ";
+	endif
+
 	var key := Hex(item.objtype) + "|" + MD5Encrypt(canonical);
 	OmegaCacheDebug("BuildItemKey: objtype=" + Hex(item.objtype) + " canonical='" + canonical + "' key=" + key);
 	return key;
 endfunction
 
 // Returns "objtype|md5hash" for a standard item with no overrides.
-// Equivalent to: Hex(objtype) + "|" + MD5Encrypt("")
+// Uses a space character for MD5 since POL's MD5Encrypt rejects empty strings.
+// This must match what BuildItemKey produces for items with no non-default properties.
 function BuildDefaultKey(objtype)
-	return Hex(objtype) + "|" + MD5Encrypt("");
+	return Hex(objtype) + "|" + MD5Encrypt(" ");
 endfunction
 
 // ============================================================
