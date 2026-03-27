@@ -1288,8 +1288,8 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 			GFTextLine(gump, 75, 42, TEXT_HUE, "Item");
 			GFTextLine(gump, 290, 42, TEXT_HUE, "Stored");
 			GFTextLine(gump, 400, 42, TEXT_HUE, "Amount");
-			GFTilePic(gump, 510, 30, 0x2076);   // Target icon header
-			GFTilePic(gump, 550, 28, 0x0E75);   // Backpack icon header
+			GFTilePic(gump, 505, 32, 0x0E79);   // Target icon header
+			GFTilePic(gump, 548, 28, 0x0E75);   // Backpack icon header
 
 			// Page nav — balanced centering based on which buttons are visible
 			if(total_pages > 1)
@@ -1374,11 +1374,11 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		GFResizePic(gump, 397, row_y + 4, 5054, 100, 22);
 		GFTextEntry(gump, 400, row_y + 7, 95, 20, TEXT_HUE, "", txt_id);
 
-		// Take to target button (blue gem)
-		GFAddButton(gump, 518, row_y + 7, 2362, 2362, GF_CLOSE_BTN, btn_id);
-		// Take to backpack button (blue gem)
+		// Take to target button (golden arrow)
+		GFAddButton(gump, 518, row_y + 7, 4005, 4007, GF_CLOSE_BTN, btn_id);
+		// Take to backpack button (golden arrow)
 		var bp_btn_id := BTN_TAKE_BP_BASE + item_index;
-		GFAddButton(gump, 558, row_y + 7, 2362, 2362, GF_CLOSE_BTN, bp_btn_id);
+		GFAddButton(gump, 558, row_y + 7, 4005, 4007, GF_CLOSE_BTN, bp_btn_id);
 	endforeach
 
 	if(total_items == 0)
