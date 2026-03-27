@@ -1425,11 +1425,13 @@ function RunOmegaCacheGump(who, df)
 
 	category_map := BuildCategoryMap(df, cat_lookup);
 
+	var cat_display_order := array{};
+
 	while(1)
 		var result;
 		if(view == "categories")
 			category_map := BuildCategoryMap(df, cat_lookup);
-			result := ShowCategoryMenu(who, category_map, cat_lookup.cat_icons, cat_lookup.cat_names);
+			result := ShowCategoryMenu(who, category_map, cat_lookup.cat_icons, cat_lookup.cat_names, cat_display_order);
 		else
 			result := ShowItemList(who, df, view, category_map, current_keys);
 		endif
@@ -1495,13 +1497,8 @@ function RunOmegaCacheGump(who, df)
 
 		elseif(btn >= BTN_CATEGORY_BASE and btn < BTN_TAKE_BASE)
 			var cat_index := btn - BTN_CATEGORY_BASE;
-			// Use config-defined order matching ShowCategoryMenu rendering
-			var ordered_names := cat_lookup.cat_names;
-			if(category_map["Other"] and category_map["Other"].size() > 0)
-				ordered_names.append("Other");
-			endif
-			if(cat_index >= 1 and cat_index <= ordered_names.size())
-				view := ordered_names[cat_index];
+			if(cat_index >= 1 and cat_index <= cat_display_order.size())
+				view := cat_display_order[cat_index];
 			endif
 
 		elseif(btn >= BTN_TAKE_BASE)
