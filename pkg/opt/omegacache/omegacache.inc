@@ -1199,7 +1199,7 @@ function ShowCategoryMenu(who, category_map, cat_icons)
 
 		// Open category button
 		var btn_id := BTN_CATEGORY_BASE + cat_index;
-		GFAddButton(gump, cx + 180, cy + 28, 4005, 4007, GF_CLOSE_BTN, btn_id);
+		GFAddButton(gump, cx + 180, cy + 28, 2362, 2362, GF_CLOSE_BTN, btn_id);
 	endforeach
 
 	if(total_display == 0)
@@ -1374,8 +1374,8 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		GFResizePic(gump, 397, row_y + 4, 5054, 100, 22);
 		GFTextEntry(gump, 400, row_y + 7, 95, 20, TEXT_HUE, "", txt_id);
 
-		// Take to target button (golden arrow)
-		GFAddButton(gump, 518, row_y + 7, 4005, 4007, GF_CLOSE_BTN, btn_id);
+		// Take to target button (blue dot)
+		GFAddButton(gump, 518, row_y + 7, 2362, 2362, GF_CLOSE_BTN, btn_id);
 		// Take to backpack button (golden arrow)
 		var bp_btn_id := BTN_TAKE_BP_BASE + item_index;
 		GFAddButton(gump, 558, row_y + 7, 4005, 4007, GF_CLOSE_BTN, bp_btn_id);
