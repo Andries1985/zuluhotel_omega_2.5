@@ -1068,6 +1068,7 @@ function BuildCategoryMap(df, lookup)
 		var objtype_int := CInt(GetObjtypeFromKey(key));
 		var cat_name := objtype_to_cat[objtype_int];
 		if(!cat_name)
+			OmegaCacheDebug("BuildCategoryMap: UNCATEGORIZED objtype=" + Hex(objtype_int) + " int=" + objtype_int + " key=" + key);
 			cat_name := "Other";
 			if(!cat_map["Other"])
 				cat_map["Other"] := array{};
@@ -1083,7 +1084,7 @@ endfunction
 // Gump: Category Menu
 // ============================================================
 
-function ShowCategoryMenu(who, category_map, cat_icons)
+function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0)
 	var gump := GFCreateGump(25, 25);
 
 	// Page 0 — always visible (background, title, bottom buttons)
@@ -1106,8 +1107,17 @@ function ShowCategoryMenu(who, category_map, cat_icons)
 	var row_start := 48;
 	var row_spacing := 85;
 
-	// Count displayable categories for pagination
-	var cat_names := category_map.keys();
+	// Use config-defined order if available, else dictionary key order
+	var cat_names;
+	if(ordered_cat_names)
+		// Add "Other" at the end if it exists in the map
+		cat_names := ordered_cat_names;
+		if(category_map["Other"] and category_map["Other"].size() > 0)
+			cat_names.append("Other");
+		endif
+	else
+		cat_names := category_map.keys();
+	endif
 	var total_display := 0;
 	foreach cat_name in cat_names
 		if(category_map[cat_name].size() > 0)
@@ -1188,6 +1198,9 @@ function ShowCategoryMenu(who, category_map, cat_icons)
 
 		// Category icon
 		var icon := cat_icons[cat_name];
+		if(!icon and cat_name == "Other")
+			icon := 0x0FA7;
+		endif
 		if(icon)
 			GFTilePic(gump, cx + 8, cy + 18, icon);
 		endif
@@ -1415,7 +1428,7 @@ function RunOmegaCacheGump(who, df)
 		var result;
 		if(view == "categories")
 			category_map := BuildCategoryMap(df, cat_lookup);
-			result := ShowCategoryMenu(who, category_map, cat_lookup.cat_icons);
+			result := ShowCategoryMenu(who, category_map, cat_lookup.cat_icons, cat_lookup.cat_names);
 		else
 			result := ShowItemList(who, df, view, category_map, current_keys);
 		endif
