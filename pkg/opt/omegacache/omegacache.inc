@@ -1378,7 +1378,7 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		GFAddButton(gump, 518, row_y + 7, 2362, 2362, GF_CLOSE_BTN, btn_id);
 		// Take to backpack button (golden down triangle)
 		var bp_btn_id := BTN_TAKE_BP_BASE + item_index;
-		GFAddButton(gump, 558, row_y + 4, 2436, 2437, GF_CLOSE_BTN, bp_btn_id);
+		GFAddButton(gump, 558, row_y + 8, 2436, 2437, GF_CLOSE_BTN, bp_btn_id);
 	endforeach
 
 	if(total_items == 0)
