@@ -1375,9 +1375,10 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 
 		// Take button — target destination
 		GFAddButton(gump, 510, row_y + 7, 4005, 4007, GF_CLOSE_BTN, btn_id);
-		// Take to backpack button (backpack icon as clickable button)
+		// Take to backpack button (black backpack icon with transparent button overlay)
 		var bp_btn_id := BTN_TAKE_BP_BASE + item_index;
-		GFAddButton(gump, 555, row_y + 4, 2436, 2437, GF_CLOSE_BTN, bp_btn_id);
+		GFTilePic(gump, 552, row_y - 2, 0x09B2);
+		GFAddButton(gump, 555, row_y + 4, 2103, 2104, GF_CLOSE_BTN, bp_btn_id);
 	endforeach
 
 	if(total_items == 0)
