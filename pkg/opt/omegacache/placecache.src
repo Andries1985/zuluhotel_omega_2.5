@@ -10,6 +10,8 @@ use os;
 include "include/client";
 include "include/omegacache_utils";
 include ":housing:utility";
+include ":gumps:gumps";
+include ":gumps:gumps_ex";
 
 program place_omegacache(who, deed)
 
@@ -55,15 +57,49 @@ program place_omegacache(who, deed)
 		return;
 	endif
 
+	// Orientation selection — two facing options
+	var GRAPHIC_SOUTH := 0x2DF4;
+	var GRAPHIC_EAST  := 0x2DF3;
+
+	var orient_gump := GFCreateGump(100, 100);
+	GFResizePic(orient_gump, 0, 0, 9270, 280, 150);
+	GFTextLine(orient_gump, 50, 15, 242, "Select Orientation");
+
+	// South-facing preview
+	GFTilePic(orient_gump, 40, 50, GRAPHIC_SOUTH, 2032);
+	GFAddButton(orient_gump, 55, 110, 4005, 4007, GF_CLOSE_BTN, 1);
+	GFTextLine(orient_gump, 40, 125, 242, "South");
+
+	// East-facing preview
+	GFTilePic(orient_gump, 170, 50, GRAPHIC_EAST, 2032);
+	GFAddButton(orient_gump, 185, 110, 4005, 4007, GF_CLOSE_BTN, 2);
+	GFTextLine(orient_gump, 170, 125, 242, "East");
+
+	var orient_result := GFSendGump(who, orient_gump);
+	var selected_graphic := GRAPHIC_SOUTH;  // default
+	if(orient_result)
+		var orient_btn := CInt(orient_result[0]);
+		if(orient_btn == 2)
+			selected_graphic := GRAPHIC_EAST;
+		elseif(orient_btn != 1)
+			SendSysMessage(who, "Cancelled.");
+			return;
+		endif
+	else
+		SendSysMessage(who, "Cancelled.");
+		return;
+	endif
+
 	// Create the Omega Cache item
-	// TODO: If using a directional graphic (e.g. chest-style), add an orientation
-	// selection gump before placement (East/South), similar to secure container placement.
-	// See HouseFunctionSecure in sign.src for the pattern.
 	var cache := CreateItemAtLocation(where.x, where.y, where.z, OMEGACACHE_OBJTYPE, 1);
 	if(!cache)
 		SendSysMessage(who, "Failed to create the Omega Cache.");
 		return;
 	endif
+
+	// Set the selected orientation graphic
+	cache.graphic := selected_graphic;
+	cache.color := 2032;
 
 	// Link to house
 	SetObjProperty(cache, "houseserial", CInt(house.serial));

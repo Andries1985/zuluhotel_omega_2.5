@@ -163,9 +163,11 @@ function LoadCategoryLookup()
 	var cat_cfg := ReadConfigFile(":omegacache:categories");
 	var categories_elem := FindConfigElem(cat_cfg, "Categories");
 	var icons_elem := FindConfigElem(cat_cfg, "Icons");
+	var icon_colors_elem := FindConfigElem(cat_cfg, "IconColors");
 	var cat_names := array{};
 	var objtype_to_cat := dictionary;
 	var cat_icons := dictionary;
+	var cat_icon_colors := dictionary;
 
 	if(categories_elem)
 		cat_names := ListConfigElemProps(categories_elem);
@@ -182,9 +184,15 @@ function LoadCategoryLookup()
 		if(icons_elem)
 			cat_icons[cat_name] := CInt(GetConfigString(icons_elem, cat_name));
 		endif
+		if(icon_colors_elem)
+			var clr := CInt(GetConfigString(icon_colors_elem, cat_name));
+			if(clr)
+				cat_icon_colors[cat_name] := clr;
+			endif
+		endif
 	endforeach
 
-	return struct{ cat_names := cat_names, objtype_to_cat := objtype_to_cat, cat_icons := cat_icons };
+	return struct{ cat_names := cat_names, objtype_to_cat := objtype_to_cat, cat_icons := cat_icons, cat_icon_colors := cat_icon_colors };
 endfunction
 
 // Returns the set of objtypes (as CInt keys) for a given category name.
@@ -1084,7 +1092,7 @@ endfunction
 // Gump: Category Menu
 // ============================================================
 
-function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0, byref out_cat_order := 0)
+function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0, byref out_cat_order := 0, cat_icon_colors := 0)
 	var gump := GFCreateGump(25, 25);
 
 	// Page 0 — always visible (background, title, bottom buttons)
@@ -1203,7 +1211,15 @@ function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0, 
 			icon := 0x0FA7;
 		endif
 		if(icon)
-			GFTilePic(gump, cx + 8, cy + 18, icon);
+			var icon_color := 0;
+			if(cat_icon_colors)
+				icon_color := CInt(cat_icon_colors[cat_name]);
+			endif
+			if(icon_color)
+				GFTilePic(gump, cx + 8, cy + 18, icon, icon_color);
+			else
+				GFTilePic(gump, cx + 8, cy + 18, icon);
+			endif
 		endif
 
 		// Category name and item count
@@ -1264,16 +1280,18 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		endif
 	endforeach
 	// Sort display keys alphabetically by item name
-	var sort_list := array{};
+	var name_key_pairs := array{};
 	foreach key in display_keys
 		var ot := CInt(GetObjtypeFromKey(key));
 		var name := Lower(GetItemDisplayName(ot));
-		sort_list.append(struct{ sort_name := name, sort_key := key });
+		// Pad name to fixed length so sort works on combined string
+		name_key_pairs.append(name + "|||" + key);
 	endforeach
-	sort_list.sort(1);  // sort by first member (sort_name)
+	name_key_pairs.sort();
 	display_keys := array{};
-	foreach entry in sort_list
-		display_keys.append(entry.sort_key);
+	foreach pair in name_key_pairs
+		var sep := Find(pair, "|||", 1);
+		display_keys.append(pair[sep + 3, len(pair)]);
 	endforeach
 
 	out_keys := display_keys;
@@ -1352,11 +1370,14 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		// Item name
 		var item_name := GetItemDisplayName(objtype);
 
-		// Variant display — show first CProp if non-default
+		// Variant display — show distinguishing CProps (skip SpellID, known IDs)
 		var propnames := elem.PropNames();
 		foreach pname in propnames
 			if(pname[1,6] == "cprop_")
 				var cprop_name := pname[7, len(pname)];
+				if(cprop_name == "SpellID")
+					continue;
+				endif
 				var cprop_val := elem.GetProp(pname);
 				item_name := item_name + " [" + cprop_name + "=" + CStr(cprop_val) + "]";
 				break;
@@ -1431,7 +1452,7 @@ function RunOmegaCacheGump(who, df)
 		var result;
 		if(view == "categories")
 			category_map := BuildCategoryMap(df, cat_lookup);
-			result := ShowCategoryMenu(who, category_map, cat_lookup.cat_icons, cat_lookup.cat_names, cat_display_order);
+			result := ShowCategoryMenu(who, category_map, cat_lookup.cat_icons, cat_lookup.cat_names, cat_display_order, cat_lookup.cat_icon_colors);
 		else
 			result := ShowItemList(who, df, view, category_map, current_keys);
 		endif

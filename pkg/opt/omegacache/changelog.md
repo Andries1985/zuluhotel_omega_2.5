@@ -578,3 +578,65 @@ Live testing of blacksmithy crafting integration revealed multiple bugs across t
 - **Verify consumption before creation, but consume after**: Check availability before the skill check to prevent exploits, but consume after item creation to avoid material loss on failed creation.
 - **`ReadGameClock` may not be monotonic across restarts**: Lease expiry values can become "in the future" after server restart if the clock resets. The `BuildCategoryMap` sweep handles this by cleaning expired leases on gump open, but leases with future expiry values persist until their host item is accessed.
 
+---
+
+## Milestone 2.3b — Gump Polish & Lease Fixes (2026-03-27)
+
+### Summary
+
+Continued testing and polish of the Omega Cache gump, lease system, category handling, and container placement.
+
+### Lease System Fixes
+
+1. **Autodraw lease key resolution** — `LeaseResource` now resolves cache key via prefix scan when `key=0` (autodraw/backpack-first path). Previously returned without creating a lease, leaving cache resources unprotected during crafting loops.
+
+2. **Late lease creation in `ExtendResourceLease`** — When `ConsumeFromCache` resolves a key during autodraw fallback (first cache consumption), `ExtendResourceLease` now creates a lease on the resolved key for subsequent iterations. Signature changed to `(byref resourceRequest, who := 0, amount := 0, ttl)`.
+
+3. **`ConsumeFromCache` refactored to take `ResourceRequest` byref** — Sets `resourceRequest.key` directly when resolved via prefix scan, eliminating the intermediate `cache_result` struct and copying in the caller.
+
+4. **`ConsumeResource` takes `ResourceRequest` byref** — Allows `ConsumeFromCache` to update `.key` on the struct for the autodraw key resolution flow.
+
+5. **Lease creation validates unleased stock** — Both `LeaseResource` and `ExtendResourceLease` now check `GetStoredAmount(df, key) >= amount` before creating a lease. Prevents leases that would push total leased amount beyond available stock.
+
+### Gump Improvements
+
+6. **Category ordering** — Categories now display in config-defined order (Crafting → Mage → General → Special → Miscellaneous → Other) instead of dictionary key order. Uses `cat_names` array from `LoadCategoryLookup`, with "Other" appended at the end.
+
+7. **Category button fix** — Button IDs now use `display_count` (non-empty categories only) with a `cat_display_order` mapping array. Previously used `cat_index` which included empty categories, causing page 2+ categories to open wrong lists.
+
+8. **Item list alphabetical sorting** — Items within a category are sorted alphabetically by name using string-concat sort (`name + "|||" + key`). Previous struct-based `.sort(1)` did not work correctly in eScript.
+
+9. **SpellID hidden from item names** — Scroll items no longer show `[SpellID=xxx]` suffix in the gump. The SpellID CProp is skipped in the variant display loop.
+
+10. **Category icon colors** — New `IconColors` config section provides hue values for category icons. Book categories (Codex Damnorum, Earth Book, Holy Book, Song Book) now use their actual spellbook graphics and colors from `itemdesc.cfg`.
+
+11. **Withdrawal button layout** — Target column uses blue dot button (2362), backpack column uses golden triangle button (2436/2437). Header row shows target icon (0x0E79) and backpack icon (0x0E75) instead of text.
+
+12. **Item name padding** — Increased spacing between tile icon and item name (x=68 → x=75) to prevent overlap with larger icons like ores.
+
+13. **Category icon padding** — Increased spacing between category tile icon and text (x=55 → x=70) to prevent overlap.
+
+### Container & Placement
+
+14. **Container graphic updated** — `0x0E43` → `0x2DF4` with hue 2032 in `itemdesc.cfg`.
+
+15. **Orientation selection on placement** — `placecache.src` now shows a gump with South (`0x2DF4`) and East (`0x2DF3`) orientation previews. Player selects facing before container is placed. Closing the gump cancels placement.
+
+### Categories Config
+
+16. **Missing item categorizations fixed** — Added `0x1079` (Hide variant) to Hides, `0x1727` (Dates) to Food, `0x0DD6-0x0DD9` (fishing fish) to Food, tinkering components (`0x1051`, `0x1053`, `0x1055`, `0x104E`, `0x1059`, `0x105D`) to Miscellaneous.
+
+17. **"Other" category icon** — Uses `0x0FA7` as fallback icon for uncategorized items.
+
+18. **SpecialItems icon** — Updated to `0x3679`.
+
+### Files Modified
+
+- `pkg/opt/omegacache/omegacache.inc` — Category ordering, button mapping, icon colors, item sorting, SpellID filter, withdrawal button layout, padding fixes, lease cleanup debug
+- `pkg/opt/omegacache/categories.cfg` — Missing items, IconColors section, updated book graphics
+- `pkg/opt/omegacache/itemdesc.cfg` — Container graphic `0x2DF4`, color 2032
+- `pkg/opt/omegacache/placecache.src` — Orientation selection gump
+- `scripts/include/resourcemanager.inc` — `ConsumeFromCache` byref refactor, `ConsumeResource` byref, `LeaseResource` key resolution, `ExtendResourceLease` late creation, unleased stock validation
+- `pkg/std/blacksmithy/make_blacksmith_items.src` — `ExtendResourceLease` call site updated with who/amount
+- All 7 other crafting scripts — `ExtendResourceLease` call sites updated with who/amount
+
