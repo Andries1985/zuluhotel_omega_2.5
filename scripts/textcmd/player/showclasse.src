@@ -20,11 +20,7 @@ program show_classe( who )
 	foreach classe in GetClasseIds()
 		EraseObjProperty( who , classe );
 		if(classe == "IsRanger")
-			level := IsFromThatClasse( who , GetClasseSkills(classe), 1, 0, 0 );
-		elseif(classe == "IsCrafter")
-			level := IsFromThatClasse( who , GetClasseSkills(classe), 0, 1, 0 );
-		elseif(classe == "IsThief")
-			level := IsFromThatClasse( who , GetClasseSkills(classe), 0, 0, 1 );
+			level := IsFromThatClasse( who , GetClasseSkills(classe), 1);
 		else
 			level := IsFromThatClasse( who , GetClasseSkills(classe) );
 		endif

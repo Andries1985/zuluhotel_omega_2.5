@@ -293,8 +293,7 @@ function GetClasseSkills( classeid )
 						 SKILLID_VETERINARY };
 
 		CLASSEID_THIEF:			
-				return { //SKILLID_DETECTINGHIDDEN,
-						 SKILLID_ALCHEMY,
+				return { SKILLID_DETECTINGHIDDEN,
 						 SKILLID_HIDING		,
 						 SKILLID_LOCKPICKING	,
 						 SKILLID_POISONING	,
@@ -598,7 +597,7 @@ function IsBladesinger( who )
 endfunction
 
 function IsCrafter( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CRAFTER ), 0, 1, 0 );
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CRAFTER ));
 endfunction
 
 function IsMage( who )
@@ -614,11 +613,11 @@ function IsPaladin( who )
 endfunction
 
 function IsRanger( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_RANGER ), 1, 0, 0 );
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_RANGER ), 1);
 endfunction
 
 function IsThief( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_THIEF ), 0, 0, 1 );
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_THIEF ) );
 endfunction
 
 function IsWarrior( who )
@@ -630,7 +629,7 @@ function IsPowerplayer( who )
 endfunction
 
 
-function IsFromThatClasse( who , classe_skills , forensicsallowed := 0, mageryallowed := 0, detectinghiddenallowed := 0 )
+function IsFromThatClasse( who , classe_skills , forensicsallowed := 0 )
 
 	var classe	:= 0;
 	var total	:= 0;
@@ -640,16 +639,6 @@ function IsFromThatClasse( who , classe_skills , forensicsallowed := 0, mageryal
 	for i := 0 to SKILLID__HIGHEST
 		if(forensicsallowed  == 1)
 			if(i != SKILLID_FORENSICS)	//Ignores forensics from spec calculation
-				amount := GetEffectiveSkill( who , i );
-				total := total + amount;
-			endif
-		elseif(mageryallowed == 1)
-			if(i != SKILLID_MAGERY)		//Ignores magery from spec calculation
-				amount := GetEffectiveSkill( who , i );
-				total := total + amount;
-			endif
-		elseif(detectinghiddenallowed == 1)
-			if(i != SKILLID_DETECTINGHIDDEN)	//Ignores detecting hidden from spec calculation
 				amount := GetEffectiveSkill( who , i );
 				total := total + amount;
 			endif
@@ -807,13 +796,9 @@ function AssignClasse( character )
 	foreach classe in GetClasseIds()
 		EraseObjProperty( character , classe );
 		if(classe == "IsRanger")
-			t := IsFromThatClasse( character , GetClasseSkills(classe), 1, 0, 0 );
-		elseif(classe == "IsCrafter")
-			t := IsFromThatClasse( character , GetClasseSkills( classe ), 0, 1, 0 );
-		elseif(classe == "IsThief")
-			t := IsFromThatClasse( character , GetClasseSkills( classe ), 0, 0, 1 );
+			t := IsFromThatClasse( character , GetClasseSkills(classe), 1 );
 		else
-			t := IsFromThatClasse( character , GetClasseSkills( classe ), 0, 0, 0 );
+			t := IsFromThatClasse( character , GetClasseSkills( classe ) );
 		endif
 		if( t )
 			SetObjProperty( character , classe , t );
