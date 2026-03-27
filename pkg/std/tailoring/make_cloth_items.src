@@ -427,7 +427,7 @@ function TryToMakeItem( character, resourceRequest, to_make_objtype )
 		endif
 
 		// Extend lease for next iteration
-		if(!ExtendResourceLease(resourceRequest))
+		if(!ExtendResourceLease(resourceRequest, character, material))
 			break;
 		endif
 	endwhile

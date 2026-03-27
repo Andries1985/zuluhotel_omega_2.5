@@ -1213,7 +1213,7 @@ function CreateScroll( character , skill , points , blankscroll , scrollobjtype 
 
 	// Extend lease for next iteration (if cache-sourced)
 	if(scrollRequest)
-		if(!ExtendResourceLease(scrollRequest))
+		if(!ExtendResourceLease(scrollRequest, character, 1))
 			break;
 		endif
 	endif

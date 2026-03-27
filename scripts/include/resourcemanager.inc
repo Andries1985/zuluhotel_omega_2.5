@@ -83,7 +83,7 @@ endfunction
 // Consumes amount of a resource following the preferredSourceOrder in the ResourceRequest.
 // Uses resourceRequest.leaseKey to exclude the caller's own lease from availability checks.
 // Returns 1 on success, 0 on failure (insufficient resources).
-function ConsumeResource(who, resourceRequest, amount)
+function ConsumeResource(who, byref resourceRequest, amount)
 	var res := GetAvailableResource(who, resourceRequest);
 	if(res.total < amount)
 		SendSysMessage(who, "You don't have enough resources.");
@@ -98,7 +98,7 @@ function ConsumeResource(who, resourceRequest, amount)
 		if(source == BACKPACK)
 			remaining := ConsumeFromBackpack(res.backpack_items, remaining);
 		elseif(source == OMEGA_CACHE and res.dataFileHandle)
-			var consumed := ConsumeFromCache(res.dataFileHandle, resourceRequest.key, resourceRequest.objtype, remaining, resourceRequest.leaseKey);
+			var consumed := ConsumeFromCache(resourceRequest, remaining);
 			remaining := remaining - consumed;
 		endif
 	endforeach
@@ -131,17 +131,22 @@ endfunction
 // Lease-aware: only consumes from the unleased portion of each key.
 // If key is provided, tries that key first (variant-specific consumption).
 // Falls back to other keys matching the objtype prefix.
+// Sets resourceRequest.key if resolved during prefix scan (autodraw path).
 // Returns total amount consumed.
-function ConsumeFromCache(dataFileHandle, key, objtype, amount, exclude_lease_key := 0)
+function ConsumeFromCache(byref resourceRequest, amount)
+	var df := resourceRequest.dataFileHandle;
+	var key := resourceRequest.key;
+	var objtype := resourceRequest.objtype;
+	var exclude_lease_key := resourceRequest.leaseKey;
 	var remaining := amount;
 	var consumed := 0;
 
 	// Try the specific key first (if provided)
 	if(key)
-		var available := GetStoredAmount(dataFileHandle, key, exclude_lease_key);
+		var available := GetStoredAmount(df, key, exclude_lease_key);
 		if(available > 0)
 			var take := Min(remaining, available);
-			var taken := WithdrawItem(dataFileHandle, key, take);
+			var taken := WithdrawItem(df, key, take);
 			consumed := consumed + taken;
 			remaining := remaining - taken;
 		endif
@@ -151,11 +156,10 @@ function ConsumeFromCache(dataFileHandle, key, objtype, amount, exclude_lease_ke
 	if(remaining > 0)
 		var prefix := Hex(CInt(objtype)) + "|";
 		var prefix_len := len(prefix);
-		foreach df_key in (dataFileHandle.Keys())
+		foreach df_key in (df.Keys())
 			if(remaining <= 0)
 				break;
 			endif
-			// Skip lease keys and the key we already tried
 			if(df_key[1, 3] == "RL#")
 				continue;
 			endif
@@ -163,10 +167,13 @@ function ConsumeFromCache(dataFileHandle, key, objtype, amount, exclude_lease_ke
 				continue;
 			endif
 			if(df_key[1, prefix_len] == prefix)
-				var available := GetStoredAmount(dataFileHandle, df_key, exclude_lease_key);
+				var available := GetStoredAmount(df, df_key, exclude_lease_key);
 				if(available > 0)
+					if(!resourceRequest.key)
+						resourceRequest.key := df_key;
+					endif
 					var take := Min(remaining, available);
-					var taken := WithdrawItem(dataFileHandle, df_key, take);
+					var taken := WithdrawItem(df, df_key, take);
 					consumed := consumed + taken;
 					remaining := remaining - taken;
 				endif
@@ -190,11 +197,33 @@ function LeaseResource(who, byref resourceRequest, amount, ttl := LEASE_DEFAULT_
 		resourceRequest.leaseKey := 0;
 		return 0;
 	endif
-	// Only lease if we have a specific cache key to lease against.
-	// Backpack-first requests (MakeBackpackRequest) have key=0 — no lease needed
-	// since physical items are consumed directly via SubtractAmount.
 	var item_key := resourceRequest.key;
+	// Resolve key from cache if not set (autodraw / backpack-first path)
 	if(!item_key)
+		var prefix := Hex(CInt(resourceRequest.objtype)) + "|";
+		var prefix_len := len(prefix);
+		foreach df_key in (resourceRequest.dataFileHandle.Keys())
+			if(df_key[1, 3] == "RL#")
+				continue;
+			endif
+			if(df_key[1, prefix_len] == prefix)
+				var available := GetStoredAmount(resourceRequest.dataFileHandle, df_key);
+				if(available > 0)
+					item_key := df_key;
+					resourceRequest.key := df_key;
+					break;
+				endif
+			endif
+		endforeach
+	endif
+	if(!item_key)
+		// No matching cache stock found — no lease needed
+		resourceRequest.leaseKey := 0;
+		return 0;
+	endif
+	// Only lease if unleased stock can cover the requested amount
+	var unleased := GetStoredAmount(resourceRequest.dataFileHandle, item_key);
+	if(unleased < amount)
 		resourceRequest.leaseKey := 0;
 		return 0;
 	endif
@@ -204,15 +233,28 @@ function LeaseResource(who, byref resourceRequest, amount, ttl := LEASE_DEFAULT_
 endfunction
 
 // Extends the lease on the ResourceRequest. Returns 1 on success, 0 if lease expired/deleted.
-// Returns 1 (success) when no lease exists — backpack-only path doesn't need a lease.
-function ExtendResourceLease(resourceRequest, ttl := LEASE_DEFAULT_TTL)
-	if(!resourceRequest.leaseKey)
-		return 1;  // No lease to extend — not an error
-	endif
+// Returns 1 (success) when no lease exists and no cache key is set (pure backpack path).
+// If a cache key was resolved (e.g., by ConsumeFromCache during autodraw fallback) but no
+// lease exists yet, creates one now for subsequent iterations.
+function ExtendResourceLease(byref resourceRequest, who := 0, amount := 0, ttl := LEASE_DEFAULT_TTL)
 	if(!resourceRequest.dataFileHandle)
 		return 1;
 	endif
-	return ExtendLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey, ttl);
+	// Lease exists — extend it
+	if(resourceRequest.leaseKey)
+		return ExtendLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey, ttl);
+	endif
+	// No lease yet but key was resolved (autodraw fallback consumed from cache) — create one now
+	if(resourceRequest.key and who and amount)
+		var unleased := GetStoredAmount(resourceRequest.dataFileHandle, resourceRequest.key);
+		if(unleased < amount)
+			return 0;  // Not enough unleased stock to cover a new lease
+		endif
+		var lease_key := CreateLease(resourceRequest.dataFileHandle, resourceRequest.key, who, amount, ttl);
+		resourceRequest.leaseKey := lease_key;
+		return (lease_key ? 1 : 0);
+	endif
+	return 1;  // Pure backpack path — no lease needed
 endfunction
 
 // Releases the lease on the ResourceRequest. Safe to call if no lease exists.

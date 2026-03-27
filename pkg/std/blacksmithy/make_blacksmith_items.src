@@ -340,7 +340,7 @@ function MakeBlacksmithItems( character, ingotRequest )
 		endif
 
 		// Extend lease for next iteration
-		if(!ExtendResourceLease(ingotRequest))
+		if(!ExtendResourceLease(ingotRequest, character, material))
 			break;
 		endif
 	endwhile
@@ -482,7 +482,7 @@ function MakeBoneItems( character, ingotRequest, boneRequest )
 		endif
 
 		// Extend leases for next iteration
-		if(!ExtendResourceLease(ingotRequest) or !ExtendResourceLease(boneRequest))
+		if(!ExtendResourceLease(ingotRequest, character, material) or !ExtendResourceLease(boneRequest, character, material))
 			break;
 		endif
 	endwhile

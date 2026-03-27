@@ -671,11 +671,11 @@ function TryToCreateItem( character , use_on , item , sfx := CARPENTER_SOUND )
 	endif
 
 	// Extend leases for next iteration
-	if(!ExtendResourceLease(logRequest))
+	if(!ExtendResourceLease(logRequest, character, material))
 		break;
 	endif
 	if(secondaryRequest and material2)
-		if(!ExtendResourceLease(secondaryRequest))
+		if(!ExtendResourceLease(secondaryRequest, character, material2))
 			break;
 		endif
 	endif

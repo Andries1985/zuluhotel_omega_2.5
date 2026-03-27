@@ -631,7 +631,7 @@ function TryToMakePotionFromCache(user, mortar, potion, resourceRequest, mage)
 		endif
 
 		// Extend lease for next iteration
-		if(!ExtendResourceLease(resourceRequest))
+		if(!ExtendResourceLease(resourceRequest, user, amount_needed))
 			break;
 		endif
 	endwhile
