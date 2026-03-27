@@ -1001,16 +1001,16 @@ function DoWithdraw(who, df, key, amount, destination)
 	return total_withdrawn;
 endfunction
 
-// Prompts for a destination container, defaulting to backpack on ESC.
+// Prompts for a destination container. Returns 0 on cancel.
 function PromptDestination(who)
-	SendSysMessage(who, "Target a container to receive items, or press ESC for your backpack.");
+	SendSysMessage(who, "Target a container to receive items, or press ESC to cancel.");
 	var dest := Target(who);
 	if(!dest)
-		dest := who.backpack;
-		SendSysMessage(who, "Using your backpack.");
+		SendSysMessage(who, "Cancelled.");
+		return 0;
 	elseif(!dest.isa(POLCLASS_CONTAINER))
-		SendSysMessage(who, "That is not a container. Using your backpack.");
-		dest := who.backpack;
+		SendSysMessage(who, "That is not a container.");
+		return 0;
 	endif
 	return dest;
 endfunction
@@ -1031,7 +1031,8 @@ const BTN_DEPOSIT_ALL := 11;
 const BTN_BACK := 12;
 const BTN_WITHDRAW := 13;
 const BTN_CATEGORY_BASE := 100;    // 100 + category_index
-const BTN_TAKE_BASE := 1000;       // 1000 + item_index
+const BTN_TAKE_BASE := 1000;       // 1000 + item_index (target destination)
+const BTN_TAKE_BP_BASE := 1500;    // 1500 + item_index (direct to backpack)
 const TXT_ENTRY_BASE := 2000;      // 2000 + item_index (text entry IDs, separate from buttons)
 
 // ============================================================
@@ -1372,8 +1373,12 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		GFResizePic(gump, 397, row_y + 4, 5054, 100, 22);
 		GFTextEntry(gump, 400, row_y + 7, 95, 20, TEXT_HUE, "", txt_id);
 
-		// Take button (per-row)
-		GFAddButton(gump, 545, row_y + 7, 4005, 4007, GF_CLOSE_BTN, btn_id);
+		// Take button — target destination
+		GFAddButton(gump, 510, row_y + 7, 4005, 4007, GF_CLOSE_BTN, btn_id);
+		// Take to backpack button
+		var bp_btn_id := BTN_TAKE_BP_BASE + item_index;
+		GFTilePic(gump, 550, row_y + 2, 0x0E75);
+		GFAddButton(gump, 555, row_y + 7, 4005, 4007, GF_CLOSE_BTN, bp_btn_id);
 	endforeach
 
 	if(total_items == 0)
@@ -1461,6 +1466,9 @@ function RunOmegaCacheGump(who, df)
 					if(amount > 0)
 						if(!dest)
 							dest := PromptDestination(who);
+							if(!dest)
+								break;
+							endif
 						endif
 						DoWithdraw(who, df, key, amount, dest);
 						withdrew_any := 1;
@@ -1482,15 +1490,28 @@ function RunOmegaCacheGump(who, df)
 			if(!FindAccessibleContainer(who, array{REMOVE_FROM_SECURE}))
 				SendSysMessage(who, "You don't have permission to withdraw items.");
 			else
-				var item_index := btn - BTN_TAKE_BASE;
+				var to_backpack := (btn >= BTN_TAKE_BP_BASE);
+				var item_index;
+				if(to_backpack)
+					item_index := btn - BTN_TAKE_BP_BASE;
+				else
+					item_index := btn - BTN_TAKE_BASE;
+				endif
 				if(item_index >= 1 and item_index <= current_keys.size())
 					var key := current_keys[item_index];
 					var txt_id := TXT_ENTRY_BASE + item_index;
 					var amount_str := GFExtractData(result, txt_id);
 					var amount := ParseDecimal(amount_str);
 					if(amount > 0)
-						var dest := PromptDestination(who);
-						DoWithdraw(who, df, key, amount, dest);
+						var dest;
+						if(to_backpack)
+							dest := who.backpack;
+						else
+							dest := PromptDestination(who);
+						endif
+						if(dest)
+							DoWithdraw(who, df, key, amount, dest);
+						endif
 					else
 						SendSysMessage(who, "Enter an amount to withdraw.");
 					endif

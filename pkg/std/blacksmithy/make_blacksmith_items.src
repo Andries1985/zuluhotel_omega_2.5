@@ -216,6 +216,9 @@ function MakeBlacksmithItems( character, ingotRequest )
 
 	var orediff := smith_cfg[ingotRequest.objtype].Difficulty;
 	var orename := smith_cfg[ingotRequest.objtype].Name;
+	if(!orename or orename == "")
+		orename := "Iron";
+	endif
 	if( GetEffectiveSkill( character , SKILLID_BLACKSMITHY ) < orediff )
 		sendDiff( character , orediff );
 		SendSysmessage( character, "You aren't skilled enough to craft anything from " + orename + " ingots yet." );
@@ -360,6 +363,9 @@ function MakeBoneItems( character, ingotRequest, boneRequest )
 
 	var orediff := smith_cfg[ingotRequest.objtype].Difficulty;
 	var orename := smith_cfg[ingotRequest.objtype].Name;
+	if(!orename or orename == "")
+		orename := "Iron";
+	endif
 	if( GetEffectiveSkill( character , SKILLID_BLACKSMITHY ) < orediff )
 		sendDiff( character , orediff );
 		SendSysmessage( character, "You aren't skilled enough to craft anything from " + orename + " ingots yet." );

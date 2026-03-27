@@ -37,6 +37,13 @@ function GetAvailableResource(who, resourceRequest)
 	var dataFileHandle := resourceRequest.dataFileHandle;
 	var exclude_lease_key := resourceRequest.leaseKey;
 
+	// Respect autodraw toggle — disable cache even if dataFileHandle was set
+	// (unless this is a cache-first request, i.e. player explicitly targeted the cache)
+	var autodraw_disabled := GetObjProperty(who, "omegacache_no_autodraw");
+	if(autodraw_disabled and resourceRequest.preferredSourceOrder and resourceRequest.preferredSourceOrder[1] == BACKPACK)
+		dataFileHandle := 0;
+	endif
+
 	// Enumerate backpack
 	var backpack_amount := 0;
 	var backpack_items := array{};
@@ -48,7 +55,7 @@ function GetAvailableResource(who, resourceRequest)
 	endforeach
 
 	// Resolve cache if not provided and autodraw is enabled
-	if(!dataFileHandle and !GetObjProperty(who, "omegacache_no_autodraw"))
+	if(!dataFileHandle and !autodraw_disabled)
 		var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
 		if(access)
 			dataFileHandle := access.df;
@@ -246,7 +253,7 @@ function MakeBackpackRequest(who, item)
 endfunction
 
 // Opens a material selection gump from the cache. Player picks a variant.
-// Reserves the cache container to prevent concurrent modification.
+// Shows category view first if more than 4 pages of items, otherwise flat list.
 // Returns a ResourceRequest with cache-first priority, or 0 on cancel.
 function SelectMaterialFromCache(who)
 	var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
@@ -279,6 +286,99 @@ function SelectMaterialFromCache(who)
 		return 0;
 	endif
 
+	var RM_CATEGORY_THRESHOLD := RM_ITEMS_PER_PAGE * 4;  // 40 items
+
+	// If many items, show category selection first
+	if(valid_keys.size() > RM_CATEGORY_THRESHOLD)
+		var filtered_keys := SelectMaterialCategory(who, df, valid_keys);
+		if(!filtered_keys)
+			return 0;  // Cancelled
+		endif
+		valid_keys := filtered_keys;
+	endif
+
+	return SelectMaterialFromList(who, df, valid_keys);
+endfunction
+
+// Shows a category selection gump. Returns filtered keys for the selected category, or 0 on cancel.
+function SelectMaterialCategory(who, df, valid_keys)
+	var lookup := LoadCategoryLookup();
+	var objtype_to_cat := lookup.objtype_to_cat;
+	var cat_icons := lookup.cat_icons;
+
+	// Group keys by category
+	var cat_keys := dictionary;
+	var cat_type_counts := dictionary;
+	foreach key in valid_keys
+		var ot := CInt(GetObjtypeFromKey(key));
+		var cat_name := objtype_to_cat[ot];
+		if(!cat_name)
+			cat_name := "Other";
+		endif
+		if(!cat_keys[cat_name])
+			cat_keys[cat_name] := array{};
+			cat_type_counts[cat_name] := 0;
+		endif
+		cat_keys[cat_name].append(key);
+		cat_type_counts[cat_name] := cat_type_counts[cat_name] + 1;
+	endforeach
+
+	// Build category gump
+	var gump := GFCreateGump(25, 25);
+	GFPage(gump, 0);
+	GFResizePic(gump, 0, 0, 9270, 500, 520);
+	GFResizePic(gump, 10, 10, 9350, 480, 500);
+
+	var title := "Select Category";
+	GFTextLine(gump, (500 - len(title) * 8) / 2, 15, RM_TEXT_HUE_HIGHLIGHT, title);
+
+	var cat_names_sorted := cat_keys.keys();
+	var row_height := 35;
+	var cat_index := 0;
+
+	GFPage(gump, 1);
+	foreach cat_name in cat_names_sorted
+		cat_index := cat_index + 1;
+		var row_y := 55 + ((cat_index - 1) * row_height);
+
+		GFResizePic(gump, 18, row_y - 2, 9350, 465, 32);
+
+		// Category icon
+		var icon := cat_icons[cat_name];
+		if(icon)
+			GFTilePic(gump, 22, row_y, CInt(icon));
+		endif
+
+		// Category name and count
+		var display_name := FormatCategoryName(cat_name);
+		GFTextLine(gump, 68, row_y + 7, RM_TEXT_HUE, display_name);
+		GFTextLine(gump, 340, row_y + 7, RM_TEXT_HUE_QTY, CStr(cat_type_counts[cat_name]) + " type(s)");
+
+		var btn_id := RM_BTN_SELECT_BASE + cat_index;
+		GFAddButton(gump, 445, row_y + 7, 4005, 4007, GF_CLOSE_BTN, btn_id);
+	endforeach
+
+	var result := GFSendGump(who, gump);
+	if(!result)
+		return 0;
+	endif
+
+	var btn := CInt(result[0]);
+	if(btn < RM_BTN_SELECT_BASE)
+		return 0;
+	endif
+
+	var selected_cat_index := btn - RM_BTN_SELECT_BASE;
+	if(selected_cat_index < 1 or selected_cat_index > cat_names_sorted.size())
+		return 0;
+	endif
+
+	var selected_cat := cat_names_sorted[selected_cat_index];
+	return cat_keys[selected_cat];
+endfunction
+
+// Shows material selection from a list of keys. Returns ResourceRequest or 0.
+function SelectMaterialFromList(who, df, valid_keys)
 	// Sort by item name for consistent display
 	var sort_list := array{};
 	foreach key in valid_keys

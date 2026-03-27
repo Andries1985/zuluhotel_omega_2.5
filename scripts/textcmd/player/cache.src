@@ -234,6 +234,37 @@ function DoListCategory(who, df, cat_name_input)
 		endif
 	endforeach
 
+	// Handle "other" as a virtual category
+	if(Lower(cat_name_input) == "other")
+		var objtype_to_cat := lookup.objtype_to_cat;
+		var keys := df.Keys();
+		var found := 0;
+		SendSysMessage(who, "=== Other ===");
+		foreach key in keys
+			if(key[1, 3] == "RL#")
+				continue;
+			endif
+			var objtype_int := CInt(GetObjtypeFromKey(key));
+			if(!objtype_to_cat[objtype_int])
+				var elem := df.FindElement(key);
+				if(elem)
+					var qty := CInt(elem.GetProp("qty"));
+					if(qty <= 0)
+						continue;
+					endif
+					var objtype := CInt(elem.GetProp("objtype"));
+					var item_name := GetItemDisplayName(objtype);
+					SendSysMessage(who, "  " + item_name + ": " + FormatNumber(qty));
+					found := found + 1;
+				endif
+			endif
+		endforeach
+		if(found == 0)
+			SendSysMessage(who, "  (empty)");
+		endif
+		return;
+	endif
+
 	if(!matched_cat or matched_cat == "")
 		SendSysMessage(who, "Unknown category: " + cat_name_input);
 		SendSysMessage(who, "Use .cache list to see available categories.");
