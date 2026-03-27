@@ -47,8 +47,8 @@ function GetAvailableResource(who, resourceRequest)
 		endif
 	endforeach
 
-	// Resolve cache if not provided
-	if(!dataFileHandle)
+	// Resolve cache if not provided and autodraw is enabled
+	if(!dataFileHandle and !GetObjProperty(who, "omegacache_no_autodraw"))
 		var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
 		if(access)
 			dataFileHandle := access.df;

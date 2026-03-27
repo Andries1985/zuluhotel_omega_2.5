@@ -513,3 +513,68 @@ Three-pass code review of the entire crafting integration. Found and fixed criti
 - **byref parameters with struct types**: Passing a struct byref to a function that reassigns the parameter will corrupt the original struct. Pass a copy when the function may overwrite the parameter.
 - **Review agents produce false positives**: Automated review found 4 false positives out of 12 issues in the third pass. Manual verification of each finding is essential before acting on it.
 
+---
+
+## Milestone 2.3 — Testing & Bug Fixes (2026-03-27)
+
+### Summary
+
+Live testing of blacksmithy crafting integration revealed multiple bugs across the lease system, resource consumption, and concurrent access. All crafting scripts updated with fixes.
+
+### Critical Bugs Fixed
+
+1. **`.+` operator doesn't overwrite existing struct members** — `LeaseResource` used `resourceRequest.+leaseKey := lease_key` which silently failed because `leaseKey` already existed on the struct (initialized to `0` by `SelectMaterialFromCache`). Lease key was always `0`, preventing lease creation, extension, and release. Fixed by using plain `.leaseKey` assignment. This is an eScript language quirk: `.+` adds NEW members only; use `.` for existing members.
+
+2. **`ExtendResourceLease` broke backpack-only loops** — Returned `0` when `leaseKey` was `0` (no lease). All crafting loops had `if(!ExtendResourceLease(...)) break;` which aborted after 1 iteration on backpack path. Fixed by returning `1` (success) when no lease exists — backpack-only path doesn't need a lease.
+
+3. **`ReserveItem` on cache container blocked concurrent access** — `ReserveItem(use_on)` was called before the `OMEGACACHE_OBJTYPE` check in blacksmithy. When one player targeted the cache, it locked the container item, preventing other players from using it. Fixed by moving the cache check before `ReserveItem` in all crafting scripts.
+
+4. **Crafting exploit: resource depletion bypass** — `ConsumeResource` was called after item creation without checking the return value. A player could open the crafting menu (which snapshot-checks availability), remove materials from backpack, then craft — consuming less than the full material cost. Fixed by adding `GetAvailableResource` re-check inside the loop body before the skill check/item creation in all crafting scripts.
+
+5. **`MD5Encrypt("")` returns error in POL** — `BuildDefaultKey` and `BuildItemKey` passed empty strings to `MD5Encrypt` for items with no non-default properties. POL rejects empty strings, producing `error{ errortext = "String is empty" }` as part of the key. Fixed by using `" "` (space) as sentinel for "no properties". Existing data unaffected (all deposited items had `weight_multiplier_mod=1` as a non-default property).
+
+6. **`LeaseResource` created leases for backpack-only requests** — `MakeBackpackRequest` sets `key := 0` but `dataFileHandle` was set (nearby cache found). `LeaseResource` tried to lease with `key=0`, fell through to `BuildDefaultKey` which failed (see #5). Fixed by returning early from `LeaseResource` when `key=0` — backpack-first requests don't need cache leases.
+
+### Features Added
+
+7. **`.cache dump` GM command** — Raw DataFile dump showing all keys, properties, and lease status. Restricted to `cmdlevel >= 4`. Essential for debugging lease accumulation and data integrity.
+
+8. **`.cache autodraw` toggle** — Player command to disable automatic cache fallback when crafting from backpack. Stores `omegacache_no_autodraw` CProp on the character. When set, `MakeBackpackRequest` skips cache lookup entirely. Targeting the cache container directly still works.
+
+9. **Expired lease cleanup in `BuildCategoryMap`** — Every gump open now sweeps all `RL#` keys and deletes expired leases. Catches orphaned leases from crashed scripts, server restarts, or broken key formats.
+
+10. **Lease key filtering in `.cache list`** — Both `DoListCategories` and `DoListCategory` now skip `RL#` keys, preventing lease entries from appearing as stored items.
+
+### Refactoring
+
+11. **`GetAvailableResource` signature simplified** — Changed from `(who, objtype, dataFileHandle, exclude_lease_key)` to `(who, resourceRequest)`. All 30 call sites across 8 crafting scripts updated. Eliminates verbose field extraction at every call site.
+
+12. **Availability check before create** — All crafting scripts with loops now re-check `GetAvailableResource` at the top of each iteration, before the skill check. If insufficient, sends a message and breaks. `ConsumeResource` remains after item creation (avoids consuming on failed `CreateItemInBackpack`).
+
+### Debug Noise Removed
+
+- `IsEligibleForStorage` rejection messages (fired for every non-stackable item during deposit-all)
+- `FindAccessibleContainer: no accessible cache found` (fired on every `GetAvailableResource` call when out of range)
+
+### Files Modified
+
+- `scripts/include/resourcemanager.inc` — `GetAvailableResource` signature, `LeaseResource` `.+` fix and early return, `ExtendResourceLease` no-lease success, autodraw check in `MakeBackpackRequest`
+- `pkg/opt/omegacache/omegacache.inc` — `BuildItemKey`/`BuildDefaultKey` empty string fix, `BuildCategoryMap` lease cleanup, debug spam removal
+- `scripts/textcmd/player/cache.src` — `.cache dump`, `.cache autodraw`, lease key filtering in list commands
+- `pkg/std/blacksmithy/make_blacksmith_items.src` — ReserveItem skip, availability check, `_debug_who` for debugging
+- `pkg/std/tailoring/make_cloth_items.src` — ReserveItem skip, availability check, `GetAvailableResource` signature update
+- `pkg/std/carpentry/carpentry.src` — Availability check, `GetAvailableResource` signature update
+- `pkg/std/tinkering/tinkering.src` — ReserveItem guard, availability check, `GetAvailableResource` signature update
+- `pkg/std/alchemy/alchemy.src` — ReserveItem guard, availability check, `ConsumeResource` reorder in cache path, `GetAvailableResource` signature update
+- `pkg/std/inscription/inscription.src` — `GetAvailableResource` signature update
+- `pkg/std/cartography/cartography.src` — `GetAvailableResource` signature update
+- `scripts/items/fletch.src` — `GetAvailableResource` signature update
+
+### Lessons Learned
+
+- **eScript `.+` operator**: Only adds NEW struct members. If the member already exists (e.g., initialized to `0` in a struct literal), `.+` silently does nothing. Always use plain `.` for assignment to existing members.
+- **No-op functions must return success, not failure**: When a function's purpose is optional (e.g., extending a lease that doesn't exist), returning failure causes callers to abort. Return success for "nothing to do" cases.
+- **`ReserveItem` on shared furniture**: Physical items used as access points (like the cache container) must NOT be reserved — it blocks concurrent users. Use data-level locking (leases) instead.
+- **Verify consumption before creation, but consume after**: Check availability before the skill check to prevent exploits, but consume after item creation to avoid material loss on failed creation.
+- **`ReadGameClock` may not be monotonic across restarts**: Lease expiry values can become "in the future" after server restart if the clock resets. The `BuildCategoryMap` sweep handles this by cleaning expired leases on gump open, but leases with future expiry values persist until their host item is accessed.
+
