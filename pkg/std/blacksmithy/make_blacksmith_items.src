@@ -217,7 +217,7 @@ function MakeBlacksmithItems( character, ingotRequest )
 	var orediff := smith_cfg[ingotRequest.objtype].Difficulty;
 	var orename := smith_cfg[ingotRequest.objtype].Name;
 	if(!orename or orename == "")
-		orename := "Iron";
+		orename := GetItemDisplayName(ingotRequest.objtype);
 	endif
 	if( GetEffectiveSkill( character , SKILLID_BLACKSMITHY ) < orediff )
 		sendDiff( character , orediff );
@@ -364,7 +364,7 @@ function MakeBoneItems( character, ingotRequest, boneRequest )
 	var orediff := smith_cfg[ingotRequest.objtype].Difficulty;
 	var orename := smith_cfg[ingotRequest.objtype].Name;
 	if(!orename or orename == "")
-		orename := "Iron";
+		orename := GetItemDisplayName(ingotRequest.objtype);
 	endif
 	if( GetEffectiveSkill( character , SKILLID_BLACKSMITHY ) < orediff )
 		sendDiff( character , orediff );
