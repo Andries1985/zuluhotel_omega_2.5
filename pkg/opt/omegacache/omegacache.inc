@@ -1084,7 +1084,7 @@ endfunction
 // Gump: Category Menu
 // ============================================================
 
-function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0)
+function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0, byref out_cat_order := 0)
 	var gump := GFCreateGump(25, 25);
 
 	// Page 0 — always visible (background, title, bottom buttons)
@@ -1110,7 +1110,6 @@ function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0)
 	// Use config-defined order if available, else dictionary key order
 	var cat_names;
 	if(ordered_cat_names)
-		// Add "Other" at the end if it exists in the map
 		cat_names := ordered_cat_names;
 		if(category_map["Other"] and category_map["Other"].size() > 0)
 			cat_names.append("Other");
@@ -1118,6 +1117,9 @@ function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0)
 	else
 		cat_names := category_map.keys();
 	endif
+
+	// Build display-order mapping (button index -> category name)
+	out_cat_order := array{};
 	var total_display := 0;
 	foreach cat_name in cat_names
 		if(category_map[cat_name].size() > 0)
@@ -1130,18 +1132,17 @@ function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0)
 		total_pages := CInt(Ceil(CDbl(total_display) / CDbl(cards_per_page)));
 	endif
 
-	var cat_index := 0;
 	var display_count := 0;
 	var page_num := 0;
 
 	foreach cat_name in cat_names
-		cat_index := cat_index + 1;
 		var items := category_map[cat_name];
-		if(items.size() <= 0)
+		if(!items or items.size() <= 0)
 			continue;
 		endif
 
 		display_count := display_count + 1;
+		out_cat_order.append(cat_name);
 		var page_item := ((display_count - 1) % cards_per_page) + 1;
 
 		// Start new gump page
@@ -1211,7 +1212,7 @@ function ShowCategoryMenu(who, category_map, cat_icons, ordered_cat_names := 0)
 		GFTextLine(gump, cx + 70, cy + 38, TEXT_HUE_QTY, CStr(count) + " type(s)");
 
 		// Open category button
-		var btn_id := BTN_CATEGORY_BASE + cat_index;
+		var btn_id := BTN_CATEGORY_BASE + display_count;
 		GFAddButton(gump, cx + 180, cy + 28, 4005, 4007, GF_CLOSE_BTN, btn_id);
 	endforeach
 
@@ -1494,9 +1495,13 @@ function RunOmegaCacheGump(who, df)
 
 		elseif(btn >= BTN_CATEGORY_BASE and btn < BTN_TAKE_BASE)
 			var cat_index := btn - BTN_CATEGORY_BASE;
-			var cat_names := category_map.keys();
-			if(cat_index >= 1 and cat_index <= cat_names.size())
-				view := cat_names[cat_index];
+			// Use config-defined order matching ShowCategoryMenu rendering
+			var ordered_names := cat_lookup.cat_names;
+			if(category_map["Other"] and category_map["Other"].size() > 0)
+				ordered_names.append("Other");
+			endif
+			if(cat_index >= 1 and cat_index <= ordered_names.size())
+				view := ordered_names[cat_index];
 			endif
 
 		elseif(btn >= BTN_TAKE_BASE)
