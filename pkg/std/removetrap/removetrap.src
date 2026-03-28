@@ -36,9 +36,10 @@ var thepoints := get_default_points(SKILLID_REMOVETRAP);
 
      if( GetObjProperty(item,"trap_type") )
         if( CheckSkill( character, SKILLID_REMOVETRAP, -1, thepoints ) )
-           EraseObjProperty( item, "trap_type" );
-           EraseObjProperty( item, "trap_strength" );
-           item.usescript := "";
+            EraseObjProperty( item, "trap_type" );
+            EraseObjProperty( item, "trap_strength" );
+            EraseObjProperty( item, "trapped_by" );
+            item.usescript := "";
 		   SendSysmessage( character , "You sucessfully disarmed the trap." );
         else
            SendSysmessage( character , "You failed to disarm the trap." );

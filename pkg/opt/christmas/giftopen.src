@@ -67,7 +67,7 @@ endprogram
 
 function WonHomeDecor(who)
 
-	var chance := Random(51);
+	var chance := Random(74);
 	var item;
 
 	case (chance)
@@ -295,6 +295,98 @@ function WonHomeDecor(who)
 			item := CreateItemInBackpack(who, 0x24D4);
 			item.movable := 1;
 			item.name := "Paper Screen";
+		51: PrintTextAbovePrivate(who, "You got a Barrel of Skeletal Parts!", who);
+			item := CreateItemInBackpack(who, 0x27B0);
+			item.movable := 1;
+			item.name := "Barrel of Skeletal Parts";
+		52: PrintTextAbovePrivate(who, "You got a Barrel of Skeletal Parts!", who);
+			item := CreateItemInBackpack(who, 0x27B1);
+			item.movable := 1;
+			item.name := "Barrel of Skeletal Parts";
+		53: PrintTextAbovePrivate(who, "You got a Crate of Skeletal Parts!", who);
+			item := CreateItemInBackpack(who, 0x27B2);
+			item.movable := 1;
+			item.name := "Crate of Skeletal Parts";
+		54: PrintTextAbovePrivate(who, "You got a Bookcase of Horror!", who);
+			item := CreateItemInBackpack(who, 0x27B3);
+			item.movable := 1;
+			item.name := "Bookcase of Horror";
+		55: PrintTextAbovePrivate(who, "You got a Bookcase of Horror!", who);
+			item := CreateItemInBackpack(who, 0x27B4);
+			item.movable := 1;
+			item.name := "Bookcase of Horror";
+		56: PrintTextAbovePrivate(who, "You got a Barrel of Zombie Parts!", who);
+			item := CreateItemInBackpack(who, 0x27B5);
+			item.movable := 1;
+			item.name := "Barrel of Zombie Parts";
+		57: PrintTextAbovePrivate(who, "You got a Barrel of Zombie Parts!", who);
+			item := CreateItemInBackpack(who, 0x27B6);
+			item.movable := 1;
+			item.name := "Barrel of Zombie Parts";
+		58: PrintTextAbovePrivate(who, "You got a Crate of Zombie Parts!", who);
+			item := CreateItemInBackpack(who, 0x27B7);
+			item.movable := 1;
+			item.name := "Crate of Zombie Parts";
+		59: PrintTextAbovePrivate(who, "You got a Crate of Zombie Parts!", who);
+			item := CreateItemInBackpack(who, 0x27B8);
+			item.movable := 1;
+			item.name := "Crate of Zombie Parts";
+		60: PrintTextAbovePrivate(who, "You got a Cauldron of Blood!", who);
+			item := CreateItemInBackpack(who, 0x27B9);
+			item.movable := 1;
+			item.name := "Cauldron of Blood";
+		61: PrintTextAbovePrivate(who, "You got a Skeleton!", who);
+			item := CreateItemInBackpack(who, 0x27BC);
+			item.movable := 1;
+			item.name := "Skeleton";
+		62: PrintTextAbovePrivate(who, "You got windchimes!", who);
+			item := CreateItemInBackpack(who, 0x2832);
+			item.movable := 1;
+			item.name := "Wind Chimes";
+		63: PrintTextAbovePrivate(who, "You got fancy wind chimes!", who);
+			item := CreateItemInBackpack(who, 0x2833);
+			item.movable := 1;
+			item.name := "Fancy Wind Chimes";
+		64: PrintTextAbovePrivate(who, "You got a bento box!", who);
+			item := CreateItemInBackpack(who, 0x2834);
+			item.movable := 1;
+			item.name := "Bento Box";
+		65: PrintTextAbovePrivate(who, "You got a bento box!", who);
+			item := CreateItemInBackpack(who, 0x2835);
+			item.movable := 1;
+			item.name := "Bento Box";
+		66: PrintTextAbovePrivate(who, "You got a bento box!", who);
+			item := CreateItemInBackpack(who, 0x2836);
+			item.movable := 1;
+			item.name := "Bento Box";
+		67: PrintTextAbovePrivate(who, "You got a bento box!", who);
+			item := CreateItemInBackpack(who, 0x2837);
+			item.movable := 1;
+			item.name := "Bento Box";
+		68: PrintTextAbovePrivate(who, "You got origami!", who);
+			item := CreateItemInBackpack(who, 0x2838);
+			item.movable := 1;
+			item.name := "Origami";
+		69: PrintTextAbovePrivate(who, "You got origami!", who);
+			item := CreateItemInBackpack(who, 0x2839);
+			item.movable := 1;
+			item.name := "Origami";
+		70: PrintTextAbovePrivate(who, "You got origami!", who);
+			item := CreateItemInBackpack(who, 0x283A);
+			item.movable := 1;
+			item.name := "Origami";
+		71: PrintTextAbovePrivate(who, "You got origami!", who);
+			item := CreateItemInBackpack(who, 0x283B);
+			item.movable := 1;
+			item.name := "Origami";
+		72: PrintTextAbovePrivate(who, "You got origami!", who);
+			item := CreateItemInBackpack(who, 0x283C);
+			item.movable := 1;
+			item.name := "Origami";
+		73: PrintTextAbovePrivate(who, "You got origami!", who);
+			item := CreateItemInBackpack(who, 0x283D);
+			item.movable := 1;
+			item.name := "Origami";
 		default: PrintTextAbovePrivate(who, "You got an aquarium!", who);
 			item := CreateItemInBackpack(who, 0x32CD);
 			item.movable := 1;
@@ -305,7 +397,7 @@ endfunction
 
 function WonStatue(who)
 
-	var chance := Random(165);
+	var chance := Random(166);
 	var item;
 
 	case (chance)
@@ -801,6 +893,9 @@ function WonStatue(who)
 		164: item := CreateItemInBackpack(who, 0x2633);
 			item.movable := 1;
 			item.name := "Mound Of Maggots Statue";
+		165: item := CreateItemInBackpack(who, 0x281B);
+			item.movable := 1;
+			item.name := "Yomotsu Warrior";
 		default: item := CreateItemInBackpack(who, 0x3DC4);
 			item.movable := 1;
 			item.name := "Baby Panda Statue";
@@ -1256,7 +1351,7 @@ endfunction
 
 function WonOrdnance(who)
 
-	var chance := Random(45);
+	var chance := Random(53);
 	var item;
 
 	case (chance)
@@ -1301,9 +1396,11 @@ function WonOrdnance(who)
 		11: PrintTextAbovePrivate(who, "You got a sword display!", who);
 			item := CreateItemInBackpack(who, 0x2855);
 			item.movable := 1;
+			item.name := "Sword Display";
 		12: PrintTextAbovePrivate(who, "You got a sword display!", who);
 			item := CreateItemInBackpack(who, 0x2856);
 			item.movable := 1;
+			item.name := "Sword Display";
 		13: PrintTextAbovePrivate(who, "You got a sword of insane powers!", who);
 			item := CreateItemInBackpack(who, 0x2A54);
 			item.movable := 1;
@@ -1432,6 +1529,38 @@ function WonOrdnance(who)
 			item := CreateItemInBackpack(who, 0x1585);
 			item.movable := 1;
 			item.name := "Decorative Shields";
+		45: PrintTextAbovePrivate(who, "You got a sword display!", who);
+			item := CreateItemInBackpack(who, 0x2842);
+			item.movable := 1;
+			item.name := "Sword Display";
+		46: PrintTextAbovePrivate(who, "You got a sword display!", who);
+			item := CreateItemInBackpack(who, 0x2843);
+			item.movable := 1;
+			item.name := "Sword Display";
+		47: PrintTextAbovePrivate(who, "You got a sword display!", who);
+			item := CreateItemInBackpack(who, 0x2844);
+			item.movable := 1;
+			item.name := "Sword Display";
+		48: PrintTextAbovePrivate(who, "You got a sword display!", who);
+			item := CreateItemInBackpack(who, 0x2845);
+			item.movable := 1;
+			item.name := "Sword Display";
+		49: PrintTextAbovePrivate(who, "You got a sword display!", who);
+			item := CreateItemInBackpack(who, 0x2851);
+			item.movable := 1;
+			item.name := "Sword Display";
+		50: PrintTextAbovePrivate(who, "You got a sword display!", who);
+			item := CreateItemInBackpack(who, 0x2852);
+			item.movable := 1;
+			item.name := "Sword Display";
+		51: PrintTextAbovePrivate(who, "You got a sword display!", who);
+			item := CreateItemInBackpack(who, 0x2853);
+			item.movable := 1;
+			item.name := "Sword Display";
+		52: PrintTextAbovePrivate(who, "You got a sword display!", who);
+			item := CreateItemInBackpack(who, 0x2854);
+			item.movable := 1;
+			item.name := "Sword Display";
 		default: PrintTextAbovePrivate(who, "You got a shields rack!", who);
 			item := CreateItemInBackpack(who, 0x3C1F);
 			item.movable := 1;
