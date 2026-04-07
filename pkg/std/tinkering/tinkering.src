@@ -243,13 +243,43 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 	var have_it;
 	var have_it_qual := 1;
 
+	var firstRequest := MakeBackpackRequest(character, use_on);
+	var secondRequest := 0;
+
 	if( needed_objtype )
 		have_it := FindObjtypeInContainer( character.backpack , needed_objtype );
 		if( !have_it )
+			// Check cache for the second component
+			var tempRequest := struct{ objtype := CInt(needed_objtype), dataFileHandle := firstRequest.dataFileHandle, leaseKey := 0, preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK } };
+			var avail := GetAvailableResource(character, tempRequest);
+			if(avail.cache > 0 and firstRequest.dataFileHandle)
+				// Route to cache-aware complex function
+				var cache_key := 0;
+				var prefix := Hex(CInt(needed_objtype)) + "|";
+				var prefix_len := len(prefix);
+				foreach dk in (firstRequest.dataFileHandle.Keys())
+					if(dk[1, 3] != "RL#" and dk[1, prefix_len] == prefix)
+						cache_key := dk;
+						break;
+					endif
+				endforeach
+				secondRequest := struct{
+					objtype              := CInt(needed_objtype),
+					key                  := cache_key,
+					color                := 0,
+					quality              := 0,
+					preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK },
+					dataFileHandle       := firstRequest.dataFileHandle,
+					leaseKey             := 0
+				};
+				TryToMakeComplexFromCache(character, firstRequest, to_be_done_objtype, 0, sfx, secondRequest);
+				return;
+			endif
 			SendSysMessage(character, "You don't have the required component.");
 			return;
 		endif
-		have_it_qual := have_it.qual;
+		have_it_qual := have_it.quality;
+		secondRequest := MakeBackpackRequest(character, have_it);
 	endif
 
 	var element := FindConfigElem( tinker_cfg , to_be_done_objtype );
@@ -262,8 +292,18 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 
 	points	:= Cint( skill * POINTS_MULTIPLIER );
 
+	// Verify materials available before crafting
+	if(GetAvailableResource(character, firstRequest).total < 1)
+		SendSysMessage(character, "You don't have enough materials.");
+		return;
+	endif
+	if(secondRequest and GetAvailableResource(character, secondRequest).total < 1)
+		SendSysMessage(character, "You don't have the required component.");
+		return;
+	endif
+
 	_Play_Sound( character , sfx );
-	
+
 	sendDiff( character , skill );
 
 	if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
@@ -271,17 +311,15 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 		var theitem := CreateItemInBackpack( character , to_be_done_objtype );
 		if( !theitem )
 			SendSysMessage( character , "Error in creation process please report this bug on the msg board." );
-			DestroyItem( use_on );
-			if( have_it )
-				DestroyItem( have_it );
+			ConsumeResource(character, firstRequest, 1);
+			if( secondRequest )
+				ConsumeResource(character, secondRequest, 1);
 			endif
 			return;
 		endif
 
 		theitem.movable := 1;
 		var item_cfg	:= ReadConfigFile( ":*:itemdesc" );
-		// Not Needed since price calculated in vendor AI based on quality
-		// var sell_price := item_cfg[to_be_done_objtype].VendorBuysFor;
 
 		var result_qual := Cint( ( use_on.quality + have_it_qual ) / 2 );
 		if( theitem.quality )
@@ -303,7 +341,6 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 
 		if( element.Exceptional and (Random(100) < excep_ch) and CheckSkill( character , SKILLID_TINKERING , skill , 0 ) )
 			if( theitem.quality )
-				//Made something Exceptional
 				var armslore := GetEffectiveSkill( character , SKILLID_ARMSLORE );
 				var multiplier := 5 + Cint( armslore / 10 );
 
@@ -319,15 +356,8 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 			endif
 
 			itemname := "Exceptional " + itemname;
-//			if( YesNo( character , "Add Builder Mark?" ) )
-					SetObjProperty( theitem , "CraftedBy" , character.name );
-//			endif
+			SetObjProperty( theitem , "CraftedBy" , character.name );
 
-			/* Not needed since SellPrice calculated on quality now in vendor AI
-			if( sell_price )
-				theitem.buyprice := Cint( sell_price * 2 );
-			endif
-			*/
 			SendSysmessage( character , "You make an exceptional item and put it in your pack" );
 			SetObjProperty( theitem , "IsExceptional" , 1 );
 			if( skill >= 130 )
@@ -338,13 +368,16 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 				AwardFame( character , FAME_BONUS );
 			endif
 		else
-
 			SendSysmessage( character , "You create the item and place it in your pack." );
 		endif
 
-		if( use_on.objtype == UOBJ_GOLD_INGOT )
-			theitem.color := GOLD_COLOR;
-		else
+		if( firstRequest.color )
+			if( CInt(firstRequest.objtype) == UOBJ_GOLD_INGOT )
+				theitem.color := GOLD_COLOR;
+			else
+				theitem.color := firstRequest.color;
+			endif
+		elseif( use_on.color )
 			theitem.color := use_on.color;
 		endif
 
@@ -356,9 +389,9 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 
 	endif
 
-	DestroyItem( use_on );
-	if( have_it )
-		DestroyItem( have_it );
+	ConsumeResource(character, firstRequest, 1);
+	if( secondRequest )
+		ConsumeResource(character, secondRequest, 1);
 	endif
 
 endfunction
@@ -541,7 +574,8 @@ function TryToMakeItem( character , resourceRequest , to_make_objtype , sfx )
 				endif
 
 				itemname := item_cfg[thegem.objtype].Name + " " + itemname;
-				SubtractAmount( thegem , 1 );
+				var gemRequest := MakeBackpackRequest(character, thegem);
+				ConsumeResource(character, gemRequest, 1);
 			endif
 		endif
 
@@ -768,8 +802,9 @@ function SetTrap( character , chest )
 	endif
 
 	var points := Cint( skill * POINTS_MULTIPLIER );
-	SubtractAmount( trap_item , 1 );
-	
+	var trapRequest := MakeBackpackRequest(character, trap_item);
+	ConsumeResource(character, trapRequest, 1);
+
 	sendDiff( character , skill );
 
 	if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
@@ -796,7 +831,7 @@ function SetTrap( character , chest )
 			strength := 1;
 		endif
 
-		SubtractAmount( trap_item , 1 );
+		ConsumeResource(character, trapRequest, 1);
 		SetObjProperty( chest , "trap_type" , cstr( trap_type ) );
 		SetObjProperty( chest , "trap_strength" , strength );
 		SetObjProperty( chest , "trapped_by" , character.serial );
@@ -841,7 +876,8 @@ function MakeTotem( me , it )
 		material := CInt(Ceil(material/2));
 	endif
 
-	if( it.amount < material )
+	var totemRequest := MakeBackpackRequest(me, it);
+	if( GetAvailableResource(me, totemRequest).total < material )
 		sendsysmessage( me , "You don't have enough obsidian to make anything." );
 		return;
 	endif
@@ -859,8 +895,8 @@ function MakeTotem( me , it )
 	endif
 
 	_Play_Sound( me , SFX_GLASSBREAK4 );
-	SubtractAmount( it , material );
-	
+	ConsumeResource( me , totemRequest , material );
+
 	sendDiff( me , 90);
 	sendSecDiff( me , 90);
 	if( !CheckSkill( me , SKILLID_MAGERY , 90 , 0 ) or !CheckSkill( me , SKILLID_TINKERING , 90 , 0 ) )
@@ -906,7 +942,8 @@ function TryToMakePotionKeg( character , use_on )
 	endif
 
 	if( use_on.objtype == UOBJ_EMPTY_BOTTLE )
-		if( use_on.amount < needed_bottles )
+		var bottleCheck := MakeBackpackRequest(character, use_on);
+		if( GetAvailableResource(character, bottleCheck).total < needed_bottles )
 			SendSysMessage( character , "You need at least 10 empty bottles." );
 			return;
 		endif
@@ -925,9 +962,12 @@ function TryToMakePotionKeg( character , use_on )
 				SendSysMessage( character , "You miss some parts to make the potion keg." );
 				return;
 
-			elseif( have_it.objtype == UOBJ_EMPTY_BOTTLE and have_it.amount < needed_bottles )
-				SendSysMessage( character , "You need at least 10 empty bottles." );
-				return;
+			elseif( have_it.objtype == UOBJ_EMPTY_BOTTLE )
+				var bottleCheck2 := MakeBackpackRequest(character, have_it);
+				if( GetAvailableResource(character, bottleCheck2).total < needed_bottles )
+					SendSysMessage( character , "You need at least 10 empty bottles." );
+					return;
+				endif
 
 			else
 				if( ReserveItem( have_it ) )
@@ -964,7 +1004,8 @@ function TryToMakePotionKeg( character , use_on )
 		endif
 
 		if( item.objtype == UOBJ_EMPTY_BOTTLE )
-			SubtractAmount( item , needed_bottles );
+			var bottleRequest := MakeBackpackRequest(character, item);
+			ConsumeResource(character, bottleRequest, needed_bottles);
 		else
 			DestroyItem( item );
 		endif

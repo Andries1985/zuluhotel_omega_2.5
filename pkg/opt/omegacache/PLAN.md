@@ -1183,6 +1183,12 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [ ] 79 | Tinkering: potion keg from cache | Bottles from cache, keg/tap/lid from backpack. |
 | [ ] 80 | Tinkering: gem jewelry from cache | Gems from cache via SelectMaterialFromCache per iteration. |
 | [ ] 81 | Tailoring: hides from cache | Full loop with dragon hides, verify color/quality on crafted item. |
+| [ ] 78a | Tinkering: obsidian golem backpack+cache | 20 obsidian in backpack, 80+ in cache, autodraw enabled. Verify `ConsumeResource` draws from both. |
+| [ ] 78b | Tinkering: gem jewelry from backpack with cache fallback | Target backpack gem, verify `ConsumeResource` draws from cache when backpack gem depleted. |
+| [ ] 78c | Tinkering: trap with cache fallback | Set trap with potion from backpack, verify `ConsumeResource` for both trap consumptions (1 pre-check + 1 on success). |
+| [ ] 78d | Tinkering: potion keg bottles from cache | Craft potion keg with <10 bottles in backpack, rest in cache. Verify availability check passes (backpack+cache >= 10), verify `ConsumeResource` draws from both sources. |
+| [ ] 78e | Tinkering: complex gears from cache | Target cache, select gears, verify axle found in cache/backpack and combined. **BLOCKED: Axle (0x105b), Springs (0x105d), Clock Parts (0x104f) have no itemdesc.cfg entries — cannot be created. Pre-existing issue, not Omega Cache related.** |
+| [ ] 78f | Tinkering: axle+gears backpack → cache for springs | Target backpack axle+gears, target cache for springs, verify complex craft completes. **BLOCKED: See 78e.** |
 | [ ] 82 | Carpentry: dual material from cache | Logs + ingots both from cache, independent leases. |
 | [ ] 83 | Alchemy: reagents from cache | AutoLoop with nightshade, bottles from cache fallback. |
 | [ ] 84 | Inscription: blank scrolls from cache | Scroll loop with mana gating, lease release on mana depletion. |

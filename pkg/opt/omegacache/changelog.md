@@ -581,6 +581,7 @@ Live testing of blacksmithy crafting integration revealed multiple bugs across t
 ### Known Issues
 
 - **Lease created on last loop iteration**: `ExtendResourceLease` creates a lease for the "next" iteration at the end of each loop. On the final iteration, this lease is immediately released when the while condition fails. No practical impact (lease lives for a fraction of a second) but is wasteful. Fix would require peeking at `AutoLoop_more()` remaining count without consuming it.
+- **Pre-existing: Missing tinkering component itemdesc entries**: Axle (`0x105b`), Springs (`0x105d`), and Clock Parts (`0x104f`) have no `itemdesc.cfg` entries. These items cannot be created via `.create` or crafting. All complex item chains requiring them (Axle+Gears, Clock, Sextant Parts via Springs) are untestable. Not caused by Omega Cache.
 - **Pre-existing: Crafted items with different materials auto-stack incorrectly**: POL core's `CreateItemInBackpack` auto-stacks items by objtype BEFORE the crafting script sets CProps/color/name. Two items of the same objtype but different materials (e.g., Iron Sextant Parts + Lavarock Sextant Parts) merge into one stack, adopting the newer item's properties and destroying the older one. This is not caused by Omega Cache — it's a pre-existing issue in the crafting scripts' use of `CreateItemInBackpack`. Fix would require creating items via `CreateItemAtLocation` (no auto-stack) then moving to container, or setting properties on `product_desc` before creation. Affects tinkering complex items and potentially other crafts.
 
 ---
@@ -657,15 +658,29 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 28. **Material selection category ordering** — Uses config-defined order from `LoadCategoryLookup` instead of dictionary key order.
 
+### Tinkering Full Cache Model (2026-04-07)
+
+29. **All `SubtractAmount` converted to `ConsumeResource`** — Gem jewelry, trap items (2x consumption), potion keg bottles, obsidian golem. All now use `MakeBackpackRequest` + `ConsumeResource` with autodraw cache fallback.
+
+30. **All `.amount` checks converted to `GetAvailableResource`** — Potion keg bottle availability checks (both entry paths) now count backpack + cache stock.
+
+31. **`TryToMakeComplex` cache fallback for second component** — When the player targets a backpack component (e.g., gears) but the second component (e.g., axle) is only in cache, the function now falls through to `TryToMakeComplexFromCache` instead of failing silently. Availability check via `GetAvailableResource` before crafting.
+
+32. **`TryToMakeComplex` uses `ConsumeResource` for both components** — Replaced `DestroyItem(use_on)` and `DestroyItem(have_it)` with `ConsumeResource` calls. Color inheritance uses `firstRequest.color` with gold ingot special case.
+
+33. **`MakeTotem` cache-aware** — `GetAvailableResource` for obsidian check (was `it.amount`), `ConsumeResource` for consumption (was `SubtractAmount`). Autodraw enabled — 20 obsidian in backpack + 80 in cache = 100 needed.
+
+34. **`SelectMaterialFromList` sort fix** — Replaced manual substring loop with `Find()` for `|||` separator extraction. Manual loop failed silently, causing empty item lists on page 2+ categories.
+
 ### Files Modified
 
 - `pkg/opt/omegacache/omegacache.inc` — Category ordering, button mapping, icon colors, item sorting with BaseName, SpellID/BaseName filter, withdrawal button layout, padding fixes, `RecreateItem` SetName, lease cleanup debug
 - `pkg/opt/omegacache/categories.cfg` — Missing items (lettuce, dates, fish, hides, gourds), IconColors section, updated book graphics
 - `pkg/opt/omegacache/itemdesc.cfg` — Container graphic `0x2DF4`, color 2032
 - `pkg/opt/omegacache/placecache.src` — Standard UO orientation menu
-- `scripts/include/resourcemanager.inc` — `ConsumeFromCache` byref refactor, `ConsumeResource` byref, `LeaseResource` shortfall calculation with backpack enumeration, `ExtendResourceLease` shortfall recalculation and late creation, unleased stock validation, item sort with BaseName, category pagination and ordering
+- `scripts/include/resourcemanager.inc` — `ConsumeFromCache` byref refactor, `ConsumeResource` byref, `LeaseResource` shortfall calculation with backpack enumeration, `ExtendResourceLease` shortfall recalculation and late creation, unleased stock validation, item sort with BaseName and `Find()` fix, category pagination and ordering
 - `pkg/std/blacksmithy/make_blacksmith_items.src` — `ExtendResourceLease` call site updated with who/amount, `orename` fallback to `GetItemDisplayName`
 - `pkg/std/blacksmithy/blacksmithy.cfg` — Added `Name Iron` for iron ingot entry
-- `pkg/std/tinkering/tinkering.src` — Complex item cache fixes (preferredSourceOrder, axle+gears→cache routing, error messages)
+- `pkg/std/tinkering/tinkering.src` — Full cache model: all `SubtractAmount`/`.amount`/`DestroyItem` on materials converted to `ConsumeResource`/`GetAvailableResource`. Complex item cache fallback for second component. Obsidian golem, gem jewelry, traps, potion keg bottles all cache-aware.
 - All 7 other crafting scripts — `ExtendResourceLease` call sites updated with who/amount
 

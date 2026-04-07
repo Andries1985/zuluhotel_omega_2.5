@@ -538,15 +538,7 @@ function SelectMaterialFromList(who, df, valid_keys)
 	sort_strings.sort();
 	valid_keys := array{};
 	foreach entry in sort_strings
-		var sep := "|||";
-		var sep_pos := 0;
-		var i;
-		for(i := 1; i <= len(entry); i := i + 1)
-			if(entry[i, i + 2] == sep)
-				sep_pos := i;
-				break;
-			endif
-		endfor
+		var sep_pos := Find(entry, "|||", 1);
 		if(sep_pos > 0)
 			valid_keys.append(entry[sep_pos + 3, len(entry)]);
 		endif
