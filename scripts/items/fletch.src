@@ -50,9 +50,11 @@ program on_fletch( character, shafts )
     endif
 
     var choice := SelectMenuItem2( character , "Fletching" );
+    SendSysMessage(character, "[Fletch] choice=" + choice + " objtype=" + choice.objtype, 3, 53);
 
     var shaft_avail := GetAvailableResource(character, shaftRequest).total;
     var feather_avail := GetAvailableResource(character, featherRequest).total;
+    SendSysMessage(character, "[Fletch] shafts=" + shaft_avail + " feathers=" + feather_avail, 3, 53);
 
     if(shaft_avail > 0 and feather_avail > 0)
         if (CheckSkill( character,
@@ -60,9 +62,11 @@ program on_fletch( character, shafts )
                         1,                     // difficulty
                         thepoints ))                   // points
             var num_to_make := Min( shaft_avail, feather_avail );
+            SendSysMessage(character, "[Fletch] num_to_make=" + num_to_make + " choice.objtype=" + choice.objtype, 3, 53);
 
             if(choice.objtype)
                 var arrows := CreateItemInBackpack( character, choice.objtype, num_to_make );
+                SendSysMessage(character, "[Fletch] arrows=" + arrows + " amount=" + arrows.amount, 3, 53);
                 if (arrows.amount > 0)
                     ConsumeResource( character, shaftRequest, num_to_make );
                     ConsumeResource( character, featherRequest, num_to_make );
