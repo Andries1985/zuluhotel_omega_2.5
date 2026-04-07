@@ -49,7 +49,7 @@ program on_fletch( character, shafts )
         featherRequest := MakeBackpackRequest(character, feathers);
     endif
 
-    var choice := SelectMenuItem2( character , "fletching" );
+    var choice := SelectMenuItem2( character , "Fletching" );
 
     var shaft_avail := GetAvailableResource(character, shaftRequest).total;
     var feather_avail := GetAvailableResource(character, featherRequest).total;

@@ -673,6 +673,12 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 34. **`SelectMaterialFromList` sort fix** — Replaced manual substring loop with `Find()` for `|||` separator extraction. Manual loop failed silently, causing empty item lists on page 2+ categories.
 
+35. **`SetTrap` cache targeting** — `SetTrap` now supports targeting the Omega Cache container for trap materials. Opens `SelectMaterialFromCache`, player picks a poison/explosion potion or bolt. Trap type and strength read from config by objtype (`GetItemDescriptor` for graphic, `:alchemy:itemdesc` for Strength). Both consumption calls (1 before skill check + 1 on success) use `ConsumeResource` with cache support.
+
+36. **`TryToMakePotionKeg` bottles appended to parts** — When bottles were found and amount-checked via `GetAvailableResource`, they were not appended to the `parts` array for consumption. Fixed by adding `parts.append(have_it)` after the amount check.
+
+37. **Debug logging removed** — Removed investigation-specific debug lines from `make_blacksmith_items.src` (`_debug_who`, `After LeaseResource`, `Before ReleaseResourceLease`) and `resourcemanager.inc` (`SelectMaterialCategory` button mapping debug).
+
 ### Files Modified
 
 - `pkg/opt/omegacache/omegacache.inc` — Category ordering, button mapping, icon colors, item sorting with BaseName, SpellID/BaseName filter, withdrawal button layout, padding fixes, `RecreateItem` SetName, lease cleanup debug
