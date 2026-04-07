@@ -958,8 +958,9 @@ function TryToMakePotionKeg( character , use_on )
 	foreach objtype in needed_parts
 		if( objtype != use_on.objtype )
 			var have_it := FindObjtypeInContainer( character.backpack , objtype );
+			SendSysMessage(character, "[OmegaCache] PotionKeg: looking for " + Hex(objtype) + " found=" + have_it + " serial=" + have_it.serial, 3, 53);
 			if( !have_it )
-				SendSysMessage( character , "You miss some parts to make the potion keg." );
+				SendSysMessage( character , "You miss some parts to make the potion keg. (need " + Hex(objtype) + ")" );
 				return;
 
 			elseif( have_it.objtype == UOBJ_EMPTY_BOTTLE )
@@ -968,6 +969,7 @@ function TryToMakePotionKeg( character , use_on )
 					SendSysMessage( character , "You need at least 10 empty bottles." );
 					return;
 				endif
+				parts.append( have_it );
 
 			else
 				if( ReserveItem( have_it ) )

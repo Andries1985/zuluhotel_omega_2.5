@@ -1186,7 +1186,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [ ] 78a | Tinkering: obsidian golem backpack+cache | 20 obsidian in backpack, 80+ in cache, autodraw enabled. Verify `ConsumeResource` draws from both. |
 | [ ] 78b | Tinkering: gem jewelry from backpack with cache fallback | Target backpack gem, verify `ConsumeResource` draws from cache when backpack gem depleted. |
 | [ ] 78c | Tinkering: trap with cache fallback | Set trap with potion from backpack, verify `ConsumeResource` for both trap consumptions (1 pre-check + 1 on success). |
-| [ ] 78d | Tinkering: potion keg bottles from cache | Craft potion keg with <10 bottles in backpack, rest in cache. Verify availability check passes (backpack+cache >= 10), verify `ConsumeResource` draws from both sources. |
+| [ ] 78d | Tinkering: potion keg bottles from cache | Craft potion keg with <10 bottles in backpack, rest in cache. Verify availability check passes (backpack+cache >= 10), verify `ConsumeResource` draws from both sources. **BLOCKED: Keg (0x0E7F), Barrel Tap (0x1004), Barrel Lid (0x1DB8) have no itemdesc.cfg entries. Pre-existing issue.** |
 | [ ] 78e | Tinkering: complex gears from cache | Target cache, select gears, verify axle found in cache/backpack and combined. **BLOCKED: Axle (0x105b), Springs (0x105d), Clock Parts (0x104f) have no itemdesc.cfg entries — cannot be created. Pre-existing issue, not Omega Cache related.** |
 | [ ] 78f | Tinkering: axle+gears backpack → cache for springs | Target backpack axle+gears, target cache for springs, verify complex craft completes. **BLOCKED: See 78e.** |
 | [ ] 82 | Carpentry: dual material from cache | Logs + ingots both from cache, independent leases. |
@@ -1262,6 +1262,10 @@ Similar to how Xarafax and Omere's doubles drop rates on mining and lumberjackin
 | [ ] 84 | Testing | Verify with and without Hammer equipped. Verify boost amount is correct. Verify no regression on existing exceptional crafting |
 
 ---
+
+## Design Constraints
+
+- **Leases are only for loop-based crafting**: Single-craft paths (tinkering complex items, obsidian golem, potion keg, bowcraft, cartography) do NOT create leases. Leases exist to reserve materials for the *next* iteration of an AutoLoop. A single-craft consumes atomically via `ConsumeResource` — there is no "next iteration" to protect. This means concurrent players could theoretically consume the same cache stock between the availability check and the consumption call, but POL's cooperative multitasking prevents preemption within a single script execution, making this a near-zero risk.
 
 ## Decisions Log
 
