@@ -689,5 +689,6 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 - `pkg/std/blacksmithy/make_blacksmith_items.src` — `ExtendResourceLease` call site updated with who/amount, `orename` fallback to `GetItemDisplayName`
 - `pkg/std/blacksmithy/blacksmithy.cfg` — Added `Name Iron` for iron ingot entry
 - `pkg/std/tinkering/tinkering.src` — Full cache model: all `SubtractAmount`/`.amount`/`DestroyItem` on materials converted to `ConsumeResource`/`GetAvailableResource`. Complex item cache fallback for second component. Obsidian golem, gem jewelry, traps, potion keg bottles all cache-aware.
-- All 7 other crafting scripts — `ExtendResourceLease` call sites updated with who/amount
+- `scripts/items/fletch.src` — Removed cache branch for shafts (always backpack, double-clicked). Shafts consumed via direct `SubtractAmount` on targeted stack. Feathers support cache via `SelectMaterialFromCache` or autodraw fallback via `GetAvailableResource`. Fixed `SelectMenuItem2` case sensitivity ("fletching" → "Fletching"). Fixed stack overflow when `num_to_make` exceeded 60000 (cache total). Capped to 60000.
+- All 6 other crafting scripts — `ExtendResourceLease` call sites updated with who/amount
 

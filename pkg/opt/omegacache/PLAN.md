@@ -1182,14 +1182,13 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [ ] 78 | Tinkering: totem from cache | 100 obsidian, single craft, no loop. Verify consumption. |
 | [ ] 79 | Tinkering: potion keg from cache | Bottles from cache, keg/tap/lid from backpack. |
 | [ ] 80 | Tinkering: gem jewelry from cache | Gems from cache via SelectMaterialFromCache per iteration. |
-| [ ] 81 | Tailoring: hides from cache | Full loop with dragon hides, verify color/quality on crafted item. |
 **Tinkering (continued, tested 2026-04-08):**
 | # | Task | Result |
 |---|---|---|
 | [x] 78a | Tinkering: obsidian golem backpack+cache | 20 obsidian in backpack, 80+ in cache. `ConsumeResource` drew 20 from backpack + 80 from cache. Single craft, no lease (design constraint). |
 | [x] 78b | Tinkering: gem jewelry from backpack with cache fallback | 2 rubies in backpack, loop 4. First 2 iterations consumed from backpack, iterations 3-4 targeted cache via `SelectMaterialFromCache` (Star Sapphire, Diamond). Mixed gem types across iterations work. |
 | [x] 78c | Tinkering: trap with cache fallback | Targeted cache for Deadly Poison Potion. Two `WithdrawItem` calls (1 pre-check + 1 on success). Trap set. Also tested Greater Explosion Potion from cache. Arrow correctly rejected. |
-| [x] 78d | Tinkering: potion keg bottles from cache | 2 bottles in backpack, rest from cache. All parts found, `WithdrawItem requested=8` from cache. Potion keg crafted. |
+| [x] 78d | Tinkering: potion keg bottles from cache | 2 bottles in backpack + cache fallback, and 0 bottles in backpack + cache-only. Both work. `ConsumeResource` draws from cache. Fixed `FindObjtypeInContainer` fallback to cache when backpack empty. |
 | BLOCKED | 78e | Tinkering: complex gears from cache — Axle (0x105b), Springs (0x105d), Clock Parts (0x104f) have no itemdesc.cfg entries. Pre-existing. |
 | [x] 78f | Tinkering: axle+gears + hinge from cache | Cache → Axle+Gears, cache → Hinge. Both consumed (`WithdrawItem` 1 each). Sextant Parts created. |
 
@@ -1205,7 +1204,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [ ] 83 | Alchemy: reagents from cache | AutoLoop with nightshade, bottles from cache fallback. |
 | [ ] 84 | Inscription: blank scrolls from cache | Scroll loop with mana gating, lease release on mana depletion. |
 | [ ] 85 | Cooking: ingredients from cache | Multi-ingredient recipe, backpack-first with cache fallback. |
-| [ ] 86 | Bowcraft: shafts + feathers from cache | Both materials from cache, no loop (single craft). |
+| [x] 86 | Bowcraft: shafts + feathers | Shafts always from backpack (double-clicked). Feathers from cache via autodraw fallback. 9 shafts = 9 arrows, targeted stack consumed directly. Autodraw disabled = backpack-only feathers. Fixed: menu name case ("Fletching"), stack overflow on cache total, wrong stack consumed. |
 | [ ] 87 | Cartography: blank maps from cache | Variable consumption (1-10), no loop. |
 | [ ] 88 | House demolition with items stored | Verify warning message, verify DataFile cleanup after demolition. |
 | [ ] 89 | Two players accessing same cache | Verify concurrent access doesn't corrupt data, leases prevent over-consumption. |

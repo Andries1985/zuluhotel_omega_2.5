@@ -999,6 +999,28 @@ function TryToMakePotionKeg( character , use_on )
 		if( objtype != use_on.objtype )
 			var have_it := FindObjtypeInContainer( character.backpack , objtype );
 			if( !have_it )
+				// For bottles, check cache availability when not in backpack
+				if(CInt(objtype) == UOBJ_EMPTY_BOTTLE)
+					var cacheBottleReq := struct{
+						objtype              := CInt(UOBJ_EMPTY_BOTTLE),
+						key                  := 0,
+						color                := 0,
+						quality              := 0,
+						preferredSourceOrder := array{ OMEGA_CACHE },
+						dataFileHandle       := 0,
+						leaseKey             := 0
+					};
+					// Resolve cache
+					var access := FindAccessibleContainer(character, array{REMOVE_FROM_SECURE});
+					if(access)
+						cacheBottleReq.dataFileHandle := access.df;
+					endif
+					if(GetAvailableResource(character, cacheBottleReq).total >= needed_bottles)
+						// Bottles available in cache — add a placeholder to parts
+						parts.append(cacheBottleReq);
+						continue;
+					endif
+				endif
 				SendSysMessage( character , "You miss some parts to make the potion keg." );
 				return;
 
@@ -1040,13 +1062,19 @@ function TryToMakePotionKeg( character , use_on )
 
 	var result_color;
 	foreach item in parts
-		if( item.color != 0 )
+		if( !item.preferredSourceOrder and item.color != 0 )
 			result_color := item.color;
 		endif
 
-		if( item.objtype == UOBJ_EMPTY_BOTTLE )
-			var bottleRequest := MakeBackpackRequest(character, item);
-			ConsumeResource(character, bottleRequest, needed_bottles);
+		if( CInt(item.objtype) == UOBJ_EMPTY_BOTTLE )
+			// Item could be a physical item or a ResourceRequest struct (cache-only bottles)
+			if(item.preferredSourceOrder)
+				// Already a ResourceRequest from cache fallback
+				ConsumeResource(character, item, needed_bottles);
+			else
+				var bottleRequest := MakeBackpackRequest(character, item);
+				ConsumeResource(character, bottleRequest, needed_bottles);
+			endif
 		else
 			DestroyItem( item );
 		endif
