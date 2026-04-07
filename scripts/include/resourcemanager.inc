@@ -221,12 +221,26 @@ function LeaseResource(who, byref resourceRequest, amount, ttl := LEASE_DEFAULT_
 		resourceRequest.leaseKey := 0;
 		return 0;
 	endif
-	// Only lease if unleased stock can cover the requested amount
+	// Calculate how much we actually need from cache (total - backpack)
+	var backpack_amount := 0;
+	foreach thing in EnumerateItemsInContainer(who.backpack)
+		if(CInt(thing.objtype) == CInt(resourceRequest.objtype))
+			backpack_amount := backpack_amount + thing.amount;
+		endif
+	endforeach
+	var cache_needed := amount - backpack_amount;
+	if(cache_needed <= 0)
+		// Backpack has enough — no cache lease needed
+		resourceRequest.leaseKey := 0;
+		return 1;
+	endif
+	// Only lease if unleased stock can cover what we need from cache
 	var unleased := GetStoredAmount(resourceRequest.dataFileHandle, item_key);
-	if(unleased < amount)
+	if(unleased < cache_needed)
 		resourceRequest.leaseKey := 0;
 		return 0;
 	endif
+	amount := cache_needed;
 	var lease_key := CreateLease(resourceRequest.dataFileHandle, item_key, who, amount, ttl);
 	resourceRequest.leaseKey := lease_key;
 	return lease_key;
@@ -240,17 +254,54 @@ function ExtendResourceLease(byref resourceRequest, who := 0, amount := 0, ttl :
 	if(!resourceRequest.dataFileHandle)
 		return 1;
 	endif
-	// Lease exists — extend it
+	// Lease exists — recalculate shortfall and update
 	if(resourceRequest.leaseKey)
-		return ExtendLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey, ttl);
+		if(!who or !amount)
+			return ExtendLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey, ttl);
+		endif
+		// Recalculate how much we need from cache this iteration
+		var backpack_amount := 0;
+		foreach thing in EnumerateItemsInContainer(who.backpack)
+			if(CInt(thing.objtype) == CInt(resourceRequest.objtype))
+				backpack_amount := backpack_amount + thing.amount;
+			endif
+		endforeach
+		var cache_needed := amount - backpack_amount;
+		if(cache_needed <= 0)
+			// Backpack now covers everything — release lease
+			ReleaseLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey);
+			resourceRequest.leaseKey := 0;
+			return 1;
+		endif
+		// Update lease with new quantity via CreateLease (overwrites existing)
+		var lease_key := CreateLease(resourceRequest.dataFileHandle, resourceRequest.key, who, cache_needed, ttl);
+		if(!lease_key)
+			// Not enough unleased stock
+			ReleaseLease(resourceRequest.dataFileHandle, resourceRequest.leaseKey);
+			resourceRequest.leaseKey := 0;
+			return 0;
+		endif
+		resourceRequest.leaseKey := lease_key;
+		return 1;
 	endif
 	// No lease yet but key was resolved (autodraw fallback consumed from cache) — create one now
 	if(resourceRequest.key and who and amount)
+		// Only lease the shortfall (total needed minus backpack stock)
+		var backpack_amount := 0;
+		foreach thing in EnumerateItemsInContainer(who.backpack)
+			if(CInt(thing.objtype) == CInt(resourceRequest.objtype))
+				backpack_amount := backpack_amount + thing.amount;
+			endif
+		endforeach
+		var cache_needed := amount - backpack_amount;
+		if(cache_needed <= 0)
+			return 1;  // Backpack covers everything, no lease needed
+		endif
 		var unleased := GetStoredAmount(resourceRequest.dataFileHandle, resourceRequest.key);
-		if(unleased < amount)
+		if(unleased < cache_needed)
 			return 0;  // Not enough unleased stock to cover a new lease
 		endif
-		var lease_key := CreateLease(resourceRequest.dataFileHandle, resourceRequest.key, who, amount, ttl);
+		var lease_key := CreateLease(resourceRequest.dataFileHandle, resourceRequest.key, who, cache_needed, ttl);
 		resourceRequest.leaseKey := lease_key;
 		return (lease_key ? 1 : 0);
 	endif
@@ -377,11 +428,47 @@ function SelectMaterialCategory(who, df, valid_keys)
 	var cat_names_sorted := cat_keys.keys();
 	var row_height := 35;
 	var cat_index := 0;
+	var total_cats := cat_names_sorted.size();
+	var cats_per_page := 12;
+	var total_pages := CInt(Ceil(CDbl(total_cats) / CDbl(cats_per_page)));
+	var page_num := 0;
 
-	GFPage(gump, 1);
 	foreach cat_name in cat_names_sorted
 		cat_index := cat_index + 1;
-		var row_y := 55 + ((cat_index - 1) * row_height);
+		var page_item := ((cat_index - 1) % cats_per_page) + 1;
+
+		if(page_item == 1)
+			page_num := page_num + 1;
+			GFPage(gump, page_num);
+
+			if(total_pages > 1)
+				var has_prev := (page_num > 1);
+				var has_next := (page_num < total_pages);
+				var page_label := "Page " + page_num + "/" + total_pages;
+				var label_w := len(page_label) * 8;
+				var group_w := label_w;
+				if(has_prev)
+					group_w := group_w + 70;
+				endif
+				if(has_next)
+					group_w := group_w + 70;
+				endif
+				var nav_x := (500 - group_w) / 2;
+				if(has_prev)
+					GFAddButton(gump, nav_x, 485, 9766, 9767, GF_PAGE_BTN, page_num - 1);
+					GFTextLine(gump, nav_x + 20, 485, RM_TEXT_HUE, "Prev");
+					nav_x := nav_x + 70;
+				endif
+				GFTextLine(gump, nav_x, 485, RM_TEXT_HUE, page_label);
+				nav_x := nav_x + label_w + 10;
+				if(has_next)
+					GFAddButton(gump, nav_x, 485, 9762, 9763, GF_PAGE_BTN, page_num + 1);
+					GFTextLine(gump, nav_x + 20, 485, RM_TEXT_HUE, "Next");
+				endif
+			endif
+		endif
+
+		var row_y := 55 + ((page_item - 1) * row_height);
 
 		GFResizePic(gump, 18, row_y - 2, 9350, 465, 32);
 
