@@ -12,17 +12,7 @@ program on_fletch( character, shafts )
     var feathers;
     var thepoints := get_default_points(SKILLID_BOWCRAFT);
 
-    // Handle cache-sourced shafts
-    var shaftRequest;
-    if(shafts.objtype == OMEGACACHE_OBJTYPE)
-        shaftRequest := SelectMaterialFromCache(character);
-        if(!shaftRequest)
-            return;
-        endif
-    else
-        shaftRequest := MakeBackpackRequest(character, shafts);
-    endif
-
+    // Shafts are always from backpack (double-clicked to start)
     SendSysMessage( character, "Select feathers to use." );
 
     feathers := Target( character );
@@ -50,19 +40,16 @@ program on_fletch( character, shafts )
     endif
 
     var choice := SelectMenuItem2( character , "Fletching" );
-    SendSysMessage(character, "[Fletch] choice=" + choice + " objtype=" + choice.objtype, 3, 53);
 
-    // Use targeted item amounts (not total available) to match original behaviour
+    // Shafts: use the targeted stack amount (what was double-clicked)
     var shaft_count := shafts.amount;
-    var feather_count := feathers.amount;
-    // For cache-sourced items, use available from cache
-    if(shaftRequest.preferredSourceOrder[1] == OMEGA_CACHE)
-        shaft_count := GetAvailableResource(character, shaftRequest).total;
-    endif
+    // Feathers: use targeted amount for backpack, total available for cache
+    var feather_count;
     if(featherRequest.preferredSourceOrder[1] == OMEGA_CACHE)
         feather_count := GetAvailableResource(character, featherRequest).total;
+    else
+        feather_count := feathers.amount;
     endif
-    SendSysMessage(character, "[Fletch] shafts=" + shaft_count + " feathers=" + feather_count, 3, 53);
 
     if(shaft_count > 0 and feather_count > 0)
         if (CheckSkill( character,
@@ -74,19 +61,18 @@ program on_fletch( character, shafts )
             if(num_to_make > 60000)
                 num_to_make := 60000;
             endif
-            SendSysMessage(character, "[Fletch] num_to_make=" + num_to_make + " choice.objtype=" + choice.objtype, 3, 53);
 
             if(choice.objtype)
                 var arrows := CreateItemInBackpack( character, choice.objtype, num_to_make );
-                SendSysMessage(character, "[Fletch] arrows=" + arrows + " amount=" + arrows.amount, 3, 53);
                 if (arrows.amount > 0)
-                    ConsumeResource( character, shaftRequest, num_to_make );
+                    // Consume shafts directly from the targeted stack
+                    SubtractAmount( shafts, num_to_make );
                     ConsumeResource( character, featherRequest, num_to_make );
                     SendSysMessage( character, "You create some arrows and put them in your pack." );
                 endif
             endif
         else
-            ConsumeResource( character, shaftRequest, 1 );
+            SubtractAmount( shafts, 1 );
             ConsumeResource( character, featherRequest, 1 );
             SendSysMessage( character, "You destroy some materials." );
         endif
