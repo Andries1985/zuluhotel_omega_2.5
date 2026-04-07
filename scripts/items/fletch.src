@@ -52,16 +52,28 @@ program on_fletch( character, shafts )
     var choice := SelectMenuItem2( character , "Fletching" );
     SendSysMessage(character, "[Fletch] choice=" + choice + " objtype=" + choice.objtype, 3, 53);
 
-    var shaft_avail := GetAvailableResource(character, shaftRequest).total;
-    var feather_avail := GetAvailableResource(character, featherRequest).total;
-    SendSysMessage(character, "[Fletch] shafts=" + shaft_avail + " feathers=" + feather_avail, 3, 53);
+    // Use targeted item amounts (not total available) to match original behaviour
+    var shaft_count := shafts.amount;
+    var feather_count := feathers.amount;
+    // For cache-sourced items, use available from cache
+    if(shaftRequest.preferredSourceOrder[1] == OMEGA_CACHE)
+        shaft_count := GetAvailableResource(character, shaftRequest).total;
+    endif
+    if(featherRequest.preferredSourceOrder[1] == OMEGA_CACHE)
+        feather_count := GetAvailableResource(character, featherRequest).total;
+    endif
+    SendSysMessage(character, "[Fletch] shafts=" + shaft_count + " feathers=" + feather_count, 3, 53);
 
-    if(shaft_avail > 0 and feather_avail > 0)
+    if(shaft_count > 0 and feather_count > 0)
         if (CheckSkill( character,
                         SKILLID_BOWCRAFT,
                         1,                     // difficulty
                         thepoints ))                   // points
-            var num_to_make := Min( shaft_avail, feather_avail );
+            var num_to_make := Min( shaft_count, feather_count );
+            // Cap to stack limit
+            if(num_to_make > 60000)
+                num_to_make := 60000;
+            endif
             SendSysMessage(character, "[Fletch] num_to_make=" + num_to_make + " choice.objtype=" + choice.objtype, 3, 53);
 
             if(choice.objtype)
