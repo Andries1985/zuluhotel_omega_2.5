@@ -43,13 +43,8 @@ program on_fletch( character, shafts )
 
     // Shafts: use the targeted stack amount (what was double-clicked)
     var shaft_count := shafts.amount;
-    // Feathers: use targeted amount for backpack, total available for cache
-    var feather_count;
-    if(featherRequest.preferredSourceOrder[1] == OMEGA_CACHE)
-        feather_count := GetAvailableResource(character, featherRequest).total;
-    else
-        feather_count := feathers.amount;
-    endif
+    // Feathers: use total available (backpack + cache if autodraw enabled)
+    var feather_count := GetAvailableResource(character, featherRequest).total;
 
     if(shaft_count > 0 and feather_count > 0)
         if (CheckSkill( character,
