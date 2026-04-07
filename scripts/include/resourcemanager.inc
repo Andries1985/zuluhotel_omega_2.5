@@ -425,7 +425,16 @@ function SelectMaterialCategory(who, df, valid_keys)
 	var title := "Select Category";
 	GFTextLine(gump, (500 - len(title) * 8) / 2, 15, RM_TEXT_HUE_HIGHLIGHT, title);
 
-	var cat_names_sorted := cat_keys.keys();
+	// Use config-defined category order, with Other at the end
+	var cat_names_sorted := array{};
+	foreach cat_name in (lookup.cat_names)
+		if(cat_keys[cat_name])
+			cat_names_sorted.append(cat_name);
+		endif
+	endforeach
+	if(cat_keys["Other"])
+		cat_names_sorted.append("Other");
+	endif
 	var row_height := 35;
 	var cat_index := 0;
 	var total_cats := cat_names_sorted.size();

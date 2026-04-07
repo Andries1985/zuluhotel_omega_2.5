@@ -578,6 +578,10 @@ Live testing of blacksmithy crafting integration revealed multiple bugs across t
 - **Verify consumption before creation, but consume after**: Check availability before the skill check to prevent exploits, but consume after item creation to avoid material loss on failed creation.
 - **`ReadGameClock` may not be monotonic across restarts**: Lease expiry values can become "in the future" after server restart if the clock resets. The `BuildCategoryMap` sweep handles this by cleaning expired leases on gump open, but leases with future expiry values persist until their host item is accessed.
 
+### Known Issues
+
+- **Lease created on last loop iteration**: `ExtendResourceLease` creates a lease for the "next" iteration at the end of each loop. On the final iteration, this lease is immediately released when the while condition fails. No practical impact (lease lives for a fraction of a second) but is wasteful. Fix would require peeking at `AutoLoop_more()` remaining count without consuming it.
+
 ---
 
 ## Milestone 2.3b — Gump Polish & Lease Fixes (2026-03-27)

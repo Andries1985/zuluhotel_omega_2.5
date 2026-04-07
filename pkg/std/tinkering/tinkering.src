@@ -148,7 +148,19 @@ program MakeTinkerItems( character , tool )
 						endif
 
 						if(thing.objtype == OMEGACACHE_OBJTYPE)
-							SendSysmessage(character, "Use the cache directly as your material source for complex items.");
+							// Select springs or hinge from cache
+							var secondCacheRequest := SelectMaterialFromCache(character);
+							if(!secondCacheRequest)
+								break;
+							endif
+							var firstBackpackRequest := MakeBackpackRequest(character, use_on);
+							if(CInt(secondCacheRequest.objtype) == UOBJ_SPRINGS)
+								TryToMakeComplexFromCache(character, firstBackpackRequest, UOBJ_CLOCK_PARTS, 0, SFX_ANVIL, secondCacheRequest);
+							elseif(CInt(secondCacheRequest.objtype) == UOBJ_HINGE)
+								TryToMakeComplexFromCache(character, firstBackpackRequest, UOBJ_SEXTANT_PARTS, 0, SFX_ANVIL, secondCacheRequest);
+							else
+								SendSysMessage(character, "You must select either a hinge or springs.");
+							endif
 							break;
 						endif
 
@@ -234,6 +246,7 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 	if( needed_objtype )
 		have_it := FindObjtypeInContainer( character.backpack , needed_objtype );
 		if( !have_it )
+			SendSysMessage(character, "You don't have the required component.");
 			return;
 		endif
 		have_it_qual := have_it.qual;
@@ -1170,7 +1183,7 @@ function TryToMakeComplexFromCache(character, firstRequest, to_be_done_objtype, 
 	// Resolve second component if not already provided
 	if(!secondRequest and needed_objtype)
 		// Check cache first, then backpack
-		var temp_request := struct{ objtype := CInt(needed_objtype), dataFileHandle := firstRequest.dataFileHandle, leaseKey := 0 };
+		var temp_request := struct{ objtype := CInt(needed_objtype), dataFileHandle := firstRequest.dataFileHandle, leaseKey := 0, preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK } };
 		var avail := GetAvailableResource(character, temp_request);
 		if(avail.total < 1)
 			SendSysMessage(character, "You don't have the required component.");
