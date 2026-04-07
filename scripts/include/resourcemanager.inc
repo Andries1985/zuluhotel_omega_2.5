@@ -507,11 +507,14 @@ function SelectMaterialCategory(who, df, valid_keys)
 	endif
 
 	var selected_cat_index := btn - RM_BTN_SELECT_BASE;
+	OmegaCacheDebug("SelectMaterialCategory: btn=" + btn + " cat_index=" + selected_cat_index + " total_cats=" + cat_names_sorted.size());
 	if(selected_cat_index < 1 or selected_cat_index > cat_names_sorted.size())
+		OmegaCacheDebug("SelectMaterialCategory: index out of bounds");
 		return 0;
 	endif
 
 	var selected_cat := cat_names_sorted[selected_cat_index];
+	OmegaCacheDebug("SelectMaterialCategory: selected=" + selected_cat + " keys=" + cat_keys[selected_cat].size());
 	return cat_keys[selected_cat];
 endfunction
 

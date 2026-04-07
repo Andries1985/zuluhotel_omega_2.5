@@ -1146,20 +1146,54 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 - Automated review produces false positives (~33% in third pass) — manual verification essential
 
 #### Milestone 2.3 — Crafting Testing
+
+**Blacksmithy (tested 2026-03-27):**
+| # | Task | Result |
+|---|---|---|
+| [x] 57 | Cache craft loop (iron breastplate, 4 iterations) | Lease created/extended/released correctly. Consumption from cache verified. |
+| [x] 58 | Backpack craft loop (4 iterations) | No lease created. Pure backpack consumption. AutoLoop count saved. |
+| [x] 59 | Cache craft with failure (low skill) | Partial destroy amount consumed from cache correctly. |
+| [x] 60 | Mixed source (5 in backpack, 25 needed) | Lease only reserves shortfall from cache. Backpack consumed first, cache fallback works. |
+| [x] 61 | Bone items from cache (dual material) | Both ingots and bone leased independently. Correct consumption of both. |
+| [x] 62 | Mixed source bone (bone backpack + ingots cache) | Independent ResourceRequests, correct depletion per source. |
+| [x] 63 | Material color on crafted item (Ebon Twilight Sapphire) | Color and quality transferred correctly from cache to product. |
+| [x] 64 | Exceptional crafter from cache | Exceptional items created with correct material properties, CraftedBy mark set. |
+| [x] 65 | Autodraw disabled near cache | `.cache autodraw` off — crafting only uses backpack, no cache draw. |
+| [x] 66 | Autodraw re-enabled | Toggle on — crafting resumes drawing from cache as fallback. |
+| [x] 67 | Out of range backpack craft | Crafting from backpack away from cache — no errors, no cache interaction. |
+| [x] 68 | Insufficient materials message | "You don't have enough Iron ingots to continue." shown and loop breaks. |
+
+**Tinkering (tested 2026-04-07):**
+| # | Task | Result |
+|---|---|---|
+| [x] 69 | Main loop ingots (lockpick from Icerock) | Lease qty=1, craft succeeds, WithdrawItem correct, lease lifecycle correct. |
+| [x] 70 | Main loop ingots (dovetail saw from Iron) | Lease qty=4, exceptional craft, WithdrawItem=4, lease lifecycle correct. |
+| [x] 71 | Main loop logs (mortar from Goddess Logs) | Lease qty=4 (cache-sourced), craft succeeds, correct consumption. |
+| [x] 72 | Mixed source logs (5 in backpack, 4 needed) | No cache lease needed (backpack sufficient). Backpack-only consumption. |
+| [x] 73 | Autodraw disabled | "You can't make anything of this category" — correct, no logs in backpack. |
+| [x] 74 | Autodraw re-enabled | Crafting resumes with cache, lease qty=3 (shortfall after backpack). |
+| [x] 75 | Complex: gears from cache | Fixed: was failing due to missing preferredSourceOrder on temp struct. |
+| [x] 76 | Complex: axle+gears → cache for springs | Fixed: now opens SelectMaterialFromCache for second component. |
+| [x] 77 | Lease shortfall (5 backpack + 10 needed) | Lease now only reserves 5 from cache (shortfall), not full 10. |
+
+**Remaining tests:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 57 | Mixed source crafting | Craft with some materials in backpack, some in cache. Verify correct depletion order per `ResourceRequest`. |
-| [ ] 58 | Dual material crafts | Carpentry/blacksmithy: one material from cache, other from backpack. Verify independent `ResourceRequest` and leases per material. |
-| [ ] 59 | Failure material loss | Craft and fail — verify percentage loss debited from correct source based on `ResourceRequest`. |
-| [ ] 60 | AutoLoop batch with leases | Batch craft 20+ items. Verify lease extends each iteration, released on exit. Verify another player sees reduced availability during lease. |
-| [ ] 61 | Lease expiry | Simulate long idle — verify lease expires, another player can consume. Verify expired lease cleaned up. |
-| [ ] 62 | No cache nearby | Craft away from any cache — verify all crafts still work exactly as before (pure backpack, no leases). |
-| [ ] 63 | Edge cases | Insufficient total resources, cache with variant items, concurrent crafters on same resource |
-| [ ] 64 | House demolition with items stored | Verify warning message, verify DataFile cleanup after demolition |
-| [ ] 65 | Two players accessing same cache | Verify concurrent access doesn't corrupt data, leases prevent over-consumption |
-| [ ] 66 | Multiple house types | Verify `who.multi` access control works for different house styles (multi-story, custom, keep, etc.) |
-| [ ] 67 | Redeed on container destroy | Verify deed returns to player backpack when container removed via house management |
-| [ ] 68 | Expired lease cleanup audit | Verify no flow exists where leases accumulate without cleanup — all entry points that touch DataFile sweep for expired RL# keys |
+| [ ] 78 | Tinkering: totem from cache | 100 obsidian, single craft, no loop. Verify consumption. |
+| [ ] 79 | Tinkering: potion keg from cache | Bottles from cache, keg/tap/lid from backpack. |
+| [ ] 80 | Tinkering: gem jewelry from cache | Gems from cache via SelectMaterialFromCache per iteration. |
+| [ ] 81 | Tailoring: hides from cache | Full loop with dragon hides, verify color/quality on crafted item. |
+| [ ] 82 | Carpentry: dual material from cache | Logs + ingots both from cache, independent leases. |
+| [ ] 83 | Alchemy: reagents from cache | AutoLoop with nightshade, bottles from cache fallback. |
+| [ ] 84 | Inscription: blank scrolls from cache | Scroll loop with mana gating, lease release on mana depletion. |
+| [ ] 85 | Cooking: ingredients from cache | Multi-ingredient recipe, backpack-first with cache fallback. |
+| [ ] 86 | Bowcraft: shafts + feathers from cache | Both materials from cache, no loop (single craft). |
+| [ ] 87 | Cartography: blank maps from cache | Variable consumption (1-10), no loop. |
+| [ ] 88 | House demolition with items stored | Verify warning message, verify DataFile cleanup after demolition. |
+| [ ] 89 | Two players accessing same cache | Verify concurrent access doesn't corrupt data, leases prevent over-consumption. |
+| [ ] 90 | Multiple house types | Verify `who.multi` access control works for different house styles. |
+| [ ] 91 | Redeed on container destroy | Verify deed returns to player backpack when container removed via house management. |
+| [ ] 92 | Expired lease cleanup audit | Verify no flow exists where leases accumulate without cleanup. |
 
 ---
 
