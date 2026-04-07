@@ -601,12 +601,23 @@ function SelectMaterialFromList(who, df, valid_keys)
 		var objtype := CInt(elem.GetProp("objtype"));
 		var desc_info := GetItemDescriptor(objtype);
 
-		// Item name with variant indicator
-		var item_name := GetItemDisplayName(objtype);
+		// Item name — use BaseName CProp if stored, otherwise default display name
+		var base_name := elem.GetProp("cprop_BaseName");
+		var item_name;
+		if(base_name and base_name != "")
+			item_name := CStr(base_name);
+		else
+			item_name := GetItemDisplayName(objtype);
+		endif
+
+		// Variant display — show distinguishing CProps (skip known internal ones)
 		var propnames := elem.PropNames();
 		foreach pname in propnames
 			if(pname[1,6] == "cprop_")
 				var cprop_name := pname[7, len(pname)];
+				if(cprop_name == "SpellID" or cprop_name == "BaseName")
+					continue;
+				endif
 				var cprop_val := elem.GetProp(pname);
 				item_name := item_name + " [" + cprop_name + "=" + CStr(cprop_val) + "]";
 				break;

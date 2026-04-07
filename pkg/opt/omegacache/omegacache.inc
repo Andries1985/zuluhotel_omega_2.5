@@ -646,6 +646,12 @@ function RecreateItem(container, elem, amount)
 		endif
 	endforeach
 
+	// If BaseName CProp was restored, set the item's display name to match
+	var base_name := GetObjProperty(newitem, "BaseName");
+	if(base_name and base_name != "")
+		SetName(newitem, CStr(base_name));
+	endif
+
 	OmegaCacheDebug("RecreateItem: created " + Hex(objtype) + " x" + amount + " serial=" + newitem.serial);
 	return newitem;
 endfunction
@@ -1367,15 +1373,21 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		var objtype := CInt(elem.GetProp("objtype"));
 		var desc_info := GetItemDescriptor(objtype);
 
-		// Item name
-		var item_name := GetItemDisplayName(objtype);
+		// Item name — use BaseName CProp if stored, otherwise default display name
+		var base_name := elem.GetProp("cprop_BaseName");
+		var item_name;
+		if(base_name and base_name != "")
+			item_name := CStr(base_name);
+		else
+			item_name := GetItemDisplayName(objtype);
+		endif
 
-		// Variant display — show distinguishing CProps (skip SpellID, known IDs)
+		// Variant display — show distinguishing CProps (skip known internal ones)
 		var propnames := elem.PropNames();
 		foreach pname in propnames
 			if(pname[1,6] == "cprop_")
 				var cprop_name := pname[7, len(pname)];
-				if(cprop_name == "SpellID")
+				if(cprop_name == "SpellID" or cprop_name == "BaseName")
 					continue;
 				endif
 				var cprop_val := elem.GetProp(pname);
