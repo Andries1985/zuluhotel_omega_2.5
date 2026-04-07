@@ -764,33 +764,74 @@ function SetTrap( character , chest )
 		return;
 	endif
 
-	if( !Accessible( character , trap_item ) )
-		SendSysmessage( character , "You can't reach that!" );
-		return;
-	endif
+	var trapRequest;
 
-	if( !ReserveItem( trap_item ) )
-		return;
-	endif
+	// Cache targeting for trap materials
+	if(trap_item.objtype == OMEGACACHE_OBJTYPE)
+		trapRequest := SelectMaterialFromCache(character);
+		if(!trapRequest)
+			return;
+		endif
+		var trap_objtype := CInt(trapRequest.objtype);
+		var trap_desc := GetItemDescriptor(trap_objtype);
+		var trap_graphic := 0;
+		if(trap_desc)
+			trap_graphic := CInt(trap_desc.Graphic);
+		endif
 
-	if (trap_item.graphic == UOBJECT_POISON_POTION)
-		cfg_id := 0xffff;
-		strength := GetPotionStrength( trap_item );
-		trap_type := 2;
-
-	elseif(trap_item.graphic == UOBJECT_PURPLE_POTION )
-		strength := GetPotionStrength( trap_item );
-		cfg_id := 0xfffe;
-		trap_type := 3;
-
-	elseif( trap_item.objtype == 0x1bfb )
-		cfg_id := 0xfffd;
-		strength := 1;
-		trap_type := 1;
-
+		if(trap_graphic == UOBJECT_POISON_POTION)
+			cfg_id := 0xffff;
+			// Read strength from config by objtype
+			var itemcfg := ReadConfigFile(":alchemy:itemdesc");
+			strength := CInt(itemcfg[trap_objtype].Strength);
+			trap_type := 2;
+		elseif(trap_graphic == UOBJECT_PURPLE_POTION)
+			var itemcfg := ReadConfigFile(":alchemy:itemdesc");
+			strength := CInt(itemcfg[trap_objtype].Strength);
+			cfg_id := 0xfffe;
+			trap_type := 3;
+		elseif(trap_objtype == 0x1bfb)
+			cfg_id := 0xfffd;
+			strength := 1;
+			trap_type := 1;
+		else
+			SendSysmessage(character, "That can't be used as a trap.");
+			return;
+		endif
 	else
-		SendSysmessage (character, "I don't know how to use these items together");
-		return;
+		// Physical item targeting
+		if( !Accessible( character , trap_item ) )
+			SendSysmessage( character , "You can't reach that!" );
+			return;
+		endif
+
+		if(trap_item.objtype != OMEGACACHE_OBJTYPE)
+			if( !ReserveItem( trap_item ) )
+				return;
+			endif
+		endif
+
+		if (trap_item.graphic == UOBJECT_POISON_POTION)
+			cfg_id := 0xffff;
+			strength := GetPotionStrength( trap_item );
+			trap_type := 2;
+
+		elseif(trap_item.graphic == UOBJECT_PURPLE_POTION )
+			strength := GetPotionStrength( trap_item );
+			cfg_id := 0xfffe;
+			trap_type := 3;
+
+		elseif( trap_item.objtype == 0x1bfb )
+			cfg_id := 0xfffd;
+			strength := 1;
+			trap_type := 1;
+
+		else
+			SendSysmessage (character, "I don't know how to use these items together");
+			return;
+		endif
+
+		trapRequest := MakeBackpackRequest(character, trap_item);
 	endif
 
 	var element := FindConfigElem( tinker_cfg , cfg_id );
@@ -802,7 +843,6 @@ function SetTrap( character , chest )
 	endif
 
 	var points := Cint( skill * POINTS_MULTIPLIER );
-	var trapRequest := MakeBackpackRequest(character, trap_item);
 	ConsumeResource(character, trapRequest, 1);
 
 	sendDiff( character , skill );
@@ -958,9 +998,8 @@ function TryToMakePotionKeg( character , use_on )
 	foreach objtype in needed_parts
 		if( objtype != use_on.objtype )
 			var have_it := FindObjtypeInContainer( character.backpack , objtype );
-			SendSysMessage(character, "[OmegaCache] PotionKeg: looking for " + Hex(objtype) + " found=" + have_it + " serial=" + have_it.serial, 3, 53);
 			if( !have_it )
-				SendSysMessage( character , "You miss some parts to make the potion keg. (need " + Hex(objtype) + ")" );
+				SendSysMessage( character , "You miss some parts to make the potion keg." );
 				return;
 
 			elseif( have_it.objtype == UOBJ_EMPTY_BOTTLE )
