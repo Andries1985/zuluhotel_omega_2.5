@@ -517,17 +517,36 @@ endfunction
 
 // Shows material selection from a list of keys. Returns ResourceRequest or 0.
 function SelectMaterialFromList(who, df, valid_keys)
-	// Sort by item name for consistent display
-	var sort_list := array{};
+	// Sort by display name (BaseName CProp if available, else default name)
+	// Use string-concat sort: "name|||key" — sort as strings, then extract keys
+	var sort_strings := array{};
 	foreach key in valid_keys
 		var ot := CInt(GetObjtypeFromKey(key));
-		var name := Lower(GetItemDisplayName(ot));
-		sort_list.append(struct{ sort_name := name, sort_key := key });
+		var elem := df.FindElement(key);
+		var base_name := elem.GetProp("cprop_BaseName");
+		var name;
+		if(base_name and base_name != "")
+			name := Lower(CStr(base_name));
+		else
+			name := Lower(GetItemDisplayName(ot));
+		endif
+		sort_strings.append(name + "|||" + key);
 	endforeach
-	sort_list.sort(1);
+	sort_strings.sort();
 	valid_keys := array{};
-	foreach entry in sort_list
-		valid_keys.append(entry.sort_key);
+	foreach entry in sort_strings
+		var sep := "|||";
+		var sep_pos := 0;
+		var i;
+		for(i := 1; i <= len(entry); i := i + 1)
+			if(entry[i, i + 2] == sep)
+				sep_pos := i;
+				break;
+			endif
+		endfor
+		if(sep_pos > 0)
+			valid_keys.append(entry[sep_pos + 3, len(entry)]);
+		endif
 	endforeach
 
 	// Build selection gump

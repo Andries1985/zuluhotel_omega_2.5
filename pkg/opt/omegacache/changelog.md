@@ -581,6 +581,7 @@ Live testing of blacksmithy crafting integration revealed multiple bugs across t
 ### Known Issues
 
 - **Lease created on last loop iteration**: `ExtendResourceLease` creates a lease for the "next" iteration at the end of each loop. On the final iteration, this lease is immediately released when the while condition fails. No practical impact (lease lives for a fraction of a second) but is wasteful. Fix would require peeking at `AutoLoop_more()` remaining count without consuming it.
+- **Pre-existing: Crafted items with different materials auto-stack incorrectly**: POL core's `CreateItemInBackpack` auto-stacks items by objtype BEFORE the crafting script sets CProps/color/name. Two items of the same objtype but different materials (e.g., Iron Sextant Parts + Lavarock Sextant Parts) merge into one stack, adopting the newer item's properties and destroying the older one. This is not caused by Omega Cache — it's a pre-existing issue in the crafting scripts' use of `CreateItemInBackpack`. Fix would require creating items via `CreateItemAtLocation` (no auto-stack) then moving to container, or setting properties on `product_desc` before creation. Affects tinkering complex items and potentially other crafts.
 
 ---
 
@@ -634,13 +635,37 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 18. **SpecialItems icon** — Updated to `0x3679`.
 
+### Tinkering Fixes (2026-04-07)
+
+19. **Complex item cache targeting** — Fixed `TryToMakeComplexFromCache` missing `preferredSourceOrder` on temp ResourceRequest struct, causing `GetAvailableResource` to fail silently. Added error message for backpack path when second component missing (was silent return).
+
+20. **Axle+Gears → cache for springs/hinge** — Previously blocked with "Use the cache directly" message. Now opens `SelectMaterialFromCache` and routes to correct complex path based on selected component type.
+
+21. **Lease shortfall calculation** — `LeaseResource` and `ExtendResourceLease` now only lease `max(0, material - backpack_amount)` instead of full material cost. Prevents over-reserving cache stock when player has partial materials in backpack. Lease quantity recalculated each iteration as backpack stock changes.
+
+22. **`RecreateItem` restores display name** — When withdrawing items with a `BaseName` CProp, `RecreateItem` now calls `SetName` to restore the item's display name. Previously only restored the CProp but not the actual name, causing casing mismatches (e.g., "sextant Parts" vs "Sextant Parts") and failed auto-stacking.
+
+23. **BaseName used as display name in gumps** — Both main cache gump and material selection gump now check `cprop_BaseName` before falling back to `GetItemDisplayName`. Items like "Ice Rock Lockpick" show their crafted name instead of "Lockpick [BaseName=Ice Rock Lockpick]". `BaseName` also excluded from variant suffix display alongside `SpellID`.
+
+24. **Item sort uses BaseName** — Both gumps sort by `BaseName` (when present) instead of default itemdesc name. Fixes sort order for crafted variants (e.g., "Ice Rock Lockpick" sorts under I, not L for "Lockpick").
+
+25. **Lettuce categorized** — Added `0x0C70` (Lettuce) to Food category. Was appearing as UNCATEGORIZED in debug output.
+
+26. **Orientation selection uses standard UO menu** — `placecache.src` replaced custom gump with `CreateMenu`/`AddMenuItem`/`SelectMenuItem2`, matching the native orientation menu used by chairs and other furniture.
+
+27. **Material selection category pagination** — `SelectMaterialCategory` now paginates with 12 categories per page (was unbounded, overflowing on 22+ categories).
+
+28. **Material selection category ordering** — Uses config-defined order from `LoadCategoryLookup` instead of dictionary key order.
+
 ### Files Modified
 
-- `pkg/opt/omegacache/omegacache.inc` — Category ordering, button mapping, icon colors, item sorting, SpellID filter, withdrawal button layout, padding fixes, lease cleanup debug
-- `pkg/opt/omegacache/categories.cfg` — Missing items, IconColors section, updated book graphics
+- `pkg/opt/omegacache/omegacache.inc` — Category ordering, button mapping, icon colors, item sorting with BaseName, SpellID/BaseName filter, withdrawal button layout, padding fixes, `RecreateItem` SetName, lease cleanup debug
+- `pkg/opt/omegacache/categories.cfg` — Missing items (lettuce, dates, fish, hides, gourds), IconColors section, updated book graphics
 - `pkg/opt/omegacache/itemdesc.cfg` — Container graphic `0x2DF4`, color 2032
-- `pkg/opt/omegacache/placecache.src` — Orientation selection gump
-- `scripts/include/resourcemanager.inc` — `ConsumeFromCache` byref refactor, `ConsumeResource` byref, `LeaseResource` key resolution, `ExtendResourceLease` late creation, unleased stock validation
-- `pkg/std/blacksmithy/make_blacksmith_items.src` — `ExtendResourceLease` call site updated with who/amount
+- `pkg/opt/omegacache/placecache.src` — Standard UO orientation menu
+- `scripts/include/resourcemanager.inc` — `ConsumeFromCache` byref refactor, `ConsumeResource` byref, `LeaseResource` shortfall calculation with backpack enumeration, `ExtendResourceLease` shortfall recalculation and late creation, unleased stock validation, item sort with BaseName, category pagination and ordering
+- `pkg/std/blacksmithy/make_blacksmith_items.src` — `ExtendResourceLease` call site updated with who/amount, `orename` fallback to `GetItemDisplayName`
+- `pkg/std/blacksmithy/blacksmithy.cfg` — Added `Name Iron` for iron ingot entry
+- `pkg/std/tinkering/tinkering.src` — Complex item cache fixes (preferredSourceOrder, axle+gears→cache routing, error messages)
 - All 7 other crafting scripts — `ExtendResourceLease` call sites updated with who/amount
 

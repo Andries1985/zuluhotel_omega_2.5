@@ -1289,8 +1289,14 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 	var name_key_pairs := array{};
 	foreach key in display_keys
 		var ot := CInt(GetObjtypeFromKey(key));
-		var name := Lower(GetItemDisplayName(ot));
-		// Pad name to fixed length so sort works on combined string
+		var elem := df.FindElement(key);
+		var base_name := elem.GetProp("cprop_BaseName");
+		var name;
+		if(base_name and base_name != "")
+			name := Lower(CStr(base_name));
+		else
+			name := Lower(GetItemDisplayName(ot));
+		endif
 		name_key_pairs.append(name + "|||" + key);
 	endforeach
 	name_key_pairs.sort();
