@@ -1176,9 +1176,6 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 76 | Complex: axle+gears → cache for springs | Fixed: now opens SelectMaterialFromCache for second component. |
 | [x] 77 | Lease shortfall (5 backpack + 10 needed) | Lease now only reserves 5 from cache (shortfall), not full 10. |
 
-**Remaining tests:**
-| # | Task | Deliverable |
-|---|---|---|
 **Tinkering (continued, tested 2026-04-08):**
 | # | Task | Result |
 |---|---|---|
@@ -1196,28 +1193,56 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 81a | Tailoring: cloth from cache | Cloth from cache, category fixed (was in Other). Name shows as hex (no itemdesc entry — known issue). |
 | [x] 81b | Tailoring: bandage from cache | Bandage consume-all from cache. Capped at 240k cloth (60k bandages) to prevent stack overflow. |
 
-**Remaining tests:**
+**Carpentry:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 82a | Carpentry: logs from cache | Single material, loop. Chairs/containers/tables/staffs/shields. |
-| [ ] 82b | Carpentry: ingots from cache | Single material, loop. Smith/cook/mage furniture, decoration, statues. |
-| [ ] 82c | Carpentry: cloth from cache | Single material, loop. House furniture, instruments, tools. |
-| [ ] 82d | Carpentry: dual material (logs + ingots) | Both from cache, independent leases. |
-| [ ] 82e | Carpentry: keg/barrel from logs | Keg and barrel crafting path. |
-| [ ] 83 | Alchemy: reagents from cache | AutoLoop with nightshade, bottles from cache fallback. |
-| [ ] 84 | Inscription: blank scrolls from cache | Scroll loop with mana gating, lease release on mana depletion. |
-| [ ] 85 | Cooking: ingredients from cache | Multi-ingredient recipe, backpack-first with cache fallback. |
-| [x] 86a | Bowcraft: arrows from backpack+cache | Shafts always from backpack (double-clicked). Feathers from cache via autodraw fallback. 9 shafts = 9 arrows, targeted stack consumed directly. Autodraw disabled = backpack-only feathers. Fixed: menu name case ("Fletching"), stack overflow on cache total, wrong stack consumed. |
-| [ ] 86b | Bowcraft: bolts from backpack+cache | Same as arrows but select Bolt from fletching menu. |
-| [ ] 86c | Bowcraft: shafts from cache logs | Knife → cache → select logs → make shafts. Verify create-all capped at 60k. Verify color/name from log type. |
-| [ ] 86d | Bowcraft: kindling from cache logs | Knife → cache → select logs → make kindling. Verify create-all capped at 60k. |
-| [ ] 86e | Bowcraft: bow from cache logs | Knife → cache → select logs → make Bow. Loop with lease lifecycle. Verify color/quality from log type. |
-| [ ] 86f | Bowcraft: fire bow from cache | Knife → cache → select logs → make Fire Bow. Requires SA reagent in backpack. Verify special color. |
-| [ ] 86g | Bowcraft: special arrows from cache | Knife → cache → select arrows → target cache for reagent → fire/ice/thunder arrows. Verify capped at 60k. |
-| [ ] 86h | Bowcraft: shafts backpack+autodraw | Knife → backpack logs (small stack) → make shafts. Autodraw enabled. Verify `ConsumeResource` draws from backpack then cache. |
-| [ ] 86i | Bowcraft: bow backpack+autodraw | Knife → backpack logs (3 logs, bow needs 7) → autodraw pulls from cache. Verify lease, availability check, consume from both sources. |
-| [ ] 86j | Bowcraft: special arrows backpack+autodraw | Target backpack arrows → target backpack reagent. 5 arrows in backpack, more in cache. Verify autodraw for arrows. Reagent from cache targeting. |
-| [ ] 87 | Cartography: blank maps from cache | Variable consumption (1-10), no loop. |
+| [ ] 82a | Logs from cache | Single material, loop. Chairs/containers/tables/staffs/shields. |
+| [ ] 82b | Ingots from cache | Single material, loop. Smith/cook/mage furniture, decoration, statues. |
+| [ ] 82c | Cloth from cache | Single material, loop. House furniture, instruments, tools. |
+| [ ] 82d | Dual material (logs + ingots) | Both from cache, independent leases. |
+| [ ] 82e | Keg/barrel from logs | Keg and barrel crafting path. |
+
+**Alchemy:**
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 83 | Reagents from cache | AutoLoop with nightshade, bottles from cache fallback. |
+
+**Inscription:**
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 84 | Blank scrolls from cache | Scroll loop with mana gating, lease release on mana depletion. |
+
+**Cooking:**
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 85 | Ingredients from cache | Multi-ingredient recipe, backpack-first with cache fallback. |
+
+**Bowcraft (fletching — `fletch.src`):**
+| # | Task | Deliverable |
+|---|---|---|
+| [x] 86a | Arrows from backpack+cache | Shafts from backpack (double-clicked). Feathers from cache via autodraw. Fixed: menu case, stack overflow, wrong stack consumed. |
+| [ ] 86b | Bolts from backpack+cache | Same as arrows but select Bolt from fletching menu. |
+
+**Bowcraft (bladed — `bladed.src`):**
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 86c | Shafts from cache logs | Knife → cache → select logs → make shafts. Create-all capped at 60k. Color/name from log type. |
+| [ ] 86d | Kindling from cache logs | Knife → cache → select logs → make kindling. Create-all capped at 60k. |
+| [ ] 86e | Bow from cache logs | Knife → cache → select logs → make Bow. Loop with lease lifecycle. Color/quality from log type. |
+| [ ] 86f | Fire bow from cache | Knife → cache → select logs → make Fire Bow. SA reagent in backpack. Special color. |
+| [ ] 86g | Special arrows from cache | Knife → cache → select arrows → target cache for reagent → fire/ice/thunder arrows. Capped at 60k. |
+| [ ] 86h | Shafts backpack+autodraw | Knife → backpack logs (small stack) → make shafts. Autodraw pulls from cache. |
+| [ ] 86i | Bow backpack+autodraw | Knife → backpack logs (3 logs, bow needs 7) → autodraw pulls from cache. Lease, availability check, consume from both. |
+| [ ] 86j | Special arrows backpack+autodraw | Backpack arrows → backpack reagent. 5 arrows in backpack, more in cache. Autodraw for arrows. Reagent from cache. |
+
+**Cartography:**
+| # | Task | Deliverable |
+|---|---|---|
+| [ ] 87 | Blank maps from cache | Variable consumption (1-10), no loop. |
+
+**Edge cases & infrastructure:**
+| # | Task | Deliverable |
+|---|---|---|
 | [ ] 88 | House demolition with items stored | Verify warning message, verify DataFile cleanup after demolition. |
 | [ ] 89 | Two players accessing same cache | Verify concurrent access doesn't corrupt data, leases prevent over-consumption. |
 | [ ] 90 | Multiple house types | Verify `who.multi` access control works for different house styles. |
