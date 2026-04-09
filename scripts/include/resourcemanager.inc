@@ -738,11 +738,12 @@ function PromptBulkAmount(who, max_available, item_name, resourceRequest := 0)
 	endif
 	// Cache involved — prompt for amount with retry on invalid input
 	while(1)
-		var raw_input := SendTextEntryGump(who, "How many " + item_name + "? [1-" + max_amount + "]", TE_CANCEL_ENABLE, TE_STYLE_NORMAL, 6);
-		if(raw_input == error)
-			return 0;  // Cancelled
+		var raw := SendTextEntryGump(who, "How many " + item_name + "? [1-" + max_amount + "]", TE_CANCEL_ENABLE, TE_STYLE_NORMAL, 6);
+		// Cancel/ESC returns 0 (not a string)
+		if(!raw and raw != "0")
+			return 0;
 		endif
-		var input := CInt(raw_input);
+		var input := CInt(raw);
 		if(input <= 0)
 			SendSysMessage(who, "Please enter a number between 1 and " + max_amount + ".");
 			continue;

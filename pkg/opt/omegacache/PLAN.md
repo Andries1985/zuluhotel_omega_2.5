@@ -1230,12 +1230,12 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 86d | Kindling from cache logs | Knife → cache → select logs → make kindling. Create-all capped at 60k. |
 | [x] 86e | Bow from cache logs | Knife → cache → select logs → make Bow. Loop with lease lifecycle. Color/quality from log type. |
 | [x] 86f | Fire bow from cache logs + backpack SA | Knife → cache → select logs → make Fire Bow. Requires bowcraft 119+ and 10 SA in backpack. |
-| [ ] 86f2 | Fire bow from cache logs + cache SA | Knife → cache → select logs. 0 SA in backpack, 100+ SA in cache. Verify Fire Bow appears in menu. Verify SA consumed from cache. |
-| [ ] 86f3 | Fire bow from backpack logs + cache SA | Knife → backpack logs. 0 SA in backpack, 100+ SA in cache. Verify Fire Bow appears in menu via autodraw. Verify SA consumed from cache. |
-| [ ] 86f4 | Fire bow mixed SA (partial backpack + cache) | 5 SA in backpack, rest in cache. Verify consumption draws from backpack first then cache. |
+| [x] 86f2 | Fire bow from cache logs + cache SA | Knife → cache → select logs. 0 SA in backpack, 100+ SA in cache. Fire Bow appears in menu. SA consumed from cache. |
+| [x] 86f3 | Fire bow from backpack logs + cache SA | Knife → backpack logs. 0 SA in backpack, 100+ SA in cache. Fire Bow appears in menu via autodraw. SA consumed from cache. |
+| [x] 86f4 | Fire bow mixed SA (partial backpack + cache) | 5 SA in backpack, rest in cache. Consumption draws from backpack first then cache. |
 | [x] 86g | Special arrows from cache | Knife → cache → select arrows → target cache for reagent → fire/ice/thunder arrows. Capped at 60k. |
-| [ ] 86h | Shafts backpack+autodraw | Knife → backpack logs (small stack) → make shafts. Autodraw pulls from cache. |
-| [ ] 86i | Bow backpack+autodraw | Knife → backpack logs (3 logs, bow needs 7) → autodraw pulls from cache. Lease, availability check, consume from both. |
+| [x] 86h | Shafts backpack+autodraw | Knife → backpack logs (small stack) → make shafts. Autodraw pulls from cache. |
+| [x] 86i | Bow backpack+autodraw | Knife → backpack logs (3 logs, bow needs 7) → autodraw pulls from cache. Lease, availability check, consume from both. |
 | [ ] 86j | Special arrows backpack+autodraw | Backpack arrows → backpack reagent. 5 arrows in backpack, more in cache. Autodraw for arrows. Reagent from cache. |
 
 **Cartography:**
@@ -1264,6 +1264,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 |---|---|---|
 | [ ] 88 | House demolition with items stored | Verify warning message, verify DataFile cleanup after demolition. |
 | [ ] 89 | Two players accessing same cache | Verify concurrent access doesn't corrupt data, leases prevent over-consumption. |
+| [ ] 89a | Manual withdrawal respects leases | Player A crafts with lease on ingots. Player B opens gump and tries to withdraw same ingots. Verify withdrawal capped to unleased amount. |
 | [ ] 90 | Multiple house types | Verify `who.multi` access control works for different house styles. |
 | [ ] 91 | Redeed on container destroy | Verify deed returns to player backpack when container removed via house management. |
 | [ ] 92 | Expired lease cleanup audit | Verify no flow exists where leases accumulate without cleanup. |

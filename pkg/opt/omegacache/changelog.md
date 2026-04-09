@@ -700,7 +700,9 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 39. **Fire/Ice/Thunder bow loop fix** — When reagent sourced from cache, `special` was unset (0), causing the `if(special and special.amount > 9)` loop guard to fail and abort crafting immediately. Fixed by replacing `special` checks with `specialRequest` + `GetAvailableResource` which covers both backpack and cache. Renamed `special` → `specialBackpackItem` to clarify it's only the physical backpack lock item. `makespecial` used for all logic checks instead.
 
-40. **Replaced hardcoded 60k caps** — All 6 bulk creation locations now use `PromptBulkAmount`:
+40. **`WithdrawItem` lease-aware** — `WithdrawItem` now enforces lease protection at the data layer. Caps withdrawal to `raw_qty - total_leased + own_lease`. Accepts optional `exclude_lease_key` parameter (4th param, defaults to 0). `ConsumeFromCache` passes caller's lease key through. Manual gump withdrawals (no lease) respect all active leases, preventing players from withdrawing into another player's crafting reservation. Previously only relied on upstream checks in `ConsumeFromCache`.
+
+41. **Replaced hardcoded 60k caps** — All 6 bulk creation locations now use `PromptBulkAmount`:
 - `bladed.src` — shafts/kindling creation and special arrows (fire/ice/thunder)
 - `fletch.src` — arrows/bolts from fletching
 - `make_cloth_items.src` — bandages from sewing kit (prompts for bandage count, multiplies by 4 for cloth)
