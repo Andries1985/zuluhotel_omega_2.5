@@ -246,6 +246,7 @@ function MakeBlacksmithItems( character, ingots )
 			SubtractAmount( ingots , material );
 			var product := CreateItemInBackpack( character , product_desc );
 			product.hp := product.maxhp;
+			IncRevision( product );
 			if(GetObjProperty(product, "IsExceptional"))
 				if(product.hitscript)
 					//was *12.. changed to *8
@@ -381,6 +382,7 @@ function MakeBoneItems( character, ingots, bone )
 			SubtractAmount( bone , material );
 			var product := CreateItemInBackpack( character , product_desc );
 			product.hp := product.maxhp;
+			IncRevision( product );
 		else
 			var bs 	:= GetEffectiveSkill( character , SKILLID_BLACKSMITHY );
 			var destroy	:= 75 - Cint( bs / 2 );
