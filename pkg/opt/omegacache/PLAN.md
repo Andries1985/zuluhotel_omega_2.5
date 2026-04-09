@@ -1206,7 +1206,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Alchemy:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 83a | Reagents from cache (direct) | Mortar → cache → select reagent → craft potion. Lease lifecycle. |
+| [x] 83a | Reagents from cache (direct) | Mortar → cache → Black Pearl. 10 loops, 4 BP per iteration from cache. Bottles from backpack then cache fallback. Lease lifecycle correct. |
 | [ ] 83b | Reagents from backpack + autodraw | Mortar → backpack reagent, small stack. Autodraw pulls from cache. Lease, bottles from cache fallback. |
 | [ ] 83c | Backpack-only (no cache) | Mortar → backpack reagent, out of cache range. Original behaviour, no lease. |
 

@@ -338,7 +338,7 @@ function GetBottle( conts, user )
 		endif
 	endif
 	// Try cache for bottles
-	var bottleReq := struct{ objtype := CInt(UOBJ_EMPTY_BOTTLE), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ OMEGA_CACHE }, dataFileHandle := 0, leaseKey := 0 };
+	var bottleReq := struct{ objtype := CInt(UOBJ_EMPTY_BOTTLE), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE }, dataFileHandle := 0, leaseKey := 0 };
 	var access := FindAccessibleContainer(user, array{REMOVE_FROM_SECURE});
 	if(access)
 		bottleReq.dataFileHandle := access.df;
