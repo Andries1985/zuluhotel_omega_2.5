@@ -1115,7 +1115,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 48 | Blacksmithy | Full `ResourceRequest` + lease integration. Cache targeting, dual material (ingots + bone), `IsIngotObjtype`/`IsBoneObjtype` helpers. |
 | [x] 49 | Tailoring | Single material (hides/cloth). ResourceRequest with leases in AutoLoop. CProps from hide config applied to product. Bandage special case uses all available material. |
 | [x] 50 | Carpentry | Dual material (logs + ingots/cloth), independent ResourceRequests and leases. Cache targeting for both primary and secondary materials. Color inheritance cache-aware. Young oak staff has cache variant. |
-| [x] 51 | Alchemy | Separate cache functions (CanMakeFromCache, TryToMakePotionFromCache, GetBottleFromCache). Reagents consumed inside CanMake before skill check. Bottles consumed from backpack-first, cache fallback. |
+| [x] 51 | Alchemy | Retrofitted existing functions (`CanMake`, `GetBottle`, `TryToMakePotion`) with optional `regRequest` param. No duplicate functions. Reagents consumed via `ConsumeResource`. Bottles: backpack-first, cache fallback in `GetBottle`. Lease lifecycle in `TryToMakePotion`. |
 | [x] 52 | Tinkering | Metal/wood/glass/clay + gems + complex components. Cache entry point routes by objtype. Main loop uses ResourceRequest with leases. Complex items (axle+gears, clock, sextant) consume from cache. Totem/potion keg have cache variants. Keys/traps remain backpack-only (non-stackable). |
 | [x] 53 | Bowcraft/Fletching | Dual material (shafts + feathers). Both can be sourced from cache. No loop, no leases. Simple ConsumeResource for both on success/failure. |
 | [x] 54 | Cooking | Multi-ingredient recipe system. Global `cooking_cache_df` set when targeting cache. `check_for_all_ingredients` checks cache as fallback. `destroy_all_ingredients` consumes from backpack first, cache remainder. Special materials (water/milk/cheese) remain backpack-only. |
@@ -1179,12 +1179,12 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Tinkering (continued, tested 2026-04-08):**
 | # | Task | Result |
 |---|---|---|
-| [x] 78a | Tinkering: obsidian golem backpack+cache | 20 obsidian in backpack, 80+ in cache. `ConsumeResource` drew 20 from backpack + 80 from cache. Single craft, no lease (design constraint). |
+| [ ] 78a | Tinkering: obsidian golem backpack+cache | **RETEST** — `MakeTotem` refactored (removed `MakeTotemFromCache`). 20 obsidian in backpack, 80+ in cache. |
 | [x] 78b | Tinkering: gem jewelry from backpack with cache fallback | 2 rubies in backpack, loop 4. First 2 iterations consumed from backpack, iterations 3-4 targeted cache via `SelectMaterialFromCache` (Star Sapphire, Diamond). Mixed gem types across iterations work. |
 | [x] 78c | Tinkering: trap with cache fallback | Targeted cache for Deadly Poison Potion. Two `WithdrawItem` calls (1 pre-check + 1 on success). Trap set. Also tested Greater Explosion Potion from cache. Arrow correctly rejected. |
-| [x] 78d | Tinkering: potion keg bottles from cache | 2 bottles in backpack + cache fallback, and 0 bottles in backpack + cache-only. Both work. `ConsumeResource` draws from cache. Fixed `FindObjtypeInContainer` fallback to cache when backpack empty. |
+| [ ] 78d | Tinkering: potion keg bottles from cache | **RETEST** — `TryToMakePotionKeg` refactored (removed `TryToMakePotionKegFromCache`). 2 bottles in backpack + cache, and 0 bottles + cache-only. |
 | BLOCKED | 78e | Tinkering: complex gears from cache — Axle (0x105b), Springs (0x105d), Clock Parts (0x104f) have no itemdesc.cfg entries. Pre-existing. |
-| [x] 78f | Tinkering: axle+gears + hinge from cache | Cache → Axle+Gears, cache → Hinge. Both consumed (`WithdrawItem` 1 each). Sextant Parts created. |
+| [ ] 78f | Tinkering: axle+gears + hinge from cache | **RETEST** — `TryToMakeComplex` refactored (removed `TryToMakeComplexFromCache`). Cache → Axle+Gears, cache → Hinge. |
 
 **Tailoring (tested 2026-04-08):**
 | # | Task | Result |
@@ -1201,11 +1201,14 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 82c | Cloth from cache (dual material) | Cloth + Emerald Logs, both from cache. Independent leases (qty=25, qty=75). Both consumed and released. |
 | [x] 82d | Dual material (logs + ingots) | Tested via 82b. |
 | [x] 82e | Keg/barrel from logs | Keg and barrel crafting path. |
+| [ ] 82f | Young oak staff from cache | **RETEST** — `MakeYoungOakStaff` refactored (removed `MakeYoungOakStaffFromCache`). Cache → young oak logs → staff. |
 
 **Alchemy:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 83 | Reagents from cache | AutoLoop with nightshade, bottles from cache fallback. |
+| [ ] 83a | Reagents from cache (direct) | Mortar → cache → select reagent → craft potion. Lease lifecycle. |
+| [ ] 83b | Reagents from backpack + autodraw | Mortar → backpack reagent, small stack. Autodraw pulls from cache. Lease, bottles from cache fallback. |
+| [ ] 83c | Backpack-only (no cache) | Mortar → backpack reagent, out of cache range. Original behaviour, no lease. |
 
 **Inscription:**
 | # | Task | Deliverable |
@@ -1253,11 +1256,11 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 93e | Shafts from backpack — no prompt | NO gump when out of cache range or autodraw disabled. Creates max available. |
 | [x] 93f | Arrows from cache — prompt | Fletching with shafts and/or feathers from cache autodraw. Gump appears. Max = min(shafts total, feathers total). |
 | [x] 93g | Arrows from backpack — no prompt | Backpack shafts + backpack feathers, out of cache range. NO gump, creates min(shafts, feathers). |
-| [ ] 93h | Bandages from cache cloth — prompt | Sewing kit → cache cloth → bandages. Gump shows bandage count (cloth ÷ 4). |
-| [ ] 93i | Bandages from backpack — no prompt | Sewing kit → backpack cloth → bandages. NO gump, original behaviour. |
+| [x] 93h | Bandages from cache cloth — prompt | Sewing kit → cache cloth → bandages. Gump shows bandage count (cloth ÷ 4). |
+| [x] 93i | Bandages from backpack — no prompt | Sewing kit → backpack cloth → bandages. NO gump, out of cache range. Original behaviour. |
 | N/A | 93j | Scissors bandages — reverted to original. Random multiplier incompatible with amount prompt. Backpack-only, capped 60k. |
-| [ ] 93k | Special arrows from cache — prompt | Fire/ice/thunder arrows from cache. Gump appears. |
-| [ ] 93l | Grinding — no prompt | Grinding backpack ingredients. NO gump, capped 60k. |
+| [x] 93k | Special arrows from cache — prompt | Fire/ice/thunder arrows from cache. Gump appears. |
+| N/A | 93l | Grinding — skipped. Flour mill non-functional on this shard. Backpack-only, no cache involvement. |
 
 **Edge cases & infrastructure:**
 | # | Task | Deliverable |
@@ -1266,7 +1269,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [ ] 89 | Two players accessing same cache | Verify concurrent access doesn't corrupt data, leases prevent over-consumption. |
 | [ ] 89a | Manual withdrawal respects leases | Player A crafts with lease on ingots. Player B opens gump and tries to withdraw same ingots. Verify withdrawal capped to unleased amount. |
 | [ ] 90 | Multiple house types | Verify `who.multi` access control works for different house styles. |
-| [ ] 91 | Redeed on container destroy | Verify deed returns to player backpack when container removed via house management. |
+| [x] 91 | Redeed on container destroy | Deed returns to player backpack when container removed via house management. |
 | [ ] 92 | Expired lease cleanup audit | Verify no flow exists where leases accumulate without cleanup. |
 
 ---

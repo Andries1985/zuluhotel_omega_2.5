@@ -713,12 +713,26 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 - `scissors.src` — bandages from scissors on cloth (backpack-only, no gump, replaced 60k overflow loop)
 - `grinding.src` — ground items (backpack-only, no gump, adjusts batch consumption)
 
+44. **`PromptBulkAmount` cancel fix** — `SendTextEntryGump` returns 0 on cancel, same as `CInt("abc")` or `CInt("0")`. Fixed by checking raw return before `CInt`: cancel (falsy non-string) returns 0 immediately, "0"/"-1"/text shows retry message, only over-max retries.
+
+45. **Alchemy backpack path retrofitted** — `TryToMakePotion` now accepts optional `regRequest` param. When provided (cache path), uses it; otherwise builds from physical `reg` item via `MakeBackpackRequest`. `CanMake` accepts optional `regRequest` — uses `GetAvailableResource` + `ConsumeResource` instead of `reg.amount` + `SubtractAmount`. `GetBottle` now checks cache as fallback when no bottles in backpack. Lease lifecycle added to `TryToMakePotion` loop. `ReserveItem(reg)` removed for cache path.
+
+46. **Duplicate `FromCache` functions eliminated** — Removed all parallel cache-specific functions that duplicated existing logic. Existing functions retrofitted with optional `resourceRequest` parameter instead:
+- **Alchemy**: Deleted `CanMakeFromCache`, `GetBottleFromCache`, `TryToMakePotionFromCache`. Merged into `CanMake`, `GetBottle`, `TryToMakePotion`.
+- **Tinkering**: Deleted `MakeTotemFromCache`, `TryToMakePotionKegFromCache`, `TryToMakeComplexFromCache`. Merged into `MakeTotem`, `TryToMakePotionKeg`, `TryToMakeComplex`.
+- **Carpentry**: Deleted `MakeYoungOakStaffFromCache`. Merged into `MakeYoungOakStaff`.
+
 ### Files Modified
 
-- `scripts/include/resourcemanager.inc` — added `PromptBulkAmount` function
-- `scripts/items/bladed.src` — 2 locations replaced with `PromptBulkAmount`
-- `scripts/items/fletch.src` — 1 location replaced with `PromptBulkAmount`
-- `pkg/std/tailoring/make_cloth_items.src` — 1 location replaced with `PromptBulkAmount`
-- `pkg/std/tailoring/scissors.src` — added includes, replaced 60k loop with `PromptBulkAmount`
-- `pkg/std/cooking/grinding.src` — added includes, replaced direct creation with `PromptBulkAmount` + adjusted batch consumption
+- `scripts/include/resourcemanager.inc` — added `PromptBulkAmount` function, cancel/retry fix
+- `scripts/items/bladed.src` — 2 locations replaced with `PromptBulkAmount`, `specialBackpackItem` rename, fire bow cache reagent fix
+- `scripts/items/fletch.src` — `PromptBulkAmount`, shafts autodraw via `GetAvailableResource` + `ConsumeResource`
+- `pkg/std/tailoring/make_cloth_items.src` — `PromptBulkAmount` for bandages
+- `pkg/std/tailoring/scissors.src` — reverted to original with 60k cap
+- `pkg/std/cooking/grinding.src` — `PromptBulkAmount` with adjusted batch consumption
+- `pkg/std/alchemy/alchemy.src` — `CanMake`/`GetBottle`/`TryToMakePotion` retrofitted with optional cache params. Deleted 3 duplicate functions. Lease lifecycle added.
+- `pkg/std/tinkering/tinkering.src` — `MakeTotem`/`TryToMakePotionKeg`/`TryToMakeComplex` retrofitted with optional cache params. Deleted 3 duplicate functions. `use_on.color` guarded for cache path.
+- `pkg/std/carpentry/carpentry.src` — `MakeYoungOakStaff` retrofitted. Deleted `MakeYoungOakStaffFromCache`.
+- `pkg/opt/omegacache/omegacache.inc` — `WithdrawItem` lease-aware with `exclude_lease_key` param
+- `pkg/opt/omegacache/categories.cfg` — Wheat sheaf added to RawFoodAndHerbs. Raw food items moved from Food. Category renamed RawHerbs → RawFoodAndHerbs.
 

@@ -101,7 +101,7 @@ program MakeCarpentryItems( character, tool )
 			var cache_use_on := use_on;
 			item := MakeAndProcessMenu(character, cache_use_on, ID_CLOTH);
 		elseif(ot == 0xBA2A)
-			MakeYoungOakStaffFromCache(character, cacheRequest);
+			MakeYoungOakStaff(character, 0, cacheRequest);
 			return;
 		else
 			SendSysMessage(character, "You don't know how to use that.");
@@ -873,14 +873,18 @@ function CanMake( who , key , ressource )
 endfunction
 
 
-function MakeYoungOakStaff( character , oak )
+function MakeYoungOakStaff( character , oak, oakRequest := 0 )
 	var ammount_required := 15;
 	//Require half resources during Crafting PH
 	if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
 		ammount_required := CInt(Ceil(ammount_required/2));
 	endif
-	
-	if( oak.amount < ammount_required )
+
+	if(!oakRequest)
+		oakRequest := MakeBackpackRequest(character, oak);
+	endif
+
+	if( GetAvailableResource(character, oakRequest).total < ammount_required )
 		SendSysMessage( character , "You don't have enough young oak wood to make a staff." );
 		return;
 	endif
@@ -894,45 +898,12 @@ function MakeYoungOakStaff( character , oak )
 
 	var diff := 100;
 	SendSysmessage( character , "Difficulty: "+diff );
-	SubtractAmount( oak , ammount_required );
+	ConsumeResource( character , oakRequest , ammount_required );
 	if( CheckSkill( character , cint(SKILLID_CARPENTRY) , cint(diff) , cint(diff * POINTS_MULTIPLIER) ) )
 		CreateItemInBackpack( character , 0xBA28 );
 		SendSysMessage( character , "You successfully crafted a young oak staff." );
 	else
 		SendSysMessage( character , "You failed in your attemp to create a young oak staff." );
-	endif
-
-endfunction
-
-
-// Young oak staff crafting from cache
-function MakeYoungOakStaffFromCache(character, resourceRequest)
-	var ammount_required := 15;
-	//Require half resources during Crafting PH
-	if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
-		ammount_required := CInt(Ceil(ammount_required/2));
-	endif
-
-	if(GetAvailableResource(character, resourceRequest).total < ammount_required)
-		SendSysMessage(character, "You don't have enough young oak wood to make a staff.");
-		return;
-	endif
-
-	PlaySoundEffect(character, CARPENTER_SOUND);
-	Sleep(2);
-	PlaySoundEffect(character, CARPENTER_SOUND);
-	Sleep(2);
-	PlaySoundEffect(character, CARPENTER_SOUND);
-	Sleep(2);
-
-	var diff := 100;
-	SendSysmessage(character, "Difficulty: " + diff);
-	ConsumeResource(character, resourceRequest, ammount_required);
-	if(CheckSkill(character, cint(SKILLID_CARPENTRY), cint(diff), cint(diff * POINTS_MULTIPLIER)))
-		CreateItemInBackpack(character, 0xBA28);
-		SendSysMessage(character, "You successfully crafted a young oak staff.");
-	else
-		SendSysMessage(character, "You failed in your attemp to create a young oak staff.");
 	endif
 
 endfunction
