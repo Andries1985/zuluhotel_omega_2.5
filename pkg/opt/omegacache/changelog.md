@@ -704,7 +704,9 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 41. **Fletching shafts autodraw** — `fletch.src` now supports cache autodraw for shafts (was backpack-only). `shaft_count` uses `GetAvailableResource` instead of `shafts.amount`. `SubtractAmount(shafts, ...)` replaced with `ConsumeResource(character, shaftRequest, ...)`. `PromptBulkAmount` shows if either shafts or feathers involve cache.
 
-42. **Replaced hardcoded 60k caps** — All 6 bulk creation locations now use `PromptBulkAmount`:
+42. **Scissors reverted** — `scissors.src` left as original backpack-only behaviour. Random bandage multiplier (1-3x cloth) incompatible with exact amount prompting. Capped at 60k.
+
+43. **Replaced hardcoded 60k caps** — All 6 bulk creation locations now use `PromptBulkAmount`:
 - `bladed.src` — shafts/kindling creation and special arrows (fire/ice/thunder)
 - `fletch.src` — arrows/bolts from fletching
 - `make_cloth_items.src` — bandages from sewing kit (prompts for bandage count, multiplies by 4 for cloth)

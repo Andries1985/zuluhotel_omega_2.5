@@ -16,8 +16,6 @@ Const BANDAGES := 0x0e21;
 
 include "include/client";
 include "include/random";
-include "include/omegacache_utils";
-include "include/resourcemanager";
 
 program use_scissors( character , scissors )
 
@@ -115,10 +113,9 @@ program use_scissors( character , scissors )
 		sleep (1);
 
 		if(CheckSkill(character, SKILLID_TAILORING , 5 , 20))
-			var max_bandages := cint(cloth.amount * (Random(3)+1));
-			var amt := PromptBulkAmount(character, max_bandages, "bandages");
-			if(!amt)
-				return;
+			var amt := cint(cloth.amount * (Random(3)+1));
+			if(amt > 60000)
+				amt := 60000;
 			endif
 			if(!CreateItemInBackpack( character, 0x0e21, amt ))
 				if (CreateItemAtLocation(character.x, character.y, character.z, 0x0e21, amt, character.realm))

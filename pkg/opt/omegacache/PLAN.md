@@ -1251,11 +1251,11 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 93c | Shafts from cache — cancel | Gump appears, cancel, nothing created. |
 | [x] 93d | Shafts from cache — max=1 | Only 1 available, no gump, 1 created. |
 | [x] 93e | Shafts from backpack — no prompt | NO gump when out of cache range or autodraw disabled. Creates max available. |
-| [ ] 93f | Arrows from cache — prompt | Fletching with shafts and/or feathers from cache autodraw. Gump appears. Max = min(shafts total, feathers total). |
+| [x] 93f | Arrows from cache — prompt | Fletching with shafts and/or feathers from cache autodraw. Gump appears. Max = min(shafts total, feathers total). |
 | [x] 93g | Arrows from backpack — no prompt | Backpack shafts + backpack feathers, out of cache range. NO gump, creates min(shafts, feathers). |
 | [ ] 93h | Bandages from cache cloth — prompt | Sewing kit → cache cloth → bandages. Gump shows bandage count (cloth ÷ 4). |
 | [ ] 93i | Bandages from backpack — no prompt | Sewing kit → backpack cloth → bandages. NO gump, original behaviour. |
-| [ ] 93j | Scissors bandages — no prompt | Scissors → cloth. NO gump (backpack-only), capped 60k. |
+| N/A | 93j | Scissors bandages — reverted to original. Random multiplier incompatible with amount prompt. Backpack-only, capped 60k. |
 | [ ] 93k | Special arrows from cache — prompt | Fire/ice/thunder arrows from cache. Gump appears. |
 | [ ] 93l | Grinding — no prompt | Grinding backpack ingredients. NO gump, capped 60k. |
 
