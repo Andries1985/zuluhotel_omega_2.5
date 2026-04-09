@@ -89,7 +89,7 @@ program use_mortar( user, mortar )
 		var num_possibilities;
 		var mage := GetObjProperty(user, CLASSEID_MAGE);
 		foreach potion_type in possibles
-			if(CanMake(user, potion_type, 0, mage, usereg := 0, cacheRequest))
+			if(CanMake(user, potion_type, 0, mage, usereg := 0, regRequest := cacheRequest))
 				AddMenuItem(menu, conf[potion_type].objtype, potion_type);
 				num_possibilities := 1;
 			endif
@@ -209,7 +209,7 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0, regReq
 
 		while( AutoLoop_more() && NOT user.dead)
 
-			if( CanMake( user, potion, reg, mage, usereg := 1, regRequest ) )
+			if( CanMake( user, potion, reg, mage, usereg := 1, regRequest := regRequest ) )
 
 				for( i := 1 ; i <= NUM_PERFORM ; i := i + 1 )
 					PlaySoundEffect( user, SFX_GRIND );
