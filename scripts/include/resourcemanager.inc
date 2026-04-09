@@ -146,7 +146,7 @@ function ConsumeFromCache(byref resourceRequest, amount)
 		var available := GetStoredAmount(df, key, exclude_lease_key);
 		if(available > 0)
 			var take := Min(remaining, available);
-			var taken := WithdrawItem(df, key, take);
+			var taken := WithdrawItem(df, key, take, exclude_lease_key);
 			consumed := consumed + taken;
 			remaining := remaining - taken;
 		endif
@@ -173,7 +173,7 @@ function ConsumeFromCache(byref resourceRequest, amount)
 						resourceRequest.key := df_key;
 					endif
 					var take := Min(remaining, available);
-					var taken := WithdrawItem(df, df_key, take);
+					var taken := WithdrawItem(df, df_key, take, exclude_lease_key);
 					consumed := consumed + taken;
 					remaining := remaining - taken;
 				endif

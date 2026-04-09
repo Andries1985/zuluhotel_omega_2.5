@@ -380,25 +380,36 @@ endfunction
 
 // Withdraw an amount from the cache. Returns the actual amount withdrawn.
 // Deletes the element if qty reaches 0.
-function WithdrawItem(df, key, amount)
+function WithdrawItem(df, key, amount, exclude_lease_key := 0)
 	var elem := df.FindElement(key);
 	if(!elem)
 		return 0;
 	endif
 
-	var available := CInt(elem.GetProp("qty"));
+	var raw_qty := CInt(elem.GetProp("qty"));
+	var leased := GetLeasedAmount(df, key, exclude_lease_key);
+	var available := raw_qty - leased;
+	if(available < 0)
+		available := 0;
+	endif
+
 	var take := amount;
 	if(take > available)
 		take := available;
 	endif
 
-	if(take >= available)
-		df.DeleteElement(key);
-	else
-		elem.SetProp("qty", available - take);
+	if(take <= 0)
+		return 0;
 	endif
 
-	OmegaCacheDebug("WithdrawItem: key=" + key + " requested=" + amount + " withdrawn=" + take + " remaining=" + (available - take));
+	var new_qty := raw_qty - take;
+	if(new_qty <= 0)
+		df.DeleteElement(key);
+	else
+		elem.SetProp("qty", new_qty);
+	endif
+
+	OmegaCacheDebug("WithdrawItem: key=" + key + " requested=" + amount + " withdrawn=" + take + " remaining=" + new_qty);
 	return take;
 endfunction
 
