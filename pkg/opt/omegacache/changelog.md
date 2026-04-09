@@ -698,7 +698,9 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 38. **`PromptBulkAmount` centralised function** — Added to `resourcemanager.inc`. Prompts player for desired amount when creating bulk items (shafts, kindling, arrows, bandages, etc). Only shows gump when cache is involved (`resourceRequest.dataFileHandle` is set). Backpack-only paths return max available capped to 60k silently (preserving original behaviour). Skips gump when max=1. Retries with error message when input exceeds maximum.
 
-39. **Replaced hardcoded 60k caps** — All 6 bulk creation locations now use `PromptBulkAmount`:
+39. **Fire/Ice/Thunder bow loop fix** — When reagent sourced from cache, `special` was unset (0), causing the `if(special and special.amount > 9)` loop guard to fail and abort crafting immediately. Fixed by replacing `special` checks with `specialRequest` + `GetAvailableResource` which covers both backpack and cache. Renamed `special` → `specialBackpackItem` to clarify it's only the physical backpack lock item. `makespecial` used for all logic checks instead.
+
+40. **Replaced hardcoded 60k caps** — All 6 bulk creation locations now use `PromptBulkAmount`:
 - `bladed.src` — shafts/kindling creation and special arrows (fire/ice/thunder)
 - `fletch.src` — arrows/bolts from fletching
 - `make_cloth_items.src` — bandages from sewing kit (prompts for bandage count, multiplies by 4 for cloth)

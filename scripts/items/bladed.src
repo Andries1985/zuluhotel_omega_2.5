@@ -357,7 +357,7 @@ function CarveLogs( character, logs, logRequest := 0 )
 	var the_keys		:= GetConfigStringKeys( bowcraft_cfg );
 	var can_make		:= 0;
 	var menu 		:= CreateMenu( "What would you like to make?" );
-	var special;
+	var specialBackpackItem;
 	var makespecial		:= 0;
 	foreach key in the_keys
 		if( CanMake( bowcraft , key , logs , logs_diff , bowcraft_cfg, character, log_avail  ) )
@@ -391,8 +391,8 @@ function CarveLogs( character, logs, logRequest := 0 )
 		foreach item in EnumerateItemsInContainer(character.backpack)
 			if(item.objtype == needed_hide_type)
 				makespecial := 1;
-				special := item;
-				special.movable := 0;
+				specialBackpackItem := item;
+				specialBackpackItem.movable := 0;
 				specialRequest := MakeBackpackRequest(character, item);
 				break;
 			endif
@@ -482,7 +482,7 @@ function CarveLogs( character, logs, logRequest := 0 )
 	AutoLoop_init( character );
 	while( AutoLoop_more() && (GetAvailableResource(character, logRequest).total >= material) && NOT character.dead)
 
-		if ((!makespecial) or (special and special.amount > 9 ))
+		if ((!makespecial) or (specialRequest and GetAvailableResource(character, specialRequest).total >= 10))
 		itemname := element.Name;
 		skill	 := element.Skill;
 		skill	 := skill + Cint( logs_diff / DIVIDER );
@@ -573,7 +573,7 @@ function CarveLogs( character, logs, logRequest := 0 )
 					SendSysmessage( character , "You create the item and place it in your pack." );
 				endif
 				theitem.color := logRequest.color;
-				if (special and theitem.color == 0 )
+				if (makespecial and theitem.color == 0 )
 					if (theitem.objtype == 0x6050)
 						theitem.color := 1172;
 					elseif (theitem.objtype == 0xb201)
@@ -623,8 +623,8 @@ function CarveLogs( character, logs, logRequest := 0 )
 	endwhile
 	ReleaseResourceLease(logRequest);
 	AutoLoop_finish();
-	if (makespecial and special)
-		special.movable := 1;
+	if (makespecial and specialBackpackItem)
+		specialBackpackItem.movable := 1;
 	endif
 endfunction
 
