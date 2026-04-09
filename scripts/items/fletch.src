@@ -41,8 +41,9 @@ program on_fletch( character, shafts )
 
     var choice := SelectMenuItem2( character , "Fletching" );
 
-    // Shafts: use the targeted stack amount (what was double-clicked)
-    var shaft_count := shafts.amount;
+    // Shafts: use targeted stack + cache if autodraw enabled
+    var shaftRequest := MakeBackpackRequest(character, shafts);
+    var shaft_count := GetAvailableResource(character, shaftRequest).total;
     // Feathers: use total available (backpack + cache if autodraw enabled)
     var feather_count := GetAvailableResource(character, featherRequest).total;
 
@@ -52,7 +53,14 @@ program on_fletch( character, shafts )
                         1,                     // difficulty
                         thepoints ))                   // points
             var max_make := Min( shaft_count, feather_count );
-            var num_to_make := PromptBulkAmount(character, max_make, "items", featherRequest);
+            // Show prompt if either material involves cache
+            var promptRequest := 0;
+            if(shaftRequest.dataFileHandle)
+                promptRequest := shaftRequest;
+            elseif(featherRequest.dataFileHandle)
+                promptRequest := featherRequest;
+            endif
+            var num_to_make := PromptBulkAmount(character, max_make, "items", promptRequest);
             if(!num_to_make)
                 return;
             endif
@@ -61,13 +69,13 @@ program on_fletch( character, shafts )
                 var arrows := CreateItemInBackpack( character, choice.objtype, num_to_make );
                 if (arrows.amount > 0)
                     // Consume shafts directly from the targeted stack
-                    SubtractAmount( shafts, num_to_make );
+                    ConsumeResource( character, shaftRequest, num_to_make );
                     ConsumeResource( character, featherRequest, num_to_make );
                     SendSysMessage( character, "You create some arrows and put them in your pack." );
                 endif
             endif
         else
-            SubtractAmount( shafts, 1 );
+            ConsumeResource( character, shaftRequest, 1 );
             ConsumeResource( character, featherRequest, 1 );
             SendSysMessage( character, "You destroy some materials." );
         endif

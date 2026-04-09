@@ -1196,11 +1196,11 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Carpentry:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 82a | Logs from cache | Single material, loop. Chairs/containers/tables/staffs/shields. |
-| [ ] 82b | Ingots from cache | Single material, loop. Smith/cook/mage furniture, decoration, statues. |
-| [ ] 82c | Cloth from cache | Single material, loop. House furniture, instruments, tools. |
-| [ ] 82d | Dual material (logs + ingots) | Both from cache, independent leases. |
-| [ ] 82e | Keg/barrel from logs | Keg and barrel crafting path. |
+| [x] 82a | Logs from cache | Purple Passion Logs from cache. Lease qty=10, craft, withdraw, release. Correct. |
+| [x] 82b | Ingots from cache (dual material) | Dark Ruby Ingots + Doom Logs, both from cache. Independent leases (qty=50, qty=100). Both consumed and released. |
+| [x] 82c | Cloth from cache (dual material) | Cloth + Emerald Logs, both from cache. Independent leases (qty=25, qty=75). Both consumed and released. |
+| [x] 82d | Dual material (logs + ingots) | Tested via 82b. |
+| [x] 82e | Keg/barrel from logs | Keg and barrel crafting path. |
 
 **Alchemy:**
 | # | Task | Deliverable |
@@ -1236,7 +1236,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 86g | Special arrows from cache | Knife → cache → select arrows → target cache for reagent → fire/ice/thunder arrows. Capped at 60k. |
 | [x] 86h | Shafts backpack+autodraw | Knife → backpack logs (small stack) → make shafts. Autodraw pulls from cache. |
 | [x] 86i | Bow backpack+autodraw | Knife → backpack logs (3 logs, bow needs 7) → autodraw pulls from cache. Lease, availability check, consume from both. |
-| [ ] 86j | Special arrows backpack+autodraw | Backpack arrows → backpack reagent. 5 arrows in backpack, more in cache. Autodraw for arrows. Reagent from cache. |
+| [x] 86j | Special arrows backpack+autodraw | Backpack arrows → backpack reagent. 5 arrows in backpack, more in cache. Autodraw for arrows. Reagent from cache. |
 
 **Cartography:**
 | # | Task | Deliverable |
@@ -1246,13 +1246,13 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Bulk Amount Prompt (`PromptBulkAmount`):**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 93a | Shafts from cache — prompt | Knife → cache logs → shafts. Gump appears, enter 50, get 50 shafts. |
-| [ ] 93b | Shafts from cache — over max | Gump appears, enter 999999, error message + gump redisplays. |
-| [ ] 93c | Shafts from cache — cancel | Gump appears, press cancel, nothing created. |
-| [ ] 93d | Shafts from cache — max=1 | Only 1 log available. No gump, 1 shaft created. |
-| [ ] 93e | Shafts from backpack — no prompt | Knife → backpack logs → shafts. NO gump, creates max available. |
-| [ ] 93f | Arrows from cache feathers — prompt | Fletching with feathers from cache. Gump appears. |
-| [ ] 93g | Arrows from backpack — no prompt | Fletching with backpack feathers. NO gump, original behaviour. |
+| [x] 93a | Shafts from cache — prompt | Gump appears, enter 50, get 50 shafts. |
+| [x] 93b | Shafts from cache — over max | Gump appears, enter 999999, error + redisplay. |
+| [x] 93c | Shafts from cache — cancel | Gump appears, cancel, nothing created. |
+| [x] 93d | Shafts from cache — max=1 | Only 1 available, no gump, 1 created. |
+| [x] 93e | Shafts from backpack — no prompt | NO gump when out of cache range or autodraw disabled. Creates max available. |
+| [ ] 93f | Arrows from cache — prompt | Fletching with shafts and/or feathers from cache autodraw. Gump appears. Max = min(shafts total, feathers total). |
+| [x] 93g | Arrows from backpack — no prompt | Backpack shafts + backpack feathers, out of cache range. NO gump, creates min(shafts, feathers). |
 | [ ] 93h | Bandages from cache cloth — prompt | Sewing kit → cache cloth → bandages. Gump shows bandage count (cloth ÷ 4). |
 | [ ] 93i | Bandages from backpack — no prompt | Sewing kit → backpack cloth → bandages. NO gump, original behaviour. |
 | [ ] 93j | Scissors bandages — no prompt | Scissors → cloth. NO gump (backpack-only), capped 60k. |

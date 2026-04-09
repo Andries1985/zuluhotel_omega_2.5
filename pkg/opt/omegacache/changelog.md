@@ -702,7 +702,9 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 40. **`WithdrawItem` lease-aware** — `WithdrawItem` now enforces lease protection at the data layer. Caps withdrawal to `raw_qty - total_leased + own_lease`. Accepts optional `exclude_lease_key` parameter (4th param, defaults to 0). `ConsumeFromCache` passes caller's lease key through. Manual gump withdrawals (no lease) respect all active leases, preventing players from withdrawing into another player's crafting reservation. Previously only relied on upstream checks in `ConsumeFromCache`.
 
-41. **Replaced hardcoded 60k caps** — All 6 bulk creation locations now use `PromptBulkAmount`:
+41. **Fletching shafts autodraw** — `fletch.src` now supports cache autodraw for shafts (was backpack-only). `shaft_count` uses `GetAvailableResource` instead of `shafts.amount`. `SubtractAmount(shafts, ...)` replaced with `ConsumeResource(character, shaftRequest, ...)`. `PromptBulkAmount` shows if either shafts or feathers involve cache.
+
+42. **Replaced hardcoded 60k caps** — All 6 bulk creation locations now use `PromptBulkAmount`:
 - `bladed.src` — shafts/kindling creation and special arrows (fire/ice/thunder)
 - `fletch.src` — arrows/bolts from fletching
 - `make_cloth_items.src` — bandages from sewing kit (prompts for bandage count, multiplies by 4 for cloth)
