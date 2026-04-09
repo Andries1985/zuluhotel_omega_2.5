@@ -16,6 +16,8 @@ Const BANDAGES := 0x0e21;
 
 include "include/client";
 include "include/random";
+include "include/omegacache_utils";
+include "include/resourcemanager";
 
 program use_scissors( character , scissors )
 
@@ -113,41 +115,20 @@ program use_scissors( character , scissors )
 		sleep (1);
 
 		if(CheckSkill(character, SKILLID_TAILORING , 5 , 20))
-			var amt := cint(cloth.amount * (Random(3)+1));
-			if(amt <= 60000)
-				if(!CreateItemInBackpack( character, 0x0e21, amt ))
-					if (CreateItemAtLocation(character.x, character.y, character.z, 0x0e21, amt, character.realm))
-						SendSysmessage(character, "As your backpack is full, you create the item and place it by your feet.");
-					else
-						SendSysMessage(character, "Your backpack is too full for you to create the item.");
-						return 0;
-					endif	
+			var max_bandages := cint(cloth.amount * (Random(3)+1));
+			var amt := PromptBulkAmount(character, max_bandages, "bandages");
+			if(!amt)
+				return;
+			endif
+			if(!CreateItemInBackpack( character, 0x0e21, amt ))
+				if (CreateItemAtLocation(character.x, character.y, character.z, 0x0e21, amt, character.realm))
+					SendSysmessage(character, "As your backpack is full, you create the item and place it by your feet.");
 				else
-					SendSysmessage( character , "You create " + amt + " bandages in your pack." );
+					SendSysMessage(character, "Your backpack is too full for you to create the item.");
+					return 0;
 				endif
 			else
-				var crazy := amt;
-				var ground := 0;
-
-				repeat
-					if(amt > 60000)
-						if(!CreateItemInBackpack( character, 0x0e21, 60000 ))
-							CreateItemAtLocation(character.x, character.y, character.z, 0x0e21, 60000, character.realm);
-							ground :=1;
-						endif
-					else
-						if(!CreateItemInBackpack( character, 0x0e21, amt ))
-							CreateItemAtLocation(character.x, character.y, character.z, 0x0e21, amt, character.realm);
-							ground :=1;
-						endif
-					endif
-					amt := amt - 60000;
-				until (amt <= 0);
-				if(ground)
-					SendSysmessage( character , "You create " + crazy + " bandages but some fell on the ground." );
-				else
-					SendSysmessage( character , "You create " + crazy + " bandages in your pack." );
-				endif
+				SendSysmessage( character , "You create " + amt + " bandages in your pack." );
 			endif
 		else
 			SendSysmessage( character , "You destroy the cloth." );

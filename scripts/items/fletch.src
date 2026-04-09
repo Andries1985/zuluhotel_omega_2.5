@@ -51,10 +51,10 @@ program on_fletch( character, shafts )
                         SKILLID_BOWCRAFT,
                         1,                     // difficulty
                         thepoints ))                   // points
-            var num_to_make := Min( shaft_count, feather_count );
-            // Cap to stack limit
-            if(num_to_make > 60000)
-                num_to_make := 60000;
+            var max_make := Min( shaft_count, feather_count );
+            var num_to_make := PromptBulkAmount(character, max_make, "items", featherRequest);
+            if(!num_to_make)
+                return;
             endif
 
             if(choice.objtype)

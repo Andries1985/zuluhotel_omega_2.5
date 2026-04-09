@@ -299,12 +299,14 @@ function TryToMakeItem( character, resourceRequest, to_make_objtype )
 			var theitem;
 			var consume_amount := material;
 			if( to_make_objtype == UOBJ_BANDAGE )
-				consume_amount := GetAvailableResource(character, resourceRequest).total;
-				// Cap to prevent exceeding stack limit (60000 bandages = 240000 cloth)
-				if(consume_amount > 240000)
-					consume_amount := 240000;
+				var total_cloth := GetAvailableResource(character, resourceRequest).total;
+				var max_bandages := CInt(total_cloth / 4);
+				var bandage_count := PromptBulkAmount(character, max_bandages, "bandages", resourceRequest);
+				if(!bandage_count)
+					break;
 				endif
-				theitem := CreateItemInBackpack( character, to_make_objtype, CInt( consume_amount / 4 ) );
+				consume_amount := bandage_count * 4;
+				theitem := CreateItemInBackpack( character, to_make_objtype, bandage_count );
 			else
 				theitem := CreateItemInBackpack( character, to_make_objtype );
 			endif

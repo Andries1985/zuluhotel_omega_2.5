@@ -1297,6 +1297,10 @@ function ShowItemList(who, df, category_name, category_map, byref out_keys)
 		else
 			name := Lower(GetItemDisplayName(ot));
 		endif
+		// Trim leading/trailing spaces for consistent sort
+		while(name[1] == " ")
+			name := name[2, len(name)];
+		endwhile
 		name_key_pairs.append(name + "|||" + key);
 	endforeach
 	name_key_pairs.sort();

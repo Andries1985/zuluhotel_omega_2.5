@@ -377,14 +377,35 @@ function CarveLogs( character, logs, logRequest := 0 )
 	endif
 
 	
-  	foreach item in EnumerateItemsInContainer(character.backpack )
-		if ( (what.objtype == 0x6050 and item.objtype == 0xf8c) or  (what.objtype == 0xb201 and item.objtype == 0xf8d) or (what.objtype == 0x1403 and item.objtype == 0xf7a))						
-			makespecial := 1;
-			special := item;
-			special.movable := 0;
-
+	var specialRequest := 0;
+	var needed_hide_type := 0;
+	if(what.objtype == 0x6050)
+		needed_hide_type := 0xf8c;
+	elseif(what.objtype == 0xb201)
+		needed_hide_type := 0xf8d;
+	elseif(what.objtype == 0x1403)
+		needed_hide_type := 0xf7a;
+	endif
+	if(needed_hide_type)
+		// Check backpack first
+		foreach item in EnumerateItemsInContainer(character.backpack)
+			if(item.objtype == needed_hide_type)
+				makespecial := 1;
+				special := item;
+				special.movable := 0;
+				specialRequest := MakeBackpackRequest(character, item);
+				break;
+			endif
+		endforeach
+		// If not in backpack, check cache
+		if(!makespecial)
+			var cacheHideReq := struct{ objtype := CInt(needed_hide_type), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ OMEGA_CACHE }, dataFileHandle := logRequest.dataFileHandle, leaseKey := 0 };
+			if(logRequest.dataFileHandle and GetAvailableResource(character, cacheHideReq).total >= 10)
+				makespecial := 1;
+				specialRequest := cacheHideReq;
+			endif
 		endif
-	endforeach
+	endif
 	what := what.objtype;	
 	element := FindConfigElem( bowcraft_cfg , what );
 
@@ -420,9 +441,9 @@ function CarveLogs( character, logs, logRequest := 0 )
 		Sleep( 2 );
 
 		if( CheckSkill( character , SKILLID_BOWCRAFT , skill , points ) )
-			var create_amount := log_avail;
-			if(create_amount > 60000)
-				create_amount := 60000;
+			var create_amount := PromptBulkAmount(character, log_avail, itemname, logRequest);
+			if(!create_amount)
+				return;
 			endif
 			var shafts := CreateItemInBackpack( character , what , create_amount );
 			if( shafts )
@@ -566,8 +587,8 @@ function CarveLogs( character, logs, logRequest := 0 )
 				SetName( theitem , itemname );
 			endif
 			ConsumeResource( character , logRequest , material );
-			if (special)
-				SubtractAmount( special , material );
+			if (specialRequest)
+				ConsumeResource( character , specialRequest , material );
 			endif
 
 		else
@@ -587,8 +608,8 @@ function CarveLogs( character, logs, logRequest := 0 )
 
 			ConsumeResource( character , logRequest , destroy );
 			SendSysmessage( character , "You destroyed " + destroy + " " + logs_name + " logs" );
-			if (special)
-				SubtractAmount( special , destroy );
+			if (specialRequest)
+				ConsumeResource( character , specialRequest , destroy );
 				SendSysmessage( character , "and " + destroy + " reagents." );
 			endif
 		endif
@@ -636,12 +657,17 @@ function CanMake( bowcraft , key , logs , logs_diff , cfg, character, total_avai
 				return 1;
 			endif
 		else
+			var hide_avail := 0;
 		  	foreach item in EnumerateItemsInContainer( character.backpack )
-			if (item.objtype == htype  )
-				num := item;
-			endif
+				if (item.objtype == htype)
+					num := item;
+					hide_avail := hide_avail + item.amount;
+				endif
 			endforeach
-			if ((num.amount >= hide ) and ( avail >= material ))
+			// Check cache for reagent hides
+			var hideReq := struct{ objtype := CInt(htype), dataFileHandle := 0, leaseKey := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE } };
+			var hide_total := GetAvailableResource(character, hideReq).total;
+			if ((hide_total >= hide ) and ( avail >= material ))
 				return 1;
 			endif
 		endif
@@ -742,9 +768,10 @@ function MakeArrows ( character, use_on, arrowRequest := 0 )
 
 	var val1 := GetAvailableResource(character, arrowRequest).total;
 	var val2 := GetAvailableResource(character, regRequest).total;
-	var num := Min(val1, val2);
-	if(num > 60000)
-		num := 60000;
+	var max_arrows := Min(val1, val2);
+	var num := PromptBulkAmount(character, max_arrows, "special arrows", arrowRequest);
+	if(!num)
+		return;
 	endif
 
 	if ( reg_objtype == 0xf8c )

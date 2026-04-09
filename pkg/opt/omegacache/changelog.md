@@ -694,3 +694,23 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 - `scripts/items/bladed.src` — Full cache integration for bowcraft/knife. Cache entry point at `use_blade` targeting. New functions: `CarveLogsFromCache` (shafts/kindling create-all capped at 60k, bows/crossbows with lease loop), `CanMakeFromCache` (availability via `GetAvailableResource`), `MakeArrowsFromCache` (fire/ice/thunder arrows from cache, both arrows and reagents from cache, capped at 60k). Special bows (fire/ice/thunder) consume reagents from backpack (non-stackable hides). All `SubtractAmount` replaced with `ConsumeResource`.
 - All 5 other crafting scripts — `ExtendResourceLease` call sites updated with who/amount
 
+### Bulk Amount Prompt (2026-04-08)
+
+38. **`PromptBulkAmount` centralised function** — Added to `resourcemanager.inc`. Prompts player for desired amount when creating bulk items (shafts, kindling, arrows, bandages, etc). Only shows gump when cache is involved (`resourceRequest.dataFileHandle` is set). Backpack-only paths return max available capped to 60k silently (preserving original behaviour). Skips gump when max=1. Retries with error message when input exceeds maximum.
+
+39. **Replaced hardcoded 60k caps** — All 6 bulk creation locations now use `PromptBulkAmount`:
+- `bladed.src` — shafts/kindling creation and special arrows (fire/ice/thunder)
+- `fletch.src` — arrows/bolts from fletching
+- `make_cloth_items.src` — bandages from sewing kit (prompts for bandage count, multiplies by 4 for cloth)
+- `scissors.src` — bandages from scissors on cloth (backpack-only, no gump, replaced 60k overflow loop)
+- `grinding.src` — ground items (backpack-only, no gump, adjusts batch consumption)
+
+### Files Modified
+
+- `scripts/include/resourcemanager.inc` — added `PromptBulkAmount` function
+- `scripts/items/bladed.src` — 2 locations replaced with `PromptBulkAmount`
+- `scripts/items/fletch.src` — 1 location replaced with `PromptBulkAmount`
+- `pkg/std/tailoring/make_cloth_items.src` — 1 location replaced with `PromptBulkAmount`
+- `pkg/std/tailoring/scissors.src` — added includes, replaced 60k loop with `PromptBulkAmount`
+- `pkg/std/cooking/grinding.src` — added includes, replaced direct creation with `PromptBulkAmount` + adjusted batch consumption
+

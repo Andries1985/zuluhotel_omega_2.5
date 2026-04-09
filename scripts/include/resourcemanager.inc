@@ -530,6 +530,10 @@ function SelectMaterialFromList(who, df, valid_keys)
 		else
 			name := Lower(GetItemDisplayName(ot));
 		endif
+		// Trim leading spaces for consistent sort
+		while(name[1] == " ")
+			name := name[2, len(name)];
+		endwhile
 		sort_strings.append(name + "|||" + key);
 	endforeach
 	sort_strings.sort();
@@ -709,4 +713,39 @@ function SelectMaterialFromList(who, df, valid_keys)
 		dataFileHandle       := df,
 		leaseKey             := 0
 	};
+endfunction
+
+// ============================================================
+// Bulk Amount Prompt
+// ============================================================
+
+// Prompts the player for a bulk crafting amount when cache is involved.
+// When backpack-only, returns max_available capped to 60k (original behaviour, no gump).
+// Returns 0 on cancel.
+function PromptBulkAmount(who, max_available, item_name, resourceRequest := 0)
+	var max_amount := Min(max_available, 60000);
+	if(max_amount <= 0)
+		SendSysMessage(who, "You don't have enough materials.");
+		return 0;
+	endif
+	// Backpack-only (no cache) — use max available, no prompt
+	if(!resourceRequest or !resourceRequest.dataFileHandle)
+		return max_amount;
+	endif
+	// Only 1 available — just make it, no prompt needed
+	if(max_amount == 1)
+		return 1;
+	endif
+	// Cache involved — prompt for amount with retry on invalid input
+	while(1)
+		var input := CInt(SendTextEntryGump(who, "How many " + item_name + "? [1-" + max_amount + "]", TE_CANCEL_ENABLE, TE_STYLE_NORMAL, 6));
+		if(input <= 0)
+			return 0;
+		endif
+		if(input > max_amount)
+			SendSysMessage(who, "Maximum is " + max_amount + ". Please enter a valid amount.");
+			continue;
+		endif
+		return input;
+	endwhile
 endfunction
