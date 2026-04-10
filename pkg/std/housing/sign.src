@@ -327,6 +327,14 @@ program textcmd_sign( who , sign )
 							RemoveHouseFromCharacter(GetObjProperty(house, "ownerserial"), house.serial);
 						endif
 
+						// Destroy any remaining Omega Cache containers
+						foreach hitem in (house.items)
+							if(hitem.objtype == OMEGACACHE_OBJTYPE)
+								EraseObjProperty(hitem, "houseserial");
+								DestroyItem(hitem);
+							endif
+						endforeach
+
 						// Clean up Omega Cache DataFile
 						var ocdf := OpenOmegaCacheStore(house.serial);
 						if(ocdf)

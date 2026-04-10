@@ -11,7 +11,22 @@ include "include/client";
 include "include/omegacache_utils";
 include ":omegacache:omegacache";
 
-program cache_on_insert(who, item, container, existing_stack, amount_to_add)
+program cache_on_insert(who, container, movetype, inserttype, adding_item, existing_stack, amt_to_add)
+
+	// Only handle player drops (movetype 0 = player action)
+	if(movetype != 0)
+		return;
+	endif
+
+	var item;
+	if(inserttype == INSERT_INCREASE_STACK)
+		item := existing_stack;
+	else
+		item := adding_item;
+	endif
+
+	// Let POL finish the insertion
+	sleepms(50);
 
 	var access := FindAccessibleContainer(who, array{ADD_TO_SECURE});
 	if(!access)
