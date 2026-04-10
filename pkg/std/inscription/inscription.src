@@ -85,6 +85,7 @@ program DoInscription( character )
 	config_file := ReadConfigFile( "inscription" );
 
 	if( item.objtype == UOBJ_BLANK_SCROLL )
+		scrollRequest := MakeBackpackRequest(character, item);
 		Set_script_option( SCRIPTOPT_NO_RUNAWAY , 1 );
 		WantToCreateScroll( character , item );
 		
