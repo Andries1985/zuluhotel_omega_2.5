@@ -1086,7 +1086,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [ ] 35 | Access control testing | Outside house, through walls, friend permissions (VIEW/ADD/REMOVE), GM bypass |
 | [x] 36 | Redeed on removal | Tested as 91. Deed returns to backpack on removal via house management. |
 | [ ] 37 | House demolition with items | Verify warning shown, DataFile cleaned up after demolition |
-| [ ] 38 | Two players same cache | Concurrent access — both browsing, one deposits while other withdraws, verify data consistency. Also test lease protection (89a). |
+| [ ] 38 | Two players same cache | Concurrent access — both browsing, one deposits while other withdraws, verify data consistency. Also: Player A crafts with lease, Player B tries to withdraw same resource — verify withdrawal capped to unleased amount. |
 | [ ] 39 | Multiple house types | Verify `who.multi` check works across different house types (small, large, castle, custom multi-houses) |
 | [ ] 40 | Orientation selection | TODO: directional graphic placement (East/South) if using chest-style graphic |
 
@@ -1219,7 +1219,9 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Cooking:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 85 | Ingredients from cache | Multi-ingredient recipe, backpack-first with cache fallback. |
+| [x] 85a | Backpack + autodraw | Leg of Lamb — 2 in backpack, loop 4. First 2 from backpack, 3-4 from cache. Late lease. |
+| [x] 85c | Backpack only, autodraw disabled | Fishsteak — 2 in backpack, loop 4. 2 succeed, 3rd aborts. No cache. |
+| [x] 85d | Multi-ingredient mixed | Honey Baked Ham — ham from backpack then cache, honey from cache only. Both ingredients consumed correctly. Lease on main ingredient. |
 
 **Bowcraft (fletching — `fletch.src`):**
 | # | Task | Deliverable |
@@ -1245,7 +1247,12 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Cartography:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 87 | Blank maps from cache | Variable consumption (1-10), no loop. |
+| [ ] 87a | Simple map from cache | Double-click cache → select blank maps → make local map. 1 map consumed from cache. |
+| [ ] 87b | Simple map backpack + autodraw | 1 blank map in backpack, autodraw enabled. Make local map. Verify backpack consumed. |
+| [ ] 87c | Complex map from cache | Double-click cache → select blank maps → make canvas world map. 10 (or 5 PHC) maps consumed from cache. |
+| [ ] 87d | Complex map backpack + autodraw | 3 blank maps in backpack, need 10. Autodraw pulls 7 from cache. |
+| [ ] 87e | Backpack only, autodraw disabled | Autodraw off, 2 blank maps. Make local map. No cache. Make canvas world map — fails (not enough). |
+| [ ] 87f | Failure consumes from cache | Fail a map (low skill). Verify 1 map consumed from cache on failure. |
 
 **Bulk Amount Prompt (`PromptBulkAmount`):**
 | # | Task | Deliverable |
@@ -1267,7 +1274,6 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | # | Task | Deliverable |
 |---|---|---|
 | [ ] 88a | Double-click range matches .cache | Double-click cache container from 4 tiles away. Verify gump opens (was limited to ~2 tiles). |
-| [ ] 89a | Manual withdrawal respects leases | Player A crafts with lease on ingots. Player B opens gump and tries to withdraw same ingots. Verify withdrawal capped to unleased amount. |
 | [ ] 92 | Expired lease cleanup audit | Verify no flow exists where leases accumulate without cleanup. |
 
 See also Milestone 1.5 tests 35-39 for access control, house demolition, concurrent access, and multi-house-type testing.

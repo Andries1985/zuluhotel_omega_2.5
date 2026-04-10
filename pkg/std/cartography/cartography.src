@@ -33,16 +33,13 @@ program go_go_gadget_map( who, blank )
 		endif
 
 		if (blank.objtype<>0x6001) SendSysmessage( who , "You have no blank maps" ); return; endif
+		mapRequest := MakeBackpackRequest(who, blank);
 	endif
 
 	var nextmsg :=CInt(GetObjProperty(who, "nextMap")), secclock:=ReadGameClock();
 	if ( secclock < nextmsg)
 		SendSysMessage( who, "You have to wait " + (nextmsg-secclock) + " seconds to make another map.");
 		return;
-	endif
-
-	if(!mapRequest)
-		if(!ReserveItem(blank)) return; endif
 	endif
 
 	var choice := SelectMenuItem2( who , "Cartography");
@@ -122,13 +119,9 @@ program go_go_gadget_map( who, blank )
 	SetObjProperty(who, "nextMap", ReadGameClock() + 3);
 endprogram
 
-// Unified consumption function — uses cache or backpack
+// Unified consumption function — always uses ResourceRequest (cache-aware)
 function ConsumeMap(who, blank, amount)
-	if(mapRequest)
-		ConsumeResource(who, mapRequest, amount);
-	else
-		SubtractAmount(blank, amount);
-	endif
+	ConsumeResource(who, mapRequest, amount);
 endfunction
 
 function makemap( who, mapdef , blank )
@@ -161,29 +154,19 @@ function makeNewmap( who, blank, choice )
 	if(GetGlobalProperty("PHC") || GetObjProperty(who, "#PPHC"))
 		material := Ceil(material/2);
 	endif
-	if(mapRequest)
-		if(GetAvailableResource(who, mapRequest).total < material)
-			sendsysmessage(who, "You don't have enough materials to do that.");
-			return;
-		endif
-		ConsumeResource(who, mapRequest, material);
-	else
-		if(blank.amount < material)
-			sendsysmessage(who, "You don't have enough materials to do that.");
-			return;
-		endif
-		var remove := SubtractAmount( blank, material );
-		if(!remove)
-			sendsysmessage(who, "Cancelled.");
-			return;
-		endif
+	if(GetAvailableResource(who, mapRequest).total < material)
+		sendsysmessage(who, "You don't have enough materials to do that.");
+		return;
 	endif
+	var map;
 	if(choice == 1)
-		CreateItemInBackpack( who, 0x3D71 );
+		map := CreateItemInBackpack( who, 0x3D71 );
 	else
-		CreateItemInBackpack( who, 0x3D72 );
+		map := CreateItemInBackpack( who, 0x3D72 );
 	endif
-
-	SendSysmessage( who , "You carefully scribe a detailed map and place it in your pack." );
+	if(map)
+		ConsumeResource(who, mapRequest, material);
+		SendSysmessage( who , "You carefully scribe a detailed map and place it in your pack." );
+	endif
 	return;
 endfunction
