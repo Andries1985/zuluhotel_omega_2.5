@@ -478,6 +478,9 @@ function CarveLogs( character, logs, logRequest := 0 )
 
 
 	LeaseResource(character, logRequest, material);
+	if(specialRequest)
+		LeaseResource(character, specialRequest, material);
+	endif
 
 	AutoLoop_init( character );
 	while( AutoLoop_more() && (GetAvailableResource(character, logRequest).total >= material) && NOT character.dead)
@@ -614,14 +617,22 @@ function CarveLogs( character, logs, logRequest := 0 )
 			endif
 		endif
 	else
-		AutoLoop_finish();
+		break;
 	endif
 
 	if(!ExtendResourceLease(logRequest, character, material))
 		break;
 	endif
+	if(specialRequest)
+		if(!ExtendResourceLease(specialRequest, character, material))
+			break;
+		endif
+	endif
 	endwhile
 	ReleaseResourceLease(logRequest);
+	if(specialRequest)
+		ReleaseResourceLease(specialRequest);
+	endif
 	AutoLoop_finish();
 	if (makespecial and specialBackpackItem)
 		specialBackpackItem.movable := 1;

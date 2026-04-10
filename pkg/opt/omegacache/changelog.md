@@ -763,8 +763,15 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 56. **House demolition destroys cache containers** — Explicit `house.items` search for `OMEGACACHE_OBJTYPE` before `DestroyMulti`. Containers were outside `ListItemsNearLocation` range from house sign. `EraseObjProperty("houseserial")` before destroy prevents `DestroyScript` from re-crediting slots on a demolished house.
 
+### Release Audit Fixes (2026-04-11)
+
+57. **Missing `specialRequest` lease in bowcraft** — Cache-sourced fire/ice/thunder bow reagents (SA/SS/BP) had no lease protection in the crafting loop. Added `LeaseResource`/`ExtendResourceLease`/`ReleaseResourceLease` for `specialRequest` matching the `logRequest` pattern.
+
+58. **Duplicate `AutoLoop_finish()` in bowcraft** — `AutoLoop_finish()` called inside the while loop (else branch) AND after the loop. Replaced inner call with `break` to exit loop normally. Single `AutoLoop_finish()` after endwhile.
+
 ### Files Modified
 
+- `scripts/items/bladed.src` — Added specialRequest lease lifecycle, fixed duplicate AutoLoop_finish
 - `pkg/opt/omegacache/itemdesc.cfg` — `Item` → `Container`, added `Gump`, `MinX/MaxX/MinY/MaxY`, `MaxItems`, `MaxSlots`, `OnInsertScript`, `DoubleclickRange`
 - `pkg/opt/omegacache/cacheinsert.src` — New file. `OnInsertScript` for drag-and-drop deposit.
 - `pkg/opt/omegacache/placecache.src` — Lazy-init for `numomegacache`/`maxnumomegacache`
