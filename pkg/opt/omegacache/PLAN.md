@@ -995,6 +995,16 @@ All commands registered as player-level in `config/cmds.cfg`.
 
 ---
 
+## Release Status
+
+**Release Candidate: Phase 1 + Phase 2 (2026-04-11)**
+
+Phase 1 (Core Storage) and Phase 2 (Crafting Integration) are complete and tested. All crafting skills integrated: blacksmithy, tinkering, tailoring, carpentry, alchemy, bowcraft/fletching, cooking, inscription, cartography.
+
+Phase 3 (Loadout System) and the Artisan's Hammer feature are deferred to a future release.
+
+---
+
 ## Implementation Plan
 
 Each phase is broken into milestones that deliver a testable, functional increment. Milestones within a phase are sequential — each builds on the previous. Phases can be delivered independently.
@@ -1086,7 +1096,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 35 | Access control testing | Outside house blocked. Friend without permission blocked. GM bypass works. |
 | [x] 36 | Redeed on removal | Tested as 91. Deed returns to backpack on removal via house management. |
 | [x] 37 | House demolition with items | Warning shown. DataFile elements deleted. Cache containers destroyed. Empty DataFile persists on disk (POL limitation — no DeleteDataFile). |
-| [ ] 38 | Two players same cache | Concurrent access — both browsing, one deposits while other withdraws, verify data consistency. Also: Player A crafts with lease, Player B tries to withdraw same resource — verify withdrawal capped to unleased amount. |
+| [ ] 38 | Two players same cache | **Outstanding** — Concurrent access: both browsing, deposit/withdraw, lease protection. Requires two active players. Low risk: `WithdrawItem` is lease-aware at data layer, POL is cooperative multitasking (no preemption within script execution). |
 | [x] 39 | Multiple house types | Tested across house types. `who.multi` access control works correctly. |
 | [x] 40 | Orientation selection | Standard UO menu with South (0x2DF4) and East (0x2DF3) options. Tested and working. |
 
@@ -1280,7 +1290,7 @@ See also Milestone 1.5 tests 35-39 for access control, house demolition, concurr
 
 ---
 
-### Phase 3: Loadout System
+### Phase 3: Loadout System *(Deferred — not in this release)*
 
 #### Milestone 3.1 — Loadout Data Layer
 | # | Task | Deliverable |
@@ -1325,7 +1335,7 @@ See also Milestone 1.5 tests 35-39 for access control, house demolition, concurr
 
 ---
 
-### Future: Artisan's Hammer of Signus — Exceptional Crafting Bonus
+### Future: Artisan's Hammer of Signus — Exceptional Crafting Bonus *(Deferred — not in this release)*
 
 Similar to how Xarafax and Omere's doubles drop rates on mining and lumberjacking, the Artisan's Hammer of Signus should increase the player's chance of crafting an exceptional item across all crafting skills. When equipped (or in backpack — TBD), the `excep_ch` value used in the `Random(100) < excep_ch` check should be boosted. This affects blacksmithy, tailoring, carpentry, tinkering, and any other skill with an exceptional quality path.
 

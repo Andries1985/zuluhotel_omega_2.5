@@ -3,6 +3,21 @@
 > Entries are ordered oldest to newest (append-only).
 > Each entry corresponds to a completed milestone from PLAN.md.
 
+## Release Candidate — Phase 1 + Phase 2 (2026-04-11)
+
+**Scope:** Core storage (Phase 1) and crafting integration (Phase 2).
+**Base commit:** `662569f2b2f79c9667642f06e7bc45ae931db763`
+
+**Phase 1 — Core Omega Cache:**
+- Milestones 1.1-1.5: DataFile storage, housing integration, deposit/withdraw, gump UI, text commands, bug fixes & polish.
+
+**Phase 2 — Crafting Integration:**
+- Milestones 2.1-2.3: Resource manager with lease system, all 9 crafting skills integrated (blacksmithy, tinkering, tailoring, carpentry, alchemy, bowcraft/fletching, cooking, inscription, cartography), code review & bug fixes, testing & polish.
+
+**Not in this release:** Phase 3 (Loadout System), Artisan's Hammer of Signus.
+
+**Outstanding test:** #38 (two players concurrent access with lease protection) — requires two active players. Low risk due to POL cooperative multitasking and lease-aware `WithdrawItem`.
+
 ---
 
 ## Milestone 1.1 — Foundation (2026-03-24)
