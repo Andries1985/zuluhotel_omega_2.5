@@ -966,6 +966,7 @@ endfunction
 
 
 function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
+	SendSysMessage(character, "[Debug] TryToMakePotionKeg: bottleReq type=" + TypeOf(bottleRequest) + " use_on=" + use_on, 3, 53);
 
 	var needed_parts := { UOBJ_KEG	,
 				UOBJ_BARREL_TAP ,
@@ -1056,8 +1057,12 @@ function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
 		endif
 	endforeach
 
-	//Integrity check
-	if( len( parts ) != len( needed_parts ) )
+	//Integrity check — when bottleRequest is set, bottles aren't in parts (consumed separately)
+	var expected_parts := len(needed_parts);
+	if(bottleRequest)
+		expected_parts := expected_parts - 1;
+	endif
+	if( len( parts ) != expected_parts )
 		SendSysMessage( character , "You miss some parts to make the potion keg." );
 		return;
 	endif
@@ -1075,8 +1080,6 @@ function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
 	_Play_Sound( character , CARPENTER_SOUND );
 
 	// Consume bottles via bottleRequest (always set by this point)
-	SendSysMessage(character, "[Debug] bottleReq objtype=" + bottleRequest.objtype + " key=" + bottleRequest.key + " df=" + bottleRequest.dataFileHandle + " pso=" + bottleRequest.preferredSourceOrder, 3, 53);
-	SendSysMessage(character, "[Debug] avail=" + GetAvailableResource(character, bottleRequest).total + " needed=" + needed_bottles, 3, 53);
 	if(!ConsumeResource(character, bottleRequest, needed_bottles))
 		SendSysMessage(character, "You need at least " + needed_bottles + " empty bottles.");
 		return;
@@ -1278,6 +1281,7 @@ function HandleCacheMaterial(character, resourceRequest)
 
 	// Empty bottles — potion keg path (cache support for bottles)
 	elseif(ot == UOBJ_EMPTY_BOTTLE)
+		SendSysMessage(character, "[Debug] HandleCache: resReq type=" + TypeOf(resourceRequest) + " objtype=" + resourceRequest.objtype + " key=" + resourceRequest.key, 3, 53);
 		TryToMakePotionKeg(character, 0, resourceRequest);
 		return;
 
