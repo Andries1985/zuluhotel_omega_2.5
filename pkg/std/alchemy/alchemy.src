@@ -126,6 +126,8 @@ program use_mortar( user, mortar )
 		endif
 	endif
 
+	var backpackRegRequest := MakeBackpackRequest(user, use_on);
+
 	var elem := conf[use_on.objtype];
 	if( !elem )
 		SendSysmessage( user, "You don't know any recipe that use this reagent." );
@@ -143,7 +145,7 @@ program use_mortar( user, mortar )
 	var mage := GetObjProperty( user, CLASSEID_MAGE );
 
 	foreach potion_type in possibles
-		if( CanMake( user, potion_type, use_on, mage ) )
+		if( CanMake( user, potion_type, use_on, mage, usereg := 0, regRequest := backpackRegRequest ) )
 			AddMenuItem( menu, conf[potion_type].objtype, potion_type );
 			num_possibilities := 1;
 		endif
@@ -159,7 +161,7 @@ program use_mortar( user, mortar )
 		return;
 	endif
 
-	TryToMakePotion( user, mortar, possibles[choice], use_on, mage );
+	TryToMakePotion( user, mortar, possibles[choice], use_on, mage, backpackRegRequest );
 
 endprogram
 
