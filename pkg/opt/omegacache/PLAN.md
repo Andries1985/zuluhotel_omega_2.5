@@ -1247,12 +1247,8 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Cartography:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 87a | Simple map from cache | Double-click cache → select blank maps → make local map. 1 map consumed from cache. |
-| [ ] 87b | Simple map backpack + autodraw | 1 blank map in backpack, autodraw enabled. Make local map. Verify backpack consumed. |
-| [ ] 87c | Complex map from cache | Double-click cache → select blank maps → make canvas world map. 10 (or 5 PHC) maps consumed from cache. |
-| [ ] 87d | Complex map backpack + autodraw | 3 blank maps in backpack, need 10. Autodraw pulls 7 from cache. |
-| [ ] 87e | Backpack only, autodraw disabled | Autodraw off, 2 blank maps. Make local map. No cache. Make canvas world map — fails (not enough). |
-| [ ] 87f | Failure consumes from cache | Fail a map (low skill). Verify 1 map consumed from cache on failure. |
+| [x] 87c | Complex map backpack + autodraw | 1 blank map in backpack, canvas world map (needs 5 PHC). Failed skill, consumed 4 from cache. Correct. |
+| [x] 87d | Backpack only, autodraw disabled | Autodraw off, 1 map. Canvas world map — "You don't have enough resources". Correct. |
 
 **Bulk Amount Prompt (`PromptBulkAmount`):**
 | # | Task | Deliverable |

@@ -1,0 +1,31 @@
+// cacheinsert.src — CanInsertScript for Omega Cache Container
+//
+// Intercepts items dropped onto the cache container and deposits them
+// into the DataFile instead of physically storing them.
+
+use uo;
+use os;
+
+include "include/client";
+include "include/omegacache_utils";
+include ":omegacache:omegacache";
+
+program cache_can_insert(who, container, movetype, inserttype, item, existing_stack, amount_to_add)
+
+	// Only handle player drops (movetype 0)
+	if(movetype != 0)
+		return 0;
+	endif
+
+	var access := FindAccessibleContainer(who, array{ADD_TO_SECURE});
+	if(!access)
+		SendSysMessage(who, "You don't have permission to deposit items.");
+		return 0;
+	endif
+
+	DepositSingleItem(who, access.df, item);
+
+	// Return 0 to prevent normal container insertion (item already handled)
+	return 0;
+
+endprogram
