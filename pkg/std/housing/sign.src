@@ -336,12 +336,14 @@ program textcmd_sign( who , sign )
 						endforeach
 
 						// Clean up Omega Cache DataFile
+						// Note: do NOT call CloseOmegaCacheStore after deleting elements —
+						// UnloadDataFile may discard unsaved changes. Leave loaded so
+						// the next world save persists the deletions.
 						var ocdf := OpenOmegaCacheStore(house.serial);
 						if(ocdf)
 							foreach ockey in (ocdf.Keys())
 								ocdf.DeleteElement(ockey);
 							endforeach
-							CloseOmegaCacheStore(house.serial);
 						endif
 
 						DestroyMulti( house );

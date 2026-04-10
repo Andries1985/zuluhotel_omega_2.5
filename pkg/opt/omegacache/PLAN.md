@@ -1083,12 +1083,12 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 32 | Redeed on removal | Return deed to backpack instead of destroying container outright |
 | [x] 33 | Recount GM tool | "Recount Cache Containers" button in House Management (GM-only) |
 | [x] 34 | `.nukeserial` admin command | Destroy items by serial with optional cache slot recalculation |
-| [ ] 35 | Access control testing | Outside house, through walls, friend permissions (VIEW/ADD/REMOVE), GM bypass |
+| [x] 35 | Access control testing | Outside house blocked. Friend without permission blocked. GM bypass works. |
 | [x] 36 | Redeed on removal | Tested as 91. Deed returns to backpack on removal via house management. |
-| [ ] 37 | House demolition with items | Verify warning shown, DataFile cleaned up after demolition |
+| [x] 37 | House demolition with items | Warning shown. DataFile elements deleted. Cache containers destroyed. Empty DataFile persists on disk (POL limitation — no DeleteDataFile). |
 | [ ] 38 | Two players same cache | Concurrent access — both browsing, one deposits while other withdraws, verify data consistency. Also: Player A crafts with lease, Player B tries to withdraw same resource — verify withdrawal capped to unleased amount. |
-| [ ] 39 | Multiple house types | Verify `who.multi` check works across different house types (small, large, castle, custom multi-houses) |
-| [ ] 40 | Orientation selection | TODO: directional graphic placement (East/South) if using chest-style graphic |
+| [x] 39 | Multiple house types | Tested across house types. `who.multi` access control works correctly. |
+| [x] 40 | Orientation selection | Standard UO menu with South (0x2DF4) and East (0x2DF3) options. Tested and working. |
 
 **Testable**: Core bug fixes verified. Remaining: access control edge cases, permission matrix, house demolition, concurrent access, multi-house-type validation, orientation selection if graphic changes.
 
@@ -1269,8 +1269,12 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Edge cases & infrastructure:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 88a | Double-click range matches .cache | Double-click cache container from 4 tiles away. Verify gump opens (was limited to ~2 tiles). |
-| [ ] 92 | Expired lease cleanup audit | Verify no flow exists where leases accumulate without cleanup. |
+| [x] 88a | Double-click range matches .cache | Double-click cache from 4 tiles. Gump opens. |
+| [x] 88b | Drop stackable item on cache | Drag stackable onto cache. Deposited to DataFile, item destroyed. |
+| [x] 88c | Drop non-stackable item on cache | "That item cannot be stored", item returned to backpack. |
+| [x] 88d | Drop item on cache without permission | Friend without ADD_TO_SECURE drops item. "You don't have permission", item returned. |
+| [x] 88e | Drop stack merge on cache | Same-type stackable added correctly. | Double-click cache container from 4 tiles away. Verify gump opens (was limited to ~2 tiles). |
+| [x] 92 | Expired lease cleanup audit | DataFile dump shows no `RL#` elements after days of testing. All leases properly created/released. `BuildCategoryMap` sweep catches orphans on gump open. |
 
 See also Milestone 1.5 tests 35-39 for access control, house demolition, concurrent access, and multi-house-type testing.
 

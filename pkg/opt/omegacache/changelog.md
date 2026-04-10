@@ -585,6 +585,7 @@ Live testing of blacksmithy crafting integration revealed multiple bugs across t
 - **Pre-existing: Missing itemdesc.cfg entries entirely**: Some items (e.g., Cloth `0x1765`, Axle `0x105b`, Springs `0x105d`, Clock Parts `0x104f`) have no `itemdesc.cfg` entry at all. The cache gump shows the hex objtype (e.g., "0x1765") instead of a name. These items cannot be `.create`'d either. Not caused by Omega Cache.
 - **Pre-existing: Missing `Desc` fields in itemdesc.cfg**: Some items (EmptyBottle, Blankscroll, Axleandgears, etc.) have only a `Name` field in `itemdesc.cfg` with no `Desc`. The cache gump shows the raw `Name` (e.g., "EmptyBottle") instead of a readable display name (e.g., "an Empty Bottle"). The in-game tooltip uses POL's built-in tile data which has the readable name, but `GetItemDisplayName` can only read `Desc`/`Name` from `itemdesc.cfg`. Fix: add `Desc` fields to affected items. Not caused by Omega Cache.
 - **Pre-existing: Missing itemdesc entries for crafting components**: Axle (`0x105b`), Springs (`0x105d`), Clock Parts (`0x104f`), and Young Oak Logs (`0xBA2A`) have no `itemdesc.cfg` entries. These items cannot be created via `.create` or crafting. Tinkering complex item chains and carpentry young oak staff are untestable. Not caused by Omega Cache.
+- **DataFiles persist on disk after house demolition**: POL has no `DeleteDataFile` function. Files in `data/ds/omegacache/` accumulate for demolished houses (elements deleted but file remains). The `.N.txt` suffix is POL's versioning — each world save creates a new version number. `UnloadDataFile` may discard unsaved changes (removed `CloseOmegaCacheStore` call after cleanup to ensure deletions persist). A server startup script to scan for orphaned files (house serial no longer exists) would be the cleanest solution. Not a functional issue — empty files are small and harmless.
 - **Pre-existing: Cartography shows all map types regardless of materials**: The cartography menu is a static `config/menus.cfg` menu — always shows all map types (local, regional, world, canvas). No `CanMake` filtering by available blank maps. Player can select canvas world map (needs 10) with only 1 blank map — fails at consumption with "not enough materials". Not caused by Omega Cache.
 - **Pre-existing: Crafted items with different materials auto-stack incorrectly**: POL core's `CreateItemInBackpack` auto-stacks items by objtype BEFORE the crafting script sets CProps/color/name. Two items of the same objtype but different materials (e.g., Iron Sextant Parts + Lavarock Sextant Parts) merge into one stack, adopting the newer item's properties and destroying the older one. This is not caused by Omega Cache — it's a pre-existing issue in the crafting scripts' use of `CreateItemInBackpack`. Fix would require creating items via `CreateItemAtLocation` (no auto-stack) then moving to container, or setting properties on `product_desc` before creation. Affects tinkering complex items and potentially other crafts.
 
@@ -751,4 +752,24 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 51. **`GetBottle` autodraw check** — Inline bottle cache request used `preferredSourceOrder := array{ OMEGA_CACHE }` which bypassed the autodraw toggle check (only checks `[1] == BACKPACK`). Changed to `array{ BACKPACK, OMEGA_CACHE }` so the autodraw toggle is respected.
 
 52. **eScript named args** — `CanMake(user, potion_type, 0, mage, usereg := 0, cacheRequest)` failed: unnamed args cannot follow named args. Fixed by naming all trailing args: `regRequest := cacheRequest`.
+
+### Features (2026-04-11)
+
+53. **Drag-and-drop deposit** — Changed `itemdesc.cfg` from `Item` to `Container` type. Added `OnInsertScript` (`cacheinsert.src`) that intercepts items dropped onto the cache container. Deposits eligible stackable items via `DepositSingleItem`, returns ineligible/non-permitted items to backpack. `Script omegacache` overrides default container open on double-click. `Gump`, `MaxItems`, `MaxSlots` set to prevent use as a real container. Initial `CanInsertScript` approach caused server crash (assertion failure — item in transitional state during drop, `DestroyItem` failed). Switched to `OnInsertScript` with `sleepms(50)` delay.
+
+54. **`DoubleclickRange 4`** — Cache container double-click range increased from default (~2 tiles) to 4, matching `.cache` command range.
+
+55. **`placecache.src` lazy-init** — Cache slots (`numomegacache`/`maxnumomegacache`) now initialized on first deed placement if not yet set. Previously required opening house sign first.
+
+56. **House demolition destroys cache containers** — Explicit `house.items` search for `OMEGACACHE_OBJTYPE` before `DestroyMulti`. Containers were outside `ListItemsNearLocation` range from house sign. `EraseObjProperty("houseserial")` before destroy prevents `DestroyScript` from re-crediting slots on a demolished house.
+
+### Files Modified
+
+- `pkg/opt/omegacache/itemdesc.cfg` — `Item` → `Container`, added `Gump`, `MinX/MaxX/MinY/MaxY`, `MaxItems`, `MaxSlots`, `OnInsertScript`, `DoubleclickRange`
+- `pkg/opt/omegacache/cacheinsert.src` — New file. `OnInsertScript` for drag-and-drop deposit.
+- `pkg/opt/omegacache/placecache.src` — Lazy-init for `numomegacache`/`maxnumomegacache`
+- `pkg/std/housing/sign.src` — Explicit cache container destruction via `house.items` on demolition
+- `pkg/opt/omegacache/categories.cfg` — Added Baked Ham (`0xC920`), Honey Baked Ham (`0xC921`) to Food. Blank Map variant (`0x14EB`) to Miscellaneous.
+- `pkg/std/cooking/cooking.src` — Autodraw for backpack path. Cache resolved once at entry. Lease lifecycle for main ingredient. `destroy_all_ingredients` cache fallback.
+- `pkg/std/cartography/cartography.src` — `MakeBackpackRequest` for autodraw. Simplified `ConsumeMap`. `makeNewmap` create-before-consume.
 
