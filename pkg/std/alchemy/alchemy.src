@@ -218,7 +218,7 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0, regReq
 				endfor
 
 				if( CheckSkill( user, SKILLID_ALCHEMY, difficulty, difficulty * POINT_MULTIPLIER ) )
-					if( GetBottle( user.backpack, user ) )
+					if( GetBottle( user.backpack, user, regRequest.dataFileHandle ) )
 						CreateItemInContainer( mortar.container, product, 1 );
 						PlaySoundEffect( user, SFX_POUR );
 					else
@@ -252,7 +252,11 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0, regReq
 
 	else
 
-		if( GetBottle( user.backpack, user ) )
+		var bottleDf := 0;
+		if(regRequest)
+			bottleDf := regRequest.dataFileHandle;
+		endif
+		if( GetBottle( user.backpack, user, bottleDf ) )
 			var product := GetObjProperty( mortar, "contents" );
 			if( mage )
 				var itemcfg := ReadConfigFile( "itemdesc" );
@@ -326,7 +330,7 @@ endfunction
 
 
 // find a bottle in backpack and reserve it
-function GetBottle( conts, user )
+function GetBottle( conts, user, dataFileHandle := 0 )
 	var bottle := FindItemInContainer( conts , UOBJ_EMPTY_BOTTLE );
 	if(bottle)
 		if( !ReserveContainers( user, bottle.container ) )
@@ -337,11 +341,15 @@ function GetBottle( conts, user )
 			return 1;
 		endif
 	endif
-	// Try cache for bottles
-	var bottleReq := struct{ objtype := CInt(UOBJ_EMPTY_BOTTLE), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE }, dataFileHandle := 0, leaseKey := 0 };
-	var access := FindAccessibleContainer(user, array{REMOVE_FROM_SECURE});
-	if(access)
-		bottleReq.dataFileHandle := access.df;
+	// Try cache for bottles (reuse existing dataFileHandle if provided)
+	if(!dataFileHandle)
+		var access := FindAccessibleContainer(user, array{REMOVE_FROM_SECURE});
+		if(access)
+			dataFileHandle := access.df;
+		endif
+	endif
+	if(dataFileHandle)
+		var bottleReq := struct{ objtype := CInt(UOBJ_EMPTY_BOTTLE), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE }, dataFileHandle := dataFileHandle, leaseKey := 0 };
 		if(GetAvailableResource(user, bottleReq).total >= 1)
 			ConsumeResource(user, bottleReq, 1);
 			return 1;
