@@ -1075,7 +1075,10 @@ function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
 	_Play_Sound( character , CARPENTER_SOUND );
 
 	// Consume bottles via bottleRequest (always set by this point)
-	ConsumeResource(character, bottleRequest, needed_bottles);
+	if(!ConsumeResource(character, bottleRequest, needed_bottles))
+		SendSysMessage(character, "You need at least " + needed_bottles + " empty bottles.");
+		return;
+	endif
 
 	// Destroy physical parts (keg, tap, lid)
 	var result_color;

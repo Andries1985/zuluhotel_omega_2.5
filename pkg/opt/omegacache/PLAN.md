@@ -1084,9 +1084,9 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 33 | Recount GM tool | "Recount Cache Containers" button in House Management (GM-only) |
 | [x] 34 | `.nukeserial` admin command | Destroy items by serial with optional cache slot recalculation |
 | [ ] 35 | Access control testing | Outside house, through walls, friend permissions (VIEW/ADD/REMOVE), GM bypass |
-| [ ] 36 | Redeed on removal | Verify deed returned to backpack on removal, blocked if backpack full |
+| [x] 36 | Redeed on removal | Tested as 91. Deed returns to backpack on removal via house management. |
 | [ ] 37 | House demolition with items | Verify warning shown, DataFile cleaned up after demolition |
-| [ ] 38 | Two players same cache | Concurrent access — both browsing, one deposits while other withdraws, verify data consistency |
+| [ ] 38 | Two players same cache | Concurrent access — both browsing, one deposits while other withdraws, verify data consistency. Also test lease protection (89a). |
 | [ ] 39 | Multiple house types | Verify `who.multi` check works across different house types (small, large, castle, custom multi-houses) |
 | [ ] 40 | Orientation selection | TODO: directional graphic placement (East/South) if using chest-style graphic |
 
@@ -1179,7 +1179,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Tinkering (continued, tested 2026-04-08):**
 | # | Task | Result |
 |---|---|---|
-| [ ] 78a | Tinkering: obsidian golem backpack+cache | **RETEST** — `MakeTotem` refactored (removed `MakeTotemFromCache`). 20 obsidian in backpack, 80+ in cache. |
+| [x] 78a | Tinkering: obsidian golem backpack+cache | Retested after `MakeTotem` refactor. 20 obsidian in backpack, 80+ in cache. Working. |
 | [x] 78b | Tinkering: gem jewelry from backpack with cache fallback | 2 rubies in backpack, loop 4. First 2 iterations consumed from backpack, iterations 3-4 targeted cache via `SelectMaterialFromCache` (Star Sapphire, Diamond). Mixed gem types across iterations work. |
 | [x] 78c | Tinkering: trap with cache fallback | Targeted cache for Deadly Poison Potion. Two `WithdrawItem` calls (1 pre-check + 1 on success). Trap set. Also tested Greater Explosion Potion from cache. Arrow correctly rejected. |
 | [ ] 78d | Tinkering: potion keg bottles from cache | **RETEST** — `TryToMakePotionKeg` refactored (removed `TryToMakePotionKegFromCache`). 2 bottles in backpack + cache, and 0 bottles + cache-only. |
@@ -1213,7 +1213,8 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Inscription:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 84 | Blank scrolls from cache | Scroll loop with mana gating, lease release on mana depletion. |
+| [x] 84a | Blank scrolls from cache (direct) | Target cache → select blank scrolls. Loop 3, all from cache. Lease lifecycle correct. |
+| [x] 84b | Blank scrolls backpack + autodraw | 2 scrolls in backpack, loop 3. First 2 from backpack, third from cache autodraw. Late lease creation. |
 
 **Cooking:**
 | # | Task | Deliverable |
@@ -1265,12 +1266,10 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Edge cases & infrastructure:**
 | # | Task | Deliverable |
 |---|---|---|
-| [ ] 88 | House demolition with items stored | Verify warning message, verify DataFile cleanup after demolition. |
-| [ ] 89 | Two players accessing same cache | Verify concurrent access doesn't corrupt data, leases prevent over-consumption. |
 | [ ] 89a | Manual withdrawal respects leases | Player A crafts with lease on ingots. Player B opens gump and tries to withdraw same ingots. Verify withdrawal capped to unleased amount. |
-| [ ] 90 | Multiple house types | Verify `who.multi` access control works for different house styles. |
-| [x] 91 | Redeed on container destroy | Deed returns to player backpack when container removed via house management. |
 | [ ] 92 | Expired lease cleanup audit | Verify no flow exists where leases accumulate without cleanup. |
+
+See also Milestone 1.5 tests 35-39 for access control, house demolition, concurrent access, and multi-house-type testing.
 
 ---
 
