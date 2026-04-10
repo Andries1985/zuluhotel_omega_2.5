@@ -966,7 +966,6 @@ endfunction
 
 
 function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
-	SendSysMessage(character, "[Debug] TryToMakePotionKeg: bottleReq type=" + TypeOf(bottleRequest) + " use_on=" + use_on, 3, 53);
 
 	var needed_parts := { UOBJ_KEG	,
 				UOBJ_BARREL_TAP ,
@@ -975,7 +974,7 @@ function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
 
 
 	var parts := array{};
-	if(use_on)
+	if(use_on and CInt(use_on.objtype) != UOBJ_EMPTY_BOTTLE)
 		parts.append(use_on);
 	endif
 	var needed_bottles := 10;
@@ -1031,8 +1030,8 @@ function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
 						cacheBottleReq.dataFileHandle := access.df;
 					endif
 					if(GetAvailableResource(character, cacheBottleReq).total >= needed_bottles)
-						// Bottles available in cache — add a placeholder to parts
-						parts.append(cacheBottleReq);
+						// Bottles available in cache — use bottleRequest for consumption
+						bottleRequest := cacheBottleReq;
 						continue;
 					endif
 				endif
@@ -1040,12 +1039,11 @@ function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
 				return;
 
 			elseif( have_it.objtype == UOBJ_EMPTY_BOTTLE )
-				var bottleCheck2 := MakeBackpackRequest(character, have_it);
-				if( GetAvailableResource(character, bottleCheck2).total < needed_bottles )
+				bottleRequest := MakeBackpackRequest(character, have_it);
+				if( GetAvailableResource(character, bottleRequest).total < needed_bottles )
 					SendSysMessage( character , "You need at least 10 empty bottles." );
 					return;
 				endif
-				parts.append( have_it );
 
 			else
 				if( ReserveItem( have_it ) )
@@ -1281,7 +1279,6 @@ function HandleCacheMaterial(character, resourceRequest)
 
 	// Empty bottles — potion keg path (cache support for bottles)
 	elseif(ot == UOBJ_EMPTY_BOTTLE)
-		SendSysMessage(character, "[Debug] HandleCache: resReq type=" + TypeOf(resourceRequest) + " objtype=" + resourceRequest.objtype + " key=" + resourceRequest.key, 3, 53);
 		TryToMakePotionKeg(character, 0, resourceRequest);
 		return;
 
