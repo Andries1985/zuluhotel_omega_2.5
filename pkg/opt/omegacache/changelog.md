@@ -583,7 +583,7 @@ Live testing of blacksmithy crafting integration revealed multiple bugs across t
 - **Lease created on last loop iteration**: `ExtendResourceLease` creates a lease for the "next" iteration at the end of each loop. On the final iteration, this lease is immediately released when the while condition fails. No practical impact (lease lives for a fraction of a second) but is wasteful. Fix would require peeking at `AutoLoop_more()` remaining count without consuming it.
 - **Pre-existing: Missing itemdesc.cfg entries entirely**: Some items (e.g., Cloth `0x1765`, Axle `0x105b`, Springs `0x105d`, Clock Parts `0x104f`) have no `itemdesc.cfg` entry at all. The cache gump shows the hex objtype (e.g., "0x1765") instead of a name. These items cannot be `.create`'d either. Not caused by Omega Cache.
 - **Pre-existing: Missing `Desc` fields in itemdesc.cfg**: Some items (EmptyBottle, Blankscroll, Axleandgears, etc.) have only a `Name` field in `itemdesc.cfg` with no `Desc`. The cache gump shows the raw `Name` (e.g., "EmptyBottle") instead of a readable display name (e.g., "an Empty Bottle"). The in-game tooltip uses POL's built-in tile data which has the readable name, but `GetItemDisplayName` can only read `Desc`/`Name` from `itemdesc.cfg`. Fix: add `Desc` fields to affected items. Not caused by Omega Cache.
-- **Pre-existing: Missing tinkering component itemdesc entries**: Axle (`0x105b`), Springs (`0x105d`), and Clock Parts (`0x104f`) have no `itemdesc.cfg` entries. These items cannot be created via `.create` or crafting. All complex item chains requiring them (Axle+Gears, Clock, Sextant Parts via Springs) are untestable. Not caused by Omega Cache.
+- **Pre-existing: Missing itemdesc entries for crafting components**: Axle (`0x105b`), Springs (`0x105d`), Clock Parts (`0x104f`), and Young Oak Logs (`0xBA2A`) have no `itemdesc.cfg` entries. These items cannot be created via `.create` or crafting. Tinkering complex item chains and carpentry young oak staff are untestable. Not caused by Omega Cache.
 - **Pre-existing: Crafted items with different materials auto-stack incorrectly**: POL core's `CreateItemInBackpack` auto-stacks items by objtype BEFORE the crafting script sets CProps/color/name. Two items of the same objtype but different materials (e.g., Iron Sextant Parts + Lavarock Sextant Parts) merge into one stack, adopting the newer item's properties and destroying the older one. This is not caused by Omega Cache — it's a pre-existing issue in the crafting scripts' use of `CreateItemInBackpack`. Fix would require creating items via `CreateItemAtLocation` (no auto-stack) then moving to container, or setting properties on `product_desc` before creation. Affects tinkering complex items and potentially other crafts.
 
 ---
@@ -734,5 +734,19 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 - `pkg/std/tinkering/tinkering.src` — `MakeTotem`/`TryToMakePotionKeg`/`TryToMakeComplex` retrofitted with optional cache params. Deleted 3 duplicate functions. `use_on.color` guarded for cache path.
 - `pkg/std/carpentry/carpentry.src` — `MakeYoungOakStaff` retrofitted. Deleted `MakeYoungOakStaffFromCache`.
 - `pkg/opt/omegacache/omegacache.inc` — `WithdrawItem` lease-aware with `exclude_lease_key` param
-- `pkg/opt/omegacache/categories.cfg` — Wheat sheaf added to RawFoodAndHerbs. Raw food items moved from Food. Category renamed RawHerbs → RawFoodAndHerbs.
+- `pkg/opt/omegacache/categories.cfg` — Wheat sheaf added to RawFoodAndHerbs. Raw food items moved from Food. Category renamed RawHerbs → RawFoodAndHerbs. Added 37 mage-variant potions (0xFF19-0xFF40) to Potions.
+
+### Bug Fixes (2026-04-10)
+
+47. **`TryToMakePotionKeg` bottle handling** — Bottles were being added to `parts` array AND consumed via `bottleRequest`, causing double-consumption or `DestroyItem` on the physical bottle before `ConsumeResource` could use it. Fixed: bottles never added to `parts` (excluded at entry and in loop). All bottle consumption goes through `bottleRequest` exclusively. Integrity check adjusted to expect `len(parts) - 1` when `bottleRequest` is set.
+
+48. **`TryToMakePotionKeg` cache bottle fallback in loop** — When targeting keg/tap/lid and no bottles in backpack, the loop's cache fallback now sets `bottleRequest` instead of appending a struct to `parts`. Consistent bottle handling across all paths.
+
+49. **Inscription backpack autodraw** — `scrollRequest` was only set when targeting cache. Backpack blank scrolls had no autodraw fallback. Fixed: `scrollRequest := MakeBackpackRequest(character, item)` when targeting blank scrolls from backpack. All paths now use `GetAvailableResource`/`ConsumeResource` via `scrollRequest`.
+
+50. **Alchemy menu autodraw** — `CanMake` in menu building didn't pass `regRequest`, so only backpack reagents counted for recipe availability. With 1 reagent in backpack and 120k in cache, recipes needing 4+ didn't show. Fixed: `backpackRegRequest` built before menu, passed to `CanMake` and `TryToMakePotion`.
+
+51. **`GetBottle` autodraw check** — Inline bottle cache request used `preferredSourceOrder := array{ OMEGA_CACHE }` which bypassed the autodraw toggle check (only checks `[1] == BACKPACK`). Changed to `array{ BACKPACK, OMEGA_CACHE }` so the autodraw toggle is respected.
+
+52. **eScript named args** — `CanMake(user, potion_type, 0, mage, usereg := 0, cacheRequest)` failed: unnamed args cannot follow named args. Fixed by naming all trailing args: `regRequest := cacheRequest`.
 

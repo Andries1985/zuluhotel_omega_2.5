@@ -1182,9 +1182,9 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 78a | Tinkering: obsidian golem backpack+cache | Retested after `MakeTotem` refactor. 20 obsidian in backpack, 80+ in cache. Working. |
 | [x] 78b | Tinkering: gem jewelry from backpack with cache fallback | 2 rubies in backpack, loop 4. First 2 iterations consumed from backpack, iterations 3-4 targeted cache via `SelectMaterialFromCache` (Star Sapphire, Diamond). Mixed gem types across iterations work. |
 | [x] 78c | Tinkering: trap with cache fallback | Targeted cache for Deadly Poison Potion. Two `WithdrawItem` calls (1 pre-check + 1 on success). Trap set. Also tested Greater Explosion Potion from cache. Arrow correctly rejected. |
-| [ ] 78d | Tinkering: potion keg bottles from cache | **RETEST** — `TryToMakePotionKeg` refactored (removed `TryToMakePotionKegFromCache`). 2 bottles in backpack + cache, and 0 bottles + cache-only. |
+| [x] 78d | Tinkering: potion keg bottles from cache | Retested after refactor. Targeted keg, 2 bottles backpack + 8 from cache. Potion keg crafted. |
 | BLOCKED | 78e | Tinkering: complex gears from cache — Axle (0x105b), Springs (0x105d), Clock Parts (0x104f) have no itemdesc.cfg entries. Pre-existing. |
-| [ ] 78f | Tinkering: axle+gears + hinge from cache | **RETEST** — `TryToMakeComplex` refactored (removed `TryToMakeComplexFromCache`). Cache → Axle+Gears, cache → Hinge. |
+| [x] 78f | Tinkering: axle+gears + hinge from cache | Retested after refactor. Cache → Axle+Gears, cache → Hinge. Both consumed 1 each. Sextant Parts created. |
 
 **Tailoring (tested 2026-04-08):**
 | # | Task | Result |
@@ -1201,7 +1201,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 | [x] 82c | Cloth from cache (dual material) | Cloth + Emerald Logs, both from cache. Independent leases (qty=25, qty=75). Both consumed and released. |
 | [x] 82d | Dual material (logs + ingots) | Tested via 82b. |
 | [x] 82e | Keg/barrel from logs | Keg and barrel crafting path. |
-| [ ] 82f | Young oak staff from cache | **RETEST** — `MakeYoungOakStaff` refactored (removed `MakeYoungOakStaffFromCache`). Cache → young oak logs → staff. |
+| BLOCKED | 82f | Young oak staff from cache | Young oak logs (`0xBA2A`) have no itemdesc.cfg entry — cannot be created. Pre-existing issue. |
 
 **Alchemy:**
 | # | Task | Deliverable |
@@ -1266,6 +1266,7 @@ Stabilisation pass. Bug fixes and enhancements found during testing.
 **Edge cases & infrastructure:**
 | # | Task | Deliverable |
 |---|---|---|
+| [ ] 88a | Double-click range matches .cache | Double-click cache container from 4 tiles away. Verify gump opens (was limited to ~2 tiles). |
 | [ ] 89a | Manual withdrawal respects leases | Player A crafts with lease on ingots. Player B opens gump and tries to withdraw same ingots. Verify withdrawal capped to unleased amount. |
 | [ ] 92 | Expired lease cleanup audit | Verify no flow exists where leases accumulate without cleanup. |
 

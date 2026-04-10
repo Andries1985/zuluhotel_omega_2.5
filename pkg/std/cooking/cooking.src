@@ -31,18 +31,30 @@ var cooking_cache_df := 0;
 
 program cook ( character, ingredient )
 
-	// Handle Omega Cache targeting — set cache handle for ingredient lookups
+	// Build main ingredient ResourceRequest and resolve cache
+	var mainRequest := 0;
+
 	if(ingredient.objtype == OMEGACACHE_OBJTYPE)
+		// Player targeted cache — show all recipes
 		var access := FindAccessibleContainer(character, array{REMOVE_FROM_SECURE});
 		if(!access)
 			SendSysmessage(character, "You must be near an Omega Cache Container you have access to.");
 			return;
 		endif
 		cooking_cache_df := access.df;
-		// Show all recipes (no specific ingredient filter)
 		original_ingredient_objtype := 0;
 	else
 		original_ingredient_objtype := ingredient.objtype;
+		mainRequest := MakeBackpackRequest(character, ingredient);
+		// Resolve cache for autodraw (reuse throughout)
+		if(mainRequest.dataFileHandle)
+			cooking_cache_df := mainRequest.dataFileHandle;
+		elseif(!GetObjProperty(character, "omegacache_no_autodraw"))
+			var access := FindAccessibleContainer(character, array{REMOVE_FROM_SECURE});
+			if(access)
+				cooking_cache_df := access.df;
+			endif
+		endif
 	endif
 
 	//Go to a function that creates a menu and lets the user choose what to make
@@ -83,12 +95,35 @@ program cook ( character, ingredient )
 		sleep(3);
 	endif
 
+	// Lease the main ingredient if we have a ResourceRequest
+	var main_amount := 0;
+	if(mainRequest and original_ingredient_objtype)
+		// Find per-iteration amount for the main ingredient from the recipe
+		var ingredient_array := GetConfigStringArray(current_recipe, "ingredient");
+		foreach ing in ingredient_array
+			var parts := splitwords(ing);
+			if(food_dictionary[parts[1]] == original_ingredient_objtype)
+				main_amount := CInt(parts[2]);
+				if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
+					main_amount := CInt(Ceil(main_amount / 2));
+				endif
+				break;
+			endif
+		endforeach
+		if(main_amount > 0)
+			LeaseResource(character, mainRequest, main_amount);
+		endif
+	endif
+
 	AutoLoop_init( character );
 	while( AutoLoop_more() && check_for_all_ingredients(character, current_recipe) && NOT character.dead)
 
 		//Now make sure that there's still a fire around to cook on.
 		if ( !can_be_cooked(character, current_recipe) )
 			SendSysmessage(character, "It appears that your fire has gone out.");
+			if(mainRequest)
+				ReleaseResourceLease(mainRequest);
+			endif
 			AutoLoop_finish();
 			return;
 		endif
@@ -126,7 +161,17 @@ program cook ( character, ingredient )
 			endif
 		endif
 
+		// Extend lease for next iteration
+		if(mainRequest and main_amount > 0)
+			if(!ExtendResourceLease(mainRequest, character, main_amount))
+				break;
+			endif
+		endif
+
 	endwhile
+	if(mainRequest)
+		ReleaseResourceLease(mainRequest);
+	endif
 	AutoLoop_finish();
 
 endprogram
@@ -240,28 +285,31 @@ function destroy_all_ingredients(character, current_recipe)
 			var found_ingredient := FindObjtypeInContainer(character.backpack, ing_objtype);
 			if(found_ingredient and found_ingredient.amount >= ingredient_quantity)
 				SubtractAmount(found_ingredient, ingredient_quantity);
-			elseif(cooking_cache_df)
-				// Consume from backpack first, then cache for remainder
-				var remaining := ingredient_quantity;
-				if(found_ingredient and found_ingredient.amount > 0)
-					var bp_take := Min(remaining, found_ingredient.amount);
-					SubtractAmount(found_ingredient, bp_take);
-					remaining := remaining - bp_take;
+			else
+				// Check cache for this ingredient
+				if(cooking_cache_df)
+					// Consume from backpack first, then cache for remainder
+					var remaining := ingredient_quantity;
+					if(found_ingredient and found_ingredient.amount > 0)
+						var bp_take := Min(remaining, found_ingredient.amount);
+						SubtractAmount(found_ingredient, bp_take);
+						remaining := remaining - bp_take;
+					endif
+					if(remaining > 0)
+						var cacheRequest := struct{
+							objtype              := CInt(ing_objtype),
+							key                  := 0,
+							color                := 0,
+							quality              := 0,
+							preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE },
+							dataFileHandle       := cooking_cache_df,
+							leaseKey             := 0
+						};
+						ConsumeResource(character, cacheRequest, remaining);
+					endif
+				elseif(found_ingredient)
+					SubtractAmount(found_ingredient, ingredient_quantity);
 				endif
-				if(remaining > 0)
-					var cacheRequest := struct{
-						objtype              := CInt(ing_objtype),
-						key                  := 0,
-						color                := 0,
-						quality              := 0,
-						preferredSourceOrder := array{ OMEGA_CACHE },
-						dataFileHandle       := cooking_cache_df,
-						leaseKey             := 0
-					};
-					ConsumeResource(character, cacheRequest, remaining);
-				endif
-			elseif(found_ingredient)
-				SubtractAmount(found_ingredient, ingredient_quantity);
 			endif
 		endif
 
@@ -431,18 +479,20 @@ function check_for_all_ingredients (character, current_recipe)
 
 			if(found_ingredient and found_ingredient.amount >= ingredient_quantity)
 				if(!ReserveItem(found_ingredient)) return 0; endif
-			elseif(cooking_cache_df)
+			else
 				// Check cache for this ingredient
-				var cache_avail := GetStoredAmountByObjtype(cooking_cache_df, ing_objtype);
-				var bp_avail := 0;
-				if(found_ingredient)
-					bp_avail := found_ingredient.amount;
-				endif
-				if((bp_avail + cache_avail) < ingredient_quantity)
+				if(cooking_cache_df)
+					var cache_avail := GetStoredAmountByObjtype(cooking_cache_df, ing_objtype);
+					var bp_avail := 0;
+					if(found_ingredient)
+						bp_avail := found_ingredient.amount;
+					endif
+					if((bp_avail + cache_avail) < ingredient_quantity)
+						return 0;
+					endif
+				else
 					return 0;
 				endif
-			else
-				return 0;
 			endif
 		endif
 	endfor
