@@ -2,6 +2,8 @@ use uo;
 
 include "include/random";
 
+const MAX_CREATEINBAG_RANGE := 256;
+
 program createinbag(who, text)
 	var params := SplitWords(text);
 	if (len(params) < 2)
@@ -14,7 +16,7 @@ program createinbag(who, text)
 
 	var start_graphic := CInt(start_input);
 	var end_graphic := CInt(end_input);
-    Print("Parsed start graphic: " + start_graphic + ", end graphic: " + end_graphic);
+	PrintTextAbovePrivate(who, "Parsed start graphic: " + start_graphic + ", end graphic: " + end_graphic, who);
 
 	if (start_graphic < 0 or start_graphic > 16383 or end_graphic < 0 or end_graphic > 16383)
 		SendSysMessage(who, "Invalid graphic ID(s). Use hex format (e.g. 0x277E).");
@@ -25,6 +27,11 @@ program createinbag(who, text)
 		var tmp := start_graphic;
 		start_graphic := end_graphic;
 		end_graphic := tmp;
+	endif
+
+	if ((end_graphic - start_graphic + 1) > MAX_CREATEINBAG_RANGE)
+		SendSysMessage(who, "Range too large. Maximum supported range is " + MAX_CREATEINBAG_RANGE + " graphics per command.");
+		return 0;
 	endif
 
 	var chest := CreateItemInBackpack(who, 0x0E40);
