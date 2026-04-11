@@ -9,16 +9,16 @@ Each house can have 1-3 physical Omega Cache Containers (based on house size), p
 Phase 2 integrates the cache with all 9 crafting skills: blacksmithy, tinkering, tailoring, carpentry, alchemy, bowcraft/fletching, cooking, inscription, and cartography. Players can target the cache container when prompted for materials, selecting specific material variants from a gump. Alternatively, the **autodraw** system transparently falls back to cache when backpack materials run out mid-craft. A resource lease system prevents concurrent crafters from consuming the same stock. Players can toggle autodraw on/off with `.cache autodraw`.
 
 ```
-                         +------------------+
-                         |   Omega Cache    |
-                         |   Container(s)   |
+                         +-------------------+
+                         |   Omega Cache     |
+                         |   Container(s)    |
                          |  (house furniture)|
-                         +--------+---------+
-                                  |
-                    +-------------+-------------+
+                         +---------+---------+
+                                   |
+                    +--------- ----+------------+
                     |                           |
               Double-click /               Drag & Drop
-              .cache command               (OnInsertScript)
+              .cache command             (OnInsertScript)
                     |                           |
                     v                           v
            +-------+----------+        DepositSingleItem()
