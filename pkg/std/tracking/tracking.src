@@ -17,6 +17,13 @@ program track(who)
 	var mysticarcher := GetObjProperty( who , CLASSEID_MYSTIC_ARCHER );
 	var points := POINT_VALUE;
 
+	PrintTextAbovePrivate(who, "You begin to track nearby creatures.", who, 3, 0x0035, 1);
+	//Resetting tracking timeout and counter properties
+	EraseObjProperty(who , "#trackingtimeout");
+	EraseObjProperty(who, "TrackingCounter");
+	var timer := 13;
+	Sleep(5);
+
 	if( !checkskill(who, SKILLID_TRACKING, -1, points)) 
 		SendSysmessage(who, "You fail to find any creatures nearby");
 		return;
@@ -24,6 +31,7 @@ program track(who)
 
 	var tracker := ReadGameClock();
 	SetObjProperty(who, "TrackingCounter", tracker);
+
 	var range := Cint(GetEffectiveSkill(who, SKILLID_TRACKING)/3);
 	//Print("Base range is " + range);
 	if( ranger )
@@ -166,11 +174,11 @@ program track(who)
 		var critter := critter_ids[thetarget.index];
 
 		SetObjProperty( who , "#trackingtimeout" , ReadGameClock()+40 );
-		detach();
+		Detach();
 		var timer := 0;
 
 		
-		while((Distance(who, critter) <= range) and (critter.dead == 0) and (timer <= 12)and (tracker == GetObjProperty(who,"TrackingCounter")))
+		while((Distance(who, critter) <= range) and (critter.dead == 0) and (timer <= 12) and (tracker == GetObjProperty(who,"TrackingCounter")))
 			timer := timer + 1;
 			var dir := Get_direction(who, critter);
 			If(dir == "nearby")

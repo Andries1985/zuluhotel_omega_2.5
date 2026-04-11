@@ -46,5 +46,5 @@ const CFGFILE_SPELLS_EARTH		:= ":earth:spells";
 const CFGFILE_SPELLS_NECROMANCY		:= ":necro:spells";
 const CFGFILE_SPELLS_NORMAL		:= ":spells:spells";
 const CFGFILE_TELEPORTERS		:= ":teleporters:teleporters";
-const CFGFILE_TRACKING			:= ":tracking:tracking";
+//const CFGFILE_TRACKING			:= ":tracking:tracking";
 const CFGFILE_WEAPON_WRESTLING		:= ":*:wepndesc";
