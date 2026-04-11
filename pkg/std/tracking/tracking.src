@@ -85,7 +85,7 @@ program track(who)
 
 	var thetarget := SelectMenuItem2(who, track_list);
 	if(!thetarget || !thetarget.index || thetarget.index < 1 || thetarget.index > category_count)
-		SendSysmessage (who, "Targetting canceled.");
+		SendSysmessage (who, "Targeting canceled.");
 		return;
 	endif
 
