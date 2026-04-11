@@ -136,6 +136,22 @@ Phase 2 integrates the cache with all 9 crafting skills: blacksmithy, tinkering,
 
 - **Cartography** (`cartography.src`): `mapRequest` built from backpack with autodraw. `ConsumeMap` always uses `ConsumeResource`. Create-before-consume in `makeNewmap`.
 
+### Peripheral Changes
+
+- **`.nukeserial` admin command** (`scripts/textcmd/admin/nukeserial.src`): New admin command to destroy items by serial number. Erases `houseserial` CProp before destruction so DestroyScript treats the item as orphaned. Created during development for debugging; retained as a general-purpose admin utility.
+
+- **`CanStack()` extraction** (`scripts/include/canstack.inc`, `pkg/packethooks/packethook/packethook.src`): Shared `CanStack()` function extracted from packethook to a shared include. Stricter than POL core — also checks usescript, equipscript, snoopscript. Used by both packethook (stack merging) and omegacache (item identity).
+
+- **`ApplyMaterialProperties`** (`pkg/systems/crafting/include/craftingfunctions.inc`): Made backwards-compatible with ResourceRequest structs. Reads `.objtype`/`.color`/`.quality` from struct (lowercase) or physical item (uppercase). Type detection via `material.preferredSourceOrder` presence.
+
+- **Blacksmithy config** (`pkg/std/blacksmithy/blacksmithy.cfg`): Added `Name Iron` for iron ingot entry (was empty, causing blank material name in messages).
+
+- **Scissors** (`pkg/std/tailoring/scissors.src`): Added 60k stack cap on bandage creation. No cache integration (random multiplier incompatible with amount prompting).
+
+- **Grinding** (`pkg/std/cooking/grinding.src`): Added `PromptBulkAmount` with 60k cap. Backpack-only (no cache targeting for grinding).
+
+- **Fletching menu case** (`scripts/items/fletch.src`): Fixed `SelectMenuItem2` case sensitivity — `"fletching"` changed to `"Fletching"` to match `config/menus.cfg` entry name on Linux.
+
 ---
 
 ## Known Issues
