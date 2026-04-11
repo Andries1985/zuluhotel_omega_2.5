@@ -32,9 +32,9 @@ endprogram
 
 function SetGraphic(dolly, mobile)
 
-var mobiletype := GetObjProperty(mobile, "Type");
-if (mobiletype)
-	case(Lower(mobiletype))
+var mobile_type := GetObjProperty(mobile, "Type");
+if (mobile_type)
+	case(Lower(mobile_type))
 		"animal":			dolly.graphic := 0x20F6;
 		"animated":			dolly.graphic := 0x2236;
 		"beholder":			dolly.graphic := 0x20F4;
@@ -55,10 +55,10 @@ if (mobiletype)
 		"terathan":			dolly.graphic := 0x212C;
 		"troll":			dolly.graphic := 0x20E9;
 		"undead":			dolly.graphic := 0x2109;
-		default:			dolly.graphic := 0x20f8;
+		default:			dolly.graphic := 0x20F8;
 	endcase
 else
-	dolly.graphic := 0x20f8;
+	dolly.graphic := 0x20F8;
 endif
 
 endfunction
