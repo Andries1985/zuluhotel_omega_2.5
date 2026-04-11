@@ -1,4 +1,4 @@
-# Omega Cache — Phase 1 + Phase 2 Release
+# Omega Cache — v1.0 Release
 
 ## Summary
 
