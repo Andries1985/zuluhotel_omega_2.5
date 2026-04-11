@@ -1,24 +1,96 @@
 use uo;
 use os;
+use polsys;
 
 include "include/client";
 include "include/namingbyenchant";
-include "include/skillpoints";
-include "include/itemutil";
+include "include/classes";
+//include "include/skillpoints";
+//include "include/itemutil";
+//include "include/chests";
+//include ":containers:checks";
 
-function SelectItemToID(who,delay)
+
+function TalismanID( who, delay, talisman )
 
 	var the_item;
-	var skillID := GetEffectiveSkill( who, SKILLID_ITEMID );
+	delay := 4;
+	var skillID;
 	var intelligence := GetAttribute( who, ATTRIBUTEID_INTELLIGENCE );
 	const MIN_DELAYMS := 250;
 	const MIN_SKILLFORBATCH := 100;
 	const MIN_INTFORBATCH := 100;
 
+	if ( GetObjProperty( who , CLASSEID_BARD ) )
+		skillID := GetEffectiveSkill( who, SKILLID_TASTEID );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+    elseif ( GetObjProperty( who , CLASSEID_CRAFTER ) )
+		skillID := CInt(GetEffectiveSkill( who, SKILLID_ARMSLORE ));
+		Print("Crafter's Arms Lore: " + skillID);
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	elseif ( GetObjProperty( who , CLASSEID_WARRIOR ) || GetObjProperty( who , CLASSEID_BLADESINGER) )
+		skillID := GetEffectiveSkill( who, SKILLID_ANATOMY );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	elseif ( GetObjProperty( who , CLASSEID_THIEF ) )
+		skillID := GetEffectiveSkill( who, SKILLID_REMOVETRAP );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	elseif ( GetObjProperty( who , CLASSEID_RANGER ) )
+		skillID := GetEffectiveSkill( who, SKILLID_CAMPING );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	elseif ( GetObjProperty( who , CLASSEID_POWERPLAYER) )
+        if( GetEffectiveSkill( who, SKILLID_EVALINT ) >= 100)
+            delay := 0;
+            //return 1;
+        elseif( GetEffectiveSkill( who, SKILLID_ANATOMY ) >= 100)
+            delay := 0;
+            //return 1;
+        elseif( GetEffectiveSkill( who, SKILLID_ARMSLORE ) >= 100)
+            delay := 0;
+            //return 1;
+        elseif( GetEffectiveSkill( who, SKILLID_TASTEID ) >= 100)
+            delay := 0;
+            //return 1;
+        elseif( GetEffectiveSkill( who, SKILLID_REMOVETRAP ) >= 100)
+            delay := 0;
+            //return 1;
+        elseif( GetEffectiveSkill( who, SKILLID_CAMPING ) >= 100)
+            delay := 0;
+            //return 1;
+        elseif( GetEffectiveSkill( who, SKILLID_ITEMID ) >= 100)
+            delay := 0;
+            //return 1;
+        endif    
+    elseif ( GetObjProperty( who , CLASSEID_MAGE ) )
+		skillID := GetEffectiveSkill( who, SKILLID_ITEMID );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+    elseif ( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER) || GetObjProperty( who , CLASSEID_PALADIN ) )
+        skillID := GetEffectiveSkill( who, SKILLID_EVALINT );
+        if( skillID >= 100)
+            delay := 0;
+        endif
+	else
+		skillID := GetEffectiveSkill( who, SKILLID_ITEMID );
+		if( skillID >= 100)
+			delay := 0;
+		endif
+	endif
+
 	SendSysMessage( who, "Select an object to identify." );
-	the_item := Target(who, TGTOPT_CHECK_LOS);
+	the_item := Target( who, TGTOPT_CHECK_LOS );
 	if( !the_item )
-		return 0;
+		return 1;
 	endif
 		
 	if( !Accessible( who , the_item ) )
@@ -31,11 +103,6 @@ function SelectItemToID(who,delay)
 		return 1;
 	endif
 		
-	if( !the_item.IsA(POLCLASS_ITEM) )
-		SendSysMessage( who , "That's not an item!" );
-		return 1;
-	endif
-
 	ReserveItem( the_item );
 	if (!ReserveItem( the_item ))
 		//Print("Item "+the_item.serial+" is already reserved.");
@@ -63,7 +130,10 @@ function SelectItemToID(who,delay)
 						ReleaseItem( the_item );
 						return 1;
 					endif
-					ItemID(who,item);
+					if( !ItemID(who, item, talisman) )
+						ReleaseItem( the_item );
+						return 1;
+					endif
 					sleepms(Max(delay*1000,MIN_DELAYMS));
 				endforeach
 			endif
@@ -95,14 +165,24 @@ function SelectItemToID(who,delay)
 		return 1;
 	endif
 
-	ItemID(who,the_item);
-
+	ItemID(who, the_item, talisman);
 	ReleaseItem( the_item );
 	return 1;
 	
 endfunction
 
-function ItemID(who,the_item)
+function ItemID(who, the_item, talisman)
+
+	if( !talisman )
+		SendSysMessage( who, "You need a talisman of identification to do that.", FONT_NORMAL, 2595 );
+		return 0;
+	endif
+
+	var idcharges := CInt(GetObjProperty(talisman, "idcharges"));
+	if( idcharges < 1 )
+		SendSysMessage( who, "Your talisman has no identification charges left.", FONT_NORMAL, 2595 );
+		return 0;
+	endif
 
 	ReserveItem( the_item );
 	if( !ReserveItem( the_item ) )
@@ -111,23 +191,25 @@ function ItemID(who,the_item)
 	endif
 	//Print("Item reserved for IDing." + the_item.serial + " ." + the_item.desc);
 
-	var thepoints := get_default_points( SKILLID_ITEMID );
+	//var thepoints := get_default_points( SKILLID_ITEMID );
+    var thepoints := 0;
 	var ided := GetObjProperty( the_item , "IDed" );
 
 	if( !ided )		
 		if( !IsIDable( the_item ) )
 			SendSysmessage( who , "This is a normal item." );
 			SetObjProperty( the_item , "IDed" , 1 );
+			SetObjProperty( talisman, "idcharges", idcharges - 1 );
 			ReleaseItem( the_item );
 			//Print("Normal Item.");
 			//Print("Releasing item...");
 			return 1;
-		elseif( !CheckSkill( who , SKILLID_ITEMID , -2 , thepoints ) )
-			SendSysmessage (who, "I'm not sure . . .");
-			ReleaseItem( the_item );
-			//Print("Failed ID.");
-			//Print("Releasing item...");
-			return 1;
+		// elseif( !CheckSkill( who , SKILLID_ITEMID , -2 , thepoints ) )
+		// 	SendSysmessage (who, "I'm not sure . . .");
+		// 	ReleaseItem( the_item );
+		// 	//Print("Failed ID.");
+		// 	//Print("Releasing item...");
+		// 	return 1;
 		endif
 	endif 
 
@@ -146,6 +228,7 @@ function ItemID(who,the_item)
 	endif
 	
 	SetObjProperty( the_item , "IDed" , 1 );
+	SetObjProperty( talisman, "idcharges", idcharges - 1 );
 
 	ReleaseItem( the_item );
 	//Print("Item IDed.");

@@ -40,6 +40,7 @@ program textcmd_undressme(me)
 	var robe := GetEquipmentByLayer( me,  LAYER_ROBE );
 	var skirt := GetEquipmentByLayer( me,  LAYER_SKIRT );
 	var legs := GetEquipmentByLayer( me,  LAYER_LEGS );
+	var talisman := GetEquipmentByLayer( me,  LAYER_TALISMAN );
 
 
 	var wonecurse := Cint( GetObjProperty( weaponone , "Cursed" ) );
@@ -61,6 +62,7 @@ program textcmd_undressme(me)
 	var robecurse := Cint( GetObjProperty( robe , "Cursed" ) );
 	var skirtcurse := Cint( GetObjProperty( skirt , "Cursed" ) );
 	var legscurse := Cint( GetObjProperty( legs , "Cursed" ) );
+	var talismancurse := Cint( GetObjProperty( talisman , "Cursed" ) );
 
 	if( weaponone )
 		if( !wonecurse or wonecurse == 3 )
@@ -173,6 +175,12 @@ program textcmd_undressme(me)
 	if( legs )
 		if( !legscurse or legscurse == 3 )
 			MoveItemToContainer(legs, mypack );
+		endif
+	endif
+	
+	if( talisman )
+		if( !talismancurse or talismancurse == 3 )
+			MoveItemToContainer(talisman, mypack );
 		endif
 	endif
 
