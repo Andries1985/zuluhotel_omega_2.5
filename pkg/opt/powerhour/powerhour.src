@@ -12,13 +12,12 @@ var starttime := 1543172400; //2018/11/25 19:00 gmt (sunday)
 program powerhour()
 	var started := 0, secChance := 0;
 	while (1)
-		var time := POLCORE().systime; 
+		var time := POLCORE().systime;
+		var randomPH := Random(3)+1;
 		if((((time - starttime) % week) > (week - (minute * 2)) && !started) || (!started && secChance)) 
 			Broadcast( "A random powerhour will start in 2 minutes!", FONT_BOLD, 1176 );
 			sleep(minute * 2);
-
 			started := ReadGameClock();
-			var randomPH := Random(3)+1;
 			case(randomPH)
 				1:	SetGlobalProperty("PHH", 1);
 					Broadcast( "Hunting powerhour has started!", FONT_BOLD, 1176 );
@@ -40,12 +39,22 @@ program powerhour()
 			EraseGlobalProperty("PHH");
 			EraseGlobalProperty("PHC");
 			EraseGlobalProperty("PHS");
-			var secondPHChance := Random(10000);
-			if(1000 > secondPHChance && !secChance)
-				Broadcast( "The Omega gods have granted a second random powerhour, that will begin shortly!", FONT_BOLD, 1176 );
-				secChance := 1;
-			elseif(secChance)
-				secChance := 0;
+			if(randomPH == 2)
+				var secondPHChance := Random(2000);
+				if(1000 > secondPHChance && !secChance)
+					Broadcast( "The Omega gods have granted a second random powerhour, that will begin shortly!", FONT_BOLD, 1176 );
+					secChance := 1;
+				elseif(secChance)
+					secChance := 0;
+				endif
+			else
+				var secondPHChance := Random(10000);
+				if(1000 > secondPHChance && !secChance)
+					Broadcast( "The Omega gods have granted a second random powerhour, that will begin shortly!", FONT_BOLD, 1176 );
+					secChance := 1;
+				elseif(secChance)
+					secChance := 0;
+				endif
 			endif				
 		endif
 		Sleep(minute);
