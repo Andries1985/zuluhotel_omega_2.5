@@ -10,8 +10,11 @@
 
 use uo;
 use os;
+use cfgfile;
 
 include "include/client";
+include "include/random";
+include "include/starteqp";
 
 const DEFAULT_LOTTO_TRIGGER := 50;
 const DEFAULT_LOTTO_CHANCE := 25;

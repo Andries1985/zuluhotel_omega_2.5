@@ -71,7 +71,7 @@ program pick( me, lockpick )
 
 		if (LockPickTheThing(me,chest,lvl,lockpick))
 			if (TypeOf(GetObjProperty(chest,"spawnchest"))=="Integer")
-				SpawnTheChest(chest);
+				//SpawnTheChest(chest);
 			endif
 		endif
 	endif
@@ -79,7 +79,7 @@ program pick( me, lockpick )
 endprogram
 
 function SpawnTheChest(chest)
-	//return 0;
+	return 0;
 	var level:=Cint(GetObjProperty(chest,"spawnchest"));
 
 	if(level)

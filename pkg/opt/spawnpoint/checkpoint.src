@@ -229,7 +229,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 	
 	// Only fire loot logic if pt_data[5] is exactly 300
 	if( Cint(pt_data[5]) != 300 )
-		Print("Spawnpoint chest created without loot, because wander range is not set to 300. Current value: "+pt_data[5]);
+		//PrintTextAbovePrivate(who, "Spawnpoint chest created without loot, because wander range is not set to 300. Current value: "+pt_data[5], who, );
 		DestroyItem(chest);
 		return 0;
 	endif
@@ -270,7 +270,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 		lock_difficulty := 120 + RandomInt(21); // 120-140
 	else
 		magic_level  := 1 + RandomInt(9);    // 1-9
-		magic_chance := 50 + RandomInt(50);  // 50-99
+		magic_chance := 30 + RandomInt(70);  // 30-99
 		lock_difficulty := 50 + RandomInt(71); // 50-120
 	endif
 
@@ -324,7 +324,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 		SetObjProperty( chest, PROPID_CHEST_TRAP_STRENGTH, CInt(magic_level + 1) );
 		SetObjProperty( chest, PROPID_CHEST_TRAPPED_BY, "Spawnpoint" );
 		chest.usescript := USESCRIPTID_TRAPPED_CONTAINER;
-		Print("Trap Type: "+GetObjProperty(chest, PROPID_CHEST_TRAP_TYPE)+" Trap Strength: "+GetObjProperty(chest, PROPID_CHEST_TRAP_STRENGTH));
+		//Print("Trap Type: "+GetObjProperty(chest, PROPID_CHEST_TRAP_TYPE)+" Trap Strength: "+GetObjProperty(chest, PROPID_CHEST_TRAP_STRENGTH));
 	endif
 	
 	serials.append( chest.serial );
