@@ -1177,10 +1177,10 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
     var itemname;
     var points;
     var skill;
-    var ore;
+    var ingot;
     var ore_cfg := ReadConfigFile( ":blacksmithy:blacksmithy" );
-    var ore_quality := 1;
-    var ore_name := "";
+    var ingot_quality := 1;
+    var ingot_name := "";
     var crafter_level := 1;
     var idcharges;
 	var excep_ch := 10;
@@ -1195,35 +1195,35 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
     endif
 
     SendSysMessage( character , "Select an ingot to bind into the talisman." );
-    ore := Target( character , TGTOPT_CHECK_LOS );
-    if( !ore )
+    ingot := Target( character , TGTOPT_CHECK_LOS );
+    if( !ingot )
         return;
     endif
 
-    if( !Accessible( character , ore ) or !ore.movable )
+    if( !Accessible( character , ingot ) or !ingot.movable )
         SendSysMessage( character , "You can't reach that!" );
         return;
     endif
 
-    if( !ReserveItem( ore ) )
+    if( !ReserveItem( ingot ) )
         return;
     endif
 
-    if( !IsInContainer( character.backpack , ore ) )
+    if( !IsInContainer( character.backpack , ingot ) )
         SendSysMessage( character , "That item has to be in your backpack." );
-        ReleaseItem( ore );
+        ReleaseItem( ingot );
         return;
     endif
 
-    if( !( ((ore.objtype >= UOBJ_INGOTS_START ) && (ore.objtype <= UOBJ_INGOTS_END )) || ((ore.objtype >= UOBJ_INGOTS2_START) && (ore.objtype <= UOBJ_INGOTS2_END)) ) )
+    if( !( ((ingot.objtype >= UOBJ_INGOTS_START ) && (ingot.objtype <= UOBJ_INGOTS_END )) || ((ingot.objtype >= UOBJ_INGOTS2_START) && (ingot.objtype <= UOBJ_INGOTS2_END)) ) )
         SendSysMessage( character , "You must select an ingot." );
-        ReleaseItem( ore );
+        ReleaseItem( ingot );
         return;
     endif
 
-	if( ore.amount < 125 )
+	if( ingot.amount < 125 )
 		SendSysMessage( character , "You need at least 125 ingots to make a talisman." );
-        ReleaseItem( ore );
+        ReleaseItem( ingot );
 		return;
 	endif
 
@@ -1232,22 +1232,22 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
         itemname := element.Name;
         skill    := element.Skill;
     else
-        ReleaseItem( ore );
+        ReleaseItem( ingot );
         return;
     endif
 
-    if( ore_cfg[ore.objtype] )
-        if( ore_cfg[ore.objtype].Quality )
-            ore_quality := ore_cfg[ore.objtype].Quality;
+    if( ore_cfg[ingot.objtype] )
+        if( ore_cfg[ingot.objtype].Quality )
+            ingot_quality := ore_cfg[ingot.objtype].Quality;
         endif
-        if( ore_cfg[ore.objtype].Name )
-            ore_name := ore_cfg[ore.objtype].Name;
+        if( ore_cfg[ingot.objtype].Name )
+            ingot_name := ore_cfg[ingot.objtype].Name;
         endif
     endif
 
     // Default quality fallback
-    if( !ore_quality )
-        ore_quality := 1;
+    if( !ingot_quality )
+        ingot_quality := 1;
     endif
 
     points := Cint( skill * POINTS_MULTIPLIER );
@@ -1260,18 +1260,18 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
         var theitem := CreateItemInBackpack( character , to_be_done_objtype );
         if( !theitem )
             SendSysMessage( character , "Error in creation process please report this bug on Discord." );
-            ReleaseItem( ore );
+            ReleaseItem( ingot );
             return;
         endif
 
 		theitem.movable := 1;
 
 		if( theitem.quality )
-			theitem.quality := ore_quality;
+			theitem.quality := ingot_quality;
 		endif
 
-		theitem.color := ore.color;
-		itemname := ore_name + " " + itemname;
+		theitem.color := ingot.color;
+		itemname := ingot_name + " " + itemname;
 
 		// exceptional logic (like TryToMakeItem / TryToMakeComplex)
 		if( GetObjProperty( character , CLASSEID_CRAFTER ) )
@@ -1342,9 +1342,10 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
     endif
 
     DestroyItem( use_on );
-    SubtractAmount( ore , 125 );
-	ReleaseItem( ore );
+    SubtractAmount( ingot , 125 );
+	ReleaseItem( ingot );
 
+endfunction
 
 // ============================================================
 // Cache-specific crafting functions

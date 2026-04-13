@@ -2,7 +2,8 @@ use uo;
 
 include "include/random";
 
-const MAX_CREATEINBAG_RANGE := 256;
+// Arbitrary limit due to bag item limit
+const MAX_CREATEINBAG_RANGE := 150; 
 
 program createinbag(who, text)
 	var params := SplitWords(text);

@@ -11,7 +11,8 @@ use uo;
 use math;
 
 include "include/omegacache_utils";
-include ":omegacache:omegacache";
+//include ":omegacache:omegacache";
+include "../pkg/opt/omegacache/omegacache";
 
 // ============================================================
 // Constants
