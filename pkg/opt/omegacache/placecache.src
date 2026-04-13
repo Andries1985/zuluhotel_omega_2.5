@@ -1,0 +1,109 @@
+// placecache.src — Omega Cache deed placement script
+//
+// Triggered when player double-clicks an Omega Cache Deed.
+// Validates house ownership, cache limit, and placement location.
+// Creates the cache item and destroys the deed.
+
+use uo;
+use os;
+
+include "include/client";
+include "include/omegacache_utils";
+include ":housing:utility";
+include ":gumps:gumps";
+include ":gumps:gumps_ex";
+
+program place_omegacache(who, deed)
+
+	if(!ReserveItem(deed))
+		return;
+	endif
+
+	// Must be inside a house
+	var house := who.multi;
+	if(!house)
+		SendSysMessage(who, "You must be inside a house to place this.");
+		return;
+	endif
+
+	// Must be owner or co-owner
+	if(!IsCowner(who, house) and GetObjProperty(house, "ownerserial") != who.serial)
+		SendSysMessage(who, "You must be the owner or co-owner of this house.");
+		return;
+	endif
+
+	// Lazy-init cache slots if not yet set (new house, sign never opened)
+	if(GetObjProperty(house, "numomegacache") == error)
+		var max := GetMaxOmegaCacheForHouse(house.objtype);
+		SetObjProperty(house, "numomegacache", max);
+		SetObjProperty(house, "maxnumomegacache", max);
+	endif
+
+	// Check cache limit (numomegacache = remaining slots, same pattern as numsecure)
+	var remaining := CInt(GetObjProperty(house, "numomegacache"));
+	if(remaining <= 0)
+		SendSysMessage(who, "This house has no more Omega Cache Container slots available.");
+		return;
+	endif
+
+	SendSysMessage(who, "Where would you like to place your Omega Cache?");
+	var where := TargetCoordinates(who);
+	if(!where)
+		SendSysMessage(who, "Cancelled.");
+		return;
+	endif
+
+	// Validate target is inside the house
+	// Create a temporary test item to check if it's within the house multi
+	var testitem := CreateItemAtLocation(where.x, where.y, where.z, 0x6200, 1);
+	var inside_multi := testitem.multi;
+	DestroyItem(testitem);
+
+	if(!inside_multi or inside_multi.serial != house.serial)
+		SendSysMessage(who, "You can only place this inside your house.");
+		return;
+	endif
+
+	// Orientation selection — standard UO menu
+	var GRAPHIC_SOUTH := 0x2DF4;
+	var GRAPHIC_EAST  := 0x2DF3;
+
+	var menu := CreateMenu("Choose an orientation");
+	AddMenuItem(menu, GRAPHIC_SOUTH, "South");
+	AddMenuItem(menu, GRAPHIC_EAST, "East");
+
+	var choice := SelectMenuItem2(who, menu);
+	if(!choice)
+		SendSysMessage(who, "Cancelled.");
+		return;
+	endif
+
+	var selected_graphic := CInt(choice.objtype);
+
+	// Create the Omega Cache item
+	var cache := CreateItemAtLocation(where.x, where.y, where.z, OMEGACACHE_OBJTYPE, 1);
+	if(!cache)
+		SendSysMessage(who, "Failed to create the Omega Cache.");
+		return;
+	endif
+
+	// Set the selected orientation graphic
+	cache.graphic := selected_graphic;
+	cache.color := 2032;
+
+	// Link to house
+	SetObjProperty(cache, "houseserial", CInt(house.serial));
+
+	// Decrement remaining slots (same pattern as numsecure)
+	SetObjProperty(house, "numomegacache", CInt(GetObjProperty(house, "numomegacache")) - 1);
+
+	// Destroy the deed
+	DestroyItem(deed);
+
+	SendSysMessage(who, "You have placed an Omega Cache.");
+
+	if(DEBUG_MODE)
+		SendSysMessage(who, "[OmegaCache] Placed cache serial=" + cache.serial + " house=" + house.serial + " remaining_slots=" + GetObjProperty(house, "numomegacache"), 3, 53);
+	endif
+
+endprogram

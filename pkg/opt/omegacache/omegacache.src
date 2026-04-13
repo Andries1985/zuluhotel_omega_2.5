@@ -1,0 +1,34 @@
+// omegacache.src — Omega Cache main use-script
+//
+// Triggered when a player double-clicks a placed Omega Cache Container.
+// Provides gump UI for browsing, depositing, and withdrawing items.
+
+use uo;
+use os;
+use math;
+use cfgfile;
+
+include ":omegacache:omegacache";
+
+program use_omegacache(who, item)
+
+	_debug_who := who;
+
+	// Access check — VIEW_SECURE to open
+	var access := FindAccessibleContainer(who, array{VIEW_SECURE});
+	if(!access)
+		SendSysMessage(who, "You cannot access this.");
+		return;
+	endif
+
+	var df := access.df;
+	if(!df)
+		SendSysMessage(who, "Failed to open storage.");
+		return;
+	endif
+
+	detach();
+
+	RunOmegaCacheGump(who, df);
+
+endprogram

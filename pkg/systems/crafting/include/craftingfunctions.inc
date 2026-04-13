@@ -10,9 +10,25 @@ const GOLD_COLOR	:= 0x0033;
 
 function ApplyMaterialProperties(byref product_desc, material, is_exceptional, character, skill_id)
 
+	// Support both physical items and ResourceRequest structs
+	var mat_objtype;
+	var mat_color;
+	var mat_quality;
+	if(material.preferredSourceOrder)
+		// ResourceRequest struct — lowercase fields
+		mat_objtype := material.objtype;
+		mat_color := material.color;
+		mat_quality := material.quality;
+	else
+		// Physical item — uppercase POL properties
+		mat_objtype := material.objtype;
+		mat_color := material.Color;
+		mat_quality := CDbl(material.quality);
+	endif
+
 	var material_cfg;
 	case(skill_id)
-		SKILLID_BLACKSMITHY: 
+		SKILLID_BLACKSMITHY:
 			material_cfg := ReadConfigFile( ":blacksmithy:blacksmithy" );
 		SKILLID_TAILORING:
 			material_cfg := ReadConfigFile( ":tailoring:tailoring" );
@@ -23,16 +39,21 @@ function ApplyMaterialProperties(byref product_desc, material, is_exceptional, c
 		default:
 			return 0;
 	endcase
-		
-	var material_desc := material_cfg[material.objtype];
+
+	var material_desc := material_cfg[mat_objtype];
 
 	product_desc.Desc := material_desc.Name +" "+product_desc.Desc;
-	product_desc.Quality := material_desc.Quality;
+	// Use stored quality if present, else fall back to config
+	if(mat_quality)
+		product_desc.Quality := mat_quality;
+	else
+		product_desc.Quality := material_desc.Quality;
+	endif
 
-	if( material.objtype == UOBJ_GOLD_INGOT )
+	if( mat_objtype == UOBJ_GOLD_INGOT )
 		product_desc.Color := GOLD_COLOR;
 	else
-		product_desc.Color := material.Color;
+		product_desc.Color := mat_color;
 	endif
 
 	//Specific Exceptional properties
@@ -59,7 +80,7 @@ function ApplyMaterialProperties(byref product_desc, material, is_exceptional, c
 	endif
 
 	
-	product_desc.Cprops.insert("CraftedWith", material.objtype);
+	product_desc.Cprops.insert("CraftedWith", mat_objtype);
 	product_desc.Cprops.insert("BaseName", product_desc.Desc);
 
 	if(product_desc.hitscript)// only weapons have hitscripts, right??

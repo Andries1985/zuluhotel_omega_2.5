@@ -17,6 +17,8 @@ include "include/autoloop";
 include "include/attributes";
 include "include/difficulty";
 include "include/chests";
+include "include/omegacache_utils";
+include "include/resourcemanager";
 
 const CARPENTER_SOUND	:= 0x23e;
 const UOBJECT_CHEST	:= 0x0e42;
@@ -53,6 +55,7 @@ program MakeTinkerItems( character , tool )
 	var points;
 	var itemname;
 	var sound;
+	var resourceRequest;
 
 	if( !ReserveItem( tool ) )
 		return;
@@ -65,13 +68,26 @@ program MakeTinkerItems( character , tool )
 		return;
 	endif
 
+	// Handle Omega Cache targeting — select material from cache gump
+	if(use_on.objtype == OMEGACACHE_OBJTYPE)
+		var cacheRequest := SelectMaterialFromCache(character);
+		if(!cacheRequest)
+			return;
+		endif
+		HandleCacheMaterial(character, cacheRequest);
+		return;
+	endif
+
 	if( !Accessible( character , use_on ) or !use_on.movable )
 		SendSysmessage( character , "You can't reach that!" );
 		return;
 	endif
 
-	if( !ReserveItem( use_on ) )
-		return;
+	// Cache containers use leases instead of ReserveItem
+	if(use_on.objtype != OMEGACACHE_OBJTYPE)
+		if( !ReserveItem( use_on ) )
+			return;
+		endif
 	endif
 
 	if( !IsInContainer( character.backpack , use_on ) )
@@ -85,7 +101,8 @@ program MakeTinkerItems( character , tool )
 		ressource_diff := cfg[use_on.objtype].Difficulty;
 		ressource_name := cfg[use_on.objtype].Name;
 		ressource_qual := cfg[use_on.objtype].Quality;
-	   	item_to_make := MakeAndProcessMenu( character , use_on , WOOD_ID );
+		resourceRequest := MakeBackpackRequest(character, use_on);
+	   	item_to_make := MakeAndProcessMenu( character , resourceRequest , WOOD_ID );
 	   	sound := CARPENTER_SOUND;
 
 	elseif((use_on.objtype ==  UOBJ_GOLD_INGOT   ) or
@@ -95,7 +112,8 @@ program MakeTinkerItems( character , tool )
 		ressource_diff := cfg[use_on.objtype].Difficulty;
 		ressource_name := cfg[use_on.objtype].Name;
 		ressource_qual := cfg[use_on.objtype].Quality;
-		item_to_make := MakeAndProcessMenu( character , use_on , METAL_ID );
+		resourceRequest := MakeBackpackRequest(character, use_on);
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , METAL_ID );
 		sound := SFX_ANVIL;
 
 	else
@@ -126,6 +144,23 @@ program MakeTinkerItems( character , tool )
 			UOBJ_AXLE_AND_GEARS:	SendSysMessage( character , "Select either some springs or a hinge." );
 						var thing := Target( character , TGTOPT_CHECK_LOS );
 						if( !thing )
+							break;
+						endif
+
+						if(thing.objtype == OMEGACACHE_OBJTYPE)
+							// Select springs or hinge from cache
+							var secondCacheRequest := SelectMaterialFromCache(character);
+							if(!secondCacheRequest)
+								break;
+							endif
+							var firstBackpackRequest := MakeBackpackRequest(character, use_on);
+							if(CInt(secondCacheRequest.objtype) == UOBJ_SPRINGS)
+								TryToMakeComplex(character, 0, UOBJ_CLOCK_PARTS, 0, SFX_ANVIL, firstBackpackRequest, secondCacheRequest);
+							elseif(CInt(secondCacheRequest.objtype) == UOBJ_HINGE)
+								TryToMakeComplex(character, 0, UOBJ_SEXTANT_PARTS, 0, SFX_ANVIL, firstBackpackRequest, secondCacheRequest);
+							else
+								SendSysMessage(character, "You must select either a hinge or springs.");
+							endif
 							break;
 						endif
 
@@ -161,12 +196,14 @@ program MakeTinkerItems( character , tool )
 						break;
 
 
-			UOBJ_GLASS:		item_to_make := MakeAndProcessMenu( character , use_on , GLASS_ID );
+			UOBJ_GLASS:		resourceRequest := MakeBackpackRequest(character, use_on);
+						item_to_make := MakeAndProcessMenu( character , resourceRequest , GLASS_ID );
 						sound := SFX_GLASSBREAK4;
 						break;
 
 
-			UOBJ_CLAY:		item_to_make := MakeAndProcessMenu( character , use_on , CLAY_ID );
+			UOBJ_CLAY:		resourceRequest := MakeBackpackRequest(character, use_on);
+						item_to_make := MakeAndProcessMenu( character , resourceRequest , CLAY_ID );
 						sound := SFX_HAMMER;
 						break;
 
@@ -190,12 +227,15 @@ program MakeTinkerItems( character , tool )
 		return;
 	endif
 
-	TryToMakeItem( character , use_on , item_to_make , sound );
+	if(!resourceRequest)
+		resourceRequest := MakeBackpackRequest(character, use_on);
+	endif
+	TryToMakeItem( character , resourceRequest , item_to_make , sound );
 
 endprogram
 
 
-function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objtype , sfx );
+function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objtype , sfx, firstRequest := 0, secondRequest := 0 );
 
 	var itemname;
 	var points;
@@ -203,12 +243,43 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 	var have_it;
 	var have_it_qual := 1;
 
-	if( needed_objtype )
+	if(!firstRequest)
+		firstRequest := MakeBackpackRequest(character, use_on);
+	endif
+
+	if( needed_objtype and !secondRequest )
 		have_it := FindObjtypeInContainer( character.backpack , needed_objtype );
 		if( !have_it )
-			return;
+			// Check cache for the second component
+			var tempRequest := struct{ objtype := CInt(needed_objtype), dataFileHandle := firstRequest.dataFileHandle, leaseKey := 0, preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK } };
+			var avail := GetAvailableResource(character, tempRequest);
+			if(avail.cache > 0 and firstRequest.dataFileHandle)
+				var cache_key := 0;
+				var prefix := Hex(CInt(needed_objtype)) + "|";
+				var prefix_len := len(prefix);
+				foreach dk in (firstRequest.dataFileHandle.Keys())
+					if(dk[1, 3] != "RL#" and dk[1, prefix_len] == prefix)
+						cache_key := dk;
+						break;
+					endif
+				endforeach
+				secondRequest := struct{
+					objtype              := CInt(needed_objtype),
+					key                  := cache_key,
+					color                := 0,
+					quality              := 0,
+					preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK },
+					dataFileHandle       := firstRequest.dataFileHandle,
+					leaseKey             := 0
+				};
+			else
+				SendSysMessage(character, "You don't have the required component.");
+				return;
+			endif
+		else
+			have_it_qual := have_it.quality;
+			secondRequest := MakeBackpackRequest(character, have_it);
 		endif
-		have_it_qual := have_it.qual;
 	endif
 
 	var element := FindConfigElem( tinker_cfg , to_be_done_objtype );
@@ -221,8 +292,18 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 
 	points	:= Cint( skill * POINTS_MULTIPLIER );
 
+	// Verify materials available before crafting
+	if(GetAvailableResource(character, firstRequest).total < 1)
+		SendSysMessage(character, "You don't have enough materials.");
+		return;
+	endif
+	if(secondRequest and GetAvailableResource(character, secondRequest).total < 1)
+		SendSysMessage(character, "You don't have the required component.");
+		return;
+	endif
+
 	_Play_Sound( character , sfx );
-	
+
 	sendDiff( character , skill );
 
 	if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
@@ -230,17 +311,15 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 		var theitem := CreateItemInBackpack( character , to_be_done_objtype );
 		if( !theitem )
 			SendSysMessage( character , "Error in creation process please report this bug on the msg board." );
-			DestroyItem( use_on );
-			if( have_it )
-				DestroyItem( have_it );
+			ConsumeResource(character, firstRequest, 1);
+			if( secondRequest )
+				ConsumeResource(character, secondRequest, 1);
 			endif
 			return;
 		endif
 
 		theitem.movable := 1;
 		var item_cfg	:= ReadConfigFile( ":*:itemdesc" );
-		// Not Needed since price calculated in vendor AI based on quality
-		// var sell_price := item_cfg[to_be_done_objtype].VendorBuysFor;
 
 		var result_qual := Cint( ( use_on.quality + have_it_qual ) / 2 );
 		if( theitem.quality )
@@ -262,7 +341,6 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 
 		if( element.Exceptional and (Random(100) < excep_ch) and CheckSkill( character , SKILLID_TINKERING , skill , 0 ) )
 			if( theitem.quality )
-				//Made something Exceptional
 				var armslore := GetEffectiveSkill( character , SKILLID_ARMSLORE );
 				var multiplier := 5 + Cint( armslore / 10 );
 
@@ -278,15 +356,8 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 			endif
 
 			itemname := "Exceptional " + itemname;
-//			if( YesNo( character , "Add Builder Mark?" ) )
-					SetObjProperty( theitem , "CraftedBy" , character.name );
-//			endif
+			SetObjProperty( theitem , "CraftedBy" , character.name );
 
-			/* Not needed since SellPrice calculated on quality now in vendor AI
-			if( sell_price )
-				theitem.buyprice := Cint( sell_price * 2 );
-			endif
-			*/
 			SendSysmessage( character , "You make an exceptional item and put it in your pack" );
 			SetObjProperty( theitem , "IsExceptional" , 1 );
 			if( skill >= 130 )
@@ -297,13 +368,16 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 				AwardFame( character , FAME_BONUS );
 			endif
 		else
-
 			SendSysmessage( character , "You create the item and place it in your pack." );
 		endif
 
-		if( use_on.objtype == UOBJ_GOLD_INGOT )
-			theitem.color := GOLD_COLOR;
-		else
+		if( firstRequest.color )
+			if( CInt(firstRequest.objtype) == UOBJ_GOLD_INGOT )
+				theitem.color := GOLD_COLOR;
+			else
+				theitem.color := firstRequest.color;
+			endif
+		elseif( use_on and use_on.color )
 			theitem.color := use_on.color;
 		endif
 
@@ -315,9 +389,9 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 
 	endif
 
-	DestroyItem( use_on );
-	if( have_it )
-		DestroyItem( have_it );
+	ConsumeResource(character, firstRequest, 1);
+	if( secondRequest )
+		ConsumeResource(character, secondRequest, 1);
 	endif
 
 endfunction
@@ -337,7 +411,7 @@ function _Play_Sound( who , sfx )
 endfunction
 
 
-function MakeAndProcessMenu( who , ressource , id )
+function MakeAndProcessMenu( who , resourceRequest , id )
 
 	var skill := GetEffectiveSkill( who , SKILLID_TINKERING );
 
@@ -390,7 +464,7 @@ function MakeAndProcessMenu( who , ressource , id )
 
 	foreach key in elemkeys
 		if( tinker_cfg[key].Type == choice )
-			if( CanMake( who , key , ressource ) )
+			if( CanMake( who , key , resourceRequest ) )
 				AddMenuItem( menu , Cint(key) , tinker_cfg[key].Name );
 				can_make := 1;
 			endif
@@ -407,7 +481,7 @@ function MakeAndProcessMenu( who , ressource , id )
 endfunction
 
 
-function CanMake( who , key , ressource )
+function CanMake( who , key , resourceRequest )
 
 	var diff := tinker_cfg[key].Skill + Cint( ressource_diff / DIVIDER );
 	if( diff < 1 )
@@ -423,7 +497,7 @@ function CanMake( who , key , ressource )
 			material := CInt(Ceil(material/2));
 		endif
 
-		if( ressource.amount >= material )
+		if( GetAvailableResource(who, resourceRequest).total >= material )
 			return 1;
 		endif
 	endif
@@ -433,7 +507,7 @@ function CanMake( who , key , ressource )
 endfunction
 
 
-function TryToMakeItem( character , ressource , to_make_objtype , sfx )
+function TryToMakeItem( character , resourceRequest , to_make_objtype , sfx )
 
 	var skill;
 	var element;
@@ -457,8 +531,11 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 		material := CInt(Ceil(material/2));
 	endif
 
+	// Lease cache resources for the first iteration
+	LeaseResource(character, resourceRequest, material);
+
 	AutoLoop_init( character );
-	while( AutoLoop_more() && ressource.amount >= material && NOT character.dead)
+	while( AutoLoop_more() && (GetAvailableResource(character, resourceRequest).total >= material) && NOT character.dead)
 
 		//refreshing some stuff ;)
 		itemname := element.Name;
@@ -469,22 +546,37 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 			SendSysmessage( character , "Select a gem for this item." );
 			var thegem := Target( character , TGTOPT_CHECK_LOS );
 			if( !thegem )
-				return;
-			endif
-
-			if( (thegem.objtype > 0xf30) or (thegem.objtype < 0xf0f) )
-				SendSysmessage( character , "That is not a gem!" );
-				return;
-			endif
-
-			if( !Accessible( character , thegem ) )
-				SendSysmessage( character , "You can't reach that!" );
-				return;
+				break;
 			endif
 
 			var item_cfg := ReadConfigFile( ":*:itemdesc" );
-			itemname := item_cfg[thegem.objtype].Name + " " + itemname;
-			SubtractAmount( thegem , 1 );
+			// Handle cache-sourced gems
+			if(thegem.objtype == OMEGACACHE_OBJTYPE)
+				var gemRequest := SelectMaterialFromCache(character);
+				if(!gemRequest)
+					break;
+				endif
+				if((CInt(gemRequest.objtype) > 0xf30) or (CInt(gemRequest.objtype) < 0xf0f))
+					SendSysmessage(character, "That is not a gem!");
+					break;
+				endif
+				itemname := item_cfg[gemRequest.objtype].Name + " " + itemname;
+				ConsumeResource(character, gemRequest, 1);
+			else
+				if( (thegem.objtype > 0xf30) or (thegem.objtype < 0xf0f) )
+					SendSysmessage( character , "That is not a gem!" );
+					break;
+				endif
+
+				if( !Accessible( character , thegem ) )
+					SendSysmessage( character , "You can't reach that!" );
+					break;
+				endif
+
+				itemname := item_cfg[thegem.objtype].Name + " " + itemname;
+				var gemRequest := MakeBackpackRequest(character, thegem);
+				ConsumeResource(character, gemRequest, 1);
+			endif
 		endif
 
 		_Play_Sound( character , sfx );
@@ -500,6 +592,12 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 		points	:= Cint( (skill + Cint(element.Material / 3)) * POINTS_MULTIPLIER );
 
 		SendSysmessage( character , "Difficulty: "+skill );
+
+		// Verify materials are still available before attempting craft
+		if(GetAvailableResource(character, resourceRequest).total < material)
+			SendSysMessage(character, "You don't have enough materials.");
+			break;
+		endif
 
 		if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
 
@@ -569,23 +667,13 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 					SendSysmessage( character , "You create the item and place it in your pack." );
 				endif
 
-				if( ressource.objtype != UOBJ_GLASS and ressource.objtype != UOBJ_CLAY )
-					if( ressource.objtype == UOBJ_GOLD_INGOT and !undyeable )
+				if( resourceRequest.objtype != UOBJ_GLASS and resourceRequest.objtype != UOBJ_CLAY )
+					if( resourceRequest.objtype == UOBJ_GOLD_INGOT and !undyeable )
 						theitem.color := GOLD_COLOR;
 					elseif( !undyeable )
-						theitem.color := ressource.color;
+						theitem.color := resourceRequest.color;
 					endif
 				endif
-
-				/* Not Needed since price calculated in vendor AI based on quality
-				if( theitem.sellprice )
-					if( theitem.quality )
-						theitem.sellprice := Cint( Pow( theitem.sellprice , theitem.quality ) );
-					elseif( ressource_qual )
-						theitem.sellprice := Cint( Pow( theitem.sellprice , ressource_qual ) );
-					endif
-				endif
-				*/
 
 				theitem.hp := theitem.maxhp;
 				SetObjProperty( theitem , "BaseName" , itemname );
@@ -610,7 +698,7 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 				endif
 				endif
 			endif
-			SubtractAmount( ressource , material );
+			ConsumeResource( character , resourceRequest , material );
 		else
 			var tink := GetEffectiveSkill( character , SKILLID_TINKERING );
 			var destroy := 75 - Cint( tink / 2 );
@@ -626,12 +714,18 @@ function TryToMakeItem( character , ressource , to_make_objtype , sfx )
 			if( destroy < 1 )
 				destroy	:= 1;
 			endif
-			
-			SubtractAmount( ressource , destroy );
-			SendSysmessage( character , "You destroyed " + destroy + " " + GetRessourceName( ressource ) + "." );
+
+			ConsumeResource( character , resourceRequest , destroy );
+			SendSysmessage( character , "You destroyed some resources." );
 		endif
 
+		// Extend lease for next iteration
+		if(!ExtendResourceLease(resourceRequest, character, material))
+			break;
+		endif
 	endwhile
+
+	ReleaseResourceLease(resourceRequest);
 	AutoLoop_finish();
 
 endfunction
@@ -670,33 +764,74 @@ function SetTrap( character , chest )
 		return;
 	endif
 
-	if( !Accessible( character , trap_item ) )
-		SendSysmessage( character , "You can't reach that!" );
-		return;
-	endif
+	var trapRequest;
 
-	if( !ReserveItem( trap_item ) )
-		return;
-	endif
+	// Cache targeting for trap materials
+	if(trap_item.objtype == OMEGACACHE_OBJTYPE)
+		trapRequest := SelectMaterialFromCache(character);
+		if(!trapRequest)
+			return;
+		endif
+		var trap_objtype := CInt(trapRequest.objtype);
+		var trap_desc := GetItemDescriptor(trap_objtype);
+		var trap_graphic := 0;
+		if(trap_desc)
+			trap_graphic := CInt(trap_desc.Graphic);
+		endif
 
-	if (trap_item.graphic == UOBJECT_POISON_POTION)
-		cfg_id := 0xffff;
-		strength := GetPotionStrength( trap_item );
-		trap_type := 2;
-
-	elseif(trap_item.graphic == UOBJECT_PURPLE_POTION )
-		strength := GetPotionStrength( trap_item );
-		cfg_id := 0xfffe;
-		trap_type := 3;
-
-	elseif( trap_item.objtype == 0x1bfb )
-		cfg_id := 0xfffd;
-		strength := 1;
-		trap_type := 1;
-
+		if(trap_graphic == UOBJECT_POISON_POTION)
+			cfg_id := 0xffff;
+			// Read strength from config by objtype
+			var itemcfg := ReadConfigFile(":alchemy:itemdesc");
+			strength := CInt(itemcfg[trap_objtype].Strength);
+			trap_type := 2;
+		elseif(trap_graphic == UOBJECT_PURPLE_POTION)
+			var itemcfg := ReadConfigFile(":alchemy:itemdesc");
+			strength := CInt(itemcfg[trap_objtype].Strength);
+			cfg_id := 0xfffe;
+			trap_type := 3;
+		elseif(trap_objtype == 0x1bfb)
+			cfg_id := 0xfffd;
+			strength := 1;
+			trap_type := 1;
+		else
+			SendSysmessage(character, "That can't be used as a trap.");
+			return;
+		endif
 	else
-		SendSysmessage (character, "I don't know how to use these items together");
-		return;
+		// Physical item targeting
+		if( !Accessible( character , trap_item ) )
+			SendSysmessage( character , "You can't reach that!" );
+			return;
+		endif
+
+		if(trap_item.objtype != OMEGACACHE_OBJTYPE)
+			if( !ReserveItem( trap_item ) )
+				return;
+			endif
+		endif
+
+		if (trap_item.graphic == UOBJECT_POISON_POTION)
+			cfg_id := 0xffff;
+			strength := GetPotionStrength( trap_item );
+			trap_type := 2;
+
+		elseif(trap_item.graphic == UOBJECT_PURPLE_POTION )
+			strength := GetPotionStrength( trap_item );
+			cfg_id := 0xfffe;
+			trap_type := 3;
+
+		elseif( trap_item.objtype == 0x1bfb )
+			cfg_id := 0xfffd;
+			strength := 1;
+			trap_type := 1;
+
+		else
+			SendSysmessage (character, "I don't know how to use these items together");
+			return;
+		endif
+
+		trapRequest := MakeBackpackRequest(character, trap_item);
 	endif
 
 	var element := FindConfigElem( tinker_cfg , cfg_id );
@@ -708,8 +843,8 @@ function SetTrap( character , chest )
 	endif
 
 	var points := Cint( skill * POINTS_MULTIPLIER );
-	SubtractAmount( trap_item , 1 );
-	
+	ConsumeResource(character, trapRequest, 1);
+
 	sendDiff( character , skill );
 
 	if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
@@ -736,7 +871,7 @@ function SetTrap( character , chest )
 			strength := 1;
 		endif
 
-		SubtractAmount( trap_item , 1 );
+		ConsumeResource(character, trapRequest, 1);
 		SetObjProperty( chest , "trap_type" , cstr( trap_type ) );
 		SetObjProperty( chest , "trap_strength" , strength );
 		SetObjProperty( chest , "trapped_by" , character.serial );
@@ -774,14 +909,17 @@ function SetTrap( character , chest )
 endfunction
 
 
-function MakeTotem( me , it )
+function MakeTotem( me , it, totemRequest := 0 )
 	var material := 100;
 	//Require half resources during Crafting PH
 	if(GetGlobalProperty("PHC") || GetObjProperty(me, "#PPHC"))
 		material := CInt(Ceil(material/2));
 	endif
 
-	if( it.amount < material )
+	if(!totemRequest)
+		totemRequest := MakeBackpackRequest(me, it);
+	endif
+	if( GetAvailableResource(me, totemRequest).total < material )
 		sendsysmessage( me , "You don't have enough obsidian to make anything." );
 		return;
 	endif
@@ -799,8 +937,8 @@ function MakeTotem( me , it )
 	endif
 
 	_Play_Sound( me , SFX_GLASSBREAK4 );
-	SubtractAmount( it , material );
-	
+	ConsumeResource( me , totemRequest , material );
+
 	sendDiff( me , 90);
 	sendSecDiff( me , 90);
 	if( !CheckSkill( me , SKILLID_MAGERY , 90 , 0 ) or !CheckSkill( me , SKILLID_TINKERING , 90 , 0 ) )
@@ -827,7 +965,7 @@ function MakeTotem( me , it )
 endfunction
 
 
-function TryToMakePotionKeg( character , use_on )
+function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
 
 	var needed_parts := { UOBJ_KEG	,
 				UOBJ_BARREL_TAP ,
@@ -835,7 +973,10 @@ function TryToMakePotionKeg( character , use_on )
 				UOBJ_EMPTY_BOTTLE };
 
 
-	var parts := { use_on };
+	var parts := array{};
+	if(use_on and CInt(use_on.objtype) != UOBJ_EMPTY_BOTTLE)
+		parts.append(use_on);
+	endif
 	var needed_bottles := 10;
 	var itemname;
 	var points;
@@ -845,8 +986,15 @@ function TryToMakePotionKeg( character , use_on )
 		needed_bottles := CInt(Ceil(needed_bottles/2));
 	endif
 
-	if( use_on.objtype == UOBJ_EMPTY_BOTTLE )
-		if( use_on.amount < needed_bottles )
+	// Cache-sourced bottles — check availability
+	if(bottleRequest)
+		if(GetAvailableResource(character, bottleRequest).total < needed_bottles)
+			SendSysMessage( character , "You need at least 10 empty bottles." );
+			return;
+		endif
+	elseif( use_on.objtype == UOBJ_EMPTY_BOTTLE )
+		bottleRequest := MakeBackpackRequest(character, use_on);
+		if( GetAvailableResource(character, bottleRequest).total < needed_bottles )
 			SendSysMessage( character , "You need at least 10 empty bottles." );
 			return;
 		endif
@@ -859,15 +1007,43 @@ function TryToMakePotionKeg( character , use_on )
 	endif
 
 	foreach objtype in needed_parts
-		if( objtype != use_on.objtype )
+		if(bottleRequest and CInt(objtype) == UOBJ_EMPTY_BOTTLE)
+			continue;
+		endif
+		if( !use_on or objtype != use_on.objtype )
 			var have_it := FindObjtypeInContainer( character.backpack , objtype );
 			if( !have_it )
+				// For bottles, check cache availability when not in backpack
+				if(CInt(objtype) == UOBJ_EMPTY_BOTTLE)
+					var cacheBottleReq := struct{
+						objtype              := CInt(UOBJ_EMPTY_BOTTLE),
+						key                  := 0,
+						color                := 0,
+						quality              := 0,
+						preferredSourceOrder := array{ OMEGA_CACHE },
+						dataFileHandle       := 0,
+						leaseKey             := 0
+					};
+					// Resolve cache
+					var access := FindAccessibleContainer(character, array{REMOVE_FROM_SECURE});
+					if(access)
+						cacheBottleReq.dataFileHandle := access.df;
+					endif
+					if(GetAvailableResource(character, cacheBottleReq).total >= needed_bottles)
+						// Bottles available in cache — use bottleRequest for consumption
+						bottleRequest := cacheBottleReq;
+						continue;
+					endif
+				endif
 				SendSysMessage( character , "You miss some parts to make the potion keg." );
 				return;
 
-			elseif( have_it.objtype == UOBJ_EMPTY_BOTTLE and have_it.amount < needed_bottles )
-				SendSysMessage( character , "You need at least 10 empty bottles." );
-				return;
+			elseif( have_it.objtype == UOBJ_EMPTY_BOTTLE )
+				bottleRequest := MakeBackpackRequest(character, have_it);
+				if( GetAvailableResource(character, bottleRequest).total < needed_bottles )
+					SendSysMessage( character , "You need at least 10 empty bottles." );
+					return;
+				endif
 
 			else
 				if( ReserveItem( have_it ) )
@@ -879,8 +1055,12 @@ function TryToMakePotionKeg( character , use_on )
 		endif
 	endforeach
 
-	//Integrity check
-	if( len( parts ) != len( needed_parts ) )
+	//Integrity check — when bottleRequest is set, bottles aren't in parts (consumed separately)
+	var expected_parts := len(needed_parts);
+	if(bottleRequest)
+		expected_parts := expected_parts - 1;
+	endif
+	if( len( parts ) != expected_parts )
 		SendSysMessage( character , "You miss some parts to make the potion keg." );
 		return;
 	endif
@@ -897,17 +1077,19 @@ function TryToMakePotionKeg( character , use_on )
 
 	_Play_Sound( character , CARPENTER_SOUND );
 
+	// Consume bottles via bottleRequest (always set by this point)
+	if(!ConsumeResource(character, bottleRequest, needed_bottles))
+		SendSysMessage(character, "You need at least " + needed_bottles + " empty bottles.");
+		return;
+	endif
+
+	// Destroy physical parts (keg, tap, lid)
 	var result_color;
 	foreach item in parts
 		if( item.color != 0 )
 			result_color := item.color;
 		endif
-
-		if( item.objtype == UOBJ_EMPTY_BOTTLE )
-			SubtractAmount( item , needed_bottles );
-		else
-			DestroyItem( item );
-		endif
+		DestroyItem( item );
 	endforeach
 	
 	sendDiff( character , skill );
@@ -930,27 +1112,6 @@ function TryToMakePotionKeg( character , use_on )
 	else
 		SendSysmessage( character , "You fail to create the item and destroy the material." );
 	endif
-
-endfunction
-
-
-function GetRessourceName( ressource )
-
-	var t_name := ressource.desc;
-
-	if( ressource.amount > 1 )
-		var i := len( t_name );
-		var amt := ressource.amount;
-		var count := 2;
-		while( Cint(amt / 10) )
-			count := count + 1;
-			amt := Cint( amt / 10 );
-		endwhile
-
-		t_name := t_name[count+1 , i - count];
-	endif
-
-	return t_name;
 
 endfunction
 
@@ -1178,4 +1339,155 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
     DestroyItem( use_on );
     SubtractAmount( ore , 125 );
 
+
+// ============================================================
+// Cache-specific crafting functions
+// ============================================================
+
+// Routes a cache-selected material to the appropriate crafting path
+function HandleCacheMaterial(character, resourceRequest)
+	var ot := CInt(resourceRequest.objtype);
+	var item_to_make;
+	var sound;
+
+	// Check if it's a log type
+	if(IsLogObjtype(ot))
+		var cfg := ReadConfigFile( ":carpentry:carpentry" );
+		ressource_diff := cfg[ot].Difficulty;
+		ressource_name := cfg[ot].Name;
+		if(resourceRequest.quality)
+			ressource_qual := resourceRequest.quality;
+		else
+			ressource_qual := cfg[ot].Quality;
+		endif
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , WOOD_ID );
+		sound := CARPENTER_SOUND;
+
+	// Check if it's an ingot type
+	elseif(IsIngotObjtype(ot))
+		var cfg := ReadConfigFile( ":blacksmithy:blacksmithy" );
+		ressource_diff := cfg[ot].Difficulty;
+		ressource_name := cfg[ot].Name;
+		if(resourceRequest.quality)
+			ressource_qual := resourceRequest.quality;
+		else
+			ressource_qual := cfg[ot].Quality;
+		endif
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , METAL_ID );
+		sound := SFX_ANVIL;
+
+	// Complex component types — single craft, consume from cache
+	elseif(ot == UOBJ_AXLE)
+		TryToMakeComplex(character, 0, UOBJ_AXLE_AND_GEARS, UOBJ_GEARS, CARPENTER_SOUND, resourceRequest);
+		return;
+	elseif(ot == UOBJ_GEARS)
+		TryToMakeComplex(character, 0, UOBJ_AXLE_AND_GEARS, UOBJ_AXLE, CARPENTER_SOUND, resourceRequest);
+		return;
+	elseif(ot == UOBJ_CLOCK_FRAME)
+		TryToMakeComplex(character, 0, UOBJ_CLOCK, UOBJ_CLOCK_PARTS, SFX_ANVIL, resourceRequest);
+		return;
+	elseif(ot == UOBJ_CLOCK_PARTS)
+		TryToMakeComplex(character, 0, UOBJ_CLOCK, UOBJ_CLOCK_FRAME, SFX_ANVIL, resourceRequest);
+		return;
+	elseif(ot == UOBJ_SPRINGS)
+		TryToMakeComplex(character, 0, UOBJ_CLOCK_PARTS, UOBJ_AXLE_AND_GEARS, SFX_ANVIL, resourceRequest);
+		return;
+	elseif(ot == UOBJ_AXLE_AND_GEARS)
+		// Need to select second component (springs or hinge)
+		SendSysMessage(character, "Select either some springs or a hinge.");
+		var thing := Target(character, TGTOPT_CHECK_LOS);
+		if(!thing)
+			return;
+		endif
+		var secondRequest;
+		if(thing.objtype == OMEGACACHE_OBJTYPE)
+			secondRequest := SelectMaterialFromCache(character);
+			if(!secondRequest)
+				return;
+			endif
+		else
+			if(!Accessible(character, thing) or !thing.movable)
+				SendSysmessage(character, "You can't reach that!");
+				return;
+			endif
+			if(!ReserveItem(thing))
+				return;
+			endif
+			secondRequest := MakeBackpackRequest(character, thing);
+		endif
+		var sot := CInt(secondRequest.objtype);
+		if(sot == UOBJ_SPRINGS)
+			TryToMakeComplex(character, 0, UOBJ_CLOCK_PARTS, 0, SFX_ANVIL, resourceRequest, secondRequest);
+		elseif(sot == UOBJ_HINGE)
+			TryToMakeComplex(character, 0, UOBJ_SEXTANT_PARTS, 0, SFX_ANVIL, resourceRequest, secondRequest);
+		else
+			SendSysMessage(character, "You must select either a hinge or springs.");
+		endif
+		return;
+	elseif(ot == UOBJ_HINGE)
+		TryToMakeComplex(character, 0, UOBJ_SEXTANT_PARTS, UOBJ_AXLE_AND_GEARS, SFX_ANVIL, resourceRequest);
+		return;
+	elseif(ot == UOBJ_SEXTANT_PARTS)
+		TryToMakeComplex(character, 0, UOBJ_SEXTANT, 0, SFX_ANVIL, resourceRequest);
+		return;
+
+	// Obsidian -> totem
+	elseif(ot == UOBJ_OBSIDIAN)
+		MakeTotem(character, 0, resourceRequest);
+		return;
+
+	// Glass / Clay
+	elseif(ot == UOBJ_GLASS)
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , GLASS_ID );
+		sound := SFX_GLASSBREAK4;
+	elseif(ot == UOBJ_CLAY)
+		item_to_make := MakeAndProcessMenu( character , resourceRequest , CLAY_ID );
+		sound := SFX_HAMMER;
+
+	// Empty bottles — potion keg path (cache support for bottles)
+	elseif(ot == UOBJ_EMPTY_BOTTLE)
+		TryToMakePotionKeg(character, 0, resourceRequest);
+		return;
+
+	else
+		SendSysMessage(character, "You don't know how to use that.");
+		return;
+	endif
+
+	item_to_make := item_to_make.objtype;
+	if(!item_to_make)
+		return;
+	endif
+
+	TryToMakeItem(character, resourceRequest, item_to_make, sound);
+endfunction
+
+
+
+
+
+
+// ============================================================
+// Objtype helper functions
+// ============================================================
+
+// Objtype-based check for log types (no item reference needed)
+function IsLogObjtype(objtype)
+	objtype := CInt(objtype);
+	if(( objtype >= UOBJ_LOGS_START and objtype <= UOBJ_LOGS_END ) or
+	   ( objtype == UOBJ_LOGS_GODDESS ) or ( objtype == UOBJ_LOGS ))
+		return 1;
+	endif
+	return 0;
+endfunction
+
+// Objtype-based check for ingot types (no item reference needed)
+function IsIngotObjtype(objtype)
+	objtype := CInt(objtype);
+	if(( objtype >= UOBJ_INGOTS_START  and objtype <= UOBJ_INGOTS_END  ) or
+	   ( objtype >= UOBJ_INGOTS2_START and objtype <= UOBJ_INGOTS2_END ) or
+	   ( objtype == UOBJ_GOLD_INGOT ))
+		return 1;
+	endif
+	return 0;
 endfunction

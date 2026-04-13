@@ -23,6 +23,8 @@ include "include/objtype";
 include "include/classes";
 include "include/itemutil";
 include "include/autoloop";
+include "include/omegacache_utils";
+include "include/resourcemanager";
 
 
 const SFX_GRIND        := 0x0243;
@@ -63,6 +65,47 @@ program use_mortar( user, mortar )
 		return;
 	endif
 
+	// Handle Omega Cache targeting
+	if(use_on.objtype == OMEGACACHE_OBJTYPE)
+		var cacheRequest := SelectMaterialFromCache(user);
+		if(!cacheRequest)
+			return;
+		endif
+		if(!IsReagent_ObjType(CInt(cacheRequest.objtype)))
+			SendSysMessage(user, "That's not a reagent!");
+			return;
+		endif
+		var elem := conf[cacheRequest.objtype];
+		if(!elem)
+			SendSysmessage(user, "You don't know any recipe that use this reagent.");
+			return;
+		endif
+		var possibles := GetConfigStringArray(elem, "potion");
+		if(!len(possibles))
+			SendSysmessage(user, "You don't know any recipe that use this reagent.");
+			return;
+		endif
+		var menu := CreateMenu("Select a potion to make");
+		var num_possibilities;
+		var mage := GetObjProperty(user, CLASSEID_MAGE);
+		foreach potion_type in possibles
+			if(CanMake(user, potion_type, 0, mage, usereg := 0, regRequest := cacheRequest))
+				AddMenuItem(menu, conf[potion_type].objtype, potion_type);
+				num_possibilities := 1;
+			endif
+		endforeach
+		if(!num_possibilities)
+			SendSysMessage(user, "You can't make any potions!");
+			return;
+		endif
+		var choice := SelectMenuItem2(user, menu).index;
+		if(!choice)
+			return;
+		endif
+		TryToMakePotion(user, mortar, possibles[choice], 0, mage, cacheRequest);
+		return;
+	endif
+
 	if( !IsReagent( use_on ) )
 		SendSysMessage( user, "That's not a reagent!" );
 		return;
@@ -73,13 +116,17 @@ program use_mortar( user, mortar )
 		return;
 	endif
 
-	if( !ReserveItem( use_on ) )
-		return;
+	if(use_on.objtype != OMEGACACHE_OBJTYPE)
+		if( !ReserveItem( use_on ) )
+			return;
+		endif
+
+		if( !ReserveContainers( user, use_on.container ) )
+			return;
+		endif
 	endif
 
-	if( !ReserveContainers( user, use_on.container ) )
-		return;
-	endif
+	var backpackRegRequest := MakeBackpackRequest(user, use_on);
 
 	var elem := conf[use_on.objtype];
 	if( !elem )
@@ -105,7 +152,7 @@ program use_mortar( user, mortar )
 	endif
 
 	foreach potion_type in possibles
-		if( CanMake( user, potion_type, use_on, mage ) )
+		if( CanMake( user, potion_type, use_on, mage, usereg := 0, regRequest := backpackRegRequest ) )
 			AddMenuItem( menu, conf[potion_type].objtype, potion_type );
 			num_possibilities := 1;
 		endif
@@ -121,16 +168,16 @@ program use_mortar( user, mortar )
 		return;
 	endif
 
-	TryToMakePotion( user, mortar, possibles[choice], use_on, mage );
+	TryToMakePotion( user, mortar, possibles[choice], use_on, mage, backpackRegRequest );
 
 endprogram
 
 
-function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0 )
+function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0, regRequest := 0 )
 
 	var bonus := 0;
 
-	if( potion and reg )
+	if( potion and (reg or regRequest) )
 
 		var difficulty := conf[potion].skill;
 		var i;
@@ -149,21 +196,33 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0 )
 			endif
 		endif
 
-		if( !ReserveItem( reg ) )
-			return;
+		if(!regRequest)
+			regRequest := MakeBackpackRequest(user, reg);
 		endif
+		var amount_needed := conf[potion].reagent_amount;
+		if(mage)
+			amount_needed := CInt(ceil(amount_needed / ClasseBonus(user, CLASSEID_MAGE)));
+			if(GetGlobalProperty("PHC") || GetObjProperty(user, "#PPHC"))
+				amount_needed := CInt(ceil(amount_needed / 2));
+			endif
+			if(amount_needed < 1)
+				amount_needed := 1;
+			endif
+		endif
+
+		LeaseResource(user, regRequest, amount_needed);
 
 		SendSysmessage( user , "Difficulty: "+difficulty );
 
 		AutoLoop_init( user );
 
 		SendSysMessage( user, "You start grinding reagents..." );
-		
+
 		product := ReturnTruePotion(product, bonus);
 
 		while( AutoLoop_more() && NOT user.dead)
 
-			if( CanMake( user, potion, reg, mage, usereg := 1 ) )
+			if( CanMake( user, potion, reg, mage, usereg := 1, regRequest := regRequest ) )
 
 				for( i := 1 ; i <= NUM_PERFORM ; i := i + 1 )
 					PlaySoundEffect( user, SFX_GRIND );
@@ -172,13 +231,14 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0 )
 				endfor
 
 				if( CheckSkill( user, SKILLID_ALCHEMY, difficulty, difficulty * POINT_MULTIPLIER ) )
-					if( GetBottle( user.backpack, user ) )
+					if( GetBottle( user.backpack, user, regRequest.dataFileHandle ) )
 						CreateItemInContainer( mortar.container, product, 1 );
 						PlaySoundEffect( user, SFX_POUR );
 					else
 						SendSysMessage( user, "With no bottles, you are forced to store the mixture in your mortar" );
 						SetObjProperty( mortar, "contents", product );
 						SendSysMessage( user, "You stop griding reagents." );
+						ReleaseResourceLease(regRequest);
 						AutoLoop_finish();
 						return;
 					endif
@@ -193,14 +253,23 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0 )
 
 			endif
 
+			if(!ExtendResourceLease(regRequest, user, amount_needed))
+				break;
+			endif
+
 		endwhile
 
+		ReleaseResourceLease(regRequest);
 		SendSysMessage( user, "You stop griding reagents." );
 		AutoLoop_finish();
 
 	else
 
-		if( GetBottle( user.backpack, user ) )
+		var bottleDf := 0;
+		if(regRequest)
+			bottleDf := regRequest.dataFileHandle;
+		endif
+		if( GetBottle( user.backpack, user, bottleDf ) )
 			var product := GetObjProperty( mortar, "contents" );
 			if( mage )
 				var itemcfg := ReadConfigFile( "itemdesc" );
@@ -226,7 +295,7 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0 )
 endfunction
 
 
-function CanMake( user, potion, reg, mage, usereg := 0 )
+function CanMake( user, potion, reg, mage, usereg := 0, regRequest := 0 )
 
 	var skillneeded:= conf[potion].skill;
 	var amount_needed:= conf[potion].reagent_amount;
@@ -241,15 +310,23 @@ function CanMake( user, potion, reg, mage, usereg := 0 )
 			amount_needed := 1;
 		endif
 	endif
-	
+
 	if( GetEffectiveSkill( user, SKILLID_ALCHEMY ) >= ( skillneeded + APPEAR_AT ) )
-		if( reg.amount )
-			if( reg.amount >= amount_needed )
-				if( usereg > 0 )
+		var avail;
+		if(regRequest)
+			avail := GetAvailableResource(user, regRequest).total;
+		else
+			avail := reg.amount;
+		endif
+		if( avail >= amount_needed )
+			if( usereg > 0 )
+				if(regRequest)
+					ConsumeResource(user, regRequest, amount_needed);
+				else
 					SubtractAmount( reg, amount_needed );
 				endif
-				return 1;
 			endif
+			return 1;
 		endif
 	endif
 	return 0;
@@ -266,7 +343,7 @@ endfunction
 
 
 // find a bottle in backpack and reserve it
-function GetBottle( conts, user )
+function GetBottle( conts, user, dataFileHandle := 0 )
 	var bottle := FindItemInContainer( conts , UOBJ_EMPTY_BOTTLE );
 	if(bottle)
 		if( !ReserveContainers( user, bottle.container ) )
@@ -274,6 +351,20 @@ function GetBottle( conts, user )
 		endif
 		if(ReserveItem(bottle))
 			SubtractAmount( bottle, 1 );
+			return 1;
+		endif
+	endif
+	// Try cache for bottles (reuse existing dataFileHandle if provided)
+	if(!dataFileHandle)
+		var access := FindAccessibleContainer(user, array{REMOVE_FROM_SECURE});
+		if(access)
+			dataFileHandle := access.df;
+		endif
+	endif
+	if(dataFileHandle)
+		var bottleReq := struct{ objtype := CInt(UOBJ_EMPTY_BOTTLE), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE }, dataFileHandle := dataFileHandle, leaseKey := 0 };
+		if(GetAvailableResource(user, bottleReq).total >= 1)
+			ConsumeResource(user, bottleReq, 1);
 			return 1;
 		endif
 	endif
@@ -443,5 +534,19 @@ endcase
 
 return type;
 
-
 endfunction
+
+
+// ============================================================
+// Cache-specific alchemy functions
+// ============================================================
+
+// Objtype-based reagent check (no item reference needed)
+function IsReagent_ObjType(objtype)
+	objtype := CInt(objtype);
+	if(objtype >= UOBJ_REAGENT_START and objtype <= UOBJ_REAGENT_END)
+		return 1;
+	endif
+	return 0;
+endfunction
+

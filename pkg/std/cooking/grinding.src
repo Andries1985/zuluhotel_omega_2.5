@@ -3,6 +3,8 @@ use os;
 use cfgfile;
 
 include ":gumps:yesno";
+include "include/omegacache_utils";
+include "include/resourcemanager";
 
 
 
@@ -105,8 +107,15 @@ program mill (character, mill_part )
 		animate_mill (character, mill_part, other_mill_part);
 
 		//And then destroy the ingredient
-		destroy_ingredient (character, grinding_recipe, makable_batches);
-		CreateItemInBackpack (character, grinding_recipe.product_objtype, grinding_recipe.product_amount*makable_batches);
+		var max_grind := grinding_recipe.product_amount * makable_batches;
+		var grind_count := PromptBulkAmount(character, max_grind, "items");
+		if(!grind_count)
+			return;
+		endif
+		// Adjust batches consumed based on player's chosen amount
+		var batches_to_use := CInt(Ceil(CDbl(grind_count) / CDbl(grinding_recipe.product_amount)));
+		destroy_ingredient (character, grinding_recipe, batches_to_use);
+		CreateItemInBackpack (character, grinding_recipe.product_objtype, grind_count);
 		SendSysmessage (character, "You place the item in your backpack.");
 	
 		//See if autoloop is turned on.  If not, quit the program.  If so,
