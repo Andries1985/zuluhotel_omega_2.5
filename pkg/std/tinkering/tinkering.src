@@ -1211,16 +1211,19 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
 
     if( !IsInContainer( character.backpack , ore ) )
         SendSysMessage( character , "That item has to be in your backpack." );
+        ReleaseItem( ore );
         return;
     endif
 
     if( !( ((ore.objtype >= UOBJ_INGOTS_START ) && (ore.objtype <= UOBJ_INGOTS_END )) || ((ore.objtype >= UOBJ_INGOTS2_START) && (ore.objtype <= UOBJ_INGOTS2_END)) ) )
         SendSysMessage( character , "You must select an ingot." );
+        ReleaseItem( ore );
         return;
     endif
 
 	if( ore.amount < 125 )
 		SendSysMessage( character , "You need at least 125 ingots to make a talisman." );
+        ReleaseItem( ore );
 		return;
 	endif
 
@@ -1229,6 +1232,7 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
         itemname := element.Name;
         skill    := element.Skill;
     else
+        ReleaseItem( ore );
         return;
     endif
 
@@ -1256,6 +1260,7 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
         var theitem := CreateItemInBackpack( character , to_be_done_objtype );
         if( !theitem )
             SendSysMessage( character , "Error in creation process please report this bug on Discord." );
+            ReleaseItem( ore );
             return;
         endif
 
@@ -1338,6 +1343,7 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
 
     DestroyItem( use_on );
     SubtractAmount( ore , 125 );
+	ReleaseItem( ore );
 
 
 // ============================================================

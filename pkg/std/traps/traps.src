@@ -35,7 +35,7 @@ program open_trapped_item( character , item )
 			return;
 		endif
 
-		var traptype		:= GetObjProperty(item,"trap_type");
+		var traptype		:= CInt(GetObjProperty(item,"trap_type"));
 		var trapstrength	:= GetObjProperty(item,"trap_strength");
 		var trapcrafter	:= GetObjProperty(item,"trapped_by" );
 		//Print("Trap Type: "+traptype+" Trap Strength: "+trapstrength+" Trapped By: "+trapcrafter);
