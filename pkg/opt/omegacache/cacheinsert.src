@@ -1,0 +1,43 @@
+// cacheinsert.src — OnInsertScript for Omega Cache Container
+//
+// Runs after an item is dropped into the cache container.
+// Deposits the item into the DataFile and destroys it from the container.
+// If ineligible or no access, moves the item back to player's backpack.
+
+use uo;
+use os;
+
+include "include/client";
+include "include/omegacache_utils";
+include ":omegacache:omegacache";
+
+program cache_on_insert(who, container, movetype, inserttype, adding_item, existing_stack, amt_to_add)
+
+	// Only handle player drops (movetype 0 = player action)
+	if(movetype != 0)
+		return;
+	endif
+
+	var item;
+	if(inserttype == INSERT_INCREASE_STACK)
+		item := existing_stack;
+	else
+		item := adding_item;
+	endif
+
+	// Let POL finish the insertion
+	sleepms(50);
+
+	var access := FindAccessibleContainer(who, array{ADD_TO_SECURE});
+	if(!access)
+		MoveItemToContainer(item, who.backpack);
+		SendSysMessage(who, "You don't have permission to deposit items.");
+		return;
+	endif
+
+	if(!DepositSingleItem(who, access.df, item))
+		// Item was ineligible — move back to backpack
+		MoveItemToContainer(item, who.backpack);
+	endif
+
+endprogram

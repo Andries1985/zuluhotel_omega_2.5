@@ -10,6 +10,8 @@ include "include/objtype";
 include "utility";
 include "include/random";
 include ":gumps:old-gumps";
+include "include/client";
+include "include/omegacache_utils";
 
 Const UOBJECT_DOORS_START := 0x0675;
 Const UOBJECT_DOORS_END   := 0x06f4;
@@ -25,7 +27,7 @@ Const KEYRING := 0x1011;
 	"resizepic 0 45 2600 412 300",
 	"gumppic 140 0 100",
 	"text 190 30 48 0",
-	"text 190 50 48 31",
+	"text 190 50 48 33",
 	"resizepic 15 100 5100 382 25",
 	"text 25 102 0 1",
 	"button 78 104 5209 5003 0 1 0",
@@ -42,50 +44,52 @@ Const KEYRING := 0x1011;
 	"text 250 180 0 7",
 	"text 35 200 2302 8",
 	"text 250 200 0 9",
-	// "text 35 240 2302 10",
-	// "text 35 260 2302 11",
-	// "text 270 260 0 12",
-	// "text 35 280 2302 13",
-	"text 150 308 2302 14",
+	"text 35 220 2302 10",
+	"text 250 220 0 11",
+	// "text 35 240 2302 12",
+	// "text 35 260 2302 13",
+	// "text 270 260 0 14",
+	// "text 35 280 2302 15",
+	"text 150 308 2302 16",
 	"button 330 308 2714 2715 1 0 1",
 
 	"page 2",
-	"text 55 130 2302 15",
+	"text 55 130 2302 17",
 	//"button 25 130 2714 2715 1 0 2",
-	"text 55 152 2302 16",
+	"text 55 152 2302 18",
 	//"button 25 152 2714 2715 1 0 3",
-	"text 55 174 2302 17",
+	"text 55 174 2302 19",
 	//"button 25 174 2714 2715 1 0 4",
-	"text 250 130 2302 18",
+	"text 250 130 2302 20",
 	//"button 220 130 2714 2715 1 0 5",
-	"text 250 152 2302 19",
+	"text 250 152 2302 21",
 	//"button 220 152 2714 2715 1 0 6",
-	"text 250 174 2302 20",
+	"text 250 174 2302 22",
 	//"button 220 174 2714 2715 1 0 7",
-	//"text 250 196 2302 21",
+	//"text 250 196 2302 23",
 	//"button 220 196 2714 2715 1 0 8",
-	"text 90 140 2302 21",
+	"text 90 140 2302 23",
 	"button 60 140 2714 2715 1 0 8",
-	"text 90 170 2302 22", //40
+	"text 90 170 2302 24", //40
 	"button 60 170 2714 2715 1 0 11",
-	"text 90 200 2302 23",
+	"text 90 200 2302 25",
 	"button 60 200 2714 2715 1 0 9",
-	"text 90 230 2302 24",
+	"text 90 230 2302 26",
 	"button 60 230 2714 2715 1 0 12",
-	"text 90 260 2302 25",
+	"text 90 260 2302 27",
 	"button 60 260 2714 2715 1 0 10",
 
 	"page 3",
-	"text 90 140 2302 26",
+	"text 90 140 2302 28",
 	"button 60 140 2714 2715 1 0 13",
-	"text 90 170 2302 27",
+	"text 90 170 2302 29",
 	"button 60 170 2714 2715 1 0 14",
-	"text 90 200 2302 28",
+	"text 90 200 2302 30",
 	"button 60 200 2714 2715 1 0 16",
 
-        "text 90 230 2302 29",             //House Management 
+        "text 90 230 2302 31",             //House Management
         "button 60 230 2714 2715 1 0 15"
-       // "text 90 250 2302 30",
+       // "text 90 250 2302 32",
        // "button 60 250 2714 2715 1 0 17"
 
 );
@@ -100,6 +104,8 @@ Const KEYRING := 0x1011;
 	"Number of locked down items:",
 	"",
 	"Number of secure containers:",
+	"",
+	"Number of omega cache containers:",
 	"",
 	"Number of visits this building has had:",
 	"This house is improperly placed.",
@@ -155,8 +161,16 @@ program textcmd_sign( who , sign )
 		GetMaxProps(house);
 	endif
 
+	if(GetObjProperty(house, "numomegacache") == error)
+		AssignDefaultContainers(house);
+	endif
+	if(!GetObjProperty(house, "maxnumomegacache"))
+		GetMaxProps(house);
+	endif
+
 	data[8] := GetObjProperty( house , "maxnumlockdowns" ) - GetObjProperty( house , "numlockdowns" ) +"/"+ GetObjProperty( house , "maxnumlockdowns" );
 	data[10] := GetObjProperty( house , "maxnumsecure" ) - GetObjProperty( house , "numsecure" ) +"/"+ GetObjProperty( house , "maxnumsecure" );
+	data[12] := GetObjProperty(house, "maxnumomegacache") - GetObjProperty(house, "numomegacache") + "/" + GetObjProperty(house, "maxnumomegacache");
 
 	var i;
 
@@ -211,9 +225,13 @@ program textcmd_sign( who , sign )
 				foreach item in ListItemsNearLocation( sign.x, sign.y, sign.z-5, 20 )
 					if(item.getprop("outside") == house.serial)
 						SendSysMessage(who, "You need to redeed furniture outside before you can demolish your house.");
-						return;						
+						return;
 					endif
 				endforeach
+				// Omega Cache warning
+				if(!IsOmegaCacheEmpty(house.serial))
+					SendSysMessage(who, "WARNING: Your Omega Caches still contain items. These will be permanently lost!", 3, 53);
+				endif
 				if(YesNo(who, "Destroy everything inside?"))
 					if( oserial == who.serial || who.cmdlevel >= 4 )
 						if(house.getprop("GuildHouse"))
@@ -308,6 +326,24 @@ program textcmd_sign( who , sign )
 						else
 							RemoveHouseFromCharacter(GetObjProperty(house, "ownerserial"), house.serial);
 						endif
+
+						// Destroy any remaining Omega Cache containers
+						foreach hitem in (house.items)
+							if(hitem.objtype == OMEGACACHE_OBJTYPE)
+								EraseObjProperty(hitem, "houseserial");
+								DestroyItem(hitem);
+							endif
+						endforeach
+
+						// Clean up Omega Cache DataFile
+						var ocdf := OpenOmegaCacheStore(house.serial);
+						if(ocdf)
+							foreach ockey in (ocdf.Keys())
+								ocdf.DeleteElement(ockey);
+							endforeach
+							CloseOmegaCacheStore(house.serial);
+						endif
+
 						DestroyMulti( house );
 					endif
 				else
@@ -346,13 +382,13 @@ function SetPlaqueName( sign )
 		data[1] := signname;
 	elseif( (len(split[1]) + len(split[2]) + len(split[3]) + 2) <= 12 )
 		data[1] := split[1] + " " + split[2] + " " + split[3];
-		data[32] := split[4] + " " + split[5];
+		data[34] := split[4] + " " + split[5];
 	elseif( len(split[1]) + len(split[2]) + 1 <= 12 )
 		data[1] := split[1] + " " + split[2];
-		data[32] := split[3] + " " + split[4] + " " + split[5];
+		data[34] := split[3] + " " + split[4] + " " + split[5];
 	elseif( len(split[1]) <= 12 )
 		data[1] := split[1];
-		data[32] := split[2] + " " + split[3] + " " + split[4] + " " + split[5];
+		data[34] := split[2] + " " + split[3] + " " + split[4] + " " + split[5];
 	endif
 
 endfunction
@@ -420,86 +456,127 @@ function AssignDefaultContainers( house )
 	case (house.objtype)
 		0x6064: SetObjProperty( house , "numlockdowns" , 100 );
 		        SetObjProperty( house , "numsecure" , 1 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6066: SetObjProperty( house , "numlockdowns" , 100 );
 		        SetObjProperty( house , "numsecure" , 1 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6068: SetObjProperty( house , "numlockdowns" , 100 );
 		        SetObjProperty( house , "numsecure" , 1 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x606A: SetObjProperty( house , "numlockdowns" , 100 );
 		        SetObjProperty( house , "numsecure" , 1 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x606C: SetObjProperty( house , "numlockdowns" , 100 );
 		        SetObjProperty( house , "numsecure" , 1 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x606E: SetObjProperty( house , "numlockdowns" , 100 );
 		        SetObjProperty( house , "numsecure" , 1 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6070: SetObjProperty( house , "numlockdowns" , 30 );
 		        SetObjProperty( house , "numsecure" , 1 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6072: SetObjProperty( house , "numlockdowns" , 30 );
 		        SetObjProperty( house , "numsecure" , 1 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6074: SetObjProperty( house , "numlockdowns" , 400 );
 		        SetObjProperty( house , "numsecure" , 4 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6076: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 6 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6078: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 6 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x607A: SetObjProperty( house , "numlockdowns" , 1200 );
 		        SetObjProperty( house , "numsecure" , 15 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x607C: SetObjProperty( house , "numlockdowns" , 1800 );
 		        SetObjProperty( house , "numsecure" , 20 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x607E: SetObjProperty( house , "numlockdowns" , 2500 );
 		        SetObjProperty( house , "numsecure" , 25 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x608C: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 6 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x608D: SetObjProperty( house , "numlockdowns" , 400 );
 		        SetObjProperty( house , "numsecure" , 4 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x60A0: SetObjProperty( house , "numlockdowns" , 300 );
 		        SetObjProperty( house , "numsecure" , 3 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x60A2: SetObjProperty( house , "numlockdowns" , 300 );
 		        SetObjProperty( house , "numsecure" , 3 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6098: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 6 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x609C: SetObjProperty( house , "numlockdowns" , 500 );
 		        SetObjProperty( house , "numsecure" , 5 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x609A: SetObjProperty( house , "numlockdowns" , 500 );
 		        SetObjProperty( house , "numsecure" , 5 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x609E: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 6 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6096: SetObjProperty( house , "numlockdowns" , 800 );
 		        SetObjProperty( house , "numsecure" , 8 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6BB8: SetObjProperty( house , "numlockdowns" , 100 );
 		        SetObjProperty( house , "numsecure" , 1 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E0: SetObjProperty( house , "numlockdowns" , 300 );
 		        SetObjProperty( house , "numsecure" , 3 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E1: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 6 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E2: SetObjProperty( house , "numlockdowns" , 1200 );
 		        SetObjProperty( house , "numsecure" , 12 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E3: SetObjProperty( house , "numlockdowns" , 1100 );
 		        SetObjProperty( house , "numsecure" , 11 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E4: SetObjProperty( house , "numlockdowns" , 1400 );
 		        SetObjProperty( house , "numsecure" , 14 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E5: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 6 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E6: SetObjProperty( house , "numlockdowns" , 700 );
 		        SetObjProperty( house , "numsecure" , 7 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E7: SetObjProperty( house , "numlockdowns" , 2200 );
 		        SetObjProperty( house , "numsecure" , 22 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E8: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 6 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E9: SetObjProperty( house , "numlockdowns" , 1000 );
 		        SetObjProperty( house , "numsecure" , 10 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EA: SetObjProperty( house , "numlockdowns" , 800 );
 		        SetObjProperty( house , "numsecure" , 8 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EB: SetObjProperty( house , "numlockdowns" , 1100 );
 		        SetObjProperty( house , "numsecure" , 11 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EC: SetObjProperty( house , "numlockdowns" , 1800 );
 		        SetObjProperty( house , "numsecure" , 20 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3ED: SetObjProperty( house , "numlockdowns" , 1500 );
 		        SetObjProperty( house , "numsecure" , 15 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EE: SetObjProperty( house , "numlockdowns" , 800 );
 		        SetObjProperty( house , "numsecure" , 12 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EF: SetObjProperty( house , "numlockdowns" , 600 );
 		        SetObjProperty( house , "numsecure" , 8 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3F0: SetObjProperty( house , "numlockdowns" , 1300 );
 		        SetObjProperty( house , "numsecure" , 13 );
+		        SetObjProperty( house , "numomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 	endcase
 
 endfunction
@@ -764,64 +841,70 @@ if(who.cmdlevel < 4)
 		"page 0",
 		"nodispose",
                 "noclose",
-               
-                "resizepic 0 0 2600 250 272",
+
+                "resizepic 0 0 2600 250 294",
 
                 "button 35  50 2714 2715 1 0 1",  //Lock
                 "button 35  72 2714 2715 1 0 2",  //Unlock
                 "button 35  94 2714 2715 1 0 3",  //Secure East
                 "button 35 116 2714 2715 1 0 4",  //Secure North
-                "button 35 138 2714 2715 1 0 5",  //Delete
+                "button 35 138 2714 2715 1 0 5",  //Delete Secure
                 "button 35 160 2714 2715 1 0 6",  //Lost Items
                 "button 35 182 2714 2715 1 0 7",  //Add teleporter
                 "button 35 204 2714 2715 1 0 8",  //Remove teleporter
+                "button 35 226 2714 2715 1 0 9",  //Remove Omega Cache
 
-                "button 90 232 243 241 1 0 12",    //Cancel 
+                "button 90 254 243 241 1 0 13",    //Cancel
 
                 "text   60  15   20 0",    //title
                 "text   70  50 2302 1",    //Lock
                 "text   70  72 2302 2",    //Unlock
                 "text   70  94 2302 3",    //Secure East
                 "text   70 116 2302 4",    //Secure South
-                "text   70 138 2302 5",     //Delete
+                "text   70 138 2302 5",     //Delete Secure
         		"text   70 160 2302 6",     //Show lost items
         		"text   70 182 2302 7",     //Add teleporter
-        		"text   70 204 2302 8"     //Remove teleporter
+        		"text   70 204 2302 8",     //Remove teleporter
+        		"text   70 226 2302 9"      //Remove Omega Cache
   };
   else
    layout1 := {
 		"page 0",
 		"nodispose",
                 "noclose",
-               
-                "resizepic 0 0 2600 250 348",
+
+                "resizepic 0 0 2600 250 392",
 
                 "button 35  50 2714 2715 1 0 1",  //Lock
                 "button 35  72 2714 2715 1 0 2",  //Unlock
                 "button 35  94 2714 2715 1 0 3",  //Secure East
                 "button 35 116 2714 2715 1 0 4",  //Secure North
-                "button 35 138 2714 2715 1 0 5",  //Delete
+                "button 35 138 2714 2715 1 0 5",  //Delete Secure
                 "button 35 160 2714 2715 1 0 6",  //Lost Items
                 "button 35 182 2714 2715 1 0 7",  //Add teleporter
                 "button 35 204 2714 2715 1 0 8",  //Remove teleporter
-                "button 35 226 2714 2715 1 0 9",  //Count teleporter
-                "button 35 248 2714 2715 1 0 10",  //Grant teleporter
-                "button 35 270 2714 2715 1 0 11",  //Lower amount teleporter
+                "button 35 226 2714 2715 1 0 9",  //Remove Omega Cache
+                "button 35 248 2714 2715 1 0 10",  //Count teleporter
+                "button 35 270 2714 2715 1 0 11",  //Grant teleporter
+                "button 35 292 2714 2715 1 0 12",  //Lower amount teleporter
+                "button 35 314 2714 2715 1 0 14",  //Recount Omega Caches
 
-                "button 90 298 243 241 1 0 12",    //Cancel 
+                "button 90 342 243 241 1 0 13",    //Cancel
 
                 "text   60  15   20 0",    //title
                 "text   70  50 2302 1",    //Lock
                 "text   70  72 2302 2",    //Unlock
                 "text   70  94 2302 3",    //Secure East
                 "text   70 116 2302 4",    //Secure South
-                "text   70 138 2302 5",     //Delete
+                "text   70 138 2302 5",     //Delete Secure
         		"text   70 160 2302 6",     //Show lost items
         		"text   70 182 2302 7",     //Add teleporter
         		"text   70 204 2302 8",     //Remove teleporter
-        		"text   70 226 2302 9",     //Count teleporter
-        		"text   70 248 2302 10",     //Grant teleporter
-        		"text   70 270 2302 11"     //Lower amount teleporter
+        		"text   70 226 2302 9",     //Remove Omega Cache
+        		"text   70 248 2302 10",     //Count teleporter
+        		"text   70 270 2302 11",     //Grant teleporter
+        		"text   70 292 2302 12",     //Lower amount teleporter
+        		"text   70 314 2302 13"     //Recount Omega Caches
   };
   endif
   
@@ -835,7 +918,8 @@ if(who.cmdlevel < 4)
                 "Delete a secure",
 				"Reveal lost items",
 				"Add Teleporter",
-				"Remove Teleporter"
+				"Remove Teleporter",
+				"Remove Cache Container"
   };
   else
   data1 := {
@@ -848,9 +932,11 @@ if(who.cmdlevel < 4)
 				"Reveal lost items",
 				"Add Teleporter",
 				"Remove Teleporter",
+				"Remove Cache Container",
 				"Count Teleporters",
 				"Grant More Teleporters",
-				"Grant Less Teleporters"
+				"Grant Less Teleporters",
+				"Recount Cache Containers"
   };
   endif
         var result;
@@ -866,20 +952,83 @@ if(who.cmdlevel < 4)
                 case (result[0])
                         1:HouseFunctionLock (who, house, 1);
 						2:HouseFunctionLock (who, house, 2);
-                        3:HouseFunctionSecure (who, house, 1); 
-                        4:HouseFunctionSecure (who, house, 2); 
-                        5:HouseFunctionSecure (who, house, 3); 
-						6:RevealLostItems (who, house); 
-						7:AddTeleporter (who, house, 1); 
-						8:AddTeleporter (who, house, 2); 
-						9:CountTeleporter (who, house); 
-						10:GrantTeleporter (who, house, 1);
-						11:GrantTeleporter (who, house, 2);
-                        12:ok := 0;
+                        3:HouseFunctionSecure (who, house, 1);
+                        4:HouseFunctionSecure (who, house, 2);
+                        5:HouseFunctionSecure (who, house, 3);
+						6:RevealLostItems (who, house);
+						7:AddTeleporter (who, house, 1);
+						8:AddTeleporter (who, house, 2);
+						9:HouseFunctionRemoveOmegaCache (who, house);
+						10:CountTeleporter (who, house);
+						11:GrantTeleporter (who, house, 1);
+						12:GrantTeleporter (who, house, 2);
+						14:RecountOmegaCaches (who, house);
+                        13:ok := 0;
                 endcase
                 sleepms(400);
         endwhile
         
+endfunction
+
+///////////////////////////////////////////////////////////////////////
+function HouseFunctionRemoveOmegaCache(who, house)
+
+	if(!house)
+		return;
+	endif
+
+	SendSysMessage(who, "Target the Omega Cache Container you wish to remove.");
+	var itemt := Target(who);
+	if(!itemt)
+		SendSysMessage(who, "Cancelled.");
+		return;
+	endif
+
+	// Validate it's an Omega Cache belonging to this house
+	if(itemt.objtype != OMEGACACHE_OBJTYPE)
+		SendSysMessage(who, "That is not an Omega Cache.");
+		return;
+	endif
+
+	if(CInt(GetObjProperty(itemt, "houseserial")) != house.serial)
+		SendSysMessage(who, "That Omega Cache does not belong to this house.");
+		return;
+	endif
+
+	// Count cache containers via house.items (covers all Z levels)
+	var cache_count := 0;
+	foreach nearby in (house.items)
+		if(nearby.objtype == OMEGACACHE_OBJTYPE)
+			cache_count := cache_count + 1;
+		endif
+	endforeach
+
+	// Block removal of the last container if cache has stored items
+	if(!IsOmegaCacheEmpty(house.serial) and cache_count <= 1)
+		SendSysMessage(who, "You must empty the Omega Cache Container before removing the last one.");
+		return;
+	endif
+
+	// Remove the cache and return a deed to the player's backpack
+	var deed := CreateItemInContainer(who.backpack, OMEGACACHE_DEED_OBJTYPE, 1);
+	if(!deed)
+		SendSysMessage(who, "Your backpack is full. Free up space first.");
+		return;
+	endif
+
+	var destroy_result := DestroyItem(itemt);
+	if(!destroy_result)
+		SendSysMessage(who, "[OmegaCache] DestroyItem FAILED: " + destroy_result.errortext, 3, 53);
+		DestroyItem(deed);
+		return;
+	endif
+	// Slot re-credit is handled by destroycache.src (DestroyScript)
+	SendSysMessage(who, "Omega Cache Container removed. A deed has been placed in your backpack.");
+
+	if(DEBUG_MODE)
+		SendSysMessage(who, "[OmegaCache] Removed cache. Slots available: " + GetObjProperty(house, "numomegacache"), 3, 53);
+	endif
+
 endfunction
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -1201,6 +1350,30 @@ function CountTeleporter(who, house)
 
 endfunction
 
+function RecountOmegaCaches(who, house)
+
+	if(who.cmdlevel < 4 or !house)
+		return;
+	endif
+
+	var max_slots := GetMaxOmegaCacheForHouse(house.objtype);
+
+	// Count placed containers via house.items (covers all Z levels)
+	var placed := 0;
+	foreach item in (house.items)
+		if(item.objtype == OMEGACACHE_OBJTYPE)
+			placed := placed + 1;
+			SendSysMessage(who, "  #" + placed + " serial=" + item.serial + " at " + item.x + "," + item.y + "," + item.z + " graphic=" + Hex(item.graphic), 3, 53);
+		endif
+	endforeach
+
+	var remaining := max_slots - placed;
+	SetObjProperty(house, "numomegacache", remaining);
+	SetObjProperty(house, "maxnumomegacache", max_slots);
+	SendSysMessage(who, "Omega Caches: " + placed + " placed, " + remaining + "/" + max_slots + " slots available.");
+
+endfunction
+
 function GrantTeleporter(who, house, num)
 
 	if(who.cmdlevel < 4 || !house)
@@ -1448,86 +1621,127 @@ function GetMaxProps( house )
 	case (house.objtype)
 		0x6064: SetObjProperty( house , "maxnumlockdowns" , 100 );
 		        SetObjProperty( house , "maxnumsecure" , 1 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6066: SetObjProperty( house , "maxnumlockdowns" , 100 );
 		        SetObjProperty( house , "maxnumsecure" , 1 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6068: SetObjProperty( house , "maxnumlockdowns" , 100 );
 		        SetObjProperty( house , "maxnumsecure" , 1 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x606A: SetObjProperty( house , "maxnumlockdowns" , 100 );
 		        SetObjProperty( house , "maxnumsecure" , 1 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x606C: SetObjProperty( house , "maxnumlockdowns" , 100 );
 		        SetObjProperty( house , "maxnumsecure" , 1 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x606E: SetObjProperty( house , "maxnumlockdowns" , 100 );
 		        SetObjProperty( house , "maxnumsecure" , 1 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6070: SetObjProperty( house , "maxnumlockdowns" , 30 );
 		        SetObjProperty( house , "maxnumsecure" , 1 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6072: SetObjProperty( house , "maxnumlockdowns" , 30 );
 		        SetObjProperty( house , "maxnumsecure" , 1 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6074: SetObjProperty( house , "maxnumlockdowns" , 400 );
 		        SetObjProperty( house , "maxnumsecure" , 4 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6076: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 6 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6078: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 6 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x607A: SetObjProperty( house , "maxnumlockdowns" , 1200 );
 		        SetObjProperty( house , "maxnumsecure" , 15 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x607C: SetObjProperty( house , "maxnumlockdowns" , 1800 );
 		        SetObjProperty( house , "maxnumsecure" , 20 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x607E: SetObjProperty( house , "maxnumlockdowns" , 2500 );
 		        SetObjProperty( house , "maxnumsecure" , 25 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x608C: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 6 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x608D: SetObjProperty( house , "maxnumlockdowns" , 400 );
 		        SetObjProperty( house , "maxnumsecure" , 4 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x60A0: SetObjProperty( house , "maxnumlockdowns" , 300 );
 		        SetObjProperty( house , "maxnumsecure" , 3 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x60A2: SetObjProperty( house , "maxnumlockdowns" , 300 );
 		        SetObjProperty( house , "maxnumsecure" , 3 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6098: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 6 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x609C: SetObjProperty( house , "maxnumlockdowns" , 500 );
 		        SetObjProperty( house , "maxnumsecure" , 5 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x609A: SetObjProperty( house , "maxnumlockdowns" , 500 );
 		        SetObjProperty( house , "maxnumsecure" , 5 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x609E: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 6 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6096: SetObjProperty( house , "maxnumlockdowns" , 800 );
 		        SetObjProperty( house , "maxnumsecure" , 8 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0x6BB8: SetObjProperty( house , "maxnumlockdowns" , 100 );
 		        SetObjProperty( house , "maxnumsecure" , 1 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E0: SetObjProperty( house , "maxnumlockdowns" , 300 );
 				SetObjProperty( house , "maxnumsecure" , 3 );
+				SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E1: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 6 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E2: SetObjProperty( house , "maxnumlockdowns" , 1200 );
 		        SetObjProperty( house , "maxnumsecure" , 12 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E3: SetObjProperty( house , "maxnumlockdowns" , 1100 );
 		        SetObjProperty( house , "maxnumsecure" , 11 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E4: SetObjProperty( house , "maxnumlockdowns" , 1400 );
 		        SetObjProperty( house , "maxnumsecure" , 14 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E5: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 6 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E6: SetObjProperty( house , "maxnumlockdowns" , 700 );
 		        SetObjProperty( house , "maxnumsecure" , 7 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E7: SetObjProperty( house , "maxnumlockdowns" , 2200 );
 		        SetObjProperty( house , "maxnumsecure" , 22 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E8: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 6 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3E9: SetObjProperty( house , "maxnumlockdowns" , 1000 );
 		        SetObjProperty( house , "maxnumsecure" , 10 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EA: SetObjProperty( house , "maxnumlockdowns" , 800 );
 		        SetObjProperty( house , "maxnumsecure" , 8 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EB: SetObjProperty( house , "maxnumlockdowns" , 1100 );
 		        SetObjProperty( house , "maxnumsecure" , 11 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EC: SetObjProperty( house , "maxnumlockdowns" , 1800 );
 		        SetObjProperty( house , "maxnumsecure" , 20 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3ED: SetObjProperty( house , "maxnumlockdowns" , 1500 );
 		        SetObjProperty( house , "maxnumsecure" , 15 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EE: SetObjProperty( house , "maxnumlockdowns" , 800 );
 		        SetObjProperty( house , "maxnumsecure" , 12 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3EF: SetObjProperty( house , "maxnumlockdowns" , 600 );
 		        SetObjProperty( house , "maxnumsecure" , 8 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 		0xA3F0: SetObjProperty( house , "maxnumlockdowns" , 1300 );
 		        SetObjProperty( house , "maxnumsecure" , 13 );
+		        SetObjProperty( house , "maxnumomegacache" , GetMaxOmegaCacheForHouse(house.objtype) );
 	endcase
 
 endfunction
