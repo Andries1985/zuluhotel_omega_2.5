@@ -1,0 +1,57 @@
+use uo;
+
+include "include/random";
+
+const MAX_CREATEINBAG_RANGE := 256;
+
+program createinbag(who, text)
+	var params := SplitWords(text);
+	if (len(params) < 2)
+		SendSysMessage(who, "Usage: .createinbag <startgraphic> <endgraphic>");
+		return 0;
+	endif
+
+	var start_input := params[1];
+	var end_input := params[2];
+
+	var start_graphic := CInt(start_input);
+	var end_graphic := CInt(end_input);
+	PrintTextAbovePrivate(who, "Parsed start graphic: " + start_graphic + ", end graphic: " + end_graphic, who);
+
+	if (start_graphic < 0 or start_graphic > 16383 or end_graphic < 0 or end_graphic > 16383)
+		SendSysMessage(who, "Invalid graphic ID(s). Use hex format (e.g. 0x277E).");
+		return 0;
+	endif
+
+	if (start_graphic > end_graphic)
+		var tmp := start_graphic;
+		start_graphic := end_graphic;
+		end_graphic := tmp;
+	endif
+
+	if ((end_graphic - start_graphic + 1) > MAX_CREATEINBAG_RANGE)
+		SendSysMessage(who, "Range too large. Maximum supported range is " + MAX_CREATEINBAG_RANGE + " graphics per command.");
+		return 0;
+	endif
+
+	var chest := CreateItemInBackpack(who, 0x0E40);
+	if (!chest)
+		SendSysMessage(who, "Couldn't create a chest in your backpack.");
+		return 0;
+	endif
+	chest.name := "Generated Graphic Chest";
+	chest.color := Random(3001);
+
+	var created := 0;
+	var objtype;
+	for (objtype := start_graphic; objtype <= end_graphic; objtype := objtype + 1)
+		var item := CreateItemInContainer(chest, objtype, 1);
+		if (item)
+			created := created + 1;
+		endif
+	endfor
+
+	SendSysMessage(who, "Created " + created + " items in the chest in your backpack.");
+	return 1;
+
+endprogram

@@ -142,7 +142,14 @@ program use_mortar( user, mortar )
 
 	var menu := CreateMenu( "Select a potion to make" );
 	var num_possibilities;
-	var mage := GetObjProperty( user, CLASSEID_MAGE );
+	var mage := 0;
+	if( IsMage( user ) )
+		mage := GetObjProperty( user, CLASSEID_MAGE );
+		//Print("Mage level: "+mage);
+	elseif( IsThief( user ) )
+		mage := GetObjProperty( user, CLASSEID_THIEF );
+		//Print("Thief level: "+mage);
+	endif
 
 	foreach potion_type in possibles
 		if( CanMake( user, potion_type, use_on, mage, usereg := 0, regRequest := backpackRegRequest ) )
@@ -179,7 +186,11 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0, regReq
 		if( mage )
 			var itemcfg := ReadConfigFile( "itemdesc" );
 			var base := itemcfg[product].Strength;
-			bonus := CInt( base * ClasseBonus( user, CLASSEID_MAGE ) ) - base;
+			if( GetObjProperty(user, CLASSEID_MAGE))
+				bonus := CInt( base * ClasseBonus( user, CLASSEID_MAGE ) - base);
+			elseif( GetObjProperty(user, CLASSEID_THIEF))
+				bonus := CInt( base * ClasseBonus( user, CLASSEID_THIEF ) - base);
+			endif
 			if( !bonus )
 				bonus := 1;
 			endif

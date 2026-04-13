@@ -32,7 +32,7 @@ const UOBJECT_TREASURE_CHEST := 0x0E40;
 
 var guardians := {};
 
-program dig_treasure( character , shovel )
+program dig_treasure( character , unused shovel )
 
 	if(GetObjProperty(character, "LastShovel") > ReadGameClock())
 		SendSysMessage(character, "You need to wait before using that again.");
@@ -88,6 +88,13 @@ program dig_treasure( character , shovel )
   
 	var range := 3;
 	var lvl := GetObjProperty( map , "level" );
+	var bard_lvl7_roll := 0;
+	var bard_level := IsBard(character);
+
+	if( bard_level > 0 and Random(100) < bard_level )
+		lvl := 7;
+		bard_lvl7_roll := 1;
+	endif
 
 	var distn := coordist( dig.x , dig.y , chestx , chesty );
 	var dirns := "None";
@@ -133,41 +140,60 @@ program dig_treasure( character , shovel )
 		
 		var cfgfile	:= ReadConfigFile( "guardians" );
 		if( cfgfile )
-			var elem := FindConfigElem( cfgfile , lvl );
-			if( elem )
-				var total	:= GetConfigString( elem , "total" );
-				var num	:= GetConfigInt( elem,"num" );
-				var limit	:= RandomDiceRoll(total)+1;
-				var rand;
-				var template;
-				var i;
+			var elem;
+			var total;
+			var num;
+			var limit;
+			var rand;
+			var template;
+			var i;
 
-				if(lvl < 4)
-					for( i := 1 ; i <= limit ; i := i + 1 )
+			if( bard_lvl7_roll )
+				elem := FindConfigElem( cfgfile , 6 );
+				if( elem )
+					num	:= GetConfigInt( elem,"num" );
+					for( i := 1 ; i <= 3 ; i := i + 1 )
 						rand := Random( num ) + 1;
 						template := GetConfigString( elem , ("creature" + rand) );
 						CreateGuardian( template, chestx, chesty, chestz );
 					endfor
-				else
-				//Special spawning way for lvl 4+
-				
-					elem := FindConfigElem( cfgfile , 4 );
+				endif
+			else
+				elem := FindConfigElem( cfgfile , lvl );
+				if( elem )
 					total	:= GetConfigString( elem , "total" );
 					num	:= GetConfigInt( elem,"num" );
-					limit := RandomDiceRoll(total )+1;
+					limit	:= RandomDiceRoll(total)+1;
 
-					for( i := 1 ; i <= limit ; i := i + 1 )
-						rand := Random( num ) + 1;
-						template := GetConfigString( elem , ("creature" + rand) );
-						CreateGuardian( template, chestx, chesty, chestz );
-					endfor
+					if(lvl < 4)
+						for( i := 1 ; i <= limit ; i := i + 1 )
+							rand := Random( num ) + 1;
+							template := GetConfigString( elem , ("creature" + rand) );
+							CreateGuardian( template, chestx, chesty, chestz );
+						endfor
+					else
+					//Special spawning way for lvl 4+
 
-					if(lvl > 4)
-						elem := FindConfigElem( cfgfile , lvl );
+						elem := FindConfigElem( cfgfile , 4 );
+						total	:= GetConfigString( elem , "total" );
 						num	:= GetConfigInt( elem,"num" );
-						rand := Random( num ) + 1;
-						template := GetConfigString( elem , ("creature" + rand) );
-						CreateGuardian( template, chestx, chesty, chestz );
+						limit := RandomDiceRoll(total )+1;
+
+						for( i := 1 ; i <= limit ; i := i + 1 )
+							rand := Random( num ) + 1;
+							template := GetConfigString( elem , ("creature" + rand) );
+							CreateGuardian( template, chestx, chesty, chestz );
+						endfor
+
+						if(lvl == 4 or lvl == 5)
+							elem := FindConfigElem( cfgfile , lvl );
+							num	:= GetConfigInt( elem,"num" );
+							rand := Random( num ) + 1;
+							template := GetConfigString( elem , ("creature" + rand) );
+							CreateGuardian( template, chestx, chesty, chestz );
+						endif
+
+
 					endif
 				endif
 			endif
@@ -201,42 +227,43 @@ function CreateTreasureChest( lvl , x , y , z )
 	var chest := CreateItemAtLocation( x , y , z , UOBJECT_TREASURE_CHEST , 1 );
 	var lootgroup;
 	var magiclevelup;
-	var magicchanse;
+	var magicchance;
 
 	case( lvl )
-		1: lootgroup := 5;	 break;
-		2: lootgroup := 6;	 break;
-		3: lootgroup := 7;	 break;
-		4: lootgroup := 8; break;
-		5: lootgroup := 9; break;
-		6: lootgroup := 10; break;		
-		default: lootgroup := 5;
+		1: lootgroup := 201;	break;
+		2: lootgroup := 202;	break;
+		3: lootgroup := 203;	break;
+		4: lootgroup := 204;	break;
+		5: lootgroup := 205;	break;
+		6: lootgroup := 206;	break;
+		7: lootgroup := 207;	break;		
+		default: lootgroup := 201;	break;
 	endcase
 
 		case( lvl )
-		1: magicchanse := 30;	break;
-		2: magicchanse := 50;	break;
-		3: magicchanse := 70;	break;
-		4: magicchanse := 100;	break;
-		5: magicchanse := 100;	break;
-		6: magicchanse := 100; break;		
-		default: magicchanse := 5;
+		1: magicchance := 50;	break;
+		2: magicchance := 60;	break;
+		3: magicchance := 70;	break;
+		4: magicchance := 80;	break;
+		5: magicchance := 90;	break;
+		6: magicchance := 95;	break;
+		7: magicchance := 99;	break;	
+		default: magicchance := 50;	break;
 	endcase
 	
 		case( lvl )
-		1: magiclevelup := 2;	break;
-		2: magiclevelup := 3;	break;
-		3: magiclevelup := 4;	break;
+		1: magiclevelup := 4;	break;
+		2: magiclevelup := 5;	break;
+		3: magiclevelup := 6;	break;
 		4: magiclevelup := 7;	break;
-		5: magiclevelup := 9; break;
-		6: magiclevelup := 9; break;		
-		default: magiclevelup := 2;
+		5: magiclevelup := 8;	break;
+		6: magiclevelup := 9;	break;
+		7: magiclevelup := 10;	break;	
+		default: magiclevelup := 4;	break;
 	endcase
-	
-
 	
 	chest.movable := 0;
-	MakeLoot( chest , Cint(lootgroup), Cint(magicchanse), Cint(magiclevelup));
+	MakeLoot( chest , Cint(lootgroup), Cint(magicchance), Cint(magiclevelup));
 
 	return chest;
 

@@ -4,6 +4,7 @@
 use uo;
 use os;
 use cfgfile;
+use cliloc;
 
 include "include/chests";
 include "include/starteqp";
@@ -48,31 +49,37 @@ program pick( me, lockpick )
         	return;
 	endif
 
-	var lvl:=finddiff(chest);
-
- 	if(lvl)
-		var tester:=cint(lvl);
-		if(tester > 150)
-			tester := 150;
-		endif
-		sendDiff( me , tester );
-	endif
-
-	if(!lvl)
-		SendSysMessage(me,"You have no chance of picking that lock!");
+	if(GetObjProperty( chest, PROPID_CHEST_SPAWNPOINT_CHEST ))
+		PickTreasureChest(me, lockpick, chest);
 		return;
-	endif
+	else
 
-	if (LockPickTheThing(me,chest,lvl,lockpick))
-		if (TypeOf(GetObjProperty(chest,"spawnchest"))=="Integer")
-			SpawnTheChest(chest);
+		var lvl:=finddiff(chest);
+
+		if(lvl)
+			var tester:=cint(lvl);
+			if(tester > 150)
+				tester := 150;
+			endif
+			sendDiff( me , tester );
+		endif
+
+		if(!lvl)
+			SendSysMessage(me,"You have no chance of picking that lock!");
+			return;
+		endif
+
+		if (LockPickTheThing(me,chest,lvl,lockpick))
+			if (TypeOf(GetObjProperty(chest,"spawnchest"))=="Integer")
+				//SpawnTheChest(chest);
+			endif
 		endif
 	endif
 
 endprogram
 
 function SpawnTheChest(chest)
-	//return 0;
+	return 0;
 	var level:=Cint(GetObjProperty(chest,"spawnchest"));
 
 	if(level)
@@ -117,6 +124,68 @@ function LockPickTheThing(me,chest,lvl,lockpick)
 			endif
 		else
 			PlaySoundEffect(chest,SFX_11F);
+		endif
+		return 0;
+	endif
+
+endfunction
+
+function PickTreasureChest(who, lockpick, chest)
+
+//PROPID_CHEST_SPAWNPOINT_LOCK_DIFFICULTY
+
+	if( !GetObjProperty(who, CLASSEID_THIEF) )
+		SendSysMessage(who, "You are not a thief!", FONT_NORMAL, 43);
+		return;
+	endif
+
+	if(!chest.locked)
+		SendSysMessageCL( who, 502069, color := 33 ); // This does not appear to be locked.
+		return;
+	endif
+
+	var lvl := GetObjProperty(chest, PROPID_CHEST_SPAWNPOINT_LOCK_DIFFICULTY);
+	//Print("Lock Difficulty: "+lvl);
+	if(!lvl)
+		SendSysMessageCL( who, 502073, color := 44 ); // This lock cannot be picked by normal means...
+		return;
+	endif
+	if( lvl > 150 )
+		lvl := 150;
+	else
+		lvl := CInt( lvl );
+	endif
+
+	var mobs := ListHostiles( who, 4 );
+	if (len(mobs))
+		SendSysMessage( who, mobs[1].name+" breaks your concentration!", FONT_NORMAL, 43);
+		return 0;
+	endif
+
+	PlaySoundEffect(who, SFX_242);
+	sleep(1);
+
+	var skillpoints := get_default_points(SKILLID_LOCKPICKING);
+
+	if ( Checkskill( who, SKILLID_LOCKPICKING, lvl, skillpoints))
+		PlaySoundEffect( chest, SFX_200);
+		SendSysMessageCL( who, 502076, color := 66 ); // The lock quickly yields to your skill.
+		//PrintTextAbovePrivateCL( who, chest, 3005143, 66 ); // Unlocked
+		PrintTextAbovePrivate( chest, "You have unlocked a level " + GetObjProperty(chest, PROPID_CHEST_SPAWN_LEVEL) + " chest!", who, 3, 66, 1 );
+		SetObjProperty( chest, "LastPickedBySerial", who.serial );
+		chest.locked := 0;
+		SubtractAmount( lockpick, 1 );
+		SendSysMessage( who, "You have 5 minutes to loot the chest.", FONT_NORMAL, 43 );
+		Start_Script( "::misc/deleter", {chest, 300} );
+		return;
+	else
+		PrintTextAbovePrivateCL(who, chest, 502075, color := 33 ); // You are unable to pick the lock.
+		if (!Checkskill( who, SKILLID_LOCKPICKING, lvl, skillpoints) )
+			PlaySoundEffect( who, 0xef );
+			SendSysMessageCL( who, 502074, color := 33 ); // You broke the lockpick.
+			SubtractAmount( lockpick, 1 );
+		else
+			PlaySoundEffect( chest, SFX_11F );
 		endif
 		return 0;
 	endif

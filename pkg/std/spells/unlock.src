@@ -73,7 +73,7 @@ program cast_unlock( parms, spell_id )
 
 	if ( LockPickTheThing( caster , cast_on , lvl ) )
 		if (TypeOf(GetObjProperty(cast_on,"spawnchest"))=="Integer")
-			SpawnTheChest(cast_on);
+			//SpawnTheChest(cast_on);
 		endif
 	endif
 

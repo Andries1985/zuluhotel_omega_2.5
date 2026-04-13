@@ -399,7 +399,7 @@ function GetMaxCircleForClasse( classeid )
 	case( classeid )
 		CLASSEID_BARD:			return 1;
 		CLASSEID_BLADESINGER:	return 1;
-		CLASSEID_CRAFTER:		return 1;
+		CLASSEID_CRAFTER:		return 7;
 		CLASSEID_MAGE:			return 0;
 		CLASSEID_MYSTIC_ARCHER:	return 0;
 		CLASSEID_PALADIN:		return 0;
@@ -451,6 +451,14 @@ function HaveInvalidSkillEnchantmentForClasse( item , classeid )
 	endif
 
 	if( classeid == CLASSEID_RANGER && skillnum == SKILLID_FORENSICS )
+		ret := 0;
+	endif
+
+	if( classeid == CLASSEID_THIEF && skillnum == SKILLID_DETECTINGHIDDEN )
+		ret := 0;
+	endif
+
+	if( classeid == CLASSEID_CRAFTER && skillnum == SKILLID_MAGERY )
 		ret := 0;
 	endif
 
@@ -589,7 +597,7 @@ function IsBladesinger( who )
 endfunction
 
 function IsCrafter( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CRAFTER ) );
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_CRAFTER ));
 endfunction
 
 function IsMage( who )
@@ -605,7 +613,7 @@ function IsPaladin( who )
 endfunction
 
 function IsRanger( who )
-	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_RANGER ) );
+	return IsFromThatClasse( who , GetClasseSkills( CLASSEID_RANGER ), 1);
 endfunction
 
 function IsThief( who )
@@ -621,7 +629,7 @@ function IsPowerplayer( who )
 endfunction
 
 
-function IsFromThatClasse( who , classe_skills , forensicsallowed := 0)
+function IsFromThatClasse( who , classe_skills , forensicsallowed := 0 )
 
 	var classe	:= 0;
 	var total	:= 0;
@@ -629,7 +637,7 @@ function IsFromThatClasse( who , classe_skills , forensicsallowed := 0)
 	var amount := 0;
 
 	for i := 0 to SKILLID__HIGHEST
-		if(forensicsallowed)
+		if(forensicsallowed  == 1)
 			if(i != SKILLID_FORENSICS)	//Ignores forensics from spec calculation
 				amount := GetEffectiveSkill( who , i );
 				total := total + amount;

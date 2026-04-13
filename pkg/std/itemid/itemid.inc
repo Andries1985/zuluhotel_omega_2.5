@@ -36,6 +36,7 @@ function SelectItemToID(who,delay)
 		return 1;
 	endif
 
+	ReserveItem( the_item );
 	if (!ReserveItem( the_item ))
 		//Print("Item "+the_item.serial+" is already reserved.");
 		return 1;
@@ -51,6 +52,7 @@ function SelectItemToID(who,delay)
 			endforeach
 			if (itemlist.Size() == 0)
 				SendSysMessage(who, "There's nothing to identify in there.");
+				ReleaseItem( the_item );
 				return 1;
 			else
 				SendSysMessage(who,"Your vast intellect tries to uncover the mysteries of your hoard.", FONT_NORMAL, 2601 );
@@ -58,36 +60,45 @@ function SelectItemToID(who,delay)
 				foreach item in itemlist
 					if( !Accessible( who , item ) || Distance( who , the_item ) > 2 )
 						SendSysMessage( who , "You can't reach that." );
+						ReleaseItem( the_item );
 						return 1;
 					endif
 					ItemID(who,item);
 					sleepms(Max(delay*1000,MIN_DELAYMS));
 				endforeach
 			endif
+			ReleaseItem( the_item );
 			return 1;
 		else
 			SendSysMessage(who, "You cannot do that yet.");
+			ReleaseItem( the_item );
 			return 1;
 		endif
 	endif
 	
 	if( !the_item.movable )
 		SendSysMessage( who, "You can't id unmovable items." );
+		ReleaseItem( the_item );
 		return 1;
 	endif
 
 	var ided := CanBeIDed(the_item);
 	var hasdetails := GetItemDetails(who, the_item);
 	if(hasdetails && ided)
+		ReleaseItem( the_item );
 		return 1;
 	endif
 
 	if( ided )
 		SendSysMessage( who, the_item.desc+" has already been identified.", FONT_NORMAL, 2595 );
+		ReleaseItem( the_item );
 		return 1;
 	endif
 
 	ItemID(who,the_item);
+
+	ReleaseItem( the_item );
+	return 1;
 	
 endfunction
 
