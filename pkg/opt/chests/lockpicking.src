@@ -176,7 +176,7 @@ function PickTreasureChest(who, lockpick, chest)
 		chest.locked := 0;
 		SubtractAmount( lockpick, 1 );
 		SendSysMessage( who, "You have 5 minutes to loot the chest.", FONT_NORMAL, 43 );
-		Start_Script( "::misc/deleter", {chest, 30} );
+		Start_Script( "::misc/deleter", {chest, 300} );
 		return;
 	else
 		PrintTextAbovePrivateCL(who, chest, 502075, color := 33 ); // You are unable to pick the lock.
