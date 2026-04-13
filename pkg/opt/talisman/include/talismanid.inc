@@ -14,7 +14,7 @@ include "include/classes";
 function TalismanID( who, delay, talisman )
 
 	var the_item;
-	delay := 4;
+	// delay := 4; // Keep caller-provided delay (e.g. BASE_DELAY) instead of overriding it here.
 	var skillID;
 	var intelligence := GetAttribute( who, ATTRIBUTEID_INTELLIGENCE );
 	const MIN_DELAYMS := 250;
