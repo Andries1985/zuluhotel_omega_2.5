@@ -102,7 +102,6 @@ function TalismanID( who, delay, talisman )
 		return 1;
 	endif
 		
-	ReserveItem( the_item );
 	if (!ReserveItem( the_item ))
 		//Print("Item "+the_item.serial+" is already reserved.");
 		return 1;
