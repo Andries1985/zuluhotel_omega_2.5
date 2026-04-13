@@ -28,7 +28,6 @@ function TalismanID( who, delay, talisman )
 		endif
     elseif ( GetObjProperty( who , CLASSEID_CRAFTER ) )
 		skillID := CInt(GetEffectiveSkill( who, SKILLID_ARMSLORE ));
-		Print("Crafter's Arms Lore: " + skillID);
 		if( skillID >= 100)
 			delay := 0;
 		endif
