@@ -969,9 +969,13 @@ function ValidateDepositTarget(who, access, tgt)
 		return 1;
 	endif
 
-	// Must be accessible
+	// Must be accessible and within range
 	if(!Accessible(who, tgt))
 		SendSysMessage(who, "You can't reach that.");
+		return 0;
+	endif
+	if(Distance(who, tgt) > 4)
+		SendSysMessage(who, "That is too far away.");
 		return 0;
 	endif
 
