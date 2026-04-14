@@ -55,7 +55,7 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 | **Deposit from loose bag** | Target items inside a non-secured bag on the house floor. Should be allowed (bag's `.multi` should match cache house). |
 | **Deposit from nested secure** | Target an item inside a bag inside a secured container. Should check secure permissions. |
 | **Deposit from neighbour's house** | Stand in own house near the wall. Target an item visible in the adjacent neighbour's house. Should be rejected (different `.multi` serial). |
-| **Deposit range check** | Target an item more than 4 tiles away within the same house. Should be rejected with "That is too far away." |
+| **Deposit range check** | Target an item more than 2 tiles away within the same house. Should be rejected with "That is too far away." |
 | **Deposit from loose bag in neighbour's house** | Drop a bag on the floor in neighbour's house. Stand in own house. Target items inside that bag. Should be rejected (bag's `.multi` belongs to neighbour's house). |
 
 ### Omega Cache — Stacking & Categories

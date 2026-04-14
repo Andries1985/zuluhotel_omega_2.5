@@ -974,7 +974,12 @@ function ValidateDepositTarget(who, access, tgt)
 		SendSysMessage(who, "You can't reach that.");
 		return 0;
 	endif
-	if(Distance(who, tgt) > 4)
+	// Range check — find the top-level world object (walk up containers)
+	var world_obj := tgt;
+	while(world_obj.container)
+		world_obj := world_obj.container;
+	endwhile
+	if(Distance(who, world_obj) > 2)
 		SendSysMessage(who, "That is too far away.");
 		return 0;
 	endif
