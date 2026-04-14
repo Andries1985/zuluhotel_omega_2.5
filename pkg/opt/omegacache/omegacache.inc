@@ -110,6 +110,10 @@ function GetNonDefaultProperties(item)
 	var desc := GetItemDescriptor(item.objtype);
 	var props := dictionary;
 
+	if(!desc)
+		return props;
+	endif
+
 	// Properties compared against itemdesc defaults
 	if(item.graphic != desc.Graphic)
 		props["graphic"] := item.graphic;
@@ -376,7 +380,10 @@ function DepositItem(df, key, item)
 	// Store metadata on first deposit for this key
 	if(current_qty == 0)
 		elem.SetProp("objtype", item.objtype);
-		elem.SetProp("weight", GetItemDescriptor(item.objtype).Weight);
+		var dep_desc := GetItemDescriptor(item.objtype);
+		if(dep_desc)
+			elem.SetProp("weight", dep_desc.Weight);
+		endif
 
 		// Store non-default properties for recreation on withdrawal
 		var props := GetNonDefaultProperties(item);
@@ -782,7 +789,7 @@ function FindAccessibleContainer(who, required_privileges)
 			endif
 
 			// Must be inside the same house the cache belongs to
-			if(who.multi.serial != house.serial and who.cmdlevel < 4)
+			if(who.multi and who.multi.serial != house.serial and who.cmdlevel < 4)
 				continue;
 			endif
 
