@@ -1013,7 +1013,7 @@ Each phase is broken into milestones that deliver a testable, functional increme
 
 **Logging**: All functions include debug logging wrapped in `if(DEBUG_MODE)` blocks using `SendSysMessage` to the player's in-game output (not `Print()` to server console). Functions that don't have direct access to a player reference use a module-level `_debug_who` variable, set at the start of each operation by the calling script. Debug output uses hue 53 (yellow) for visibility.
 
-**Changelog**: At the end of every milestone, update `pkg/opt/omegacache/changelog.md` with:
+**Changelog**: At the end of every milestone, update `pkg/opt/omegacache/docs/changelog.md` with:
 - A PR-style summary of what was done in that milestone
 - Verification steps for manual functional, integration, and feature testing
 - Entries are ordered newest at bottom (append-only)

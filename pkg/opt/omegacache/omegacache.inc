@@ -945,7 +945,7 @@ endfunction
 // Checks: player is in the cache's house, target is accessible, movable,
 // and is in the player's backpack or in the same house.
 // Returns 1 if valid, 0 if rejected (sends message to player).
-function ValidateDepositTarget(who, access, target)
+function ValidateDepositTarget(who, access, tgt)
 	// If no access struct, skip validation (backwards compatibility)
 	if(!access)
 		return 1;
@@ -958,25 +958,25 @@ function ValidateDepositTarget(who, access, target)
 	endif
 
 	// Target is the player's backpack — always valid if player is in house
-	if(target.serial == who.backpack.serial)
+	if(tgt.serial == who.backpack.serial)
 		return 1;
 	endif
 
 	// Must be accessible
-	if(!Accessible(who, target))
+	if(!Accessible(who, tgt))
 		SendSysMessage(who, "You can't reach that.");
 		return 0;
 	endif
 
 	// Must be movable (not locked down)
-	if(!target.movable)
+	if(!tgt.movable)
 		SendSysMessage(who, "That item is locked down.");
 		return 0;
 	endif
 
 	// Walk up the container chain — item must trace back to
 	// player's backpack or be within the cache's house
-	var check := target.container;
+	var check := tgt.container;
 	while(check)
 		if(check.serial == who.backpack.serial)
 			return 1;
@@ -986,7 +986,7 @@ function ValidateDepositTarget(who, access, target)
 
 	// Not in backpack — check if item is within the house
 	var in_house := 0;
-	check := target;
+	check := tgt;
 	while(check)
 		if(check.multi and check.multi.serial == access.house.serial)
 			in_house := 1;
@@ -1001,7 +1001,7 @@ function ValidateDepositTarget(who, access, target)
 	endif
 
 	// Walk up the container chain to check if any parent is a secured container
-	check := target.container;
+	check := tgt.container;
 	while(check)
 		if(check.usescript == USESCRIPTID_SECURE_CONTAINER)
 			// Inside a secured container — check access

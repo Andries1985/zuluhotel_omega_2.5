@@ -58,6 +58,7 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 | **Withdrawal — stripped CProps** | Withdraw an item originally deposited with `IDed`. The withdrawn item should NOT have `IDed`. |
 | **Categories** | Browse cache gump. Verify cooking items, potions, gems, fishing shells, verse scrolls are in correct categories, not in "Other". |
 | **CanStack consistency** | Merge two backpack stacks differing only by ignored CProps. Verify they stack. |
+| **Blacklist enforcement** | Temporarily add a known stackable item (e.g., `Blacklist 0x0F7A { Reason Test }` for Black Pearl) to `blacklist.cfg`, restart server. Attempt to deposit via gump, `.cache deposit`, and drag-and-drop. All should reject with "That item cannot be stored." Verify item is returned to backpack on drag-and-drop. Remove the test entry after. |
 
 ### Magic Absorption Self-Cast
 
