@@ -12,6 +12,7 @@ use math;
 
 include "include/canstack";
 include "include/client";
+include "include/constants/usescriptids";
 include "include/omegacache_utils";
 include ":housing:utility";
 include ":gumps:gumps";
@@ -145,10 +146,21 @@ function GetNonDefaultProperties(item)
 		props["weight_multiplier_mod"] := item.weight_multiplier_mod;
 	endif
 
-	// CProps — always per-instance
+	// CProps — per-instance, skip ignored CProps from stacking_ignore.cfg
+	var ignore_cfg := ReadConfigFile(":omegacache:stacking_ignore");
+	var ignore_elem := FindConfigElem(ignore_cfg, "IgnoreCProps");
+	var ignore_list := dictionary;
+	if(ignore_elem)
+		foreach propname in (ListConfigElemProps(ignore_elem))
+			ignore_list[propname] := 1;
+		endforeach
+	endif
+
 	var cprop_names := GetObjPropertyNames(item);
 	foreach propname in cprop_names
-		props["cprop_" + propname] := GetObjProperty(item, propname);
+		if(!ignore_list[propname])
+			props["cprop_" + propname] := GetObjProperty(item, propname);
+		endif
 	endforeach
 
 	return props;
@@ -893,13 +905,18 @@ function DepositFromContainer(who, df, container)
 endfunction
 
 // Deposit with targeting loop.
-function DoDepositTargeting(who, df)
+function DoDepositTargeting(who, access)
+	var df := access.df;
 	var tgt;
 	while(1)
 		SendSysMessage(who, "Target an item or container to deposit. Press ESC to stop.");
 		tgt := Target(who);
 		if(!tgt)
 			break;
+		endif
+
+		if(!ValidateDepositTarget(who, access, tgt))
+			continue;
 		endif
 
 		if(tgt.isa(POLCLASS_CONTAINER))
@@ -911,13 +928,96 @@ function DoDepositTargeting(who, df)
 endfunction
 
 // Deposit all eligible items from backpack.
-function DoDepositAll(who, df)
+function DoDepositAll(who, access)
+	if(!ValidateDepositTarget(who, access, who.backpack))
+		return 0;
+	endif
+	var df := access.df;
 	SendSysMessage(who, "Depositing all eligible items from your backpack...");
 	var total := DepositFromContainer(who, df, who.backpack);
 	if(total == 0)
 		SendSysMessage(who, "No eligible items found in your backpack.");
 	endif
 	return total;
+endfunction
+
+// Validates that a deposit target is allowed.
+// Checks: player is in the cache's house, target is accessible, movable,
+// and is in the player's backpack or in the same house.
+// Returns 1 if valid, 0 if rejected (sends message to player).
+function ValidateDepositTarget(who, access, target)
+	// If no access struct, skip validation (backwards compatibility)
+	if(!access)
+		return 1;
+	endif
+
+	// Player must be in the cache's house
+	if(!who.multi or who.multi.serial != access.house.serial)
+		SendSysMessage(who, "You must be inside the house to deposit items.");
+		return 0;
+	endif
+
+	// Target is the player's backpack — always valid if player is in house
+	if(target.serial == who.backpack.serial)
+		return 1;
+	endif
+
+	// Must be accessible
+	if(!Accessible(who, target))
+		SendSysMessage(who, "You can't reach that.");
+		return 0;
+	endif
+
+	// Must be movable (not locked down)
+	if(!target.movable)
+		SendSysMessage(who, "That item is locked down.");
+		return 0;
+	endif
+
+	// Walk up the container chain — item must trace back to
+	// player's backpack or be within the cache's house
+	var check := target.container;
+	while(check)
+		if(check.serial == who.backpack.serial)
+			return 1;
+		endif
+		check := check.container;
+	endwhile
+
+	// Not in backpack — check if item is within the house
+	var in_house := 0;
+	check := target;
+	while(check)
+		if(check.multi and check.multi.serial == access.house.serial)
+			in_house := 1;
+			break;
+		endif
+		check := check.container;
+	endwhile
+
+	if(!in_house)
+		SendSysMessage(who, "You can only deposit items from your backpack or from within this house.");
+		return 0;
+	endif
+
+	// Walk up the container chain to check if any parent is a secured container
+	check := target.container;
+	while(check)
+		if(check.usescript == USESCRIPTID_SECURE_CONTAINER)
+			// Inside a secured container — check access
+			var owner_serial := GetObjProperty(access.house, "ownerserial");
+			if(who.serial != owner_serial and !IsCowner(who, access.house))
+				if(!IsFriend(who, access.house, REMOVE_FROM_SECURE))
+					SendSysMessage(who, "You don't have permission to remove items from that container.");
+					return 0;
+				endif
+			endif
+			break;
+		endif
+		check := check.container;
+	endwhile
+
+	return 1;
 endfunction
 
 // ============================================================
@@ -1464,7 +1564,8 @@ endfunction
 
 // Runs the interactive gump loop for browsing/depositing/withdrawing.
 // Called by both the use-script (double-click) and the .cache text command.
-function RunOmegaCacheGump(who, df)
+function RunOmegaCacheGump(who, access)
+	var df := access.df;
 	// Block multiple gump instances
 	if(CInt(GetObjProperty(who, "#omegacache_open")) > ReadGameClock())
 		SendSysMessage(who, "You already have the Omega Cache open.");
@@ -1505,15 +1606,10 @@ function RunOmegaCacheGump(who, df)
 		endif
 
 		if(btn == BTN_DEPOSIT_ITEM)
-			if(FindAccessibleContainer(who, array{ADD_TO_SECURE}))
-				DoDepositTargeting(who, df);
-			else
-				SendSysMessage(who, "You don't have permission to deposit items.");
-			endif
+			DoDepositTargeting(who, access);
 
 		elseif(btn == BTN_DEPOSIT_ALL)
-			if(FindAccessibleContainer(who, array{ADD_TO_SECURE}))
-				DoDepositAll(who, df);
+			DoDepositAll(who, access);
 			else
 				SendSysMessage(who, "You don't have permission to deposit items.");
 			endif

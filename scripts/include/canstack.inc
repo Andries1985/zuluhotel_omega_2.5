@@ -42,6 +42,11 @@ function CanStack(item1, item2)
 		return 0;
 	endif
 
+	// In-use check (matches POL core's !inuse())
+	if(item1.inuse or item2.inuse)
+		return 0;
+	endif
+
 	// Script checks (stricter than POL core)
 	if(item1.usescript != item2.usescript)
 		return 0;
@@ -53,13 +58,46 @@ function CanStack(item1, item2)
 		return 0;
 	endif
 
-	// Compare CProps
+	// Compare CProps (skip globally ignored CProps from stacking.cfg)
+	// Note: POL core reads config/stacking.cfg IgnoreCprops for this.
+	// We read it here to match core behaviour from eScript.
+	var ignore_list := dictionary;
+	var stacking_cfg := ReadConfigFile("stacking");
+	if(stacking_cfg)
+		var stacking_elem := FindConfigElem(stacking_cfg, "Stacking");
+		if(stacking_elem)
+			foreach propname in (ListConfigElemProps(stacking_elem))
+				if(propname == "IgnoreCprops")
+					var ignored := SplitWords(GetConfigString(stacking_elem, "IgnoreCprops"));
+					foreach ig in ignored
+						ignore_list[ig] := 1;
+					endforeach
+				endif
+			endforeach
+		endif
+	endif
+
 	var props1 := GetObjPropertyNames(item1);
 	var props2 := GetObjPropertyNames(item2);
-	if(props1.size() != props2.size())
+
+	// Filter out ignored props before comparing
+	var filtered1 := array{};
+	foreach propname in props1
+		if(!ignore_list[propname])
+			filtered1.append(propname);
+		endif
+	endforeach
+	var filtered2 := array{};
+	foreach propname in props2
+		if(!ignore_list[propname])
+			filtered2.append(propname);
+		endif
+	endforeach
+
+	if(filtered1.size() != filtered2.size())
 		return 0;
 	endif
-	foreach propname in props1
+	foreach propname in filtered1
 		if(GetObjProperty(item1, propname) != GetObjProperty(item2, propname))
 			return 0;
 		endif

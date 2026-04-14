@@ -7,6 +7,7 @@ include "include/itemutil";
 include "include/objtype";
 include "setup";
 include "utility";
+include "include/constants/usescriptids";
 
 var bans, owns; // updated by CacheData
 
@@ -224,7 +225,7 @@ function HouseFunctionSecure( house, event, num )
 				box.movable := 0;
 				SetObjProperty( box, "boxserial" , CInt( newbox.serial ) );
 				SetObjProperty( box, "houseserial" , CInt( house.serial ) );
-				box.usescript := ":housing:securecont";
+				box.usescript := USESCRIPTID_SECURE_CONTAINER;
 				SetObjProperty( house, "numsecure" , CInt( GetObjProperty( house, "numsecure") - 1 ) );
 				SendSysmessage( event.source , "Secure On." );
 			else
