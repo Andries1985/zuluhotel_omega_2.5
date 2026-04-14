@@ -1610,9 +1610,6 @@ function RunOmegaCacheGump(who, access)
 
 		elseif(btn == BTN_DEPOSIT_ALL)
 			DoDepositAll(who, access);
-			else
-				SendSysMessage(who, "You don't have permission to deposit items.");
-			endif
 
 		elseif(btn == BTN_BACK)
 			view := "categories";

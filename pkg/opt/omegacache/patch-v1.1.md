@@ -1,0 +1,102 @@
+# Omega Cache - Patch v1.1
+
+## Summary
+
+This patch addresses bugs and improvements across three areas: Omega Cache post-RC security and data integrity fixes, a magic absorption self-cast bypass, and a treasure map Personal Power Hour fix.
+
+### Omega Cache
+
+The Omega Cache changes close a security vulnerability where players could deposit items from other houses' secure containers into their own cache, effectively stealing items. A centralised `ValidateDepositTarget()` function now gates all deposit operations, verifying the player is inside the cache's house, the target is accessible and movable, and secured container permissions are respected by walking up the full container chain and checking `REMOVE_FROM_SECURE` via the existing housing `IsFriend` function. Secured containers are identified by their `usescript == USESCRIPTID_SECURE_CONTAINER` — this constant was adopted across all housing scripts replacing string literals to prevent future regressions. The gump and command signatures were refactored to thread the `access` struct through all deposit paths, eliminating redundant `FindAccessibleContainer` calls. A new `stacking_ignore.cfg` configuration aligns Omega Cache item identity with POL's `stacking.cfg` ignored CProps — items differing only by `BackPackXYZ`, `IDed`, `#SecureRemove`, or `fromLoot` now merge into the same cache entry, while `BaseName` and `foodvalue` are deliberately preserved as gameplay-meaningful. The `CanStack()` function was updated to match POL core's full `can_add_to_self()` behaviour including `inuse` checks and `stacking.cfg` CProp filtering. Approximately 160 new item category mappings were added covering cooking items, AlchemyPlus potions, talisman gems, fishing shells, verse book scrolls, and candlemaking materials.
+
+### Magic Absorption self-cast bypass
+
+The second fix corrects an issue where players could not cast beneficial spells (such as Dispel) on themselves when equipped with Blackrock magic absorption items. The `IsProtected()` function in `spelldata.inc` was missing a self-cast bypass that the `Reflected()` function already had — magic absorption would consume the player's own spell before it could take effect. A simple `caster == cast_on` guard was added to match the existing reflection behaviour.
+
+### Treasure Map Personal Power Hour
+
+The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly apply to treasure map loot. The loot system in `starteqp.inc` determines Power Hour eligibility by reading a `KilledBySerial` property from the loot container and looking up the associated player's `#PPHH` flag. Treasure chests created by `digtreasure.src` never had this property set, so the personal bonus was silently ignored (the global Power Hour still worked). The fix passes the digger's character reference into `CreateTreasureChest()` and sets `KilledBySerial` on the chest before `MakeLoot()` populates it, allowing the existing loot functions to find the player and apply the bonus.
+
+## Notable Points
+
+### Omega Cache
+
+- **Security**: `ValidateDepositTarget` is the single gate for all deposit operations — gump, commands, and drag-and-drop all flow through it. Checks house membership, accessibility, movability, backpack/house containment, and secured container permissions.
+- **Signature changes**: `RunOmegaCacheGump(who, df)` → `RunOmegaCacheGump(who, access)`. `DoDepositTargeting` and `DoDepositAll` also take `access` instead of `df`.
+- **Stripped CProps**: `IDed`, `BackPackXYZ`, `#SecureRemove`, `fromLoot` are permanently removed on deposit and not restored on withdrawal. This is intentional and matches POL's stacking philosophy.
+- **Cross-package**: `USESCRIPTID_SECURE_CONTAINER` constant adopted in `sign.src`, `signcontrol.src`, `ssign.src` replacing string literals.
+
+### Magic Absorption
+
+- **Self-cast absorption bypass** (`scripts/include/spelldata.inc`): Added `if( caster == cast_on ) return 0; endif` at the top of `IsProtected()`. This mirrors the identical check already present in `Reflected()` at line 885. Affects all spells that call `IsProtected()`, not just Dispel — any beneficial self-cast that was previously blocked by absorption will now work correctly.
+
+### Treasure Map PPHH
+
+- **Treasure map PPHH fix** (`pkg/std/treasuremap/digtreasure.src`): `CreateTreasureChest()` now accepts a `digger` parameter. The digger's serial is written as `KilledBySerial` on the chest before loot generation. No changes were made to `starteqp.inc` — the existing PHH/PPHH checks in `CreateFromItemString()`, `CreateFromRandomGroup()`, and `CreateFromStackString()` now work as intended for treasure chests.
+- **Global Power Hour was unaffected**: The global `PHH` check (`GetGlobalProperty("PHH")`) in the loot functions always worked for treasure maps. Only the per-player `#PPHH` personal bonus was broken.
+- **Digger vs. killer**: The fix uses the player who dug the treasure (the `character` in the dig script) rather than the player who killed the last guardian. This is a pragmatic choice — guardian corpses are destroyed immediately on death (via `guardkill` flag in `death.src`), making it unreliable to retrieve `KilledBySerial` from them after the fact.
+
+---
+
+## Acceptance Testing Criteria
+
+### Omega Cache — Deposit Security
+
+| Area | What to Test |
+|------|-------------|
+| **Deposit from own house** | Deposit Item / Deposit All / drag-and-drop / `.cache deposit` from inside the cache's house. All should work. |
+| **Deposit from wrong house** | Walk to a different house with items in backpack. Attempt deposit. Should be rejected. |
+| **Deposit from secure without permission** | As a friend with VIEW_SECURE but without REMOVE_FROM_SECURE, target items inside a secured container. Should be rejected. |
+| **Deposit from loose bag** | Target items inside a non-secured bag on the house floor. Should be allowed. |
+| **Deposit from nested secure** | Target an item inside a bag inside a secured container. Should check secure permissions. |
+
+### Omega Cache — Stacking & Categories
+
+| Area | What to Test |
+|------|-------------|
+| **Stacking — ignored CProps** | Deposit two identical items differing only by `IDed` or `fromLoot`. Should merge into same cache entry. |
+| **Stacking — preserved CProps** | Deposit two items of same objtype with different `BaseName` or `foodvalue`. Should be stored separately. |
+| **Withdrawal — stripped CProps** | Withdraw an item originally deposited with `IDed`. The withdrawn item should NOT have `IDed`. |
+| **Categories** | Browse cache gump. Verify cooking items, potions, gems, fishing shells, verse scrolls are in correct categories, not in "Other". |
+| **CanStack consistency** | Merge two backpack stacks differing only by ignored CProps. Verify they stack. |
+
+### Magic Absorption Self-Cast
+
+| Area | What to Test |
+|------|-------------|
+| **Self-cast with absorption** | Equip a Blackrock absorption item. Cast a beneficial spell on yourself. Verify it takes effect and is not absorbed. |
+| **Absorption vs. hostile spells** | Have another player cast on you with absorption gear. Verify the spell is still absorbed. |
+| **Reflection self-cast unchanged** | Equip magic reflection gear. Cast a spell on yourself. Verify it still works (regression check — this was already working). |
+| **Reflection vs. hostile spells** | Have another player cast on you with reflection active. Verify the spell is still reflected. |
+| **Combined absorption + reflection** | Equip both absorption and reflection items. Verify self-cast works, hostile spells are reflected or absorbed as expected. |
+
+### Treasure Map Personal Power Hour
+
+| Area | What to Test |
+|------|-------------|
+| **PPHH active during dig** | Activate a Personal Power Hour (Hunting). Dig a treasure map, defeat guardians, and open the chest. Verify loot quantities/chances are doubled compared to a baseline dig without PPHH. |
+| **PPHH inactive** | Dig a treasure map without any Power Hour active. Verify loot is at normal levels (no bonus applied). |
+| **Global PHH** | Activate a server-wide PHH. Dig a treasure map. Verify bonus loot applies (regression check — this was already working). |
+| **PPHH expires mid-dig** | Start a treasure map dig with PPHH active. Let it expire before killing the last guardian. Verify loot reflects the state at chest creation time (PPHH no longer active = no bonus). |
+| **Multiple map levels** | Test with different map levels (1-7) under PPHH to verify the bonus scales correctly across loot groups 201-207. |
+
+---
+
+## Files Modified
+
+### Omega Cache
+- `pkg/opt/omegacache/omegacache.inc` — `ValidateDepositTarget()`, `RunOmegaCacheGump` signature, deposit function signatures, `GetNonDefaultProperties` reads `stacking_ignore.cfg`
+- `pkg/opt/omegacache/omegacache.src` — Updated `RunOmegaCacheGump` call
+- `pkg/opt/omegacache/stacking_ignore.cfg` — New file
+- `pkg/opt/omegacache/categories.cfg` — ~160 new item mappings
+- `scripts/textcmd/player/cache.src` — Updated deposit/gump calls
+- `scripts/include/canstack.inc` — `inuse` check, `stacking.cfg` filtering
+- `config/stacking.cfg` — Comment referencing `stacking_ignore.cfg`
+- `pkg/std/housing/sign.src` — `USESCRIPTID_SECURE_CONTAINER` constant
+- `pkg/std/housing/signcontrol.src` — `USESCRIPTID_SECURE_CONTAINER` constant
+- `pkg/opt/statichousing/ssign.src` — `USESCRIPTID_SECURE_CONTAINER` constant
+
+### Magic Absorption
+- `scripts/include/spelldata.inc` — Self-cast bypass in `IsProtected()`
+
+### Treasure Map PPHH
+- `pkg/std/treasuremap/digtreasure.src` — `CreateTreasureChest()` accepts digger, sets `KilledBySerial`
