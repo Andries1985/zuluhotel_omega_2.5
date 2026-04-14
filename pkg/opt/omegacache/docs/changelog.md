@@ -786,7 +786,7 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 ### Post-RC Security & Data Integrity (2026-04-15)
 
-59. **Deposit target validation** — New centralised `ValidateDepositTarget(who, access, tgt)` function gates all deposit operations. Checks: player is in cache's house, target is accessible and movable, target is in player's backpack or in the same house, secured container permissions checked via `IsFriend(who, house, REMOVE_FROM_SECURE)` by walking up the container chain for `usescript == USESCRIPTID_SECURE_CONTAINER`. Prevents cross-house theft via cache deposits.
+59. **Deposit target validation** — New centralised `ValidateDepositTarget(who, access, tgt)` function gates all deposit operations. Checks: player is in cache's house, target is accessible and within 2 tiles (via top-level world object for nested items), target is in player's backpack or in the same house, secured container permissions checked via `IsFriend(who, house, REMOVE_FROM_SECURE)` by walking from the target itself up the container chain for `usescript == USESCRIPTID_SECURE_CONTAINER`. The `movable` check was moved to `IsEligibleForStorage` (item-level) so locked-down non-secure containers can be targeted for depositing their contents. Prevents cross-house theft via cache deposits.
 
 60. **`RunOmegaCacheGump` signature refactored** — Changed from `(who, df)` to `(who, access)`. `df` extracted internally. `DoDepositTargeting` and `DoDepositAll` also changed to take `access` instead of `df`. Eliminates redundant `FindAccessibleContainer` calls on deposit actions.
 

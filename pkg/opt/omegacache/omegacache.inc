@@ -746,6 +746,9 @@ function IsEligibleForStorage(item)
 	if(!item.stackable)
 		return 0;
 	endif
+	if(!item.movable)
+		return 0;
+	endif
 
 	// Lazy-load blacklist
 	if(!_omegacache_blacklist)
@@ -949,8 +952,6 @@ function DoDepositAll(who, access)
 endfunction
 
 // Validates that a deposit target is allowed.
-// Checks: player is in the cache's house, target is accessible, movable,
-// and is in the player's backpack or in the same house.
 // Returns 1 if valid, 0 if rejected (sends message to player).
 function ValidateDepositTarget(who, access, tgt)
 	// If no access struct, skip validation (backwards compatibility)
@@ -984,12 +985,6 @@ function ValidateDepositTarget(who, access, tgt)
 		return 0;
 	endif
 
-	// Must be movable (not locked down)
-	if(!tgt.movable)
-		SendSysMessage(who, "That item is locked down.");
-		return 0;
-	endif
-
 	// Walk up the container chain — item must trace back to
 	// player's backpack or be within the cache's house
 	var check := tgt.container;
@@ -1016,8 +1011,8 @@ function ValidateDepositTarget(who, access, tgt)
 		return 0;
 	endif
 
-	// Walk up the container chain to check if any parent is a secured container
-	check := tgt.container;
+	// Check if the target itself or any parent is a secured container
+	check := tgt;
 	while(check)
 		if(check.usescript == USESCRIPTID_SECURE_CONTAINER)
 			// Inside a secured container — check access

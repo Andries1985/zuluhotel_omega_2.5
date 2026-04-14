@@ -6,7 +6,7 @@ This patch addresses bugs and improvements across three areas: Omega Cache post-
 
 ### Omega Cache
 
-The Omega Cache changes close a security vulnerability where players could deposit items from other houses' secure containers into their own cache, effectively stealing items. A centralised `ValidateDepositTarget()` function now gates all deposit operations, verifying the player is inside the cache's house, the target is accessible and movable, and secured container permissions are respected. The permission check walks up the full container chain looking for secured containers (identified by `usescript == USESCRIPTID_SECURE_CONTAINER`) and validates `REMOVE_FROM_SECURE` via the existing housing `IsFriend` function. This constant was adopted across all housing scripts replacing string literals to prevent future regressions.
+The Omega Cache changes close a security vulnerability where players could deposit items from other houses' secure containers into their own cache, effectively stealing items. A centralised `ValidateDepositTarget()` function now gates all deposit operations, verifying the player is inside the cache's house, the target is accessible and within 2 tiles, and secured container permissions are respected. The permission check walks from the target itself up the full container chain looking for secured containers (identified by `usescript == USESCRIPTID_SECURE_CONTAINER`) and validates `REMOVE_FROM_SECURE` via the existing housing `IsFriend` function. The `movable` check was moved to `IsEligibleForStorage` at the item level, so locked-down non-secure containers can be targeted for depositing their contents while non-movable items are still rejected. This constant was adopted across all housing scripts replacing string literals to prevent future regressions.
 
 The gump and command signatures were refactored to thread the `access` struct (from `FindAccessibleContainer`) through all deposit paths, eliminating redundant cache lookups. `RunOmegaCacheGump`, `DoDepositTargeting`, and `DoDepositAll` now take `access` instead of the raw DataFile handle, extracting `df` internally.
 
@@ -26,7 +26,7 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 
 ### Omega Cache
 
-- **Security**: `ValidateDepositTarget` is the single gate for all deposit operations — gump, commands, and drag-and-drop all flow through it. Checks house membership, accessibility, movability, backpack/house containment, and secured container permissions.
+- **Security**: `ValidateDepositTarget` is the single gate for all deposit operations — gump, commands, and drag-and-drop all flow through it. Checks house membership, accessibility, 2-tile range (via top-level world object for nested items), backpack/house containment, and secured container permissions. The `movable` check lives in `IsEligibleForStorage` (item-level) so locked-down non-secure containers can be targeted for depositing their contents.
 - **Signature changes**: `RunOmegaCacheGump(who, df)` → `RunOmegaCacheGump(who, access)`. `DoDepositTargeting` and `DoDepositAll` also take `access` instead of `df`.
 - **Stripped CProps**: `IDed`, `BackPackXYZ`, `#SecureRemove`, `fromLoot` are permanently removed on deposit and not restored on withdrawal. This is intentional and matches POL's stacking philosophy.
 - **Cross-package**: `USESCRIPTID_SECURE_CONTAINER` constant adopted in `sign.src`, `signcontrol.src`, `ssign.src` replacing string literals.
