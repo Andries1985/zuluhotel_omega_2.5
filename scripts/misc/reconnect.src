@@ -8,6 +8,8 @@ const BANNED_IPS := ":ipban:bannedips";
 
 program reconnect( who )
 
+	EraseObjProperty(who, "#SettingPH");
+
 	// Name Check
         var check := CheckName(who.name,who);
         if (check[1] == 0 || check != 1 || GetObjProperty(who, "Converted"))
