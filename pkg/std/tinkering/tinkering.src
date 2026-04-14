@@ -119,10 +119,10 @@ program MakeTinkerItems( character , tool )
 	else
 		case( use_on.objtype )
 
-			UOBJ_AXLE:		TryToMakeComplex( character , use_on , UOBJ_AXLE_AND_GEARS , UOBJ_GEARS , CARPENTER_SOUND );
+			UOBJ_AXLE:			TryToMakeComplex( character , use_on , UOBJ_AXLE_AND_GEARS , UOBJ_GEARS , CARPENTER_SOUND );
 						break;
 
-			UOBJ_GEARS:		TryToMakeComplex( character , use_on , UOBJ_AXLE_AND_GEARS , UOBJ_AXLE , CARPENTER_SOUND );
+			UOBJ_GEARS:			TryToMakeComplex( character , use_on , UOBJ_AXLE_AND_GEARS , UOBJ_AXLE , CARPENTER_SOUND );
 						break;
 
 			UOBJ_CLOCK_FRAME:	TryToMakeComplex( character , use_on , UOBJ_CLOCK , UOBJ_CLOCK_PARTS , SFX_ANVIL );
@@ -133,8 +133,8 @@ program MakeTinkerItems( character , tool )
 
 			UOBJ_SPRINGS:		TryToMakeComplex( character , use_on , UOBJ_CLOCK_PARTS , UOBJ_AXLE_AND_GEARS , SFX_ANVIL );
 						break;
-
-
+			0xffa3:				TryToMakeTalisman( character , use_on , 0x213e , 0xffa3 , SFX_HAMMER );
+						break;
 			UOBJ_KEG:
 			UOBJ_BARREL_TAP:
 			UOBJ_BARREL_LID:
@@ -185,7 +185,7 @@ program MakeTinkerItems( character , tool )
 						endcase
 
 
-			UOBJ_HINGE:		TryToMakeComplex( character , use_on , UOBJ_SEXTANT_PARTS , UOBJ_AXLE_AND_GEARS , SFX_ANVIL );
+			UOBJ_HINGE:			TryToMakeComplex( character , use_on , UOBJ_SEXTANT_PARTS , UOBJ_AXLE_AND_GEARS , SFX_ANVIL );
 						break;
 
 			UOBJ_SEXTANT_PARTS:	TryToMakeComplex( character , use_on , UOBJ_SEXTANT , 0 , SFX_ANVIL );
@@ -1172,6 +1172,180 @@ function TryToMakeAContainerLockable( character , key )
 
 endfunction
 
+function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_objtype , sfx );
+
+    var itemname;
+    var points;
+    var skill;
+    var ingot;
+    var ore_cfg := ReadConfigFile( ":blacksmithy:blacksmithy" );
+    var ingot_quality := 1;
+    var ingot_name := "";
+    var crafter_level := 1;
+    var idcharges;
+	var excep_ch := 10;
+
+    // Optional extra required part (kept for parity with TryToMakeComplex)
+    if( needed_objtype and use_on.objtype != needed_objtype )
+        var have_it := FindObjtypeInContainer( character.backpack , needed_objtype );
+        if( !have_it )
+            SendSysMessage( character , "You are missing a required part." );
+            return;
+        endif
+    endif
+
+    SendSysMessage( character , "Select an ingot to bind into the talisman." );
+    ingot := Target( character , TGTOPT_CHECK_LOS );
+    if( !ingot )
+        return;
+    endif
+
+    if( !Accessible( character , ingot ) or !ingot.movable )
+        SendSysMessage( character , "You can't reach that!" );
+        return;
+    endif
+
+    if( !ReserveItem( ingot ) )
+        return;
+    endif
+
+    if( !IsInContainer( character.backpack , ingot ) )
+        SendSysMessage( character , "That item has to be in your backpack." );
+        ReleaseItem( ingot );
+        return;
+    endif
+
+    if( !( ((ingot.objtype >= UOBJ_INGOTS_START ) && (ingot.objtype <= UOBJ_INGOTS_END )) || ((ingot.objtype >= UOBJ_INGOTS2_START) && (ingot.objtype <= UOBJ_INGOTS2_END)) ) )
+        SendSysMessage( character , "You must select an ingot." );
+        ReleaseItem( ingot );
+        return;
+    endif
+
+	if( ingot.amount < 125 )
+		SendSysMessage( character , "You need at least 125 ingots to make a talisman." );
+        ReleaseItem( ingot );
+		return;
+	endif
+
+    var element := FindConfigElem( tinker_cfg , to_be_done_objtype );
+    if( element )
+        itemname := element.Name;
+        skill    := element.Skill;
+    else
+        ReleaseItem( ingot );
+        return;
+    endif
+
+    if( ore_cfg[ingot.objtype] )
+        if( ore_cfg[ingot.objtype].Quality )
+            ingot_quality := ore_cfg[ingot.objtype].Quality;
+        endif
+        if( ore_cfg[ingot.objtype].Name )
+            ingot_name := ore_cfg[ingot.objtype].Name;
+        endif
+    endif
+
+    // Default quality fallback
+    if( !ingot_quality )
+        ingot_quality := 1;
+    endif
+
+    points := Cint( skill * POINTS_MULTIPLIER );
+
+    _Play_Sound( character , sfx );
+    sendDiff( character , skill );
+
+    if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
+
+        var theitem := CreateItemInBackpack( character , to_be_done_objtype );
+        if( !theitem )
+            SendSysMessage( character , "Error in creation process please report this bug on Discord." );
+            ReleaseItem( ingot );
+            return;
+        endif
+
+		theitem.movable := 1;
+
+		if( theitem.quality )
+			theitem.quality := ingot_quality;
+		endif
+
+		theitem.color := ingot.color;
+		itemname := ingot_name + " " + itemname;
+
+		// exceptional logic (like TryToMakeItem / TryToMakeComplex)
+		if( GetObjProperty( character , CLASSEID_CRAFTER ) )
+			excep_ch := Cint( excep_ch * ClasseBonus( character , CLASSEID_CRAFTER ) );
+		else
+			skill := skill + 20;
+		endif
+
+		if( skill < 90 )
+			skill := 90;
+		endif
+
+		if( element.Exceptional and (Random(100) < excep_ch) and CheckSkill( character , SKILLID_TINKERING , skill , 0 ) )
+			if( theitem.quality )
+				var armslore := GetEffectiveSkill( character , SKILLID_ARMSLORE );
+				var multiplier := 5 + Cint( armslore / 10 );
+
+				if( GetObjProperty( character , CLASSEID_CRAFTER ) )
+					multiplier := Cint( multiplier * ClasseBonus( character , CLASSEID_CRAFTER ) );
+				endif
+
+				multiplier := 100 + multiplier;
+				var newquality := Cint(theitem.quality * multiplier);
+				newquality := Cdbl(newquality);
+				newquality := newquality / 100;
+				theitem.quality := newquality;
+			endif
+
+			itemname := "Exceptional " + itemname;
+			if(GetObjProperty(character, "ToggleBuildMark"))
+				if( YesNo( character , "Add Builder Mark?" ) )
+					SetObjProperty( theitem , "CraftedBy" , character.name );
+				endif
+			else
+				SetObjProperty( theitem , "CraftedBy" , character.name );
+			endif
+
+			SetObjProperty( theitem , "IsExceptional" , 1 );
+			SendSysMessage( character , "You make an exceptional talisman and put it in your pack." );
+		else
+			SendSysMessage( character , "You create the talisman and place it in your pack." );
+		endif
+
+		// Crafter level -> charges (max level 6 => 6000)
+		crafter_level := Cint( GetObjProperty( character , CLASSEID_CRAFTER ) );
+		if( crafter_level < 1 )
+			var bonus := CInt(ClasseBonus( character , CLASSEID_CRAFTER ));
+			if( bonus )
+				crafter_level := Cint( (bonus - 1) * 10 );
+			endif
+		endif
+		if( crafter_level < 1 )
+			crafter_level := 1;
+		elseif( crafter_level > 6 )
+			crafter_level := 6;
+		endif
+
+		idcharges := crafter_level * 1000;
+		SetObjProperty( theitem , "idcharges" , idcharges );
+		SetObjProperty( theitem , "maxidcharges" , idcharges );
+
+		SetObjProperty( theitem , "BaseName" , itemname );
+		SetName( theitem , itemname );
+
+        SendSysMessage( character , "You create the talisman and place it in your pack." );
+    else
+        SendSysMessage( character , "You fail to create the talisman and destroy the material." );
+    endif
+
+    DestroyItem( use_on );
+    SubtractAmount( ingot , 125 );
+	ReleaseItem( ingot );
+
+endfunction
 
 // ============================================================
 // Cache-specific crafting functions

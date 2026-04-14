@@ -70,6 +70,45 @@ program use_hammer( character, hammer )
 		return;
 	endif
 
+	if( !ReserveItem(use_on) )
+		return;
+	endif
+
+	if( smith_cfg[use_on.graphic] && use_on.hp && use_on.quality)
+		var near := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+ 		foreach thing in near
+	  		if ((thing.objtype == UOBJ_ANVIL1) or (thing.objtype == UOBJ_ANVIL2))
+	   			repair_item( character, use_on, SKILLID_BLACKSMITHY );
+	   			return;
+	  		endif
+ 		endforeach
+		SendSysmessage( character , "You must be near an anvil to repair items!" );
+		return;
+
+	endif
+	
+	if( !IsInContainer( character.backpack , use_on ) )
+		SendSysmessage( character, "That item has to be in your backpack." );
+		return;
+	endif
+
+ 	if (IsBone(use_on))
+		SendSysMessage( character, "What ingots would you like to use?" );
+		var bone := use_on;
+		use_on := Target( character, TGTOPT_CHECK_LOS );
+		
+		if( !use_on )
+			return;
+		endif
+
+		if( !Accessible( character , use_on ) )
+			SendSysMessage( character , "You can't reach that." );
+			return;
+		endif
+
+		if( !ReserveItem(use_on) )
+			return;
+		endif
 	// Repair path — requires ReserveItem
 	if(use_on.objtype != OMEGACACHE_OBJTYPE)
 		if( !ReserveItem(use_on) )
@@ -142,11 +181,25 @@ program use_hammer( character, hammer )
 		return;
 	endif
 
-	if( !IsInContainer( character.backpack , use_on ) )
-		SendSysmessage( character, "That item has to be in your backpack." );
-		return;
-	endif
+		if( !IsInContainer( character.backpack , use_on ) )
+			SendSysmessage( character, "That item has to be in your backpack." );
+			return;
+		endif
 
+		if ( !IsIngot(use_on) )
+			SendSysMessage( character, "You must select ingots!" );
+			return;
+		endif
+			var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+		foreach item in Near_Items
+			if ((item.objtype == UOBJ_ANVIL1) or (item.objtype == UOBJ_ANVIL2))
+				MakeBoneItems( character , use_on , bone );
+				return;
+			endif
+		endforeach
+
+		SendSysmessage( character , "You must be near an anvil to smith items!" );
+	endif
 	if(IsBone(use_on))
 		SendSysMessage(character, "What ingots would you like to use?");
 		var bone := use_on;
@@ -312,6 +365,7 @@ function MakeBlacksmithItems( character, ingotRequest )
 			ConsumeResource( character , ingotRequest , material );
 			var product := CreateItemInBackpack( character , product_desc );
 			product.hp := product.maxhp;
+			IncRevision( product );
 			if(GetObjProperty(product, "IsExceptional"))
 				if(product.hitscript)
 					//was *12.. changed to *8
@@ -461,6 +515,7 @@ function MakeBoneItems( character, ingotRequest, boneRequest )
 			ConsumeResource( character , boneRequest , material );
 			var product := CreateItemInBackpack( character , product_desc );
 			product.hp := product.maxhp;
+			IncRevision( product );
 		else
 			var bs 	:= GetEffectiveSkill( character , SKILLID_BLACKSMITHY );
 			var destroy	:= 75 - Cint( bs / 2 );
@@ -519,6 +574,7 @@ function MakeAndProcessMenu( who , ingotRequest , orediff )
 			AddMenuItem( menu , 0x13C4 , "Chainmail" );
 			AddMenuItem( menu , 0x13EC , "Ringmail" );
 			AddMenuItem( menu , 0x1412 , "Helmets" );
+			AddMenuItem( menu , 0x2641 , "Dragon Armor" );
 			break;
 
 		2:	break;

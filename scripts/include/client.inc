@@ -17,7 +17,7 @@
 
 
 // DEBUG MODE
-const DEBUG_MODE	:= 1; // Set to 1 to enable debug output, 0 to disable
+const DEBUG_MODE	:= 0; // Set to 1 to enable debug output, 0 to disable
 
 
 ////
@@ -1642,7 +1642,7 @@ const LAYER_SHIRT       :=  0x05;   // Shirt.
 const LAYER_HELM        :=  0x06;   // Helm or Hat.
 const LAYER_GLOVES      :=  0x07;   // Gloves.
 const LAYER_RING        :=  0x08;   // Ring.
-const LAYER_UNUSED9     :=  0x09;   // Unused.
+const LAYER_TALISMAN    :=  0x09;   // Talisman.
 const LAYER_NECK        :=  0x0a;   // Neck.
 const LAYER_HAIR        :=  0x0b;   // Hair
 const LAYER_WAIST       :=  0x0c;   // Waist (half apron).

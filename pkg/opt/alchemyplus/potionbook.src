@@ -10,7 +10,7 @@ var reagent_name_dict := define_reagent_name_dictionary ();
 Const BUTTON_NEXT_PAGE	:=	"button 294 5 2206 2206 0 2";
 Const BUTTON_LAST_PAGE	:=	"button 23 6 2205 2205 0 2";
 
-program display_potionbook (character, book)
+program display_potionbook (character, unused book)
 
 	//call a function that searches through alchemyplus.cfg and uses that information to create an array of
 	//all the potions that should be shown in the potionbook
@@ -201,33 +201,37 @@ endprogram
 
 function create_array_of_potions ()
 	//starting by setting up data
-	//load in the cooking.cfg file that contains all the potions
+	//load in the alchemyplus.cfg file that contains all the potions
 	var potion_config_file := ReadConfigFile ("alchemyplus");
 
-	//find out how many potions are contained in the cooking.cfg file	
+	//find out how many potions are contained in the alchemyplus.cfg file	
 	var number_of_potions := GetConfigMaxIntKey (potion_config_file);
 
 	//this is an array that contains all the potions that should be displayed in the cookbook.  This
-	//isn't neccessarily all the potions in the cooking.cfg file
+	//isn't neccessarily all the potions in the alchemyplus.cfg file
 	var array_of_potions := {};
 
 	//this is whatever potion is currently being considered
 	var current_potion;
 
-	//just an incremental counter used to go through all the potions in the cooking.cfg file
+	//just an incremental counter used to go through all the potions in the alchemyplus.cfg file
 	var potion_counter := 1;
 
 	//another counter that keeps track of each potion added to array_of_potions
 	var array_counter := 1;
 
-	//now we go through all the potions defined in the cookbook to find those that are supposed to be displayed
+	//now we go through all the potions defined in the alchemyplus.cfg file to find those that are supposed to be displayed
 	for (potion_counter := 1; potion_counter <= number_of_potions; potion_counter := potion_counter + 1)
 		//pick the current potion out of the config file
 		current_potion := FindConfigElem (potion_config_file, potion_counter);
 
 		//add it to the array of potions
-		array_of_potions[array_counter] := current_potion;
-		array_counter := array_counter + 1;
+		if (potion_counter == 40)
+			array_counter := array_counter + 1;
+		else
+			array_of_potions[array_counter] := current_potion;
+			array_counter := array_counter + 1;
+		endif
 	endfor
 
 	return array_of_potions;

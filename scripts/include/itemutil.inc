@@ -191,15 +191,28 @@ function FitRequirements( who , item )
 	
 endfunction
 
+// Plate mail armor graphics:
+// 0x1408=CloseHelm, 0x1409=CloseHelm2, 0x140A=Helmet, 0x140B=Helmet2, 0x140C=Bascinet,
+// 0x140D=Bascinet2, 0x140E=NoseHelm, 0x140F=NoseHelm2, 0x1410=PlatemailArms, 0x1411=PlatemailLegs,
+// 0x1412=PlateHelm, 0x1413=PlatemailGorget, 0x1414=PlatemailGloves, 0x1415=PlatemailBreastplate,
+// 0x1416=PlatemailBreastplate2, 0x1417=PlatemailArms2, 0x1418=PlatemailGloves2,
+// 0x1419=PlateHelm2, 0x141A=PlatemailLegs2, 0x1C04=FemalePlate, 0x1C05=unused,
+// 0x2641=dragonbreastplate, 0x2643=dragongloves, 0x2645=dragonhelm,
+// 0x2647=dragonlegs, 0x2657=dragonsleeves
 function GetPlatemailArmorGraphics()
 
 	return { 0x1408, 0x1409, 0x140a, 0x140b, 0x140c,
 		 0x140d, 0x140e, 0x140f, 0x1410, 0x1411,
 		 0x1412, 0x1413, 0x1414, 0x1415, 0x1416,
-		 0x1417, 0x1418, 0x1419, 0x141a, 0x1c04, 0x1c05 };
+		 0x1417, 0x1418, 0x1419, 0x141a, 0x1c04, 0x1c05,
+		 0x2641, 0x2643, 0x2645, 0x2647, 0x2657 };
 
 endfunction
 
+// Chainmail armor graphics:
+// 0x13BB=ChainmailCoif, 0x13BC=unused, 0x13BD=unused, 0x13BE=ChainmailLeggings,
+// 0x13BF=ChainmailTunic, 0x13C0=ChainmailCoif2, 0x13C1=unused, 0x13C2=unused,
+// 0x13C3=ChainmailLeggings2, 0x13C4=ChainmailTunic2
 function GetChainmailArmorGraphics()
 
 	return { 0x13bb, 0x13bc, 0x13bd, 0x13be, 0x13bf,
@@ -207,6 +220,11 @@ function GetChainmailArmorGraphics()
 
 endfunction
 
+// Ringmail armor graphics:
+// 0x13E5=unused, 0x13E6=unused, 0x13E7=unused, 0x13E8=unused, 0x13E9=unused,
+// 0x13EA=unused, 0x13EB=unused, 0x13EC=RingmailTunic, 0x13ED=RingmailTunic2,
+// 0x13EE=RingmailSleeves, 0x13EF=RingmailSleeves2, 0x13F0=RingmailLeggings,
+// 0x13F1=RingmailLeggings2, 0x13F2=RingmailGloves
 function GetRingmailArmorGraphics()
 
 	return { 0x13e5, 0x13e6, 0x13e7, 0x13e8, 0x13e9,
@@ -215,6 +233,9 @@ function GetRingmailArmorGraphics()
 
 endfunction
 
+// Bone armor graphics:
+// 0x144E=Bonearms, 0x144F=Bonetunic, 0x1450=Bonegloves, 0x1451=Bonehelm, 0x1452=Bonelegs,
+// 0x1453=unused, 0x1454=unused, 0x1455=unused, 0x1456=unused, 0x1457=unused
 function GetBoneArmorGraphics()
 
 	return { 0x144e, 0x144f, 0x1450, 0x1451, 0x1452,
@@ -222,6 +243,11 @@ function GetBoneArmorGraphics()
 
 endfunction
 
+// Studded leather armor graphics:
+// 0x13D4=StuddedSleeves, 0x13D5=StuddedGloves, 0x13D6=StuddedGorget, 0x13D7=unused,
+// 0x13D8=unused, 0x13D9=unused, 0x13DA=StuddedLeggings, 0x13DB=StuddedTunic,
+// 0x13DC=unused, 0x13DD=unused, 0x13DE=unused, 0x13DF=unused, 0x13E0=unused,
+// 0x13E1=unused, 0x13E2=unused
 function GetStuddedLeatherArmorGraphics()
 
 	return { 0x13d4, 0x13d5, 0x13d6, 0x13d7, 0x13d8,
@@ -230,6 +256,15 @@ function GetStuddedLeatherArmorGraphics()
 
 endfunction
 
+// Leather armor graphics, including mask graphics:
+// 0x13C5=LeatherSleeves, 0x13C6=LeatherGloves, 0x13C7=LeatherGorget, 0x13C8=unused,
+// 0x13C9=unused, 0x13CA=unused, 0x13CB=LeatherLeggings, 0x13CC=LeatherTunic,
+// 0x13CD=unused, 0x13CE=unused, 0x13CF=Kasa, 0x13D0=unused, 0x13D1=unused,
+// 0x13D2=unused, 0x13D3=LeatherTunic2, 0x1DB9=LeatherCap, 0x1DBA=unused,
+// 0x1C06=FemaleLeather, 0x1C07=unused, 0x1C0A=LeatherBustier, 0x1C0B=unused,
+// 0x1C00=LeatherShorts, 0x1C01=unused, 0x1C08=LeatherSkirt, 0x1C09=unused,
+// 0x141B=orcmask, 0x141C=orcmask2, 0x1545=bearmask, 0x1546=bearmask2, 0x1547=deermask,
+// 0x1548=deermask2, 0x1549=tribalmask, 0x154A=tribalmask2, 0x154B=voodoomask, 0x154C=voodoomask2
 function GetLeatherArmorGraphics()
 
 	return { 0x13c5, 0x13c6, 0x13c7, 0x13c8, 0x13c9,
@@ -240,20 +275,28 @@ function GetLeatherArmorGraphics()
 		 0x141b, 0x141c, 0x1545, 0x1546, 0x1547,
 		 0x1548, 0x1549, 0x154a, 0x154b, 0x154c };
 
-	// 0x141b to 0x154c is masks
 endfunction
 
+// All shield graphics:
+// 0x1B72=BronzeShield, 0x1B73=Buckler, 0x1B74=KiteShield, 0x1B75=KiteShield2,
+// 0x1B76=HeaterShield, 0x1B77=HeaterShield2, 0x1B78=KiteShieldB1, 0x1B79=KiteShieldB2,
+// 0x1B7A=WoodenShield, 0x1B7B=MetalShield, 0x1BC3=Chaosshield, 0x1BC4=Ordershield,
+// 0x982A=NavarBloodyBarrier
 function GetShieldGraphics()
-
+	
 	return { 0x1b72, 0x1b73, 0x1b74, 0x1b75, 0x1b76,
-		 0x1b77, 0x1b78, 0x1b79, 0x1b7a, 0x1b7b, 0x982a };
+		 0x1b77, 0x1b78, 0x1b79, 0x1b7a, 0x1b7b, 0x1bc3, 0x1bc4, 0x982a };
 
 endfunction
 
+// Shield graphics allowed for thief use:
+// 0x1B72=BronzeShield, 0x1B74=KiteShield, 0x1B75=KiteShield2, 0x1B76=HeaterShield,
+// 0x1B77=HeaterShield2, 0x1B78=KiteShieldB1, 0x1B79=KiteShieldB2, 0x1B7A=WoodenShield,
+// 0x1B7B=MetalShield, 0x1BC3=Chaosshield, 0x1BC4=Ordershield, 0x982A=NavarBloodyBarrier
 function GetShieldGraphicsThief()
 
 	return { 0x1b72, 0x1b74, 0x1b75, 0x1b76,
-		 0x1b77, 0x1b78, 0x1b79, 0x1b7a, 0x1b7b, 0x982a };
+		 0x1b77, 0x1b78, 0x1b79, 0x1b7a, 0x1b7b, 0x1bc3, 0x1bc4, 0x982a };
 
 endfunction
 
@@ -261,21 +304,22 @@ function GetGraphicsBladesinger()
 
 	return { 0x1f02, 0x9B10 };
 	
-	// Cloak of Lettenhove, Grarks Shepherds Crook
+	// 0x1F02 = CloakofLettenhove
+	// 0x9B10 = GrarkShep
 endfunction
 
 function GetGraphicsCrafter()
 
 	return { 0x757a };
 	
-	// Signus Hammer
+	// 0x757A = ArtisansHammerofSignus
 endfunction
 
 function GetGraphicsPaladin()
 
 	return { 0x75b2 };
 	
-	// Nagash Staff
+	// 0x75B2 = nagashstaffofsorcery
 endfunction
 
 function GetPossiblePropertyNames()
@@ -593,13 +637,34 @@ endfunction
 
 function IsLog( item )
 
-	if(( item.objtype >= UOBJ_LOGS_START  and item.objtype <= UOBJ_LOGS_END ) or ( item.objtype == UOBJ_LOGS_GODDESS ) or ( item.objtype  == UOBJ_LOGS ))
+	if(( item.objtype >= UOBJ_LOGS_START and item.objtype <= UOBJ_LOGS_END ) or ( item.objtype == UOBJ_LOGS_GODDESS ) or ( item.objtype  == UOBJ_LOGS ))
 		return 1;
 	else
 		return 0;
 	endif
 
 endfunction
+
+function IsGem( item )
+
+	if( item.objtype >= UOBJ_GEM1_START and item.objtype <= UOBJ_GEM1_END )
+		return 1;
+	else
+		return 0;
+	endif
+
+endfunction
+
+function IsGem2( item )
+
+	if( item.objtype >= UOBJ_GEM2_START and item.objtype <= UOBJ_GEM2_END )
+		return 1;
+	else
+		return 0;
+	endif
+
+endfunction
+
 
 function IsMinable( theobj , othertype )
 

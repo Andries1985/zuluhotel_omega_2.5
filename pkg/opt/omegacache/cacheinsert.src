@@ -9,7 +9,8 @@ use os;
 
 include "include/client";
 include "include/omegacache_utils";
-include ":omegacache:omegacache";
+//include ":omegacache:omegacache";
+include "../pkg/opt/omegacache/omegacache";
 
 program cache_on_insert(who, container, movetype, inserttype, adding_item, existing_stack, amt_to_add)
 

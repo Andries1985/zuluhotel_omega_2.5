@@ -83,7 +83,7 @@ function DestroyFive(me, byref allmyflax);
 
 endfunction
 
-function CountFlax(me, byref allmyflax)
+function CountFlax(unused me, byref allmyflax)
 
 	var numflax := 0;
 	foreach item in (allmyflax)

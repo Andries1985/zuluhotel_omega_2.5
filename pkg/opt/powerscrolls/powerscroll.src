@@ -65,8 +65,8 @@ program powerscroll(who, scroll)
 		endif
 		SetObjProperty(who, "pScrollMatrix", matrix);
 		
-		PlayObjectCenteredEffect(who, 0x33EA, 0x1, 10);
-		PlayObjectCenteredEffect(who, 0x373A, 0x1, 10);
+		PlayObjectCenteredEffect(who, 0x33EA, 0x1, 12);
+		PlayObjectCenteredEffect(who, 0x373A, 0x1, 16);
 		PlaySoundEffect(who, 0x5C1);
 	else
 		SendSysMessage(who, "This tome has no power.");

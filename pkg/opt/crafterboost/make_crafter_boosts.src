@@ -35,7 +35,7 @@ program make_crafter_boosts(character, smithyretort)
 		return 0;
 	endif
 	
-	if (IsIngot(use_on) || IsLog(use_on) || IsHide(use_on.objtype) || (use_on.objtype == 0x0F7F))
+	if (IsIngot(use_on) || IsLog(use_on) || IsHide(use_on.objtype) || (use_on.objtype == 0x0F7F) || IsGem2(use_on) )
 		MakeUpgrade(character, use_on, smithyretort);
 	else
 		SendSysMessage( character , "You can't make anything with that." );
@@ -91,6 +91,13 @@ function MakeUpgrade(character, start_material, smithyretort)
 		mat1_type := 0x0F80;
 		mat1_name := "Daemon Bone";
 		product_type := 0x8B03; // Varnish
+	elseif(IsGem2(start_material))
+		material_cfg := ReadConfigFile( ":tinkering:tinker" );
+		//material_cfg := ReadConfigFile( ":talisman:config/itemdesc" );
+		skilltype := SKILLID_TINKERING;
+		mat1_type := 0x0F82;
+		mat1_name := "Dragon's Blood";
+		product_type := 0x8B05; // Recharge Powder
 	else
 		material_cfg := ReadConfigFile( ":tailoring:tailoring" );
 		skilltype := SKILLID_TAILORING;
@@ -108,10 +115,9 @@ function MakeUpgrade(character, start_material, smithyretort)
 		return 0;
 	endif
 
-
 	var item_elem := FindConfigElem(item_cfg, product_type);
 	var mat1_qty := item_elem.Material1; // Pagan
-	var mat2_qty := item_elem.Material2; // Ingot/Hide/Log
+	var mat2_qty := item_elem.Material2; // Ingot/Hide/Log/Gem
 
 	//Require half resources during Crafting PH
 	if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
@@ -125,8 +131,9 @@ function MakeUpgrade(character, start_material, smithyretort)
 	var material_quality := material_cfg[mat2_type].Quality;
 	var char_bkpk := character.backpack;
 	var mat2_color := material2.color;
+	var empty_flask;
 	AutoLoop_init(character);
-	while(AutoLoop_more() && FindSubstance(char_bkpk, mat2_type, mat2_qty) && FindSubstance(char_bkpk, mat1_type, mat1_qty) && !character.dead)
+	while(AutoLoop_more() && FindSubstance(char_bkpk, mat2_type, mat2_qty) && FindSubstance(char_bkpk, mat1_type, mat1_qty) && ((product_type != 0x8B05) || FindSubstance(char_bkpk, 0x1832, 1)) && !character.dead)
 		sendDiff( character , final_diff );
 
 		PlaySoundEffect(character, SFX_1C9);
@@ -142,6 +149,21 @@ function MakeUpgrade(character, start_material, smithyretort)
 		endif
 
 		if(CheckSkill(character, skilltype, final_diff, points))
+			if( product_type == 0x8B05 )
+				empty_flask := FindObjtypeInContainer(char_bkpk, 0x1832);
+				if( !empty_flask )
+					SendSysMessage( character , "You need at least 1 empty flask." );
+					return 0;
+				endif
+				if( !Accessible( character , empty_flask ) or !empty_flask.movable )
+					SendSysMessage( character , "You can't reach the empty flask." );
+					return 0;
+				endif
+				if( !ReserveItem( empty_flask ) )
+					return 0;
+				endif
+			endif
+
 			if (!ConsumeSubstance( char_bkpk, mat1_type, mat1_qty ))
 				SendSysMessage( character , "Something went wrong when consuming the"+mat1_name+".");
 				return 0;
@@ -150,15 +172,25 @@ function MakeUpgrade(character, start_material, smithyretort)
 				SendSysMessage( character , "Something went wrong when consuming the"+mat2_name+".");
 				return 0;
 			endif
+			if( product_type == 0x8B05 )
+				SubtractAmount( empty_flask, 1 );
+			endif
 			var newitem := CreateItemInBackpack(character, product_type);
 			if (!newitem)
 				SendSysMessage( character , "Couldn't place the product in your backpack." );
 				return 0;
 			endif
 			
-			newitem.Quality := material_quality;
-			newitem.Name := mat2_name +" "+ newitem.Name;
-			newitem.Color := mat2_color;
+			if( product_type == 0x8B05 )
+				// Recharge Flask: base 500 charges, no gem name/color
+				SetObjProperty(newitem, "charges", 500);
+				newitem.Name := mat2_name +" "+ newitem.Name;
+				newitem.Color := mat2_color;
+			else
+				newitem.Quality := material_quality;
+				newitem.Name := mat2_name +" "+ newitem.Name;
+				newitem.Color := mat2_color;
+			endif
 
 			var excep_chance;
 			var excep_diff;
@@ -172,36 +204,47 @@ function MakeUpgrade(character, start_material, smithyretort)
 
 			excep_diff := Max(excep_diff, 90);
 			//Check for Exceptional
-			if ((RandomInt(100) < excep_chance) && (CheckSkill(character, skilltype, excep_diff,0) ))
-				var multiplier := 5 + Cint( GetEffectiveSkill( character , SKILLID_ARMSLORE ) / 10 );
+			if ((RandomInt(100) < excep_chance) && (CheckSkill(character, skilltype, excep_diff, 0) ))
+				if( product_type == 0x8B05 )
+					// Exceptional Flask: multiply charges by class bonus, add Exceptional to name
+					var excep_charges := 500;
+					if( GetObjProperty(character, CLASSEID_CRAFTER) )
+						excep_charges := CInt(500 * ClasseBonus(character, CLASSEID_CRAFTER));
+					endif
+					SetObjProperty(newitem, "charges", excep_charges);
+					newitem.Name := "Exceptional " + newitem.Name;
+					SetObjProperty(newitem, "IsExceptional", 1);
+				else
+					var multiplier := 5 + Cint( GetEffectiveSkill( character , SKILLID_ARMSLORE ) / 10 );
 
-				if( GetObjProperty( character , CLASSEID_CRAFTER ) )
-					multiplier := Cint( multiplier * ClasseBonus( character , CLASSEID_CRAFTER ) );
-				endif
-								
-				multiplier := (100.0 + multiplier);
-				newitem.Quality := Trunc((newitem.Quality * multiplier) / 100.0, 2);
+					if( GetObjProperty( character , CLASSEID_CRAFTER ) )
+						multiplier := Cint( multiplier * ClasseBonus( character , CLASSEID_CRAFTER ) );
+					endif
+							
+					multiplier := (100.0 + multiplier);
+					newitem.Quality := Trunc((newitem.Quality * multiplier) / 100.0, 2);
 
-				newitem.Name := "Exceptional " + newitem.Name;
+					newitem.Name := "Exceptional " + newitem.Name;
 
-				if(GetObjProperty(character, "ToggleBuildMark"))
-					if( YesNo( character , "Add Builder Mark?" ))
+					if(GetObjProperty(character, "ToggleBuildMark"))
+						if( YesNo( character , "Add Builder Mark?" ))
+							SetObjProperty( newitem , "CraftedBy" , character.name );
+						endif
+					else
 						SetObjProperty( newitem , "CraftedBy" , character.name );
 					endif
-				else
-					SetObjProperty( newitem , "CraftedBy" , character.name );
-				endif
 
+					SetObjProperty( newitem , "IsExceptional" , 1 );
+
+					if( excep_diff >= 130 )
+						SendSysmessage( character , "This masterpiece will make you famous around the world." );
+						AwardFame( character , FAME_BONUS );
+					elseif( GetObjProperty( character , CLASSEID_CRAFTER ) and excep_diff >= 110 )
+						SendSysmessage( character , "This masterpiece will make you famous around the world." );
+						AwardFame( character , FAME_BONUS );
+					endif
+				endif
 				SendSysmessage( character , "You make an exceptional item and put it in your pack." );
-				SetObjProperty( newitem , "IsExceptional" , 1 );
-
-				if( excep_diff >= 130 )
-					SendSysmessage( character , "This masterpiece will make you famous around the world." );
-					AwardFame( character , FAME_BONUS );
-				elseif( GetObjProperty( character , CLASSEID_CRAFTER ) and excep_diff >= 110 )
-					SendSysmessage( character , "This masterpiece will make you famous around the world." );
-					AwardFame( character , FAME_BONUS );
-				endif
 			endif
 			SendSysmessage( character , "You create the item and place it in your pack." );
 			IncRevision(newitem);
@@ -228,6 +271,9 @@ function MakeUpgrade(character, start_material, smithyretort)
 		if (!FindSubstance(char_bkpk, mat1_type, mat1_qty))
 			SendSysMessage( character , "You need at least "+mat1_qty+" "+mat1_name+"." );
 		endif
+	endif
+	if( product_type == 0x8B05 and !FindSubstance(char_bkpk, 0x1832, 1) )
+		SendSysMessage( character , "You need at least 1 empty flask." );
 	endif
 endfunction
 

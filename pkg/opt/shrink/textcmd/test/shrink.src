@@ -1,7 +1,6 @@
 use uo;
 use os;
 use npc;
-use cfgfile;
 
 include ":staff:include/staff";
 
@@ -33,12 +32,33 @@ endprogram
 
 function SetGraphic(dolly, mobile)
 
-var trackingcfg := ReadConfigFile(":tracking:tracking");
-var elem := FindConfigElem(trackingcfg, mobile.graphic);
-if (elem)
-	dolly.graphic := elem.tile;
+var mobile_type := GetObjProperty(mobile, "Type");
+if (mobile_type)
+	case(Lower(mobile_type))
+		"animal":			dolly.graphic := 0x20F6;
+		"animated":			dolly.graphic := 0x2236;
+		"beholder":			dolly.graphic := 0x20F4;
+		"champion":			dolly.graphic := 0x25F8;
+		"daemon":			dolly.graphic := 0x20D3;
+		"dragonkin":		dolly.graphic := 0x20D6;
+		"elemental":		dolly.graphic := 0x210B;
+		"ethereal":			dolly.graphic := 0x25DC;
+		"gargoyle":			dolly.graphic := 0x20D9;
+		"giantkin":			dolly.graphic := 0x20DF;
+		"human":			dolly.graphic := 0x2106;
+		"miscellaneous":	dolly.graphic := 0x2100;
+		"ophidian":			dolly.graphic := 0x2134;
+		"orc":				dolly.graphic := 0x20E0;
+		"plant":			dolly.graphic := 0x20D2;
+		"ratkin":			dolly.graphic := 0x20E3;
+		"slime":			dolly.graphic := 0x20E8;
+		"terathan":			dolly.graphic := 0x212C;
+		"troll":			dolly.graphic := 0x20E9;
+		"undead":			dolly.graphic := 0x2109;
+		default:			dolly.graphic := 0x20F8;
+	endcase
 else
-	dolly.graphic := 0x20f8;
+	dolly.graphic := 0x20F8;
 endif
 
 endfunction
