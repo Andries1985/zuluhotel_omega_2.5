@@ -731,7 +731,11 @@ endfunction
 
 
 function IsProtected( caster, cast_on, circle, nomsg := 0 )
-	
+
+	if( caster == cast_on )
+		return 0;
+	endif
+
 	var protserial := GetObjProperty( cast_on, "MagicImmunity" );
 	var protlvl	 := GetObjProperty( cast_on, "PermMagicImmunity" );
 	if( !protlvl )
