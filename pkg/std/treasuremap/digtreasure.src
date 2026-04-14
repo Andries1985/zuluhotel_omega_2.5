@@ -213,7 +213,7 @@ program dig_treasure( character , unused shovel )
 		endwhile
 		
 		SendSysmessage( character , "Now that all guardians were defeated, the treasure is revealed!" );
-		var chest	 := CreateTreasureChest( lvl , chestx , chesty , chestz );
+		var chest	 := CreateTreasureChest( lvl , chestx , chesty , chestz , character );
 		SetObjProperty( chest , "treasurechest" , 1 );
 		chest.saveonexit := 0;
 		chest.decayat	 := Cint(ReadGameClock()) + 1010;
@@ -222,9 +222,10 @@ program dig_treasure( character , unused shovel )
 
 endprogram
 
-function CreateTreasureChest( lvl , x , y , z )
+function CreateTreasureChest( lvl , x , y , z , digger )
 
 	var chest := CreateItemAtLocation( x , y , z , UOBJECT_TREASURE_CHEST , 1 );
+	SetObjProperty( chest, "KilledBySerial", digger.serial );
 	var lootgroup;
 	var magiclevelup;
 	var magicchance;
