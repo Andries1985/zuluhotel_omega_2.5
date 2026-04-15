@@ -185,7 +185,7 @@ program dig_treasure( character , unused shovel )
 							CreateGuardian( template, chestx, chesty, chestz );
 						endfor
 
-						if(lvl == 4 or lvl == 5)
+						if(lvl == 4 or lvl == 5 or lvl == 6)
 							elem := FindConfigElem( cfgfile , lvl );
 							num	:= GetConfigInt( elem,"num" );
 							rand := Random( num ) + 1;
