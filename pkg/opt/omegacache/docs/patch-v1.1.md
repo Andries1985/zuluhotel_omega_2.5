@@ -16,7 +16,7 @@ Approximately 160 new item category mappings were added covering cooking items, 
 
 ### Boss Pet House Confiscation
 
-Previously, boss pets entering a house were killed outright by the sign listener loop — including tamed boss pets that wandered in because their master ran past. This caused players to permanently lose valuable pets through no fault of their own.
+Previously, boss pets entering a house were killed outright by the sign listener loop — including tamed boss pets that wandered in because their master ran past. This caused players to permanently lose valuable pets through no fault of their own. [Bug Report](https://discord.com/channels/587931652978769930/1484515151204978779)
 
 The fix replaces the kill with a confiscation system for tamed boss pets. When a tamed boss enters a house, the pet is destroyed but a claim ticket (`0xDF0C`) is created for the owner. The ticket is placed in the owner's backpack (if online and space available), failing that their bank box, failing that the pet is destroyed with a message to the owner. Wild (untamed) bosses are still killed outright.
 
