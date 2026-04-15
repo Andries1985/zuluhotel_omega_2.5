@@ -20,7 +20,7 @@ Previously, boss pets entering a house were killed outright by the sign listener
 
 The fix replaces the kill with a confiscation system for tamed boss pets. When a tamed boss enters a house, the pet is destroyed but a claim ticket (`0xDF0C`) is created for the owner. The ticket is placed in the owner's backpack (if online and space available), failing that their bank box, failing that the pet is destroyed with a message to the owner. Wild (untamed) bosses are still killed outright.
 
-The ticket is owner-locked — only the original master can redeem it. Redemption is done by giving the ticket to an Animal Trainer and paying a fine of `MaxHP / 40` (7,500–62,500 gold depending on the boss). The trainer recreates the pet from its NPC template at full health with the original name, color, and master relationship.
+The ticket is owner-locked — only the original master can redeem it. Redemption is done by giving the ticket to an Animal Trainer and paying a fine based on the pet's `CustomHitsLevel` (or native MaxHP as fallback) divided by 40 (7,500–62,500 gold depending on the boss). The trainer recreates the pet from its NPC template at full health with the original name, color, and master relationship.
 
 The existing operator precedence bug in the boss detection condition was also fixed — `SuperBoss` previously bypassed the `POLCLASS_NPC` check due to `||` binding looser than `&&`.
 
@@ -53,8 +53,8 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 
 ### Boss Pet House Confiscation
 
-- **Confiscation ticket**: New item `0xDF0C` in `config/itemdesc.cfg`. Graphic 5360, color 5184. Exclusive to confiscation — does not affect the existing stable ticket system (`0x186E`).
-- **Fine formula**: `CInt(GetMaxHP(mobile) / 40)`. SuperBoss: 25k–62.5k gold. Boss: 7.5k–27.5k gold.
+- **Confiscation ticket**: New item `0xDF0C` in `config/itemdesc.cfg`. Graphic `0x14F0`, color 1404. Exclusive to confiscation — does not affect the existing stable ticket system (`0x186E`).
+- **Fine formula**: `CustomHitsLevel / 40`, falling back to `GetMaxHP / 40` if no custom HP. SuperBoss: 25k–62.5k gold. Boss: 7.5k–27.5k gold.
 - **Ticket fallback**: Backpack (online) → bank (online/offline) → pet destroyed with notification.
 - **Owner-locked**: `owner_serial` stored on ticket, checked on redemption. Non-owners are rejected and the ticket is returned.
 - **Operator precedence fix**: `&&`/`||` replaced with `and`/`or` with explicit parentheses around the `Boss`/`SuperBoss` check.

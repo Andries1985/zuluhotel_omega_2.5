@@ -359,7 +359,7 @@ function ConfiscateBossPet(mobile)
 		SetObjProperty(mobile, "guardkill", 1);
 		ApplyRawDamage(mobile, GetMaxHP(mobile) + 3);
 		if(master_online)
-			SendSysMessage(master, "Your pet " + pet_name + " was destroyed for entering a house. A claim ticket could not be created — your backpack and bank are full.");
+			SendSysMessage(master, "Your pet " + pet_name + " was destroyed for entering a house. A claim ticket could not be created — your backpack and bank are full.", 3, 43);
 		endif
 		return;
 	endif
@@ -379,7 +379,7 @@ function ConfiscateBossPet(mobile)
 
 	if(master_online)
 		SendSysMessage(master, "Your pet " + pet_name + " has been confiscated for entering a house.");
-		SendSysMessage(master, "A claim ticket has been placed in your " + ticket_location + ". Visit an Animal Trainer and pay " + fine + "gp to reclaim it.");
+		SendSysMessage(master, "A claim ticket has been placed in your " + ticket_location + ". Visit an Animal Trainer and pay " + fine + "gp to reclaim it.", 3, 43);
 	endif
 endfunction
 
