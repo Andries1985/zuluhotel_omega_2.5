@@ -2,7 +2,7 @@
 
 ## Summary
 
-This patch addresses bugs and improvements across three areas: Omega Cache post-RC security and data integrity fixes, a magic absorption self-cast bypass, and a treasure map Personal Power Hour fix.
+This patch addresses bugs and improvements across four areas: Omega Cache post-RC security and data integrity fixes, a magic absorption self-cast bypass, a treasure map Personal Power Hour fix, and a boss pet house confiscation system.
 
 ### Omega Cache
 
@@ -13,6 +13,16 @@ The gump and command signatures were refactored to thread the `access` struct (f
 A new `stacking_ignore.cfg` configuration aligns Omega Cache item identity with POL's `stacking.cfg` ignored CProps. Items differing only by `BackPackXYZ`, `IDed`, `#SecureRemove`, or `fromLoot` now merge into the same cache entry. `BaseName` and `foodvalue` are deliberately preserved as they are gameplay-meaningful. Ignored CProps are stripped on deposit and not restored on withdrawal. The `CanStack()` function in `canstack.inc` was also updated to match POL core's full `can_add_to_self()` behaviour, adding `inuse` checks and `stacking.cfg` CProp filtering.
 
 Approximately 160 new item category mappings were added covering cooking items, AlchemyPlus potions, talisman gems, fishing shells, verse book scrolls, and candlemaking materials.
+
+### Boss Pet House Confiscation
+
+Previously, boss pets entering a house were killed outright by the sign listener loop — including tamed boss pets that wandered in because their master ran past. This caused players to permanently lose valuable pets through no fault of their own.
+
+The fix replaces the kill with a confiscation system for tamed boss pets. When a tamed boss enters a house, the pet is destroyed but a claim ticket (`0xDF0C`) is created for the owner. The ticket is placed in the owner's backpack (if online and space available), failing that their bank box, failing that the pet is destroyed with a message to the owner. Wild (untamed) bosses are still killed outright.
+
+The ticket is owner-locked — only the original master can redeem it. Redemption is done by giving the ticket to an Animal Trainer and paying a fine of `MaxHP / 40` (7,500–62,500 gold depending on the boss). The trainer recreates the pet from its NPC template at full health with the original name, color, and master relationship.
+
+The existing operator precedence bug in the boss detection condition was also fixed — `SuperBoss` previously bypassed the `POLCLASS_NPC` check due to `||` binding looser than `&&`.
 
 ### Magic Absorption self-cast bypass
 
@@ -43,18 +53,11 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 
 ### Boss Pet House Confiscation
 
-Previously, boss pets entering a house were killed outright by the sign listener loop — including tamed boss pets that wandered in because their master ran past. This caused players to permanently lose valuable pets through no fault of their own.
-
-The fix replaces the kill with a confiscation system for tamed boss pets. When a tamed boss enters a house, the pet is destroyed but a claim ticket (`0xDF0C`) is created for the owner. The ticket is placed in the owner's backpack (if online and space available), failing that their bank box, failing that the pet is destroyed with a message to the owner. Wild (untamed) bosses are still killed outright.
-
-The ticket is owner-locked — only the original master can redeem it. Redemption is done by giving the ticket to an Animal Trainer and paying a fine of `MaxHP / 20` (15,000–125,000 gold depending on the boss). The trainer recreates the pet from its NPC template at full health with the original name, color, and master relationship.
-
-The existing operator precedence bug in the boss detection condition was also fixed — `SuperBoss` previously bypassed the `POLCLASS_NPC` check due to `||` binding looser than `&&`.
-
 - **Confiscation ticket**: New item `0xDF0C` in `config/itemdesc.cfg`. Graphic 5360, color 5184. Exclusive to confiscation — does not affect the existing stable ticket system (`0x186E`).
-- **Fine formula**: `CInt(GetMaxHP(mobile) / 20)`. SuperBoss: 50k–125k gold. Boss: 15k–55k gold.
+- **Fine formula**: `CInt(GetMaxHP(mobile) / 40)`. SuperBoss: 25k–62.5k gold. Boss: 7.5k–27.5k gold.
 - **Ticket fallback**: Backpack (online) → bank (online/offline) → pet destroyed with notification.
 - **Owner-locked**: `owner_serial` stored on ticket, checked on redemption. Non-owners are rejected and the ticket is returned.
+- **Operator precedence fix**: `&&`/`||` replaced with `and`/`or` with explicit parentheses around the `Boss`/`SuperBoss` check.
 
 ---
 
@@ -117,7 +120,7 @@ The existing operator precedence bug in the boss detection condition was also fi
 | **Redeem ticket — owner** | Give confiscation ticket to Animal Trainer. Verify fine is announced, gold is deducted, and pet is recreated with correct name, color, and master. |
 | **Redeem ticket — non-owner** | Have a different player give the ticket to Animal Trainer. Verify it is rejected and returned to the player's backpack. |
 | **Redeem ticket — insufficient gold** | Give ticket with less gold than the fine. Verify rejection message and ticket returned. |
-| **Fine amount** | Verify fine equals `MaxHP / 20` for the boss type. Check a Boss (~15k–55k) and a SuperBoss (~50k–125k). |
+| **Fine amount** | Verify fine equals `MaxHP / 40` for the boss type. Check a Boss (~15k–55k) and a SuperBoss (~50k–125k). |
 | **Operator precedence fix** | Verify a SuperBoss NPC (not pet) entering a house is still killed. Previously the `SuperBoss` check bypassed the NPC check. |
 | **Normal stable unchanged** | Stable and unstable a regular pet via Animal Trainer. Verify existing `0x186E` ticket flow is unaffected. |
 

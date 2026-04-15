@@ -314,7 +314,7 @@ function ConfiscateBossPet(mobile)
 		return;
 	endif
 
-	var fine := CInt(GetMaxHP(mobile) / 20);
+	var fine := CInt(GetMaxHP(mobile) / 40);
 	var pet_name := mobile.name;
 
 	var master := SystemFindObjectBySerial(master_serial);
