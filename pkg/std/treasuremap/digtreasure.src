@@ -226,6 +226,17 @@ function CreateTreasureChest( lvl , x , y , z , digger )
 
 	var chest := CreateItemAtLocation( x , y , z , UOBJECT_TREASURE_CHEST , 1 );
 	SetObjProperty( chest, "KilledBySerial", digger.serial );
+
+	if(DEBUG_MODE)
+		if(GetObjProperty(digger, "#PPHH"))
+			SendSysMessage( digger, "[DEBUG] Treasure chest loot: Personal Power Hour (PPHH) active" );
+		elseif(GetGlobalProperty("PHH"))
+			SendSysMessage( digger, "[DEBUG] Treasure chest loot: Global Power Hour (PHH) active" );
+		else
+			SendSysMessage( digger, "[DEBUG] Treasure chest loot: No Power Hour active" );
+		endif
+	endif
+
 	var lootgroup;
 	var magiclevelup;
 	var magicchance;
