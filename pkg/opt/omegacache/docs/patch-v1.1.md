@@ -41,6 +41,21 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 - **Global Power Hour was unaffected**: The global `PHH` check (`GetGlobalProperty("PHH")`) in the loot functions always worked for treasure maps. Only the per-player `#PPHH` personal bonus was broken.
 - **Digger vs. killer**: The fix uses the player who dug the treasure (the `character` in the dig script) rather than the player who killed the last guardian. This is a pragmatic choice — guardian corpses are destroyed immediately on death (via `guardkill` flag in `death.src`), making it unreliable to retrieve `KilledBySerial` from them after the fact.
 
+### Boss Pet House Confiscation
+
+Previously, boss pets entering a house were killed outright by the sign listener loop — including tamed boss pets that wandered in because their master ran past. This caused players to permanently lose valuable pets through no fault of their own.
+
+The fix replaces the kill with a confiscation system for tamed boss pets. When a tamed boss enters a house, the pet is destroyed but a claim ticket (`0xDF0C`) is created for the owner. The ticket is placed in the owner's backpack (if online and space available), failing that their bank box, failing that the pet is destroyed with a message to the owner. Wild (untamed) bosses are still killed outright.
+
+The ticket is owner-locked — only the original master can redeem it. Redemption is done by giving the ticket to an Animal Trainer and paying a fine of `MaxHP / 20` (15,000–125,000 gold depending on the boss). The trainer recreates the pet from its NPC template at full health with the original name, color, and master relationship.
+
+The existing operator precedence bug in the boss detection condition was also fixed — `SuperBoss` previously bypassed the `POLCLASS_NPC` check due to `||` binding looser than `&&`.
+
+- **Confiscation ticket**: New item `0xDF0C` in `config/itemdesc.cfg`. Graphic 5360, color 5184. Exclusive to confiscation — does not affect the existing stable ticket system (`0x186E`).
+- **Fine formula**: `CInt(GetMaxHP(mobile) / 20)`. SuperBoss: 50k–125k gold. Boss: 15k–55k gold.
+- **Ticket fallback**: Backpack (online) → bank (online/offline) → pet destroyed with notification.
+- **Owner-locked**: `owner_serial` stored on ticket, checked on redemption. Non-owners are rejected and the ticket is returned.
+
 ---
 
 ## Acceptance Testing Criteria
@@ -89,6 +104,23 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 | **PPHH expires mid-dig** | Start a treasure map dig with PPHH active. Let it expire before killing the last guardian. Verify loot reflects the state at chest creation time (PPHH no longer active = no bonus). |
 | **Multiple map levels** | Test with different map levels (1-7) under PPHH to verify the bonus scales correctly across loot groups 201-207. |
 
+### Boss Pet House Confiscation
+
+| Area | What to Test |
+|------|-------------|
+| **Tamed boss enters house** | Have a tamed boss pet follow you into a house. Within 60 seconds it should be confiscated and a ticket created in your backpack. Verify message is sent. |
+| **Wild boss enters house** | Lure a wild (untamed) boss into a house. Verify it is killed outright with no ticket. |
+| **Ticket in backpack** | Confiscate a tamed boss while online with backpack space. Verify ticket appears in backpack with correct name, fine amount, and pet data. |
+| **Ticket in bank (backpack full)** | Fill backpack completely, then trigger confiscation. Verify ticket is placed in bank and message says "bank". |
+| **Offline master** | Log out the boss pet owner, trigger confiscation via another player or NPC aggro. Log back in and verify ticket is in bank. |
+| **Both full** | Fill backpack and bank, trigger confiscation. Verify pet is destroyed and message warns the player. |
+| **Redeem ticket — owner** | Give confiscation ticket to Animal Trainer. Verify fine is announced, gold is deducted, and pet is recreated with correct name, color, and master. |
+| **Redeem ticket — non-owner** | Have a different player give the ticket to Animal Trainer. Verify it is rejected and returned to the player's backpack. |
+| **Redeem ticket — insufficient gold** | Give ticket with less gold than the fine. Verify rejection message and ticket returned. |
+| **Fine amount** | Verify fine equals `MaxHP / 20` for the boss type. Check a Boss (~15k–55k) and a SuperBoss (~50k–125k). |
+| **Operator precedence fix** | Verify a SuperBoss NPC (not pet) entering a house is still killed. Previously the `SuperBoss` check bypassed the NPC check. |
+| **Normal stable unchanged** | Stable and unstable a regular pet via Animal Trainer. Verify existing `0x186E` ticket flow is unaffected. |
+
 ---
 
 ## Files Modified
@@ -102,7 +134,7 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 - `scripts/include/canstack.inc` — `inuse` check, `stacking.cfg` filtering
 - `config/stacking.cfg` — Comment referencing `stacking_ignore.cfg`
 - `pkg/std/housing/sign.src` — `USESCRIPTID_SECURE_CONTAINER` constant
-- `pkg/std/housing/signcontrol.src` — `USESCRIPTID_SECURE_CONTAINER` constant
+- `pkg/std/housing/signcontrol.src` — `USESCRIPTID_SECURE_CONTAINER` constant, boss pet confiscation (`ConfiscateBossPet`), operator precedence fix
 - `pkg/opt/statichousing/ssign.src` — `USESCRIPTID_SECURE_CONTAINER` constant
 
 ### Magic Absorption
@@ -110,3 +142,8 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 
 ### Treasure Map PPHH
 - `pkg/std/treasuremap/digtreasure.src` — `CreateTreasureChest()` accepts digger, sets `KilledBySerial`
+
+### Boss Pet House Confiscation
+- `config/itemdesc.cfg` — New `Item 0xDF0C` (confiscation ticket, graphic 5360, color 5184)
+- `pkg/std/housing/signcontrol.src` — `ConfiscateBossPet()` function, operator precedence fix, `include "util/bank"`
+- `scripts/ai/animaltrainer.src` — `0xDF0C` confiscation ticket branch in `Load_Ticket_Data` (ownership check, fine payment)
