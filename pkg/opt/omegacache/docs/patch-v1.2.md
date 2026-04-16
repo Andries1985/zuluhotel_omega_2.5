@@ -43,6 +43,7 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 - **Dispel removes the buff**: The Dispel spell now checks for `#freedeath` on the target after all absorption/reflection checks pass. If present, the property is erased and the target receives "The resurrection crystal's protection has been dispelled!".
 - **Placement rationale**: Placed after disguise cleanup (line ~243) so incognito, earth spell shapeshift, and camouflage are stripped before resurrection without duplicating that code.
 - **Post-resurrection poison cure**: `CurePoison(ghost)` called after `ResurrectMobile()` to handle re-poisoning during the `sleep(2)` window (e.g. poison fields).
+- **Players only**: The crystal's AoE effect now skips NPCs (`isA(POLCLASS_NPC)` check). Previously it would set `#freedeath` on all mobiles within 15 tiles including NPCs.
 - **Murder reporting preserved**: `SendReportGump` and `mr` property cleanup still execute — the crystal saves you from death, not from justice.
 
 ---
