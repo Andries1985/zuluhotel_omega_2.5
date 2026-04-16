@@ -822,7 +822,7 @@ function ReadyBow ()
 		weaponone := CreateItemInInventory(me.backpack,0x9a1b,1);
 		EraseObjProperty(weaponone,"IsBlackrock");
 		SetObjProperty( weaponone, "noloot" , 1 );
-		weaponone.hitscript := ":combat:staminadrainscript";
+		weaponone.hitscript := ":combat:banishscript";
 		EquipItem(me,weaponone);
 		foreach item in EnumerateItemsInContainer( me.backpack )
 			if (item.graphic == 0xf3f)
