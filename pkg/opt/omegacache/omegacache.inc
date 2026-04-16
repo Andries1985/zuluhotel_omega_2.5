@@ -956,6 +956,7 @@ function DoDepositAll(who, access)
 endfunction
 
 const BTN_CONFIRM_DEPOSIT_ALL := 1;
+const BTN_CANCEL_DEPOSIT_ALL := 2;
 
 function ConfirmDepositAll(who)
 	var w := 400;
@@ -978,11 +979,11 @@ function ConfirmDepositAll(who)
 	var btn_start := (w - btn_area) / 2;
 	GFAddButton(gump, btn_start, h - 40, 4005, 4007, GF_CLOSE_BTN, BTN_CONFIRM_DEPOSIT_ALL);
 	GFTextLine(gump, btn_start + 35, h - 40, TEXT_HUE_DEPOSIT, "Confirm");
-	GFAddButton(gump, btn_start + 130, h - 40, 4017, 4019, GF_CLOSE_BTN, 0);
+	GFAddButton(gump, btn_start + 130, h - 40, 4017, 4019, GF_CLOSE_BTN, BTN_CANCEL_DEPOSIT_ALL);
 	GFTextLine(gump, btn_start + 165, h - 40, TEXT_HUE, "Cancel");
 
 	var result := GFSendGump(who, gump);
-	return result[0];
+	return (CInt(result[0]) == BTN_CONFIRM_DEPOSIT_ALL);
 endfunction
 
 // Validates that a deposit target is allowed.
