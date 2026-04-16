@@ -4,9 +4,16 @@
 
 This patch addresses combat balance changes, bug fixes across multiple systems, and a new resurrection crystal implementation. The combat changes rebalance physical damage calculations for several classes, fix NPC damage scaling that was incorrectly applying player class bonuses, and adjust the Ranger/Mystic Archer ranged bonus threshold. The Paladin spell resistance formula has been reworked to halve the bonus rather than applying the full class multiplier. Several NPC equipment assignments and a typo in "Mondain's Staff" have been corrected, and the Chaos AI bow hitscript has been changed from stamina drain to banish.
 
+The Omega Cache deposit flow now includes a confirmation gump for "Deposit All" and blocks deposits from targeting corpses. The confirmation gump uses the same visual style as the main cache UI and warns the player before bulk-depositing all stackable items from their backpack. Corpse targeting is blocked both when targeting a corpse directly and when targeting items inside a corpse.
+
 The resurrection crystal (`lifecrystal`) previously set a `freedeath` property on the player but no death script ever checked for it, making the crystal non-functional. The fix adds a `freedeath` handler in `chrdeath.src` that auto-resurrects the player on their next death, restores all items from the corpse, hides the player, and cleans up the corpse. The block is placed after the existing incognito/shapeshift/camouflage cleanup to avoid duplicating that logic. A syntax error in `spelldata.inc` (mismatched parenthesis in the Paladin resist chance calculation) was also fixed.
 
 ## Notable Points
+
+### Omega Cache
+
+- **Deposit All confirmation**: `DoDepositAll` shows a styled confirmation gump before proceeding. Uses `GFAddButton` with explicit button IDs — `GFAddButton` auto-assigns non-zero IDs when passed 0, so cancel buttons must use a named constant and check `result[0] == BTN_CONFIRM`.
+- **Corpse deposit block**: `ValidateDepositTarget` rejects corpses as targets (`tgt.isa(POLCLASS_CORPSE)`) and items inside corpses (walks up container chain checking for corpse parents).
 
 ### Combat Balance — Damage Calculations (`hitscriptinc.inc`)
 
@@ -46,9 +53,25 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 - **Players only**: The crystal's AoE effect now skips NPCs (`isA(POLCLASS_NPC)` check). Previously it would set `#freedeath` on all mobiles within 15 tiles including NPCs.
 - **Murder reporting preserved**: `SendReportGump` and `mr` property cleanup still execute — the crystal saves you from death, not from justice.
 
+### Tooltip Improvements (`itemdata.src`)
+
+- **AR display**: Armor tooltips now show `AR: X (Y)` where X is the effective weighted AR (based on coverage zone hit chance) and Y is the raw item AR value. Previously only the effective value was shown, which confused players (e.g. a platemail breastplate with AR 25 showed "AR: 11" because Body zone has a 44% hit chance).
+- **DPS display**: Weapon tooltips now show `DPS: X (Y)` where X is the class/quality-modified DPS and Y is the raw average base DPS without any player modifiers.
+
 ---
 
 ## Acceptance Testing Criteria
+
+### Omega Cache
+
+| Area | What to Test |
+|------|-------------|
+| **Deposit All confirm** | Open cache, click Deposit All. Verify confirmation gump appears. Click Confirm — items are deposited. |
+| **Deposit All cancel** | Open cache, click Deposit All. Click Cancel on confirmation gump. Verify no items are deposited and "Deposit cancelled." message appears. |
+| **Deposit All close gump** | Open cache, click Deposit All. Close the confirmation gump (right-click or ESC). Verify no items are deposited. |
+| **Target corpse** | Kill an NPC near your cache. Use Deposit Item and target the corpse. Verify rejection: "You cannot deposit from a corpse." |
+| **Target item in corpse** | Kill an NPC, open its corpse. Use Deposit Item and target an item inside the corpse. Verify rejection: "You cannot deposit items from a corpse." |
+| **Normal deposit unchanged** | Use Deposit Item on backpack items and house items. Verify everything still works as before. |
 
 ### Combat Balance
 
@@ -92,9 +115,21 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 | **Undead Flayer** | Spawn an Undead Flayer NPC. Verify weapon graphic and hit/miss sounds are correct. |
 | **Chaos AI bow** | Engage the chaos multi-kill AI at range. Verify bow hits apply banish effect, not stamina drain. |
 
+### Tooltip Improvements
+
+| Area | What to Test |
+|------|-------------|
+| **Armor AR tooltip** | Hover over armor pieces. Verify tooltip shows `AR: X (Y)` where X is the effective weighted value and Y in brackets is the raw AR. E.g. a platemail breastplate with AR 25 should show `AR: 11 (25)`. |
+| **Shield AR tooltip** | Hover over a shield. Verify the raw AR in brackets matches the item's actual AR value. |
+| **Weapon DPS tooltip** | Hover over a weapon. Verify tooltip shows `DPS: X (Y)` where X is the modified DPS and Y in brackets is the raw average base DPS. The modified value should be higher than raw for most classes. |
+| **No-class DPS** | Log in with a character that has no class. Hover over a weapon. Verify both DPS values are reasonable and close together (minimal class bonuses). |
+
 ---
 
 ## Files Modified
+
+### Omega Cache
+- `pkg/opt/omegacache/omegacache.inc` — `ConfirmDepositAll` gump, corpse check in `ValidateDepositTarget`
 
 ### Combat Balance
 - `pkg/systems/combat/include/hitscriptinc.inc` — Class damage formulas, NPC damage path, Bladesinger reduction fix, Ranger/MA threshold
@@ -106,6 +141,9 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 - `config/equip.cfg` — `ModainsStaffWeapon` → `MondainsStaffWeapon`
 - `config/npcdesc.cfg` — NPC equipment swaps, Poisoning skill addition, whitespace cleanup
 - `scripts/ai/chaosmultikillpcs.src` — Chaos AI bow hitscript changed to `banishscript`
+
+### Tooltip Improvements
+- `pkg/packethooks/megacliloc/itemdata.src` — AR tooltip shows raw value in brackets, DPS tooltip shows raw average base DPS in brackets
 
 ### Resurrection Crystal
 - `scripts/misc/chrdeath.src` — `#freedeath` handler block, whitespace cleanup

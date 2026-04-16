@@ -63,7 +63,7 @@ program itemdata(parms)
 			endif
 			if(xObject.isa(POLCLASS_ARMOR))
 				prop.clilocid := 1063495; // AR: ~1_VAL~
-				prop.values := array {CS_GetEffectiveArmor(xObject)};
+				prop.values := array {CS_GetEffectiveArmor(xObject) + " (" + xObject.ar + ")"};
 				allprops.append(prop);
 				var BE := GetObjProperty(xObject, "BardicEfficiency");
 				if(BE && (IsBard(who) || IsBladesinger(who) || IsPowerPlayer(who)))
@@ -100,7 +100,8 @@ program itemdata(parms)
 				prop.values := array {weapondesc.Speed+xObject.speed_mod};
 				allprops.append(prop);		
 				prop.clilocid := 1070722; ; // Nothing
-				prop.values := array {"DPS: "+CINT(calcdps(who, xObject, weapondesc))};
+				var rawdps := (weapondesc.MinDamage + weapondesc.MaxDamage) / 2.0 / (15000.0 / (((GetDexterity(who)/10.0)+100) * (weapondesc.Speed+xObject.speed_mod)));
+				prop.values := array {"DPS: "+CINT(calcdps(who, xObject, weapondesc)) + " (" + CINT(rawdps) + ")"};
 				allprops.append(prop);
 				case(weapondesc.hitscript)
 					"slayerscript":
