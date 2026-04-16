@@ -38,6 +38,7 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 
 - **Security**: `ValidateDepositTarget` is the single gate for all deposit operations — gump, commands, and drag-and-drop all flow through it. Checks house membership, accessibility, 2-tile range (via top-level world object for nested items), backpack/house containment, and secured container permissions. The `movable` check lives in `IsEligibleForStorage` (item-level) so locked-down non-secure containers can be targeted for depositing their contents.
 - **Signature changes**: `RunOmegaCacheGump(who, df)` → `RunOmegaCacheGump(who, access)`. `DoDepositTargeting` and `DoDepositAll` also take `access` instead of `df`.
+- **Deposit All confirmation**: `DoDepositAll` shows a `YesNoVar` gump before proceeding, warning that all stackable items will be moved from the backpack to the cache.
 - **Stripped CProps**: `IDed`, `BackPackXYZ`, `#SecureRemove`, `fromLoot` are permanently removed on deposit and not restored on withdrawal. This is intentional and matches POL's stacking philosophy.
 - **Cross-package**: `USESCRIPTID_SECURE_CONTAINER` constant adopted in `sign.src`, `signcontrol.src`, `ssign.src` replacing string literals.
 

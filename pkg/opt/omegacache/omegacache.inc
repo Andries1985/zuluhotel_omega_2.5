@@ -17,6 +17,7 @@ include "include/omegacache_utils";
 include ":housing:utility";
 include ":gumps:gumps";
 include ":gumps:gumps_ex";
+include ":gumps:yesNoSizable";
 
 // ============================================================
 // Constants
@@ -940,6 +941,10 @@ endfunction
 // Deposit all eligible items from backpack.
 function DoDepositAll(who, access)
 	if(!ValidateDepositTarget(who, access, who.backpack))
+		return 0;
+	endif
+	if(!YesNoVar(who, "This will deposit all stackable items from your entire backpack into the cache. Continue?"))
+		SendSysMessage(who, "Deposit cancelled.");
 		return 0;
 	endif
 	var df := access.df;

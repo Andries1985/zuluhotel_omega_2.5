@@ -798,9 +798,11 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 64. **Category additions** — ~160 new item mappings: cooking items (variants, bowls, pies, cakes, pizzas, bread, bacon, cheese, sausage, donuts, jerky), raw ingredients (dough, batter, flour, corn), 68 AlchemyPlus potions (`0xFF4E`-`0xFF95`, `0xFFA2`), 8 talisman gems (`0x213F`-`0x2146`), 9 fishing shells, 10 verse book scrolls, candlemaking materials (beeswax, pot of wax, dipping stick), bloody bandages, missing fish variants (`0x09CC`, `0xA370`).
 
+65. **Deposit All confirmation** — `DoDepositAll` now shows a `YesNoVar` confirmation gump before depositing. Warns the player that all stackable items from their entire backpack will be moved to the cache. Cancel aborts the operation.
+
 ### Files Modified
 
-- `pkg/opt/omegacache/omegacache.inc` — `ValidateDepositTarget()`, `RunOmegaCacheGump(who, access)` signature, deposit function signatures, `GetNonDefaultProperties` reads `stacking_ignore.cfg`
+- `pkg/opt/omegacache/omegacache.inc` — `ValidateDepositTarget()`, `RunOmegaCacheGump(who, access)` signature, deposit function signatures, `GetNonDefaultProperties` reads `stacking_ignore.cfg`, `DoDepositAll` confirmation gump, `include ":gumps:yesNoSizable"`
 - `pkg/opt/omegacache/omegacache.src` — Updated `RunOmegaCacheGump` call to pass `access`
 - `pkg/opt/omegacache/stacking_ignore.cfg` — New file
 - `pkg/opt/omegacache/categories.cfg` — ~160 new item mappings
