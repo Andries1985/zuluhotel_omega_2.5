@@ -958,7 +958,7 @@ endfunction
 const BTN_CONFIRM_DEPOSIT_ALL := 1;
 
 function ConfirmDepositAll(who)
-	var w := 350;
+	var w := 400;
 	var h := 150;
 	var gx := (800 - w) / 2;
 	var gy := (600 - h) / 2;

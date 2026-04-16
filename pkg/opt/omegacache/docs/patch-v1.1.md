@@ -32,6 +32,10 @@ A bug caused items to be lost when a player's corpse decayed inside a house. The
 
 The second fix corrects an issue where players could not cast beneficial spells (such as Dispel) on themselves when equipped with Blackrock magic absorption items. The `IsProtected()` function in `spelldata.inc` was missing a self-cast bypass that the `Reflected()` function already had — magic absorption would consume the player's own spell before it could take effect. A simple `caster == cast_on` guard was added to match the existing reflection behaviour.
 
+### Treasure Map Level 6 Boss Spawn
+
+Level 6 treasure maps were not spawning a boss creature. The guardian spawning logic in `digtreasure.src` spawns base trash mobs from Group 4 for all level 4+ maps, then adds a boss from the level-specific guardian group — but the boss spawn condition only checked for `lvl == 4 or lvl == 5`, skipping level 6 entirely. The fix extends the condition to include level 6, which now spawns a super boss from Group 6 (the super boss pool defined in `guardians.cfg`).
+
 ### Treasure Map Personal Power Hour
 
 The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly apply to treasure map loot. The loot system in `starteqp.inc` determines Power Hour eligibility by reading a `KilledBySerial` property from the loot container and looking up the associated player's `#PPHH` flag. Treasure chests created by `digtreasure.src` never had this property set, so the personal bonus was silently ignored (the global Power Hour still worked). The fix passes the digger's character reference into `CreateTreasureChest()` and sets `KilledBySerial` on the chest before `MakeLoot()` populates it, allowing the existing loot functions to find the player and apply the bonus.
@@ -53,6 +57,10 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 ### Magic Absorption
 
 - **Self-cast absorption bypass** (`scripts/include/spelldata.inc`): Added `if( caster == cast_on ) return 0; endif` at the top of `IsProtected()`. This mirrors the identical check already present in `Reflected()` at line 885. Affects all spells that call `IsProtected()`, not just Dispel — any beneficial self-cast that was previously blocked by absorption will now work correctly.
+
+### Treasure Map Level 6 Boss Spawn
+
+- **Boss spawn condition** (`pkg/std/treasuremap/digtreasure.src`): Extended the boss spawn check from `if(lvl == 4 or lvl == 5)` to `if(lvl == 4 or lvl == 5 or lvl == 6)`. Level 4 spawns an extra creature from Group 4, level 5 spawns a boss from Group 5, and level 6 now spawns a super boss from Group 6. Level 7 (bard roll) is unaffected — it uses its own dedicated path that spawns 3 super bosses from Group 6.
 
 ### Treasure Map PPHH
 
@@ -115,6 +123,15 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 | **Reflection vs. hostile spells** | Have another player cast on you with reflection active. Verify the spell is still reflected. |
 | **Combined absorption + reflection** | Equip both absorption and reflection items. Verify self-cast works, hostile spells are reflected or absorbed as expected. |
 
+### Treasure Map Level 6 Boss Spawn
+
+| Area | What to Test |
+|------|-------------|
+| **Level 6 super boss** | Dig a level 6 treasure map. Verify a super boss from Group 6 (`guardians.cfg`) spawns alongside the trash mobs from Group 4. |
+| **Level 4 unchanged** | Dig a level 4 map. Verify an extra creature from Group 4 spawns (regression check). |
+| **Level 5 unchanged** | Dig a level 5 map. Verify a boss from Group 5 spawns (regression check). |
+| **Level 7 (bard) unchanged** | Trigger a bard level 7 roll. Verify 3 super bosses from Group 6 spawn with no trash mobs (regression check). |
+
 ### Treasure Map Personal Power Hour
 
 | Area | What to Test |
@@ -164,8 +181,8 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 ### Magic Absorption
 - `scripts/include/spelldata.inc` — Self-cast bypass in `IsProtected()`
 
-### Treasure Map PPHH
-- `pkg/std/treasuremap/digtreasure.src` — `CreateTreasureChest()` accepts digger, sets `KilledBySerial`
+### Treasure Map
+- `pkg/std/treasuremap/digtreasure.src` — `CreateTreasureChest()` accepts digger, sets `KilledBySerial`; level 6 boss spawn condition extended to include Group 6 super boss
 
 ### Boss Pet House Confiscation
 - `config/itemdesc.cfg` — New `Item 0xDF0C` (confiscation ticket, graphic 5360, color 5184)
