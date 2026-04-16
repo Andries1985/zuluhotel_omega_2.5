@@ -967,14 +967,19 @@ function ConfirmDepositAll(who)
 	GFResizePic(gump, 0, 0, 9270, w, h);
 	GFResizePic(gump, 10, 10, 9350, w - 20, h - 20);
 
-	GFTextLine(gump, (w - len("Deposit All") * 8) / 2, 18, TEXT_HUE_HIGHLIGHT, "Deposit All");
-	GFTextLine(gump, 30, 50, TEXT_HUE, "This will deposit all stackable items");
-	GFTextLine(gump, 30, 70, TEXT_HUE, "from your backpack into the cache.");
+	var line1 := "Deposit All";
+	var line2 := "This will deposit all stackable items";
+	var line3 := "from your backpack into the cache.";
+	GFTextLine(gump, (w - len(line1) * 8) / 2, 18, TEXT_HUE_HIGHLIGHT, line1);
+	GFTextLine(gump, (w - len(line2) * 8) / 2, 50, TEXT_HUE, line2);
+	GFTextLine(gump, (w - len(line3) * 8) / 2, 70, TEXT_HUE, line3);
 
-	GFAddButton(gump, 70, h - 40, 4005, 4007, GF_CLOSE_BTN, BTN_CONFIRM_DEPOSIT_ALL);
-	GFTextLine(gump, 105, h - 40, TEXT_HUE_DEPOSIT, "Confirm");
-	GFAddButton(gump, 200, h - 40, 4017, 4019, GF_CLOSE_BTN, 0);
-	GFTextLine(gump, 235, h - 40, TEXT_HUE, "Cancel");
+	var btn_area := 195;
+	var btn_start := (w - btn_area) / 2;
+	GFAddButton(gump, btn_start, h - 40, 4005, 4007, GF_CLOSE_BTN, BTN_CONFIRM_DEPOSIT_ALL);
+	GFTextLine(gump, btn_start + 35, h - 40, TEXT_HUE_DEPOSIT, "Confirm");
+	GFAddButton(gump, btn_start + 130, h - 40, 4017, 4019, GF_CLOSE_BTN, 0);
+	GFTextLine(gump, btn_start + 165, h - 40, TEXT_HUE, "Cancel");
 
 	var result := GFSendGump(who, gump);
 	return result[0];
