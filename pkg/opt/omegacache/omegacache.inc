@@ -17,7 +17,6 @@ include "include/omegacache_utils";
 include ":housing:utility";
 include ":gumps:gumps";
 include ":gumps:gumps_ex";
-include ":gumps:yesNoSizable";
 
 // ============================================================
 // Constants
@@ -943,7 +942,7 @@ function DoDepositAll(who, access)
 	if(!ValidateDepositTarget(who, access, who.backpack))
 		return 0;
 	endif
-	if(!YesNoVar(who, "This will deposit all stackable items from your entire backpack into the cache. Continue?"))
+	if(!ConfirmDepositAll(who))
 		SendSysMessage(who, "Deposit cancelled.");
 		return 0;
 	endif
@@ -954,6 +953,31 @@ function DoDepositAll(who, access)
 		SendSysMessage(who, "No eligible items found in your backpack.");
 	endif
 	return total;
+endfunction
+
+const BTN_CONFIRM_DEPOSIT_ALL := 1;
+
+function ConfirmDepositAll(who)
+	var w := 350;
+	var h := 150;
+	var gx := (800 - w) / 2;
+	var gy := (600 - h) / 2;
+	var gump := GFCreateGump(gx, gy);
+	GFPage(gump, 0);
+	GFResizePic(gump, 0, 0, 9270, w, h);
+	GFResizePic(gump, 10, 10, 9350, w - 20, h - 20);
+
+	GFTextLine(gump, (w - len("Deposit All") * 8) / 2, 18, TEXT_HUE_HIGHLIGHT, "Deposit All");
+	GFTextLine(gump, 30, 50, TEXT_HUE, "This will deposit all stackable items");
+	GFTextLine(gump, 30, 70, TEXT_HUE, "from your backpack into the cache.");
+
+	GFAddButton(gump, 70, h - 40, 4005, 4007, GF_CLOSE_BTN, BTN_CONFIRM_DEPOSIT_ALL);
+	GFTextLine(gump, 105, h - 40, TEXT_HUE_DEPOSIT, "Confirm");
+	GFAddButton(gump, 200, h - 40, 4017, 4019, GF_CLOSE_BTN, 0);
+	GFTextLine(gump, 235, h - 40, TEXT_HUE, "Cancel");
+
+	var result := GFSendGump(who, gump);
+	return result[0];
 endfunction
 
 // Validates that a deposit target is allowed.
