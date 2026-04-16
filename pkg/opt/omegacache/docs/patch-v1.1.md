@@ -24,6 +24,10 @@ The ticket is owner-locked — only the original master can redeem it. Redemptio
 
 The existing operator precedence bug in the boss detection condition was also fixed — `SuperBoss` previously bypassed the `POLCLASS_NPC` check due to `||` binding looser than `&&`.
 
+### [Possible fix] - Corpse Decay Item Loss in Houses
+
+A bug caused items to be lost when a player's corpse decayed inside a house. The `corpsedecay.src` script used `MOVEOBJECT_NORMAL` when moving items from the corpse to the ground, which silently fails when another container or blocking item occupies the same tile — a common scenario inside houses. After the failed move, `DestroyItem(corpse)` destroyed the corpse along with any items still inside it. The fix changes the move flag to `MOVEOBJECT_FORCELOCATION`, which bypasses tile-blocking checks and guarantees items are placed on the ground.
+
 ### Magic Absorption self-cast bypass
 
 The second fix corrects an issue where players could not cast beneficial spells (such as Dispel) on themselves when equipped with Blackrock magic absorption items. The `IsProtected()` function in `spelldata.inc` was missing a self-cast bypass that the `Reflected()` function already had — magic absorption would consume the player's own spell before it could take effect. A simple `caster == cast_on` guard was added to match the existing reflection behaviour.
@@ -41,6 +45,10 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 - **Deposit All confirmation**: `DoDepositAll` shows a `YesNoVar` gump before proceeding, warning that all stackable items will be moved from the backpack to the cache.
 - **Stripped CProps**: `IDed`, `BackPackXYZ`, `#SecureRemove`, `fromLoot` are permanently removed on deposit and not restored on withdrawal. This is intentional and matches POL's stacking philosophy.
 - **Cross-package**: `USESCRIPTID_SECURE_CONTAINER` constant adopted in `sign.src`, `signcontrol.src`, `ssign.src` replacing string literals.
+
+### Corpse Decay
+
+- **Force location move** (`scripts/control/corpsedecay.src`): Changed `MOVEOBJECT_NORMAL` to `MOVEOBJECT_FORCELOCATION` in `ProcessHumanCorpseDecaying()`. This is the only change — the iteration logic and `DestroyItem(corpse)` are unchanged. Items in sub-containers (bags on the corpse) are not affected as the loop only moves root-level items (`item.container == corpse`).
 
 ### Magic Absorption
 
@@ -87,6 +95,15 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 | **Categories** | Browse cache gump. Verify cooking items, potions, gems, fishing shells, verse scrolls are in correct categories, not in "Other". |
 | **CanStack consistency** | Merge two backpack stacks differing only by ignored CProps. Verify they stack. |
 | **Blacklist enforcement** | Temporarily add a known stackable item (e.g., `Blacklist 0x0F7A { Reason Test }` for Black Pearl) to `blacklist.cfg`, restart server. Attempt to deposit via gump, `.cache deposit`, and drag-and-drop. All should reject with "That item cannot be stored." Verify item is returned to backpack on drag-and-drop. Remove the test entry after. |
+
+### Corpse Decay in Houses
+
+| Area | What to Test |
+|------|-------------|
+| **Decay on occupied tile** | Die inside a house on a tile with another container or item. Wait for corpse to fully decay. Verify all items drop to the ground and none are lost. |
+| **Decay on empty tile** | Die inside a house on an empty tile. Verify items drop normally (regression check). |
+| **Decay outside house** | Die outside any house. Verify items drop normally (regression check). |
+| **Sub-container items** | Die with a bag containing items in your backpack. Verify the bag (and its contents) drops to the ground intact on corpse decay. |
 
 ### Magic Absorption Self-Cast
 
@@ -140,6 +157,9 @@ The third fix ensures that Personal Power Hour (PPHH) hunting bonuses correctly 
 - `pkg/std/housing/sign.src` — `USESCRIPTID_SECURE_CONTAINER` constant
 - `pkg/std/housing/signcontrol.src` — `USESCRIPTID_SECURE_CONTAINER` constant, boss pet confiscation (`ConfiscateBossPet`), operator precedence fix
 - `pkg/opt/statichousing/ssign.src` — `USESCRIPTID_SECURE_CONTAINER` constant
+
+### Corpse Decay
+- `scripts/control/corpsedecay.src` — `MOVEOBJECT_NORMAL` → `MOVEOBJECT_FORCELOCATION` in `ProcessHumanCorpseDecaying()`
 
 ### Magic Absorption
 - `scripts/include/spelldata.inc` — Self-cast bypass in `IsProtected()`

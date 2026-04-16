@@ -42,7 +42,7 @@ function ProcessHumanCorpseDecaying( corpse )
 				//Print("Item " + item.objtype + " On Corpse");
 				if( item.container == corpse )
 					//Print("Item = to corpse:  Moving item " + item.objtype + " to the ground");
-					MoveObjectToLocation( item, corpse.x, corpse.y, corpse.z, corpse.realm, MOVEOBJECT_NORMAL );
+					MoveObjectToLocation( item, corpse.x, corpse.y, corpse.z, corpse.realm, MOVEOBJECT_FORCELOCATION );
 					if(corpse.multi)
 						item.decayat := 0;
 					endif
