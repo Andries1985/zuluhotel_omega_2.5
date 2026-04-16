@@ -970,9 +970,9 @@ function ConfirmDepositAll(who)
 	var line1 := "Deposit All";
 	var line2 := "This will deposit all stackable items";
 	var line3 := "from your backpack into the cache.";
-	GFTextLine(gump, (w - len(line1) * 8) / 2, 18, TEXT_HUE_HIGHLIGHT, line1);
-	GFTextLine(gump, (w - len(line2) * 8) / 2, 50, TEXT_HUE, line2);
-	GFTextLine(gump, (w - len(line3) * 8) / 2, 70, TEXT_HUE, line3);
+	GFTextLine(gump, (w - len(line1) * 6) / 2, 18, TEXT_HUE_HIGHLIGHT, line1);
+	GFTextLine(gump, (w - len(line2) * 6) / 2, 50, TEXT_HUE, line2);
+	GFTextLine(gump, (w - len(line3) * 6) / 2, 70, TEXT_HUE, line3);
 
 	var btn_area := 195;
 	var btn_start := (w - btn_area) / 2;
