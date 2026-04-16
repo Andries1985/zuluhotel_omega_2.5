@@ -1004,6 +1004,20 @@ function ValidateDepositTarget(who, access, tgt)
 		return 1;
 	endif
 
+	// Corpses are not valid deposit targets or sources
+	if(tgt.isa(POLCLASS_CORPSE))
+		SendSysMessage(who, "You cannot deposit from a corpse.");
+		return 0;
+	endif
+	var corpse_check := tgt.container;
+	while(corpse_check)
+		if(corpse_check.isa(POLCLASS_CORPSE))
+			SendSysMessage(who, "You cannot deposit items from a corpse.");
+			return 0;
+		endif
+		corpse_check := corpse_check.container;
+	endwhile
+
 	// Must be accessible and within range
 	if(!Accessible(who, tgt))
 		SendSysMessage(who, "You can't reach that.");
