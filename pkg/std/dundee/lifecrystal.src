@@ -16,7 +16,7 @@ foreach cast_near in affected
 	PlayObjectCenteredEffect( cast_near, FX_BLESS_EFFECT, 10,10);
 	PlaySoundEffect( cast_near , SFX_SPELL_GREATER_HEAL );
 	EraseObjProperty(cast_near ,"death");
-	SetObjProperty(cast_near ,"freedeath",1);
+	SetObjProperty(cast_near ,"#freedeath",1);
 	SendSysmessage( cast_near , "Death pardons your next transgression into the nether realm..." );
 endforeach
 

@@ -982,7 +982,7 @@ function Resisted( caster , cast_on , circle , dmg )
 		var halfmod := ClasseBonus(cast_on , CLASSEID_PALADIN) - 1; // 1.75  - 1   = 0.75
 		halfmod := halfmod * 0.5;                                   // 0.75  * 0.5 = 0.375
 		halfmod := (1 + halfmod);                                   // 0.375 + 1   = 1.375
-		chance := Cint( (chance * halfmod);
+		chance := Cint( chance * halfmod );
 		//Print("Base Chance Pala 2: " + chance);
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		var bonus := ClasseBonus( cast_on , CLASSEID_WARRIOR );

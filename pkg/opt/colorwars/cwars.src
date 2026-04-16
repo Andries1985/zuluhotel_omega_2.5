@@ -312,7 +312,7 @@ program pvp (who)
 	WipeMods( who );	
 	who.graphic := who.trueobjtype;
 	EraseObjProperty(who,"kothtime");
-	EraseObjProperty(who,"freedeath");
+	EraseObjProperty(who,"#freedeath");
 	EraseObjProperty(who,"cwdisqualify");
 	SetObjProperty(who,"cwhiding",0);
 	lfame := GetObjProperty(who,"Fame");

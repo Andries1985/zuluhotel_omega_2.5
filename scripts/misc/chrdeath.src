@@ -240,9 +240,9 @@ program chrdeath(corpse,ghost)
 		RemoveCamouflage( ghost );
 	endif
 
-	var freedeath := GetObjProperty( ghost, "freedeath" );
+	var freedeath := GetObjProperty( ghost, "#freedeath" );
 	if( freedeath )
-		EraseObjProperty( ghost, "freedeath" );
+		EraseObjProperty( ghost, "#freedeath" );
 		SetObjProperty(ghost, "death", ReadGameClock()+3600);
 		sleep(2);
 		ResurrectMobile(ghost);

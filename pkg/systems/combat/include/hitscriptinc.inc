@@ -437,7 +437,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			    defenderlevel := max(0, defenderlevel-1);
 			endif
 
-			basedamage := basedamage * (1 - (defenderlevel * 0.05) ) );
+			basedamage := basedamage * (1 - (defenderlevel * 0.05));
 
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Paladin reduction: "+basedamage, FONT_NORMAL, 2555 );
@@ -447,7 +447,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 				defenderlevel := max(0, defenderlevel-1);
 			endif
 
-			basedamage := basedamage * (1 - (defenderlevel * 0.10) ) );
+			basedamage := basedamage * (1 - (defenderlevel * 0.10));
 
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Warrior reduction: "+basedamage, FONT_NORMAL, 2555 );
@@ -457,7 +457,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			    defenderlevel := max(0, defenderlevel-1);
 			endif
 
-			basedamage := basedamage * (1 - (defenderlevel * 0.05) ) );
+			basedamage := basedamage * (1 - (defenderlevel * 0.05));
 
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Bladesinger reduction: "+basedamage, FONT_NORMAL, 2555 );
