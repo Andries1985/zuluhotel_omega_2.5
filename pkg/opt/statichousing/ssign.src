@@ -10,6 +10,7 @@ include ":gumps:old-gumps";
 include ":gumps:yesno";
 include ":housing:setup";
 include ":housing:utility";
+include "include/constants/usescriptids";
 
 Const UOBJECT_DOORS_START := 0x0675;
 Const UOBJECT_DOORS_END   := 0x06f4;
@@ -806,7 +807,7 @@ function HouseFunctionSecure( who, sign, num )
 			if (inside)
 				box.movable := 0;
 				SetObjProperty( box, "houseserial" , GetObjProperty(sign, "houseserial") );
-				box.usescript := ":housing:securecont";
+				box.usescript := USESCRIPTID_SECURE_CONTAINER;
 				SetObjProperty( sign, "CurrentSecures" , CInt( GetObjProperty( sign, "CurrentSecures") + 1 ) );
 				SendSysmessage( who , "Secure On." );
 			else

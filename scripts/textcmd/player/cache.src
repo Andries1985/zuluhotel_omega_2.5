@@ -52,10 +52,10 @@ program textcmd_cache(who, text)
 	endif
 
 	if(text == "deposit")
-		DoDepositAll(who, df);
+		DoDepositAll(who, access);
 
 	elseif(text == "deposit target")
-		DoDepositTargeting(who, df);
+		DoDepositTargeting(who, access);
 
 	elseif(text[1,8] == "withdraw")
 		var amount_str := text[10, len(text)];
@@ -92,7 +92,7 @@ program textcmd_cache(who, text)
 		DoCacheDump(who, df);
 
 	elseif(!text or text == "")
-		RunOmegaCacheGump(who, df);
+		RunOmegaCacheGump(who, access);
 
 	else
 		SendSysMessage(who, "Usage:");

@@ -7,6 +7,10 @@ include "include/itemutil";
 include "include/objtype";
 include "setup";
 include "utility";
+include "util/bank";
+include "include/constants/usescriptids";
+
+const CONFISCATION_TICKET_OBJTYPE := 0xDF0C;
 
 var bans, owns; // updated by CacheData
 
@@ -50,10 +54,8 @@ program SignListener( sign )
 			if( mobile.serial in bans )
 				MoveObjectToLocation( mobile, sign.x, sign.y, (sign.z-5), sign.realm ,MOVEOBJECT_FORCELOCATION );
 			endif
-			if(mobile.isa(POLCLASS_NPC) && GetObjProperty(mobile,"Boss") || GetObjProperty(mobile,"SuperBoss")) //(S)Boss Eviction
-				MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia",MOVEOBJECT_FORCELOCATION );
-				SetObjProperty(mobile, "guardkill", 1);
-				ApplyRawdamage(mobile, GetMaxHP(mobile) + 3 );
+			if(mobile.isa(POLCLASS_NPC) and (GetObjProperty(mobile, "Boss") or GetObjProperty(mobile, "SuperBoss")))
+				ConfiscateBossPet(mobile);
 			endif
 			if(mobile.isa(POLCLASS_NPC) && !GetObjProperty(mobile,"WarriorForHire") && !GetObjProperty(mobile,"nextpay"))
 				count := count+1;
@@ -224,7 +226,7 @@ function HouseFunctionSecure( house, event, num )
 				box.movable := 0;
 				SetObjProperty( box, "boxserial" , CInt( newbox.serial ) );
 				SetObjProperty( box, "houseserial" , CInt( house.serial ) );
-				box.usescript := ":housing:securecont";
+				box.usescript := USESCRIPTID_SECURE_CONTAINER;
 				SetObjProperty( house, "numsecure" , CInt( GetObjProperty( house, "numsecure") - 1 ) );
 				SendSysmessage( event.source , "Secure On." );
 			else
@@ -300,6 +302,85 @@ function Demolish(house, sign)
 	endif
 	DestroyMulti( house );
 
+endfunction
+
+function ConfiscateBossPet(mobile)
+	var master_serial := GetObjProperty(mobile, "master");
+	if(!master_serial or mobile.script != "tamed")
+		// Wild boss — kill outright
+		MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+		SetObjProperty(mobile, "guardkill", 1);
+		ApplyRawDamage(mobile, GetMaxHP(mobile) + 3);
+		return;
+	endif
+
+	var max_hp := CInt(GetObjProperty(mobile, "CustomHitsLevel"));
+	if(!max_hp)
+		max_hp := GetMaxHP(mobile);
+	endif
+	var fine := CInt(max_hp / 40);
+	var pet_name := mobile.name;
+
+	var master := SystemFindObjectBySerial(master_serial);
+	var master_online := 1;
+	if(!master)
+		master := SystemFindObjectBySerial(master_serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+		master_online := 0;
+	endif
+
+	if(!master)
+		MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+		SetObjProperty(mobile, "guardkill", 1);
+		ApplyRawDamage(mobile, GetMaxHP(mobile) + 3);
+		return;
+	endif
+
+	var ticket := 0;
+	var ticket_location := "";
+	if(master_online)
+		ticket := CreateItemInBackpack(master, CONFISCATION_TICKET_OBJTYPE);
+		if(ticket)
+			ticket_location := "backpack";
+		endif
+	endif
+
+	if(!ticket)
+		var bankbox := FindBankBox(master);
+		if(bankbox)
+			ticket := CreateItemInContainer(bankbox, CONFISCATION_TICKET_OBJTYPE);
+			if(ticket)
+				ticket_location := "bank";
+			endif
+		endif
+	endif
+
+	if(!ticket)
+		MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+		SetObjProperty(mobile, "guardkill", 1);
+		ApplyRawDamage(mobile, GetMaxHP(mobile) + 3);
+		if(master_online)
+			SendSysMessage(master, "Your pet " + pet_name + " was destroyed for entering a house. A claim ticket could not be created — your backpack and bank are full.", 3, 43);
+		endif
+		return;
+	endif
+
+	ticket.name := "Confiscated pet ticket - " + pet_name + " - Fine: " + fine + "gp";
+	SetObjProperty(ticket, "petname", mobile.name);
+	SetObjProperty(ticket, "pettemplate", mobile.npctemplate);
+	SetObjProperty(ticket, "pethp", GetHP(mobile));
+	SetObjProperty(ticket, "petmana", GetMana(mobile));
+	SetObjProperty(ticket, "petcolor", mobile.color);
+	SetObjProperty(ticket, "owner_serial", master_serial);
+	SetObjProperty(ticket, "confiscation_fine", fine);
+
+	MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+	SetObjProperty(mobile, "guardkill", 1);
+	ApplyRawDamage(mobile, GetMaxHP(mobile) + 3);
+
+	if(master_online)
+		SendSysMessage(master, "Your pet " + pet_name + " has been confiscated for entering a house.");
+		SendSysMessage(master, "A claim ticket has been placed in your " + ticket_location + ". Visit an Animal Trainer and pay " + fine + "gp to reclaim it.", 3, 43);
+	endif
 endfunction
 
 function InsideTent(who,house)

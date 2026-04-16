@@ -12,6 +12,7 @@ use math;
 
 include "include/canstack";
 include "include/client";
+include "include/constants/usescriptids";
 include "include/omegacache_utils";
 include ":housing:utility";
 include ":gumps:gumps";
@@ -109,6 +110,10 @@ function GetNonDefaultProperties(item)
 	var desc := GetItemDescriptor(item.objtype);
 	var props := dictionary;
 
+	if(!desc)
+		return props;
+	endif
+
 	// Properties compared against itemdesc defaults
 	if(item.graphic != desc.Graphic)
 		props["graphic"] := item.graphic;
@@ -145,10 +150,21 @@ function GetNonDefaultProperties(item)
 		props["weight_multiplier_mod"] := item.weight_multiplier_mod;
 	endif
 
-	// CProps — always per-instance
+	// CProps — per-instance, skip ignored CProps from stacking_ignore.cfg
+	var ignore_cfg := ReadConfigFile(":omegacache:stacking_ignore");
+	var ignore_elem := FindConfigElem(ignore_cfg, "IgnoreCProps");
+	var ignore_list := dictionary;
+	if(ignore_elem)
+		foreach propname in (ListConfigElemProps(ignore_elem))
+			ignore_list[propname] := 1;
+		endforeach
+	endif
+
 	var cprop_names := GetObjPropertyNames(item);
 	foreach propname in cprop_names
-		props["cprop_" + propname] := GetObjProperty(item, propname);
+		if(!ignore_list[propname])
+			props["cprop_" + propname] := GetObjProperty(item, propname);
+		endif
 	endforeach
 
 	return props;
@@ -364,7 +380,10 @@ function DepositItem(df, key, item)
 	// Store metadata on first deposit for this key
 	if(current_qty == 0)
 		elem.SetProp("objtype", item.objtype);
-		elem.SetProp("weight", GetItemDescriptor(item.objtype).Weight);
+		var dep_desc := GetItemDescriptor(item.objtype);
+		if(dep_desc)
+			elem.SetProp("weight", dep_desc.Weight);
+		endif
 
 		// Store non-default properties for recreation on withdrawal
 		var props := GetNonDefaultProperties(item);
@@ -727,6 +746,9 @@ function IsEligibleForStorage(item)
 	if(!item.stackable)
 		return 0;
 	endif
+	if(!item.movable)
+		return 0;
+	endif
 
 	// Lazy-load blacklist
 	if(!_omegacache_blacklist)
@@ -770,7 +792,7 @@ function FindAccessibleContainer(who, required_privileges)
 			endif
 
 			// Must be inside the same house the cache belongs to
-			if(who.multi.serial != house.serial and who.cmdlevel < 4)
+			if(who.multi and who.multi.serial != house.serial and who.cmdlevel < 4)
 				continue;
 			endif
 
@@ -893,13 +915,18 @@ function DepositFromContainer(who, df, container)
 endfunction
 
 // Deposit with targeting loop.
-function DoDepositTargeting(who, df)
+function DoDepositTargeting(who, access)
+	var df := access.df;
 	var tgt;
 	while(1)
 		SendSysMessage(who, "Target an item or container to deposit. Press ESC to stop.");
 		tgt := Target(who);
 		if(!tgt)
 			break;
+		endif
+
+		if(!ValidateDepositTarget(who, access, tgt))
+			continue;
 		endif
 
 		if(tgt.isa(POLCLASS_CONTAINER))
@@ -911,13 +938,145 @@ function DoDepositTargeting(who, df)
 endfunction
 
 // Deposit all eligible items from backpack.
-function DoDepositAll(who, df)
+function DoDepositAll(who, access)
+	if(!ValidateDepositTarget(who, access, who.backpack))
+		return 0;
+	endif
+	if(!ConfirmDepositAll(who))
+		SendSysMessage(who, "Deposit cancelled.");
+		return 0;
+	endif
+	var df := access.df;
 	SendSysMessage(who, "Depositing all eligible items from your backpack...");
 	var total := DepositFromContainer(who, df, who.backpack);
 	if(total == 0)
 		SendSysMessage(who, "No eligible items found in your backpack.");
 	endif
 	return total;
+endfunction
+
+const BTN_CONFIRM_DEPOSIT_ALL := 1;
+
+function ConfirmDepositAll(who)
+	var w := 400;
+	var h := 150;
+	var gx := (800 - w) / 2;
+	var gy := (600 - h) / 2;
+	var gump := GFCreateGump(gx, gy);
+	GFPage(gump, 0);
+	GFResizePic(gump, 0, 0, 9270, w, h);
+	GFResizePic(gump, 10, 10, 9350, w - 20, h - 20);
+
+	var line1 := "Deposit All";
+	var line2 := "This will deposit all stackable items";
+	var line3 := "from your backpack into the cache.";
+	GFTextLine(gump, (w - len(line1) * 6) / 2, 18, TEXT_HUE_HIGHLIGHT, line1);
+	GFTextLine(gump, (w - len(line2) * 6) / 2, 50, TEXT_HUE, line2);
+	GFTextLine(gump, (w - len(line3) * 6) / 2, 70, TEXT_HUE, line3);
+
+	var btn_area := 195;
+	var btn_start := (w - btn_area) / 2;
+	GFAddButton(gump, btn_start, h - 40, 4005, 4007, GF_CLOSE_BTN, BTN_CONFIRM_DEPOSIT_ALL);
+	GFTextLine(gump, btn_start + 35, h - 40, TEXT_HUE_DEPOSIT, "Confirm");
+	GFAddButton(gump, btn_start + 130, h - 40, 4017, 4019, GF_CLOSE_BTN, 0);
+	GFTextLine(gump, btn_start + 165, h - 40, TEXT_HUE, "Cancel");
+
+	var result := GFSendGump(who, gump);
+	return result[0];
+endfunction
+
+// Validates that a deposit target is allowed.
+// Returns 1 if valid, 0 if rejected (sends message to player).
+function ValidateDepositTarget(who, access, tgt)
+	// If no access struct, skip validation (backwards compatibility)
+	if(!access)
+		return 1;
+	endif
+
+	// Player must be in the cache's house
+	if(!who.multi or who.multi.serial != access.house.serial)
+		SendSysMessage(who, "You must be inside the house to deposit items.");
+		return 0;
+	endif
+
+	// Target is the player's backpack — always valid if player is in house
+	if(tgt.serial == who.backpack.serial)
+		return 1;
+	endif
+
+	// Corpses are not valid deposit targets or sources
+	if(tgt.isa(POLCLASS_CORPSE))
+		SendSysMessage(who, "You cannot deposit from a corpse.");
+		return 0;
+	endif
+	var corpse_check := tgt.container;
+	while(corpse_check)
+		if(corpse_check.isa(POLCLASS_CORPSE))
+			SendSysMessage(who, "You cannot deposit items from a corpse.");
+			return 0;
+		endif
+		corpse_check := corpse_check.container;
+	endwhile
+
+	// Must be accessible and within range
+	if(!Accessible(who, tgt))
+		SendSysMessage(who, "You can't reach that.");
+		return 0;
+	endif
+	// Range check — find the top-level world object (walk up containers)
+	var world_obj := tgt;
+	while(world_obj.container)
+		world_obj := world_obj.container;
+	endwhile
+	if(Distance(who, world_obj) > 2)
+		SendSysMessage(who, "That is too far away.");
+		return 0;
+	endif
+
+	// Walk up the container chain — item must trace back to
+	// player's backpack or be within the cache's house
+	var check := tgt.container;
+	while(check)
+		if(check.serial == who.backpack.serial)
+			return 1;
+		endif
+		check := check.container;
+	endwhile
+
+	// Not in backpack — check if item is within the house
+	var in_house := 0;
+	check := tgt;
+	while(check)
+		if(check.multi and check.multi.serial == access.house.serial)
+			in_house := 1;
+			break;
+		endif
+		check := check.container;
+	endwhile
+
+	if(!in_house)
+		SendSysMessage(who, "You can only deposit items from your backpack or from within this house.");
+		return 0;
+	endif
+
+	// Check if the target itself or any parent is a secured container
+	check := tgt;
+	while(check)
+		if(check.usescript == USESCRIPTID_SECURE_CONTAINER)
+			// Inside a secured container — check access
+			var owner_serial := GetObjProperty(access.house, "ownerserial");
+			if(who.serial != owner_serial and !IsCowner(who, access.house))
+				if(!IsFriend(who, access.house, REMOVE_FROM_SECURE))
+					SendSysMessage(who, "You don't have permission to remove items from that container.");
+					return 0;
+				endif
+			endif
+			break;
+		endif
+		check := check.container;
+	endwhile
+
+	return 1;
 endfunction
 
 // ============================================================
@@ -1464,7 +1623,8 @@ endfunction
 
 // Runs the interactive gump loop for browsing/depositing/withdrawing.
 // Called by both the use-script (double-click) and the .cache text command.
-function RunOmegaCacheGump(who, df)
+function RunOmegaCacheGump(who, access)
+	var df := access.df;
 	// Block multiple gump instances
 	if(CInt(GetObjProperty(who, "#omegacache_open")) > ReadGameClock())
 		SendSysMessage(who, "You already have the Omega Cache open.");
@@ -1505,18 +1665,10 @@ function RunOmegaCacheGump(who, df)
 		endif
 
 		if(btn == BTN_DEPOSIT_ITEM)
-			if(FindAccessibleContainer(who, array{ADD_TO_SECURE}))
-				DoDepositTargeting(who, df);
-			else
-				SendSysMessage(who, "You don't have permission to deposit items.");
-			endif
+			DoDepositTargeting(who, access);
 
 		elseif(btn == BTN_DEPOSIT_ALL)
-			if(FindAccessibleContainer(who, array{ADD_TO_SECURE}))
-				DoDepositAll(who, df);
-			else
-				SendSysMessage(who, "You don't have permission to deposit items.");
-			endif
+			DoDepositAll(who, access);
 
 		elseif(btn == BTN_BACK)
 			view := "categories";

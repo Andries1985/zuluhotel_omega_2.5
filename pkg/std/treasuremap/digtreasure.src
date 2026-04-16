@@ -185,7 +185,7 @@ program dig_treasure( character , unused shovel )
 							CreateGuardian( template, chestx, chesty, chestz );
 						endfor
 
-						if(lvl == 4 or lvl == 5)
+						if(lvl == 4 or lvl == 5 or lvl == 6)
 							elem := FindConfigElem( cfgfile , lvl );
 							num	:= GetConfigInt( elem,"num" );
 							rand := Random( num ) + 1;
@@ -213,7 +213,7 @@ program dig_treasure( character , unused shovel )
 		endwhile
 		
 		SendSysmessage( character , "Now that all guardians were defeated, the treasure is revealed!" );
-		var chest	 := CreateTreasureChest( lvl , chestx , chesty , chestz );
+		var chest	 := CreateTreasureChest( lvl , chestx , chesty , chestz , character );
 		SetObjProperty( chest , "treasurechest" , 1 );
 		chest.saveonexit := 0;
 		chest.decayat	 := Cint(ReadGameClock()) + 1010;
@@ -222,9 +222,21 @@ program dig_treasure( character , unused shovel )
 
 endprogram
 
-function CreateTreasureChest( lvl , x , y , z )
+function CreateTreasureChest( lvl , x , y , z , digger )
 
 	var chest := CreateItemAtLocation( x , y , z , UOBJECT_TREASURE_CHEST , 1 );
+	SetObjProperty( chest, "KilledBySerial", digger.serial );
+
+	if(DEBUG_MODE)
+		if(GetObjProperty(digger, "#PPHH"))
+			SendSysMessage( digger, "[DEBUG] Treasure chest loot (lvl " + lvl + "): Personal Power Hour (PPHH) active" );
+		elseif(GetGlobalProperty("PHH"))
+			SendSysMessage( digger, "[DEBUG] Treasure chest loot (lvl " + lvl + "): Global Power Hour (PHH) active" );
+		else
+			SendSysMessage( digger, "[DEBUG] Treasure chest loot (lvl " + lvl + "): No Power Hour active" );
+		endif
+	endif
+
 	var lootgroup;
 	var magiclevelup;
 	var magicchance;

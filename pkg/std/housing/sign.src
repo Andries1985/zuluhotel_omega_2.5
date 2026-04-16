@@ -11,6 +11,7 @@ include "utility";
 include "include/random";
 include ":gumps:old-gumps";
 include "include/client";
+include "include/constants/usescriptids";
 include "include/omegacache_utils";
 
 Const UOBJECT_DOORS_START := 0x0675;
@@ -1197,7 +1198,7 @@ function HouseFunctionSecure( who, house, num )
 			if (inside)
 				box.movable := 0;
 				SetObjProperty( box, "houseserial" , CInt( house.serial ) );
-				box.usescript := ":housing:securecont";
+				box.usescript := USESCRIPTID_SECURE_CONTAINER;
 				SetObjProperty( house, "numsecure" , CInt( GetObjProperty( house, "numsecure") - 1 ) );
 				SendSysmessage( who , "Secure On." );
 			else

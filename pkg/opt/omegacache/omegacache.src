@@ -22,14 +22,13 @@ program use_omegacache(who, item)
 		return;
 	endif
 
-	var df := access.df;
-	if(!df)
+	if(!access.df)
 		SendSysMessage(who, "Failed to open storage.");
 		return;
 	endif
 
 	detach();
 
-	RunOmegaCacheGump(who, df);
+	RunOmegaCacheGump(who, access);
 
 endprogram

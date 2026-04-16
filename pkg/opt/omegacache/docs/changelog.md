@@ -784,14 +784,38 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 58. **Duplicate `AutoLoop_finish()` in bowcraft** — `AutoLoop_finish()` called inside the while loop (else branch) AND after the loop. Replaced inner call with `break` to exit loop normally. Single `AutoLoop_finish()` after endwhile.
 
+### Post-RC Security & Data Integrity (2026-04-15)
+
+59. **Deposit target validation** — New centralised `ValidateDepositTarget(who, access, tgt)` function gates all deposit operations. Checks: player is in cache's house, target is accessible and within 2 tiles (via top-level world object for nested items), target is in player's backpack or in the same house, secured container permissions checked via `IsFriend(who, house, REMOVE_FROM_SECURE)` by walking from the target itself up the container chain for `usescript == USESCRIPTID_SECURE_CONTAINER`. The `movable` check was moved to `IsEligibleForStorage` (item-level) so locked-down non-secure containers can be targeted for depositing their contents. Prevents cross-house theft via cache deposits.
+
+60. **`RunOmegaCacheGump` signature refactored** — Changed from `(who, df)` to `(who, access)`. `df` extracted internally. `DoDepositTargeting` and `DoDepositAll` also changed to take `access` instead of `df`. Eliminates redundant `FindAccessibleContainer` calls on deposit actions.
+
+61. **`stacking_ignore.cfg`** — New config file defining CProps excluded from cache key identity: `BackPackXYZ`, `IDed`, `#SecureRemove`, `fromLoot`. Items differing only by these CProps merge into same cache entry. `BaseName` and `foodvalue` deliberately preserved. Ignored CProps stripped on deposit, not restored on withdrawal.
+
+62. **`CanStack` updated** — Added `item.inuse` check and `stacking.cfg` ignored CProps filtering to match POL core's `can_add_to_self()` behaviour. Reads `config/stacking.cfg` `IgnoreCprops` and filters before comparing.
+
+63. **`USESCRIPTID_SECURE_CONTAINER` constant** — Replaced string literal `":housing:securecont"` with constant in `sign.src`, `signcontrol.src`, `ssign.src`. Include added to each file.
+
+64. **Category additions** — ~160 new item mappings: cooking items (variants, bowls, pies, cakes, pizzas, bread, bacon, cheese, sausage, donuts, jerky), raw ingredients (dough, batter, flour, corn), 68 AlchemyPlus potions (`0xFF4E`-`0xFF95`, `0xFFA2`), 8 talisman gems (`0x213F`-`0x2146`), 9 fishing shells, 10 verse book scrolls, candlemaking materials (beeswax, pot of wax, dipping stick), bloody bandages, missing fish variants (`0x09CC`, `0xA370`).
+
+65. **Deposit All confirmation** — `DoDepositAll` now shows a `YesNoVar` confirmation gump before depositing. Warns the player that all stackable items from their entire backpack will be moved to the cache. Cancel aborts the operation.
+
 ### Files Modified
 
-- `scripts/items/bladed.src` — Added specialRequest lease lifecycle, fixed duplicate AutoLoop_finish
-- `pkg/opt/omegacache/itemdesc.cfg` — `Item` → `Container`, added `Gump`, `MinX/MaxX/MinY/MaxY`, `MaxItems`, `MaxSlots`, `OnInsertScript`, `DoubleclickRange`
+- `pkg/opt/omegacache/omegacache.inc` — `ValidateDepositTarget()`, `RunOmegaCacheGump(who, access)` signature, deposit function signatures, `GetNonDefaultProperties` reads `stacking_ignore.cfg`, `DoDepositAll` confirmation gump, `include ":gumps:yesNoSizable"`
+- `pkg/opt/omegacache/omegacache.src` — Updated `RunOmegaCacheGump` call to pass `access`
+- `pkg/opt/omegacache/stacking_ignore.cfg` — New file
+- `pkg/opt/omegacache/categories.cfg` — ~160 new item mappings
 - `pkg/opt/omegacache/cacheinsert.src` — New file. `OnInsertScript` for drag-and-drop deposit.
+- `pkg/opt/omegacache/itemdesc.cfg` — `Item` → `Container`, added `Gump`, `MinX/MaxX/MinY/MaxY`, `MaxItems`, `MaxSlots`, `OnInsertScript`, `DoubleclickRange`
 - `pkg/opt/omegacache/placecache.src` — Lazy-init for `numomegacache`/`maxnumomegacache`
-- `pkg/std/housing/sign.src` — Explicit cache container destruction via `house.items` on demolition
-- `pkg/opt/omegacache/categories.cfg` — Added Baked Ham (`0xC920`), Honey Baked Ham (`0xC921`) to Food. Blank Map variant (`0x14EB`) to Miscellaneous.
-- `pkg/std/cooking/cooking.src` — Autodraw for backpack path. Cache resolved once at entry. Lease lifecycle for main ingredient. `destroy_all_ingredients` cache fallback.
-- `pkg/std/cartography/cartography.src` — `MakeBackpackRequest` for autodraw. Simplified `ConsumeMap`. `makeNewmap` create-before-consume.
+- `scripts/textcmd/player/cache.src` — Updated deposit/gump calls to pass `access`
+- `scripts/include/canstack.inc` — `inuse` check, `stacking.cfg` filtering
+- `scripts/items/bladed.src` — Added specialRequest lease lifecycle, fixed duplicate AutoLoop_finish
+- `config/stacking.cfg` — Comment referencing `stacking_ignore.cfg`
+- `pkg/std/housing/sign.src` — `USESCRIPTID_SECURE_CONTAINER` constant, cache container destruction via `house.items`
+- `pkg/std/housing/signcontrol.src` — `USESCRIPTID_SECURE_CONTAINER` constant
+- `pkg/opt/statichousing/ssign.src` — `USESCRIPTID_SECURE_CONTAINER` constant
+- `pkg/std/cooking/cooking.src` — Autodraw for backpack path. Cache resolved once at entry. Lease lifecycle.
+- `pkg/std/cartography/cartography.src` — `MakeBackpackRequest` for autodraw. `makeNewmap` create-before-consume.
 
