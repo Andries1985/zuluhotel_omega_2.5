@@ -17,7 +17,7 @@ include "include/constants/propids";
 include "include/packets";
 include ":areas:include/areafunctions";
 
-program chrdeath(corpse,ghost) 
+program chrdeath(corpse,ghost)
 
 	corpse.decayat := ReadGameClock()+2700;
 	// Toad - Applying the latest player corpse serial to the player.  Only used for the pvp.src
@@ -40,12 +40,12 @@ program chrdeath(corpse,ghost)
 	endforeach
 
 	var acc := plyr.acct;
-	var accname := acc.name;	
+	var accname := acc.name;
 	if(plyr)
 		SetObjProperty( ghost,"KillerSerial",plyr.serial);
 		SetObjProperty( corpse,"KillerSerial",plyr.serial);
 		SetObjProperty( ghost,"KillerAcct",accname);
-		SetObjProperty ( corpse, "KillerAcct", accname );	
+		SetObjProperty ( corpse, "KillerAcct", accname );
 	endif
 	var wasguarded:=getobjproperty(ghost,PROPID_MOBILE_GUARD_KILLED);
 	SetObjProperty( ghost, "Killer", killer);
@@ -68,7 +68,7 @@ program chrdeath(corpse,ghost)
 	EraseObjProperty( ghost, PROPID_MOBILE_GUARD_KILLED );
 	EraseObjProperty( ghost, PROPID_MOBILE_MAGIC_REFLECTION );
 	SetObjProperty( corpse, PROPID_CORPSE_CORPSE_OF, ghost.serial );
-	
+
 	// anti looting stuff
 	if( !ghost.criminal )
 		if( !ghost.murderer )
@@ -94,15 +94,15 @@ program chrdeath(corpse,ghost)
 		EraseObjProperty( ghost, "pvping" );
 		sleep (2);
 		ResurrectMobile(ghost);
-		SetHP(ghost, GetMaxHP(ghost));	
-		SetMana(ghost, GetMaxMana(ghost));	
+		SetHP(ghost, GetMaxHP(ghost));
+		SetMana(ghost, GetMaxMana(ghost));
 		SetStamina(ghost, GetMaxStamina(ghost));
 		ghost.warmode:= 0;
 		var mount2;
 		foreach item in ListRootItemsInContainerOfObjtype(corpse,0x1F021)
 			mount2:=item;
 		endforeach
-		if(mount2) 
+		if(mount2)
 			EquipItem(ghost,mount2);
 		endif
 		foreach item in EnumerateItemsInContainer( corpse )
@@ -140,7 +140,7 @@ program chrdeath(corpse,ghost)
 	endif
 
 	var bmdeath := GetObjProperty( ghost, "bmPlayer" );
-	if(  bmdeath  ) 
+	if(  bmdeath  )
 		if( GetObjProperty(ghost, "bmSpeed") )
 			EraseObjProperty(ghost, "bmSpeed");
 			SendPacket( ghost, "BF0006002600" );
@@ -149,15 +149,15 @@ program chrdeath(corpse,ghost)
 		EraseObjProperty( ghost, "bmColor");
 		sleep (2);
 		ResurrectMobile(ghost);
-		SetHP(ghost, GetMaxHP(ghost));	
-		SetMana(ghost, GetMaxMana(ghost));	
+		SetHP(ghost, GetMaxHP(ghost));
+		SetMana(ghost, GetMaxMana(ghost));
 		SetStamina(ghost, GetMaxStamina(ghost));
 		ghost.warmode:= 0;
 		var mount2;
 		foreach item in ListRootItemsInContainerOfObjtype(corpse,0x1F021)
 			mount2:=item;
 		endforeach
-		if(mount2) 
+		if(mount2)
 			EquipItem(ghost,mount2);
 		endif
 		foreach item in EnumerateItemsInContainer( corpse )
@@ -240,6 +240,63 @@ program chrdeath(corpse,ghost)
 		RemoveCamouflage( ghost );
 	endif
 
+	var freedeath := GetObjProperty( ghost, "freedeath" );
+	if( freedeath )
+		EraseObjProperty( ghost, "freedeath" );
+		SetObjProperty(ghost, "death", ReadGameClock()+3600);
+		sleep(2);
+		ResurrectMobile(ghost);
+		CurePoison(ghost);
+		SetHP(ghost, GetMaxHP(ghost));
+		SetMana(ghost, GetMaxMana(ghost));
+		SetStamina(ghost, GetMaxStamina(ghost));
+		ghost.warmode := 0;
+		ghost.hidden := 1;
+		var mount2;
+		foreach item in ListRootItemsInContainerOfObjtype(corpse,0x1F021)
+			mount2:=item;
+		endforeach
+		if(mount2)
+			EquipItem(ghost,mount2);
+		endif
+		foreach item in EnumerateItemsInContainer( corpse )
+			if (item.container.serial == corpse.serial)
+				if(!MoveItemToContainer( item, ghost.backpack ))
+					ReleaseItem( item );
+					SleepMS(100);
+					MoveItemToContainer( item, ghost.backpack );
+				endif
+			endif
+		endforeach
+		sleepms(100);
+		foreach item in EnumerateItemsInContainer( corpse )
+			sleepms(100);
+			item.movable := 1;
+			if(!MoveItemToContainer( item, ghost.backpack ))
+				ReleaseItem( item );
+				SleepMS(100);
+				MoveItemToContainer( item, ghost.backpack );
+			endif
+		endforeach
+		var oktodestroy2 := 1;
+		foreach item in EnumerateItemsInContainer( corpse )
+			if (item)
+				oktodestroy2 := 0;
+			endif
+		endforeach
+		if (oktodestroy2)
+			DestroyItem(corpse);
+		else
+			SendSysMessage(ghost,"There are still items left on your corpse - please page staff.");
+		endif
+		if(len(ghost.reportables)>0)
+			SendReportGump(ghost);
+		endif
+		EraseObjProperty(ghost,"mr");
+		SendSysMessage(ghost, "Death has pardoned your transgression...");
+		return;
+	endif
+
 	if( ghost.dead and (ghost.graphic != 0x192) and (ghost.graphic != 0x193) )
 	  	ghost.graphic := 402 + Cint(ghost.gender);
 	endif
@@ -251,8 +308,8 @@ program chrdeath(corpse,ghost)
 		mount:=item;
 	endforeach
 
-	if(mount) 
-		Dismount(ghost,mount); 
+	if(mount)
+		Dismount(ghost,mount);
 	endif
 
 	SetPlayerWarMode(ghost, 0);
@@ -265,7 +322,7 @@ program chrdeath(corpse,ghost)
 
 	// Find out what this prop is
 	EraseObjProperty(ghost,"mr");
-	
+
 	// What's this for? It's the time of death PLUS an hour
 	SetObjProperty(ghost,"death",ReadGameClock()+3600);
 
@@ -284,8 +341,8 @@ function FindMyPack(myserial)
     var bank_obj_name:="Bankbox  "+hex(myserial);
     var bankbox:=FindRootItemInStorageArea(mybank,bank_obj_name);
 
-    if (!bankbox) 
-		bankbox:=CreateRootItemInStorageArea(mybank,bank_obj_name,UOBJ_BANKBOX); 
+    if (!bankbox)
+		bankbox:=CreateRootItemInStorageArea(mybank,bank_obj_name,UOBJ_BANKBOX);
 	endif
 
     return bankbox;
@@ -296,8 +353,8 @@ endfunction
 function OpenTamedStorageAreas()
     var bank:=FindStorageArea("Tamed Storage");
 
-    if (!bank) 
-		bank:=CreateStorageArea("Tamed Storage"); 
+    if (!bank)
+		bank:=CreateStorageArea("Tamed Storage");
 	endif
 
     return bank;
