@@ -36,7 +36,6 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 
 ### NPC and Equipment Fixes
 
-- **Mondain's Staff**: Typo fix — "Modain" → "Mondain" in both the item name (`MondainsStaffWeapon`) and description (`Mondain's Staff`). Equipment config updated to match.
 - **Undead Flayer weapon**: Graphic changed from `0x0ec4` to `0x27a7`, sounds changed (`0x16D`/`0x239` → `0x13C`/`0x234`), attribute formatting fixed.
 - **NPC equipment swaps**: Some NPCs had their equipment assignments rotated between `undeadflayer`, `behemoth`, and `mondainstaff` configs.
 - **Chaos AI bow hitscript**: Changed from `staminadrainscript` to `banishscript` for the chaos multi-kill AI's bow weapon.
@@ -140,7 +139,6 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 
 ### NPC and Equipment
 - `pkg/systems/combat/config/itemdesc.cfg` — Mondain's Staff name/desc, Undead Flayer graphic/sounds, whitespace cleanup
-- `config/equip.cfg` — `ModainsStaffWeapon` → `MondainsStaffWeapon`
 - `config/npcdesc.cfg` — NPC equipment swaps, Poisoning skill addition, whitespace cleanup
 - `scripts/ai/chaosmultikillpcs.src` — Chaos AI bow hitscript changed to `banishscript`
 
