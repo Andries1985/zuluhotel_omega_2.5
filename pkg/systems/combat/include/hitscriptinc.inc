@@ -462,9 +462,7 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Bladesinger reduction: "+basedamage, FONT_NORMAL, 2555 );
 			endif
-		endif
-		// Mage damage reduction.
-		if( GetObjProperty( attacker, CLASSEID_MAGE ) )
+		elseif( GetObjProperty( attacker, CLASSEID_MAGE ) ) // Mage damage reduction.
 			basedamage := basedamage / ClasseSmallBonusByLevel( level );
 			if(DEBUG_MODE)
 				SendSysMessage( attacker, "Mage reduction: "+basedamage, FONT_NORMAL, 2555 );

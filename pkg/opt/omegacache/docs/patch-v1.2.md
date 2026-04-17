@@ -28,7 +28,6 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 - **NPC class damage bonus**: NPCs no longer receive player class-level damage bonuses (PvP/PvE multipliers). The NPC path is now an explicit empty block.
 - **Bladesinger damage reduction**: Remains as `defender` class check — reduces damage taken by Bladesinger defenders. Multiplier reduced from 0.075 to 0.05 per level.
 - **Paladin/Warrior damage reduction**: Extra closing parenthesis introduced in reduction formula — **this is a syntax error that will cause compilation failure** (lines ~399 and ~410: `(1 - (defenderlevel * 0.05) ) )` and `(1 - (defenderlevel * 0.10) ) )`).
-- **Mage damage reduction**: Changed from `elseif` chained with Bladesinger to a separate `if` block. Mage reduction now applies independently of the Warrior/Paladin/Bladesinger reduction.
 
 ### Combat Balance — Spell Resistance (`spelldata.inc`)
 
