@@ -389,11 +389,6 @@ function Calcdamage(who, xObject, basedamage)
 	if( xObject.quality > 1)
 		basedamage += (xObject.quality - 1) * 15;
 	endif
-
-	var hp_percent := CDbl(xObject.hp) / CDbl(xObject.maxhp);
-	if (hp_percent < 0.5)
-		basedamage *= hp_percent;
-	endif
 	
 	if( xObject.attribute == ATTRIBUTEID_ARCHERY )
 		if(!who.isA(POLCLASS_NPC))

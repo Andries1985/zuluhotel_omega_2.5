@@ -57,7 +57,7 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 
 - **AR display**: Armor tooltips now show `AR: X (Y)` where X is the effective AR based on the viewing player's stats and Y is the effective AR at a baseline of 150 parry (shields) or the same zone-weighted value (regular armor). Previously shields showed raw AR which didn't match the character stat panel.
 - **`CS_GetEffectiveArmor` rewrite** (`armorZones.inc`): Aligned with POL core's `refresh_ar()` in `charactr.cpp`. Regular armor uses the item's fixed AR and coverage zone chances. Shields are detected by having no Coverage entries (matching core's `zones.empty()` check) rather than by equip layer, so the calculation works whether the item is equipped, in a container, or on the ground. Shields use the core's parry formula: `shield_ar * parry_skill * 0.5 * 0.01` with a minimum contribution of 1. Zero parry correctly returns 1 (not raw AR). Durability scaling is not applied — the tooltip shows the item's base AR stat, not the durability-adjusted combat value. Accepts optional `who` parameter for actual parry skill and `parry_override` for baseline calculations.
-- **DPS display**: Weapon tooltips now show `DPS: X (Y)` where X is the class/quality-modified DPS and Y is the raw average base DPS at a fixed 130 dexterity without player modifiers.
+- **DPS display**: Weapon tooltips now show `DPS: X (Y)` where X is the class/quality-modified DPS and Y is the raw average base DPS at a fixed 130 dexterity without player modifiers. Durability scaling removed from the tooltip's `Calcdamage` function — DPS shows the weapon's fixed damage output, not degraded by condition. This function is local to `itemdata.src` and does not affect combat calculations.
 
 ---
 
