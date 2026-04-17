@@ -53,10 +53,11 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 - **Players only**: The crystal's AoE effect now skips NPCs (`isA(POLCLASS_NPC)` check). Previously it would set `#freedeath` on all mobiles within 15 tiles including NPCs.
 - **Murder reporting preserved**: `SendReportGump` and `mr` property cleanup still execute — the crystal saves you from death, not from justice.
 
-### Tooltip Improvements (`itemdata.src`)
+### Tooltip Improvements (`itemdata.src`, `armorZones.inc`)
 
-- **AR display**: Armor tooltips now show `AR: X (Y)` where X is the effective weighted AR (based on coverage zone hit chance) and Y is the raw item AR value. Previously only the effective value was shown, which confused players (e.g. a platemail breastplate with AR 25 showed "AR: 11" because Body zone has a 44% hit chance).
-- **DPS display**: Weapon tooltips now show `DPS: X (Y)` where X is the class/quality-modified DPS and Y is the raw average base DPS without any player modifiers.
+- **AR display**: Armor tooltips now show `AR: X (Y)` where X is the effective AR based on the viewing player's stats and Y is the effective AR at a baseline of 150 parry (shields) or the same zone-weighted value (regular armor). Previously shields showed raw AR which didn't match the character stat panel.
+- **`CS_GetEffectiveArmor` rewrite** (`armorZones.inc`): Aligned with POL core's `refresh_ar()` in `charactr.cpp`. Regular armor now factors in durability (`hp/maxhp`) and coverage zone chances. Shields (layer 1/2) now use the core's parry formula: `shield_ar * (hp/maxhp) * parry_skill * 0.5 * 0.01` with a minimum contribution of 1. Accepts optional `who` parameter for actual parry skill and `parry_override` for baseline calculations.
+- **DPS display**: Weapon tooltips now show `DPS: X (Y)` where X is the class/quality-modified DPS and Y is the raw average base DPS at a fixed 130 dexterity without player modifiers.
 
 ---
 
@@ -119,10 +120,12 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 
 | Area | What to Test |
 |------|-------------|
-| **Armor AR tooltip** | Hover over armor pieces. Verify tooltip shows `AR: X (Y)` where X is the effective weighted value and Y in brackets is the raw AR. E.g. a platemail breastplate with AR 25 should show `AR: 11 (25)`. |
-| **Shield AR tooltip** | Hover over a shield. Verify the raw AR in brackets matches the item's actual AR value. |
-| **Weapon DPS tooltip** | Hover over a weapon. Verify tooltip shows `DPS: X (Y)` where X is the modified DPS and Y in brackets is the raw average base DPS. The modified value should be higher than raw for most classes. |
-| **No-class DPS** | Log in with a character that has no class. Hover over a weapon. Verify both DPS values are reasonable and close together (minimal class bonuses). |
+| **Shield AR tooltip** | Equip a shield and note the Physical Resistance (AR) change on the character stat panel. Hover over the shield — verify the first AR value in the tooltip matches the stat panel change. The bracket value should show the AR at 150 parry baseline. |
+| **Shield AR with different parry** | Compare the tooltip AR on the same shield with two characters of different parry skill. The first value should differ, the bracket value should be the same. |
+| **Armor AR tooltip** | Hover over regular armor pieces (helm, chest, etc). Verify tooltip shows `AR: X (Y)` where both values are zone-weighted. E.g. a platemail breastplate with AR 25 and Body coverage (44%) should show approximately `AR: 11 (11)`. |
+| **Damaged armor AR** | Damage an armor piece (reduce HP). Verify the AR tooltip value decreases proportionally to `hp/maxhp`. |
+| **Weapon DPS tooltip** | Hover over a weapon. Verify tooltip shows `DPS: X (Y)` where X is the class/quality-modified DPS and Y is the raw base DPS at 130 dexterity. |
+| **No-class DPS** | Log in with a character that has no class. Hover over a weapon. Verify both DPS values are close together (minimal class bonuses). |
 
 ---
 
