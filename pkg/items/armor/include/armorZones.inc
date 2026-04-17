@@ -140,7 +140,7 @@ function CS_GetEffectiveArmor(item, who := 0, parry_override := 0)
 	var effective_ar := 0.0;
 	foreach area in coverage
 		foreach zone in GetConfigIntKeys(zone_cfg)
-			if (zone_cfg[zone].Name == area)
+			if (lower(zone_cfg[zone].Name) == lower(area))
 				effective_ar += base_ar * zone_cfg[zone].Chance/100.0;
 			endif
 		endforeach
