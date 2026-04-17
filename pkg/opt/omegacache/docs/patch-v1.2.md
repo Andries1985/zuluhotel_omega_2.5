@@ -146,7 +146,8 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 - `scripts/ai/chaosmultikillpcs.src` — Chaos AI bow hitscript changed to `banishscript`
 
 ### Tooltip Improvements
-- `pkg/packethooks/megacliloc/itemdata.src` — AR tooltip shows raw value in brackets, DPS tooltip shows raw average base DPS in brackets
+- `pkg/packethooks/megacliloc/itemdata.src` — AR tooltip passes `who` to `CS_GetEffectiveArmor`, bracket value uses parry 150 baseline for shields; DPS tooltip shows raw base DPS at 130 dex in brackets
+- `pkg/items/armor/include/armorZones.inc` — `CS_GetEffectiveArmor` rewritten to match POL core: durability scaling (`hp/maxhp`), shield parry formula (`ar * parry * 0.5 * 0.01`), optional `parry_override` parameter
 
 ### Resurrection Crystal
 - `scripts/misc/chrdeath.src` — `#freedeath` handler block, whitespace cleanup
