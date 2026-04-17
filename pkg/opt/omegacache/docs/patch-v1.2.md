@@ -56,7 +56,7 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 ### Tooltip Improvements (`itemdata.src`, `armorZones.inc`)
 
 - **AR display**: Armor tooltips now show `AR: X (Y)` where X is the effective AR based on the viewing player's stats and Y is the effective AR at a baseline of 150 parry (shields) or the same zone-weighted value (regular armor). Previously shields showed raw AR which didn't match the character stat panel.
-- **`CS_GetEffectiveArmor` rewrite** (`armorZones.inc`): Aligned with POL core's `refresh_ar()` in `charactr.cpp`. Regular armor now factors in durability (`hp/maxhp`) and coverage zone chances. Shields are detected by having no Coverage entries (matching core's `zones.empty()` check) rather than by equip layer, so the calculation works whether the item is equipped, in a container, or on the ground. Shields use the core's parry formula: `shield_ar * (hp/maxhp) * parry_skill * 0.5 * 0.01` with a minimum contribution of 1. Zero parry correctly returns 1 (not raw AR). Accepts optional `who` parameter for actual parry skill and `parry_override` for baseline calculations.
+- **`CS_GetEffectiveArmor` rewrite** (`armorZones.inc`): Aligned with POL core's `refresh_ar()` in `charactr.cpp`. Regular armor uses the item's fixed AR and coverage zone chances. Shields are detected by having no Coverage entries (matching core's `zones.empty()` check) rather than by equip layer, so the calculation works whether the item is equipped, in a container, or on the ground. Shields use the core's parry formula: `shield_ar * parry_skill * 0.5 * 0.01` with a minimum contribution of 1. Zero parry correctly returns 1 (not raw AR). Durability scaling is not applied — the tooltip shows the item's base AR stat, not the durability-adjusted combat value. Accepts optional `who` parameter for actual parry skill and `parry_override` for baseline calculations.
 - **DPS display**: Weapon tooltips now show `DPS: X (Y)` where X is the class/quality-modified DPS and Y is the raw average base DPS at a fixed 130 dexterity without player modifiers.
 
 ---
@@ -125,7 +125,6 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 | **Shield AR zero parry** | With a character with 0 parry, hover over a shield. Verify the first value shows 1 (minimum), not the raw AR. |
 | **Shield AR on ground** | Drop a shield on the ground. Hover over it. Verify the tooltip shows correct values (not 0), same as when in backpack. |
 | **Armor AR tooltip** | Hover over regular armor pieces (helm, chest, etc). Verify tooltip shows `AR: X (Y)` where both values are zone-weighted. E.g. a platemail breastplate with AR 25 and Body coverage (44%) should show approximately `AR: 11 (25)`. |
-| **Damaged armor AR** | Damage an armor piece (reduce HP). Verify the AR tooltip value decreases proportionally to `hp/maxhp`. |
 | **Weapon DPS tooltip** | Hover over a weapon. Verify tooltip shows `DPS: X (Y)` where X is the class/quality-modified DPS and Y is the raw base DPS at 130 dexterity. |
 | **No-class DPS** | Log in with a character that has no class. Hover over a weapon. Verify both DPS values are close together (minimal class bonuses). |
 

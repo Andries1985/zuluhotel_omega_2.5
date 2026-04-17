@@ -117,7 +117,7 @@ endfunction
 // Shields (layer 1 or 2): not zone-based in core; use shield_ar * parry * 0.5 * 0.01
 // Pass who for shield parry calculation; if omitted, shields return 0.
 function CS_GetEffectiveArmor(item, who := 0, parry_override := 0)
-	var base_ar := CInt(item.ar * CDbl(item.hp) / CDbl(item.maxhp));
+	var base_ar := item.ar;
 	var coverage := GetConfigStringArray(itemdesc_cfg[item.objtype], "Coverage");
 
 	if(!coverage || coverage.size() == 0)
