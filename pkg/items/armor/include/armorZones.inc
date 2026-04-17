@@ -118,8 +118,9 @@ endfunction
 // Pass who for shield parry calculation; if omitted, shields return 0.
 function CS_GetEffectiveArmor(item, who := 0, parry_override := 0)
 	var base_ar := CInt(item.ar * CDbl(item.hp) / CDbl(item.maxhp));
+	var coverage := GetConfigStringArray(itemdesc_cfg[item.objtype], "Coverage");
 
-	if(item.layer == 1 or item.layer == 2)
+	if(!coverage || coverage.size() == 0)
 		var parry;
 		if(parry_override)
 			parry := parry_override;
@@ -128,20 +129,16 @@ function CS_GetEffectiveArmor(item, who := 0, parry_override := 0)
 		else
 			return base_ar;
 		endif
-		if(parry)
-			var add := 0.5 * 0.01 * base_ar * parry;
-			if(add > 1.0)
-				return CInt(add);
-			else
-				return 1;
-			endif
+		var add := 0.5 * 0.01 * base_ar * parry;
+		if(add > 1.0)
+			return CInt(add);
 		else
-			return base_ar;
+			return 1;
 		endif
 	endif
 
 	var effective_ar := 0.0;
-	foreach area in GetConfigStringArray(itemdesc_cfg[item.objtype], "Coverage")
+	foreach area in coverage
 		foreach zone in GetConfigIntKeys(zone_cfg)
 			if (zone_cfg[zone].Name == area)
 				effective_ar += base_ar * zone_cfg[zone].Chance/100.0;
