@@ -1136,8 +1136,14 @@ function ApplyHealing(who)
 	if ( GetObjProperty(me,"#heal") > ReadGameClock())
 		return 0;
 	endif
+	if (me.dead)
+		return 0;
+	endif
+	if (who.dead)
+		return 0;
+	endif
 	if (who == me)
-		SetObjProperty(me,"#heal", ReadGameClock()+1);
+		SetObjProperty(me,"#heal", ReadGameClock()+16);
 	else
 		SetObjProperty(me,"#heal", ReadGameClock()+20);
 	endif
