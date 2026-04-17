@@ -26,7 +26,7 @@ The resurrection crystal (`lifecrystal`) previously set a `freedeath` property o
 - **Ranger/Mystic Archer ranged class bonus**: Threshold changed from level 2 (`level-1`) to level 4 (`level-3`). Also gated on `!attacker.isA(POLCLASS_NPC)`.
 - **NPC melee skill bonus**: New dedicated path using Tactics at 0.00025 multiplier (average +5% pre-absorption). Previously NPCs fell through to player class paths.
 - **NPC class damage bonus**: NPCs no longer receive player class-level damage bonuses (PvP/PvE multipliers). The NPC path is now an explicit empty block.
-- **Bladesinger damage reduction**: Changed from `defender` to `attacker` class check — now reduces the Bladesinger attacker's damage (was incorrectly reducing damage taken by Bladesinger defenders). Multiplier reduced from 0.075 to 0.05 per level.
+- **Bladesinger damage reduction**: Remains as `defender` class check — reduces damage taken by Bladesinger defenders. Multiplier reduced from 0.075 to 0.05 per level.
 - **Paladin/Warrior damage reduction**: Extra closing parenthesis introduced in reduction formula — **this is a syntax error that will cause compilation failure** (lines ~399 and ~410: `(1 - (defenderlevel * 0.05) ) )` and `(1 - (defenderlevel * 0.10) ) )`).
 - **Mage damage reduction**: Changed from `elseif` chained with Bladesinger to a separate `if` block. Mage reduction now applies independently of the Warrior/Paladin/Bladesinger reduction.
 
