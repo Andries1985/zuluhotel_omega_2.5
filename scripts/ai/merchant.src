@@ -917,6 +917,7 @@ function TrainSkill( me, who, item )
 
 				// Set the PC's skill
 				SetBaseSkillBaseValue( who, TrainSkillID, New_Level);
+				RecalculateEquippedSkillBonus( who, TrainSkillID );
 
 				DestroyItem( item );  // Destroy gold
 
@@ -1061,6 +1062,7 @@ var skillamt := GetBaseSKillBaseValue(me, skill)/3 - GetBaseSKillBaseValue(who, 
 
 if (who.spendgold(skillamt))
 	SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt);
+	RecalculateEquippedSkillBonus( who, skill );
 else
 	var goldamt := 0;
 	// Not enough gold for full skill, try less
@@ -1073,6 +1075,7 @@ else
 	if (goldamt > 1 && goldamt <= skillamt)
 		if (who.spendgold(goldamt))
 			SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+goldamt);
+			RecalculateEquippedSkillBonus( who, skill );
 		else
 			return 0; // SHOULD never hit here
 		endif
@@ -1109,6 +1112,7 @@ endif
 
 if (who.spendgold(CInt(skillamt*10)))
 	SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt*10);
+	RecalculateEquippedSkillBonus( who, skill );
 	return 1;
 else
 	Say("You don't have enough gold to train.");

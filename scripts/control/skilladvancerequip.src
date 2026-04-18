@@ -650,6 +650,7 @@ function GetMaxGain(item)
 			/*Adept*/	4:	MaxGain := 125;
 			/*Master*/	5:	MaxGain := 140;
 			/*G Master*/	6:	MaxGain := 150;
+			/*Legendary*/	10:	MaxGain := 150;
 					default: MaxGain := 150;
 		endcase
 

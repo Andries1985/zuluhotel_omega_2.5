@@ -467,6 +467,10 @@ function AwardRawAttributePoints( who, attributeid, rawpoints )
 
 
 		SetAttributeBaseValue(who, attributeid, current);
+		// Recalculate equipped skill gear bonuses for skill attributes (not stats)
+		if(attributeid != ATTRIBUTEID_STRENGTH && attributeid != ATTRIBUTEID_DEXTERITY && attributeid != ATTRIBUTEID_INTELLIGENCE)
+			RecalculateEquippedSkillBonus(who, GetSkillIdByAttributeId(attributeid));
+		endif
 		// Recalc the vitals if the attribute is a vital related one.
 		case( attributeid )
 			ATTRIBUTEID_STRENGTH:
@@ -2256,4 +2260,64 @@ function GetSpeed(me := 0, MoveSpeed)
 		print(me.name+" Have a wrong MoveSpeed value in npcdesc.cfg, fix it now!");
 		return 300;
 	endif
+endfunction
+
+function RecalculateEquippedSkillBonus( who, skillnum )
+	var baseskill := CInt(GetBaseSkill(who, skillnum));
+	var allSkillItems := dictionary;
+	var numiter := 0.01;
+
+	foreach item in ListEquippedItems(who)
+		if(GetObjProperty(item, "skilladv") == skillnum)
+			var maxGain := GetItemSkillMaxGain(item);
+			var advAmount := CInt(GetObjProperty(item, "skilladvamount"));
+			if(allSkillItems.exists(maxGain))
+				allSkillItems.insert(maxGain + numiter, advAmount);
+				numiter := numiter + 0.01;
+			else
+				allSkillItems.insert(maxGain, advAmount);
+			endif
+		endif
+	endforeach
+
+	var totalGain := 0;
+	foreach key in (allSkillItems.keys())
+		var adv_amount := CInt(allSkillItems[key]);
+		var subMaxGain := CInt(key);
+
+		if((baseskill + totalGain) < subMaxGain)
+			if((baseskill + totalGain + adv_amount) > subMaxGain)
+				totalGain := totalGain + (adv_amount - ((baseskill + totalGain + adv_amount) - subMaxGain));
+			else
+				totalGain := totalGain + adv_amount;
+			endif
+		endif
+	endforeach
+
+	SetSkillTemporaryMod(who, skillnum, totalGain);
+endfunction
+
+function GetItemSkillMaxGain(item)
+	var modamount := CInt(GetObjProperty(item, "skilladvamount"));
+	var power := CInt(modamount);
+
+	if(GetObjProperty(item, "WeapAdv"))
+		power := CInt(power / 5);
+	endif
+
+	var divider := CInt(GetObjProperty(item, "SpecMult"));
+	if(divider)
+		power := CInt(power / divider);
+	endif
+
+	case(power)
+		1: return 75;
+		2: return 90;
+		3: return 110;
+		4: return 125;
+		5: return 140;
+		6: return 150;
+		10: return 150;
+		default: return 150;
+	endcase
 endfunction
