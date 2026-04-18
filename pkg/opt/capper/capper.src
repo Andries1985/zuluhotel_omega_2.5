@@ -68,10 +68,12 @@ program capper()
 						endif
 						if(GetBaseSkill(chr, skill) > pscrollSkillCap)
 							SetBaseSkill(chr, skill, pscrollSkillCap);
+							RecalculateEquippedSkillBonus(chr, skill);
 						endif
 					else
 						if (GetBaseSkill(chr, skill) > SKILLCAP)
 							SetBaseSkill(chr, skill, SKILLCAP);
+							RecalculateEquippedSkillBonus(chr, skill);
 						endif
 					endif
 	 			endfor

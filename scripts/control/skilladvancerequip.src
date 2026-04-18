@@ -118,7 +118,7 @@ endfunction
 
 // This won't convert M or GM items!
 // this contains a lot of fixes for stuff i fucked up.  Not needed after an item wipe :P
-function FixWeapon(who, wep)
+function FixWeapon(unused who, wep)
 
 	if (GetObjProperty(wep, "SlayType") == "Human1")
 		SetObjProperty(wep, "SlayType", "Human");
