@@ -32,7 +32,7 @@ const HALT_THRESHOLD := 1; // how close before he barks?
 var me := Self();
 
 program CastleGuard()
-drop_anchor();
+drop_anchor(me);
 
 	SetObjProperty(me,"serial",me.serial);
 

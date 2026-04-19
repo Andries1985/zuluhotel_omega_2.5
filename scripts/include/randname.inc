@@ -6,9 +6,11 @@ use uo;
 use os;
 use basic;
 use util;
+use cfgfile;
 
 include "include/randname_util";
 include "include/random";
+
 
 function RandomName( me )
 

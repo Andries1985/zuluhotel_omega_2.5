@@ -5,6 +5,7 @@ use npc;
 include "include/attributes";
 include "include/client";
 include "include/random";
+
 program Dress (parms)
 
 	set_critical(0);

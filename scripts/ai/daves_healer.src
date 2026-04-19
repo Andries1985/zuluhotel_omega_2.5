@@ -53,13 +53,13 @@ program HealerAI()
 	GrantPrivilege( me, "hearghosts" );
 	me.enable( "hearghosts" );
 
-	if (getobjproperty(me, "frozen"))
-		me.frozen := 1;
-	endif
+	// if (getobjproperty(me, "frozen"))
+	// 	me.frozen := 1;
+	// endif
 
-	drop_anchor();
-	SetAnchor( me.x, me.y, 5, 20 );
-	var next_wander := ReadGameClock() + 10;
+	drop_anchor(me);
+	//SetAnchor( me.x, me.y, 5, 20 );
+	var next_wander := ReadGameClock() + RandomDice( 2, 25, 10 );
 
     EnableEvents( SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED );
     EnableEvents( SYSEVENT_ENTEREDAREA, REACT_THRESHOLD );
@@ -79,31 +79,30 @@ program HealerAI()
         repeat
             // print( "event type: " + ev.type );
             case (ev.type)
-            SYSEVENT_SPEECH:
-		next_wander := readgameclock()+60;
-                check_speech(ev.text, ev.source);
-		HealerStuff(ev.source);
-
+                SYSEVENT_SPEECH:
+                    next_wander := readgameclock()+RandomDice( 2, 25, 10 );
+                    check_speech(ev.text, ev.source);
+                    HealerStuff(ev.source);
                 SYSEVENT_ENGAGED:
                 SYSEVENT_DAMAGED:
-                /*    if (ev.source)
-		 Toadstool - Disable healers fighting
-                     Fight( ev.source );
-                    endif
-		*/
+                    /*    if (ev.source)
+                        Toadstool - Disable healers fighting
+                        Fight( ev.source );
+                        endif
+                    */
                 SYSEVENT_ENTEREDAREA:
                     if ( !ev.source.npctemplate && !ev.source.cmdlevel )
                         HealerStuff(ev.source);
                     endif
                 SYSEVENT_ITEM_GIVEN:
-		    next_wander := readgameclock()+60;
-		    TakeItem(ev.source,ev.item);
+                    next_wander := readgameclock()+RandomDice( 2, 25, 10 );
+                    TakeItem(ev.source,ev.item);
             endcase
 
         until (! (ev := os::wait_for_event(4)) );
         if (ReadGameClock() >= next_wander)
-                wander();
-                next_wander := ReadGameClock() + 10;
+            wander();
+            next_wander := ReadGameClock() + RandomDice( 2, 25, 10 );
         endif
     endwhile
 endprogram
