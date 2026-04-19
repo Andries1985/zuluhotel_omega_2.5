@@ -73,23 +73,14 @@ program banker()
 			if(ev.type ==SYSEVENT_ITEM_GIVEN)
 				TurnToward (ev.source);
 				if (ev.item.objtype == 0x14000)
-					if( !ReserveItem( ev.item ) )
-						Say( "Something went wrong. Please try again." );
-					else
-						addtobank(ev.source,ev.item);
-						if(overflow == 0)
-							Say( "Your gold has been placed in your bank." );
-							DestroyItem(ev.item);
-						endif
+					addtobank(ev.source,ev.item);
+					if(overflow == 0)
+						Say( "Your gold has been placed in your bank." );
+						DestroyItem(ev.item);
 					endif
 				else
-					if( !ReserveItem( ev.item ) )
-						Say( "I only accept banker's orders." );
-					else
-						Say( "I only accept banker's orders." );
-						ReleaseItem( ev.item );
-						MoveItemToContainer( ev.item, ev.source.backpack );
-					endif
+					Say( "I only accept banker's orders." );
+					MoveItemToContainer( ev.item, ev.source.backpack );
 				endif
 			endif
 
@@ -190,7 +181,6 @@ function addtobank(you,previtem)
 
 	if( !bankbox )
 		Say( "You don't seem to have a bank box, " + you.name );
-		ReleaseItem( previtem );
 		MoveItemToContainer( you.backpack, previtem );
 		overflow := 1;
 		return;
@@ -203,7 +193,6 @@ function addtobank(you,previtem)
 
 	if( amountofcheck < 5000 )
 		Say( "This banker's order is invalid." );
-		ReleaseItem( previtem );
 		MoveItemToContainer( you.backpack, previtem );
 		overflow := 1;
 		return;
@@ -211,7 +200,6 @@ function addtobank(you,previtem)
 
 	if( amountofcheck > MAX_BANK_TRANSACTION )
 		Say( "This banker's order exceeds the 5000000 gold limit." );
-		ReleaseItem( previtem );
 		MoveItemToContainer( you.backpack, previtem );
 		overflow := 1;
 		return;
@@ -219,13 +207,10 @@ function addtobank(you,previtem)
 
 	if( !CreateCoins( bankbox, 0x0EED, amountofcheck ) )
 		Say( "Sorry. Thy bankbox will overflow its limit. Your banker's order is returned." );
-		ReleaseItem( previtem );
 		MoveItemToContainer( you.backpack, previtem );
 		overflow := 1;
 		return;
 	endif
-
-	ReleaseItem( previtem );
 
 endfunction
 
