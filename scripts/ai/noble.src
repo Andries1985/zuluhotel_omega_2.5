@@ -18,8 +18,8 @@ program noble ()
 
 	drop_anchor(me);
 
-	SetObjProperty(me,"serial",me.serial);
-	SetObjProperty(me, "noloot", 1);
+	SetObjProperty( me, "serial", me.serial );
+	SetObjProperty( me, "noloot", 1 );
     
     EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED, HALT_THRESHOLD);
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );

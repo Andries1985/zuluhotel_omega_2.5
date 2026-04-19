@@ -33,7 +33,7 @@ endif
 
 //EquipFromTemplate( me , "Clothes" );
 
-var style := Random(5);;
+var style := Random(5);
 
 case (style) 
     0: style := "mage";
@@ -44,6 +44,7 @@ case (style)
     default: style := "poor";
 endcase
 
+//Print( "Name: " + me.name + " Style: " + style );
 var parms := {};
 parms[1]:= me;
 parms[2]:= style;
@@ -53,6 +54,8 @@ start_script("::/misc/dressme", parms);
 program TownPerson()
 
     drop_anchor(me);
+    SetObjProperty( me, "serial", me.serial );
+    SetObjProperty( me, "noloot", 1 );
 
     EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED );
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
