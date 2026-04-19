@@ -63,7 +63,12 @@ program itemdata(parms)
 			endif
 			if(xObject.isa(POLCLASS_ARMOR))
 				prop.clilocid := 1063495; // AR: ~1_VAL~
-				prop.values := array {CS_GetEffectiveArmor(xObject)};
+				var coverage := GetConfigStringArray(itemdesc_cfg[xObject.objtype], "Coverage");
+				if(!coverage || coverage.size() == 0)
+					prop.values := array {CS_GetEffectiveArmor(xObject, who) + " (" + CS_GetEffectiveArmor(xObject, 0, 150) + ")"};
+				else
+					prop.values := array {CS_GetEffectiveArmor(xObject, who)};
+				endif
 				allprops.append(prop);
 				var BE := GetObjProperty(xObject, "BardicEfficiency");
 				if(BE && (IsBard(who) || IsBladesinger(who) || IsPowerPlayer(who)))
@@ -387,11 +392,6 @@ function Calcdamage(who, xObject, basedamage)
 	basedamage += xObject.dmg_mod;
 	if( xObject.quality > 1)
 		basedamage += (xObject.quality - 1) * 15;
-	endif
-
-	var hp_percent := CDbl(xObject.hp) / CDbl(xObject.maxhp);
-	if (hp_percent < 0.5)
-		basedamage *= hp_percent;
 	endif
 	
 	if( xObject.attribute == ATTRIBUTEID_ARCHERY )

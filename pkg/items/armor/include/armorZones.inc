@@ -112,15 +112,36 @@ endfunction
 
 
 // Calculate effective item armor based on coverage
-function CS_GetEffectiveArmor(item)
-	if(item.layer == 2)
-		return item.ar;
+// Calculates the effective AR contribution of an armor piece, matching POL core's refresh_ar().
+// Regular armor: ar * (hp/maxhp) * sum(zone_chances)
+// Shields (layer 1 or 2): not zone-based in core; use shield_ar * parry * 0.5 * 0.01
+// Pass who for shield parry calculation; if omitted, shields return 0.
+function CS_GetEffectiveArmor(item, who := 0, parry_override := 0)
+	var base_ar := item.ar;
+	var coverage := GetConfigStringArray(itemdesc_cfg[item.objtype], "Coverage");
+
+	if(!coverage || coverage.size() == 0)
+		var parry;
+		if(parry_override)
+			parry := parry_override;
+		elseif(who)
+			parry := GetEffectiveSkill(who, SKILLID_PARRY);
+		else
+			return base_ar;
+		endif
+		var add := 0.5 * 0.01 * base_ar * parry;
+		if(add > 1.0)
+			return CInt(add);
+		else
+			return 1;
+		endif
 	endif
+
 	var effective_ar := 0.0;
-	foreach area in GetConfigStringArray(itemdesc_cfg[item.objtype], "Coverage")
+	foreach area in coverage
 		foreach zone in GetConfigIntKeys(zone_cfg)
-			if (zone_cfg[zone].Name == area)
-				effective_ar += item.ar * zone_cfg[zone].Chance/100.0;
+			if (lower(zone_cfg[zone].Name) == lower(area))
+				effective_ar += base_ar * zone_cfg[zone].Chance/100.0;
 			endif
 		endforeach
 	endforeach
