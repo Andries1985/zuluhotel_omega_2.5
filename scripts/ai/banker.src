@@ -82,6 +82,14 @@ program banker()
 							DestroyItem(ev.item);
 						endif
 					endif
+				else
+					if( !ReserveItem( ev.item ) )
+						Say( "I only accept banker's orders." );
+					else
+						Say( "I only accept banker's orders." );
+						ReleaseItem( ev.item );
+						MoveItemToContainer( ev.source.backpack, ev.item );
+					endif
 				endif
 			endif
 
