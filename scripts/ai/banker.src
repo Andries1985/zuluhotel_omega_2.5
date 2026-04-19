@@ -88,7 +88,7 @@ program banker()
 					else
 						Say( "I only accept banker's orders." );
 						ReleaseItem( ev.item );
-						MoveItemToContainer( ev.source.backpack, ev.item );
+						MoveItemToContainer( ev.item, ev.source.backpack );
 					endif
 				endif
 			endif
