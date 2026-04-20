@@ -1,0 +1,317 @@
+// Command .testpanel
+// Category-first staff panel using GF gump API.
+
+use uo;
+
+include ":gumps:include/gumps";
+
+const MAIN_BTN_SHARD          := 1;
+const MAIN_BTN_WORLDBUILDING  := 2;
+const MAIN_BTN_ACCOUNT        := 3;
+const MAIN_BTN_CHARACTER      := 4;
+const MAIN_BTN_RPERS          := 5;
+const MAIN_BTN_SPAWNING       := 6;
+
+const CHAR_BTN_ONLINE_LIST    := 1;
+
+const ACCOUNTS_PER_PAGE       := 10;
+const PLAYERS_PER_PAGE        := 16;
+
+program textcmd_testpanel( who )
+	var selected := ShowMainCategoryGump( who );
+	if ( !selected )
+		return;
+	endif
+
+	case ( selected )
+		MAIN_BTN_SHARD:
+			ShowPlaceholderGump( who, "Shard", "Shard tools will be added here." );
+
+		MAIN_BTN_WORLDBUILDING:
+			ShowPlaceholderGump( who, "World Building", "World Building tools will be added here." );
+
+		MAIN_BTN_ACCOUNT:
+			ShowAccountsOnlineByIpGump( who );
+
+		MAIN_BTN_CHARACTER:
+			ShowCharacterCommandsGump( who );
+
+		MAIN_BTN_RPERS:
+			ShowRPerCommandsGump( who );
+
+		MAIN_BTN_SPAWNING:
+			ShowSpawningCommandsGump( who );
+	endcase
+endprogram
+
+
+function ShowMainCategoryGump( who )
+	var gump := GFCreateGump( 40, 40, 460, 320 );
+	GFDisposable( gump, 0 );
+	GFResizePic( gump, 40, 40, 3500, 460, 320 );
+	GFTextLine( gump, 175, 58, 53, "Test Panel" );
+	GFTextLine( gump, 105, 80, 0, "Choose a category:" );
+
+	GFAddButton( gump, 70, 110, 5540, 5541, GF_CLOSE_BTN, MAIN_BTN_SHARD );
+	GFTextLine( gump, 105, 110, 0, "Shard" );
+	GFAddButton( gump, 70, 135, 5540, 5541, GF_CLOSE_BTN, MAIN_BTN_WORLDBUILDING );
+	GFTextLine( gump, 105, 135, 0, "World Building" );
+	GFAddButton( gump, 70, 160, 5540, 5541, GF_CLOSE_BTN, MAIN_BTN_ACCOUNT );
+	GFTextLine( gump, 105, 160, 0, "Account" );
+	GFAddButton( gump, 70, 185, 5540, 5541, GF_CLOSE_BTN, MAIN_BTN_CHARACTER );
+	GFTextLine( gump, 105, 185, 0, "Character" );
+	GFAddButton( gump, 70, 210, 5540, 5541, GF_CLOSE_BTN, MAIN_BTN_RPERS );
+	GFTextLine( gump, 105, 210, 0, "RPers" );
+	GFAddButton( gump, 70, 235, 5540, 5541, GF_CLOSE_BTN, MAIN_BTN_SPAWNING );
+	GFTextLine( gump, 105, 235, 0, "Spawning" );
+
+	var result := GFSendGump( who, gump );
+	return result[0];
+endfunction
+
+
+function ShowCharacterCommandsGump( who )
+	var gump := GFCreateGump( 45, 45, 470, 320 );
+	GFDisposable( gump, 0 );
+	GFResizePic( gump, 45, 45, 3500, 470, 320 );
+	GFTextLine( gump, 165, 60, 53, "Character Commands" );
+	GFTextLine( gump, 90, 82, 0, "Select a character action:" );
+
+	GFAddButton( gump, 70, 115, 5540, 5541, GF_CLOSE_BTN, CHAR_BTN_ONLINE_LIST );
+	GFTextLine( gump, 105, 115, 0, "List online characters" );
+	GFTextLine( gump, 110, 145, 995, "More character commands can be added below." );
+
+	var result := GFSendGump( who, gump );
+	if ( result[0] == CHAR_BTN_ONLINE_LIST )
+		ShowOnlinePlayersGump( who );
+	endif
+endfunction
+
+
+function ShowSpawningCommandsGump( who )
+	var gump := GFCreateGump( 45, 45, 500, 300 );
+	GFDisposable( gump, 0 );
+	GFResizePic( gump, 45, 45, 3500, 500, 300 );
+	GFTextLine( gump, 185, 60, 53, "Spawning Commands" );
+	GFTextLine( gump, 90, 95, 0, ".gotomobtype" );
+	GFTextLine( gump, 90, 120, 0, ".newmobedit" );
+	GFTextLine( gump, 90, 160, 995, "Command launch hooks can be added next." );
+	GFSendGump( who, gump );
+endfunction
+
+
+function ShowRPerCommandsGump( who )
+	var gump := GFCreateGump( 45, 45, 520, 340 );
+	GFDisposable( gump, 0 );
+	GFResizePic( gump, 45, 45, 3500, 520, 340 );
+	GFTextLine( gump, 210, 60, 53, "RPer Commands" );
+
+	GFTextLine( gump, 90, 95, 0, ".setrper" );
+	GFTextLine( gump, 90, 118, 0, ".rperon" );
+	GFTextLine( gump, 90, 141, 0, ".rperoff" );
+	GFTextLine( gump, 90, 164, 0, ".makerpergate" );
+	GFTextLine( gump, 90, 187, 0, ".removerper" );
+
+	GFTextLine( gump, 90, 230, 995, "Command launch hooks can be added next." );
+	GFSendGump( who, gump );
+endfunction
+
+
+function ShowPlaceholderGump( who, title, message )
+	var gump := GFCreateGump( 60, 60, 420, 240 );
+	GFDisposable( gump, 0 );
+	GFResizePic( gump, 60, 60, 3500, 420, 240 );
+	GFTextLine( gump, 145, 85, 53, title );
+	GFTextLine( gump, 85, 130, 995, message );
+	GFSendGump( who, gump );
+endfunction
+
+
+function ShowOnlinePlayersGump( who )
+	var players := EnumerateOnlineCharacters();
+	var visible_players := {};
+	var i;
+
+	for ( i := 1; i <= players.Size(); i := i + 1 )
+		var player := players[i];
+		if ( player.concealed > who.cmdlevel )
+			continue;
+		endif
+		visible_players.append( player );
+	endfor
+
+	var player_count := visible_players.Size();
+	var total_pages := 1;
+	if ( player_count > 0 )
+		total_pages := CInt( (player_count - 1) / PLAYERS_PER_PAGE ) + 1;
+	endif
+
+	var gump := GFCreateGump( 20, 20, 520, 420 );
+	GFDisposable( gump, 0 );
+	GFResizePic( gump, 20, 20, 3500, 520, 420 );
+	GFTextLine( gump, 150, 35, 53, "Online Players" );
+	GFTextLine( gump, 70, 60, 0, "Account" );
+	GFTextLine( gump, 235, 60, 0, "Name" );
+	GFTextLine( gump, 400, 60, 0, "IP" );
+
+	var page;
+	for ( page := 1; page <= total_pages; page := page + 1 )
+		GFPage( gump, page );
+
+		if ( page > 1 )
+			GFAddButton( gump, 180, 380, 5537, 5538, GF_PAGE_BTN, page - 1 );
+			GFTextLine( gump, 205, 380, 0, "Previous" );
+		endif
+
+		if ( page < total_pages )
+			GFAddButton( gump, 300, 380, 5540, 5541, GF_PAGE_BTN, page + 1 );
+			GFTextLine( gump, 325, 380, 0, "Next" );
+		endif
+
+		var start_index := ((page - 1) * PLAYERS_PER_PAGE) + 1;
+		var end_index := start_index + PLAYERS_PER_PAGE - 1;
+		if ( end_index > player_count )
+			end_index := player_count;
+		endif
+
+		var row_y := 90;
+		for ( i := start_index; i <= end_index; i := i + 1 )
+			var online_player := visible_players[i];
+			GFTextLine( gump, 70, row_y, 0, online_player.acctname );
+			GFTextLine( gump, 235, row_y, 0, online_player.name );
+			GFTextLine( gump, 400, row_y, 0, online_player.ip );
+			row_y := row_y + 18;
+		endfor
+
+		if ( player_count == 0 )
+			GFTextLine( gump, 170, 140, 995, "No visible players are online." );
+		endif
+
+		GFTextLine( gump, 210, 355, 53, "Page " + page + " of " + total_pages );
+	endfor
+
+	GFSendGump( who, gump );
+endfunction
+
+
+function ShowAccountsOnlineByIpGump( who )
+	var players := EnumerateOnlineCharacters();
+	var acct_names := {};
+	var acct_ips := {};
+	var acct_chars := {};
+	var i;
+
+	for ( i := 1; i <= players.Size(); i := i + 1 )
+		var player := players[i];
+		if ( player.concealed > who.cmdlevel )
+			continue;
+		endif
+
+		var acct_idx := FindIndexByAccount( acct_names, player.acctname );
+		if ( !acct_idx )
+			acct_names.append( player.acctname );
+			acct_ips.append( player.ip );
+			acct_chars.append( player.name );
+		else
+			acct_chars[acct_idx] := acct_chars[acct_idx] + ", " + player.name;
+		endif
+	endfor
+
+	var order := BuildSortedOrderByIp( acct_ips, acct_names );
+	var account_count := order.Size();
+	var total_pages := 1;
+	if ( account_count > 0 )
+		total_pages := CInt( (account_count - 1) / ACCOUNTS_PER_PAGE ) + 1;
+	endif
+
+	var gump := GFCreateGump( 15, 15, 610, 430 );
+	GFDisposable( gump, 0 );
+	GFResizePic( gump, 15, 15, 3500, 610, 430 );
+	GFTextLine( gump, 180, 30, 53, "Online Accounts (Sorted by IP)" );
+	GFTextLine( gump, 40, 55, 0, "IP" );
+	GFTextLine( gump, 170, 55, 0, "Account" );
+	GFTextLine( gump, 325, 55, 0, "Online Characters" );
+
+	var page;
+	for ( page := 1; page <= total_pages; page := page + 1 )
+		GFPage( gump, page );
+
+		if ( page > 1 )
+			GFAddButton( gump, 230, 390, 5537, 5538, GF_PAGE_BTN, page - 1 );
+			GFTextLine( gump, 255, 390, 0, "Previous" );
+		endif
+		if ( page < total_pages )
+			GFAddButton( gump, 350, 390, 5540, 5541, GF_PAGE_BTN, page + 1 );
+			GFTextLine( gump, 375, 390, 0, "Next" );
+		endif
+
+		var start_index := ((page - 1) * ACCOUNTS_PER_PAGE) + 1;
+		var end_index := start_index + ACCOUNTS_PER_PAGE - 1;
+		if ( end_index > account_count )
+			end_index := account_count;
+		endif
+
+		var y := 80;
+		for ( i := start_index; i <= end_index; i := i + 1 )
+			var idx := order[i];
+			GFTextLine( gump, 40, y, 0, acct_ips[idx] );
+			GFTextLine( gump, 170, y, 0, acct_names[idx] );
+			GFTextLine( gump, 325, y, 0, acct_chars[idx] );
+			y := y + 28;
+		endfor
+
+		if ( account_count == 0 )
+			GFTextLine( gump, 200, 170, 995, "No visible accounts are online." );
+		endif
+
+		GFTextLine( gump, 275, 365, 53, "Page " + page + " of " + total_pages );
+	endfor
+
+	GFSendGump( who, gump );
+endfunction
+
+
+function FindIndexByAccount( acct_names, acctname )
+	var i;
+	for ( i := 1; i <= acct_names.Size(); i := i + 1 )
+		if ( acct_names[i] == acctname )
+			return i;
+		endif
+	endfor
+	return 0;
+endfunction
+
+
+function BuildSortedOrderByIp( acct_ips, acct_names )
+	var order := {};
+	var i;
+	for ( i := 1; i <= acct_ips.Size(); i := i + 1 )
+		order.append( i );
+	endfor
+
+	var n := order.Size();
+	if ( n <= 1 )
+		return order;
+	endif
+
+	var pass;
+	for ( pass := 1; pass <= (n - 1); pass := pass + 1 )
+		var j;
+		for ( j := 1; j <= (n - pass); j := j + 1 )
+			var left_idx := order[j];
+			var right_idx := order[j + 1];
+
+			var left_ip := CStr( acct_ips[left_idx] );
+			var right_ip := CStr( acct_ips[right_idx] );
+
+			if ( (left_ip > right_ip) or ((left_ip == right_ip) and (CStr(acct_names[left_idx]) > CStr(acct_names[right_idx]))) )
+				var tmp := order[j];
+				order[j] := order[j + 1];
+				order[j + 1] := tmp;
+			endif
+		endfor
+	endfor
+
+	return order;
+endfunction
+
