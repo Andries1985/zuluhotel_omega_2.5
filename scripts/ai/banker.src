@@ -184,6 +184,25 @@ function CreateCoins( container, coin_type, amt )
 
 endfunction
 
+function IsDigitsOnly( text )
+
+	text := CStr(text);
+	if( !text || len(text) <= 0 )
+		return 0;
+	endif
+
+	var i := 1;
+	while( i <= len(text) )
+		if( text[i] < "0" || text[i] > "9" )
+			return 0;
+		endif
+		i := i + 1;
+	endwhile
+
+	return 1;
+
+endfunction
+
 
 function addtobank(you,previtem)
 
@@ -403,6 +422,7 @@ endfunction
 function MakeCheque( you )
 
 	var tamount := 0;
+	var tamount_text := "";
 	var bankbox := FindBankBox(you);
 	var myamt := 0;
 
@@ -423,7 +443,14 @@ function MakeCheque( you )
 		return;
 	endif
 
-	tamount := CInt( SendTextEntryGump(you, "How much gold did you want to make a cheque for? ", TE_CANCEL_ENABLE, TE_STYLE_NORMAL, 10));
+	tamount_text := CStr( SendTextEntryGump(you, "How much gold did you want to make a cheque for? ", TE_CANCEL_ENABLE, TE_STYLE_NORMAL, 10));
+
+	if( !IsDigitsOnly( tamount_text ) )
+		SendSysMessage( you, "Cheque amounts must contain numbers only." );
+		return;
+	endif
+
+	tamount := CInt( tamount_text );
 
 	if( tamount <= 0 or !tamount )
 		SendSysmessage( you, "The transaction has been terminated." );
