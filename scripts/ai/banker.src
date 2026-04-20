@@ -22,9 +22,13 @@ include "include/eventid";
 include "ai/setup/modsetup";
 include "include/attributes";
 include "include/npcboosts";
+include ":gumps:gumps";
 
 var overflow;
 var me := Self();
+
+const BTN_CONFIRM_BANK_DEPOSIT_ALL := 1;
+const BTN_CANCEL_BANK_DEPOSIT_ALL := 2;
 
 ///const REACT_THRESHOLD := 35;
 const REACT_THRESHOLD := 8;
@@ -292,6 +296,11 @@ function DepositAllBackpackGold( you )
 		return;
 	endif
 
+	if( !ConfirmBankDepositAll( you ) )
+		SendSysMessage( you, "The transaction has been terminated." );
+		return;
+	endif
+
 	foreach item in EnumerateItemsInContainer(you.backpack)
 		if( item.objtype == 0x0EED )
 			totalgold := totalgold + item.amount;
@@ -316,6 +325,38 @@ function DepositAllBackpackGold( you )
 	endif
 
 	Say( "Your gold has been deposited in your bank." );
+
+endfunction
+
+function ConfirmBankDepositAll( who )
+
+	var w := 400;
+	var h := 150;
+	var gx := (800 - w) / 2;
+	var gy := (600 - h) / 2;
+	var gump := GFCreateGump(gx, gy);
+
+	GFPage(gump, 0);
+	GFResizePic(gump, 0, 0, 9270, w, h);
+	GFResizePic(gump, 10, 10, 9350, w - 20, h - 20);
+
+	var line1 := "Deposit All Gold";
+	var line2 := "This will deposit all gold from";
+	var line3 := "your backpack into your bank box.";
+
+	GFTextLine(gump, (w - len(line1) * 6) / 2, 18, 1153, line1);
+	GFTextLine(gump, (w - len(line2) * 6) / 2, 50, 0, line2);
+	GFTextLine(gump, (w - len(line3) * 6) / 2, 70, 0, line3);
+
+	var btn_area := 195;
+	var btn_start := (w - btn_area) / 2;
+	GFAddButton(gump, btn_start, h - 40, 4005, 4007, GF_CLOSE_BTN, BTN_CONFIRM_BANK_DEPOSIT_ALL);
+	GFTextLine(gump, btn_start + 35, h - 40, 63, "Confirm");
+	GFAddButton(gump, btn_start + 130, h - 40, 4017, 4019, GF_CLOSE_BTN, BTN_CANCEL_BANK_DEPOSIT_ALL);
+	GFTextLine(gump, btn_start + 165, h - 40, 0, "Cancel");
+
+	var result := GFSendGump(who, gump);
+	return (CInt(result[0]) == BTN_CONFIRM_BANK_DEPOSIT_ALL);
 
 endfunction
 
