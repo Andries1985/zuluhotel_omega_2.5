@@ -41,7 +41,7 @@ endif
 
 
 program KillPlayers()
-drop_anchor();
+drop_anchor(me);
 var next_wander := ReadGameClock() + 10;
 // var npccfg := readconfigfile("npcdesc");
 

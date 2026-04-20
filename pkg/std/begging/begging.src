@@ -20,13 +20,24 @@ program begging ( character )
 		return;
 	endif
 
-	if (who.npctemplate == "warriorforhire")
-		SendSysMessage(character, "You can't beg from warriors for hire.");
-		return;
-	endif
-
-	if (who.npctemplate == "playervendor")
-		SendSysMessage(character, "You can't beg from player vendors.");
+	if (who.npctemplate == "warriorforhire" or who.npctemplate == "playervendor" or lower(who.npctemplate) == "healer" or lower(who.npctemplate) == "highpriest" or lower(who.npctemplate) == "vanityvendor" or lower(who.npctemplate) == "architect" or lower(who.npctemplate) == "titlemaster" or lower(who.npctemplate) == "banker")
+		if (who.npctemplate == "warriorforhire")
+			SendSysMessage(character, "You can't beg from warriors for hire.");
+		elseif (who.npctemplate == "playervendor")
+			SendSysMessage(character, "You can't beg from player vendors.");
+		elseif (lower(who.npctemplate) == "healer")
+			SendSysMessage(character, "You can't beg from healers.");
+		elseif (lower(who.npctemplate) == "banker")
+			SendSysMessage(character, "You can't beg from bankers.");
+		elseif (lower(who.npctemplate) == "vanityvendor")
+			SendSysMessage(character, "You can't beg from vanity vendors.");
+		elseif (lower(who.npctemplate) == "architect")
+			SendSysMessage(character, "You can't beg from architects.");
+		elseif (lower(who.npctemplate) == "titlemaster")
+			SendSysMessage(character, "You can't beg from title masters.");
+		else
+			SendSysMessage(character, "You can't beg from high priests.");
+		endif
 		return;
 	endif
 	

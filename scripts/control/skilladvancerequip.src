@@ -118,7 +118,7 @@ endfunction
 
 // This won't convert M or GM items!
 // this contains a lot of fixes for stuff i fucked up.  Not needed after an item wipe :P
-function FixWeapon(who, wep)
+function FixWeapon(unused who, wep)
 
 	if (GetObjProperty(wep, "SlayType") == "Human1")
 		SetObjProperty(wep, "SlayType", "Human");
@@ -650,6 +650,7 @@ function GetMaxGain(item)
 			/*Adept*/	4:	MaxGain := 125;
 			/*Master*/	5:	MaxGain := 140;
 			/*G Master*/	6:	MaxGain := 150;
+			/*Legendary*/	10:	MaxGain := 150;
 					default: MaxGain := 150;
 		endcase
 

@@ -3,6 +3,8 @@ use uo;
 
 include "include/random";
 
+const DEFAULT_GIFT_COOLDOWN := 24*3600;
+
 program santaman(who, santa)
 
 	var time := getobjproperty(who, "onlinetimer");
@@ -12,14 +14,16 @@ program santaman(who, santa)
 	time := CInt(time/(24*3600));
 	
 	var GiftedAlready :=CInt(GetObjProperty(who, "#GiftedAlready")), secclock:=ReadGameClock();
+
 	if(secclock < GiftedAlready && !who.cmdlevel)
-		SendSysMessage(who, "You can only recieve one christmas present per day.");
+		var timeleft := GiftedAlready - secclock;
+		SendSysMessage(who, "You can only recieve one christmas present per cooldown period. Time left: " + FormatDuration(timeleft) + ".");
 		return;
 	elseif(time < 10)
 		SendSysMessage(who, "You are too young to recieve a gift.");
 		return;
 	endif
-	SetObjProperty(who, "#GiftedAlready", ReadGameClock() + (24*3600));
+	SetObjProperty(who, "#GiftedAlready", ReadGameClock() + GiftCooldownSeconds());
 
 	PrintTextAbovePrivate(santa, "Ho Ho Ho", who);
 	SleepMS(1000);
@@ -48,3 +52,57 @@ program santaman(who, santa)
 	endif
 	return;
 endprogram
+
+function GiftCooldownSeconds()
+	var cooldown := CInt(GetGlobalProperty("ChristmasGiftCooldownSeconds"));
+	if(cooldown <= 0)
+		cooldown := DEFAULT_GIFT_COOLDOWN;
+	endif
+	return cooldown;
+endfunction
+
+function FormatDuration(seconds)
+	seconds := CInt(seconds);
+	if(seconds < 0)
+		seconds := 0;
+	endif
+
+	var days := CInt(seconds/86400);
+	seconds := seconds - (days*86400);
+	var hours := CInt(seconds/3600);
+	seconds := seconds - (hours*3600);
+	var minutes := CInt(seconds/60);
+	seconds := seconds - (minutes*60);
+
+	var parts := "";
+	if(days > 0)
+		parts := days + " day" + PluralS(days);
+	endif
+	if(hours > 0)
+		if(parts)
+			parts := parts + ", ";
+		endif
+		parts := parts + hours + " hour" + PluralS(hours);
+	endif
+	if(minutes > 0)
+		if(parts)
+			parts := parts + ", ";
+		endif
+		parts := parts + minutes + " minute" + PluralS(minutes);
+	endif
+	if(seconds > 0 || !parts)
+		if(parts)
+			parts := parts + ", ";
+		endif
+		parts := parts + seconds + " second" + PluralS(seconds);
+	endif
+
+	return parts;
+endfunction
+
+function PluralS(value)
+	if(CInt(value) == 1)
+		return "";
+	endif
+	return "s";
+endfunction

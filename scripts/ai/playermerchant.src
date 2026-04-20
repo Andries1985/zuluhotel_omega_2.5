@@ -25,6 +25,8 @@ var cont := getobjproperty(me, "cont");
 
 const LAYER_START := 1;
 const LAYER_END	  := 25;
+const TWO_DAYS_SECONDS := 172800;
+const ONE_WEEK_SECONDS := 604800;
 
 program merchant()
 	if(!me.backpack)
@@ -50,6 +52,7 @@ program merchant()
 
 	EnableEvents( SYSEVENT_ITEM_GIVEN + SYSEVENT_MERCHANT_SOLD  );
 	EnableEvents( SYSEVENT_DAMAGED + SYSEVENT_ENGAGED  );
+	EnableEvents( SYSEVENT_ENTEREDAREA, 6 );
 	EnableEvents( SYSEVENT_SPEECH, 1 );
 	var ev;
 
@@ -68,9 +71,12 @@ program merchant()
 			checkmymod(me);
 		endif
 
-		ev := os::wait_for_event( 30 );
+		ev := os::wait_for_event( 120 );
 		if(ev)
 			case(ev.type)
+				SYSEVENT_ENTEREDAREA:
+					//Print("entered area event, my serial is " + me.serial + " and event source is " + ev.source.serial);
+					AnnounceRecentStock(ev.source);
 				SYSEVENT_DAMAGED:
 				SYSEVENT_ENGAGED:
 					me.hidden := 1;
@@ -109,6 +115,55 @@ program merchant()
 	endwhile
 
 endprogram
+
+function RecordNewStock()
+	SetObjProperty(me, "laststocktime", ReadGameClock());
+endfunction
+
+function HasRecentStock()
+	var laststocktime := GetObjProperty(me, "laststocktime");
+	if(!laststocktime)
+		return 0;
+	endif
+
+	if((ReadGameClock() - laststocktime) <= ONE_WEEK_SECONDS)
+		return 1;
+	endif
+
+	return 0;
+endfunction
+
+function RecentStockTimeText()
+	var secondsago := ReadGameClock() - GetObjProperty(me, "laststocktime");
+	if(secondsago < 60)
+		return "just now";
+	elseif(secondsago < 120)
+		return "about a minute ago";
+	elseif(secondsago < 3600)
+		return CInt(secondsago / 60) + " minutes ago";
+	elseif(secondsago < 7200)
+		return "about an hour ago";
+	elseif(secondsago < 86400)
+		return CInt(secondsago / 3600) + " hours ago";
+	elseif(secondsago < TWO_DAYS_SECONDS)
+		return "about a day ago";
+	elseif(secondsago < ONE_WEEK_SECONDS)
+		return "about " + CInt(secondsago / 86400) + " days ago";
+	endif
+
+	return 0;
+endfunction
+
+function AnnounceRecentStock(who)
+	if(!who or who.npctemplate or !HasRecentStock())
+		return;
+	endif
+
+	var timetext := RecentStockTimeText();
+	if(timetext)
+		PrintTextAbovePrivate(me, "My latest stock was added " + timetext + ".", who);
+	endif
+endfunction
 
 
 
@@ -350,6 +405,7 @@ function stockitem(byref item, byref seller)
 		endif
 		DestroyItem(old_item);
 		var theItem;
+		var stocked_any := 0;
 		Say("I'll just sell this at the same price as the others.");
 		if(newAmount <= 60000)
 			theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, newAmount );
@@ -360,6 +416,8 @@ function stockitem(byref item, byref seller)
 			if(!MoveItemToContainer(theItem, inv_fs))
 				Say( "My inventory is too full!" );
 				MoveItemToContainer(theItem, seller.backpack);
+			else
+				stocked_any := 1;
 			endif
 		else
 			while(newAmount > 60000)
@@ -371,6 +429,8 @@ function stockitem(byref item, byref seller)
 				if(!MoveItemToContainer(theItem, inv_fs))
 					Say( "My inventory is too full!" );
 					MoveItemToContainer(theItem, seller.backpack);
+				else
+					stocked_any := 1;
 				endif
 				newAmount := newAmount - 60000;
 			endwhile
@@ -381,6 +441,10 @@ function stockitem(byref item, byref seller)
 			endif
 			MoveItemToContainer(theItem, seller.backpack);
 			Say("I can only sell one 60000 stack of that item.");
+		endif
+
+		if(stocked_any)
+			RecordNewStock();
 		endif
 		return;
 	endif
@@ -419,6 +483,7 @@ function stockitem(byref item, byref seller)
 		Say( "My inventory is too full!" );
     else
 		Say( "I will sell " + item.desc + " for " + item.sellprice);
+		RecordNewStock();
 	endif
 
 endfunction

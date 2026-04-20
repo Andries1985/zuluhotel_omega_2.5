@@ -172,7 +172,13 @@ program npcdeath(corpse)
 		SetObjProperty(corpse, "noloot", 1);
 	endif
 
-	if( !GetObjProperty( corpse, "noloot"))
+	if( GetObjProperty( corpse, "noloot") )
+		foreach item in EnumerateItemsInContainer( corpse )
+			if( item.container == corpse )
+				DestroyItem(item);
+			endif
+		endforeach
+	else
 		MakeLoot(corpse);
 		RegisterNPC(corpse);
 	endif

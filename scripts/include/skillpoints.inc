@@ -123,6 +123,30 @@ function AwardSkillPoints( who, skillid, points )
 	
 endfunction
 
+function GetPlayerSkillCap( who, skillid )
+	var skillcap := 130;
+	var matrix := GetObjProperty(who, "pScrollMatrix");
+
+	if(matrix)
+		skillcap := 130 + CInt(matrix[skillid]);
+		if(skillid == 0)
+			skillcap := 130 + CInt(matrix[49]);
+		endif
+		if(skillcap > 150)
+			skillcap := 150;
+		endif
+	endif
+
+	return skillcap;
+endfunction
+
+function ApplySkillHardCap( who, skillid )
+	var skillcap := GetPlayerSkillCap(who, skillid);
+	if(GetBaseSkill(who, skillid) > skillcap)
+		SetBaseSkill(who, skillid, skillcap);
+	endif
+endfunction
+
 /***********************************************************************************
 // **
 // ** function AwardPoints( who, skillid, skillpoints )

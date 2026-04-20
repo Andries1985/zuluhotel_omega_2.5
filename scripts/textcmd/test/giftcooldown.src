@@ -1,0 +1,79 @@
+use uo;
+use os;
+
+const PROP_GIFT_COOLDOWN := "ChristmasGiftCooldownSeconds";
+const DEFAULT_GIFT_COOLDOWN := 24*3600;
+
+program giftcooldown(who, text)
+	var input := "";
+	if(text)
+		input := Lower(text);
+	endif
+
+	if(!input)
+		var current := CInt(GetGlobalProperty(PROP_GIFT_COOLDOWN));
+		if(current <= 0)
+			current := DEFAULT_GIFT_COOLDOWN;
+		endif
+		SendSysMessage(who, "Current Christmas gift cooldown: " + DescribeCooldown(current) + " (" + current + " seconds)");
+		SendSysMessage(who, "Usage: .giftcooldown second|minute|hour|12hours|day|2days|4days|week|default|<seconds>");
+		return;
+	endif
+
+	var seconds := ParseCooldownInput(input);
+	if(seconds <= 0)
+		SendSysMessage(who, "Invalid cooldown value.");
+		SendSysMessage(who, "Valid presets: second, minute, hour, 12hours, day, 2days, 4days, week, default.");
+		SendSysMessage(who, "Or set an exact value in seconds, e.g. .giftcooldown 3600");
+		return;
+	endif
+
+	if(!SetGlobalProperty(PROP_GIFT_COOLDOWN, seconds))
+		SendSysMessage(who, "Failed to save Christmas gift cooldown.");
+		return;
+	endif
+
+	SendSysMessage(who, "Christmas gift cooldown set to: " + DescribeCooldown(seconds) + " (" + seconds + " seconds)");
+endprogram
+
+function ParseCooldownInput(input)
+	case(input)
+		"second": return 1;
+		"minute": return 60;
+		"hour": return 3600;
+		"12hours": return 12*3600;
+		"day": return 24*3600;
+		"2days": return 2*24*3600;
+		"4days": return 4*24*3600;
+		"week": return 7*24*3600;
+		"default": return DEFAULT_GIFT_COOLDOWN;
+	endcase
+
+	var numeric := CInt(input);
+	if(numeric > 0)
+		return numeric;
+	endif
+	return 0;
+endfunction
+
+function DescribeCooldown(seconds)
+	if(seconds == 1)
+		return "1 second";
+	elseif(seconds == 60)
+		return "1 minute";
+	elseif(seconds == 3600)
+		return "1 hour";
+	elseif(seconds == 12*3600)
+		return "12 hours";
+	elseif(seconds == 24*3600)
+		return "1 day";
+	elseif(seconds == 2*24*3600)
+		return "2 days";
+	elseif(seconds == 4*24*3600)
+		return "4 days";
+	elseif(seconds == 7*24*3600)
+		return "1 week";
+	endif
+
+	return CStr(seconds) + " seconds";
+endfunction

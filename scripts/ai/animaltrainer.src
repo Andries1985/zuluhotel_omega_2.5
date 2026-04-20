@@ -705,6 +705,7 @@ function TrainMax(who, skill, trained)
 
   if (who.spendgold(skillamt))
     SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt);
+    RecalculateEquippedSkillBonus( who, skill );
   else
     var goldamt := 0;
     // Not enough gold for full skill, try less
@@ -717,6 +718,7 @@ function TrainMax(who, skill, trained)
     if (goldamt > 1 && goldamt <= skillamt)
       if (who.spendgold(goldamt))
         SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+goldamt);
+        RecalculateEquippedSkillBonus( who, skill );
       else
         return 0; // SHOULD never hit here
       endif
@@ -753,6 +755,7 @@ function TrainEntry(who, skill, data, trained)
 
   if (who.spendgold(CInt(skillamt*10)))
     SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt*10);
+    RecalculateEquippedSkillBonus( who, skill );
     return 1;
   else
     Say("You don't have enough gold to train.");

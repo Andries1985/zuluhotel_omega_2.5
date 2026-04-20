@@ -52,7 +52,7 @@ program CastleGuard()
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
     EnableEvents( SYSEVENT_OPPONENT_MOVED );
     EnableEvents( SYSEVENT_ITEM_GIVEN );
-    drop_anchor();
+    drop_anchor(me);
 
 	if (getobjproperty(me, "frozen"))
 		me.frozen := 1;

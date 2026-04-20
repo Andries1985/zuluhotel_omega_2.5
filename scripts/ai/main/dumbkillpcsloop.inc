@@ -1,10 +1,15 @@
+use npc;
+
+
 include "ai/main/npcinfo";
 include "include/areas";
 include "include/npcboosts";
 
 
+
 function main_AI_loop()
 
+	var me := Self();
     var ev;
     var wanders := 60;
 
@@ -68,7 +73,7 @@ function main_AI_loop()
 			mydestx := ev.x;
 			mydesty := ev.y;
 			steps := 0;
-			drop_anchor();
+			drop_anchor(me);
 			WalkTowardLocation(mydestx, mydesty);
             endcase
 	  until (!(ev := os::wait_for_event(2)));

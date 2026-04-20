@@ -111,6 +111,7 @@ function ChangeFromSkillList( who )
 
     	SendSysMessage( who, "Skill Set to 150", FONT_NORMAL, 2601 );
     	SetBaseSkillBaseValue( who, res[0]-1, 1500 );
+    	RecalculateEquippedSkillBonus( who, res[0]-1 );
        	//ChangeFromSkillList( who );
     endif
 

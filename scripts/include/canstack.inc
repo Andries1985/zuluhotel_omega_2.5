@@ -5,6 +5,7 @@
 // Used by: packethook (stack merging), omegacache (item identity)
 
 use uo;
+use cfgfile;
 
 // Returns 1 if two items are identical for stacking purposes, 0 otherwise.
 // Checks all properties that define item identity:

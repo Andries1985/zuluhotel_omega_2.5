@@ -119,6 +119,7 @@ function ChangeFromSkillList( who )
 
     	SendSysMessage( who, "First Skill Set to 90", FONT_NORMAL, 2601 );
     	SetBaseSkillBaseValue( who, res[0]-1, 900 );
+    	RecalculateEquippedSkillBonus( who, res[0]-1 );
     	SetObjProperty( who, "BoostedSkillNr1", res[0]-1 );
     	SetObjProperty( who, "Detsoob", 1 );
     	ChangeFromSkillList( who );
@@ -156,6 +157,7 @@ function ChangeFromSkillList( who )
 
     	SendSysMessage( who, "Second Skill Set to 90", FONT_NORMAL, 2601 );
     	SetBaseSkillBaseValue( who, res[0]-1, 900 );
+    	RecalculateEquippedSkillBonus( who, res[0]-1 );
     	SetObjProperty( who, "BoostedSkillNr2", res[0]-1 );
     	EraseObjProperty( who, "Detsoob" );
     	SetObjProperty( who, "Detsoob", 2 );
@@ -163,6 +165,7 @@ function ChangeFromSkillList( who )
     elseif( Boosted == 0 )
    	    SendSysMessage( who, "First Skill Set to 90", FONT_NORMAL, 2601 );
     	SetBaseSkillBaseValue( who, res[0]-1, 900 );
+    	RecalculateEquippedSkillBonus( who, res[0]-1 );
     	SetObjProperty( who, "BoostedSkillNr1", res[0]-1 );
     	EraseObjProperty( who, "Detsoob" );
     	SetObjProperty( who, "Detsoob", 1 );

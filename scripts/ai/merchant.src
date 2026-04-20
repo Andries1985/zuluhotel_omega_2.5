@@ -82,8 +82,8 @@ program merchantai()
 	var mydestx := 0;
 	var mydesty := 0;
 	var steps   := 0;
-	var wanders := 60;
-	var next_wander := ReadGameClock();
+	var wanders := 0;
+	var next_wander := ReadGameClock() + RandomDice( 2, 50, 10 );
 
 	while (1)
 		if (me.hidden)
@@ -98,7 +98,7 @@ program merchantai()
 		if (ReadGameClock() > next_wander)
 			if (mydestx != 0)
 				WalkTowardLocation(mydestx, mydesty);
-				if ( (me.x == mydestx and me.y == mydesty) or ( steps > 10 ) )
+				if ( (me.x == mydestx and me.y == mydesty) or ( steps > 15 ) )
 					mydestx := 0;
 					SetAnchor( me.x, me.y, 3, 80 );
 				endif
@@ -106,8 +106,8 @@ program merchantai()
 				Wander();
 				wanders := wanders + 1;
 			endif
-			next_wander := ReadGameClock() + 2;
-			if (wanders > 10)
+			next_wander := ReadGameClock() + RandomDice( 2, 50, 10 );
+			if (wanders > 15)
 				wanders := 0;
 				WalkHome();
 				ev := sleepmode();
@@ -118,7 +118,7 @@ program merchantai()
 
 		if (ev)
 			if (ProcessEvent(ev, mydestx, mydesty, steps))
-				next_wander := ReadGameClock() + 30;
+				next_wander := ReadGameClock() + RandomDice( 2, 50, 10 );
 			endif
 		elseif (ReadGameClock() > next_restock)
 			if ( GetObjProperty(me, "restock") )
@@ -917,6 +917,7 @@ function TrainSkill( me, who, item )
 
 				// Set the PC's skill
 				SetBaseSkillBaseValue( who, TrainSkillID, New_Level);
+				RecalculateEquippedSkillBonus( who, TrainSkillID );
 
 				DestroyItem( item );  // Destroy gold
 
@@ -1061,6 +1062,7 @@ var skillamt := GetBaseSKillBaseValue(me, skill)/3 - GetBaseSKillBaseValue(who, 
 
 if (who.spendgold(skillamt))
 	SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt);
+	RecalculateEquippedSkillBonus( who, skill );
 else
 	var goldamt := 0;
 	// Not enough gold for full skill, try less
@@ -1073,6 +1075,7 @@ else
 	if (goldamt > 1 && goldamt <= skillamt)
 		if (who.spendgold(goldamt))
 			SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+goldamt);
+			RecalculateEquippedSkillBonus( who, skill );
 		else
 			return 0; // SHOULD never hit here
 		endif
@@ -1109,6 +1112,7 @@ endif
 
 if (who.spendgold(CInt(skillamt*10)))
 	SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt*10);
+	RecalculateEquippedSkillBonus( who, skill );
 	return 1;
 else
 	Say("You don't have enough gold to train.");

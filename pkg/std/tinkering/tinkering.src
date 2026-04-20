@@ -1172,7 +1172,7 @@ function TryToMakeAContainerLockable( character , key )
 
 endfunction
 
-function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_objtype , sfx );
+function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_objtype , sfx, baseRequest := 0 );
 
     var itemname;
     var points;
@@ -1184,15 +1184,30 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
     var crafter_level := 1;
     var idcharges;
 	var excep_ch := 10;
+	var ingotRequest;
 
-    // Optional extra required part (kept for parity with TryToMakeComplex)
-    if( needed_objtype and use_on.objtype != needed_objtype )
-        var have_it := FindObjtypeInContainer( character.backpack , needed_objtype );
-        if( !have_it )
-            SendSysMessage( character , "You are missing a required part." );
-            return;
-        endif
-    endif
+	if(!baseRequest)
+		if(!use_on)
+			SendSysMessage( character , "You are missing a required part." );
+			return;
+		endif
+
+		// Optional extra required part (kept for parity with TryToMakeComplex)
+		if( needed_objtype and use_on.objtype != needed_objtype )
+			var have_it := FindObjtypeInContainer( character.backpack , needed_objtype );
+			if( !have_it )
+				SendSysMessage( character , "You are missing a required part." );
+				return;
+			endif
+		endif
+
+		baseRequest := MakeBackpackRequest(character, use_on);
+	endif
+
+	if( GetAvailableResource(character, baseRequest).total < 1 )
+		SendSysMessage( character , "You are missing a required part." );
+		return;
+	endif
 
     SendSysMessage( character , "Select an ingot to bind into the talisman." );
     ingot := Target( character , TGTOPT_CHECK_LOS );
@@ -1200,31 +1215,50 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
         return;
     endif
 
-    if( !Accessible( character , ingot ) or !ingot.movable )
-        SendSysMessage( character , "You can't reach that!" );
-        return;
-    endif
+	if( ingot.objtype == OMEGACACHE_OBJTYPE )
+		ingotRequest := SelectMaterialFromCache(character);
+		if(!ingotRequest)
+			return;
+		endif
 
-    if( !ReserveItem( ingot ) )
-        return;
-    endif
+		if( !IsIngotObjtype(ingotRequest.objtype) )
+			SendSysMessage( character , "You must select an ingot." );
+			return;
+		endif
 
-    if( !IsInContainer( character.backpack , ingot ) )
-        SendSysMessage( character , "That item has to be in your backpack." );
-        ReleaseItem( ingot );
-        return;
-    endif
+		if( GetAvailableResource(character, ingotRequest).total < 125 )
+			SendSysMessage( character , "You need at least 125 ingots to make a talisman." );
+			return;
+		endif
+	else
+		if( !Accessible( character , ingot ) or !ingot.movable )
+			SendSysMessage( character , "You can't reach that!" );
+			return;
+		endif
 
-    if( !( ((ingot.objtype >= UOBJ_INGOTS_START ) && (ingot.objtype <= UOBJ_INGOTS_END )) || ((ingot.objtype >= UOBJ_INGOTS2_START) && (ingot.objtype <= UOBJ_INGOTS2_END)) ) )
-        SendSysMessage( character , "You must select an ingot." );
-        ReleaseItem( ingot );
-        return;
-    endif
+		if( !ReserveItem( ingot ) )
+			return;
+		endif
 
-	if( ingot.amount < 125 )
-		SendSysMessage( character , "You need at least 125 ingots to make a talisman." );
-        ReleaseItem( ingot );
-		return;
+		if( !IsInContainer( character.backpack , ingot ) )
+			SendSysMessage( character , "That item has to be in your backpack." );
+			ReleaseItem( ingot );
+			return;
+		endif
+
+		if( !IsIngotObjtype(ingot.objtype) )
+			SendSysMessage( character , "You must select an ingot." );
+			ReleaseItem( ingot );
+			return;
+		endif
+
+		if( ingot.amount < 125 )
+			SendSysMessage( character , "You need at least 125 ingots to make a talisman." );
+			ReleaseItem( ingot );
+			return;
+		endif
+
+		ingotRequest := MakeBackpackRequest(character, ingot);
 	endif
 
     var element := FindConfigElem( tinker_cfg , to_be_done_objtype );
@@ -1232,16 +1266,18 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
         itemname := element.Name;
         skill    := element.Skill;
     else
-        ReleaseItem( ingot );
+		if( ingot and ingot.objtype != OMEGACACHE_OBJTYPE )
+			ReleaseItem( ingot );
+		endif
         return;
     endif
 
-    if( ore_cfg[ingot.objtype] )
-        if( ore_cfg[ingot.objtype].Quality )
-            ingot_quality := ore_cfg[ingot.objtype].Quality;
+	if( ore_cfg[ingotRequest.objtype] )
+		if( ore_cfg[ingotRequest.objtype].Quality )
+			ingot_quality := ore_cfg[ingotRequest.objtype].Quality;
         endif
-        if( ore_cfg[ingot.objtype].Name )
-            ingot_name := ore_cfg[ingot.objtype].Name;
+		if( ore_cfg[ingotRequest.objtype].Name )
+			ingot_name := ore_cfg[ingotRequest.objtype].Name;
         endif
     endif
 
@@ -1260,7 +1296,9 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
         var theitem := CreateItemInBackpack( character , to_be_done_objtype );
         if( !theitem )
             SendSysMessage( character , "Error in creation process please report this bug on Discord." );
-            ReleaseItem( ingot );
+			if( ingot and ingot.objtype != OMEGACACHE_OBJTYPE )
+				ReleaseItem( ingot );
+			endif
             return;
         endif
 
@@ -1270,7 +1308,7 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
 			theitem.quality := ingot_quality;
 		endif
 
-		theitem.color := ingot.color;
+		theitem.color := ingotRequest.color;
 		itemname := ingot_name + " " + itemname;
 
 		// exceptional logic (like TryToMakeItem / TryToMakeComplex)
@@ -1336,14 +1374,16 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
 		SetObjProperty( theitem , "BaseName" , itemname );
 		SetName( theitem , itemname );
 
-        SendSysMessage( character , "You create the talisman and place it in your pack." );
     else
         SendSysMessage( character , "You fail to create the talisman and destroy the material." );
     endif
 
-    DestroyItem( use_on );
-    SubtractAmount( ingot , 125 );
-	ReleaseItem( ingot );
+	ConsumeResource(character, baseRequest, 1);
+	ConsumeResource(character, ingotRequest, 125);
+
+	if( ingot and ingot.objtype != OMEGACACHE_OBJTYPE )
+		ReleaseItem( ingot );
+	endif
 
 endfunction
 
@@ -1454,6 +1494,11 @@ function HandleCacheMaterial(character, resourceRequest)
 	// Empty bottles — potion keg path (cache support for bottles)
 	elseif(ot == UOBJ_EMPTY_BOTTLE)
 		TryToMakePotionKeg(character, 0, resourceRequest);
+		return;
+
+	// Talisman base item
+	elseif(ot == 0xffa3)
+		TryToMakeTalisman(character, 0, 0x213e, 0xffa3, SFX_HAMMER, resourceRequest);
 		return;
 
 	else
