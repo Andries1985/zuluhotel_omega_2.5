@@ -5,6 +5,7 @@ include "include/client";
 include "include/namingbyenchant";
 include "include/skillpoints";
 include "include/itemutil";
+include "include/constants/propids";
 
 function SelectItemToID(who,delay)
 
@@ -33,6 +34,11 @@ function SelectItemToID(who,delay)
 		
 	if( !the_item.IsA(POLCLASS_ITEM) )
 		SendSysMessage( who , "That's not an item!" );
+		return 1;
+	endif
+
+	if( IsLockedSpawnPointChest(the_item) )
+		SendSysMessage( who, "You must unlock that spawnpoint chest first." );
 		return 1;
 	endif
 
@@ -223,6 +229,10 @@ endfunction
 
 function CanBeIDed(the_item)
 
+	if( IsLockedSpawnPointChest(the_item) )
+		return 1;
+	endif
+
 	if(GetObjProperty( the_item , "IDed" ))
 		return 1;
 	elseif(GetObjProperty( the_item , "UnIDedMagicalItem"))
@@ -238,5 +248,19 @@ function CanBeIDed(the_item)
 	else
 		return 1;
 	endif
+
+endfunction
+
+function IsLockedSpawnPointChest(the_item)
+
+	if( !the_item || !the_item.IsA(POLCLASS_CONTAINER) )
+		return 0;
+	endif
+
+	if( GetObjProperty(the_item, PROPID_CHEST_SPAWNPOINT_CHEST) && the_item.locked )
+		return 1;
+	endif
+
+	return 0;
 
 endfunction

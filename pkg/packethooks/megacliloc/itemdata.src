@@ -12,6 +12,7 @@ include "include/math";
 include ":itemid:itemid";
 include "include/attributes";
 include ":armor:armorZones";
+include "include/constants/propids";
 
 /*todo
 add magic/bardic efficiency
@@ -25,6 +26,10 @@ program itemdata(parms)
 	var prop := struct;
 	prop.+ clilocid := 0;
 	prop.+ values := array;
+
+	if( IsLockedSpawnPointChest(xObject) )
+		return allprops;
+	endif
 
 	var owner := GetObjProperty(xObject, "Owner");
 	if(owner)
@@ -459,3 +464,17 @@ function GetSkillName( skillid )
     	return cfg[skillid].name;
     	
 endfunction
+
+	function IsLockedSpawnPointChest(the_item)
+
+		if( !the_item || !the_item.IsA(POLCLASS_CONTAINER) )
+			return 0;
+		endif
+
+		if( GetObjProperty(the_item, PROPID_CHEST_SPAWNPOINT_CHEST) && the_item.locked )
+			return 1;
+		endif
+
+		return 0;
+
+	endfunction
