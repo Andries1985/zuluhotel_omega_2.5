@@ -16,14 +16,14 @@ program giftcooldown(who, text)
 			current := DEFAULT_GIFT_COOLDOWN;
 		endif
 		SendSysMessage(who, "Current Christmas gift cooldown: " + DescribeCooldown(current) + " (" + current + " seconds)");
-		SendSysMessage(who, "Usage: .giftcooldown minute|hour|12hours|day|2days|4days|week|default|<seconds>");
+		SendSysMessage(who, "Usage: .giftcooldown second|minute|hour|12hours|day|2days|4days|week|default|<seconds>");
 		return;
 	endif
 
 	var seconds := ParseCooldownInput(input);
 	if(seconds <= 0)
 		SendSysMessage(who, "Invalid cooldown value.");
-		SendSysMessage(who, "Valid presets: minute, hour, 12hours, day, 2days, 4days, week, default.");
+		SendSysMessage(who, "Valid presets: second, minute, hour, 12hours, day, 2days, 4days, week, default.");
 		SendSysMessage(who, "Or set an exact value in seconds, e.g. .giftcooldown 3600");
 		return;
 	endif
@@ -38,6 +38,7 @@ endprogram
 
 function ParseCooldownInput(input)
 	case(input)
+		"second": return 1;
 		"minute": return 60;
 		"hour": return 3600;
 		"12hours": return 12*3600;
@@ -56,7 +57,9 @@ function ParseCooldownInput(input)
 endfunction
 
 function DescribeCooldown(seconds)
-	if(seconds == 60)
+	if(seconds == 1)
+		return "1 second";
+	elseif(seconds == 60)
 		return "1 minute";
 	elseif(seconds == 3600)
 		return "1 hour";
