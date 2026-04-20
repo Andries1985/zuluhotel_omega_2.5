@@ -16,6 +16,7 @@ program logon( who )
 
 	EraseObjProperty(who, "#SettingPH");
 	EraseObjProperty(who, "#LastID");
+	EraseObjProperty(who, "#MerchantID");
 	
 	var stafflevel := who.cmdlevel;
 

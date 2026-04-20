@@ -332,8 +332,13 @@ function ProcessEvent(byref ev, byref mydestx, byref mydesty, byref steps)
 		// Toadstool -  Added identifying items for mage/scribe npcs
 		//		Have it start a script so a player can't 'hold' up the merchant
 			elseif ( ev.text["identify"] && (me.npctemplate == "mage" || me.npctemplate == "scribe") )
-				// Check if player already has id window open
-				if (GetObjProperty(ev.source, "#MerchantID") != 1)
+				// Check if player already has id window open (lock is an expiry timestamp)
+				var merchant_id_lock := CInt(GetObjProperty(ev.source, "#MerchantID"));
+				if( merchant_id_lock && merchant_id_lock <= ReadGameClock() )
+					EraseObjProperty(ev.source, "#MerchantID");
+					merchant_id_lock := 0;
+				endif
+				if( !merchant_id_lock )
 					TurnToward( ev.source );
 					PrintTextAbovePrivate( me, "What do you want me to identify?", ev.source );
 					Start_Script("::misc/merchantidentify", {ev.source, me, IDENTIFY});
