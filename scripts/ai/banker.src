@@ -29,6 +29,8 @@ var me := Self();
 
 const BTN_CONFIRM_BANK_DEPOSIT_ALL := 1;
 const BTN_CANCEL_BANK_DEPOSIT_ALL := 2;
+const BANK_SPEECH_COOLDOWN := 5;
+const BANK_Z_TOLERANCE := 8;
 
 ///const REACT_THRESHOLD := 35;
 const REACT_THRESHOLD := 8;
@@ -67,11 +69,10 @@ program banker()
 
 		ev := os::wait_for_event( 120 );
 		if( ev )
-
 			if(ev.type ==SYSEVENT_SPEECH)
-			if( ev.source.z == me.z )
-				Bankfunctions( ev.source, ev.text );
-			endif
+				if( ev.source.z <= me.z + BANK_Z_TOLERANCE && ev.source.z >= me.z - BANK_Z_TOLERANCE )
+					Bankfunctions( ev.source, ev.text );
+				endif
 			endif
 
 			if(ev.type ==SYSEVENT_ITEM_GIVEN)
@@ -89,45 +90,53 @@ program banker()
 			endif
 
 			cleareventque();
-
 		endif
-
 	endwhile
-
 endprogram
 
 function cleareventque()
 
-var ev;
-repeat
-until (! (ev := os::wait_for_event(0)) );
+	var ev;
+	repeat
+	until (! (ev := os::wait_for_event(0)) );
 
 endfunction
 
 
 function BankFunctions( you, byref text )
 
-	if( CInt( GetObjProperty( you, "#bankused" ) ) > ReadGameClock() )
+	var now := ReadGameClock();
+	if( CInt( GetObjProperty( you, "#bankused" ) ) > now )
 		return;
-	else
-		SetObjProperty( you, "#bankused", ReadGameClock() + 5 );
 	endif
+
+	var handled := 0;
 
 	TurnToward(you);
 
 	// normal event
 	if ( text["bank"] )
 		OpenBank( you );
+		handled := 1;
 	elseif ( text["withdraw"] )
 		Withdraw( you );
+		handled := 1;
 	elseif ( text["deposit"] )
 		DepositAllBackpackGold( you );
+		handled := 1;
 	elseif ( text["check"] || text["cheque"] )
 		MakeCheque(you);
+		handled := 1;
 	elseif ( text["balance"] )
 		Balance( you);
+		handled := 1;
     elseif ( text["count"] )
         CountItems( you );
+		handled := 1;
+	endif
+
+	if( handled )
+		SetObjProperty( you, "#bankused", now + BANK_SPEECH_COOLDOWN );
 	endif
 
 endfunction
