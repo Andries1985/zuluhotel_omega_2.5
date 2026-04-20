@@ -3,6 +3,8 @@ use uo;
 
 include "include/random";
 
+const DEFAULT_GIFT_COOLDOWN := 24*3600;
+
 program santaman(who, santa)
 
 	var time := getobjproperty(who, "onlinetimer");
@@ -19,7 +21,7 @@ program santaman(who, santa)
 		SendSysMessage(who, "You are too young to recieve a gift.");
 		return;
 	endif
-	SetObjProperty(who, "#GiftedAlready", ReadGameClock() + (24*3600));
+	SetObjProperty(who, "#GiftedAlready", ReadGameClock() + GiftCooldownSeconds());
 
 	PrintTextAbovePrivate(santa, "Ho Ho Ho", who);
 	SleepMS(1000);
@@ -48,3 +50,11 @@ program santaman(who, santa)
 	endif
 	return;
 endprogram
+
+function GiftCooldownSeconds()
+	var cooldown := CInt(GetGlobalProperty("ChristmasGiftCooldownSeconds"));
+	if(cooldown <= 0)
+		cooldown := DEFAULT_GIFT_COOLDOWN;
+	endif
+	return cooldown;
+endfunction
