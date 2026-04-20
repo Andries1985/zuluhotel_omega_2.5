@@ -231,7 +231,7 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0, regReq
 				endfor
 
 				if( CheckSkill( user, SKILLID_ALCHEMY, difficulty, difficulty * POINT_MULTIPLIER ) )
-					if( GetBottle( user.backpack, user, regRequest.dataFileHandle ) )
+					if( GetBottle( user.backpack, user, regRequest ) )
 						CreateItemInContainer( mortar.container, product, 1 );
 						PlaySoundEffect( user, SFX_POUR );
 					else
@@ -265,11 +265,7 @@ function TryToMakePotion( user, mortar, potion := 0, reg := 0, mage := 0, regReq
 
 	else
 
-		var bottleDf := 0;
-		if(regRequest)
-			bottleDf := regRequest.dataFileHandle;
-		endif
-		if( GetBottle( user.backpack, user, bottleDf ) )
+		if( GetBottle( user.backpack, user, regRequest ) )
 			var product := GetObjProperty( mortar, "contents" );
 			if( mage )
 				var itemcfg := ReadConfigFile( "itemdesc" );
@@ -343,7 +339,10 @@ endfunction
 
 
 // find a bottle in backpack and reserve it
-function GetBottle( conts, user, dataFileHandle := 0 )
+// parentRequest: a ResourceRequest from the caller (e.g. the reagent request) used to
+// inherit the cache context (dataFileHandle + houseSerial). Falls back to fresh
+// FindAccessibleContainer if not provided.
+function GetBottle( conts, user, parentRequest := 0 )
 	var bottle := FindItemInContainer( conts , UOBJ_EMPTY_BOTTLE );
 	if(bottle)
 		if( !ReserveContainers( user, bottle.container ) )
@@ -354,15 +353,23 @@ function GetBottle( conts, user, dataFileHandle := 0 )
 			return 1;
 		endif
 	endif
-	// Try cache for bottles (reuse existing dataFileHandle if provided)
-	if(!dataFileHandle)
+	// Inherit cache context from parent request when available; otherwise resolve fresh.
+	var dataFileHandle := 0;
+	var houseSerial := 0;
+	if(parentRequest and parentRequest.dataFileHandle)
+		dataFileHandle := parentRequest.dataFileHandle;
+		houseSerial := parentRequest.houseSerial;
+	else
 		var access := FindAccessibleContainer(user, array{REMOVE_FROM_SECURE});
 		if(access)
 			dataFileHandle := access.df;
+			if(access.house)
+				houseSerial := access.house.serial;
+			endif
 		endif
 	endif
 	if(dataFileHandle)
-		var bottleReq := struct{ objtype := CInt(UOBJ_EMPTY_BOTTLE), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE }, dataFileHandle := dataFileHandle, leaseKey := 0 };
+		var bottleReq := struct{ objtype := CInt(UOBJ_EMPTY_BOTTLE), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE }, dataFileHandle := dataFileHandle, houseSerial := houseSerial, leaseKey := 0 };
 		if(GetAvailableResource(user, bottleReq).total >= 1)
 			ConsumeResource(user, bottleReq, 1);
 			return 1;

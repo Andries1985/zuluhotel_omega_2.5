@@ -8,6 +8,7 @@
 // tinkering, bowcraft, cooking, inscription, cartography).
 
 use uo;
+use os;
 use math;
 
 include "include/omegacache_utils";
@@ -84,6 +85,11 @@ endfunction
 // Consumes amount of a resource following the preferredSourceOrder in the ResourceRequest.
 // Uses resourceRequest.leaseKey to exclude the caller's own lease from availability checks.
 // Returns 1 on success, 0 on failure (insufficient resources).
+//
+// Partial-consumption detection: if sources drain unequally (rare — usually only under
+// concurrent lease/withdraw races) we log the discrepancy via SysLog and inform the
+// player what was lost from each source so they can ticket it. Refund is NOT performed
+// at this layer — see `docs/PLAN.md` "ConsumeResource partial refund" for why.
 function ConsumeResource(who, byref resourceRequest, amount)
 	var res := GetAvailableResource(who, resourceRequest);
 	if(res.total < amount)
@@ -92,20 +98,47 @@ function ConsumeResource(who, byref resourceRequest, amount)
 	endif
 
 	var remaining := amount;
+	var consumed_backpack := 0;
+	var consumed_cache := 0;
+
 	foreach source in (resourceRequest.preferredSourceOrder)
 		if(remaining <= 0)
 			break;
 		endif
+		var before := remaining;
 		if(source == BACKPACK)
 			remaining := ConsumeFromBackpack(res.backpack_items, remaining);
+			consumed_backpack := consumed_backpack + (before - remaining);
 		elseif(source == OMEGA_CACHE and res.dataFileHandle)
 			var consumed := ConsumeFromCache(resourceRequest, remaining);
 			remaining := remaining - consumed;
+			consumed_cache := consumed_cache + consumed;
 		endif
 	endforeach
 
 	if(remaining > 0)
-		SendSysMessage(who, "Resource consumption failed unexpectedly.");
+		// Partial consumption — materials taken but request not fully satisfied.
+		// Log for audit/support, inform the player generically.
+		// `houseSerial` is set by the factory builders (MakeBackpackRequest /
+		// SelectMaterialFromList) and inherited by downstream structs. Guard the
+		// read so a future inline struct that omits it won't break this log path.
+		var house_serial := 0;
+		if(resourceRequest.houseSerial)
+			house_serial := resourceRequest.houseSerial;
+		endif
+
+		SysLog("[ConsumeResource] PARTIAL_CONSUME player_serial=" + who.serial
+			+ " player_name=" + who.name
+			+ " objtype=" + Hex(CInt(resourceRequest.objtype))
+			+ " requested=" + amount
+			+ " unfulfilled=" + remaining
+			+ " consumed_backpack=" + consumed_backpack
+			+ " consumed_cache=" + consumed_cache
+			+ " color=" + CInt(resourceRequest.color)
+			+ " key=" + CStr(resourceRequest.key)
+			+ " house_serial=" + CStr(house_serial));
+
+		SendSysMessage(who, "A crafting error occurred and some of your materials could not be reclaimed. Please contact staff.");
 		return 0;
 	endif
 
@@ -328,10 +361,14 @@ endfunction
 // Checks for a nearby cache for fallback consumption (unless autodraw is disabled).
 function MakeBackpackRequest(who, item)
 	var dataFileHandle := 0;
+	var houseSerial := 0;
 	if(!GetObjProperty(who, "omegacache_no_autodraw"))
 		var access := FindAccessibleContainer(who, array{REMOVE_FROM_SECURE});
 		if(access)
 			dataFileHandle := access.df;
+			if(access.house)
+				houseSerial := access.house.serial;
+			endif
 		endif
 	endif
 
@@ -342,6 +379,7 @@ function MakeBackpackRequest(who, item)
 		quality              := CDbl(item.quality),
 		preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE },
 		dataFileHandle       := dataFileHandle,
+		houseSerial          := houseSerial,
 		leaseKey             := 0
 	};
 endfunction
@@ -391,7 +429,7 @@ function SelectMaterialFromCache(who)
 		valid_keys := filtered_keys;
 	endif
 
-	return SelectMaterialFromList(who, df, valid_keys);
+	return SelectMaterialFromList(who, access, valid_keys);
 endfunction
 
 // Shows a category selection gump. Returns filtered keys for the selected category, or 0 on cancel.
@@ -517,10 +555,11 @@ function SelectMaterialCategory(who, df, valid_keys)
 endfunction
 
 // Shows material selection from a list of keys. Returns ResourceRequest or 0.
-function SelectMaterialFromList(who, df, valid_keys)
+function SelectMaterialFromList(who, access, valid_keys)
 	// Sort by display name (BaseName CProp if available, else default name)
 	// Use string-concat sort: "name|||key" — sort as strings, then extract keys
 	var sort_strings := array{};
+	var df := access.df;
 	foreach key in valid_keys
 		var ot := CInt(GetObjtypeFromKey(key));
 		var elem := df.FindElement(key);
@@ -705,6 +744,11 @@ function SelectMaterialFromList(who, df, valid_keys)
 		selected_quality := CDbl(selected_elem.GetProp("quality"));
 	endif
 
+	var houseSerial := 0;
+	if(access.house)
+		houseSerial := access.house.serial;
+	endif
+
 	return struct{
 		objtype              := selected_objtype,
 		key                  := selected_key,
@@ -712,6 +756,7 @@ function SelectMaterialFromList(who, df, valid_keys)
 		quality              := selected_quality,
 		preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK },
 		dataFileHandle       := df,
+		houseSerial          := houseSerial,
 		leaseKey             := 0
 	};
 endfunction

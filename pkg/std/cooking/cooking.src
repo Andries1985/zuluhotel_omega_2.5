@@ -26,8 +26,9 @@ food_dictionary := define_food_dictionary();
 //this is used to make sure that all recipes presented use the ingredient that was originally selected
 var original_ingredient_objtype := 0;
 
-// Omega Cache datafile handle — set when player targets cache, 0 otherwise
+// Omega Cache datafile handle + house serial — set when player targets cache, 0 otherwise
 var cooking_cache_df := 0;
+var cooking_cache_house_serial := 0;
 
 program cook ( character, ingredient )
 
@@ -42,6 +43,9 @@ program cook ( character, ingredient )
 			return;
 		endif
 		cooking_cache_df := access.df;
+		if(access.house)
+			cooking_cache_house_serial := access.house.serial;
+		endif
 		original_ingredient_objtype := 0;
 	else
 		original_ingredient_objtype := ingredient.objtype;
@@ -49,10 +53,14 @@ program cook ( character, ingredient )
 		// Resolve cache for autodraw (reuse throughout)
 		if(mainRequest.dataFileHandle)
 			cooking_cache_df := mainRequest.dataFileHandle;
+			cooking_cache_house_serial := mainRequest.houseSerial;
 		elseif(!GetObjProperty(character, "omegacache_no_autodraw"))
 			var access := FindAccessibleContainer(character, array{REMOVE_FROM_SECURE});
 			if(access)
 				cooking_cache_df := access.df;
+				if(access.house)
+					cooking_cache_house_serial := access.house.serial;
+				endif
 			endif
 		endif
 	endif
@@ -303,6 +311,7 @@ function destroy_all_ingredients(character, current_recipe)
 							quality              := 0,
 							preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE },
 							dataFileHandle       := cooking_cache_df,
+							houseSerial          := cooking_cache_house_serial,
 							leaseKey             := 0
 						};
 						ConsumeResource(character, cacheRequest, remaining);

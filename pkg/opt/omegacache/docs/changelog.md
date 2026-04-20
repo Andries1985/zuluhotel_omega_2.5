@@ -800,6 +800,16 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 65. **Deposit All confirmation** — `DoDepositAll` now shows a `YesNoVar` confirmation gump before depositing. Warns the player that all stackable items from their entire backpack will be moved to the cache. Cancel aborts the operation.
 
+### Post-merge audit — talisman crafting and resource-manager hardening (2026-04-17)
+
+66. **Talisman crafting cache-integration fixes** — `TryToMakeTalisman` (merged via a separate feature branch) diverged from the established single-craft cache pattern. The manual ingot path rejected valid crafts with partial backpack + partial cache stock (used `ingot.amount < 125` instead of `GetAvailableResource`). Missing Crafting Power Hour halving that every sibling tinkering function applies. Consumption happened AFTER skill check + item creation, leaving a duplication window under concurrent lease/withdraw races. Redundant `ReserveItem`/`ReleaseItem` plumbing on the ingot stack (main program reserves `use_on`; internal reservation caused release-after-destroy warnings). Dead `needed_objtype` secondary-component check (both callers pass `0xffa3 = use_on.objtype`, making the block unreachable). All fixed — talisman now mirrors `MakeTotem` / `TryToMakePotionKeg` pattern.
+
+67. **`ConsumeResource` partial-consume detection** — `ConsumeResource` previously returned `0` with a generic `"Resource consumption failed unexpectedly."` message when the drain loop couldn't satisfy the full request despite the initial availability check passing. Now tracks `consumed_backpack` and `consumed_cache` via before/after snapshots of `remaining` in the drain loop. On partial failure, emits a structured `[ConsumeResource] PARTIAL_CONSUME ...` syslog entry (player serial/name, objtype, amounts, colour, cache key, house serial) and sends the player a generic `"A crafting error occurred... contact staff."` message. Refund is NOT performed — the fix is diagnostic. `use os` added for `SysLog`.
+
+68. **`houseSerial` on `ResourceRequest`** — Added `houseSerial` field to `ResourceRequest` struct so partial-consume logs can identify which house's cache was involved. `MakeBackpackRequest` and `SelectMaterialFromList` populate it from `access.house.serial` (null-guarded). `SelectMaterialFromList` signature changed from `(who, df, valid_keys)` to `(who, access, valid_keys)` — the full access struct flows in so house serial propagates naturally. Inline structs that reach `ConsumeResource` set `houseSerial`: `tinkering.src` `tempRequest`/`secondRequest`/`cacheBottleReq`, `bladed.src` `cacheHideReq`/`hideReq`, `alchemy.src` `bottleReq`, `cooking.src` `cacheRequest`. Cooking tracks `cooking_cache_house_serial` module var alongside `cooking_cache_df` across its three resolution paths. The partial-consume log reads `houseSerial` defensively via `if(resourceRequest.houseSerial)` guard — future inline structs that omit the field will log `house_serial=0` rather than breaking the log path.
+
+69. **`GetBottle` refactored to accept parent request** — `GetBottle(conts, user, dataFileHandle)` → `GetBottle(conts, user, parentRequest)`. Both callers in `TryToMakePotion` now pass `regRequest` directly; previously they extracted `regRequest.dataFileHandle` at the call site, discarding the rest of the context. `GetBottle` inherits both `dataFileHandle` and `houseSerial` from the parent request when provided, or falls back to `FindAccessibleContainer` resolution.
+
 ### Files Modified
 
 - `pkg/opt/omegacache/omegacache.inc` — `ValidateDepositTarget()`, `RunOmegaCacheGump(who, access)` signature, deposit function signatures, `GetNonDefaultProperties` reads `stacking_ignore.cfg`, `DoDepositAll` confirmation gump, `include ":gumps:yesNoSizable"`
@@ -816,6 +826,10 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 - `pkg/std/housing/sign.src` — `USESCRIPTID_SECURE_CONTAINER` constant, cache container destruction via `house.items`
 - `pkg/std/housing/signcontrol.src` — `USESCRIPTID_SECURE_CONTAINER` constant
 - `pkg/opt/statichousing/ssign.src` — `USESCRIPTID_SECURE_CONTAINER` constant
-- `pkg/std/cooking/cooking.src` — Autodraw for backpack path. Cache resolved once at entry. Lease lifecycle.
+- `pkg/std/cooking/cooking.src` — Autodraw for backpack path. Cache resolved once at entry. Lease lifecycle. Added `cooking_cache_house_serial` tracking across all three resolution paths; inline `cacheRequest` carries `houseSerial`.
 - `pkg/std/cartography/cartography.src` — `MakeBackpackRequest` for autodraw. `makeNewmap` create-before-consume.
+- `pkg/std/tinkering/tinkering.src` — `TryToMakeTalisman` rewritten (autodraw-aware availability, PHC halving, consume-before-check, removed internal ReserveItem/ReleaseItem, removed dead `needed_objtype` block); `tempRequest`/`secondRequest`/`cacheBottleReq` inline structs carry `houseSerial`.
+- `pkg/std/alchemy/alchemy.src` — `GetBottle` signature `(conts, user, dataFileHandle)` → `(conts, user, parentRequest)`; both callers updated; inline `bottleReq` carries `houseSerial`.
+- `scripts/include/resourcemanager.inc` — `use os` for SysLog; `ConsumeResource` partial-consume detection + SysLog + generic player message + defensive `houseSerial` read; `MakeBackpackRequest` / `SelectMaterialFromList` output `houseSerial`; `SelectMaterialFromList` signature takes `access` struct.
+- `scripts/items/bladed.src` — `cacheHideReq` inherits `houseSerial` from `logRequest`; `hideReq` gets `houseSerial := 0` for struct shape consistency.
 

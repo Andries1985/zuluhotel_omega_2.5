@@ -408,7 +408,7 @@ function CarveLogs( character, logs, logRequest := 0 )
 		endforeach
 		// If not in backpack, check cache
 		if(!makespecial)
-			var cacheHideReq := struct{ objtype := CInt(needed_hide_type), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ OMEGA_CACHE }, dataFileHandle := logRequest.dataFileHandle, leaseKey := 0 };
+			var cacheHideReq := struct{ objtype := CInt(needed_hide_type), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ OMEGA_CACHE }, dataFileHandle := logRequest.dataFileHandle, houseSerial := logRequest.houseSerial, leaseKey := 0 };
 			if(logRequest.dataFileHandle and GetAvailableResource(character, cacheHideReq).total >= 10)
 				makespecial := 1;
 				specialRequest := cacheHideReq;
@@ -685,7 +685,7 @@ function CanMake( bowcraft , key , logs , logs_diff , cfg, character, total_avai
 				endif
 			endforeach
 			// Check cache for reagent hides
-			var hideReq := struct{ objtype := CInt(htype), dataFileHandle := 0, leaseKey := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE } };
+			var hideReq := struct{ objtype := CInt(htype), dataFileHandle := 0, houseSerial := 0, leaseKey := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE } };
 			var hide_total := GetAvailableResource(character, hideReq).total;
 			if ((hide_total >= hide ) and ( avail >= material ))
 				return 1;
