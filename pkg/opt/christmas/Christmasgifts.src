@@ -14,7 +14,7 @@ program santaman(who, santa)
 	time := CInt(time/(24*3600));
 	
 	var GiftedAlready :=CInt(GetObjProperty(who, "#GiftedAlready")), secclock:=ReadGameClock();
-	var currentCooldown := CInt(GiftCooldownSeconds());
+
 	if(secclock < GiftedAlready && !who.cmdlevel)
 		SendSysMessage(who, "You can only recieve one christmas present per day.");
 		return;
@@ -22,7 +22,7 @@ program santaman(who, santa)
 		SendSysMessage(who, "You are too young to recieve a gift.");
 		return;
 	endif
-	SetObjProperty(who, "#GiftedAlready", ReadGameClock() + currentCooldown);
+	SetObjProperty(who, "#GiftedAlready", ReadGameClock() + GiftCooldownSeconds());
 
 	PrintTextAbovePrivate(santa, "Ho Ho Ho", who);
 	SleepMS(1000);
