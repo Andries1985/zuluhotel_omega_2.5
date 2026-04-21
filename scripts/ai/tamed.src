@@ -99,13 +99,14 @@ program TamedAI()
 	SetAnchor( me.x, me.y, 20, 0 );
 
 	var npccfg := readconfigfile("npcdesc");
-	if ((npccfg[me.npctemplate].script == "spellkillpcs") || (npccfg[me.npctemplate].script == "goodcaster") || (npccfg[me.npctemplate].script == "tamed"))
+	var poison_skill := GetConfigInt( npccfg[me.npctemplate], "Poisoning" );
+	spells := GetConfigStringArray( npccfg[me.npctemplate], "spell" );
+	if (Len(spells))
 		caster := 1;
-		spells := GetConfigStringArray( npccfg[me.npctemplate], "spell" );
 		saywords := npccfg[me.npctemplate].saywords;
 	elseif ((npccfg[me.npctemplate].script == "firebreather") || (npccfg[me.npctemplate].script == "chaosfirebreather"))
 		firebreather := 1;
-	elseif (npccfg[me.npctemplate].script == "poisonkillpcs")
+	elseif (poison_skill > 0)
 		poisoner := 1;
 	endif
 
@@ -560,7 +561,7 @@ function PetCount()
 				magic_pets := magic_pets + 1;
 			else
 				if ( GetObjProperty( mob , "Boss" ) )
-					pets := pets + 4;
+					pets := pets + 3;
 				else
 					pets := pets + 1;
 				endif
@@ -1225,8 +1226,16 @@ function DoPoison( you )
 
 	if ( (distance(me,you)<2) and (Random(8)==1) )
 
-		var p_level := Random(cint(GetMaxHP(me)/20));
-		if (p_level > 3) p_level := 3; endif
+		var poison_skill := Cint(GetEffectiveSkill(me, SKILLID_POISONING));
+		if (poison_skill > 150)
+			poison_skill := 150;
+		endif
+
+		var p_level := Cint(poison_skill / 25);
+		if (p_level < 1)
+			return;
+		endif
+
 		SetPoison(you, p_level, "You have been poisoned by " + me.name +"!");
 
 	endif

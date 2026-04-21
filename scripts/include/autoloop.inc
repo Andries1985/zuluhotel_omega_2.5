@@ -14,6 +14,11 @@
 ** AutoLoop_finish();
 */
 
+use uo;
+use os;
+
+include "include/random";
+
 const AL_consecutive := 10; // number of consecutive items before a anti-macroer gump appears to ask to continue
 const AL_timeout := 15; // number of seconds the player has to press "continue"
 

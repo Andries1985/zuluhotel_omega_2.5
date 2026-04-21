@@ -26,6 +26,10 @@ program itemdata(parms)
 	prop.+ clilocid := 0;
 	prop.+ values := array;
 
+	if( IsLockedSpawnPointChest(xObject) )
+		return allprops;
+	endif
+
 	var owner := GetObjProperty(xObject, "Owner");
 	if(owner)
 		prop.clilocid := 1061113; // Owner:

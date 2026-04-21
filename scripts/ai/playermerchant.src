@@ -245,6 +245,10 @@ function ProcessSpeech(byref ev);
 		TurnToward( ev.source );
 		cashout();
 
+	elseif((ev.text["cheque"]) and (ev.source.serial == master))
+		TurnToward( ev.source );
+		cashcheque(ev.source);
+
 	elseif((ev.text["status"]) and (ev.source.serial == master))
 		TurnToward( ev.source );
 		statuscheck();
@@ -307,7 +311,7 @@ function ProcessSpeech(byref ev);
 		TurnToward( ev.source );
 		Say("I will obey the following orders:");
 		sleep(1);
-		Say("release, sell, contact, collect,");
+		Say("release, sell, contact, collect, cheque,");
 		sleep(2);
 		Say("wear, undress, strip, follow, stop, hire, status, log and purchase");
 	endif
@@ -568,6 +572,58 @@ function cashout()
 	foreach thingie in ListRootItemsInContainer(me.backpack)
         	MoveItemToContainer(thingie, mstr.backpack);
 	endforeach
+
+endfunction
+
+function cashcheque(byref who)
+
+	var mygold := cint(getobjproperty(me, "g"));
+	if(mygold <= 0)
+		Say("I don't currently hold any gold for you.");
+		return;
+	endif
+
+	var checkamt := mygold;
+	if(checkamt > 1000000)
+		checkamt := 1000000;
+	endif
+
+	var placed_in_bank := 0;
+	var itemcheck := CreateItemInContainer(who.backpack, CInt(0x14000), 1);
+	if(!itemcheck)
+		var bankbox := FindBankBox(who);
+		if(bankbox)
+			itemcheck := CreateItemInContainer(bankbox, CInt(0x14000), 1);
+			if(itemcheck)
+				placed_in_bank := 1;
+			endif
+		endif
+
+		if(!itemcheck)
+			Say("I couldn't place a cheque in your backpack or bank box.");
+			return;
+		endif
+	endif
+
+	SetObjProperty(itemcheck, "Amount", checkamt);
+	SetObjProperty(itemcheck, "checkamount", checkamt);
+	SetObjProperty(itemcheck, "CreatedBy", me.name);
+	itemcheck.color := 51;
+	itemcheck.name := "A Cheque for " + checkamt + " Gold by " + me.name + ".";
+
+	mygold := mygold - checkamt;
+	setobjproperty(me, "g", mygold);
+
+	if(placed_in_bank)
+		Say("I placed your cheque for " + checkamt + " gold in your bank box.");
+	else
+		Say("Here is your cheque for " + checkamt + " gold.");
+	endif
+	if(mygold)
+		Say("I still hold " + mygold + " gold.");
+	else
+		Say("I currently hold no remaining gold for you.");
+	endif
 
 endfunction
 

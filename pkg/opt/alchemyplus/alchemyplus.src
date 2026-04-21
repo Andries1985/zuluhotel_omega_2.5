@@ -124,6 +124,7 @@ program alchemyplus ( character, myburner )
 		myburner.graphic := 0x1849;
 		
 		if (!CanMakePotion( character , current_potion ))
+			SendSysMessage(character, "You can no longer make that potion.");
 			AutoLoop_finish();
 			return;
 		endif
@@ -154,22 +155,22 @@ program alchemyplus ( character, myburner )
 				elseif (!pstr)
 					level := 0;
 				endif
-            elseif( GetObjProperty( character , CLASSEID_THIEF ) )
-				var pstr := current_potion.strength;
-				//Print("Potion Strength: " + pstr);
-				var classbonus := ClasseBonus( character , CLASSEID_THIEF );
-				//Print("Class Bonus: " + classbonus);
-				level := Cint( (pstr * classbonus ) - pstr );
-				//Print("Level: " + level);
+            // elseif( GetObjProperty( character , CLASSEID_THIEF ) )
+			// 	var pstr := current_potion.strength;
+			// 	//Print("Potion Strength: " + pstr);
+			// 	var classbonus := ClasseBonus( character , CLASSEID_THIEF );
+			// 	//Print("Class Bonus: " + classbonus);
+			// 	level := Cint( (pstr * classbonus ) - pstr );
+			// 	//Print("Level: " + level);
 
 
-				// If the potion HAS strength defined AND level is below 1, set it to 1
-				if (pstr && level < 1)
-					level := 1;
-				// Making sure we don't try set a level on items that don't need one
-				elseif (!pstr)
-					level := 0;
-				endif
+			// 	// If the potion HAS strength defined AND level is below 1, set it to 1
+			// 	if (pstr && level < 1)
+			// 		level := 1;
+			// 	// Making sure we don't try set a level on items that don't need one
+			// 	elseif (!pstr)
+			// 		level := 0;
+			// 	endif
 			endif
 
 			// Return new potion type (level) based on mage bonus
@@ -183,24 +184,58 @@ program alchemyplus ( character, myburner )
 				//Print("Consuming bottle");
 				SubtractAmount (potion_container, 1);
 				if (!potion_container)
-					SendSysMessage (character, "You run out of bottles.");
-					AutoLoop_finish();
-					return;
+					// If one bottle stack/item is consumed, try the next available bottle.
+					potion_container := FindItemInContainer( character.backpack , UOBJ_EMPTY_BOTTLE );
+					if (!potion_container)
+						SendSysMessage (character, "You run out of bottles.");
+						AutoLoop_finish();
+						return;
+					elseif( !ReserveItem( potion_container ) )
+						AutoLoop_finish();
+						return;
+					elseif( !IsOnPlayer( character.backpack , potion_container ) )
+						SendSysmessage( character, "That item has to be in your backpack." );
+						AutoLoop_finish();
+						return;
+					elseif( !ReserveContainers( character, potion_container.container ) )
+						AutoLoop_finish();
+						return;
+					endif
 				endif
 			elseif (current_potion.consume_flask && current_potion.itemtype == 40)
 				//Print("Consuming flask");
 				SubtractAmount (potion_container, 1);
 				if (!potion_container)
-					SendSysMessage (character, "You run out of flasks.");
-					AutoLoop_finish();
-					return;
+					// Flasks are non-stackable, so after consuming one we must grab a new flask object.
+					potion_container := FindItemInContainer( character.backpack , UOBJ_EMPTY_FLASK );
+					if (!potion_container)
+						SendSysMessage (character, "You run out of flasks.");
+						AutoLoop_finish();
+						return;
+					elseif( !ReserveItem( potion_container ) )
+						AutoLoop_finish();
+						return;
+					elseif( !IsOnPlayer( character.backpack , potion_container ) )
+						SendSysmessage( character, "That item has to be in your backpack." );
+						AutoLoop_finish();
+						return;
+					elseif( !ReserveContainers( character, potion_container.container ) )
+						AutoLoop_finish();
+						return;
+					endif
 				endif
 			endif
 
 			created_potion := CreateItemInContainer(character.backpack, correct, 1);
+			// if (!created_potion)
+			// 	SendSysMessage(character, "You fail to bottle the potion. Make sure you have room in your backpack.");
+			// 	AutoLoop_finish();
+			// 	return;
+			// endif
 
 		else
 			PlaySoundEffect(character, current_potion.failnoise);
+			SendSysMessage(character, "You fail to combine the ingredients.");
 		endif
 		
 	endwhile
