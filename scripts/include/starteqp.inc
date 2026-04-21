@@ -6713,7 +6713,7 @@ function ShieldApplyArSkillMod( item )
 	var skillroll := RandomDiceStr( "1d" + len(skillpool) );
 	skillid := skillpool[skillroll];
 
-	SetObjProperty( item , "skilladv" , skillid );
+	SetObjProperty( item , "ShieldAdv" , skillid );
 	SetObjProperty( item , "skilladvamount" , amount );
 
 	//Check for another enchantment
