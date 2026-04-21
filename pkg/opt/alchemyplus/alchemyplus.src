@@ -11,6 +11,8 @@ include "include/random";
 include "alchemy";
 include "include/autoloop";
 include "include/difficulty";
+include "include/omegacache_utils";
+include "include/resourcemanager";
 
 Const SOUND_EFFECT_SPARKLE	:= 0x1e8;
 Const EFFECT_SPARKLE		:= 0x373a;
@@ -19,6 +21,11 @@ const POINT_MULTIPLIER		:= 15;
 
 //this is used to make sure that all potions presented use the reagent that was originally selected
 var original_reagent_objtype := 0;
+
+//set by SelectWhatToMake when the player targets the Omega Cache to pick a reagent.
+//Threaded into BuildReagentRequests so the primary reagent uses cache-first order while
+//the other reagents fall through to autodraw.
+var primary_cacheRequest := 0;
 
 var basicregs := {0xf79, 0xf7a, 0xf7b, 0xf7c, 0xf84,0xf85, 0xf86, 0xf88, 0xf8c, 0xf8d};
 var basicpots := {0xDC02, 0xDC03, 0xDC05, 0xDC06, 0xDC07, 0xDC09, 0xDC0c, 0xDC0d, 0xDC0f, 0xDC11, 0xDC12, 0xDC15, 0xDC16, 0xDC17, 0xDCE6};
@@ -46,69 +53,120 @@ program alchemyplus ( character, myburner )
 		return 0;
 	endif
 
-	//try to find out if they only have bottles or only have a keg, and other variables
-	var found_empty_bottle := FindItemInContainer( character.backpack , UOBJ_EMPTY_BOTTLE );
-	var found_empty_flask := FindItemInContainer( character.backpack , UOBJ_EMPTY_FLASK );
-	var potion_container;
-
-	//if it doesn't use up a bottle, we can just make it without a container
-	if( !current_potion.consume_bottle )
-		potion_container := "no container needed";
-		//Print("No bottle needed: " + potion_container);
-
-	//this one doesn't need a container
-	elseif( current_potion.itemtype == 36 )
-		potion_container := "no container needed";
-	
-	//Flask for the Talisman Item
-    elseif( current_potion.itemtype == 40 )
-        if( found_empty_flask )
-            potion_container := found_empty_flask;
-            //Print("Flask: " + potion_container);
-        else
-            SendSysMessage(character, "You need an empty flask to make that potion.");
-            return;
-        endif
-
-	//if the potion can't be made in a keg and we found a bottle, automatically select the bottle
-	elseif( found_empty_bottle )
-		potion_container := found_empty_bottle;
-		//Print("Bottle: " + potion_container);
-
-	//if it can't be made in a keg and we didn't find any bottles, ask to select bottles
-	else
-		//choose bottles
-		SendSysMessage( character , "Select an empty bottle to make the potion in." );
-		potion_container := Target( character , TGTOPT_CHECK_LOS );
-		
-		if( !Accessible( character , potion_container ) )
-			SendSysMessage( character , "You can't reach that." );
-			return;
-		elseif (potion_container.objtype != UOBJ_EMPTY_BOTTLE )
-			SendSysMessage (character, "You can't make this potion in that.");
-			return;
-		elseif( !ReserveItem( potion_container ) )
-			return;
-		endif
-	
+	//Determine container requirements for this recipe. Some potions don't need
+	//a container (itemtype 36 = Totem), most need a bottle (UOBJ_EMPTY_BOTTLE),
+	//and the Flask of Crystallized Intelligence (itemtype 40) uses a flask.
+	var needs_container := 0;
+	var container_objtype := 0;
+	var material_name := "";
+	if( current_potion.consume_bottle and current_potion.itemtype != 40 and current_potion.itemtype != 36 )
+		needs_container := 1;
+		container_objtype := UOBJ_EMPTY_BOTTLE;
+		material_name := "bottles";
+	elseif( current_potion.consume_flask and current_potion.itemtype == 40 )
+		needs_container := 1;
+		container_objtype := UOBJ_EMPTY_FLASK;
+		material_name := "flasks";
 	endif
 
-    if (potion_container != "no container needed")
-        if (!potion_container)
-            return;
-        elseif (!ReserveItem (potion_container) )
-            SendSysmessage (character, "You cannot make the potion in that.");
-            return;
-        elseif ( (current_potion.itemtype == 40 && potion_container.objtype != UOBJ_EMPTY_FLASK) || (current_potion.itemtype != 40 && potion_container.objtype != UOBJ_EMPTY_BOTTLE) )
-            SendSysmessage (character, "You cannot make the potion in that.");
-            return;
-        elseif (!potion_container.movable)
-            SendSysmessage (character, "You cannot make the potion in that.");
-            return;
-        endif
-    endif
+	//Build a cache-aware container request. Backpack-first via MakeBackpackRequest
+	//when we find a physical container; cache-only struct when we don't, so
+	//autodraw still works for flasks/bottles stored exclusively in the cache.
+	//Matches the pattern used for reagents — same code path, dataFileHandle=0
+	//falls through to backpack-only behaviour.
+	var containerRequest := 0;
+	if( needs_container )
+		var existing_container := FindItemInContainer( character.backpack , container_objtype );
+		if( existing_container )
+			if( !ReserveItem(existing_container) )
+				return;
+			elseif( !IsOnPlayer(character.backpack, existing_container) )
+				SendSysmessage(character, "That item has to be in your backpack.");
+				return;
+			elseif( !existing_container.movable )
+				SendSysmessage(character, "You cannot make the potion in that.");
+				return;
+			endif
+			containerRequest := MakeBackpackRequest(character, existing_container);
+		else
+			//No backpack container — probe the cache directly via autodraw
+			var access := 0;
+			if( !GetObjProperty(character, "omegacache_no_autodraw") )
+				access := FindAccessibleContainer(character, array{REMOVE_FROM_SECURE});
+			endif
+			if( access and access.df )
+				var hs := 0;
+				if( access.house )
+					hs := access.house.serial;
+				endif
+				var cacheReq := struct{
+					objtype              := CInt(container_objtype),
+					key                  := 0,
+					color                := 0,
+					quality              := 0,
+					preferredSourceOrder := array{ OMEGA_CACHE },
+					dataFileHandle       := access.df,
+					houseSerial          := hs,
+					leaseKey             := 0
+				};
+				if( GetAvailableResource(character, cacheReq).total >= 1 )
+					containerRequest := cacheReq;
+				endif
+			endif
+			//Still nothing? Fall back to legacy Target() flow for bottles —
+			//preserves UX where the player can manually pick an odd-placed
+			//bottle. Flasks just fail (matches the original behaviour).
+			if( !containerRequest )
+				if( current_potion.itemtype == 40 )
+					SendSysMessage(character, "You need an empty flask to make that potion.");
+					return;
+				endif
+				SendSysMessage( character , "Select an empty bottle to make the potion in." );
+				var targeted := Target( character , TGTOPT_CHECK_LOS );
+				if( !targeted )
+					return;
+				elseif( !Accessible(character, targeted) )
+					SendSysMessage(character, "You can't reach that.");
+					return;
+				elseif( targeted.objtype != container_objtype )
+					SendSysMessage(character, "You can't make this potion in that.");
+					return;
+				elseif( !ReserveItem(targeted) )
+					return;
+				elseif( !IsOnPlayer(character.backpack, targeted) )
+					SendSysmessage(character, "That item has to be in your backpack.");
+					return;
+				elseif( !targeted.movable )
+					SendSysmessage(character, "You cannot make the potion in that.");
+					return;
+				endif
+				containerRequest := MakeBackpackRequest(character, targeted);
+			endif
+		endif
 
-	
+		//Final availability guard — covers the edge case where backpack stack
+		//was found but is now empty (e.g. another script consumed it), or cache
+		//changed between probe and here.
+		if( GetAvailableResource(character, containerRequest).total < 1 )
+			SendSysMessage(character, "You don't have any " + material_name + ".");
+			return;
+		endif
+	endif
+
+	//Build reagent requests once and lease each for the duration of the loop.
+	//Single code path — backpack-only crafts get requests with dataFileHandle=0,
+	//cache-aware crafts get requests populated via FindAccessibleContainer.
+	var mage := GetObjProperty(character, CLASSEID_MAGE);
+	var reagentRequests := BuildReagentRequests(character, current_potion, mage, original_reagent_objtype, primary_cacheRequest);
+	foreach req in reagentRequests
+		LeaseResource(character, req, req.amount);
+	endforeach
+	//Lease the container too (1 per iteration) to prevent concurrent crafters
+	//draining shared cache flask/bottle stock mid-loop.
+	if( containerRequest )
+		LeaseResource(character, containerRequest, 1);
+	endif
+
 	AutoLoop_init( character );
 	while( AutoLoop_more() && NOT character.dead )
 
@@ -122,14 +180,13 @@ program alchemyplus ( character, myburner )
 			sleep(1);
 		endfor
 		myburner.graphic := 0x1849;
-		
-		if (!CanMakePotion( character , current_potion ))
+
+		if (!CanMakePotion( character , current_potion, reagentRequests ))
 			SendSysMessage(character, "You can no longer make that potion.");
-			AutoLoop_finish();
-			return;
+			break;
 		endif
 
-		destroy_all_reagents (character, current_potion);
+		destroy_all_reagents (character, current_potion, reagentRequests);
 		
 		sendDiff( character, current_potion.skill );
 
@@ -179,66 +236,64 @@ program alchemyplus ( character, myburner )
 			
 			
 
-			//destroy a bottle, if needed
-			if (current_potion.consume_bottle && current_potion.itemtype != 40) 
-				//Print("Consuming bottle");
-				SubtractAmount (potion_container, 1);
-				if (!potion_container)
-					// If one bottle stack/item is consumed, try the next available bottle.
-					potion_container := FindItemInContainer( character.backpack , UOBJ_EMPTY_BOTTLE );
-					if (!potion_container)
-						SendSysMessage (character, "You run out of bottles.");
-						AutoLoop_finish();
-						return;
-					elseif( !ReserveItem( potion_container ) )
-						AutoLoop_finish();
-						return;
-					elseif( !IsOnPlayer( character.backpack , potion_container ) )
-						SendSysmessage( character, "That item has to be in your backpack." );
-						AutoLoop_finish();
-						return;
-					elseif( !ReserveContainers( character, potion_container.container ) )
-						AutoLoop_finish();
-						return;
-					endif
+			// Create the potion FIRST, then consume the container. This ensures
+			// that if we run out of containers we don't lose the current craft's
+			// materials (reagents are already consumed above). Pattern matches
+			// alchemyplus toad.src and was added in v1.3 to fix the "You run out
+			// of flasks/bottles" mid-loop bug.
+			created_potion := CreateItemInContainer(character.backpack, correct, 1);
+
+			// Consume the container for THIS craft via the cache-aware request.
+			// ConsumeResource drains backpack first (via preferredSourceOrder),
+			// falling back to cache if backpack is empty. Replaces the legacy
+			// SubtractAmount + FindItemInContainer + ReserveItem dance.
+			if( needs_container )
+				if( !ConsumeResource(character, containerRequest, 1) )
+					//Shouldn't happen after the initial availability check +
+					//lease, but handle gracefully — current craft's materials
+					//are already consumed, so we exit the loop cleanly.
+					SendSysMessage(character, "You run out of " + material_name + ".");
+					break;
 				endif
-			elseif (current_potion.consume_flask && current_potion.itemtype == 40)
-				//Print("Consuming flask");
-				SubtractAmount (potion_container, 1);
-				if (!potion_container)
-					// Flasks are non-stackable, so after consuming one we must grab a new flask object.
-					potion_container := FindItemInContainer( character.backpack , UOBJ_EMPTY_FLASK );
-					if (!potion_container)
-						SendSysMessage (character, "You run out of flasks.");
-						AutoLoop_finish();
-						return;
-					elseif( !ReserveItem( potion_container ) )
-						AutoLoop_finish();
-						return;
-					elseif( !IsOnPlayer( character.backpack , potion_container ) )
-						SendSysmessage( character, "That item has to be in your backpack." );
-						AutoLoop_finish();
-						return;
-					elseif( !ReserveContainers( character, potion_container.container ) )
-						AutoLoop_finish();
-						return;
-					endif
+				// If no stock remains for the next iteration, exit cleanly —
+				// current potion is already created so no material loss.
+				if( GetAvailableResource(character, containerRequest).total < 1 )
+					SendSysMessage(character, "You run out of " + material_name + ".");
+					break;
 				endif
 			endif
-
-			created_potion := CreateItemInContainer(character.backpack, correct, 1);
-			// if (!created_potion)
-			// 	SendSysMessage(character, "You fail to bottle the potion. Make sure you have room in your backpack.");
-			// 	AutoLoop_finish();
-			// 	return;
-			// endif
 
 		else
 			PlaySoundEffect(character, current_potion.failnoise);
 			SendSysMessage(character, "You fail to combine the ingredients.");
 		endif
-		
+
+		//Extend leases for next iteration — if any expire, break cleanly
+		var extend_failed := 0;
+		foreach req in reagentRequests
+			if(!ExtendResourceLease(req, character, req.amount))
+				extend_failed := 1;
+				break;
+			endif
+		endforeach
+		if( !extend_failed and containerRequest )
+			if( !ExtendResourceLease(containerRequest, character, 1) )
+				extend_failed := 1;
+			endif
+		endif
+		if(extend_failed)
+			break;
+		endif
+
 	endwhile
+
+	//Release all leases on any exit path
+	foreach req in reagentRequests
+		ReleaseResourceLease(req);
+	endforeach
+	if( containerRequest )
+		ReleaseResourceLease(containerRequest);
+	endif
 
 	AutoLoop_finish();
 
@@ -266,44 +321,69 @@ function SelectWhatToMake(character, myburner)
 
 	var original_reagent := Target( character , TGTOPT_CHECK_LOS );
 
-	if( original_reagent.objtype in basicregs)
-		SendSysMessage(character, "You must use a mortar to make basic potions.");
-		return 0;
-	endif
-
-
 	if( !original_reagent )
 		return;
-	elseif( !Accessible( character , original_reagent ) )
-		SendSysMessage( character , "You can't reach that." );
-		return;
-	elseif( !ReserveItem( original_reagent ) ) 
-		return; 
-	elseif( !IsOnPlayer( character.backpack , original_reagent ) )
-		SendSysmessage( character, "That item has to be in your backpack." );
-		return;
-	elseif( !ReserveContainers( character, original_reagent.container ) )
-		return;
+	endif
+
+	//Cache-targeting: player picks the primary reagent from the Omega Cache gump.
+	//Sets module-level primary_cacheRequest so BuildReagentRequests uses cache-first
+	//priority for that specific reagent; other reagents fall through to autodraw.
+	if( original_reagent.objtype == OMEGACACHE_OBJTYPE )
+		primary_cacheRequest := SelectMaterialFromCache(character);
+		if( !primary_cacheRequest )
+			return 0;
+		endif
+		if( !IsAlchemyPlusReagent(CInt(primary_cacheRequest.objtype)) )
+			SendSysMessage(character, "That's not a reagent I know how to use.");
+			return 0;
+		endif
+		if( CInt(primary_cacheRequest.objtype) in basicregs )
+			SendSysMessage(character, "You must use a mortar to make basic potions.");
+			return 0;
+		endif
+		original_reagent_objtype := CInt(primary_cacheRequest.objtype);
+		// Skip the backpack-based validation below — continue to menu-building.
+	else
+		if( original_reagent.objtype in basicregs)
+			SendSysMessage(character, "You must use a mortar to make basic potions.");
+			return 0;
+		endif
+
+		if( !Accessible( character , original_reagent ) )
+			SendSysMessage( character , "You can't reach that." );
+			return;
+		elseif( !ReserveItem( original_reagent ) )
+			return;
+		elseif( !IsOnPlayer( character.backpack , original_reagent ) )
+			SendSysmessage( character, "That item has to be in your backpack." );
+			return;
+		elseif( !ReserveContainers( character, original_reagent.container ) )
+			return;
+		endif
 	endif
 
 	//if they pick target the burner, make the last made item
-	if( original_reagent.serial == myburner.serial )
-		if( GetObjProperty( myburner , "lastmade" ) )
-			current_potion := alchemy_cfg_file[GetObjProperty(myburner, "lastmade")];
-			original_reagent_objtype := "success";
+	//(only applies when targeting a backpack reagent — cache-targeted path already
+	// set original_reagent_objtype from primary_cacheRequest.objtype above)
+	if( !primary_cacheRequest )
+		if( original_reagent.serial == myburner.serial )
+			if( GetObjProperty( myburner , "lastmade" ) )
+				current_potion := alchemy_cfg_file[GetObjProperty(myburner, "lastmade")];
+				original_reagent_objtype := "success";
 
-			if( CanMakePotion(character, current_potion) )
-				return current_potion;
+				if( CanMakePotion(character, current_potion) )
+					return current_potion;
+				else
+					SendSysMessage (character, "You can't make that.");
+					return 0;
+				endif
 			else
-				SendSysMessage (character, "You can't make that.");
+				SendSysMessage( character , "There's no recipes stored in the heating stand." );
 				return 0;
 			endif
 		else
-			SendSysMessage( character , "There's no recipes stored in the heating stand." );
-			return 0;
+			original_reagent_objtype := original_reagent.objtype;
 		endif
-	else
-		original_reagent_objtype := original_reagent.objtype;
 	endif
 
 	var potion_counter;
@@ -341,22 +421,22 @@ endfunction
 //  to be made is available
 ///////////////////
 
-function CanMakePotion( character , current_potion )
+function CanMakePotion( character , current_potion, reagentRequests := 0 )
 
 	if( current_potion.specialist )
 		if( !GetObjProperty( character , CLASSEID_MAGE ) )
 			return 0;
 		endif
 	endif
-	
+
 	//if the potion requires a mortar to make, check to see if the character has a mortar
 	if (current_potion.needmortar)
 		var mortar := FindItemInContainer (character.backpack, 0x0e9b );
 		if (!mortar)
 			return 0;
 		else
-			if(!ReserveItem(mortar)) 
-				return 0; 
+			if(!ReserveItem(mortar))
+				return 0;
 			elseif( !IsOnPlayer( character.backpack , mortar ) )
 				SendSysmessage( character, "That item has to be in your backpack." );
 				return 0;
@@ -371,90 +451,61 @@ function CanMakePotion( character , current_potion )
 		return 0;
 	endif
 
-	//some setup
-	//load the reagent list from the current potion into an array
-	var reagent_array := GetConfigStringArray( current_potion, "reagent" );
-	var current_reagent;
-	var reagent_counter;
-	var used_selected_reagent := 0;
+	//Build the reagent-request array. Each recipe entry becomes a ResourceRequest
+	//with amount pre-adjusted for mage class bonus + PHC halving and with basicpot
+	//reagents resolved to an actual leveled variant the player owns. Built on
+	//demand when the caller didn't pre-build them (e.g. SelectWhatToMake's menu
+	//filter pass). Same code path for backpack-only and cache-aware flows —
+	//dataFileHandle=0 lets GetAvailableResource/ConsumeResource fall through to
+	//pure backpack operations.
+	if( !reagentRequests )
+		var mage := GetObjProperty(character, CLASSEID_MAGE);
+		reagentRequests := BuildReagentRequests(character, current_potion, mage, original_reagent_objtype, primary_cacheRequest);
+	endif
 
-	//Make sure that there's at least 1 reagent.  If not, something is very, very wrong
-	if ( len(reagent_array) <= 0 )
+	//Make sure there's at least 1 reagent. If not, the recipe config is broken.
+	if( len(reagentRequests) <= 0 )
 		SendSysmessage (character, "There is an error in the recipe for " + current_potion.name );
 		return 0;
 	endif
 
-	//now we cycle through all the reagents in the potion
-	for (reagent_counter := 1; reagent_counter <= len(reagent_array); reagent_counter := reagent_counter + 1)
-
-		//Pick the current reagent out of the array and split it into 2 parts.  The first part, current_reagent[1],
-		//contains the type of reagent that is being called for by the potion.  The second part, current_reagent[2],
-		//is the number of that reagent needed
-		current_reagent := splitwords(reagent_array[reagent_counter]);
-
-		//Here is where we check to see if the reagent that we just picked out of the reagent
-		//list is the one that actually was originally selected.
-		if ( cint(current_reagent[1]) == original_reagent_objtype or original_reagent_objtype == "success")
-			used_selected_reagent := 1;
-		endif
-
-		//use the FindObjtypeInContainer function to try to find what we need quickly.  If it
-		//fails, or finds less of the reagent than we need, fail this potion.  Otherwise, reserve
-		//what was found and try the next reagent
-		//var found_reagent := FindItemInContainer (character.backpack, cint(current_reagent[1]));
-
-		// Doing a bandaid for the new potion levels. As they are different objtypes, you wouldn't
-		// be able to use a [level] greater heal potion to make a tamla.
-
-		if(cint(current_reagent[1]) in basicpots)
-			foreach reg in basicpots
-				if (Hex(reg) == current_reagent[1])
-					current_reagent[1] := GetNewPotionFromBasic(character, current_reagent[1]);
-					current_reagent[1] := Hex(current_reagent[1].objtype);
-					break;
-				endif
-			endforeach
-		endif
-
-		var amount_needed := Cint(current_reagent[2]);
-		if( GetObjProperty( character , CLASSEID_MAGE ) )
-			amount_needed := Cint( amount_needed / ClasseBonus( character , CLASSEID_MAGE ) );
-			if( amount_needed < 1 )
-				amount_needed := 1;
-			endif
-		endif
-
-		var findAll := {};
-		var amount := 0;
-		foreach reagent in EnumerateItemsInContainer( character.backpack )
-			if( reagent.objtype == cint(current_reagent[1]) )
-				findAll.append(reagent);
-				amount := amount + reagent.amount;
-			endif
-   		endforeach
-
-		if(len(findAll) > 0)
-			foreach reag in findAll
-				if (!reag)
-					return 0;
-				elseif( amount < amount_needed )
-					return 0;
-				elseif(!ReserveItem(reag))
-					return 0;
-				elseif( !IsOnPlayer( character.backpack , reag ) )
-					SendSysmessage( character, "That item has to be in your backpack." );
-					return 0;
-				elseif( !ReserveContainers( character, reag.container ) )
-					return 0;
-				endif
-			endforeach
-		else
+	//Cycle through all the reagents checking availability. We track whether the
+	//originally-selected reagent (the one the player targeted, or "success" for
+	//the lastmade-from-burner shortcut) matches one of this recipe's reagents —
+	//potions that don't use the selected reagent are filtered out of the menu.
+	var used_selected_reagent := 0;
+	foreach req in reagentRequests
+		var res := GetAvailableResource(character, req);
+		if( res.total < req.amount )
 			return 0;
 		endif
-	endfor
+		//Reserve matching backpack stacks so concurrent scripts (packet hooks,
+		//drag-and-drop) can't mutate them between our availability check and
+		//consumption. Preserves the legacy CanMakePotion semantics.
+		foreach stack in res.backpack_items
+			if( !ReserveItem(stack) )
+				return 0;
+			endif
+			if( !ReserveContainers(character, stack.container) )
+				return 0;
+			endif
+		endforeach
+		//A request may be built from a basicpot recipe entry but resolve to a
+		//leveled variant objtype (0xDC02 Heal → 0xff1a leveled Heal, etc. —
+		//POL 093 bandaid: leveled potions use different objtypes). Accept a
+		//match against either the resolved objtype or the raw config objtype.
+		//"success" is the lastmade-from-burner bypass that short-circuits the
+		//originally-selected-reagent check.
+		if( CInt(req.objtype) == original_reagent_objtype
+			or CInt(req.config_objtype) == original_reagent_objtype
+			or original_reagent_objtype == "success" )
+			used_selected_reagent := 1;
+		endif
+	endforeach
 
-	//It appears we've made it through all of the reagents.  Return success if the originally selected
-	//reagent was used in this potion.  Otherwise, fail.
+	//Made it through all reagents with adequate stock. Return success only if
+	//the originally-selected reagent was actually used by this potion — otherwise
+	//the player selected a reagent that this recipe doesn't use and we skip it.
 	if (used_selected_reagent)
 		return 1;
 	else
@@ -470,56 +521,24 @@ endfunction
 //  destroys the reagents used in the potion
 ///////////////////
 
-function destroy_all_reagents (character, current_potion)
+function destroy_all_reagents (character, current_potion, reagentRequests := 0)
 
-	//Check through the current potion and load all the reagents into an array
-	var reagent_array := GetConfigStringArray( current_potion, "reagent" );
-	var current_reagent;
-	var reagent_counter;
-	
-	//now we cycle through all the reagents
-	for (reagent_counter := 1; reagent_counter <= len(reagent_array); reagent_counter := reagent_counter + 1)
+	//Build on demand when the caller didn't provide pre-built requests. Same
+	//code path for backpack-only and cache-aware flows — ConsumeResource handles
+	//both via dataFileHandle=0 (backpack-only) vs set (autodraw / cache-targeted).
+	//ConsumeResource internally does the multi-stack drain that the legacy
+	//repeat-until loop did (SubtractAmount across stacks when one stack can't
+	//cover the full amount) and applies the same mage + PHC halving (already
+	//baked into req.amount by BuildReagentRequests).
+	if( !reagentRequests )
+		var mage := GetObjProperty(character, CLASSEID_MAGE);
+		reagentRequests := BuildReagentRequests(character, current_potion, mage, original_reagent_objtype, primary_cacheRequest);
+	endif
 
-		//Pick the current reagent out of the array and split it into 2 parts.  The first part, current_reagent[1],
-		//contains the type of reagent that is being called for by the potion.  The second part, current_reagent[2],
-		//is the number of that ingredien needed
-		current_reagent := splitwords(reagent_array[reagent_counter]);
-		
-		var the_reagent := FindItemInContainer( character.backpack , Cint(current_reagent[1]) );
-	
-		if (!the_reagent)
-			//if (cint(current_reagent[1]) in basicpots)
-			foreach reg in basicpots
-				if (Hex(reg) == current_reagent[1])
-					the_reagent := GetNewPotionFromBasic(character, current_reagent[1]);
-					break;
-				endif
-			endforeach
-		endif
+	foreach req in reagentRequests
+		ConsumeResource(character, req, req.amount);
+	endforeach
 
-		//Then, we subtract what we need from the stack
-		var amount_needed := Cint(current_reagent[2]);
-		if( GetObjProperty( character , CLASSEID_MAGE ) )
-			amount_needed := Cint( amount_needed / ClasseBonus( character , CLASSEID_MAGE ) );
-			if( amount_needed < 1 )
-				amount_needed := 1;
-			endif
-		endif
-
-		var count := 0;
-		repeat
-			if(the_reagent.amount < amount_needed)
-				amount_needed := amount_needed - the_reagent.amount;
-				SubtractAmount( the_reagent , the_reagent.amount );
-				the_reagent := FindItemInContainer( character.backpack , Cint(current_reagent[1]) );
-			else
-				SubtractAmount( the_reagent , amount_needed );
-				amount_needed := 0;
-			endif
-			count := count+1;
-		until(amount_needed == 0 || count > 100);
-	endfor
-	
 endfunction
 
 ///////////////////////////////////////////////////////////////////////
@@ -778,4 +797,186 @@ endforeach
 
 return 0;
 
+endfunction
+
+
+// ============================================================
+// Omega Cache integration helpers (Phase 1 — not yet wired into main loop)
+// ============================================================
+
+// Returns the array of leveled-potion objtypes for a given basic-potion objtype.
+// Mirrors the case table in GetNewPotionFromBasic but returns the raw list so
+// callers can search across backpack + cache.
+function GetLeveledVariantsForBasic(basic_objtype)
+	var variants := array{};
+	case (CInt(basic_objtype))
+		0xDC02: variants := {0xff19, 0xff1a, 0xff1b};                          // HEAL
+		0xDC03: variants := {0x0f0c, 0xff1c, 0xff1d, 0xff1e, 0xff1f, 0xff20};  // GHEAL
+		0xdc05: variants := {0xff22, 0xff23};                                  // Poison
+		0xdc06: variants := {0xff24, 0xff25, 0xff26, 0xff27, 0xff28};          // GPoison
+		0xdc17: variants := {0xff29, 0xff2a, 0xff2b, 0xff2c, 0xff2d};          // DPoison
+		0xdc09: variants := {0xff2f, 0xff30, 0xff31};                          // ExPotion
+		0xdc07: variants := {0xff32, 0xff33, 0xff34, 0xff35, 0xff36};          // GExPotion
+		0xdc0c: variants := {0xff38, 0xff39};                                  // Agility
+		0xdc0d: variants := {0xff3a, 0xff3b, 0xff3c};                          // GAgility
+		0xdc0f: variants := {0xff3d, 0xff3e, 0xff3f};                          // FullRefresh
+		0xdc11: variants := {0xff40, 0xff41};                                  // Strength
+		0xdc12: variants := {0xff42, 0xff43, 0xff44};                          // GStrength
+		0xdc15: variants := {0xff45, 0xff46, 0xff47};                          // Cure
+		0xdc16: variants := {0xff48, 0xff49, 0xff4a, 0xff4b, 0xff4c};          // GCure
+	endcase
+	return variants;
+endfunction
+
+
+var _alchemyplus_reagent_set := 0;
+
+// Scans alchemyplus.cfg once, caches the set of all objtypes that appear as
+// reagents in any recipe (including basicpot leveled variants). Returns 1 if
+// the given objtype is a valid alchemyplus reagent, 0 otherwise.
+function IsAlchemyPlusReagent(objtype)
+	if(!_alchemyplus_reagent_set)
+		_alchemyplus_reagent_set := dictionary;
+		var cfg := ReadConfigFile("alchemyplus");
+		var max_key := GetConfigMaxIntKey(cfg);
+		var i;
+		for(i := 1; i <= max_key; i := i + 1)
+			var elem := cfg[i];
+			if(elem)
+				var reagent_array := GetConfigStringArray(elem, "reagent");
+				foreach reagent_line in reagent_array
+					var parts := SplitWords(reagent_line);
+					var reagent_ot := CInt(parts[1]);
+					_alchemyplus_reagent_set[reagent_ot] := 1;
+					// Also register leveled variants so players can target
+					// a leveled potion from cache for a basicpot recipe.
+					var variants := GetLeveledVariantsForBasic(reagent_ot);
+					foreach v in variants
+						_alchemyplus_reagent_set[CInt(v)] := 1;
+					endforeach
+				endforeach
+			endif
+		endfor
+	endif
+	if(_alchemyplus_reagent_set[CInt(objtype)])
+		return 1;
+	endif
+	return 0;
+endfunction
+
+
+// Builds an array of ResourceRequest structs — one per reagent in the recipe —
+// with cache-aware dataFileHandle + houseSerial set when autodraw is enabled.
+// For basicpot reagents, resolves to an actual leveled variant the player has
+// (backpack first, then cache). Amounts already include mage bonus + PHC halving.
+//
+// primary_objtype: the objtype of the reagent the player targeted (may be 0).
+// primary_cacheRequest: if player targeted the cache, the pre-built cache-first
+//                       request for the primary reagent (else 0).
+function BuildReagentRequests(character, current_potion, mage, primary_objtype, primary_cacheRequest := 0)
+	var requests := array{};
+
+	// Resolve the character's accessible cache once
+	var df := 0;
+	var house_serial := 0;
+	if(!GetObjProperty(character, "omegacache_no_autodraw"))
+		var access := FindAccessibleContainer(character, array{REMOVE_FROM_SECURE});
+		if(access)
+			df := access.df;
+			if(access.house)
+				house_serial := access.house.serial;
+			endif
+		endif
+	endif
+
+	var reagent_array := GetConfigStringArray(current_potion, "reagent");
+	foreach reagent_line in reagent_array
+		var parts := SplitWords(reagent_line);
+		var config_objtype := CInt(parts[1]);
+		var amount_needed := CInt(parts[2]);
+
+		if(mage)
+			amount_needed := CInt(Ceil(CDbl(amount_needed) / ClasseBonus(character, CLASSEID_MAGE)));
+		endif
+		if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
+			amount_needed := CInt(Ceil(CDbl(amount_needed) / 2));
+		endif
+		if(amount_needed < 1)
+			amount_needed := 1;
+		endif
+
+		// Basicpot bandaid (from Toadstool 2012): POL 093's ByTrueMage stacking
+		// forced every leveled potion variant to be a different objtype. So a
+		// recipe that calls for "Heal potion" (0xDC02) in its reagent list can
+		// be satisfied by any of several leveled objtypes (0xff19, 0xff1a, ...).
+		// We resolve the basicpot to the first leveled variant the player has
+		// — backpack first (matches GetNewPotionFromBasic legacy behaviour),
+		// then cache. If nothing matches anywhere, leave resolved_objtype as
+		// the raw basicpot; CanMakePotion's availability check will see 0 stock
+		// and abort cleanly.
+		var resolved_objtype := config_objtype;
+		var is_basicpot := 0;
+		if(config_objtype in basicpots)
+			is_basicpot := 1;
+			var variants := GetLeveledVariantsForBasic(config_objtype);
+			var found := 0;
+			foreach v in variants
+				if(FindItemInContainer(character.backpack, CInt(v)))
+					resolved_objtype := CInt(v);
+					found := 1;
+					break;
+				endif
+			endforeach
+			if(!found and df)
+				foreach v in variants
+					if(GetStoredAmountByObjtype(df, CInt(v)) > 0)
+						resolved_objtype := CInt(v);
+						found := 1;
+						break;
+					endif
+				endforeach
+			endif
+		endif
+
+		// Build the request as a fresh struct each call. When this reagent matches
+		// the cache-targeted primary, we COPY fields from primary_cacheRequest into
+		// a new struct rather than aliasing it — avoids mutating the module-level
+		// primary_cacheRequest and sidesteps the `.+` on existing-field issue we
+		// hit in earlier work. All fields declared inline so nothing relies on
+		// `.+` semantics.
+		var req;
+		if(primary_cacheRequest and CInt(primary_cacheRequest.objtype) == resolved_objtype)
+			req := struct{
+				objtype              := primary_cacheRequest.objtype,
+				key                  := primary_cacheRequest.key,
+				color                := primary_cacheRequest.color,
+				quality              := primary_cacheRequest.quality,
+				preferredSourceOrder := primary_cacheRequest.preferredSourceOrder,
+				dataFileHandle       := primary_cacheRequest.dataFileHandle,
+				houseSerial          := primary_cacheRequest.houseSerial,
+				leaseKey             := 0,
+				amount               := amount_needed,
+				is_basicpot          := is_basicpot,
+				config_objtype       := config_objtype
+			};
+		else
+			req := struct{
+				objtype              := resolved_objtype,
+				key                  := 0,
+				color                := 0,
+				quality              := 0,
+				preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE },
+				dataFileHandle       := df,
+				houseSerial          := house_serial,
+				leaseKey             := 0,
+				amount               := amount_needed,
+				is_basicpot          := is_basicpot,
+				config_objtype       := config_objtype
+			};
+		endif
+
+		requests.append(req);
+	endforeach
+
+	return requests;
 endfunction

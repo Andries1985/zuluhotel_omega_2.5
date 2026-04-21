@@ -810,6 +810,10 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 
 69. **`GetBottle` refactored to accept parent request** — `GetBottle(conts, user, dataFileHandle)` → `GetBottle(conts, user, parentRequest)`. Both callers in `TryToMakePotion` now pass `regRequest` directly; previously they extracted `regRequest.dataFileHandle` at the call site, discarding the rest of the context. `GetBottle` inherits both `dataFileHandle` and `houseSerial` from the parent request when provided, or falls back to `FindAccessibleContainer` resolution.
 
+70. **AlchemyPlus Flask + Empty Flask + Glowing Brain stackable** — Reported by Xenomath testing talisman recipes. Flask of Crystallized Intelligence output (`0xffa3`) and Glowing Brain (`0x2147`) had no `Stackable 1` flag. The empty flask input (`0x183A` = `UOBJ_EMPTY_FLASK`) had no custom itemdesc entry at all, inheriting non-stackable tiledata defaults. Added `Stackable 1` to the two existing entries and added a new `Item 0x183A` definition for the empty flask. All three now stack cleanly — instances merge in backpack and in Omega Cache with no per-item state to worry about.
+
+71. **AlchemyPlus "You run out of flasks/bottles" bug** — Also reported by Xenomath. The main potion loop in `alchemyplus.src` consumed the container via `SubtractAmount` *before* `CreateItemInContainer`, then searched for the next iteration's container and aborted with "You run out of flasks/bottles" on failure — losing the current craft's potion even though reagents + container were already consumed. Reordered to match the sibling `alchemyplus toad.src` pattern: create potion first, subtract container second, search for next-iteration container afterwards. Current craft always completes before the loop exits on out-of-container.
+
 ### Files Modified
 
 - `pkg/opt/omegacache/omegacache.inc` — `ValidateDepositTarget()`, `RunOmegaCacheGump(who, access)` signature, deposit function signatures, `GetNonDefaultProperties` reads `stacking_ignore.cfg`, `DoDepositAll` confirmation gump, `include ":gumps:yesNoSizable"`
@@ -832,4 +836,9 @@ Continued testing and polish of the Omega Cache gump, lease system, category han
 - `pkg/std/alchemy/alchemy.src` — `GetBottle` signature `(conts, user, dataFileHandle)` → `(conts, user, parentRequest)`; both callers updated; inline `bottleReq` carries `houseSerial`.
 - `scripts/include/resourcemanager.inc` — `use os` for SysLog; `ConsumeResource` partial-consume detection + SysLog + generic player message + defensive `houseSerial` read; `MakeBackpackRequest` / `SelectMaterialFromList` output `houseSerial`; `SelectMaterialFromList` signature takes `access` struct.
 - `scripts/items/bladed.src` — `cacheHideReq` inherits `houseSerial` from `logRequest`; `hideReq` gets `houseSerial := 0` for struct shape consistency.
+- `pkg/opt/alchemyplus/itemdesc.cfg` — `Stackable 1` added to Flask of Crystallized Intelligence output (`0xffa3`); new `Item 0x183A` definition added for the empty flask input (`UOBJ_EMPTY_FLASK`).
+- `pkg/opt/omegacache/categories.cfg` — Three newly-stackable items placed in categories: `0xFFA3` (Flask of Crystallized Intelligence) → Potions, `0x2147` (Glowing Brain) → Reagents, `0x183A` (Empty Flask) → Miscellaneous.
+- `config/tiles.cfg` — UoFlags bit `0x0800` (STACKABLE) added plus `Stackable 1` for tiles `0x1839` (filled flask), `0x183a` (empty flask), `0x1CF0` (brain). Without this, POL's server-side `Stackable 1` in itemdesc would merge stacks but the client wouldn't render stack counts. Mirrors the pattern used for ingots (`0x1bef`, `0x1bf2` etc.).
+- `pkg/opt/talisman/config/itemdesc.cfg` — `Stackable 1` added to Glowing Brain (`0x2147`).
+- `pkg/opt/alchemyplus/alchemyplus.src` — Main potion loop reordered to create-then-consume-then-find-next (was consume-then-find-next-then-create, causing lost potions on the last iteration).
 
