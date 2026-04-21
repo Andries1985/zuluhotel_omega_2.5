@@ -482,11 +482,12 @@ function CanMakePotion( character , current_potion, reagentRequests := 0 )
 		//Reserve matching backpack stacks so concurrent scripts (packet hooks,
 		//drag-and-drop) can't mutate them between our availability check and
 		//consumption. Preserves the legacy CanMakePotion semantics.
-		foreach stack in res.backpack_items
-			if( !ReserveItem(stack) )
+		//(Variable named bp_stack — `stack` is a reserved word in eScript.)
+		foreach bp_stack in res.backpack_items
+			if( !ReserveItem(bp_stack) )
 				return 0;
 			endif
-			if( !ReserveContainers(character, stack.container) )
+			if( !ReserveContainers(character, bp_stack.container) )
 				return 0;
 			endif
 		endforeach
