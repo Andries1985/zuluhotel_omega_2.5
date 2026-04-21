@@ -124,6 +124,7 @@ program alchemyplus ( character, myburner )
 		myburner.graphic := 0x1849;
 		
 		if (!CanMakePotion( character , current_potion ))
+			SendSysMessage(character, "You can no longer make that potion.");
 			AutoLoop_finish();
 			return;
 		endif
@@ -226,9 +227,15 @@ program alchemyplus ( character, myburner )
 			endif
 
 			created_potion := CreateItemInContainer(character.backpack, correct, 1);
+			// if (!created_potion)
+			// 	SendSysMessage(character, "You fail to bottle the potion. Make sure you have room in your backpack.");
+			// 	AutoLoop_finish();
+			// 	return;
+			// endif
 
 		else
 			PlaySoundEffect(character, current_potion.failnoise);
+			SendSysMessage(character, "You fail to combine the ingredients.");
 		endif
 		
 	endwhile
