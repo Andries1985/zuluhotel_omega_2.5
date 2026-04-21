@@ -6,7 +6,7 @@ This patch addresses issues introduced by the merged talisman crafting feature (
 
 Alongside the talisman fixes, the wider resource-manager layer was hardened: `ConsumeResource` now detects and logs partial consumption (materials drained but the full request not satisfied — possible under concurrent lease/withdraw races) so support can diagnose rare material-loss reports; a `houseSerial` field is threaded through `ResourceRequest` so partial-consume logs identify which house's cache was involved without requiring expensive on-demand lookups; and `GetBottle` in alchemy was refactored to accept a full parent request instead of a raw `dataFileHandle`, eliminating lossy argument passing at two call sites.
 
-Two AlchemyPlus quality-of-life fixes: the Flask of Crystallized Intelligence (`0xffa3`) and the Glowing Brain (`0x2147`) are now stackable — reducing inventory clutter for players working with talisman-tier crafting. The `alchemyplus.src` potion loop also had a long-standing bug where consuming the last flask/bottle aborted the current iteration with "You run out of flasks" / "You run out of bottles" *before* the potion was created, causing material loss without the expected output. The loop now creates the potion first and searches for the next container afterwards — matching the pattern already used in the sibling `alchemyplus toad.src`.
+One AlchemyPlus bug fix: the potion loop had a long-standing bug where consuming the last flask/bottle aborted the current iteration with "You run out of flasks" / "You run out of bottles" *before* the potion was created, causing material loss without the expected output. The loop now creates the potion first and searches for the next container afterwards — matching the pattern already used in the sibling `alchemyplus toad.src`. (Note: a stackability fix for the flask/brain items was investigated and reverted — server-side stacking worked but the UO client wouldn't render the drag-split UI without a client-side `tiledata.mul` patch, which is out of scope for this patch.)
 
 **Follow-up (next patch):** AlchemyPlus is not cache-integrated — the reagent/flask/brain pipeline still uses direct `FindItemInContainer` / `SubtractAmount` calls without `MakeBackpackRequest` / `ConsumeResource` / autodraw support. A separate Phase-2-style integration is planned next to mirror what was done for vanilla alchemy (`pkg/std/alchemy/alchemy.src`).
 
@@ -63,14 +63,6 @@ The `ResourceRequest` struct now carries `houseSerial` alongside `dataFileHandle
 - **Signature**: `GetBottle(conts, user, parentRequest := 0)` — parent request replaces raw `dataFileHandle`.
 - **Callers updated**: both sites in `TryToMakePotion` now pass `regRequest` directly (was `regRequest.dataFileHandle` and the temporary `bottleDf` variable).
 - **Fallback preserved**: when `parentRequest` is 0 or lacks `dataFileHandle`, GetBottle resolves its own `access` via `FindAccessibleContainer`.
-
-### AlchemyPlus — Flask and Brain stackable
-
-- **Flask of Crystallized Intelligence — output** (`0xffa3`): added `Stackable 1` to `pkg/opt/alchemyplus/itemdesc.cfg`. No per-item scripts or CProps — instances merge cleanly in backpack and in Omega Cache.
-- **Empty flask — input** (`UOBJ_EMPTY_FLASK` = `0x183A`): had no custom itemdesc and was inheriting non-stackable tiledata defaults. Added a new `Item 0x183A` definition in `pkg/opt/alchemyplus/itemdesc.cfg` mirroring the output flask (weight 1, movable, stackable). Both input and output flasks now stack consistently.
-- **Omega Cache categories**: the three newly-stackable items were added to `pkg/opt/omegacache/categories.cfg` so they surface under the correct cache categories instead of "Other": `0xFFA3` → Potions, `0x2147` → Reagents, `0x183A` → Miscellaneous (alongside Empty Bottle `0x0F0E`).
-- **Client-side stackability via `config/tiles.cfg`**: `Stackable 1` in `itemdesc.cfg` makes the POL server merge stacks, but the client won't render stack counts unless the corresponding tile in `config/tiles.cfg` has the `0x0800` STACKABLE flag set in `UoFlags`. Updated tiles `0x1839`, `0x183a`, `0x1CF0` to add `0x0800` to `UoFlags` and `Stackable 1` — mirrors the pattern used for iron ingots (`0x1bef`, `0x1bf2`).
-- **Glowing Brain** (`0x2147`): added `Stackable 1` to `pkg/opt/talisman/config/itemdesc.cfg`. Weight 10 × amount preserves total weight; no per-item state.
 
 ### AlchemyPlus — "run out of flasks/bottles" bug
 
@@ -167,20 +159,14 @@ Covers `cacheHideReq` which now inherits `houseSerial` from `logRequest`.
 | **Shafts/kindling** | Carve logs — verify shafts/kindling crafted (no hide involved, simpler regression). |
 | **Partial-consume logging** | Force a partial consume on a cache-sourced hide. Verify syslog shows `house_serial` (inherited from `logRequest`). |
 
-### AlchemyPlus Stackability & Loop Fix
+### AlchemyPlus Loop Fix
 
 | Area | What to Test |
 |------|-------------|
-| **Empty flask stacking (input)** | Gather multiple empty flasks (`0x183A` = `UOBJ_EMPTY_FLASK`). Verify they stack in backpack and in Omega Cache. **This was previously not stackable.** |
-| **Filled flask stacking (output)** | Craft multiple Flasks of Crystallized Intelligence (`0xffa3`). Verify they stack in backpack and in Omega Cache. |
-| **Brain stacking** | Gather multiple Glowing Brains (`0x2147`). Verify they stack in backpack and in Omega Cache. |
 | **AlchemyPlus craft — one flask** | Have exactly 1 flask and reagents. Craft one flask potion. Verify the potion IS created AND the "You run out of flasks." message fires after creation. **Previously the flask was consumed with no potion produced.** |
 | **AlchemyPlus craft — multiple flasks** | Have 5 flasks and reagents for 5 crafts. Verify all 5 potions produced, loop terminates on the 6th iteration with "run out" message. |
 | **AlchemyPlus craft — one bottle** | Have exactly 1 empty bottle and reagents. Craft one potion. Verify potion created, "run out of bottles" after. |
 | **AlchemyPlus craft — multiple bottles** | 5 bottles + reagents. Verify 5 potions produced. |
-| **Backpack weight** | Stack 10+ brains. Verify total weight is `10 × amount` (unchanged overall). |
-| **Cache storage** | Deposit brains and flasks into cache. Verify they stack as single cache entries per type. |
-| **Client stack-count render** | With `config/tiles.cfg` updated, verify the UO client shows the stack count overlay on the ground and in containers for flasks and brains (not just when hovered). Previously only server-side stacking was available. |
 
 ### AlchemyPlus Cache Integration (Phase 1-3)
 
@@ -210,13 +196,15 @@ Tonight the alchemyplus crafting flow (`pkg/opt/alchemyplus/alchemyplus.src`) wa
 
 #### Flask & Brain (talisman recipe — itemtype 40)
 
+Note: the flask/brain/talisman-gem items are NOT stackable and therefore cannot be stored in the Omega Cache. Tests here verify graceful backpack-only behaviour for these items while the stackable reagents (wyrmheart, daemonbone, dragonblood, obsidian) can still be cache-sourced via autodraw.
+
 | Area | What to Test |
 |------|-------------|
-| **All reagents backpack, brain + flask backpack** | Craft the Flask of Crystallized Intelligence. All 12 reagents consumed from backpack, empty flask consumed, filled flask created. |
-| **Brain in cache, flask in backpack** | Glowing Brain (`0x2147`) only in cache, everything else backpack. Craft. Verify brain drains from cache via autodraw. |
-| **Empty flask in cache, brain + reagents backpack** | Empty flask (`0x183A`) only in cache, rest backpack. Craft. Verify cache-only flask probe succeeds, filled flask (`0xFFA3`) created. |
-| **Everything in cache** | Backpack empty. All 12 reagents + empty flask in cache. Target cache → pick a reagent → menu shows the flask recipe. Craft. Verify all materials drain from cache; filled flask created in backpack. |
-| **Basicpot reagent resolved to leveled variant** | Craft a recipe with `reagent 0xDC03 4` (Greater Heal). Player has 4 leveled Greater Heal potions (objtype `0xff1c`+). Verify: `BuildReagentRequests` resolves `0xDC03` → `0xff1c`, `CanMakePotion` passes, `destroy_all_reagents` consumes `0xff1c`. Same test but with the leveled variants in the CACHE instead — verify resolution also works via cache probe. |
+| **All reagents + flask + brain in backpack** | Craft the Flask of Crystallized Intelligence. All 12 reagents consumed from backpack, empty flask consumed, filled flask created. |
+| **Stackable reagents in cache** | Wyrmheart (`0x0F91`), daemonbone (`0x0F80`), dragonblood (`0x0F82`), obsidian (`0x0F89`) only in cache; brain, empty flask, and talisman gems in backpack. Craft. Verify stackable reagents drain from cache; brain/flask/gems drain from backpack. |
+| **Brain missing everywhere** | Empty flask + all other reagents present; no brain anywhere. Verify recipe not craftable, availability check fails cleanly. |
+| **Empty flask missing** | All reagents present; no empty flask in backpack. Verify: `"You need an empty flask to make that potion."` — flask path does not Target() fallback (preserved legacy). |
+| **Basicpot reagent resolved to leveled variant** | Craft a recipe with `reagent 0xDC03 4` (Greater Heal). Player has 4 leveled Greater Heal potions (objtype `0xff1c`+). Verify: `BuildReagentRequests` resolves `0xDC03` → `0xff1c`, `CanMakePotion` passes, `destroy_all_reagents` consumes `0xff1c`. Same test but with the leveled variants in the CACHE instead (leveled potions ARE stackable) — verify resolution also works via cache probe. |
 
 #### Lease + concurrency
 
@@ -236,7 +224,7 @@ Tonight the alchemyplus crafting flow (`pkg/opt/alchemyplus/alchemyplus.src`) wa
 |------|-------------|
 | **Single flask, single craft** | Exactly 1 empty flask in backpack, reagents for 1 craft. Verify flask consumed, filled flask created, loop exits with `"You run out of flasks."` after creation. **This was v1.3's fix — regression check.** |
 | **Multiple flasks, partial batch** | 5 flasks, reagents for only 3 potions. Verify 3 filled flasks created, loop exits after 3rd when reagents run out. 2 empty flasks remain. |
-| **Flask in cache-only path** | No flasks in backpack. Cache has 5. Verify: setup probe detects cache stock, `containerRequest` built with `preferredSourceOrder := {OMEGA_CACHE}`. Craft drains 5 from cache. |
+| **Flask in cache-only path (stackable containers only — e.g. if future flasks become stackable)** | This path exists in code for forward compatibility. Current non-stackable flasks can't be in cache, so `containerRequest` never reaches this branch for flasks today. Test this branch by temporarily making `0x0F0E` (empty bottle) cache-stored and crafting a bottle-based potion with empty backpack. |
 | **Flask target fallback (bottles only)** | For a non-flask recipe (itemtype != 40), no bottles in backpack or cache. Verify: `"Select an empty bottle to make the potion in."` prompt appears (legacy path preserved). |
 | **Flask target fallback (flask)** | For flask recipe, no flask anywhere. Verify: `"You need an empty flask to make that potion."` and abort (legacy behaviour preserved — no Target() prompt for flasks). |
 
@@ -291,11 +279,7 @@ These were identified during audit and are being tracked but not fixed in this p
 ### `GetBottle` refactor
 - `pkg/std/alchemy/alchemy.src` — `GetBottle(conts, user, dataFileHandle)` → `GetBottle(conts, user, parentRequest)`; both callers in `TryToMakePotion` updated to pass `regRequest` directly
 
-### AlchemyPlus stackability & loop fix
-- `pkg/opt/alchemyplus/itemdesc.cfg` — `Stackable 1` added to Flask of Crystallized Intelligence output (`0xffa3`); new `Item 0x183A` definition added for the empty flask input (`UOBJ_EMPTY_FLASK`) with `Stackable 1`
-- `pkg/opt/omegacache/categories.cfg` — `0xFFA3` added to Potions, `0x2147` added to Reagents, `0x183A` added to Miscellaneous
-- `config/tiles.cfg` — `UoFlags` updated from `0x00004000` to `0x00004800` (adding `0x0800` STACKABLE flag) plus new `Stackable 1` line for tiles `0x1839`, `0x183a`, `0x1CF0`
-- `pkg/opt/talisman/config/itemdesc.cfg` — `Stackable 1` added to Glowing Brain (`0x2147`)
+### AlchemyPlus loop fix
 - `pkg/opt/alchemyplus/alchemyplus.src` — Reordered the main potion loop to create the potion BEFORE consuming the container. Previously `SubtractAmount` → `FindItemInContainer` → abort (before `CreateItemInContainer`) caused the current iteration's potion to be lost when the player had exactly 1 flask/bottle. New order matches the sibling `alchemyplus toad.src` pattern.
 
 ---
