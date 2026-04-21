@@ -482,9 +482,10 @@ function CanMakePotion( character , current_potion, reagentRequests := 0 )
 		//Reserve matching backpack items so concurrent scripts (packet hooks,
 		//drag-and-drop) can't mutate them between our availability check and
 		//consumption. Preserves the legacy CanMakePotion semantics.
-		//(Loop var named reagent_item — `stack` and `_stack` collide with the
-		//eScript reserved word.)
-		foreach reagent_item in res.backpack_items
+		//(Local var for the iterable — eScript's foreach parser doesn't accept
+		//member access like `res.backpack_items` directly in the iterable slot.)
+		var bp_items := res.backpack_items;
+		foreach reagent_item in bp_items
 			if( !ReserveItem(reagent_item) )
 				return 0;
 			endif
