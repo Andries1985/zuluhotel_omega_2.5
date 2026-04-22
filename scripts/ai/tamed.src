@@ -287,14 +287,14 @@ function CloseDistance( opponent )
 		endif
 		
 		var d:=distance(me,opponent);
-		if ( d > 11 )
+		if ( d > 10 )
 			if (DEBUG_MODE)
 				PrintTextAbove(me, "d: "+d);
 			endif
 			WalkToward( opponent );
 			Sleepms(sleepdelay);
 			return 1;
-		elseif (d < 8)
+		elseif (d < 2)
 			if (GetMana(me) > (GetMaxMana(me)/3))
 				if (DEBUG_MODE)
 					PrintTextAbove(me, "good mana too close");
