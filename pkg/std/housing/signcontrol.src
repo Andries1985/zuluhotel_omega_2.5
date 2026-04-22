@@ -10,8 +10,6 @@ include "utility";
 include "util/bank";
 include "include/constants/usescriptids";
 
-const CONFISCATION_TICKET_OBJTYPE := 0xDF0C;
-
 var bans, owns; // updated by CacheData
 
 program SignListener( sign )
@@ -308,17 +306,10 @@ function ConfiscateBossPet(mobile)
 	var master_serial := GetObjProperty(mobile, "master");
 	if(!master_serial or mobile.script != "tamed")
 		// Wild boss — kill outright
-		MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
-		SetObjProperty(mobile, "guardkill", 1);
-		ApplyRawDamage(mobile, GetMaxHP(mobile) + 3);
+		KillConfiscatedPet(mobile);
 		return;
 	endif
 
-	var max_hp := CInt(GetObjProperty(mobile, "CustomHitsLevel"));
-	if(!max_hp)
-		max_hp := GetMaxHP(mobile);
-	endif
-	var fine := CInt(max_hp / 40);
 	var pet_name := mobile.name;
 
 	var master := SystemFindObjectBySerial(master_serial);
@@ -329,9 +320,7 @@ function ConfiscateBossPet(mobile)
 	endif
 
 	if(!master)
-		MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
-		SetObjProperty(mobile, "guardkill", 1);
-		ApplyRawDamage(mobile, GetMaxHP(mobile) + 3);
+		KillConfiscatedPet(mobile);
 		return;
 	endif
 
@@ -355,27 +344,16 @@ function ConfiscateBossPet(mobile)
 	endif
 
 	if(!ticket)
-		MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
-		SetObjProperty(mobile, "guardkill", 1);
-		ApplyRawDamage(mobile, GetMaxHP(mobile) + 3);
+		KillConfiscatedPet(mobile);
 		if(master_online)
 			SendSysMessage(master, "Your pet " + pet_name + " was destroyed for entering a house. A claim ticket could not be created — your backpack and bank are full.", 3, 43);
 		endif
 		return;
 	endif
 
-	ticket.name := "Confiscated pet ticket - " + pet_name + " - Fine: " + fine + "gp";
-	SetObjProperty(ticket, "petname", mobile.name);
-	SetObjProperty(ticket, "pettemplate", mobile.npctemplate);
-	SetObjProperty(ticket, "pethp", GetHP(mobile));
-	SetObjProperty(ticket, "petmana", GetMana(mobile));
-	SetObjProperty(ticket, "petcolor", mobile.color);
-	SetObjProperty(ticket, "owner_serial", master_serial);
-	SetObjProperty(ticket, "confiscation_fine", fine);
+	var fine := PopulateConfiscatedPetTicket(ticket, master_serial, mobile);
 
-	MoveObjectToLocation(mobile, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
-	SetObjProperty(mobile, "guardkill", 1);
-	ApplyRawDamage(mobile, GetMaxHP(mobile) + 3);
+	KillConfiscatedPet(mobile);
 
 	if(master_online)
 		SendSysMessage(master, "Your pet " + pet_name + " has been confiscated for entering a house.");

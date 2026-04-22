@@ -7,6 +7,8 @@ use os;
 use util;
 use cfgfile;
 
+include "include/attributes";
+
 var zone_cfg := ReadConfigFile("::armrzone");
 var itemdesc_cfg := ReadConfigFile(":*:itemdesc");
 /*
