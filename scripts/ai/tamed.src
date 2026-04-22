@@ -561,29 +561,6 @@ function ReturnItemToSourcePackOrGround(item, source)
 	return 0;
 endfunction
 
-function IsDonatorMountGraphic(graphic)
-	var npccfg := ReadConfigFile("npcdesc");
-	if (!npccfg)
-		return 0;
-	endif
-
-	var donatortemplates := array{ "donatorbear", "donatorostard", "donatorhorse", "donatorllama",
-		"mountbeetle", "mountkirin", "mountraptalon", "mountwolf", "mounthairiyo",
-		"mountskeletalhorse", "mountmondainshorse", "mountunicorn", "mountridgeback",
-		"mountsavageridgeback", "mountswampdragon", "mountarmoredswampdragon" };
-
-	foreach tpl in donatortemplates
-		var elem := npccfg[tpl];
-		if (elem)
-			if (CInt(GetConfigInt(elem, "objtype")) == CInt(graphic))
-				return 1;
-			endif
-		endif
-	endforeach
-
-	return 0;
-endfunction
-
 function speak()
 
 	PetCount();
@@ -754,13 +731,6 @@ function OpenMyPack();
 	endif
 
 	var mounttype := 0;
-
-	if (IsDonatorMountGraphic(me.graphic) and !GetObjProperty(me, "DonatorMount"))
-		if (DEBUG_MODE)
-			PrintTextAbove(me, "OpenMyPack denied: non-donator mount on donor graphic");
-		endif
-		return 0;
-	endif
 
 	case (me.graphic)
 		0xcc:	mounttype := 0x3ea2;	//dark brown/horse
