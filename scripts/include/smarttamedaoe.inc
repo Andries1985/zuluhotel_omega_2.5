@@ -5,10 +5,20 @@
 use uo;
 
 function SmartFilterTamedTargets(tamed_pet, candidates)
-	// For a tamed NPC, filter targets using SmartAoE logic with the master as reference
-	// This prevents hitting: master, master's party, pets of master's party, safe zone players, etc.
+	// For tamed NPCs, filter targets using SmartAoE logic with the master as reference.
+	// For released or wild NPCs, preserve the original behavior: only hit players.
 	if (!tamed_pet.master)
-		return candidates;  // If not tamed, return all candidates
+		var wild_remove := {};
+		var wild_i;
+		for(wild_i:=1; wild_i<=candidates.Size(); wild_i:=wild_i+1)
+			if (candidates[wild_i].serial == tamed_pet.serial || candidates[wild_i].isa(POLCLASS_NPC))
+				wild_remove.append(wild_i);
+			endif
+		endfor
+		for(wild_i:=wild_remove.Size(); wild_i>=1; wild_i:=wild_i-1)
+			candidates.erase(wild_remove[wild_i]);
+		endfor
+		return candidates;
 	endif
 	
 	var master := tamed_pet.master;

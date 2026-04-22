@@ -87,9 +87,7 @@ function Massvatten(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Fluctus Perturbo Magus Navitas");
 	sleep(2);
-	if (me.master)
-		players := SmartFilterTamedTargets(me, players);
-	endif
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
 		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
 			if (!me.master || (me.master && mobile.serial != me.master.serial))
@@ -106,9 +104,7 @@ function Massgust(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Gust Do Ar");
 	sleep(2);
-	if (me.master)
-		players := SmartFilterTamedTargets(me, players);
-	endif
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
 		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
 			if (!me.master || (me.master && mobile.serial != me.master.serial))
@@ -125,9 +121,7 @@ function Masswyvern(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Umbrae Tenebrae Venarent");
 	sleep(2);
-	if (me.master)
-		players := SmartFilterTamedTargets(me, players);
-	endif
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
 		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
 			if (!me.master || (me.master && mobile.serial != me.master.serial))
@@ -144,9 +138,7 @@ function Masskill(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Ulties Manum Necarent");
 	sleep(2);
-	if (me.master)
-		players := SmartFilterTamedTargets(me, players);
-	endif
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
 		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
 			if (!me.master || (me.master && mobile.serial != me.master.serial))
@@ -163,9 +155,7 @@ function Masscalllightning(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Batida Do Deus");
 	sleep(2);
-	if (me.master)
-		players := SmartFilterTamedTargets(me, players);
-	endif
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
 		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
 			if (!me.master || (me.master && mobile.serial != me.master.serial))
@@ -182,9 +172,7 @@ function Massicestrike(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Geada Com Inverno");
 	sleep(2);
-	if (me.master)
-		players := SmartFilterTamedTargets(me, players);
-	endif
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
 		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
 			if (!me.master || (me.master && mobile.serial != me.master.serial))
@@ -201,9 +189,7 @@ function Massshiftingearth(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Esmagamento Con Pedra");
 	sleep(2);
-	if (me.master)
-		players := SmartFilterTamedTargets(me, players);
-	endif
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
 		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
 			if (!me.master || (me.master && mobile.serial != me.master.serial))
@@ -220,9 +206,7 @@ function MassHolyBolt(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Sanctus Utor Telum");
 	sleep(2);
-	if (me.master)
-		players := SmartFilterTamedTargets(me, players);
-	endif
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
 		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
 			if (!me.master || (me.master && mobile.serial != me.master.serial))
@@ -286,9 +270,7 @@ function ChampFire(me)
 		6: element := "HOLY";
 	endcase
 
-	if (me.master)
-		players := SmartFilterTamedTargets(me, players);
-	endif
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
 		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
 			if (!me.master || (me.master && mobile.serial != me.master.serial))
