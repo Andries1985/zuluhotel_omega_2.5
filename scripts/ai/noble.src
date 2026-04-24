@@ -6,17 +6,27 @@ include "include/randname";
 include "include/npcbackpacks";
 include "include/speech";
 include "include/vetement";
-include "include/anchors";
+include "include/townsfolk";
+include "include/attributes";
 
-const HALT_THRESHOLD := 4; // how close before he barks?
+const HALT_THRESHOLD := 2; // how close before he barks?
 
 var me := Self();
 
 program noble ()
 
-	//var me := Self();
+	if (!InitTownBounds())
+		return;
+	endif
 
-	drop_anchor(me);
+    if( me.name["<random>"] )
+		if (me.gender == 0)
+			Habille( me , "noblemale" );
+		else
+			Habille( me , "noblefemale" );
+		endif
+		SetName ( me , RandomName( me ) );
+	endif
 
 	SetObjProperty( me, "serial", me.serial );
 	SetObjProperty( me, "noloot", 1 );
@@ -31,119 +41,37 @@ program noble ()
 
     SetWarMode( 0 );
     set_priority(10);
-	if( me.name["<random>"] )
-		if (me.gender == 0)
-			Habille( me , "noblemale" );
-		else
-			Habille( me , "noblefemale" );
-		endif
-		SetName ( me , RandomName( me ) );
-	endif
 
-	var ev;
-    //var looter := GetObjProperty( me, "looter" );
-	var next_wander := ReadGameClock() + 60;
+
+    // (Old while loop removed; only the new, shared-saying-based loop remains)
+    var ev;
+    var next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
     while (1)
-        //wander();
+        WanderWithinTown();
         ev := os::wait_for_event( 120 );
-        // print( "event type: " + ev.type );
         case (ev.type)
             SYSEVENT_SPEECH:
                var tspeech := process_text(ev.text, "default","default");
                if (tspeech)
-                        say(tspeech);
+                    say(tspeech);
                endif
-                
             SYSEVENT_ENGAGED:
-				say("Aaahhh! Help! Help!  I'm being oppressed!");
-                Run( ev.source );
-
+                SayRandomFromArray(ENGAGED_SAYINGS);
+                RunFromOpponent( ev.source, HALT_THRESHOLD );
             SYSEVENT_DAMAGED:
-                say( "By the virtues! Why? WHY??" );
-                //print( "I just took " + ev.damage + " points of damage!" );
+                SayRandomFromArray(DAMAGED_SAYINGS);
                 if (ev.source)
-                    Run( ev.source );
+                    RunFromOpponent( ev.source, HALT_THRESHOLD );
                 else
-                    say( "What sinister force is this!" );
+                    say( "What treachery is this!" );
                 endif
-           default: //wander();
-
+            SYSEVENT_DISENGAGED:
+                SayRandomFromArray(DISENGAGED_SAYINGS);
         endcase
         if (ReadGameClock() >= next_wander)
-            wander();
-			//if (looter)
-				//grabloot();
-			//endif
-			next_wander := ReadGameClock() + RandomDice( 2, 25, 10 );
+            WanderWithinTown();
+            next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
         endif
-        
-        // TODO: ReturnToPost();
     endwhile
-
 endprogram
 
-function Run( opponent )
-    TurnAwayFrom( opponent );
-
-    DisableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA );
-    //SetOpponent( opponent );
-
-    var waittime;
-  	outer:
-		while (opponent and !opponent.dead)
-			waittime := OpenDistance( opponent ) * 15;
-
-			var ev := wait_for_event( waittime );
-			// print( "event type: " + ev.type );
-			case (ev.type)
-				SYSEVENT_SPEECH:
-				
-				SYSEVENT_DISENGAGED:
-					if (ev.source.serial == opponent.serial)
-						say( "Whew!" );
-						break outer;
-					endif
-
-				SYSEVENT_ENGAGED:
-				SYSEVENT_DAMAGED:
-					if (ev.source)
-						if (ev.source.serial != opponent.serial)
-							say( "Ack! Leave me alone!" );
-						else
-							if (ev.type == "damage")
-								say("Ouch! Heeelp!");
-								//print( "I just took " + ev.damage + " points of damage." );
-							endif
-						endif
-					endif
-
-				SYSEVENT_OPPONENT_MOVED:
-					
-					
-				SYSEVENT_ENTEREDAREA:
-				SYSEVENT_LEFTAREA:
-					// ignore both of these
-			endcase
-		endwhile
-
-    EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
-    SetWarMode( 0 );
-endfunction
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  OpenDistance - open the distance between self and an opponent.
-//  Returns: 1 if distance is 10 (no move necessary)
-//           0 if distance is < 10 (may still need to move)
-//
-/////////////////////////////////////////////////////////////////////////////
-function OpenDistance( opponent )
-    case (Distance( me, opponent ))
-        10:
-            return 1;
-        default:
-            RunAwayFrom( opponent );
-            return 0;
-    endcase
-endfunction
