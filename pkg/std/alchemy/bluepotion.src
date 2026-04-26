@@ -16,16 +16,27 @@ program drink_blue( character, potion )
 		DoPoison( character , potion );
 
 	else
-		var power := GetPotionStrength( potion );
+		var itemcfg  := ReadConfigFile( ":alchemy:itemdesc" );
+		var base_str := Cint( itemcfg[potion.objtype].Strength );
+		var btm      := Cint( GetObjProperty( potion, "ByTrueMage" ) );
 		EmptyBottle( character , potion );
+
+		SetObjProperty( character , "#potion" , ReadGameClock() + 2 );
 
 		if( !CanMod( character , "dex" ) )
 			SendSysMessage( character , "Already under the influence!" );
 		else
 			PlayObjectCenteredEffect( character , FX_BLESS_EFFECT , SPEED_SPELL_BLESS , LOOP_SPELL_BLESS );
-			var duration	:= power * DURATION_MULTIPLIER;
-			var thestring	:= Cstr(power * 2) + "d5";
-			var agil_gain	:= RandomDiceStr( thestring );
+			var rank;
+			if ( base_str == 1 )
+				rank := 0;
+			elseif ( base_str == 2 || base_str == 4 )
+				rank := 1 + btm;
+			else
+				rank := 4 + btm;
+			endif
+			var agil_gain := rank * 10 + 5;
+			var duration  := ( rank + 1 ) * 480;
 
 			DoTempMod( character , "dex" , agil_gain , duration );
 		endif

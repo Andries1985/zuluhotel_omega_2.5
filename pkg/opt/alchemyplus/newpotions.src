@@ -142,15 +142,29 @@ function DoInvisEffect( me , what )
 endfunction
 
 function DoCunningEffect( me , item , what )
-	//Print("Doing cunning effect");
 
-	var strength := GetPotionStr( item , what );
-	var mod_amount := RandomDiceStr(strength+"d10");
-	var duration   := strength * 20;
-	if( CanMod( me , "int" ) )
-		DoTempMod( me , "int" , mod_amount , duration );
-	endif
+	var base_str := Cint( item.strength );
+	var btm      := Cint( GetObjProperty( what , "ByTrueMage" ) );
 	SubtractAmount(what, 1);
+
+	SetObjProperty( me , "#potion" , ReadGameClock() + 2 );
+
+	if( !CanMod( me , "int" ) )
+		SendSysMessage( me , "Already under the influence!" );
+	else
+		var rank;
+		if ( base_str == 1 )
+			rank := 0;
+		elseif ( base_str == 4 )
+			rank := 1 + btm;
+		else
+			rank := 4 + btm;
+		endif
+		var int_gain  := rank * 10 + 5;
+		var duration  := ( rank + 1 ) * 480;
+
+		DoTempMod( me , "int" , int_gain , duration );
+	endif
 
 endfunction
 
@@ -182,21 +196,60 @@ endfunction
 
 function DoProtectionEffect( me , item , what )
 
+	var activemods := GetObjProperty( me , "#mods" );
+	if( activemods )
+		foreach mmod in activemods
+			if( mmod[1] == "ar" || mmod[1] == "car" || mmod[1] == "poly" || mmod[1] == "cpoly" )
+				SendSysMessage( me , "You cannot use Mego's Invulnerability while another armor-affecting buff is active." );
+				return;
+			endif
+		endforeach
+	endif
+
 	var strength	 := GetPotionStr( item , what );
 	var mod_amount := RandomDiceStr( strength + "d2" );
 	var duration   := strength * 15;
-	if( CanMod( me , "ar" ) )
-		DoTempMod( me, "ar", mod_amount, duration );
+	if( !CanMod( me , "ar" ) )
+		SendSysMessage( me , "Already under the influence!" );
+		return;
 	endif
+
+	DoTempMod( me, "ar", mod_amount, duration );
 	SubtractAmount(what, 1);
 
 endfunction
 
 function DoBlessEffect( me , item , what )
 
-	var strength := GetPotionStr( item , what );
-	var mod_amount := RandomDiceStr( strength + "d3" );
-	var duration   := strength * 15;
+	var itemtype   := CInt( item.itemtype );
+	var btm        := CInt( GetObjProperty( what , "ByTrueMage" ) );
+	var mod_amount;
+	var duration;
+
+	if( itemtype == 31 || itemtype == 32 )
+		var tier;
+		if( itemtype == 31 )
+			tier := 1 + btm;
+			if( tier > 3 )
+				tier := 3;
+			endif
+		else
+			if( btm >= 2 )
+				tier := 5;
+			elseif( btm >= 1 )
+				tier := 4;
+			else
+				tier := 3;
+			endif
+		endif
+		mod_amount := tier * 15;
+		duration   := tier * 720;
+	else
+		var strength := GetPotionStr( item , what );
+		mod_amount := RandomDiceStr( strength + "d3" );
+		duration   := strength * 15;
+	endif
+
 	//if( CanMod( me , "all" ) )
 	if( CanMod( me , "all" ) && CanMod( me , "ebless" ) && CanMod( me, "poly"))
 		DoTempMod( me, "all", mod_amount, duration );
@@ -261,8 +314,20 @@ function DoPolyEffect( me , item , what )
 	var strength	 := GetPotionStr( item , what );
 	var critter 	 := Random(8);
 	var newcolor 	 := 1401+(strength*10)+critter;
-	var mod_amount := (strength*5)+critter;
-	var duration 	 := strength * 120;
+	var mod_amount;
+	if( item.itemtype == 34 || item.itemtype == 35 )
+		// Taint tiers now scale from +10 to +65 across strength 1..5.
+		case( strength )
+			1: mod_amount := 10;
+			2: mod_amount := 25;
+			3: mod_amount := 40;
+			4: mod_amount := 55;
+			default: mod_amount := 65;
+		endcase
+	else
+		mod_amount := strength * 15;
+	endif
+	var duration 	 := strength * 720;
 	//if( CanMod( me , "poly" ) )
 	if( CanMod( me , "all" ) && CanMod( me , "ebless" ) && CanMod( me, "poly"))
 		DoTempMod( me , "poly" , mod_amount , duration );

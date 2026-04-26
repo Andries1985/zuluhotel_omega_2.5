@@ -49,7 +49,7 @@ function AddToStatMods( byref allmods , byref mmod )
 	set_critical(1);
 	var i;
 	for( i := 1 ; i <= len(allmods) ; i := i + 1 )
-		if ( allmods[i][1] == mmod[1] )
+		if ( TempModConflicts( allmods[i][1] , mmod[1] ) )
 			return 0;
 		endif
 	endfor
@@ -58,6 +58,106 @@ function AddToStatMods( byref allmods , byref mmod )
 	set_critical(0);
 	
 	return i;
+
+endfunction
+
+
+function TempModTouchesStrength( modname )
+
+	return ( modname == "str" || modname == "cstr" );
+
+endfunction
+
+
+function TempModTouchesDexterity( modname )
+
+	return ( modname == "dex" || modname == "cdex" );
+
+endfunction
+
+
+function TempModTouchesIntelligence( modname )
+
+	return ( modname == "int" || modname == "cint" );
+
+endfunction
+
+
+function TempModIsSingleStat( modname )
+
+	return (
+		TempModTouchesStrength(modname) ||
+		TempModTouchesDexterity(modname) ||
+		TempModTouchesIntelligence(modname)
+	);
+
+endfunction
+
+
+function TempModIsBlessPoly( modname )
+
+	return (
+		modname == "all" || modname == "call" ||
+		modname == "ebless" || modname == "cebless" ||
+		modname == "poly" || modname == "cpoly"
+	);
+
+endfunction
+
+
+function TempModIsPoly( modname )
+
+	return ( modname == "poly" || modname == "cpoly" );
+
+endfunction
+
+
+function TempModTouchesArmor( modname )
+
+	return ( modname == "ar" || modname == "car" );
+
+endfunction
+
+
+function TempModTouchesParalyze( modname )
+
+	return ( modname == "p" );
+
+endfunction
+
+
+function TempModConflicts( existing_mod , incoming_mod )
+
+	if( existing_mod == incoming_mod )
+		return 1;
+	endif
+
+	// One of: str/dex/int at a time.
+	if( TempModIsSingleStat(existing_mod) && TempModIsSingleStat(incoming_mod) )
+		return 1;
+	endif
+
+	// One of: bless/all/poly family at a time.
+	if( TempModIsBlessPoly(existing_mod) && TempModIsBlessPoly(incoming_mod) )
+		return 1;
+	endif
+
+	// One AR instance at a time for direct AR buffs.
+	if( TempModTouchesArmor(existing_mod) && TempModTouchesArmor(incoming_mod) )
+		return 1;
+	endif
+
+	// Poly contributes AR as well, so do not allow AR buffs with active poly.
+	if( (TempModIsPoly(existing_mod) && TempModTouchesArmor(incoming_mod)) ||
+		(TempModTouchesArmor(existing_mod) && TempModIsPoly(incoming_mod)) )
+		return 1;
+	endif
+
+	if( TempModTouchesParalyze(existing_mod) && TempModTouchesParalyze(incoming_mod) )
+		return 1;
+	endif
+
+	return 0;
 
 endfunction
 
