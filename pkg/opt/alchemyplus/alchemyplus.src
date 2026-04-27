@@ -798,7 +798,7 @@ endfunction
 
 
 // ============================================================
-// Omega Cache integration helpers (Phase 1 — not yet wired into main loop)
+// Omega Cache integration helpers
 // ============================================================
 
 // Returns the array of leveled-potion objtypes for a given basic-potion objtype.
