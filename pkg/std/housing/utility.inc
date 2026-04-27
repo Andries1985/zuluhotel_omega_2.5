@@ -7,6 +7,7 @@ const RECALL_TO := 5;
 const GATE_TO := 6;
 const GATE_FROM := 7;
 const CO_OWNER := 8;
+const CONFISCATION_TICKET_OBJTYPE := 0xDF0C;
 
 //-------------------------------------------------- New Housing Functions ----------------------------------------------------------------\\
 
@@ -364,4 +365,38 @@ var name := StrReplace(deed.desc, "a deed to a ", "");
 
 SetObjProperty(house, "MultiType", name);
 
+endfunction
+
+function PopulateConfiscatedPetTicket(ticket, owner_serial, pet)
+	if(!ticket or !pet)
+		return 0;
+	endif
+
+	var pet_name := pet.name;
+	var max_hp := CInt(GetObjProperty(pet, "CustomHitsLevel"));
+	if(!max_hp)
+		max_hp := GetMaxHP(pet);
+	endif
+	var fine := CInt(max_hp / 40);
+
+	ticket.name := "Confiscated pet ticket - " + pet_name + " - Fine: " + fine + "gp";
+	SetObjProperty(ticket, "petname", pet.name);
+	SetObjProperty(ticket, "pettemplate", pet.npctemplate);
+	SetObjProperty(ticket, "pethp", GetHP(pet));
+	SetObjProperty(ticket, "petmana", GetMana(pet));
+	SetObjProperty(ticket, "petcolor", pet.color);
+	SetObjProperty(ticket, "owner_serial", owner_serial);
+	SetObjProperty(ticket, "confiscation_fine", fine);
+
+	return fine;
+endfunction
+
+function KillConfiscatedPet(pet)
+	if(!pet)
+		return;
+	endif
+
+	MoveObjectToLocation(pet, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+	SetObjProperty(pet, "guardkill", 1);
+	ApplyRawDamage(pet, GetMaxHP(pet) + 3);
 endfunction

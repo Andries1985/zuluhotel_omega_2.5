@@ -26,6 +26,7 @@ use uo;
 include "include/eventid";
 include "include/randname";
 include "include/client";
+include "include/townsfolk";
 include "ai/setup/modsetup";
 include "include/random";
 include "include/attributes";
@@ -44,10 +45,13 @@ if( me.name["<random>"] )
 endif
 
 program Minstrel()
-    EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED,HALT_THRESHOLD);
+    if (!InitTownBounds())
+        return;
+    endif
+
+    EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED, HALT_THRESHOLD);
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
     EnableEvents( SYSEVENT_OPPONENT_MOVED );
-	var next_wander := readgameclock() + 1;
 
 	if (getobjproperty(me, "frozen"))
 		me.frozen := 0;
@@ -56,149 +60,42 @@ program Minstrel()
     SetWarMode( 0 );
     set_priority(10);
 
+    // (Old while loop removed; only the new, shared-saying-based loop remains)
     var ev;
+    var next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
     while (1)
+        WanderWithinTown();
         ev := os::wait_for_event( 120 );
-        // print( "event type: " + ev.type );
         case (ev.type)
             SYSEVENT_SPEECH:
                 if (ev.text["hi"] or ev.text["hail"])
                     say("Hail traveler! Wouldst thou like to hear a new song?");
                 elseif (ev.text["song"] or ev.text["sing"])
                     singsongs( me, ev.source );
-		endif
+                endif
             SYSEVENT_ENGAGED:
-		say("Gaahhh! Do not hurt a simple minstrel!");
-                Run( ev.source );
+                SayRandomFromArray(ENGAGED_SAYINGS);
+                RunFromOpponent( ev.source, HALT_THRESHOLD );
             SYSEVENT_DAMAGED:
-                say( "By the virtues! Why? WHY??" );
-                //print( "I just took " + ev.damage + " points of damage!" );
+                SayRandomFromArray(DAMAGED_SAYINGS);
                 if (ev.source)
-                    Run( ev.source );
+                    RunFromOpponent( ev.source, HALT_THRESHOLD );
                 else
                     say( "What evil thou art!" );
                 endif
             SYSEVENT_ENTEREDAREA:
                 singsongs(me, ev.source);
-	    SYSEVENT_LEFTAREA:
-		say("Fare thee well!");
+	        SYSEVENT_LEFTAREA:
+                say("Fare thee well!");
         endcase
-	if (readgameclock() >= next_wander)
-		wander();
-		next_wander := readgameclock() + 1;
-	endif  
-        // TODO: ReturnToPost();
+        if (ReadGameClock() >= next_wander)
+            WanderWithinTown();
+            next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
+        endif
     endwhile
 endprogram
 
-function Run( opponent )
-    TurnAwayFrom( opponent );
-    DisableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA );
-    //SetOpponent( opponent );
-    var waittime;
-  outer:
-    while (opponent and !opponent.dead)
-        waittime := OpenDistance( opponent ) * 15;
-        var ev := wait_for_event( waittime );
-        // print( "event type: " + ev.type );
-        case (ev.type)
-            SYSEVENT_SPEECH:
-                if (ev.text["hold"])
-                    say( "Very well then." );
-                    break outer;
-                endif
-            SYSEVENT_DISENGAGED:
-                if (ev.source.serial == opponent.serial)
-                    say( "Whew!" );
-                    break outer;
-                endif
-            SYSEVENT_ENGAGED:
-            SYSEVENT_DAMAGED:
-                if (ev.source)
-                    if (ev.source.serial != opponent.serial)
-                        say( "Ack! Leave me alone!" );
-                    else
-                        if (ev.type == "damage")
-			    say("Ouch! Heeelp!");
-                            //print( "I just took " + ev.damage + " points of damage." );
-                        endif
-                    endif
-                endif
-            SYSEVENT_OPPONENT_MOVED:                
-            SYSEVENT_ENTEREDAREA:
-            SYSEVENT_LEFTAREA:
-                // ignore both of these
-        endcase
-    endwhile
-    EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
-    SetWarMode( 0 );
-endfunction
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//  OpenDistance - open the distance between self and an opponent.
-//  Returns: 1 if distance is 10 (no move necessary)
-//           0 if distance is < 10 (may still need to move)
-//
-/////////////////////////////////////////////////////////////////////////////
-function OpenDistance( opponent )
-    case (Distance( me, opponent ))
-        10:
-            return 1;        
-        default:
-            RunAwayFrom( opponent );
-            return 0;
-    endcase
-endfunction
 
-function singsongs(character, tonedeaf)
-	var counting := 1;
-	// var numsongs := 4;
-	var songcfg  := ReadConfigFile("songs");
-	var maxsongs := FindConfigElem( songcfg, "songs");
-	var numsongs := GetConfigInt( maxsongs, "number");
-	//var numsongs := cint(GetConfigMaxIntKey("songs"));
-	var songnumb := Random(numsongs) + 1;
-	var songelem := FindConfigElem( songcfg, songnumb);
-	var midinum  := GetConfigString ( songelem, "midi");
-  	var number   := GetConfigInt( songelem, "count");
 
-	if ( midinum )
-		PlayMidi( character, midinum);
-	else
-		PlaySFX( character );
-	endif
-	
-	while ( counting <= number )
-		var linename := "line" + cint( counting );
-		// print( "linename is: " + linename );
-		var song := GetConfigString( songelem, linename );
-		say(song);
-		sleep(4);
-		counting := counting + 1;
-	endwhile
-endfunction
 
-function PlayMidi(character, song_id)
-	var packet_id;
-	var xdist    := Abs(me.x - character.x);
-	var ydist    := Abs(me.y - character.y);
-
-	foreach character in EnumerateOnlineCharacters()
-		if ( xdist <= 15 and ydist <= 15 )  // character is within a given radius
-			packet_id := "6D00" + song_id;
-			SendPacket (character, packet_id);
-		endif
-	endforeach
-endfunction
-
-function PlaySFX( character )
-	var randy    := Random(4);
-
-	case( randy )
-		0: playsoundeffect( character, SFX_MUSIC_LUTE_GOOD );
-		1: playsoundeffect( character, SFX_MUSIC_HARP_LAP_GOOD );
-		2: playsoundeffect( character, SFX_MUSIC_DRUM_GOOD );
-		3: playsoundeffect( character, SFX_MUSIC_TAMBORINE_GOOD );
-   	endcase
-endfunction

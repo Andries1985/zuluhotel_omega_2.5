@@ -25,24 +25,26 @@ use uo;
 include "include/eventid";
 include "include/randname";
 include "include/client";
+include "include/townsfolk";
 include "ai/setup/modsetup";
 include "include/random";
+include "include/dotempmods";
+
 const HALT_THRESHOLD := 10; // how close before he barks?
 
 var me := Self();
 if( me.name["<random>"] )
-EquipFromTemplate( me , "Crier" );
-   SetName ( me , RandomName( me ) );
-   case( Random(2) )
-      0: me.graphic := 400;
-      1: me.graphic := 401;
-   endcase
+	EquipFromTemplate( me , "Crier" );
+	SetName ( me , RandomName( me ) );
+	case( Random(2) )
+		0: me.graphic := 400;
+		1: me.graphic := 401;
+	endcase
 endif
 
 program Performer()
     EnableEvents( SYSEVENT_SPEECH, HALT_THRESHOLD);
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
-//	var next_wander := readgameclock() + 1;
 
 	if (getobjproperty(me, "frozen"))
 		me.frozen := 1;
@@ -53,77 +55,38 @@ program Performer()
 
     var ev;
     while (1)
+		if (me.hidden)
+		    me.hidden := 0;
+	    endif
         ev := os::wait_for_event( 120 );
-        // print( "event type: " + ev.type );
         case (ev.type)
+			SYSEVENT_ENGAGED:
+				Say ( ev.source.name + ", I'll call a guard, if you don't stop that!");
+
+			SYSEVENT_DAMAGED:
+				SetHP(me, GetMaxHP(me));
+				if( me.poisoned ) CurePoison( me ); endif
+				Say("Help guards!!! I'm being attacked!!");
+				SetObjProperty(me, "guardkill", 1);
+				Start_Script( ":areas:callguards", me );
+				sleep(5);
+				say("You scoundrel!!!");
+
+				me.hidden := 1;
+				sleep(30);
+				me.hidden := 0;
             SYSEVENT_SPEECH:
                 if (ev.text["hi"] or ev.text["hail"])
                     say("Hail traveler! Wouldst thou like to hear a new song?");
                 elseif (ev.text["song"] or ev.text["sing"])
                     singsongs( me, ev.source );
-		endif
+				endif
             SYSEVENT_ENTEREDAREA:
                 singsongs(me, ev.source);
-	    SYSEVENT_LEFTAREA:
-		say("Fare thee well!");
+	    	SYSEVENT_LEFTAREA:
+				say("Fare thee well!");
         endcase
-	//if (readgameclock() >= next_wander)
-	//	wander();
-	//	next_wander := readgameclock() + 1;
-	//endif  
-        // TODO: ReturnToPost();
     endwhile
 endprogram
 
 
-function singsongs(character, tonedeaf)
-	var counting := 1;
-	// var numsongs := 4;
-	var songcfg  := ReadConfigFile("songs");
-	var maxsongs := FindConfigElem( songcfg, "songs");
-	var numsongs := GetConfigInt( maxsongs, "number");
-	//var numsongs := cint(GetConfigMaxIntKey("songs"));
-	var songnumb := Random(numsongs) + 1;
-	var songelem := FindConfigElem( songcfg, songnumb);
-	var midinum  := GetConfigString ( songelem, "midi");
-  	var number   := GetConfigInt( songelem, "count");
-
-	if ( midinum )
-		PlayMidi( character, midinum);
-	else
-		PlaySFX( character );
-	endif
-	
-	while ( counting <= number )
-		var linename := "line" + cint( counting );
-		// print( "linename is: " + linename );
-		var song := GetConfigString( songelem, linename );
-		say(song);
-		sleep(4);
-		counting := counting + 1;
-	endwhile
-endfunction
-
-function PlayMidi(character, song_id)
-	var packet_id;
-	var xdist    := Abs(me.x - character.x);
-	var ydist    := Abs(me.y - character.y);
-
-	foreach character in EnumerateOnlineCharacters()
-		if ( xdist <= 15 and ydist <= 15 )  // character is within a given radius
-			packet_id := "6D00" + song_id;
-			SendPacket (character, packet_id);
-		endif
-	endforeach
-endfunction
-
-function PlaySFX( character )
-	var randy    := Random(4);
-
-	case( randy )
-		0: playsoundeffect( character, SFX_MUSIC_LUTE_GOOD );
-		1: playsoundeffect( character, SFX_MUSIC_HARP_LAP_GOOD );
-		2: playsoundeffect( character, SFX_MUSIC_DRUM_GOOD );
-		3: playsoundeffect( character, SFX_MUSIC_TAMBORINE_GOOD );
-   	endcase
-endfunction

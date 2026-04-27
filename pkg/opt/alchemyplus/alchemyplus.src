@@ -579,11 +579,7 @@ case (itemtype)
 //Phandels Fine Int	
 		24:
 		case (level)
-			0: type := 0xff4e;
-			1: type := 0xff4f;
-			2: type := 0xff50;
-			3: type := 0xff51;
-			default: type := 0xff51; // Only situation when default is called is if the level is HIGHER, so it's maxed at level 5 mage atm
+			default: type := 0xff4e;
 		endcase
 
 //Phandels Fab Int		
@@ -592,22 +588,20 @@ case (itemtype)
 			0: type := 0xff52;
 			1: type := 0xff53;
 			2: type := 0xff54;
-			3: type := 0xff55;
-			5: type := 0xff56;
-			6: type := 0xff57;
-			default: type := 0xff57;
+			default: type := 0xff54;
 		endcase
 
 //Phandels Fan Int	
 		26:
 		case (level)
-			0: type := 0xff59;
-			1: type := 0xff5a;
-			3: type := 0xff5b;
-			5: type := 0xff5c;
-			7: type := 0xff5d;
-			9: type := 0xff5e;
-			default: type := 0xff5e;
+			0: type := 0xff59;  // non-mage
+			2: type := 0xff59;  // mage lv1 -> base
+			4: type := 0xff5a;  // mage lv2 -> Lv1
+			6: type := 0xff5a;  // mage lv3 -> Lv1
+			8: type := 0xff5b;  // mage lv4 -> Lv2
+			10: type := 0xff5b; // mage lv5 -> Lv2
+			12: type := 0xff5c; // mage lv6 -> Lv3 (max)
+			default: type := 0xff5c;
 		endcase
 
 //Lesser Meg Inv	
@@ -664,21 +658,19 @@ case (itemtype)
 			0: type := 0xff7a;
 			1: type := 0xff7b;
 			2: type := 0xff7c;
-			3: type := 0xff7d;
-			4: type := 0xff7e;
-			5: type := 0xff7f;
-			default: type := 0xff7f;	
+			default: type := 0xff7c;	
 		endcase
 
 //Greater Homos might
 		32:
 		case (level)
 			0: type := 0xff80;
-			2: type := 0xff81;
-			4: type := 0xff82;
+			2: type := 0xff80;
+			4: type := 0xff80;
 			6: type := 0xff83;
 			9: type := 0xff84;
-			11: type := 0xff85;
+			11: type := 0xff84;
+			13: type := 0xff85;
 			default: type := 0xff85;	
 		endcase
 
@@ -706,8 +698,10 @@ case (itemtype)
 		35:
 		case (level)
 			0: type := 0xff8e;
-			1: type := 0xff8f;
-			2: type := 0xff90;
+			1: type := 0xff8e;
+			2: type := 0xff8f;
+			3: type := 0xff8f;
+			4: type := 0xff90;
 			default: type := 0xff90;	
 		endcase
 

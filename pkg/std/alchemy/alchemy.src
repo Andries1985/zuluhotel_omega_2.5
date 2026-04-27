@@ -483,9 +483,13 @@ case (type)
 //GAgility	
 		0xdc0d:
 		case (level)
-			1: type := 0xff3a;
-			2: type := 0xff3b;
-			3: type := 0xff3c;
+			0: type := 0xdc0d;  // non-mage
+			2: type := 0xdc0d;  // mage lv1 -> base
+			4: type := 0xff3a;  // mage lv2 -> Lv1
+			6: type := 0xff3a;  // mage lv3 -> Lv1
+			8: type := 0xff3b;  // mage lv4 -> Lv2
+			10: type := 0xff3b; // mage lv5 -> Lv2
+			12: type := 0xff3c; // mage lv6 -> Lv3 (max)
 			default: type := 0xff3c;
 		endcase	
 
@@ -509,10 +513,14 @@ case (type)
 //GStrength	
 		0xdc12:
 		case (level)
-			1: type := 0xdc12;
-			2: type := 0xdc12;
-			3: type := 0xdc12;
-			default: type := 0xdc12;
+			0: type := 0xdc12;  // non-mage
+			2: type := 0xdc12;  // mage lv1 -> base
+			4: type := 0xff42;  // mage lv2 -> Lv1
+			6: type := 0xff42;  // mage lv3 -> Lv1
+			8: type := 0xff43;  // mage lv4 -> Lv2
+			10: type := 0xff43; // mage lv5 -> Lv2
+			12: type := 0xff44; // mage lv6 -> Lv3 (max)
+			default: type := 0xff44;
 		endcase	
 
 //Cure		

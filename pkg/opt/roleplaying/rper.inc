@@ -267,15 +267,15 @@ function createRPerBladesingerBag(backpack)
     CreateItemInContainer(backpack, "lute", 1);
     CreateItemInContainer(backpack, "goldcoin", 4000);
 
-    //Leather Armor
+    //Chainmail Armor + Plate for missing pieces
     var armor := {};
-    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x13d4);
-    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x13d5);
-    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x13d6);
-    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x13da);
-    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x13db);
-    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x1DB9);
-    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x170B);
+    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x13BB);  // Chainmail Coif
+    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x13BE);  // Chainmail Leggings
+    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x13BF);  // Chainmail Tunic
+    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x1410);  // Platemail Arms
+    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x1413);  // Platemail Gorget
+    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x1414);  // Platemail Gloves
+    armor[len(armor)+1] := CreateItemInContainer(backpack, 0x170B);  // Leather Boots
 
 endfunction
 

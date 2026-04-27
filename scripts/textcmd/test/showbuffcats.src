@@ -1,0 +1,105 @@
+use uo;
+
+program textcmd_showbuffcats( who )
+
+	SendSysMessage(who, "Target a mobile to inspect active buff categories.");
+	var target_mobile := Target(who);
+
+	if(!target_mobile)
+		SendSysMessage(who, "Canceled.");
+		return;
+	endif
+
+	if(!target_mobile.isa(POLCLASS_MOBILE))
+		SendSysMessage(who, "Target must be a mobile.");
+		return;
+	endif
+
+	var mods := GetObjProperty(target_mobile, "#mods");
+	if(!mods || !len(mods))
+		SendSysMessage(who, target_mobile.name + " has no active #mods.");
+		return;
+	endif
+
+	SendSysMessage(who, "Active #mods on " + target_mobile.name + ": " + CStr(len(mods)));
+
+	var seen_stat := 0;
+	var seen_blesspoly := 0;
+	var seen_ar := 0;
+	var seen_paralyze := 0;
+	var seen_other := 0;
+
+	foreach mmod in mods
+		var modname := mmod[1];
+		var amount := CInt(mmod[2]);
+		var expires := CInt(mmod[3]);
+		var secs_left := expires - ReadGameClock();
+		if(secs_left < 0)
+			secs_left := 0;
+		endif
+
+		var category := GetBuffCategory(modname);
+		if(category == "stat")
+			seen_stat := 1;
+		elseif(category == "bless/poly")
+			seen_blesspoly := 1;
+		elseif(category == "ar")
+			seen_ar := 1;
+		elseif(category == "paralyze")
+			seen_paralyze := 1;
+		else
+			seen_other := 1;
+		endif
+
+		SendSysMessage(
+			who,
+			"- " + modname + " | cat=" + category + " | amt=" + CStr(amount) + " | left=" + CStr(secs_left) + "s"
+		);
+	endforeach
+
+	var summary := "Summary categories active:";
+	if(seen_stat)
+		summary := summary + " [stat]";
+	endif
+	if(seen_blesspoly)
+		summary := summary + " [bless/poly]";
+	endif
+	if(seen_ar)
+		summary := summary + " [ar]";
+	endif
+	if(seen_paralyze)
+		summary := summary + " [paralyze]";
+	endif
+	if(seen_other)
+		summary := summary + " [other]";
+	endif
+
+	SendSysMessage(who, summary);
+
+endprogram
+
+function GetBuffCategory( modname )
+
+	if( modname == "str" || modname == "cstr" ||
+		modname == "dex" || modname == "cdex" ||
+		modname == "int" || modname == "cint" )
+		return "stat";
+	endif
+
+	if( modname == "all" || modname == "call" ||
+		modname == "ebless" || modname == "cebless" ||
+		modname == "poly" || modname == "cpoly" )
+		return "bless/poly";
+	endif
+
+	if( modname == "ar" || modname == "car" )
+		return "ar";
+	endif
+
+	if( modname == "p" )
+		return "paralyze";
+	endif
+
+	return "other";
+
+endfunction
