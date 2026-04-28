@@ -518,7 +518,7 @@ function DoRess( me , what)
 				SendSysMessage(me, "You can't resurrect this.", FONT_NORMAL, 2595 );
 				return;
 			else
-				if (GetObjProperty(patient, "#Ressing"));
+				if (GetObjProperty(patient, "#Ressing"))
 					SendSysMessage(me, "This creature is currently being aided back to life.", FONT_NORMAL, 2595 );
 					return;			
 				else
@@ -568,7 +568,7 @@ function DoRess( me , what)
 	// Player
 	elseif( patient.dead )
 		if(!patient.isa(POLCLASS_NPC))
-			if (GetObjProperty(patient, "#Ressing"));
+			if (GetObjProperty(patient, "#Ressing"))
 				SendSysMessage(me, patient.name+" is currently being aided back to life.", FONT_NORMAL, 2595 );
 				return;			
 			else

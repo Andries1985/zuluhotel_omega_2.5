@@ -239,7 +239,7 @@ function create_extra_returns (character, current_recipe)
 	var current_return;
 	
 	//now we cycle through all the ingredients
-	for (return_counter := 1; return_counter == len(return_array); return_counter := return_counter + 1)
+	for (return_counter := 1; return_counter <= len(return_array); return_counter := return_counter + 1)
 
 		//Pick the current return items out of the array.  the first part of this (current_return[1]) is the type of
 		//return being created.  The second part (current_return[2]) is the number.
@@ -316,8 +316,6 @@ function destroy_all_ingredients(character, current_recipe)
 						};
 						ConsumeResource(character, cacheRequest, remaining);
 					endif
-				elseif(found_ingredient)
-					SubtractAmount(found_ingredient, ingredient_quantity);
 				endif
 			endif
 		endif
@@ -437,6 +435,9 @@ function check_for_all_ingredients (character, current_recipe)
 	//that don't use this ingredient, would be available.
 	var used_selected_ingredient := 0;
 
+	// Track items reserved via ReserveItem so they can be released on any failure path.
+	var reserved_items := array{};
+
 	//now we cycle through all the ingredients
 	for (ingredient_counter := 1; ingredient_counter <= len(ingredient_array); ingredient_counter := ingredient_counter + 1)
 
@@ -465,16 +466,25 @@ function check_for_all_ingredients (character, current_recipe)
 		//more complex processing so they're put in a seperate function
 		if (current_ingredient[1] == "ITEM_GENERAL_WATER")
 			if (!special_find_water(character, ingredient_quantity))
+				foreach res in reserved_items
+					ReleaseItem(res);
+				endforeach
 				return 0;
 			endif
 
 		elseif (current_ingredient[1] == "ITEM_GENERAL_MILK")
 			if (!special_find_milk(character))
+				foreach res in reserved_items
+					ReleaseItem(res);
+				endforeach
 				return 0;
 			endif
 
 		elseif (current_ingredient[1] == "ITEM_GENERAL_CHEESE")
 			if (!special_find_cheese(character, ingredient_quantity))
+				foreach res in reserved_items
+					ReleaseItem(res);
+				endforeach
 				return 0;
 			endif
 
@@ -487,7 +497,13 @@ function check_for_all_ingredients (character, current_recipe)
 			var found_ingredient := FindObjtypeInContainer(character.backpack, ing_objtype);
 
 			if(found_ingredient and found_ingredient.amount >= ingredient_quantity)
-				if(!ReserveItem(found_ingredient)) return 0; endif
+				if(!ReserveItem(found_ingredient))
+					foreach res in reserved_items
+						ReleaseItem(res);
+					endforeach
+					return 0;
+				endif
+				reserved_items[len(reserved_items)+1] := found_ingredient;
 			else
 				// Check cache for this ingredient
 				if(cooking_cache_df)
@@ -497,14 +513,25 @@ function check_for_all_ingredients (character, current_recipe)
 						bp_avail := found_ingredient.amount;
 					endif
 					if((bp_avail + cache_avail) < ingredient_quantity)
+						foreach res in reserved_items
+							ReleaseItem(res);
+						endforeach
 						return 0;
 					endif
 				else
+					foreach res in reserved_items
+						ReleaseItem(res);
+					endforeach
 					return 0;
 				endif
 			endif
 		endif
 	endfor
+
+	// Release all reservations before returning — destroy_all_ingredients handles actual consumption.
+	foreach res in reserved_items
+		ReleaseItem(res);
+	endforeach
 
 	//It appears we've made it through all of the ingredients.  Return success if the originally selected
 	//ingredient was used in this recipe.  Otherwise, fail.
