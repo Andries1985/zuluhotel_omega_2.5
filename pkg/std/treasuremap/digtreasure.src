@@ -7,7 +7,7 @@
 // in the map) according to your mining skill, a chest is created and
 // yummy loot is placed in it according to the map's level. The chest 
 // should be locked and trapped. The map and the digging tool are 
-// deleted after the chest is 'found'. The chest decays in 30 minutes.
+// deleted after the chest is 'found'. The chest decays in 15 minutes.
 //
 // Author: Racalac, 4/24/99
 // Hint system added by Zulu, zuluhotel@home.com  01/02/2000
@@ -91,7 +91,7 @@ program dig_treasure( character , unused shovel )
 	var bard_lvl7_roll := 0;
 	var bard_level := IsBard(character);
 
-	if( bard_level > 0 and Random(100) < bard_level )
+	if( lvl == 6 and bard_level > 0 and Random(100) < bard_level )
 		lvl := 7;
 		bard_lvl7_roll := 1;
 	endif
@@ -216,7 +216,7 @@ program dig_treasure( character , unused shovel )
 		var chest	 := CreateTreasureChest( lvl , chestx , chesty , chestz , character );
 		SetObjProperty( chest , "treasurechest" , 1 );
 		chest.saveonexit := 0;
-		chest.decayat	 := Cint(ReadGameClock()) + 1010;
+		chest.decayat	 := ReadGameClock() + (15*60);
 		chest.locked	 := 0;
 	endif
 
