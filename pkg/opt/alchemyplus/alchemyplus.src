@@ -242,6 +242,10 @@ program alchemyplus ( character, myburner )
 			// alchemyplus toad.src and was added in v1.3 to fix the "You run out
 			// of flasks/bottles" mid-loop bug.
 			created_potion := CreateItemInContainer(character.backpack, correct, 1);
+			if( !created_potion )
+				SendSysMessage(character, "You do not have enough room in your backpack for that potion.");
+				break;
+			endif
 
 			// Consume the container for THIS craft via the cache-aware request.
 			// ConsumeResource drains backpack first (via preferredSourceOrder),
