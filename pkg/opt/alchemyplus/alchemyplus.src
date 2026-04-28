@@ -186,7 +186,9 @@ program alchemyplus ( character, myburner )
 			break;
 		endif
 
-		destroy_all_reagents (character, current_potion, reagentRequests);
+		if( !destroy_all_reagents(character, current_potion, reagentRequests) )
+			break;
+		endif
 		
 		sendDiff( character, current_potion.skill );
 
