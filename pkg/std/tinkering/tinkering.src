@@ -251,7 +251,7 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 		have_it := FindObjtypeInContainer( character.backpack , needed_objtype );
 		if( !have_it )
 			// Check cache for the second component
-			var tempRequest := struct{ objtype := CInt(needed_objtype), dataFileHandle := firstRequest.dataFileHandle, leaseKey := 0, preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK } };
+			var tempRequest := struct{ objtype := CInt(needed_objtype), dataFileHandle := firstRequest.dataFileHandle, houseSerial := firstRequest.houseSerial, leaseKey := 0, preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK } };
 			var avail := GetAvailableResource(character, tempRequest);
 			if(avail.cache > 0 and firstRequest.dataFileHandle)
 				var cache_key := 0;
@@ -270,6 +270,7 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 					quality              := 0,
 					preferredSourceOrder := array{ OMEGA_CACHE, BACKPACK },
 					dataFileHandle       := firstRequest.dataFileHandle,
+					houseSerial          := firstRequest.houseSerial,
 					leaseKey             := 0
 				};
 			else
@@ -1022,12 +1023,16 @@ function TryToMakePotionKeg( character , use_on, bottleRequest := 0 )
 						quality              := 0,
 						preferredSourceOrder := array{ OMEGA_CACHE },
 						dataFileHandle       := 0,
+						houseSerial          := 0,
 						leaseKey             := 0
 					};
 					// Resolve cache
 					var access := FindAccessibleContainer(character, array{REMOVE_FROM_SECURE});
 					if(access)
 						cacheBottleReq.dataFileHandle := access.df;
+						if(access.house)
+							cacheBottleReq.houseSerial := access.house.serial;
+						endif
 					endif
 					if(GetAvailableResource(character, cacheBottleReq).total >= needed_bottles)
 						// Bottles available in cache — use bottleRequest for consumption
@@ -1185,20 +1190,17 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
     var idcharges;
 	var excep_ch := 10;
 	var ingotRequest;
+	var material := 125;
+
+	//Require half resources during Crafting PH
+	if(GetGlobalProperty("PHC") || GetObjProperty(character, "#PPHC"))
+		material := CInt(Ceil(material/2));
+	endif
 
 	if(!baseRequest)
 		if(!use_on)
 			SendSysMessage( character , "You are missing a required part." );
 			return;
-		endif
-
-		// Optional extra required part (kept for parity with TryToMakeComplex)
-		if( needed_objtype and use_on.objtype != needed_objtype )
-			var have_it := FindObjtypeInContainer( character.backpack , needed_objtype );
-			if( !have_it )
-				SendSysMessage( character , "You are missing a required part." );
-				return;
-			endif
 		endif
 
 		baseRequest := MakeBackpackRequest(character, use_on);
@@ -1225,40 +1227,29 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
 			SendSysMessage( character , "You must select an ingot." );
 			return;
 		endif
-
-		if( GetAvailableResource(character, ingotRequest).total < 125 )
-			SendSysMessage( character , "You need at least 125 ingots to make a talisman." );
-			return;
-		endif
 	else
 		if( !Accessible( character , ingot ) or !ingot.movable )
 			SendSysMessage( character , "You can't reach that!" );
 			return;
 		endif
 
-		if( !ReserveItem( ingot ) )
-			return;
-		endif
-
 		if( !IsInContainer( character.backpack , ingot ) )
 			SendSysMessage( character , "That item has to be in your backpack." );
-			ReleaseItem( ingot );
 			return;
 		endif
 
 		if( !IsIngotObjtype(ingot.objtype) )
 			SendSysMessage( character , "You must select an ingot." );
-			ReleaseItem( ingot );
-			return;
-		endif
-
-		if( ingot.amount < 125 )
-			SendSysMessage( character , "You need at least 125 ingots to make a talisman." );
-			ReleaseItem( ingot );
 			return;
 		endif
 
 		ingotRequest := MakeBackpackRequest(character, ingot);
+	endif
+
+	// Cache-aware availability check — honours autodraw fallback
+	if( GetAvailableResource(character, ingotRequest).total < material )
+		SendSysMessage( character , "You need at least " + material + " ingots to make a talisman." );
+		return;
 	endif
 
     var element := FindConfigElem( tinker_cfg , to_be_done_objtype );
@@ -1266,9 +1257,6 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
         itemname := element.Name;
         skill    := element.Skill;
     else
-		if( ingot and ingot.objtype != OMEGACACHE_OBJTYPE )
-			ReleaseItem( ingot );
-		endif
         return;
     endif
 
@@ -1289,6 +1277,18 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
     points := Cint( skill * POINTS_MULTIPLIER );
 
     _Play_Sound( character , sfx );
+
+	// Consume materials before the skill check — matches MakeTotem / TryToMakePotionKeg
+	// legacy pattern. Full loss on failure is intentional for single-craft tinkering.
+	if( !ConsumeResource(character, baseRequest, 1) )
+		SendSysMessage( character , "You are missing a required part." );
+		return;
+	endif
+	if( !ConsumeResource(character, ingotRequest, material) )
+		SendSysMessage( character , "You don't have enough ingots." );
+		return;
+	endif
+
     sendDiff( character , skill );
 
     if( CheckSkill( character , SKILLID_TINKERING , skill , points ) )
@@ -1296,9 +1296,6 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
         var theitem := CreateItemInBackpack( character , to_be_done_objtype );
         if( !theitem )
             SendSysMessage( character , "Error in creation process please report this bug on Discord." );
-			if( ingot and ingot.objtype != OMEGACACHE_OBJTYPE )
-				ReleaseItem( ingot );
-			endif
             return;
         endif
 
@@ -1377,13 +1374,6 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
     else
         SendSysMessage( character , "You fail to create the talisman and destroy the material." );
     endif
-
-	ConsumeResource(character, baseRequest, 1);
-	ConsumeResource(character, ingotRequest, 125);
-
-	if( ingot and ingot.objtype != OMEGACACHE_OBJTYPE )
-		ReleaseItem( ingot );
-	endif
 
 endfunction
 
