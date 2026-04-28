@@ -539,9 +539,12 @@ function destroy_all_reagents (character, current_potion, reagentRequests := 0)
 	endif
 
 	foreach req in reagentRequests
-		ConsumeResource(character, req, req.amount);
+		if( !ConsumeResource(character, req, req.amount) )
+			return 0;
+		endif
 	endforeach
 
+	return 1;
 endfunction
 
 ///////////////////////////////////////////////////////////////////////
