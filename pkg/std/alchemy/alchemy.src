@@ -371,8 +371,10 @@ function GetBottle( conts, user, parentRequest := 0 )
 	if(dataFileHandle)
 		var bottleReq := struct{ objtype := CInt(UOBJ_EMPTY_BOTTLE), key := 0, color := 0, quality := 0, preferredSourceOrder := array{ BACKPACK, OMEGA_CACHE }, dataFileHandle := dataFileHandle, houseSerial := houseSerial, leaseKey := 0 };
 		if(GetAvailableResource(user, bottleReq).total >= 1)
-			ConsumeResource(user, bottleReq, 1);
-			return 1;
+			if(ConsumeResource(user, bottleReq, 1))
+				return 1;
+			endif
+			return 0;
 		endif
 	endif
 	return 0;
