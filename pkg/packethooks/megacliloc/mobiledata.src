@@ -54,28 +54,79 @@ program mobiledata(parms)
 
 	if(who.cmdlevel)
 		if(npc)
-			var npc := xObject.IsA(POLCLASS_NPC);
-			if(npc)
-				prop.clilocid := 1070722; // nothing 
-				var s := GetAttribute(xObject, "strength");
-				var ms := Cint(GetVitalMaximumValue(xObject, "life") / 100);
-				prop.values := array {"Str: " + s + " MaxHP: " + ms};
+			prop.clilocid := 1070722;
+			var ms := Cint(GetVitalMaximumValue(xObject, "life") / 100);
+			prop.values := array {"Str: " + GetStrength(xObject) + " HP: " + GetHP(xObject) + "/" + ms};
+			allprops.append(prop);
+
+			prop.clilocid := 1070722;
+			var mi := Cint(GetVitalMaximumValue(xObject, "mana") / 100);
+			prop.values := array {"Int: " + GetIntelligence(xObject) + " MP: " + GetMana(xObject) + "/" + mi};
+			allprops.append(prop);
+
+			prop.clilocid := 1070722;
+			var md := Cint(GetVitalMaximumValue(xObject, "stamina") / 100);
+			prop.values := array {"Dex: " + GetDexterity(xObject) + " Stam: " + GetStamina(xObject) + "/" + md};
+			allprops.append(prop);
+
+			elem_prot := GetObjProperty(xObject, "FireProtection");
+			if(elem_prot)
+				prop.clilocid := 1063492;
+				prop.values := array {elem_prot};
 				allprops.append(prop);
 			endif
-			npc := xObject.IsA(POLCLASS_NPC);
-			if(npc)
-				prop.clilocid := 1070722; // nothing 
-				var iv := GetAttribute(xObject, "intelligence");
-				var mi := Cint(GetVitalMaximumValue(xObject, "mana") / 100);
-				prop.values := array {"Int: " + iv + " MaxMP: " + mi};
+			elem_prot := GetObjProperty(xObject, "WaterProtection");
+			if(elem_prot)
+				prop.clilocid := 1063491;
+				prop.values := array {elem_prot};
 				allprops.append(prop);
 			endif
-			npc := xObject.IsA(POLCLASS_NPC);
-			if(npc)
-				prop.clilocid := 1070722; // nothing 
-				var dv := GetAttribute(xObject, "dexterity");
-				var md := Cint(GetVitalMaximumValue(xObject, "stamina") / 100);
-				prop.values := array {"Dex: " + dv + " MaxStam: " + md};
+			elem_prot := GetObjProperty(xObject, "EarthProtection");
+			if(elem_prot)
+				prop.clilocid := 1063490;
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "AirProtection");
+			if(elem_prot)
+				prop.clilocid := 1063493;
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "NecroProtection");
+			if(elem_prot)
+				prop.clilocid := 1063502;
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "HolyProtection");
+			if(elem_prot)
+				prop.clilocid := 1063503;
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "PhysicalProtection");
+			if(elem_prot)
+				prop.clilocid := 1063504;
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "PermPoisonImmunity");
+			if(elem_prot)
+				prop.clilocid := 1063505;
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "Permmr");
+			if(elem_prot)
+				prop.clilocid := 1063508;
+				prop.values := array {elem_prot};
+				allprops.append(prop);
+			endif
+			elem_prot := GetObjProperty(xObject, "PermMagicImmunity");
+			if(elem_prot)
+				prop.clilocid := 1063509;
+				prop.values := array {elem_prot};
 				allprops.append(prop);
 			endif
 		endif
