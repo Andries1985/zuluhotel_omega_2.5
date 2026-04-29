@@ -253,13 +253,13 @@ function CreateTreasureChest( lvl , x , y , z , digger )
 	endcase
 
 		case( lvl )
-		1: magicchance := 50;	break;
-		2: magicchance := 60;	break;
-		3: magicchance := 70;	break;
-		4: magicchance := 80;	break;
-		5: magicchance := 90;	break;
-		6: magicchance := 95;	break;
-		7: magicchance := 99;	break;	
+		1: magicchance := CInt(Random(25) + 75);	break;
+		2: magicchance := CInt(Random(25) + 75);	break;
+		3: magicchance := CInt(Random(25) + 75);	break;
+		4: magicchance := CInt(Random(25) + 75);	break;
+		5: magicchance := CInt(Random(20) + 80);	break;
+		6: magicchance := CInt(Random(15) + 85);	break;
+		7: magicchance := CInt(Random(10) + 90);	break;	
 		default: magicchance := 50;	break;
 	endcase
 	
