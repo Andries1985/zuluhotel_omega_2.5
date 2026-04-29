@@ -10,6 +10,11 @@ include "include/attributes";
 const Minutes:=1; // You can beg only after this time
 
 program begging ( character ) 
+	if(character.multi)
+		SendSysMessage(character, "You can't beg while inside of a house.");
+		return;
+	endif
+
 	SendSysMessage( character, "Who do you want to beg from?" );
 	var who := target( character );
 	var defbegging := get_default_points(SKILLID_BEGGING);
@@ -17,6 +22,11 @@ program begging ( character )
 
 	if(!who.isa(POLCLASS_NPC) or (who.graphic!=0x191 and who.graphic!=0x190))
 		SendSysMessage(character, "You must target an NPC!");
+		return;
+	endif
+
+	if(who.multi)
+		SendSysMessage(character, "You can't beg from NPCs while they are inside of a house.");
 		return;
 	endif
 
