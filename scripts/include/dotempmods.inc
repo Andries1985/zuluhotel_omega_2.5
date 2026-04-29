@@ -132,8 +132,10 @@ function TempModConflicts( existing_mod , incoming_mod )
 		return 1;
 	endif
 
-	// One of: str/dex/int at a time.
-	if( TempModIsSingleStat(existing_mod) && TempModIsSingleStat(incoming_mod) )
+	// Same-attribute stat mods conflict with each other, but different stat mods can coexist.
+	if( (TempModTouchesStrength(existing_mod) && TempModTouchesStrength(incoming_mod)) ||
+		(TempModTouchesDexterity(existing_mod) && TempModTouchesDexterity(incoming_mod)) ||
+		(TempModTouchesIntelligence(existing_mod) && TempModTouchesIntelligence(incoming_mod)) )
 		return 1;
 	endif
 

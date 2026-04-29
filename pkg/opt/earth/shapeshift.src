@@ -64,16 +64,16 @@ program shapeshift( caster )
 	endif
 
 	if( CheckSkill( caster , SKILLID_MEDITATION , 90 , 400 )) 
-	SetObjProperty(caster, "old_colah", caster.color);
-	PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID1, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);                            
-	PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID2, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);                              
-	PlaySoundEffect( caster , SFX_SPELL_SHAPESHIFT );
+		SetObjProperty(caster, "old_colah", caster.color);
+		PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID1, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);                            
+		PlayObjectCenteredEffect(caster, SPELL_EFFECT_ID2, SPELL_EFFECT_SPEED, SPELL_EFFECT_LOOP);                              
+		PlaySoundEffect( caster , SFX_SPELL_SHAPESHIFT );
 	else
-	SendSysmessage(caster, "You fail to transform yourself");
-	PlayObjectCenteredEffect(caster, FX_SPELL_FIZZLE, SPEED_SPELL_FIZZLE, LOOP_SPELL_FIZZLE );
-	PlaySoundEffect(caster, SFX_SPELL_FIZZLE);
-	EraseObjProperty( caster , "#Casting" );
-	return;
+		SendSysmessage(caster, "You fail to transform yourself");
+		PlayObjectCenteredEffect(caster, FX_SPELL_FIZZLE, SPEED_SPELL_FIZZLE, LOOP_SPELL_FIZZLE );
+		PlaySoundEffect(caster, SFX_SPELL_FIZZLE);
+		EraseObjProperty( caster , "#Casting" );
+		return;
 	endif
 
 	EraseObjProperty( caster , "#Casting" );
@@ -82,13 +82,13 @@ program shapeshift( caster )
 	var duration := Cint( GetModDuration( caster ) );
 	
 	if(GetObjProperty( caster, CLASSEID_MAGE ))
-	mod_amount := Cint( GetModAmount( caster ) * 1.25 );
+		mod_amount := Cint( GetModAmount( caster ) * 1.25 );
 	elseif(GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER ))
-	mod_amount := Cint( GetModAmount( caster ) * 4 );
+		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	elseif(GetObjProperty( caster, CLASSEID_POWERPLAYER ))
-		mod_amount := Cint( GetModAmount( caster ) * 2 );
+		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	else
-	mod_amount := Cint( GetModAmount( caster )  );
+		mod_amount := Cint( GetModAmount( caster )  );
 	endif
 
 	SetObjProperty(caster, "old_colah", caster.color);

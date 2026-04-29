@@ -207,8 +207,8 @@ function DoProtectionEffect( me , item , what )
 	endif
 
 	var strength	 := GetPotionStr( item , what );
-	var mod_amount := RandomDiceStr( strength + "d2" );
-	var duration   := strength * 15;
+	var mod_amount := strength * 2;
+	var duration   := strength * 15 + 300;
 	if( !CanMod( me , "ar" ) )
 		SendSysMessage( me , "Already under the influence!" );
 		return;
@@ -322,7 +322,7 @@ function DoPolyEffect( me , item , what )
 			2: mod_amount := 25;
 			3: mod_amount := 40;
 			4: mod_amount := 55;
-			default: mod_amount := 65;
+			default: mod_amount := 75;
 		endcase
 	else
 		mod_amount := strength * 15;
