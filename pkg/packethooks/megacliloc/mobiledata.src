@@ -69,6 +69,23 @@ program mobiledata(parms)
 			prop.values := array {"Dex: " + GetDexterity(xObject) + " Stam: " + GetStamina(xObject) + "/" + md};
 			allprops.append(prop);
 
+			var loot_mprop, loot_mlevel, loot_lootgroup;
+			var cloot := GetObjProperty(xObject, "CustomLoot");
+			if (cloot)
+				loot_mprop     := cloot[1];
+				loot_mlevel    := cloot[2];
+				loot_lootgroup := cloot[3];
+			else
+				var _npcdesc := ReadConfigFile("::npcdesc");
+				var _elem := FindConfigElem(_npcdesc, xObject.npctemplate);
+				loot_mprop     := GetConfigInt(_elem, "MagicItemChance");
+				loot_mlevel    := GetConfigInt(_elem, "MagicItemLevel");
+				loot_lootgroup := GetConfigInt(_elem, "lootgroup");
+			endif
+			prop.clilocid := 1070722;
+			prop.values := array {"Loot Grp: " + loot_lootgroup + "  Lvl: " + loot_mlevel + "  Chance: " + loot_mprop + "%"};
+			allprops.append(prop);
+
 			elem_prot := GetObjProperty(xObject, "FireProtection");
 			if(elem_prot)
 				prop.clilocid := 1063492;
