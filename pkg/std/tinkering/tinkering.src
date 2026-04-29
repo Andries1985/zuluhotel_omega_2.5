@@ -925,11 +925,11 @@ function MakeTotem( me , it, totemRequest := 0 )
 		return;
 	endif
 
-	if( GetEffectiveSkill( me , SKILLID_MAGERY ) < 70 )
-		SendSysMessage( me , "You're not a skilled enough mage to work with that." );
-		SendSysmessage( me , "You need atleast 70 magery to work with that.");
-		return;
-	endif
+	// if( GetEffectiveSkill( me , SKILLID_MAGERY ) < 70 )
+	// 	SendSysMessage( me , "You're not a skilled enough mage to work with that." );
+	// 	SendSysmessage( me , "You need atleast 70 magery to work with that.");
+	// 	return;
+	// endif
 
 	if (GetEffectiveSkill( me , SKILLID_TINKERING ) < 70 )
 		SendSysMessage( me , "You're not a skilled enough tinker to work with that." );
