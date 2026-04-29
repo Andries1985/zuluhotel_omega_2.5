@@ -271,6 +271,9 @@ function TryToMakeItem( character, resourceRequest, to_make_objtype )
 	else
 		excep_diff += 40;
 	endif
+	if( excep_diff > 150 )
+		excep_diff := 150;
+	endif
 
 	if( excep_diff < 90 )
 		excep_diff := 90;

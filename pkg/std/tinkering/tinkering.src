@@ -335,6 +335,9 @@ function TryToMakeComplex( character , use_on , to_be_done_objtype , needed_objt
 		else
 			skill := skill + 20;
 		endif
+		if( skill > 150 )
+			skill := 150;
+		endif
 
 		if( skill < 90 )
 			skill := 90;
@@ -508,6 +511,18 @@ function CanMake( who , key , resourceRequest )
 endfunction
 
 
+function IsJewelryGemObjtype( objtype )
+	objtype := CInt(objtype);
+
+	// Classic gems plus the 8 new mining gems (0x213f-0x2146).
+	if( (objtype >= 0x0f0f and objtype <= 0x0f30) or (objtype >= 0x213f and objtype <= 0x2146) )
+		return 1;
+	endif
+
+	return 0;
+endfunction
+
+
 function TryToMakeItem( character , resourceRequest , to_make_objtype , sfx )
 
 	var skill;
@@ -557,14 +572,14 @@ function TryToMakeItem( character , resourceRequest , to_make_objtype , sfx )
 				if(!gemRequest)
 					break;
 				endif
-				if((CInt(gemRequest.objtype) > 0xf30) or (CInt(gemRequest.objtype) < 0xf0f))
+				if(!IsJewelryGemObjtype(gemRequest.objtype))
 					SendSysmessage(character, "That is not a gem!");
 					break;
 				endif
 				itemname := item_cfg[gemRequest.objtype].Name + " " + itemname;
 				ConsumeResource(character, gemRequest, 1);
 			else
-				if( (thegem.objtype > 0xf30) or (thegem.objtype < 0xf0f) )
+				if( !IsJewelryGemObjtype(thegem.objtype) )
 					SendSysmessage( character , "That is not a gem!" );
 					break;
 				endif
@@ -1314,6 +1329,9 @@ function TryToMakeTalisman( character , use_on , to_be_done_objtype , needed_obj
 			excep_ch := Cint( excep_ch * ClasseBonus( character , CLASSEID_CRAFTER ) );
 		else
 			skill := skill + 20;
+		endif
+		if( skill > 150 )
+			skill := 150;
 		endif
 
 		if( skill < 90 )

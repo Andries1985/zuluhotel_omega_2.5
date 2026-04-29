@@ -314,6 +314,9 @@ function MakeBlacksmithItems( character, ingotRequest )
 	else
 		excep_diff	+= 40;
 	endif
+	if( excep_diff > 150 )
+		excep_diff := 150;
+	endif
 	if( excep_diff < 90 )
 		excep_diff := 90;
 	endif
@@ -463,6 +466,9 @@ function MakeBoneItems( character, ingotRequest, boneRequest )
 		excep_diff	+= 20;
 	else
 		excep_diff	+= 40;
+	endif
+	if( excep_diff > 150 )
+		excep_diff := 150;
 	endif
 	if( excep_diff < 90 )
 		excep_diff := 90;

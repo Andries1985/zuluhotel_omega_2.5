@@ -1101,6 +1101,9 @@ function CreateRunebook( character , item )
 	else
 		excep_diff := excep_diff + 20;
 	endif
+	if( excep_diff > 150 )
+		excep_diff := 150;
+	endif
 				
 	if( excep_diff < 90 )
 		excep_diff := 90;

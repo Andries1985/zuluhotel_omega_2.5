@@ -202,6 +202,7 @@ function MakeUpgrade(character, start_material, smithyretort)
 				excep_diff := final_diff + BASE_EXCEP_DIFF;
 			endif
 
+			excep_diff := Min(excep_diff, 150);
 			excep_diff := Max(excep_diff, 90);
 			//Check for Exceptional
 			if ((RandomInt(100) < excep_chance) && (CheckSkill(character, skilltype, excep_diff, 0) ))
