@@ -942,7 +942,8 @@ function MakeTotem( me , it, totemRequest := 0 )
 
 	sendDiff( me , 90);
 	sendSecDiff( me , 90);
-	if( !CheckSkill( me , SKILLID_MAGERY , 90 , 0 ) or !CheckSkill( me , SKILLID_TINKERING , 90 , 0 ) )
+	//if( !CheckSkill( me , SKILLID_MAGERY , 90 , 0 ) or !CheckSkill( me , SKILLID_TINKERING , 90 , 0 ) )
+	if(!CheckSkill( me , SKILLID_TINKERING , 90 , 0 ) )
 		SendSysMessage( me , "You fail to make anything useful." );
 		return;
 	endif

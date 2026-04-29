@@ -3,10 +3,16 @@ use os;
 
 include "include/client";
 include "include/attributes";
+include "include/classes";
 
 program totem(who, totem)
 
 	if(!ReserveItem(totem)) return; endif
+
+	if( !GetObjProperty( who , CLASSEID_CRAFTER ) )
+		SendSysMessage( who , "Only crafters can activate obsidian golems." );
+		return;
+	endif
 
 	var npctemplate := GetObjProperty(totem,"critter");
 	//Print("Totem template: " + npctemplate);

@@ -92,7 +92,8 @@ program cast_spellbind( parms )
 	endforeach
 
 	var untamable := GetObjProperty( cast_on , "untamable" );
-	if( (!difficulty) or untamable or (elem.Privs == "invul") || GetObjProperty( cast_on, "Boss" ) || GetObjProperty( cast_on, "SuperBoss") || ammo_check)
+	var is_totem := GetObjProperty( cast_on , "totem" );
+	if( (!difficulty) or untamable or (elem.Privs == "invul") || GetObjProperty( cast_on, "Boss" ) || GetObjProperty( cast_on, "SuperBoss") || ammo_check || is_totem)
 	  	SendSysmessage(caster, "You can't take the control of that!");
 	  	EraseObjProperty( caster , "#Casting" );
 		return;
