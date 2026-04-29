@@ -500,9 +500,10 @@ function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
 			x := point.x + RandomInt((appear*2)+1) - appear;
 			y := point.y + RandomInt((appear*2)+1) - appear;
 			standing := GetStandingHeight( x, y, z, point.realm);
-			count := maxcount;
-			vits := GetObjProperty(point, "NPCVits");
-			SetHP(critter, vits.hits);
+			if (GetObjProperty(point, "CustomPoint"))
+				vits := GetObjProperty(point, "NPCVits");
+				SetHP(critter, vits.hits);
+			endif
 		else
 			var ret := error;
 			ret.errortext := "Invalid spawning location.";
@@ -512,11 +513,10 @@ function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
 		
 	endwhile
 	
-	//var ret := error;
-	//ret.errortext := "Invalid spawning location.";
-
 	KillMobile(critter,1);
-	//return ret;
+	var ret := error;
+	ret.errortext := "Invalid spawning location after max retries.";
+	return ret;
 	
 endfunction
 
@@ -618,27 +618,21 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 			x := point.x + RandomInt((appear*2)+1) - appear;
 			y := point.y + RandomInt((appear*2)+1) - appear;
 			standing := GetStandingHeight( x, y, z, point.realm);
-			count := maxcount;
 		else
-			sleep(5);
-			Print("SPAWNER CANT FIND SPAWN LOCATION, CHANGE APPEAR RANGE?");
-			Print("Spawner xyz = "+point.x+" "+point.y+" "+point.z);
-			count := 0;
-			/*
 			var ret := error;
-			ret.errortext := "Invalid spawning location.";
+			ret.errortext := "Invalid spawning location (appear range is 0).";
 			KillMobile(critter,1);
 			return ret;
-			*/
 		endif
 		
 	endwhile
 	
-	//var ret := error;
-	//ret.errortext := "Invalid spawning location.";
-	print("roligt");
 	KillMobile(critter,1);
-	//return ret;
+	Print("SPAWNER CANT FIND SPAWN LOCATION, CHANGE APPEAR RANGE?");
+	Print("Spawner xyz = "+point.x+" "+point.y+" "+point.z);
+	var ret := error;
+	ret.errortext := "Invalid spawning location after max retries.";
+	return ret;
 
 endfunction
 

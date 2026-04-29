@@ -91,8 +91,16 @@ program cast_songofhaste( player )
 			PrintTextAbove(player,"Adfor Adiudico Festinatio Adsimulo Volo");
 		//endif
 		sleep(1);
-		dmod := RandomInt(5) + (peace/10) + spec*8;
-		duration := 1800;
+		case (spec)
+			0: dmod := 0;
+			1: dmod := 15;
+			2: dmod := 30;
+			3: dmod := 45;
+			4: dmod := 60;
+			5: dmod := 65;
+			default: dmod := 75;
+		endcase
+		duration := 3600;
 		PlaySoundEffect(player, SFX_SPELL_AGILITY);
 		var affected := ListMobilesInLineOfSight( player , cint( (spec+1) * 2 )) + player;
 
@@ -102,10 +110,25 @@ program cast_songofhaste( player )
 			if(!ValidSongBoost(player, cast_near))
 				continue;
 			endif
+			var applied := 0;
 
 			if (CanMod(cast_near, "dex"))
 				PlayObjectCenteredEffect( cast_near, FX_SPELL_AGILITY , SPEED_SPELL_AGILITY , LOOP_SPELL_AGILITY );
 				DoTempMod(cast_near, "dex", dmod, duration);
+				applied := 1;
+			endif
+
+			if (CanMod(cast_near, "str"))
+				DoTempMod(cast_near, "str", dmod, duration);
+				applied := 1;
+			endif
+
+			if (CanMod(cast_near, "int"))
+				DoTempMod(cast_near, "int", dmod, duration);
+				applied := 1;
+			endif
+
+			if (applied)
 				SendBoostMessage( player, cast_near, "song of haste", dmod, duration, 0 );
 			endif
 		endforeach

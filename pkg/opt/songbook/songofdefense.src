@@ -92,8 +92,11 @@ program cast_songofdefense( player )
 			PrintTextAbove(player,"Impertio Cutis Adsimulo Scrupeus");
 		//endif
 		sleep(1);
-		dmod := RandomInt(5) + (peace/10) + spec*3;
-		duration := 1800;
+		dmod := CInt(spec * 9);
+		if (dmod > 54)
+			dmod := 54;
+		endif
+		duration := 3600;
 		PlaySoundEffect(player, SFX_SPELL_PROTECTION);
 		var affected := ListMobilesInLineOfSight( player , cint( (spec+1) * 2 )) + player;
 
