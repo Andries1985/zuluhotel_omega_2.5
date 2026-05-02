@@ -620,16 +620,16 @@ function ApplyArmourModNew( unused who, item )
 	// Level 2 loot
 	elseif (magiclevel == 2)
 		
-		// 10% chance 
-		if (chance < 1000)
+		// 19% chance 
+		if (chance < 1900)
 			ApplyHPMod( item );
-		// 20% chance
-		elseif (chance < 3000)
+		// 30% chance
+		elseif (chance < 4900)
 			ApplyArSkillMod( item ); 
-		// 55% chance
-		elseif (chance < 8500)
+		// 40% chance
+		elseif (chance < 8900)
 			ApplyARMod( item );
-		// 15% chance
+		// 11% chance
 		else
 			ApplyOnHitScript( item );
 		endif
@@ -637,16 +637,16 @@ function ApplyArmourModNew( unused who, item )
 	// Level 3 loot
 	elseif (magiclevel == 3)
 		
-		// 1% chance 
-		if (chance < 100)
+		// 18% chance 
+		if (chance < 1800)
 			ApplyHPMod( item );
-		// 2% chance
-		elseif (chance < 300)
+		// 30% chance
+		elseif (chance < 4800)
 			ApplyArSkillMod( item ); 
-		// 77% chance
-		elseif (chance < 8000)
+		// 40% chance
+		elseif (chance < 8800)
 			ApplyARMod( item );
-		// 20% chance
+		// 12% chance
 		else
 			ApplyOnHitScript( item );
 		endif
@@ -654,16 +654,16 @@ function ApplyArmourModNew( unused who, item )
 	// Level 4 loot
 	elseif (magiclevel == 4)
 		
-		// .7% chance 
-		if (chance < 70)
+		// 17% chance 
+		if (chance < 1700)
 			ApplyHPMod( item );
-		// 1.8% chance
-		elseif (chance < 250)
+		// 30% chance
+		elseif (chance < 4700)
 			ApplyArSkillMod( item ); 
-		// 75.5% chance
-		elseif (chance < 7800)
+		// 40% chance
+		elseif (chance < 8700)
 			ApplyARMod( item );
-		// 22% chance
+		// 13% chance
 		else
 			ApplyOnHitScript( item );
 		endif
@@ -671,16 +671,16 @@ function ApplyArmourModNew( unused who, item )
 	// Level 5 loot
 	elseif (magiclevel == 5)
 		
-		// .5% chance 
-		if (chance < 50)
+		// 16% chance 
+		if (chance < 1600)
 			ApplyHPMod( item );
-		// 1.5% chance
-		elseif (chance < 200)
-			ApplyArSkillMod( item ); 
-		// 68% chance
-		elseif (chance < 7000)
-			ApplyARMod( item );
 		// 30% chance
+		elseif (chance < 4600)
+			ApplyArSkillMod( item ); 
+		// 40% chance
+		elseif (chance < 8600)
+			ApplyARMod( item );
+		// 14% chance
 		else
 			ApplyOnHitScript( item );
 		endif
@@ -688,16 +688,16 @@ function ApplyArmourModNew( unused who, item )
 	// Level 6 loot
 	elseif (magiclevel == 6)
 		
-		// .1% chance 
-		if (chance < 10)
+		// 15% chance 
+		if (chance < 1500)
 			ApplyHPMod( item );
-		// 1% chance
-		elseif (chance < 110)
+		// 29% chance
+		elseif (chance < 4400)
 			ApplyArSkillMod( item ); 
-		// 80% chance
-		elseif (chance < 8110)
+		// 41% chance
+		elseif (chance < 8500)
 			ApplyARMod( item );
-		// 18.9% chance
+		// 15% chance
 		else
 			ApplyOnHitScript( item );
 		endif
@@ -705,10 +705,16 @@ function ApplyArmourModNew( unused who, item )
 	// Level 7 loot
 	elseif (magiclevel == 7)
 		
-		// 78% chance
-		if (chance < 7800)
+		// 14% chance 
+		if (chance < 1400)
+			ApplyHPMod( item );
+		// 29% chance
+		elseif (chance < 4300)
+			ApplyArSkillMod( item ); 
+		// 41% chance
+		elseif (chance < 8400)
 			ApplyARMod( item );
-		// 22% chance
+		// 16% chance
 		else
 			ApplyOnHitScript( item );
 		endif
@@ -716,40 +722,67 @@ function ApplyArmourModNew( unused who, item )
 	// Level 8 loot
 	elseif (magiclevel == 8)
 		
-		// 76% chance
-		if (chance < 7600)
+		// 13% chance 
+		if (chance < 1300)
+			ApplyHPMod( item );
+		// 27% chance
+		elseif (chance < 4000)
+			ApplyArSkillMod( item ); 
+		// 43.5% chance
+		elseif (chance < 8350)
 			ApplyARMod( item );
-		// 24% chance
+		// 16.5% chance
 		else
 			ApplyOnHitScript( item );
 		endif
 
 	// Level 9 loot
 	elseif (magiclevel == 9)
-		// 74% chance
-		if (chance < 7400)
+
+		// 12% chance 
+		if (chance < 1200)
+			ApplyHPMod( item );
+		// 28% chance
+		elseif (chance < 4000)
+			ApplyArSkillMod( item ); 
+		// 40% chance
+		elseif (chance < 8000)
 			ApplyARMod( item );
-		// 26% chance
+		// 20% chance
 		else
 			ApplyOnHitScript( item );
 		endif
 
 	// Level 10 loot
 	elseif (magiclevel == 10)
-		// 72% chance
-		if (chance < 7200)
+
+		// 10% chance 
+		if (chance < 1000)
+			ApplyHPMod( item );
+		// 30% chance
+		elseif (chance < 4000)
+			ApplyArSkillMod( item ); 
+		// 39% chance
+		elseif (chance < 7900)
 			ApplyARMod( item );
-		// 28% chance
+		// 21% chance
 		else
 			ApplyOnHitScript( item );
 		endif
 
 	// Level 11 loot
 	elseif (magiclevel == 11)
-		// 70% chance
-		if (chance < 7000)
+
+		// 8% chance 
+		if (chance < 800)
+			ApplyHPMod( item );
+		// 32% chance
+		elseif (chance < 4000)
+			ApplyArSkillMod( item ); 
+		// 38% chance
+		elseif (chance < 7800)
 			ApplyARMod( item );
-		// 30% chance
+		// 22% chance
 		else
 			ApplyOnHitScript( item );
 		endif
@@ -757,15 +790,21 @@ function ApplyArmourModNew( unused who, item )
 	// Level ?? Loot
 	else
 
-			// 68% chance
-			if (chance < 6800)
-				ApplyARMod( item );
-			// 32% chance
-			else
-				ApplyOnHitScript( item );
-			endif
-			
+		// 5% chance 
+		if (chance < 500)
+			ApplyHPMod( item );
+		// 35% chance
+		elseif (chance < 4000)
+			ApplyArSkillMod( item ); 
+		// 35% chance
+		elseif (chance < 7500)
+			ApplyARMod( item );
+		// 25% chance
+		else
+			ApplyOnHitScript( item );
 		endif
+
+	endif
 
 	AddName( item );
 
