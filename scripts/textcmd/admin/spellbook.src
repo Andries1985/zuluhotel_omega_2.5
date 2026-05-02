@@ -1,3 +1,4 @@
+// Synopsis: Create a new spellbook in your backpack
 use uo;
 
 program textcmd_spellbook( who )

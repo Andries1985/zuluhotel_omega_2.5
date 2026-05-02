@@ -1,3 +1,4 @@
+// Synopsis: Place a new spawn point item at your current location
 use uo;
 
 include "include/constants/objtypes";

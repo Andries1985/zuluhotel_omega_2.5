@@ -1,3 +1,4 @@
+// Synopsis: Teleport yourself to the staff home location
 use uo;
 include ":staff:include/staff";
 program textcmd_home( who )

@@ -1,3 +1,4 @@
+// Synopsis: Generate all dungeon teleporter pairs from config
 use uo;
 use os;
 

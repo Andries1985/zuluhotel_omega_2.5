@@ -1,3 +1,4 @@
+// Synopsis: Configure loot lottery settings on a targeted spawn or mobile
 use uo;
 use os;
 

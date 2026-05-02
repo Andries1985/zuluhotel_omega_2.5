@@ -1,3 +1,4 @@
+// Synopsis: Send a targeted player to jail
 use uo;
 
 include ":gumps:yesno";

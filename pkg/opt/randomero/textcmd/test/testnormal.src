@@ -1,3 +1,4 @@
+// Synopsis: Test the normal distribution random number generator
 use os;
 
 include "include/random";

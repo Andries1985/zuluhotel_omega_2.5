@@ -1,3 +1,4 @@
+// Synopsis: Kill a running script process by its PID number
 use uo;
 use os;
 

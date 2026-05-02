@@ -1,3 +1,4 @@
+// Synopsis: Remove a targeted player from their current party
 use os;
 use uo;
 use party;

@@ -1,3 +1,4 @@
+// Synopsis: Display your current fame and karma values
 use os;
 use uo;
 

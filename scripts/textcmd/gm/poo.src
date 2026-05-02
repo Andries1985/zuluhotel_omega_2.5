@@ -1,3 +1,4 @@
+// Synopsis: Place a dung tile graphic at your current location
 include "include/dismount";
 include ":staff:include/staff";
 

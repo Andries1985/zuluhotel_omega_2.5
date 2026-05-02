@@ -1,3 +1,4 @@
+// Synopsis: Move all items of a targeted type to another container
 use uo;
 
 include "include/client";

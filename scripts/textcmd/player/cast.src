@@ -1,3 +1,4 @@
+// Synopsis: Cast a spell by name without requiring a spellbook
 use uo;
 use basic;
 use cfgfile;

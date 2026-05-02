@@ -1,3 +1,4 @@
+// Synopsis: Force a targeted spawn point to prime and ready to spawn
 use uo;
 use os;
 

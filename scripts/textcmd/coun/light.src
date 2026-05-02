@@ -1,3 +1,4 @@
+// Synopsis: Set your personal light level to maximum brightness
 use uo;
 include ":staff:include/staff";
 program light(who)

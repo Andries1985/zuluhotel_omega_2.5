@@ -1,3 +1,4 @@
+// Synopsis: Broadcast a custom message to all online players
 use uo;
 include ":staff:include/staff";
 

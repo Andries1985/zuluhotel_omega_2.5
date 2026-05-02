@@ -1,3 +1,4 @@
+// Synopsis: Force-open a targeted container
 use uo;
 include ":staff:include/staff";
 program openit( character )

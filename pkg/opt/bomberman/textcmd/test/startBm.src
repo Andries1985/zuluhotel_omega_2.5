@@ -1,3 +1,4 @@
+// Synopsis: Start a Bomberman event with a specified number of participants
 use uo;
 
 include "include/random";

@@ -1,3 +1,4 @@
+// Synopsis: Read a named cprop value from a targeted object
 use uo;
 include ":staff:include/staff";
 program txtcmd_getobjproperty( who , propname )

@@ -1,3 +1,4 @@
+// Synopsis: Create a pre-filled tournament loot bag
 use uo;
 
 include "include/namingbyenchant";

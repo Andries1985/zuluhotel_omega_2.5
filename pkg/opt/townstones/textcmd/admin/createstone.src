@@ -1,3 +1,4 @@
+// Synopsis: Create a new town stone at a targeted location
 use uo;
 use os;
 

@@ -1,3 +1,4 @@
+// Synopsis: Set up Christmas event decorations and settings on the server
 
 use uo;
 use os;

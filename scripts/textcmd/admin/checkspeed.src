@@ -1,3 +1,4 @@
+// Synopsis: Display movement speed statistics for a targeted player
 use uo;
 use os;
 use math;

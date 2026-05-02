@@ -1,3 +1,4 @@
+// Synopsis: Open the Omega Info-Vault website in your browser
 use uo;
 use os;
 

@@ -1,3 +1,4 @@
+// Synopsis: Convert a targeted item into an artifact
 use uo;
 
 include ":ArtifactSystem:artifact";

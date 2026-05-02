@@ -1,3 +1,4 @@
+// Synopsis: Display your active elemental and status protection values
 use uo;
 use os;
 

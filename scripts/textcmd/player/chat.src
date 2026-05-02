@@ -1,3 +1,4 @@
+// Synopsis: Send a message to the global chat channel
 use uo;
 use os;
 

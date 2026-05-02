@@ -1,3 +1,4 @@
+// Synopsis: Shrink a targeted creature into a figurine in your backpack
 use uo;
 use os;
 use npc;

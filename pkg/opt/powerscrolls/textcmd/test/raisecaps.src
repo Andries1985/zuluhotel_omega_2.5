@@ -1,3 +1,4 @@
+// Synopsis: Raise the skill caps of a targeted player
 use uo;
 
 include "include/attributes";

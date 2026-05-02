@@ -1,3 +1,4 @@
+// Synopsis: Open a sample test gump layout
 use uo;
 use os;
 

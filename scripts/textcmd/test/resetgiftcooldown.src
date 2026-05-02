@@ -1,3 +1,4 @@
+// Synopsis: Clear the Christmas gift cooldown for a targeted player
 use uo;
 use os;
 

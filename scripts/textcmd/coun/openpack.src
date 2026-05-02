@@ -1,3 +1,4 @@
+// Synopsis: Open a targeted NPC's backpack storage
 use uo;
 use storage;
 include "include/npcbackpacks";

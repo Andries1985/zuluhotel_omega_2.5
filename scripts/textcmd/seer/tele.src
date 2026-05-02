@@ -1,3 +1,4 @@
+// Synopsis: Teleport yourself to a targeted map location
 use uo;
 use os;
 

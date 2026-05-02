@@ -1,3 +1,4 @@
+// Synopsis: Destroy the multi (house or boat) at or under your position
 use uo;
 
 program destroy_multi( who )

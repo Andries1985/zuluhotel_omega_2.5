@@ -1,3 +1,4 @@
+// Synopsis: Reset a player account's password by account name
 use os;
 use uo;
 

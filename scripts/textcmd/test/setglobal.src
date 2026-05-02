@@ -1,3 +1,4 @@
+// Synopsis: Set a named global server property to a typed value
 use uo;
 use os;
 

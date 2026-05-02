@@ -1,3 +1,4 @@
+// Synopsis: Target a player to see their current class
 use uo;
 
 include "include/classes";

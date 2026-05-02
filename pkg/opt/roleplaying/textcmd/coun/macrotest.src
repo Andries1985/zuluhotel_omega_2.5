@@ -1,3 +1,4 @@
+// Synopsis: Test a targeted player for macro usage patterns
 use os;
 use uo;
 

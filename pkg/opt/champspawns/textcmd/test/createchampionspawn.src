@@ -1,3 +1,4 @@
+// Synopsis: Create a champion spawn altar at a targeted location
 //Edited September 20, 2024
 
 use uo;

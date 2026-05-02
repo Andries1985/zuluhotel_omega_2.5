@@ -1,3 +1,4 @@
+// Synopsis: View and manage the GM help page queue
 use uo;
 use os;
 

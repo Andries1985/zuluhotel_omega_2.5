@@ -1,3 +1,4 @@
+// Synopsis: Display your current power hour status and remaining time
 use uo;
 
 const day := 86400;

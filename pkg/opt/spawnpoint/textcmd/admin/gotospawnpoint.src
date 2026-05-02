@@ -1,3 +1,4 @@
+// Synopsis: Teleport to the nearest spawn point matching a loot level or template
 use uo;
 use os;
 use npc;

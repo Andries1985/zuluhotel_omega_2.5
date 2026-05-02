@@ -1,3 +1,4 @@
+// Synopsis: Force-tame a targeted NPC to yourself
 use uo;
 
 include ":staff:include/staff";

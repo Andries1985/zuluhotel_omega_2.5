@@ -1,3 +1,4 @@
+// Synopsis: Toggle Bomberman speed boost on a targeted mobile
 use uo;
 
 program togglespeed(who)

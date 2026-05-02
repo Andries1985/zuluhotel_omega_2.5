@@ -1,3 +1,4 @@
+// Synopsis: Teleport to an online player's location by name
 
 use uo;
 use os;

@@ -1,3 +1,4 @@
+// Synopsis: Dye a targeted character's beard to a specified color code
 use os;
 use uo;
 

@@ -1,3 +1,4 @@
+// Synopsis: Conceal all NPCs within a specified tile range
 use uo;
 
 Program concealmobs( who, range )

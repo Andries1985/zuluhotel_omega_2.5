@@ -1,3 +1,4 @@
+// Synopsis: Convert a placed house add-on back into a deed
 use uo;
 use os;
 

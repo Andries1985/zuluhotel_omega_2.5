@@ -1,3 +1,4 @@
+// Synopsis: Remove the RPer status from a targeted player
 use uo;
 use os;
 

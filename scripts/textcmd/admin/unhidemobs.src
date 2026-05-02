@@ -1,3 +1,4 @@
+// Synopsis: Unhide all hidden NPCs within a specified tile range
 use uo;
 
 Program unhidemobs( who, range )

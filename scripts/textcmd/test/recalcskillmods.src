@@ -1,3 +1,4 @@
+// Synopsis: Recalculate all equipped item skill bonuses for every character
 use uo;
 
 include "include/attributes";

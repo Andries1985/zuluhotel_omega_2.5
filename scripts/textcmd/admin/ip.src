@@ -1,3 +1,4 @@
+// Synopsis: Show all characters currently logged in from a targeted player's IP
 use os;
 use uo;
 

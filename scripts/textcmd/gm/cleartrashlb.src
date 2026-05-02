@@ -1,3 +1,4 @@
+// Synopsis: Reset the trash leaderboard totals for all characters
 use os;
 use uo;
 

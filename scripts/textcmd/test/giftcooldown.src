@@ -1,3 +1,4 @@
+// Synopsis: View or set the Christmas gift cooldown duration
 use uo;
 use os;
 

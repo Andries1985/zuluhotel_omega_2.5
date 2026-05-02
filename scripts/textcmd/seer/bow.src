@@ -1,3 +1,4 @@
+// Synopsis: Perform a bow animation a specified number of times
 use uo;
 use os;
 

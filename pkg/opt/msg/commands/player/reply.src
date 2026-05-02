@@ -1,3 +1,4 @@
+// Synopsis: Reply to the last private message you received
 use os;
 use os;
 use datafile;

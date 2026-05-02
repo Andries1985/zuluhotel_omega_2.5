@@ -1,3 +1,4 @@
+// Synopsis: Regenerate all town signs from the signs config file
 use uo;
 use os;
 use cfgfile;

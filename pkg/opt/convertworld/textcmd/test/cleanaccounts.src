@@ -1,3 +1,4 @@
+// Synopsis: Remove unused characters from all player accounts
 use uo;
 use os;
 

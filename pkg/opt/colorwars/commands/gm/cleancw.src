@@ -1,3 +1,4 @@
+// Synopsis: Clean up all Color Wars arena items and reset the arena
 use uo;
 use os;
 

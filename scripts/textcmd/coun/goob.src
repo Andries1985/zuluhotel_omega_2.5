@@ -1,3 +1,4 @@
+// Synopsis: Teleport yourself to Britain bank (emergency unstuck)
 use os;
 use uo;
 use vitals;

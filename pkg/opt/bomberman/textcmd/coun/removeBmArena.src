@@ -1,3 +1,4 @@
+// Synopsis: Remove the Bomberman event arena
 use uo;
 use os;
 

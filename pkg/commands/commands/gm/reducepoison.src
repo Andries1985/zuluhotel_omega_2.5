@@ -1,3 +1,4 @@
+// Synopsis: Apply a damage multiplier to poison damage dealt in combat
 use os;
 use uo;
 use party;

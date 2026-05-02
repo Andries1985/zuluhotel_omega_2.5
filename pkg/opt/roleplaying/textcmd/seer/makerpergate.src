@@ -1,3 +1,4 @@
+// Synopsis: Create a two-way gate restricted to RPer players
 use uo;
 use os;
 

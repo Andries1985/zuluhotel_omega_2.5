@@ -1,3 +1,4 @@
+// Synopsis: Send a message to your own guild channel
 use uo;
 use guilds;
 

@@ -1,3 +1,4 @@
+// Synopsis: Instantly kill a targeted mobile
 use os;
 use uo;
 use vitals;

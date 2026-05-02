@@ -1,3 +1,4 @@
+// Synopsis: Set a typed cprop value on a targeted object
 use uo;
 use polsys;
 include ":staff:include/staff";

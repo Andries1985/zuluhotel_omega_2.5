@@ -1,3 +1,4 @@
+// Synopsis: Open or interact with your Omega Cache storage container
 // cache.src — .cache command
 //
 // .cache                    — opens the Omega Cache gump (same as double-clicking)

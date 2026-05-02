@@ -1,3 +1,4 @@
+// Synopsis: Duplicate a targeted item into your backpack
 
 Use uo;
 include ":staff:include/staff";

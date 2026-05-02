@@ -1,3 +1,4 @@
+// Synopsis: Open a targeted player's bank box
 use uo;
 
 include "util/bank";

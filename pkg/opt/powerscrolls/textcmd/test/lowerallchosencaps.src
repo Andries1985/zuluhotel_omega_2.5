@@ -1,3 +1,4 @@
+// Synopsis: Lower the chosen skill caps for all characters
 use uo;
 
 include "include/attributes";

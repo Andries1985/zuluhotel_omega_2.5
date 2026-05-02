@@ -1,3 +1,4 @@
+// Synopsis: Grant RPer status to a targeted player
 use uo;
 use os;
 

@@ -1,3 +1,4 @@
+// Synopsis: Delete a named cprop from a targeted object
 use uo;
 use polsys;
 include ":staff:include/staff";

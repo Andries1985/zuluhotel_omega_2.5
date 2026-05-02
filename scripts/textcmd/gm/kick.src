@@ -1,3 +1,4 @@
+// Synopsis: Forcibly disconnect a targeted player from the server
 //
 // .kick {target} - Kick a user offline (doesn't ban, though)
 //

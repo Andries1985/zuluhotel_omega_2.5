@@ -1,3 +1,4 @@
+// Synopsis: Set the name of a targeted object
 use uo;
 use polsys;
 include ":staff:include/staff";

@@ -1,3 +1,4 @@
+// Synopsis: Update the tooltip display for a targeted item
 use uo;
 use polsys;
 

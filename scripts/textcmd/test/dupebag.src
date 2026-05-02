@@ -1,3 +1,4 @@
+// Synopsis: Duplicate all contents of a targeted container into your backpack
 use uo;
 include ":staff:include/staff";
 

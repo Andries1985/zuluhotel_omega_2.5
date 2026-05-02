@@ -1,3 +1,4 @@
+// Synopsis: Create a two-way gate between two targeted locations
 use uo;
 use os;
 

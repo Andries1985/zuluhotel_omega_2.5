@@ -1,3 +1,4 @@
+// Synopsis: Display all active buff categories on a targeted mobile
 use uo;
 
 program textcmd_showbuffcats( who )

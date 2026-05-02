@@ -1,3 +1,4 @@
+// Synopsis: Remove all Bomberman arena items from the map
 use uo;
 use os;
 

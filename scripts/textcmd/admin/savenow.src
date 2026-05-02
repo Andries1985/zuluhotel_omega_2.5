@@ -1,3 +1,4 @@
+// Synopsis: Force an immediate world state save with a broadcast message
 use os;
 use uo;
 include "include/client";

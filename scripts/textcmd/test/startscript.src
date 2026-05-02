@@ -1,3 +1,4 @@
+// Synopsis: Start a named script by its full path
 use os;
 
 program textcmd_start( who, scriptname )

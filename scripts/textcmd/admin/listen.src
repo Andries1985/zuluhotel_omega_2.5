@@ -1,3 +1,4 @@
+// Synopsis: Toggle eavesdropping to read all nearby player speech
 use uo;
 
 program listening( who )

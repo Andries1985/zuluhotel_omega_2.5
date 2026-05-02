@@ -1,3 +1,4 @@
+// Synopsis: Display server uptime, player count, and performance stats
 use uo;
 use datafile;
 

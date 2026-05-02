@@ -1,3 +1,4 @@
+// Synopsis: Force a targeted spawn point to immediately spawn its NPCs
 use uo;
 use os;
 

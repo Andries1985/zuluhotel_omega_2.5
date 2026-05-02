@@ -1,3 +1,4 @@
+// Synopsis: Freeze a targeted mobile in place
 use uo;
 use polsys;
 include ":staff:include/staff";

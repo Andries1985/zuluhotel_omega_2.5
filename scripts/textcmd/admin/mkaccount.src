@@ -1,3 +1,4 @@
+// Synopsis: Create a new player account with name, password, and email
 use uo;
 use os;
 

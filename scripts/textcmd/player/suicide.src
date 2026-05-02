@@ -1,3 +1,4 @@
+// Synopsis: Kill yourself instantly (has a cooldown between uses)
 use os;
 use uo;
 use vitals;

@@ -1,3 +1,4 @@
+// Synopsis: Teleport to an object's location by its serial number
 use uo;
 use os;
 

@@ -1,3 +1,4 @@
+// Synopsis: Reveal all concealed NPCs within a specified tile range
 use uo;
 
 Program unconcealmobs( who, range )

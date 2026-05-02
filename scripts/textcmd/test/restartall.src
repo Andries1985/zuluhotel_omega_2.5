@@ -1,3 +1,4 @@
+// Synopsis: Restart the AI script on all NPC mobiles on the server
 use uo;
 use os;
 

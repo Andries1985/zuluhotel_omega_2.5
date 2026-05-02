@@ -1,3 +1,4 @@
+// Synopsis: Test the pseudo-random number generator with dice, faces, and bonus
 use os;
 
 include "include/random";

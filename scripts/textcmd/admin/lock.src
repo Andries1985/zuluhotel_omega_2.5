@@ -1,3 +1,4 @@
+// Synopsis: Lock a targeted item so players cannot move it
 use os;
 use uo;
 include ":staff:include/staff";

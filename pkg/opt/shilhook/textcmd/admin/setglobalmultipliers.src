@@ -1,3 +1,4 @@
+// Synopsis: Set global economy multipliers for skills and resources
 use uo;
 use os;
 use math;

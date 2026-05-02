@@ -1,3 +1,4 @@
+// Synopsis: Send a raw hex packet string to yourself for testing
 use os;
 use uo;
 

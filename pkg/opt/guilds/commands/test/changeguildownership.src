@@ -1,3 +1,4 @@
+// Synopsis: Transfer guild leadership to another member
 use uo;           // For basic Ultima Online functions
 use os;           // For operating system-related functions like SplitWords
 use guilds;       // Assuming a guilds package exists for guild management

@@ -1,3 +1,4 @@
+// Synopsis: Destroy an object by its serial number
 // nukeserial.src — Destroy an item by serial number
 // Usage: .nukeserial <serial>
 

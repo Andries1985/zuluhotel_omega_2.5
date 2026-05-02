@@ -1,3 +1,4 @@
+// Synopsis: Move all equipped items to your backpack
 use uo;
 use os;
 

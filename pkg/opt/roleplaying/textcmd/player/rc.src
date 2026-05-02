@@ -1,3 +1,4 @@
+// Synopsis: Send a message on the RPer-only chat channel
 use os;
 use uo;
 

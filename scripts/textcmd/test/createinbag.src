@@ -1,3 +1,4 @@
+// Synopsis: Create items of a graphic ID range into your backpack for testing
 use uo;
 
 include "include/random";

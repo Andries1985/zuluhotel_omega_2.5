@@ -1,6 +1,7 @@
+// Synopsis: Display a list of available commands with descriptions
 use os;
 use uo;
-use polsys;
+use cfgfile;
 
 include ":gumps:gumps";
 
@@ -8,20 +9,61 @@ include ":gumps:gumps";
 //Program use_racegate(who, gate)
 program textcmd_commands(who)
 
-var commands := ListTextCOmmands();	
-var displayinfo := "<BASEFONT SIZE=16>";
-var name := "";
+var synopses_cfg := ReadConfigFile("command_synopses");
 
-foreach package in commands
-	foreach level in package
-		if (_level_iter <= who.cmdlevel )
-			foreach command in level
-				name := SplitWords(command.script, ".");
-				displayinfo := displayinfo+"<br>    "+name[1];
-			endforeach
-		endif
-	endforeach
+// Iterate the cfg directly — Python writes keys in sorted() order so the
+// output is alphabetical within each level section automatically.
+var lvl_player := "";
+var lvl_coun   := "";
+var lvl_seer   := "";
+var lvl_gm     := "";
+var lvl_admin  := "";
+var lvl_dev    := "";
+
+foreach name in GetConfigStringKeys(synopses_cfg)
+	var elem := FindConfigElem(synopses_cfg, name);
+	var cmd_level_num := GetConfigInt(elem, "CmdLevel");
+	if (cmd_level_num > who.cmdlevel)
+		continue;
+	endif
+	var synopsis  := GetConfigString(elem, "Synopsis");
+	var lvl_label := GetConfigString(elem, "Level");
+	var entry := "<br>    " + name + " - " + synopsis;
+	if (lvl_label == "Player")
+		lvl_player := lvl_player + entry;
+	elseif (lvl_label == "Counselor")
+		lvl_coun := lvl_coun + entry;
+	elseif (lvl_label == "Seer")
+		lvl_seer := lvl_seer + entry;
+	elseif (lvl_label == "Game Master")
+		lvl_gm := lvl_gm + entry;
+	elseif (lvl_label == "Administrator")
+		lvl_admin := lvl_admin + entry;
+	elseif (lvl_label == "Developer")
+		lvl_dev := lvl_dev + entry;
+	endif
 endforeach
+
+// Build display with a header per level
+var displayinfo := "<BASEFONT SIZE=16>";
+if (len(lvl_player))
+	displayinfo := displayinfo + "<br><b>[ Player Commands ]</b>" + lvl_player;
+endif
+if (len(lvl_coun))
+	displayinfo := displayinfo + "<br><br><b>[ Counselor Commands ]</b>" + lvl_coun;
+endif
+if (len(lvl_seer))
+	displayinfo := displayinfo + "<br><br><b>[ Seer Commands ]</b>" + lvl_seer;
+endif
+if (len(lvl_gm))
+	displayinfo := displayinfo + "<br><br><b>[ Game Master Commands ]</b>" + lvl_gm;
+endif
+if (len(lvl_admin))
+	displayinfo := displayinfo + "<br><br><b>[ Administrator Commands ]</b>" + lvl_admin;
+endif
+if (len(lvl_dev))
+	displayinfo := displayinfo + "<br><br><b>[ Developer Commands ]</b>" + lvl_dev;
+endif
 
 // var gump := GFCreateGump(20, 20, 230, 400);
 
@@ -38,19 +80,45 @@ endforeach
 
 // endprogram
 
-var gump := GFCreateGump(20, 20, 280, 635);
+var gump := GFCreateGump(20, 20, 700, 635);
 
 // The main gump screen
 //GFResizePic(gump, 20, 20, 9250, 230, 400);
 //GFGumpPic(gump, 20, 20, 3500);
-GFResizePic(gump, 20, 20, 3500, 280, 635);
+GFResizePic(gump, 20, 20, 3500, 700, 635);
 
 //GFResizePic(gump, 70, 32, 9200, 131, 27);
 
-GFHTMLArea(gump, 35, 55, 250, 575, displayinfo, 1, 1);
+GFHTMLArea(gump, 35, 55, 660, 575, displayinfo, 1, 1);
 
-GFTextLine(gump, 115, 35, 67, "Command List");
+GFTextLine(gump, 300, 35, 67, "Command List");
 
 var result := GFSendGump(who, gump);
 
 endprogram
+
+function GetCommandName(script_name)
+	var clean_name := CStr(script_name);
+
+	if (clean_name[":"])
+		var desc_parts := SplitWords(clean_name, ":");
+		if (len(desc_parts) >= 2)
+			clean_name := desc_parts[2];
+		endif
+	endif
+
+	var path_parts := SplitWords(clean_name, "/");
+
+	if (len(path_parts))
+		clean_name := path_parts[len(path_parts)];
+	endif
+
+	if (clean_name["."])
+		var name_parts := SplitWords(clean_name, ".");
+		if (len(name_parts))
+			clean_name := name_parts[1];
+		endif
+	endif
+
+	return clean_name;
+endfunction

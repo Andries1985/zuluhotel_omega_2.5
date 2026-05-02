@@ -1,3 +1,4 @@
+// Synopsis: Enable a targeted player account (test utility)
 use uo;
 
 program test(who, acc)

@@ -1,3 +1,4 @@
+// Synopsis: Reset karma and fame on a targeted mobile to zero
 use uo;
 
 include "../../karmafame";
