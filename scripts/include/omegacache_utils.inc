@@ -38,14 +38,14 @@ function GetMaxOmegaCacheForHouse(house_objtype)
 		0x609A: return 2;
 		0x609E: return 2;
 		0x6096: return 2;
-		// Mansion (15 secures) — 2 caches
-		0x607A: return 2;
+		// Mansion (15 secures) — 3 caches
+		0x607A: return 3;
 		// Castle (20 secures) — 3 caches
 		0x607C: return 3;
 		// Fortress (25 secures) — 3 caches
 		0x607E: return 3;
-		// Keep — 1 cache
-		0x6BB8: return 1;
+		// Keep — 3 caches
+		0x6BB8: return 3;
 		// Custom multi-houses — scale with secures
 		0xA3E0: return 1;   // 3 secures
 		0xA3E1: return 2;   // 6 secures
