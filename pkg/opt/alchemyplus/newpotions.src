@@ -169,7 +169,7 @@ function DoCunningEffect( me , item , what )
 endfunction
 
 // AGAIN, dispel pots don't have TrueMage prop. Don't need to alter it YET
-function DoDispel( me , unused what)
+function DoDispel( me , what)
 
 	PlayObjectCenteredEffect(me, 
                                SPELL_EFFECT_ID,
@@ -181,6 +181,7 @@ function DoDispel( me , unused what)
 		me.graphic := me.trueobjtype;
 	endif
 	SendSysmessage( me , "All the magical effects active on this creature have been wiped." );
+	SubtractAmount(what, 1);
 
 	// // THIS IS NEVER HIT
 	// if( GetObjProperty( what , "ByTrueMage" ) )
