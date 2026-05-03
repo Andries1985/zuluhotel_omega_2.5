@@ -1,3 +1,4 @@
+// Synopsis: Set the IsRPer flag on a targeted item
 use os;
 use uo;
 

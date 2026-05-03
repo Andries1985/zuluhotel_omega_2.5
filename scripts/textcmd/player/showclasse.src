@@ -1,3 +1,4 @@
+// Synopsis: Display your current class and class level
 /////////////////////////////////////////////////////////////////////////////
 //
 // updated: Zulu April 19, 2000
@@ -20,7 +21,7 @@ program show_classe( who )
 	foreach classe in GetClasseIds()
 		EraseObjProperty( who , classe );
 		if(classe == "IsRanger")
-			level := IsFromThatClasse( who , GetClasseSkills(classe), 1 );
+			level := IsFromThatClasse( who , GetClasseSkills(classe), 1);
 		else
 			level := IsFromThatClasse( who , GetClasseSkills(classe) );
 		endif

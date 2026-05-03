@@ -14,6 +14,8 @@ program logoff(who)
 
 	EraseObjProperty(who, "#SettingPH");
 	EraseObjProperty( who , "Windsbreath" );
+	EraseObjProperty(who, "#LastID");
+	EraseObjProperty(who, "#MerchantID");
 
 	var temp := GetObjProperty(who,"realname");
 	if (temp)

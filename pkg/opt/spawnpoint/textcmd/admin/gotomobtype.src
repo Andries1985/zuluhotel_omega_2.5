@@ -1,3 +1,4 @@
+// Synopsis: Teleport to the nearest spawn point of a given NPC template
 //Edited August 25, 2024
 
 use uo;

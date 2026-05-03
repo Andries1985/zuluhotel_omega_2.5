@@ -1,3 +1,4 @@
+// Synopsis: Destroy a targeted artifact item
 use uo;
 
 include ":ArtifactSystem:artifact";

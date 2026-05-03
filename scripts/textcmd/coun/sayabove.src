@@ -1,3 +1,4 @@
+// Synopsis: Display text above a targeted object or mobile
 use os;
 use uo;
 include ":staff:include/staff";

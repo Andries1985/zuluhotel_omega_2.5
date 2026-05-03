@@ -1,3 +1,4 @@
+// Synopsis: Clear your private message log (once per day limit)
 use os;
 use uo;
 use datafile;

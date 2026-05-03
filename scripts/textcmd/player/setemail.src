@@ -1,3 +1,4 @@
+// Synopsis: Set your account email address (one-time only)
 use uo;
 
 program email( who, email )

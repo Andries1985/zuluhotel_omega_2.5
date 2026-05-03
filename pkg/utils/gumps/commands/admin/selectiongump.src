@@ -1,3 +1,4 @@
+// Synopsis: Open a selection list gump for testing
 use uo;
 
 include ":gumps:gumps";

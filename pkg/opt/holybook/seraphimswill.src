@@ -43,13 +43,13 @@ program cast_seraphims_will( parms )
 	elseif(GetObjProperty( caster, CLASSEID_PALADIN ))
 		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	elseif(GetObjProperty( caster, CLASSEID_POWERPLAYER ))
-		mod_amount := Cint( GetModAmount( caster ) * 2 );
+		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	else
 		mod_amount := Cint( GetModAmount( caster ) );
 	endif
 
 	if( CanMod( caster , "all" ) && CanMod( caster , "ebless" ) && CanMod( caster, "poly")) 
-		DoTempMod( caster, "poly" , mod_amount , duration );
+		DoTempMod( caster, "all" , mod_amount , duration );
 		SendBoostMessage( caster, caster, "seraphims will", mod_amount, duration, 0 );
 	else
 		SendSysMessage( caster , "Already under the influence!" );

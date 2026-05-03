@@ -1,3 +1,4 @@
+// Synopsis: Toggle Bomberman speed boost on yourself
 use uo;
 
 program togglespeed(who)

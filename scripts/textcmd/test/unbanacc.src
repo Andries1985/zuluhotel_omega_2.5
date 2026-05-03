@@ -1,3 +1,4 @@
+// Synopsis: Unban a player account by account name
 use uo;
 
 program unbanacc( who, text )

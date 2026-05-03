@@ -46,7 +46,7 @@ program cast_earth_blessing( parms )
 	elseif(GetObjProperty( caster, CLASSEID_MYSTIC_ARCHER ))
 		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	elseif(GetObjProperty( caster, CLASSEID_POWERPLAYER ))
-		mod_amount := Cint( GetModAmount( caster ) * 2 );
+		mod_amount := Cint( GetModAmount( caster ) * 3 );
 	else
 		mod_amount := Cint( GetModAmount( caster ) );
 		//Print("In Earth Blessing: Non-spec mod amount is " + mod_amount);

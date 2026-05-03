@@ -1,3 +1,4 @@
+// Synopsis: Open a test request gump with yes or no options
 use uo;
 
 include ":gumps:gumps";

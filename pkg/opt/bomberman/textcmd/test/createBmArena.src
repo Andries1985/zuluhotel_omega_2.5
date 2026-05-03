@@ -1,3 +1,4 @@
+// Synopsis: Create the Bomberman event arena layout
 use uo;
 
 include "include/random";

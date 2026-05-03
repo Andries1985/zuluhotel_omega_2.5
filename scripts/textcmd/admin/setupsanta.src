@@ -1,3 +1,4 @@
+// Synopsis: Set up the Santa NPC and Christmas gift delivery system
 
 use uo;
 use os;

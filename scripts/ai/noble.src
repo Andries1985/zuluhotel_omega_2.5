@@ -1,24 +1,77 @@
 use os;
 use uo;
+
 include "include/eventid";
 include "include/randname";
-include "include/utility";
-include "include/mrcspawn";
-include "include/speech";
-include "include/client";
-include "include/vetement";
 include "include/npcbackpacks";
-include "ai/setup/modsetup";
-program noble ()
+include "include/speech";
+include "include/vetement";
+include "include/townsfolk";
+include "include/attributes";
+
+const HALT_THRESHOLD := 2; // how close before he barks?
 
 var me := Self();
-if( me.name["<random>"] )
-	if (me.gender == 0)
-		Habille( me , "noblemale" );
-	else
-		Habille( me , "noblefemale" );
-	endif
-	SetName ( me , RandomName( me ) );
-endif
 
+program noble ()
+
+	if (!InitTownBounds())
+		return;
+	endif
+
+    if( me.name["<random>"] )
+		if (me.gender == 0)
+			Habille( me , "noblemale" );
+		else
+			Habille( me , "noblefemale" );
+		endif
+		SetName ( me , RandomName( me ) );
+	endif
+
+	SetObjProperty( me, "serial", me.serial );
+	SetObjProperty( me, "noloot", 1 );
+    
+    EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED, HALT_THRESHOLD);
+    EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
+    EnableEvents( SYSEVENT_OPPONENT_MOVED );
+
+	if (getobjproperty(me, "frozen"))
+		me.frozen := 1;
+	endif
+
+    SetWarMode( 0 );
+    set_priority(10);
+
+
+    // (Old while loop removed; only the new, shared-saying-based loop remains)
+    var ev;
+    var next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
+    while (1)
+        WanderWithinTown();
+        ev := os::wait_for_event( 120 );
+        case (ev.type)
+            SYSEVENT_SPEECH:
+               var tspeech := process_text(ev.text, "default","default");
+               if (tspeech)
+                    say(tspeech);
+               endif
+            SYSEVENT_ENGAGED:
+                SayRandomFromArray(ENGAGED_SAYINGS);
+                RunFromOpponent( ev.source, HALT_THRESHOLD );
+            SYSEVENT_DAMAGED:
+                SayRandomFromArray(DAMAGED_SAYINGS);
+                if (ev.source)
+                    RunFromOpponent( ev.source, HALT_THRESHOLD );
+                else
+                    say( "What treachery is this!" );
+                endif
+            SYSEVENT_DISENGAGED:
+                SayRandomFromArray(DISENGAGED_SAYINGS);
+        endcase
+        if (ReadGameClock() >= next_wander)
+            WanderWithinTown();
+            next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
+        endif
+    endwhile
 endprogram
+

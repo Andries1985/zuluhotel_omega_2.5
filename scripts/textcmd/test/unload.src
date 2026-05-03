@@ -1,3 +1,4 @@
+// Synopsis: Unload all cached scripts or scripts matching a filter string
 use uo;
 use os;
 

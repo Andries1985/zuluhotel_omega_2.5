@@ -1,0 +1,25 @@
+// Synopsis: Restart the AI script on a targeted mobile
+use uo;
+use os;
+
+include "include/client";
+
+program textcmd_restartscript(who)
+
+	SendSysMessage(who, "Target a mobile to restart its script.", FONT_NORMAL, 43);
+	var mobile := target(who);
+
+	if(!mobile)
+		SendSysMessage(who, "Canceled.", FONT_NORMAL, 43);
+		return;
+	endif
+
+	if(!mobile.isa(POLCLASS_NPC))
+		SendSysMessage(who, "Target must be an NPC.", FONT_NORMAL, 43);
+		return;
+	endif
+
+	RestartScript(mobile);
+	SendSysMessage(who, "Script restarted on " + mobile.name + " (serial: " + mobile.serial + ").", FONT_NORMAL, 43);
+
+endprogram

@@ -1,3 +1,4 @@
+// Synopsis: Unlock a targeted locked item
 use uo;
 include ":staff:include/staff";
 program textcmd_unlock( who )

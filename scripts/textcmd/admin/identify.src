@@ -1,3 +1,4 @@
+// Synopsis: Start the item identification process for yourself
 use uo;
 use os;
 

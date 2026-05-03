@@ -1,3 +1,4 @@
+// Synopsis: Disable global chat for all players for a specified number of minutes
 use uo;
 use os;
 include "include/client";

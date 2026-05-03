@@ -109,8 +109,9 @@ function ChangeFromSkillList( who )
     		return 0;
 		endif
 
-    	SendSysMessage( who, "Skill Set to 130", FONT_NORMAL, 2601 );
-    	SetBaseSkillBaseValue( who, res[0]-1, 1300 );
+    	SendSysMessage( who, "Skill Set to 150", FONT_NORMAL, 2601 );
+    	SetBaseSkillBaseValue( who, res[0]-1, 1500 );
+    	RecalculateEquippedSkillBonus( who, res[0]-1 );
        	//ChangeFromSkillList( who );
     endif
 
@@ -156,13 +157,13 @@ function BoostStat( Who )
 
     case( Effect[0] )
         1:
-        SetBaseStrength( Who, 130 );
+        SetBaseStrength( Who, 150 );
 
         2:
-        SetBaseDexterity( Who, 130 );
+        SetBaseDexterity( Who, 150 );
 
         3:
-        SetBaseIntelligence( Who, 130 );
+        SetBaseIntelligence( Who, 150 );
     endcase
 
 EndFunction

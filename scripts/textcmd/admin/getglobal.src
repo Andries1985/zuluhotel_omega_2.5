@@ -1,3 +1,4 @@
+// Synopsis: Read and display a named global server property value
 use uo;
 
 program textcmd_getvar( who, propname )

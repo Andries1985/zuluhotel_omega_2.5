@@ -25,6 +25,8 @@ var cont := getobjproperty(me, "cont");
 
 const LAYER_START := 1;
 const LAYER_END	  := 25;
+const TWO_DAYS_SECONDS := 172800;
+const ONE_WEEK_SECONDS := 604800;
 
 program merchant()
 	if(!me.backpack)
@@ -50,6 +52,7 @@ program merchant()
 
 	EnableEvents( SYSEVENT_ITEM_GIVEN + SYSEVENT_MERCHANT_SOLD  );
 	EnableEvents( SYSEVENT_DAMAGED + SYSEVENT_ENGAGED  );
+	EnableEvents( SYSEVENT_ENTEREDAREA, 6 );
 	EnableEvents( SYSEVENT_SPEECH, 1 );
 	var ev;
 
@@ -68,9 +71,12 @@ program merchant()
 			checkmymod(me);
 		endif
 
-		ev := os::wait_for_event( 30 );
+		ev := os::wait_for_event( 120 );
 		if(ev)
 			case(ev.type)
+				SYSEVENT_ENTEREDAREA:
+					//Print("entered area event, my serial is " + me.serial + " and event source is " + ev.source.serial);
+					AnnounceRecentStock(ev.source);
 				SYSEVENT_DAMAGED:
 				SYSEVENT_ENGAGED:
 					me.hidden := 1;
@@ -109,6 +115,55 @@ program merchant()
 	endwhile
 
 endprogram
+
+function RecordNewStock()
+	SetObjProperty(me, "laststocktime", ReadGameClock());
+endfunction
+
+function HasRecentStock()
+	var laststocktime := GetObjProperty(me, "laststocktime");
+	if(!laststocktime)
+		return 0;
+	endif
+
+	if((ReadGameClock() - laststocktime) <= ONE_WEEK_SECONDS)
+		return 1;
+	endif
+
+	return 0;
+endfunction
+
+function RecentStockTimeText()
+	var secondsago := ReadGameClock() - GetObjProperty(me, "laststocktime");
+	if(secondsago < 60)
+		return "just now";
+	elseif(secondsago < 120)
+		return "about a minute ago";
+	elseif(secondsago < 3600)
+		return CInt(secondsago / 60) + " minutes ago";
+	elseif(secondsago < 7200)
+		return "about an hour ago";
+	elseif(secondsago < 86400)
+		return CInt(secondsago / 3600) + " hours ago";
+	elseif(secondsago < TWO_DAYS_SECONDS)
+		return "about a day ago";
+	elseif(secondsago < ONE_WEEK_SECONDS)
+		return "about " + CInt(secondsago / 86400) + " days ago";
+	endif
+
+	return 0;
+endfunction
+
+function AnnounceRecentStock(who)
+	if(!who or who.npctemplate or !HasRecentStock())
+		return;
+	endif
+
+	var timetext := RecentStockTimeText();
+	if(timetext)
+		PrintTextAbovePrivate(me, "My latest stock was added " + timetext + ".", who);
+	endif
+endfunction
 
 
 
@@ -190,6 +245,10 @@ function ProcessSpeech(byref ev);
 		TurnToward( ev.source );
 		cashout();
 
+	elseif((ev.text["cheque"]) and (ev.source.serial == master))
+		TurnToward( ev.source );
+		cashcheque(ev.source);
+
 	elseif((ev.text["status"]) and (ev.source.serial == master))
 		TurnToward( ev.source );
 		statuscheck();
@@ -252,7 +311,7 @@ function ProcessSpeech(byref ev);
 		TurnToward( ev.source );
 		Say("I will obey the following orders:");
 		sleep(1);
-		Say("release, sell, contact, collect,");
+		Say("release, sell, contact, collect, cheque,");
 		sleep(2);
 		Say("wear, undress, strip, follow, stop, hire, status, log and purchase");
 	endif
@@ -350,6 +409,7 @@ function stockitem(byref item, byref seller)
 		endif
 		DestroyItem(old_item);
 		var theItem;
+		var stocked_any := 0;
 		Say("I'll just sell this at the same price as the others.");
 		if(newAmount <= 60000)
 			theItem := CreateItemAtLocation( 5427, 1082, 38, itemType, newAmount );
@@ -360,6 +420,8 @@ function stockitem(byref item, byref seller)
 			if(!MoveItemToContainer(theItem, inv_fs))
 				Say( "My inventory is too full!" );
 				MoveItemToContainer(theItem, seller.backpack);
+			else
+				stocked_any := 1;
 			endif
 		else
 			while(newAmount > 60000)
@@ -371,6 +433,8 @@ function stockitem(byref item, byref seller)
 				if(!MoveItemToContainer(theItem, inv_fs))
 					Say( "My inventory is too full!" );
 					MoveItemToContainer(theItem, seller.backpack);
+				else
+					stocked_any := 1;
 				endif
 				newAmount := newAmount - 60000;
 			endwhile
@@ -381,6 +445,10 @@ function stockitem(byref item, byref seller)
 			endif
 			MoveItemToContainer(theItem, seller.backpack);
 			Say("I can only sell one 60000 stack of that item.");
+		endif
+
+		if(stocked_any)
+			RecordNewStock();
 		endif
 		return;
 	endif
@@ -419,6 +487,7 @@ function stockitem(byref item, byref seller)
 		Say( "My inventory is too full!" );
     else
 		Say( "I will sell " + item.desc + " for " + item.sellprice);
+		RecordNewStock();
 	endif
 
 endfunction
@@ -503,6 +572,58 @@ function cashout()
 	foreach thingie in ListRootItemsInContainer(me.backpack)
         	MoveItemToContainer(thingie, mstr.backpack);
 	endforeach
+
+endfunction
+
+function cashcheque(byref who)
+
+	var mygold := cint(getobjproperty(me, "g"));
+	if(mygold <= 0)
+		Say("I don't currently hold any gold for you.");
+		return;
+	endif
+
+	var checkamt := mygold;
+	if(checkamt > 1000000)
+		checkamt := 1000000;
+	endif
+
+	var placed_in_bank := 0;
+	var itemcheck := CreateItemInContainer(who.backpack, CInt(0x14000), 1);
+	if(!itemcheck)
+		var bankbox := FindBankBox(who);
+		if(bankbox)
+			itemcheck := CreateItemInContainer(bankbox, CInt(0x14000), 1);
+			if(itemcheck)
+				placed_in_bank := 1;
+			endif
+		endif
+
+		if(!itemcheck)
+			Say("I couldn't place a cheque in your backpack or bank box.");
+			return;
+		endif
+	endif
+
+	SetObjProperty(itemcheck, "Amount", checkamt);
+	SetObjProperty(itemcheck, "checkamount", checkamt);
+	SetObjProperty(itemcheck, "CreatedBy", me.name);
+	itemcheck.color := 51;
+	itemcheck.name := "A Cheque for " + checkamt + " Gold by " + me.name + ".";
+
+	mygold := mygold - checkamt;
+	setobjproperty(me, "g", mygold);
+
+	if(placed_in_bank)
+		Say("I placed your cheque for " + checkamt + " gold in your bank box.");
+	else
+		Say("Here is your cheque for " + checkamt + " gold.");
+	endif
+	if(mygold)
+		Say("I still hold " + mygold + " gold.");
+	else
+		Say("I currently hold no remaining gold for you.");
+	endif
 
 endfunction
 

@@ -1,0 +1,88 @@
+use uo;
+use polsys;
+
+include "include/client";
+
+const TEXT_COLOR := 319;
+
+program rechargeflask(who, flask)
+
+	if (!ReserveItem(flask))
+		return 0;
+	endif
+
+	SendSysMessage(who, "Select the talisman you'd like to recharge.", FONT_NORMAL, TEXT_COLOR);
+	var talisman := Target(who, TGTOPT_NOCHECK_LOS);
+
+	if (!talisman || !ReserveItem(talisman))
+		SendSysMessage(who, "Canceled", FONT_NORMAL, 2595);
+		ReleaseItem(flask);
+		return 0;
+	elseif (!talisman.isa(POLCLASS_ITEM))
+		SendSysMessage(who, "You can only use this on a talisman.", FONT_NORMAL, TEXT_COLOR);
+		ReleaseItem(flask);
+		ReleaseItem(talisman);
+		return 0;
+	elseif (talisman.container != who.backpack)
+		SendSysMessage(who, "That needs to be in your backpack.", FONT_NORMAL, TEXT_COLOR);
+		ReleaseItem(flask);
+		ReleaseItem(talisman);
+		return 0;
+	elseif (talisman.objtype != 0x213e)
+		SendSysMessage(who, "That is not a talisman of identification.", FONT_NORMAL, TEXT_COLOR);
+		ReleaseItem(flask);
+		ReleaseItem(talisman);
+		return 0;
+	endif
+
+	var maxcharges := CInt(GetObjProperty(talisman, "maxidcharges"));
+	if (!maxcharges)
+		SendSysMessage(who, "That talisman can't be recharged.", FONT_NORMAL, TEXT_COLOR);
+		ReleaseItem(flask);
+		ReleaseItem(talisman);
+		return 0;
+	endif
+
+	var idcharges := CInt(GetObjProperty(talisman, "idcharges"));
+	if (idcharges >= maxcharges)
+		SendSysMessage(who, "That talisman is already fully charged.", FONT_NORMAL, TEXT_COLOR);
+		ReleaseItem(flask);
+		ReleaseItem(talisman);
+		return 0;
+	endif
+
+	var flask_charges := CInt(GetObjProperty(flask, "charges"));
+	if (flask_charges < 1)
+		SendSysMessage(who, "The flask is empty.", FONT_NORMAL, TEXT_COLOR);
+		ReleaseItem(flask);
+		ReleaseItem(talisman);
+		DestroyItem(flask);
+		return 0;
+	endif
+
+	var needed := maxcharges - idcharges;
+	var to_add := needed;
+	if (flask_charges < needed)
+		to_add := flask_charges;
+	endif
+
+	idcharges += to_add;
+	SetObjProperty(talisman, "idcharges", idcharges);
+	IncRevision(talisman);
+
+	var remaining := flask_charges - to_add;
+	if (remaining <= 0)
+		SendSysMessage(who, "You use the last of the recharge flask.", FONT_NORMAL, TEXT_COLOR);
+		ReleaseItem(talisman);
+		DestroyItem(flask);
+	else
+		SetObjProperty(flask, "charges", remaining);
+		SendSysMessage(who, "You add " + to_add + " charges. The flask has " + remaining + " charges remaining.", FONT_NORMAL, TEXT_COLOR);
+		IncRevision(flask);
+		ReleaseItem(flask);
+		ReleaseItem(talisman);
+	endif
+
+	SendSysMessage(who, "The talisman now has " + idcharges + " of " + maxcharges + " identification charges.", FONT_NORMAL, TEXT_COLOR);
+
+endprogram

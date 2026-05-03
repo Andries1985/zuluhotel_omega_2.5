@@ -92,10 +92,14 @@ Program tss( who, scroll)
 		
 		if(result[0] != 0 and result[0] != 100 and result[0] != 999 and result[0] == 49)
 			SetBaseSkillBaseValue(who, 0, amount);
+			ApplyHardCap(who, 0);
+			RecalculateEquippedSkillBonus(who, 0);
 		endif
 
 		if(result[0] != 0 and result[0] != 100 and result[0] != 999 and result[0] != 49)
 			SetBaseSkillBaseValue(who, result[0], amount);
+			ApplyHardCap(who, result[0]);
+			RecalculateEquippedSkillBonus(who, result[0]);
 		endif
 		counter := 1;
 	endif
@@ -111,7 +115,7 @@ function checkAmount( who, skill )
 		skill := 0;
 	endif
 	var base := GetBaseSkillBaseValue(who, skill);
-	if(base == 1500)
+	if(base >= 1500)
 		return 0;
 	endif
 	if(base < 500)
@@ -155,3 +159,28 @@ function checkAmount( who, skill )
 	endif
 	return value;
 endfunction
+
+function GetHardCap(who, skill)
+	var cap := 130;
+	var matrix := GetObjProperty(who, "pScrollMatrix");
+
+	if(matrix)
+		cap := 130 + CInt(matrix[skill]);
+		if(skill == 0)
+			cap := 130 + CInt(matrix[49]);
+		endif
+		if(cap > 150)
+			cap := 150;
+		endif
+	endif
+
+	return cap;
+endfunction
+
+function ApplyHardCap(who, skill)
+	var cap := GetHardCap(who, skill);
+	if(GetBaseSkillBaseValue(who, skill) > (cap * 10))
+		SetBaseSkillBaseValue(who, skill, cap * 10);
+	endif
+endfunction
+

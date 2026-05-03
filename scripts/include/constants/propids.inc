@@ -59,10 +59,12 @@ const PROPID_CHEST_LOCK_DIFFICULTY			:= "LockDifficulty";
 const PROPID_CHEST_NEVER_SPAWN				:= "NeverSpawn";
 const PROPID_CHEST_SPAWN_LEVEL				:= "SpawnChestLevel";
 const PROPID_CHEST_PERMANENTLY_TRAPPED		:= "PermanentlyTrapped";
-const PROPID_CHEST_TRAP_STRENGTH			:= "TrapStrength";
-const PROPID_CHEST_TRAP_TYPE				:= "TrapType";
-const PROPID_CHEST_TRAPPED_BY				:= "TrappedBy";
+const PROPID_CHEST_TRAP_STRENGTH			:= "trap_strength";
+const PROPID_CHEST_TRAP_TYPE				:= "trap_type";
+const PROPID_CHEST_TRAPPED_BY				:= "trapped_by";
 const PROPID_CHEST_TREASURE_CHEST			:= "TreasureChest";
+const PROPID_CHEST_SPAWNPOINT_CHEST			    := "SpawnPointChest";
+const PROPID_CHEST_SPAWNPOINT_LOCK_DIFFICULTY	:= "SPLockPickDiff";
 
 
 // PropIDs for corpses
@@ -313,7 +315,7 @@ const PROPID_MOBILE_EXP				    	:= "EXP";
 const PROPID_MOBILE_FAME			    	:= "Fame";
 const PROPID_MOBILE_FINAL_DEATH				:= "FinalDeath";
 const PROPID_MOBILE_FLED_COUNT				:= "#flees";
-const PROPID_MOBILE_FREE_DEATH				:= "freedeath";
+const PROPID_MOBILE_FREE_DEATH				:= "#freedeath";
 const PROPID_MOBILE_FREE_TIMER				:= "freetime";
 const PROPID_MOBILE_FRIENDS			    	:= "MobileFriends";
 const PROPID_MOBILE_FROZEN			    	:= "frozen";

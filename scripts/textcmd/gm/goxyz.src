@@ -1,3 +1,4 @@
+// Synopsis: Teleport to specific X Y Z map coordinates
 /////////////////////////////////////////////////////////////////////////////
 //
 //  ".goxyz x y [z]" - jump to a location, specifying coordinates.

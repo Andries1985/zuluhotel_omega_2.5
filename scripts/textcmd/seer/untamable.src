@@ -1,3 +1,4 @@
+// Synopsis: Mark a targeted NPC as untamable by players
 use uo;
 
 program untamable(who)

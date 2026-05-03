@@ -134,7 +134,7 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 			// dmg := dmg + newdamage;
 			//Print("Damage after mage bonus: " + dmg);
 		else
-			dmg := dmg - Cint(dmg * resultprot / 100);	
+			dmg := dmg - Cint(dmg * resultprot / 100);
 		endif
 		if(DEBUG_MODE)
 			PrintTextAbovePrivate( caster , "I've dealt this much Elemental damage: " +dmg, caster );
@@ -165,7 +165,7 @@ function ApplyElementalDamageNoResist( on_who, by_who, dmg, element )
 	var resultprot := GetResultingElementalProt( on_who, element );
 
 	if( resultprot < 100 )
-		dmg := dmg - Cint(dmg * resultprot / 100);	
+		dmg := dmg - Cint(dmg * resultprot / 100);
 		if(DEBUG_MODE)
 			PrintTextAbovePrivate( by_who , "I've dealt this much Elemental damage: " +dmg, by_who );
 			PrintTextAbovePrivate( on_who , "I received this much Elemental damage: " +dmg, on_who );
@@ -176,7 +176,7 @@ function ApplyElementalDamageNoResist( on_who, by_who, dmg, element )
 		var amt := CDbl(resultprot)/100.0;
 		HealDamage( on_who , Cint(dmg * CDbl(amt-1)) );
 	endif
-	
+
 endfunction
 
 
@@ -201,7 +201,7 @@ function ApplyPlanarDamage( caster, cast_on, circle, dmg, plane )
 		var amt := CDbl(resultprot)/100.0;
 		HealDamage( cast_on , Cint(dmg * CDbl(amt-1)) );
 	endif
-	
+
 endfunction
 
 
@@ -252,13 +252,13 @@ function CalcSpellDamage( caster, cast_on, circle, area_spell := SINGLE_TARGET_S
 
 	dmg := ModifyWithMagicEfficiency( caster, dmg );
 
-	if( !cast_on.npctemplate ) 
+	if( !cast_on.npctemplate )
 		dmg := CInt(dmg / SPELL_DAMAGES_ON_PLAYER_DIVIDER);
 		if( dmg < 1)
 			dmg := 1;
 		endif
 	endif
-	if(cast_on.npctemplate) 
+	if(cast_on.npctemplate)
 		dmg := CInt(dmg*1.5);
 		if( dmg < 1)
 			dmg := 1;
@@ -344,7 +344,7 @@ function CanTargetArea( caster, circle := 1 )
 		EraseObjProperty(caster, "#Casting");
 		return 0;
 	endif
-	
+
 	if (IsInSafeArea(cast_loc))
 		SendSysMessage( caster, "Can't cast spells in safe zone." );
 		if(GetObjProperty(caster, "#SpellMove"))
@@ -411,7 +411,7 @@ function CanTargetSpell( caster, circle := 1 , TargOpt := TGTOPT_CHECK_LOS )
 		SendSysMessage( caster, ERROR_MSG_LOST_CONCENTRATION );
 		return 0;
 	endif
-	
+
 	if(GetObjProperty(caster, "#SpellMove"))
 		EraseObjProperty(caster, "#SpellMove");
 	endif
@@ -430,7 +430,7 @@ function CanTargetThing( caster, circle := 1, TargOpt := TGTOPT_CHECK_LOS )
 	if(!can_cast(caster, circle))
         	return 0;
 	endif
-	
+
 	SetObjProperty(caster, "#Casting", 1);
 	Start_script( ":summoning:checkmove", caster );
 
@@ -451,7 +451,7 @@ function CanTargetThing( caster, circle := 1, TargOpt := TGTOPT_CHECK_LOS )
 		EraseObjProperty(caster, "#Casting");
 		return 0;
 	endif
-	
+
 	if(GetObjProperty(caster, "#SpellMove"))
 		EraseObjProperty(caster, "#SpellMove");
 	endif
@@ -643,7 +643,7 @@ function GetResultingElementalProt( cast_on, element )
 
 	// Remove opposing complementing prots, what u get is what u get now
 	return GetProtLevel( cast_on, element );
-	
+
 	var complementary;
 	var opposed;
 	case( element )
@@ -683,7 +683,7 @@ function GetResultingPlaneProtection( cast_on, plane )
 
 	// remove complementary/opposing prots
 	return GetProtLevel( cast_on, plane );
-	
+
 	var opposed;
 	if( plane == NECRO )
 		opposed := HOLY;
@@ -731,7 +731,11 @@ endfunction
 
 
 function IsProtected( caster, cast_on, circle, nomsg := 0 )
-	
+
+	if( caster == cast_on )
+		return 0;
+	endif
+
 	var protserial := GetObjProperty( cast_on, "MagicImmunity" );
 	var protlvl	 := GetObjProperty( cast_on, "PermMagicImmunity" );
 	if( !protlvl )
@@ -877,7 +881,7 @@ function Reflected( caster, cast_on, circle )
 
 	var source	:= caster;
 	var targ	:= cast_on;
-	
+
 	if(GetObjProperty( cast_on , CLASSEID_WARRIOR ))
 		return targ;
 	endif
@@ -975,7 +979,10 @@ function Resisted( caster , cast_on , circle , dmg )
 		chance := Cint( chance * ClasseBonus( cast_on , CLASSEID_MAGE ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
 		//Print("Base Chance Pala 1: " + chance);
-		chance := Cint( (chance * ClasseBonus( cast_on , CLASSEID_PALADIN ) ) * 0.5 );
+		var halfmod := ClasseBonus(cast_on , CLASSEID_PALADIN) - 1; // 1.75  - 1   = 0.75
+		halfmod := halfmod * 0.5;                                   // 0.75  * 0.5 = 0.375
+		halfmod := (1 + halfmod);                                   // 0.375 + 1   = 1.375
+		chance := Cint( chance * halfmod );
 		//Print("Base Chance Pala 2: " + chance);
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		var bonus := ClasseBonus( cast_on , CLASSEID_WARRIOR );
@@ -1077,7 +1084,7 @@ function Send_Attack( ttarget , source , spellid := 0 )
 
 	ev.type := SYSEVENT_ENGAGED;
 	ev.source := source;
-	
+
  	if (spellid)
 		ev.+spell;
 		ev.type := 0x0800; //spell attack
@@ -1186,7 +1193,7 @@ function TryToCast( caster, spell, anim := ANIM_CAST_DIR )
 	if (caster.hidden)
 		caster.hidden := 0;
 	endif
-	
+
 	if (caster.dead)
 		return 0;
 	endif
@@ -1212,13 +1219,13 @@ function TryToCast( caster, spell, anim := ANIM_CAST_DIR )
 	else
 		EraseObjProperty( caster, CASTINGOPT_PROP_NAME );
 	endif
-	
+
 	sendDiff( caster, difficulty );
 	//Try to cast the spell
 	PerformAction( caster, anim );
 
 	//Speak the power words
-	if ( !FindOption( options, CASTINGOPT_NO_WORDS ) )	
+	if ( !FindOption( options, CASTINGOPT_NO_WORDS ) )
 		SpeakPowerWords( caster, spell );
 	endif
 
@@ -1282,7 +1289,7 @@ function TryToCast( caster, spell, anim := ANIM_CAST_DIR )
 					endif
 				endforeach
 			endif
-			
+
 			if( (spell == 32 || spell == 52) && GetHP(caster) < shp )
 				SendSysmessage( caster, ERROR_MSG_INTERRUPTED );
 				PlayObjectCenteredEffect(caster, FX_SPELL_FIZZLE, SPEED_SPELL_FIZZLE, LOOP_SPELL_FIZZLE );
@@ -1328,7 +1335,7 @@ function TryToCast( caster, spell, anim := ANIM_CAST_DIR )
 		endif
 */
 	endif
-	
+
 	//Consume the mana
 	if( !FindOption( options, CASTINGOPT_NO_MANA ) )
 		if( !ConsumeMana( caster, spell ) )
@@ -1359,7 +1366,7 @@ function TryToCast( caster, spell, anim := ANIM_CAST_DIR )
       if( !CheckSkill( caster , SKILLID_MAGERY , difficulty , value ) )
 			SetMana(caster, GetMana(caster)+manacost);
 			if( GetMana(caster) > GetMaxMana(caster) )
-				SetMana(caster, GetMaxMana(caster)); 
+				SetMana(caster, GetMaxMana(caster));
 			endif
 			PlayObjectCenteredEffect(caster, FX_SPELL_FIZZLE, SPEED_SPELL_FIZZLE, LOOP_SPELL_FIZZLE );
 			PlaySoundEffect( caster, SFX_SPELL_FIZZLE );
@@ -1380,7 +1387,7 @@ points := CInt(points*0.8);
 		else
 			SendSysMessage( mobile, "You cast "+spell+" on yourself for "+points+" points." );
         endif
- 
+
         if( mobile.serial != targ.serial )
 			if( a == 1 )
                  SendSysMessage( targ, "You recieved an "+spell+" boost for "+points+" points." );
@@ -1394,7 +1401,7 @@ points := CInt(points*0.8);
 		else
 			SendSysMessage( mobile, "You cast "+spell+" on yourself for "+points+" points. The effect will last for "+ delay / 60.0 +" minutes." );
         endif
- 
+
         if( mobile.serial != targ.serial )
 			if( a == 1 )
                  SendSysMessage( targ, "You recieved an "+spell+" boost for "+points+" points. The effect will last for "+ delay / 60.0 +" minutes." );

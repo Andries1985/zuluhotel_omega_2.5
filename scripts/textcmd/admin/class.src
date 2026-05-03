@@ -1,3 +1,4 @@
+// Synopsis: Display or set the class of a targeted player
 use uo;
 use os;
 

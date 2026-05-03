@@ -1,3 +1,4 @@
+// Synopsis: Hide all NPCs within a specified tile range
 use uo;
 
 Program hidemobs( who, range )

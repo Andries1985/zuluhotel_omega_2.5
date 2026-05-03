@@ -1,8 +1,15 @@
+use cfgfile;
+use uo;
+
+include "include/random";
+include "include/anchors";
+include "include/randname";
+
 var me := self();
 
 var flee_point;
 
-drop_anchor();
+drop_anchor(me);
 
 var npccfg := readconfigfile("npcdesc");
 var speechelem := npccfg[me.npctemplate];

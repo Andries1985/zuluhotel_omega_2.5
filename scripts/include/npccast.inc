@@ -11,6 +11,7 @@ include "include/objtype";
 include "include/attributes";
 include "include/classes";
 include "include/npccastspells";
+include "include/smarttamedaoe";
 
 // var npccfg := readconfigfile("npcdesc");
 // var me := Self();
@@ -86,9 +87,10 @@ function Massvatten(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Fluctus Perturbo Magus Navitas");
 	sleep(2);
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
-		if (mobile.cmdlevel < 1)
-			if(!mobile.isa(POLCLASS_NPC) ||  mobile.master)
+		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
+			if (!me.master || (me.master && mobile.serial != me.master.serial))
 				var los := CheckLineOfSight( me, mobile );
 				if(los)
 					SpecialSorcerersBane(me, mobile);
@@ -102,9 +104,10 @@ function Massgust(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Gust Do Ar");
 	sleep(2);
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
-		if (mobile.cmdlevel < 1)
-			if(!mobile.isa(POLCLASS_NPC) ||  mobile.master)
+		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
+			if (!me.master || (me.master && mobile.serial != me.master.serial))
 				var los := CheckLineOfSight( me, mobile );
 				if(los)
 					SpecialGustOfAir(me, mobile);
@@ -118,9 +121,10 @@ function Masswyvern(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Umbrae Tenebrae Venarent");
 	sleep(2);
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
-		if (mobile.cmdlevel < 1)
-			if(!mobile.isa(POLCLASS_NPC) ||  mobile.master)
+		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
+			if (!me.master || (me.master && mobile.serial != me.master.serial))
 				var los := CheckLineOfSight( me, mobile );
 				if(los)
 					SpecialWyvernStrike(me, mobile);
@@ -134,9 +138,10 @@ function Masskill(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Ulties Manum Necarent");
 	sleep(2);
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
-		if (mobile.cmdlevel < 1)
-			if(!mobile.isa(POLCLASS_NPC) ||  mobile.master)
+		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
+			if (!me.master || (me.master && mobile.serial != me.master.serial))
 				var los := CheckLineOfSight( me, mobile );
 				if(los)
 					SpecialKill(me, mobile);
@@ -150,9 +155,10 @@ function Masscalllightning(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Batida Do Deus");
 	sleep(2);
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
-		if (mobile.cmdlevel < 1)
-			if(!mobile.isa(POLCLASS_NPC) ||  mobile.master)
+		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
+			if (!me.master || (me.master && mobile.serial != me.master.serial))
 				var los := CheckLineOfSight( me, mobile );
 				if(los)
 					SpecialCallLightning(me, mobile);
@@ -166,9 +172,10 @@ function Massicestrike(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Geada Com Inverno");
 	sleep(2);
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
-		if (mobile.cmdlevel < 1)
-			if(!mobile.isa(POLCLASS_NPC) ||  mobile.master)
+		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
+			if (!me.master || (me.master && mobile.serial != me.master.serial))
 				var los := CheckLineOfSight( me, mobile );
 				if(los)
 					SpecialIcestrike(me, mobile);
@@ -182,9 +189,10 @@ function Massshiftingearth(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Esmagamento Con Pedra");
 	sleep(2);
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
-		if (mobile.cmdlevel < 1)
-			if(!mobile.isa(POLCLASS_NPC) ||  mobile.master)
+		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
+			if (!me.master || (me.master && mobile.serial != me.master.serial))
 				var los := CheckLineOfSight( me, mobile );
 				if(los)
 					SpecialShiftingEarth(me, mobile);
@@ -198,9 +206,10 @@ function MassHolyBolt(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );
 	say("Vas Sanctus Utor Telum");
 	sleep(2);
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
-		if (mobile.cmdlevel < 1)
-			if(!mobile.isa(POLCLASS_NPC) ||  mobile.master)
+		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
+			if (!me.master || (me.master && mobile.serial != me.master.serial))
 				var los := CheckLineOfSight( me, mobile );
 				if(los)
 					SpecialHolyBolt(me, mobile);
@@ -261,9 +270,10 @@ function ChampFire(me)
 		6: element := "HOLY";
 	endcase
 
+	players := SmartFilterTamedTargets(me, players);
 	foreach mobile in players
-		if (mobile.cmdlevel < 1)
-			if(!mobile.isa(POLCLASS_NPC) ||  mobile.master)
+		if (mobile.cmdlevel < 1 && mobile.serial != me.serial)
+			if (!me.master || (me.master && mobile.serial != me.master.serial))
 				var los := CheckLineOfSight( me, mobile );
 				if(los)
 					SpecialChampFire(me, mobile, element);
@@ -533,6 +543,11 @@ endfunction
 
 function PrepareToCast(caster, cast_on, spellid)
 
+	var npccfg := readconfigfile("npcdesc");
+	// var me := Self();
+	// var spells := GetConfigStringArray( npccfg[me.npctemplate], "spell" );
+	var saywords := npccfg[caster.npctemplate].saywords;
+
 	if (!CheckLineOfSight( caster, cast_on ))
 		return 0;
 	endif
@@ -547,8 +562,8 @@ function PrepareToCast(caster, cast_on, spellid)
 		PerformAction(caster,ANIM_CAST_DIR);
 		sleep(1);
 	elseif (saywords)
-		SpeakPowerWords( me, spellid);
-		PerformAction(caster,ANIM_CAST_DIR);
+		SpeakPowerWords( caster, spellid );
+		PerformAction( caster, ANIM_CAST_DIR );
 		sleep(1);
 	endif
 
@@ -569,6 +584,9 @@ function PrepareToCast(caster, cast_on, spellid)
 endfunction
 
 function cast_offensive_spell(caster, cast_on)
+
+	var npccfg := readconfigfile("npcdesc");
+	var spells := GetConfigStringArray( npccfg[caster.npctemplate], "spell" );
 
 	var thespell := spells[Random( len(spells) +1 )];
 

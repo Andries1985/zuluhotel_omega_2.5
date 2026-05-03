@@ -56,7 +56,22 @@ program cast_archprot( parms, spell_id )
 	affected := SmartBoost(caster, affected);
 
 	foreach cast_on in affected
-		if (CanMod(cast_on, "ar"))
+		var blocked := 0;
+		var activemods := GetObjProperty( cast_on , "#mods" );
+		if( activemods )
+			foreach mmod in activemods
+				if( mmod[1] == "ar" || mmod[1] == "car" || mmod[1] == "poly" || mmod[1] == "cpoly" )
+					blocked := 1;
+					break;
+				endif
+			endforeach
+		endif
+
+		if( blocked )
+			if( cast_on == caster )
+				SendSysMessage(caster,"You are already under another armor-affecting buff.");
+			endif
+		elseif (CanMod(cast_on, "ar"))
 			PlayObjectCenteredEffect( cast_on, FX_SPELL_ARCH_PROTECTION , SPEED_SPELL_ARCH_PROTECTION , LOOP_SPELL_ARCH_PROTECTION );
 			DoTempMod(cast_on, "ar", mod_amount, duration);
 			SendBoostMessage( caster, cast_on, "arch protection", mod_amount, duration, 1 );

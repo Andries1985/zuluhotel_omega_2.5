@@ -1,3 +1,4 @@
+// Synopsis: Test the internal random number generator with a modulo and throws
 use os;
 use uo;
 use util;

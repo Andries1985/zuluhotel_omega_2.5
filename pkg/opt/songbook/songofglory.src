@@ -99,8 +99,15 @@ program cast_songofglory( player )
 			PrintTextAbove(player,"Obtestor Tribuo Dominatus Fortuno");
 //		endif
 		sleep(1);
-		//dmod := RandomInt(5) + (peace/10) + spec*8;
-		dmod := 6 + (peace/10) + (spec * 9);
+		case (spec)
+			0: dmod := 0;
+			1: dmod := 15;
+			2: dmod := 30;
+			3: dmod := 45;
+			4: dmod := 60;
+			5: dmod := 65;
+			default: dmod := 75;
+		endcase
 		duration := 3600;
 		affected := ListMobilesInLineOfSight( player , cint( (spec+1) * 2 )) + player;
 
@@ -111,7 +118,7 @@ program cast_songofglory( player )
 				continue;
 			endif
 
-			if( CanMod( cast_near , "all" ) && CanMod( cast_near , "ebless" ))
+			if( CanMod( cast_near , "all" ) && CanMod( cast_near , "ebless" ) && CanMod( cast_near, "poly" ) )
 				proped.append( cast_near );
 				PlayObjectCenteredEffect(cast_near, 
 				SPELL_EFFECT_ID,

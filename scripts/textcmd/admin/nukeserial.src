@@ -1,0 +1,31 @@
+// Synopsis: Destroy an object by its serial number
+// nukeserial.src — Destroy an item by serial number
+// Usage: .nukeserial <serial>
+
+use uo;
+use polsys;
+
+program nukeserial(who, text)
+	var serial := CInt(text);
+	if(!serial)
+		SendSysMessage(who, "Usage: .nukeserial <serial>");
+		return;
+	endif
+
+	var obj := SystemFindObjectBySerial(serial);
+	if(!obj)
+		SendSysMessage(who, "No object found with serial " + serial);
+		return;
+	endif
+
+	SendSysMessage(who, "Found: " + obj.desc + " objtype=" + Hex(obj.objtype) + " at " + obj.x + "," + obj.y + "," + obj.z);
+
+	// Erase houseserial so DestroyScripts treat it as orphaned
+	EraseObjProperty(obj, "houseserial");
+	var res := DestroyItem(obj);
+	if(res)
+		SendSysMessage(who, "Destroyed.");
+	else
+		SendSysMessage(who, "DestroyItem failed: " + res.errortext);
+	endif
+endprogram

@@ -1,3 +1,4 @@
+// Synopsis: Toggle visibility of skill difficulty feedback messages
 use os;
 use uo;
 

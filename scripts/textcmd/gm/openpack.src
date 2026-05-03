@@ -1,3 +1,4 @@
+// Synopsis: Open a targeted mobile's backpack
 use uo;
 use storage;
 include "include/npcbackpacks";

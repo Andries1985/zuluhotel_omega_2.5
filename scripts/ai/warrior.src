@@ -66,7 +66,7 @@ program Warrior()
 	endif
 
 	SetWarMode( 0 );
-	Drop_Anchor();
+	Drop_Anchor(me);
 
 	var ev;
 	var next_wander := ReadGameClock() + 10;
@@ -1136,8 +1136,14 @@ function ApplyHealing(who)
 	if ( GetObjProperty(me,"#heal") > ReadGameClock())
 		return 0;
 	endif
+	if (me.dead)
+		return 0;
+	endif
+	if (who.dead)
+		return 0;
+	endif
 	if (who == me)
-		SetObjProperty(me,"#heal", ReadGameClock()+1);
+		SetObjProperty(me,"#heal", ReadGameClock()+16);
 	else
 		SetObjProperty(me,"#heal", ReadGameClock()+20);
 	endif

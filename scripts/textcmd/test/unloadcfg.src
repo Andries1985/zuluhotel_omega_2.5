@@ -1,3 +1,4 @@
+// Synopsis: Reload a specified config file from disk
 use cfgfile;
 use uo;
 

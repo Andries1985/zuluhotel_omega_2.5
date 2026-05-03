@@ -1,3 +1,4 @@
+// Synopsis: Equip a targeted mobile with a preset class equipment set
 use uo;
 use npc;
 

@@ -1,3 +1,4 @@
+// Synopsis: Force a targeted spawn point to despawn all its NPCs
 use uo;
 use os;
 

@@ -1,3 +1,4 @@
+// Synopsis: Grant donator status to a targeted player
 Use uo;
 Use os;
 include ":staff:include/staff";

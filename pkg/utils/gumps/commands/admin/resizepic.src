@@ -1,3 +1,4 @@
+// Synopsis: Display a test resize-pic gump background
 use uo;
 
 include ":gumps:gumps";

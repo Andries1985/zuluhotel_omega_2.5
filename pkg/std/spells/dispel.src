@@ -143,6 +143,10 @@ program dispel ( parms, spell_id )
 		if( cast_on.Color != cast_on.TrueColor && !cast_on.dead)
 			cast_on.Color := cast_on.TrueColor;
 		endif
+		if( GetObjProperty( cast_on, "#freedeath" ) )
+			EraseObjProperty( cast_on, "#freedeath" );
+			SendSysmessage( cast_on, "The resurrection crystal's protection has been dispelled!" );
+		endif
 		SendSysmessage( caster , "All the magical effects active on this creature have been wiped." );
 	endif
 

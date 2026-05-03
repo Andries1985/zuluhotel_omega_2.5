@@ -1,3 +1,4 @@
+// Synopsis: Assign a class and class level to a targeted player
 use uo;
 use os;
 use polsys;

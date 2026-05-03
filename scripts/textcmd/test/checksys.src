@@ -1,3 +1,4 @@
+// Synopsis: Display a script profile overview gump
 use uo;
 
 include ":gumps:old-gumps";

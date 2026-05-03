@@ -1,3 +1,4 @@
+// Synopsis: Place a Color Wars registration stone
 use uo;
 use os;
 

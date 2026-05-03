@@ -1,3 +1,4 @@
+// Synopsis: Display the current maximum stat and skill cap values
 use uo;
 use os;
 

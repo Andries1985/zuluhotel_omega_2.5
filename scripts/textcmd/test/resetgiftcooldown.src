@@ -1,0 +1,26 @@
+// Synopsis: Clear the Christmas gift cooldown for a targeted player
+use uo;
+use os;
+
+program resetgiftcooldown(who)
+	SendSysMessage(who, "Target a player to clear their Christmas gift cooldown.");
+	var mobile := Target(who);
+
+	if(!mobile)
+		SendSysMessage(who, "Cancelled.");
+		return 0;
+	endif
+
+	if(!mobile.isa(POLCLASS_MOBILE))
+		SendSysMessage(who, "Target must be a mobile.");
+		return 0;
+	endif
+
+	SetObjProperty(mobile, "#GiftedAlready", 0);
+	SendSysMessage(who, "Gift cooldown cleared for " + mobile.name + ".");
+	if(mobile != who)
+		SendSysMessage(mobile, "Your Christmas gift cooldown has been reset by staff.");
+	endif
+
+	return 1;
+endprogram

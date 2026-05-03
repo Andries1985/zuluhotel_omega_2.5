@@ -1,0 +1,63 @@
+// Synopsis: Duplicate all contents of a targeted container into your backpack
+use uo;
+include ":staff:include/staff";
+
+function DuplicateContainerContents(source_container, destination_container)
+	foreach item in EnumerateItemsInContainer(source_container, ENUMERATE_ROOT_ONLY)
+		var duped_item := CreateItemCopyAtLocation(0, 0, 0, item);
+		if (!duped_item)
+			continue;
+		endif
+
+		if (!MoveItemToContainer(duped_item, destination_container))
+			DestroyItem(duped_item);
+			continue;
+		endif
+
+		if (item.isa(POLCLASS_CONTAINER))
+			DuplicateContainerContents(item, duped_item);
+		endif
+	endforeach
+endfunction
+
+program textcmd_dupebag(who)
+	SendSysMessage(who, "Target a container to dupe into your backpack.");
+
+	var what := TargetCoordinates(who).item;
+	if (!what)
+		SendSysMessage(who, "Cancelled.");
+		return 0;
+	elseif (!what.isa(POLCLASS_CONTAINER))
+		SendSysMessage(who, "You can only dupe containers.");
+		return 0;
+	endif
+
+	var newbag := CreateItemCopyAtLocation(0, 0, 0, what);
+	if (!newbag)
+		SendSysMessage(who, "Error duplicating the container!");
+		return 0;
+	endif
+
+	newbag.movable := 1;
+	if (!MoveItemToContainer(newbag, who.backpack))
+		DestroyItem(newbag);
+		SendSysMessage(who, "Error duplicating the container!");
+		return 0;
+	endif
+
+	DuplicateContainerContents(what, newbag);
+
+	if (newbag.container == who.backpack)
+		SendSysMessage(who, "A duplicate container has been placed in your backpack.");
+	else
+		DestroyItem(newbag);
+		SendSysMessage(who, "Error duplicating the container!");
+		return 0;
+	endif
+
+	if (who.cmdlevel < 5)
+		SetObjProperty(newbag, "LFucker", who.acctname+"/"+who.serial);
+	endif
+
+	LogCommand(who, GetProcess(GetPid()).name, what.desc+"/"+what.serial, newbag.desc+"/"+newbag.serial);
+endprogram

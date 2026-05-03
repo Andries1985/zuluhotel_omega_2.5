@@ -1,3 +1,4 @@
+// Synopsis: Send a message to all allied guild channels
 use uo;
 use guilds;
 

@@ -1,3 +1,4 @@
+// Synopsis: Open the staff notes gump
 use uo;
 
 include ":gumps:yesno";

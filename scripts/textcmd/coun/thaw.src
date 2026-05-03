@@ -1,3 +1,4 @@
+// Synopsis: Remove the frozen state from a targeted mobile
 use uo;
 use polsys;
 

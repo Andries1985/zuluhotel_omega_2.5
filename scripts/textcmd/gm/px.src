@@ -1,3 +1,4 @@
+// Synopsis: Print the X coordinate of a targeted object to console
 use uo;
 
 program  z(who, howfar)

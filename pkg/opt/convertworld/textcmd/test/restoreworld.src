@@ -1,3 +1,4 @@
+// Synopsis: Restore previously backed-up world data files
 use uo;
 use os;
 use datafile;

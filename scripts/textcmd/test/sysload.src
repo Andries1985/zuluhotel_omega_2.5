@@ -1,3 +1,4 @@
+// Synopsis: Display the current server system load and severity level
 use uo;
 use os;
 

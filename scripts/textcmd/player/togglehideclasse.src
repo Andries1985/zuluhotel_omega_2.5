@@ -1,3 +1,4 @@
+// Synopsis: Toggle whether other players can see your class
 use uo;
 use polsys;
 

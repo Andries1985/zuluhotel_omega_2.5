@@ -1,3 +1,4 @@
+// Synopsis: Display your current karma and fame values
 use uo;
 
 include "../../karmafame";

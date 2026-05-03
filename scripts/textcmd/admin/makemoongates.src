@@ -1,3 +1,4 @@
+// Synopsis: Generate the standard moongate network across the map
 //makemoongates.src
 
 use uo;

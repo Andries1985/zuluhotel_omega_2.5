@@ -441,7 +441,55 @@ function Load_Ticket_Data (me, who, ticket)
   var tempdata := 0;
   var newpet := 0;
 
-  if ((ticket.objtype == 0x186E) and (ticket.graphic == 5360))
+  if(ticket.objtype == CInt(0xDF0C))
+    var owner_serial := GetObjProperty(ticket, "owner_serial");
+    if(owner_serial != who.serial)
+      Say("This ticket does not belong to you.");
+      MoveItemToContainer(ticket, who.backpack);
+      return;
+    endif
+
+    var fine := CInt(GetObjProperty(ticket, "confiscation_fine"));
+    var petname := GetObjProperty(ticket, "petname");
+    Say("Your pet " + petname + " was confiscated. The fine is " + fine + " gold.");
+    Sleep(1);
+
+    if(!who.spendgold(fine))
+      Say("You cannot afford the fine of " + fine + " gold.");
+      MoveItemToContainer(ticket, who.backpack);
+      return;
+    endif
+
+    Say("Fine paid. I will get " + petname + " for you. One moment, please.");
+    Sleep(1);
+
+    tempdata := GetObjProperty(ticket, "pettemplate");
+    newpet := CreateNPCFromTemplate(tempdata, me.x, me.y, me.z);
+
+    newpet.name := petname;
+    SetMana(newpet, CInt(GetObjProperty(ticket, "petmana")));
+    newpet.color := GetObjProperty(ticket, "petcolor");
+
+    SetObjProperty(newpet, "master", who.serial);
+    SetObjProperty(newpet, "prevtamed", 1);
+    newpet.script := "tamed";
+    RestartScript(newpet);
+
+    SetObjProperty(newpet, "nocut", 1);
+    SetObjProperty(newpet, "noloot", 1);
+
+    if(GetObjProperty(newpet, "PhysicalProtection") > 100)
+      SetObjProperty(newpet, "PhysicalProtection", 1);
+      EraseObjProperty(newpet, "AttackTypeImmunities");
+    endif
+
+    SetHp(newpet, GetMaxHp(newpet));
+
+    Say("Take care and keep it away from houses!");
+
+    DestroyItem(ticket);
+
+  elseif ((ticket.objtype == 0x186E) and (ticket.graphic == 5360))
 
     tempdata := GetObjProperty(ticket, "petname");
     Say("I will get " + tempdata + " for you. One moment, please.");
@@ -460,7 +508,7 @@ function Load_Ticket_Data (me, who, ticket)
     SetObjProperty(newpet, "prevtamed", 1);
     newpet.script := "tamed";
     RestartScript(newpet);
-  
+
     SetObjProperty(newpet, "nocut", 1);
     SetObjProperty(newpet, "noloot", 1);
 
@@ -471,7 +519,7 @@ function Load_Ticket_Data (me, who, ticket)
 
     //tempdata := CInt(GetObjProperty(ticket, "pethp"));
     //SetHp(newpet, 3);
-    
+
     SetHp(newpet, GetMaxHp(newpet));
 
     Say("Take care and be sure to feed it!");
@@ -657,6 +705,7 @@ function TrainMax(who, skill, trained)
 
   if (who.spendgold(skillamt))
     SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt);
+    RecalculateEquippedSkillBonus( who, skill );
   else
     var goldamt := 0;
     // Not enough gold for full skill, try less
@@ -669,6 +718,7 @@ function TrainMax(who, skill, trained)
     if (goldamt > 1 && goldamt <= skillamt)
       if (who.spendgold(goldamt))
         SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+goldamt);
+        RecalculateEquippedSkillBonus( who, skill );
       else
         return 0; // SHOULD never hit here
       endif
@@ -705,6 +755,7 @@ function TrainEntry(who, skill, data, trained)
 
   if (who.spendgold(CInt(skillamt*10)))
     SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt*10);
+    RecalculateEquippedSkillBonus( who, skill );
     return 1;
   else
     Say("You don't have enough gold to train.");

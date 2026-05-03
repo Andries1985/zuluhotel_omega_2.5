@@ -1,0 +1,39 @@
+// Synopsis: Recalculate all equipped item skill bonuses for every character
+use uo;
+
+include "include/attributes";
+include "include/skillpoints";
+
+program textcmd_recalcskillmods( who )
+
+	var processed := 0;
+	var updated := 0;
+
+	foreach chr in EnumerateOnlineCharacters()
+		if(chr and !chr.npctemplate)
+			processed := processed + 1;
+			if(RecalculateAllEquippedSkillBonuses(chr))
+				updated := updated + 1;
+			endif
+		endif
+	endforeach
+
+	SendSysMessage(who, "Recalculated equipped skill bonuses for " + CStr(updated) + " / " + CStr(processed) + " online players.");
+
+endprogram
+
+function RecalculateAllEquippedSkillBonuses( who )
+	var changed := 0;
+	var skill;
+
+	for(skill := 0; skill <= SKILLID__HIGHEST; skill := skill + 1)
+		var old_mod := CInt(GetAttributeTemporaryMod(who, GetAttributeIdBySkillId(skill)) / 10);
+		RecalculateEquippedSkillBonus(who, skill);
+		var new_mod := CInt(GetAttributeTemporaryMod(who, GetAttributeIdBySkillId(skill)) / 10);
+		if(new_mod != old_mod)
+			changed := 1;
+		endif
+	endfor
+
+	return changed;
+endfunction

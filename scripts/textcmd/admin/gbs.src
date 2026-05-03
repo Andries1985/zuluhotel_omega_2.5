@@ -1,3 +1,4 @@
+// Synopsis: Clear bugged temporary stat modifiers from a targeted player
 use uo;
 
 include "include/attributes";

@@ -1,3 +1,4 @@
+// Synopsis: Run a time utility test and display results
 /* $Id: timetest.src 469 2006-06-27 15:00:43Z austinheilman $
  *
  * Note:

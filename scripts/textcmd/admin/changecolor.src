@@ -1,3 +1,4 @@
+// Synopsis: Change the color hue of a targeted object by color ID
 use uo;
 
 include "include/client";

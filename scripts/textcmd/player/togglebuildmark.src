@@ -1,3 +1,4 @@
+// Synopsis: Toggle the builder's mark prompt when crafting
 use uo;
 
 program buildmark(who)

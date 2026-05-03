@@ -1,3 +1,4 @@
+// Synopsis: Create a moongate to specific map coordinates
 use uo;
 use os;
 

@@ -1,0 +1,310 @@
+// Synopsis: Open or interact with your Omega Cache storage container
+// cache.src — .cache command
+//
+// .cache                    — opens the Omega Cache gump (same as double-clicking)
+// .cache deposit            — deposit all from backpack (no gump)
+// .cache deposit target     — deposit with targeting cursor
+// .cache list               — list categories with counts
+// .cache list <category>    — list items in category with quantities
+// .cache withdraw <amount>  — target item type, withdraw to backpack
+
+use uo;
+use os;
+use math;
+
+include "include/client";
+include "include/omegacache_utils";
+include ":omegacache:omegacache";
+
+program textcmd_cache(who, text)
+
+	_debug_who := who;
+
+	if(!text or CStr(text) == "0")
+		text := "";
+	else
+		text := Lower(CStr(text));
+	endif
+
+	// Commands that don't require cache proximity
+	if(text == "autodraw")
+		DoToggleAutodraw(who);
+		return;
+	endif
+
+	// Determine required privilege based on subcommand
+	var required_privs := array{VIEW_SECURE};
+	if(text == "deposit" or text == "deposit target")
+		required_privs := array{ADD_TO_SECURE};
+	elseif(text[1,8] == "withdraw")
+		required_privs := array{REMOVE_FROM_SECURE};
+	endif
+
+	var access := FindAccessibleContainer(who, required_privs);
+	if(!access)
+		SendSysMessage(who, "You must be near an Omega Cache Container in a house you have access to.");
+		return;
+	endif
+
+	var df := access.df;
+	if(!df)
+		SendSysMessage(who, "Failed to open storage.");
+		return;
+	endif
+
+	if(text == "deposit")
+		DoDepositAll(who, access);
+
+	elseif(text == "deposit target")
+		DoDepositTargeting(who, access);
+
+	elseif(text[1,8] == "withdraw")
+		var amount_str := text[10, len(text)];
+		var amount := ParseDecimal(amount_str);
+		if(amount <= 0)
+			SendSysMessage(who, "Usage: .cache withdraw <amount>");
+			SendSysMessage(who, "Then target an item of the type you wish to withdraw.");
+			return;
+		endif
+
+		SendSysMessage(who, "Target an item of the type you wish to withdraw.");
+		var tgt := Target(who);
+		if(!tgt)
+			SendSysMessage(who, "Cancelled.");
+			return;
+		endif
+
+		if(!tgt.stackable)
+			SendSysMessage(who, "That item type is not stackable.");
+			return;
+		endif
+
+		var key := BuildItemKey(tgt);
+		DoWithdraw(who, df, key, amount, who.backpack);
+
+	elseif(text == "list")
+		DoListCategories(who, df);
+
+	elseif(text[1,5] == "list ")
+		var cat_name := text[6, len(text)];
+		DoListCategory(who, df, cat_name);
+
+	elseif(text == "dump" and who.cmdlevel >= 4)
+		DoCacheDump(who, df);
+
+	elseif(!text or text == "")
+		RunOmegaCacheGump(who, access);
+
+	else
+		SendSysMessage(who, "Usage:");
+		SendSysMessage(who, "  .cache                    - open the Omega Cache");
+		SendSysMessage(who, "  .cache deposit            - deposit all from backpack");
+		SendSysMessage(who, "  .cache deposit target     - deposit with targeting");
+		SendSysMessage(who, "  .cache list               - list categories");
+		SendSysMessage(who, "  .cache list <category>    - list items in category");
+		SendSysMessage(who, "  .cache withdraw <amount>  - withdraw to backpack");
+		SendSysMessage(who, "  .cache autodraw           - toggle auto-draw from cache");
+	endif
+
+endprogram
+
+// Deposit, withdraw, and prompt functions are in omegacache.inc (shared include).
+
+function DoToggleAutodraw(who)
+	var current := GetObjProperty(who, "omegacache_no_autodraw");
+	if(current)
+		EraseObjProperty(who, "omegacache_no_autodraw");
+		SendSysMessage(who, "Omega Cache auto-draw enabled. Crafting will draw from the cache when backpack runs out.");
+	else
+		SetObjProperty(who, "omegacache_no_autodraw", 1);
+		SendSysMessage(who, "Omega Cache auto-draw disabled. Crafting will only use items from your backpack.");
+	endif
+endfunction
+
+// ============================================================
+// List Functions
+// ============================================================
+
+function DoListCategories(who, df)
+	var lookup := LoadCategoryLookup();
+	var cat_names := lookup.cat_names;
+	var objtype_to_cat := lookup.objtype_to_cat;
+
+	if(cat_names.size() == 0)
+		SendSysMessage(who, "No categories configured.");
+		return;
+	endif
+
+	var keys := df.Keys();
+
+	// Count items per category
+	var cat_counts := dictionary;
+	var cat_qty := dictionary;
+	var other_count := 0;
+	var other_qty := 0;
+
+	foreach key in keys
+		if(key[1, 3] == "RL#")
+			continue;
+		endif
+		var objtype_int := CInt(GetObjtypeFromKey(key));
+
+		var elem := df.FindElement(key);
+		var qty := 0;
+		if(elem)
+			qty := CInt(elem.GetProp("qty"));
+		endif
+		if(qty <= 0)
+			continue;
+		endif
+
+		var cat_name := objtype_to_cat[objtype_int];
+		if(cat_name)
+			if(!cat_counts[cat_name])
+				cat_counts[cat_name] := 0;
+				cat_qty[cat_name] := 0;
+			endif
+			cat_counts[cat_name] := cat_counts[cat_name] + 1;
+			cat_qty[cat_name] := cat_qty[cat_name] + qty;
+		else
+			other_count := other_count + 1;
+			other_qty := other_qty + qty;
+		endif
+	endforeach
+
+	SendSysMessage(who, "=== Omega Cache Contents ===");
+	foreach cat_name in cat_names
+		var count := cat_counts[cat_name];
+		var qty := cat_qty[cat_name];
+		if(count and count > 0)
+			SendSysMessage(who, "  " + FormatCategoryName(cat_name) + ": " + count + " type(s), " + FormatNumber(qty) + " total");
+		endif
+	endforeach
+	if(other_count > 0)
+		SendSysMessage(who, "  Other: " + other_count + " type(s), " + FormatNumber(other_qty) + " total");
+	endif
+	if(keys.size() == 0)
+		SendSysMessage(who, "  (empty)");
+	endif
+endfunction
+
+function DoCacheDump(who, df)
+	var keys := df.Keys();
+	SendSysMessage(who, "=== Raw DataFile Dump (" + keys.size() + " keys) ===");
+	foreach key in keys
+		var elem := df.FindElement(key);
+		if(!elem)
+			SendSysMessage(who, "  [" + key + "] (no element)");
+			continue;
+		endif
+		var props := elem.PropNames();
+		var prop_str := "";
+		foreach pname in props
+			var val := elem.GetProp(pname);
+			if(prop_str != "")
+				prop_str := prop_str + ", ";
+			endif
+			prop_str := prop_str + pname + "=" + CStr(val);
+		endforeach
+		if(key[1, 3] == "RL#")
+			SendSysMessage(who, "  LEASE [" + key + "] " + prop_str);
+		else
+			SendSysMessage(who, "  ITEM  [" + key + "] " + prop_str);
+		endif
+	endforeach
+	if(keys.size() == 0)
+		SendSysMessage(who, "  (empty)");
+	endif
+endfunction
+
+function DoListCategory(who, df, cat_name_input)
+	var lookup := LoadCategoryLookup();
+	var cat_names := lookup.cat_names;
+
+	if(cat_names.size() == 0)
+		SendSysMessage(who, "No categories configured.");
+		return;
+	endif
+
+	// Find matching category (case-insensitive, matches raw or formatted name)
+	var matched_cat := "";
+	foreach cat_name in cat_names
+		if(Lower(cat_name) == Lower(cat_name_input) or Lower(FormatCategoryName(cat_name)) == Lower(cat_name_input))
+			matched_cat := cat_name;
+			break;
+		endif
+	endforeach
+
+	// Handle "other" as a virtual category
+	if(Lower(cat_name_input) == "other")
+		var objtype_to_cat := lookup.objtype_to_cat;
+		var keys := df.Keys();
+		var found := 0;
+		SendSysMessage(who, "=== Other ===");
+		foreach key in keys
+			if(key[1, 3] == "RL#")
+				continue;
+			endif
+			var objtype_int := CInt(GetObjtypeFromKey(key));
+			if(!objtype_to_cat[objtype_int])
+				var elem := df.FindElement(key);
+				if(elem)
+					var qty := CInt(elem.GetProp("qty"));
+					if(qty <= 0)
+						continue;
+					endif
+					var objtype := CInt(elem.GetProp("objtype"));
+					var item_name := GetItemDisplayName(objtype);
+					SendSysMessage(who, "  " + item_name + ": " + FormatNumber(qty));
+					found := found + 1;
+				endif
+			endif
+		endforeach
+		if(found == 0)
+			SendSysMessage(who, "  (empty)");
+		endif
+		return;
+	endif
+
+	if(!matched_cat or matched_cat == "")
+		SendSysMessage(who, "Unknown category: " + cat_name_input);
+		SendSysMessage(who, "Use .cache list to see available categories.");
+		return;
+	endif
+
+	var cat_objtypes := GetCategoryObjtypes(matched_cat);
+	if(cat_objtypes.size() == 0)
+		SendSysMessage(who, "Category has no items configured.");
+		return;
+	endif
+
+	// Find matching keys in DataFile
+	var keys := df.Keys();
+	var found := 0;
+
+	SendSysMessage(who, "=== " + FormatCategoryName(matched_cat) + " ===");
+	foreach key in keys
+		if(key[1, 3] == "RL#")
+			continue;
+		endif
+		var objtype_int := CInt(GetObjtypeFromKey(key));
+
+		if(cat_objtypes[objtype_int])
+			var elem := df.FindElement(key);
+			if(elem)
+				var qty := CInt(elem.GetProp("qty"));
+				if(qty <= 0)
+					continue;
+				endif
+				var objtype := CInt(elem.GetProp("objtype"));
+				var item_name := GetItemDisplayName(objtype);
+				SendSysMessage(who, "  " + item_name + ": " + FormatNumber(qty));
+				found := found + 1;
+			endif
+		endif
+	endforeach
+
+	if(found == 0)
+		SendSysMessage(who, "  (empty)");
+	endif
+endfunction

@@ -1,3 +1,4 @@
+// Synopsis: Toggle gate entry confirmation prompt on or off
 use uo;
 
 program nogateproo(who)

@@ -1,3 +1,4 @@
+// Synopsis: Set the karma and fame values for a targeted mobile
 use uo;
 
 include "../../karmafame";

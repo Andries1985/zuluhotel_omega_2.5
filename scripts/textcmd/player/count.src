@@ -1,3 +1,4 @@
+// Synopsis: Count items in a targeted container
 use uo;
 
 program textcmd_count(me)

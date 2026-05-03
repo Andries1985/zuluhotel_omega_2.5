@@ -1,3 +1,4 @@
+// Synopsis: Move equipped weapons to your backpack or designated disarm bag
 use uo;
 use os;
 

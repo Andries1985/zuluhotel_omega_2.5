@@ -1,3 +1,4 @@
+// Synopsis: Display detailed enchant and property info for a targeted item
 use uo;
 use os;
 use math;

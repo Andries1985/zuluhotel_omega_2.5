@@ -1,3 +1,4 @@
+// Synopsis: Call guards to assist against nearby criminals
 
 use uo;
 use os;

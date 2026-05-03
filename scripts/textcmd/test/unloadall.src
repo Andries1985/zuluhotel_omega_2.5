@@ -1,3 +1,4 @@
+// Synopsis: Force-unload all currently running scripts immediately
 use uo;
 use os;
 

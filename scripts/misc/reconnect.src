@@ -9,6 +9,7 @@ const BANNED_IPS := ":ipban:bannedips";
 program reconnect( who )
 
 	EraseObjProperty(who, "#SettingPH");
+	EraseObjProperty(who, "#MerchantID");
 
 	// Name Check
         var check := CheckName(who.name,who);

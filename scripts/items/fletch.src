@@ -4,46 +4,79 @@ include "include/client";
 include "include/objtype";
 include "include/utility";
 include "include/skillpoints";
+include "include/omegacache_utils";
+include "include/resourcemanager";
 
 
 program on_fletch( character, shafts )
     var feathers;
     var thepoints := get_default_points(SKILLID_BOWCRAFT);
+
+    // Shafts are always from backpack (double-clicked to start)
     SendSysMessage( character, "Select feathers to use." );
 
-    feathers := Target( character ); 
+    feathers := Target( character );
     if (!feathers) // canceled, or targetting error
         return;
     endif
-    
-    if (GetObjType(feathers) != UOBJ_FEATHER) 
-        SendSysMessage( character, "I can only make arrows from shafts and feathers." );
-        return;
+
+    // Handle cache-sourced feathers
+    var featherRequest;
+    if(feathers.objtype == OMEGACACHE_OBJTYPE)
+        featherRequest := SelectMaterialFromCache(character);
+        if(!featherRequest)
+            return;
+        endif
+        if(CInt(featherRequest.objtype) != UOBJ_FEATHER)
+            SendSysMessage(character, "I can only make arrows from shafts and feathers.");
+            return;
+        endif
+    else
+        if (GetObjType(feathers) != UOBJ_FEATHER)
+            SendSysMessage( character, "I can only make arrows from shafts and feathers." );
+            return;
+        endif
+        featherRequest := MakeBackpackRequest(character, feathers);
     endif
 
-    var choice := SelectMenuItem2( character , "fletching" );
+    var choice := SelectMenuItem2( character , "Fletching" );
 
-    if (Accessible( character, shafts ) and Accessible( character, feathers ))
-        if (CheckSkill( character, 
-                        SKILLID_BOWCRAFT, 
+    // Shafts: use targeted stack + cache if autodraw enabled
+    var shaftRequest := MakeBackpackRequest(character, shafts);
+    var shaft_count := GetAvailableResource(character, shaftRequest).total;
+    // Feathers: use total available (backpack + cache if autodraw enabled)
+    var feather_count := GetAvailableResource(character, featherRequest).total;
+
+    if(shaft_count > 0 and feather_count > 0)
+        if (CheckSkill( character,
+                        SKILLID_BOWCRAFT,
                         1,                     // difficulty
                         thepoints ))                   // points
-            var num_to_make := Min( GetAmount(shafts), GetAmount(feathers) );
+            var max_make := Min( shaft_count, feather_count );
+            // Show prompt if either material involves cache
+            var promptRequest := 0;
+            if(shaftRequest.dataFileHandle)
+                promptRequest := shaftRequest;
+            elseif(featherRequest.dataFileHandle)
+                promptRequest := featherRequest;
+            endif
+            var num_to_make := PromptBulkAmount(character, max_make, "items", promptRequest);
+            if(!num_to_make)
+                return;
+            endif
 
-            
-            //print( "Would create " + num_to_make + " arrows." );
-            if(choice.objtype)  //debug stuff
+            if(choice.objtype)
                 var arrows := CreateItemInBackpack( character, choice.objtype, num_to_make );
-                if (arrows.amount > 0) 
-                    SubtractAmount( shafts, num_to_make );
-                    SubtractAmount( feathers, num_to_make ); 
+                if (arrows.amount > 0)
+                    // Consume shafts directly from the targeted stack
+                    ConsumeResource( character, shaftRequest, num_to_make );
+                    ConsumeResource( character, featherRequest, num_to_make );
                     SendSysMessage( character, "You create some arrows and put them in your pack." );
                 endif
             endif
-            // else report error? hmm, no information on that!
         else
-            SubtractAmount( shafts, 1 );
-            SubtractAmount( feathers, 1 );
+            ConsumeResource( character, shaftRequest, 1 );
+            ConsumeResource( character, featherRequest, 1 );
             SendSysMessage( character, "You destroy some materials." );
         endif
     else

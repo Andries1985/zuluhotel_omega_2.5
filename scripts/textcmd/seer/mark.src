@@ -1,3 +1,4 @@
+// Synopsis: Mark a blank rune with your current location
 
 Use uo;
 include ":staff:include/staff";

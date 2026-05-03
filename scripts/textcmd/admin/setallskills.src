@@ -1,3 +1,4 @@
+// Synopsis: Set all skills of a targeted mobile to a specified value
 use uo;
 
 include "include/client";

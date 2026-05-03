@@ -3,20 +3,27 @@ use os;
 
 include "include/client";
 include "include/attributes";
+include "include/classes";
 
 program totem(who, totem)
 
 	if(!ReserveItem(totem)) return; endif
 
-	var npctemplate := GetObjProperty(totem,"critter");
+	if( !GetObjProperty( who , CLASSEID_CRAFTER ) )
+		SendSysMessage( who , "Only crafters can activate obsidian golems." );
+		return;
+	endif
 
-	var parms := {};
-	parms .+ script := "tamed";
+	var npctemplate := GetObjProperty(totem,"critter");
+	//Print("Totem template: " + npctemplate);
+
+	var parms := struct;
+	parms.+ script := "tamed";
 	detach();
 
-	var it := CreateNPCfromTemplate(npctemplate, who.x -1, who.y+1, who.z, parms);
+	var it := CreateNpcFromTemplate(CStr(npctemplate), CInt(who.x-1), CInt(who.y+1), who.z, parms);
 	if (!it)
-		it := CreateNPCfromTemplate(npctemplate, who.x +1, who.y-1, who.z, parms);
+		it := CreateNpcFromTemplate(CStr(npctemplate), CInt(who.x+1), CInt(who.y-1), who.z, parms);
 		if (!it)
 			SendSysMessage(who,"Canceled");
 			return;

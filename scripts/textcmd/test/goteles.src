@@ -1,3 +1,4 @@
+// Synopsis: Teleport to a checkpoint teleporter by index
 use uo;
 use os;
 

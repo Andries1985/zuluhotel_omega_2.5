@@ -1,3 +1,4 @@
+// Synopsis: List all spawn points within a range of your location
 use uo;
 
 program findspnm(who, input)

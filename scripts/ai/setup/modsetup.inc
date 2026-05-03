@@ -14,7 +14,11 @@ if( !GetStrengthMod(modnpc) )
 	var strmod := GetObjProperty( modnpc , "BaseStrmod" );
 	if (strmod)
 		SetStrengthMod(modnpc, strmod);
-		SetHP(modnpc, GetStrength(modnpc));
+		if (GetObjProperty(modnpc, "CustomHitsLevel"))
+			SetHP(modnpc, GetMaxHP(modnpc));
+		else
+			SetHP(modnpc, GetStrength(modnpc));
+		endif
 	endif
 endif
 

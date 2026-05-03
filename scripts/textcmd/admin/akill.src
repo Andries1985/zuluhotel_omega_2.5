@@ -1,3 +1,4 @@
+// Synopsis: Instantly kill all NPCs within a specified tile range
 //Edited August 25, 2024
 
 use os;

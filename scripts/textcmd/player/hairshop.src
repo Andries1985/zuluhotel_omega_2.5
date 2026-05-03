@@ -1,3 +1,4 @@
+// Synopsis: Open the hair and beard style or color customization shop
 use uo;
 
 include ":gumps:include/gumps";

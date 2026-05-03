@@ -1,3 +1,4 @@
+// Synopsis: Remove your own freeze or paralysis effect
 use uo;
 include ":staff:include/staff";
 program thawme( gm )

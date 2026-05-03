@@ -1,3 +1,4 @@
+// Synopsis: Remove the RPer tag from a targeted player
 use uo;
 use os;
 

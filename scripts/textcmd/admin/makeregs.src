@@ -1,3 +1,4 @@
+// Synopsis: Create a set of reagent items in your backpack
 use os;
 use uo;
 

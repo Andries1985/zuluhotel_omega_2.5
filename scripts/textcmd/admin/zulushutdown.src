@@ -1,3 +1,4 @@
+// Synopsis: Shut down the game server after a specified delay
 // Zulu  zuluhotel@hotmail.com
 
 use uo;

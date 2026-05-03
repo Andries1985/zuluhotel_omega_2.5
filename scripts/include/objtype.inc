@@ -48,6 +48,7 @@ const UOBJ_SPELLBOOK        := 0x0EFA;
 
 const UOBJ_POISON_POTION    := 0x0F0A;
 const UOBJ_EMPTY_BOTTLE     := 0x0F0E;
+const UOBJ_EMPTY_FLASK		:= 0x183A;
 
 const UOBJ_GEM_START        := 0x0F0F;
 const UOBJ_GEM_END          := 0x0f30;
@@ -356,7 +357,54 @@ const UOBJ_SHING_INGOT	    := 0Xc530;
 const UOBJ_LEVIATHAN_INGOT  := 0Xc531;
 const UOBJ_SANCTUARY_INGOT  := 0Xc532;
 const UOBJ_INGOTS2_END      := 0xc532;
-//
+
+const UOBJ_GEM1_START		:= 0x0F0F;
+const UOBJ_STAR_SAPPHIRE	:= 0x0F0F;
+const UOBJ_EMERALD			:= 0x0F10;
+const UOBJ_SAPPHIRE			:= 0x0F11;
+const UOBJ_SAPPHIRE_2		:= 0x0F12;
+const UOBJ_RUBY		    	:= 0x0F13;
+const UOBJ_RUBY_2			:= 0x0F14;
+const UOBJ_CITRINE		    := 0x0F15;
+const UOBJ_AMETHYST		    := 0x0F16;
+const UOBJ_AMETHYST_2	    := 0x0F17;
+const UOBJ_TOURMALINE	    := 0x0F18;
+const UOBJ_SAPPHIRE_3	    := 0x0F19;
+const UOBJ_RUBY_3		    := 0x0F1a;
+const UOBJ_STAR_SAPPHIRE_2	:= 0x0F1b;
+const UOBJ_RUBY_4		    := 0x0F1c;
+const UOBJ_RUBY_5		    := 0x0F1d;
+const UOBJ_TOURMALINE_2	    := 0x0F1e;
+const UOBJ_SAPPHIRE_4	    := 0x0F1f;
+const UOBJ_TOURMALINE_3		:= 0x0F20;
+const UOBJ_STAR_SAPPHIRE_3	:= 0x0F21;
+const UOBJ_AMETHYST_3		:= 0x0F22;
+const UOBJ_CITRINE_2		:= 0x0F23;
+const UOBJ_CITRINE_3		:= 0x0F24;
+const UOBJ_AMBER			:= 0x0F25;
+const UOBJ_DIAMOND_1		:= 0x0F26;
+const UOBJ_DIAMOND_2		:= 0x0F27;
+const UOBJ_DIAMOND_3		:= 0x0F28;
+const UOBJ_DIAMOND_4		:= 0x0F29;
+const UOBJ_RUBY_6			:= 0x0F2a;
+const UOBJ_RUBY_7			:= 0x0F2b;
+const UOBJ_CITRINE_4		:= 0x0F2c;
+const UOBJ_TOURMALINE_4		:= 0x0F2d;
+const UOBJ_AMETHYST_4		:= 0x0F2e;
+const UOBJ_EMERALD_2		:= 0x0F2f;
+const UOBJ_DIAMOND_5		:= 0x0F30;
+const UOBJ_GEM1_END			:= 0x0F30;
+
+const UOBJ_GEM2_START		:= 0x213f;
+const UOBJ_DARK_SAPPHIRE	:= 0x213f;
+const UOBJ_TURQUOISE		:= 0x2140;
+const UOBJ_PERFECT_EMERALD	:= 0x2141;
+const UOBJ_ECRU_CITRINE		:= 0x2142;
+const UOBJ_WHITE_PEARL		:= 0x2143;
+const UOBJ_FIRE_RUBY		:= 0x2144;
+const UOBJ_BLUE_DIAMOND		:= 0x2145;
+const UOBJ_BRILLIANT_AMBER	:= 0x2146;
+const UOBJ_GEM2_END			:= 0x2146;
 
 
 /////////////////////////////////////////////////////////////////////////////

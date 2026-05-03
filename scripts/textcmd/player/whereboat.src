@@ -1,3 +1,4 @@
+// Synopsis: Display the current map coordinates of your boat
 use os;
 use uo;
 

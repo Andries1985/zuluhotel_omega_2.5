@@ -1,3 +1,4 @@
+// Synopsis: Change the graphic (objtype) of a targeted object
 use uo;
 
 include "include/client";

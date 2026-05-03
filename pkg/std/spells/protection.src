@@ -53,6 +53,16 @@ program cast_protection( parms, spell_id )
                                          SPELL_EFFECT_ID,
                                          SPELL_EFFECT_SPEED,
                                          SPELL_EFFECT_LOOP);
+
+	var activemods := GetObjProperty( cast_on , "#mods" );
+	if( activemods )
+		foreach mmod in activemods
+			if( mmod[1] == "ar" || mmod[1] == "car" || mmod[1] == "poly" || mmod[1] == "cpoly" )
+				SendSysMessage(caster,"Target is already under another armor-affecting buff.");
+				return;
+			endif
+		endforeach
+	endif
 	
 	
 	if (!CanMod(cast_on, "ar"))

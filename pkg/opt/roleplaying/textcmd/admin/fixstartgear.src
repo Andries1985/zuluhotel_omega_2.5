@@ -1,3 +1,4 @@
+// Synopsis: Give a targeted player the correct class starting equipment
 use uo;
 use os;
 

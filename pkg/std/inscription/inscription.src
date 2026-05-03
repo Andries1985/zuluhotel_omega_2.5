@@ -26,6 +26,8 @@ include "include/random";
 include "include/autoloop";
 include "include/difficulty";
 include "include/math";
+include "include/omegacache_utils";
+include "include/resourcemanager";
 
 
 const SOUND_EFFECT_INSCRIPTION 	:= 0x50;
@@ -35,6 +37,9 @@ const POINT_MULTIPLIER		:= 15;
 
 var config_file;
 
+// Cache ResourceRequest for blank scrolls — set when player targets cache
+var scrollRequest := 0;
+
 
 program DoInscription( character )
 
@@ -43,12 +48,28 @@ program DoInscription( character )
 			      UOBJ_CODEX_DAMNORUM,
 			      UOBJ_EARTH_BOOK,
 			      UOBJ_TOME_OF_ENCHANTMENT };
-  
+
 	SendSysmessage( character , "What would you like to inscribe?" );
-  
+
 	item := Target( character , TGTOPT_CHECK_LOS );
-   
+
 	if( !item )
+		return;
+	endif
+
+	// Handle Omega Cache targeting — use blank scrolls from cache
+	if(item.objtype == OMEGACACHE_OBJTYPE)
+		scrollRequest := SelectMaterialFromCache(character);
+		if(!scrollRequest)
+			return;
+		endif
+		if(CInt(scrollRequest.objtype) != UOBJ_BLANK_SCROLL)
+			SendSysMessage(character, "You must select blank scrolls.");
+			return;
+		endif
+		config_file := ReadConfigFile("inscription");
+		Set_script_option(SCRIPTOPT_NO_RUNAWAY, 1);
+		WantToCreateScroll(character, 0);
 		return;
 	endif
 
@@ -56,23 +77,15 @@ program DoInscription( character )
 		SendSysmessage( character , "You can't reach that!" );
 		return;
 	endif
-	
+
 	if( !ReserveItem( item ) )
 		return;
 	endif
-  
-	config_file := ReadConfigFile( "inscription" );
-	
-	/*if( IsExceptionalItem( item ) )
-		var enchantment := GetObjProperty( item , "EnchantedWith" );
-		if( enchantment )
-			RechargeEngravedItem( character , item , enchantment );
-		else
-			EnchantItem( character , item );
-		endif
 
-	else*/
+	config_file := ReadConfigFile( "inscription" );
+
 	if( item.objtype == UOBJ_BLANK_SCROLL )
+		scrollRequest := MakeBackpackRequest(character, item);
 		Set_script_option( SCRIPTOPT_NO_RUNAWAY , 1 );
 		WantToCreateScroll( character , item );
 		
@@ -1088,6 +1101,9 @@ function CreateRunebook( character , item )
 	else
 		excep_diff := excep_diff + 20;
 	endif
+	if( excep_diff > 150 )
+		excep_diff := 150;
+	endif
 				
 	if( excep_diff < 90 )
 		excep_diff := 90;
@@ -1142,41 +1158,75 @@ function CreateScroll( character , skill , points , blankscroll , scrollobjtype 
 		return;
 	endif
 	
-      /*** Autolooping now starts ***/	
+      /*** Autolooping now starts ***/
+      // Lease cache resources for the first iteration
+      if(scrollRequest)
+	LeaseResource(character, scrollRequest, 1);
+      endif
+
       Autoloop_init (character);
 
-      while (Autoloop_more ()) 		
+      while (Autoloop_more ())
 
 	/*** First check if there are at least one scroll. Maybe previous iterations had burned out all the scrolls ***/
-	if( GetAmount ( blankscroll ) == 0 )
+	if(scrollRequest)
+		if(GetAvailableResource(character, scrollRequest).total < 1)
+			SendSysMessage(character, "You don't have any more blank scrolls.");
+			break;
+		endif
+	elseif( GetAmount ( blankscroll ) == 0 )
 		SendSysMessage( character , "You don't have any more blank scrolls." );
-		Autoloop_finish (); 
+		if(scrollRequest)
+			ReleaseResourceLease(scrollRequest);
+		endif
+		Autoloop_finish ();
 		return;
-	endif	
-	
+	endif
+
 	/*** Second check if there's enough mana left ***/
 	if( GetMana(character) < manacost )
 		SendSysMessage( character , "You don't have enough mana." );
+		if(scrollRequest)
+			ReleaseResourceLease(scrollRequest);
+		endif
 		Autoloop_finish ();
 		return;
 	else
 		SetMana(character, GetMana(character) - manacost );
 	endif
-	
+
 	/*** If inscription failed, autolooping can continue ***/
 	if( !CheckSkill( character , SKILLID_INSCRIPTION , skill , points ) )
 		SendSysmessage( character , "You fail and destroy the scroll" );
-		SubtractAmount( blankscroll , 1 );		
+		if(scrollRequest)
+			ConsumeResource(character, scrollRequest, 1);
+		else
+			SubtractAmount( blankscroll , 1 );
+		endif
 	else
-	/*** That's ok ***/		
+	/*** That's ok ***/
 		CreateItemInBackpack( character , scrollobjtype );
-		PlaySoundEffect( character , SOUND_EFFECT_INSCRIPTION ); 
+		PlaySoundEffect( character , SOUND_EFFECT_INSCRIPTION );
 		SendSysmessage( character , "You create the scroll and put it in your backpack" );
-		SubtractAmount( blankscroll , 1 );
+		if(scrollRequest)
+			ConsumeResource(character, scrollRequest, 1);
+		else
+			SubtractAmount( blankscroll , 1 );
+		endif
+	endif
+
+	// Extend lease for next iteration (if cache-sourced)
+	if(scrollRequest)
+		if(!ExtendResourceLease(scrollRequest, character, 1))
+			break;
+		endif
 	endif
 
    endwhile
-	
+
+   if(scrollRequest)
+	ReleaseResourceLease(scrollRequest);
+   endif
    Autoloop_finish();
 
 endfunction

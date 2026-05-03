@@ -1,3 +1,4 @@
+// Synopsis: Repeatedly teleport to clicked locations until cancelled
 /////////////////////////////////////////////////////
 //
 //  ".mtele" - multiple teleport

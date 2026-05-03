@@ -1,3 +1,4 @@
+// Synopsis: Create an event loot bag for a targeted mobile
 use uo;
 
 include "include/random";

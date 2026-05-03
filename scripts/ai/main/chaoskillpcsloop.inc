@@ -3,10 +3,12 @@ include "include/client";
 include "include/areas";
 include "include/attributes";
 include "include/npcboosts";
+include "include/anchors";
 
 
 function main_AI_loop()
 
+	var me := self();
 	var ev;
 	var wanders := 60;
 	var next_loot := readgameclock() + 20;
@@ -15,6 +17,7 @@ function main_AI_loop()
 
 	if ( getobjproperty(me,"summoned") ) LOOTSTUFF := 0; endif
 
+	//var HALT_THRESHOLD := 8;
 
 	EnableMainEvents();
    
@@ -101,7 +104,7 @@ function main_AI_loop()
 						mydestx := ev.x;
 						mydesty := ev.y;
 						steps := 0;
-						drop_anchor();
+						drop_anchor(me);
 						WalkTowardLocation(mydestx, mydesty);
 				endcase
 			until (!(ev := os::wait_for_event(2)));

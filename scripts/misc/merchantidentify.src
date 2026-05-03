@@ -3,7 +3,7 @@ use os;
 use math;
 
 include "include/client";
-include "include/namingbyenchant";
+include "include/itemid_core";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,14 +17,15 @@ include "include/namingbyenchant";
 program IdentifyItem(parms)
 
 var who, IDENTIFY, me;
-var delay := 4;
+var delay := 0;
 const MIN_DELAYMS := 250;
+const MERCHANT_ID_LOCK_SECONDS := 120;
 who := parms[1];
 me := parms[2];
 IDENTIFY := parms[3];
 
 // Set temp prop so player can't open multiple id's
-SetObjProperty(who, "#MerchantID", 1);
+SetObjProperty(who, "#MerchantID", ReadGameClock() + MERCHANT_ID_LOCK_SECONDS);
 
 var item := Target(who);
 
@@ -68,14 +69,8 @@ endif
 
 // If players wants a bag identified
 if (item.isa(POLCLASS_CONTAINER))
-	var iditems := {};
+	var iditems := IDCore_CollectContainerMagicItems(item);
 	var cost := IDENTIFY;
-
-	foreach thing in EnumerateItemsInContainer(item)
-		if (GetObjProperty(thing, "UnIDedMagicalItem"))
-			iditems.append(thing);
-		endif
-	endforeach
 
 	if (iditems.size() < 1)
 		PrintTextAbovePrivate( me, "I can not see any items that need to be identified in there.", who);
@@ -91,19 +86,15 @@ if (item.isa(POLCLASS_CONTAINER))
 
 	// Player has enough money identify
 	if (who.spendgold(cost))
-		//foreach thing in iditems
-		//	SetNameByEnchant( thing );
-		//endforeach
-		
 		SendSysMessage(who,"There's "+iditems.Size()+" magical items to identify.", FONT_NORMAL, 2601 );
-		foreach item in iditems
-			if( !Accessible( who , item ) || Distance( who , item ) > 2)
-				SendSysMessage( who , "You can't reach that." );
-				return 1;
-			endif
-			ItemID(who,item);
-			sleepms( Max( delay, MIN_DELAYMS ) );
-		endforeach
+		IDCore_IdentifyContainerItems(
+			who,
+			item,
+			0,
+			Max( delay, 0 ),
+			0,
+			0
+		);
 
 		PrintTextAbovePrivate( me, "All items in thy container are now identified", who);	
 	else
@@ -125,7 +116,7 @@ else
 
 		// Player has enough money identify
 		if (who.spendgold(IDENTIFY))
-			SetNameByEnchant( item );
+			ItemID(who, item);
 			PrintTextAbovePrivate( me, "That appears to be a "+item.desc, who);	
 		else
 			PrintTextAbovePrivate( me, "You do not have enough gold to pay for that", who);	
@@ -137,112 +128,7 @@ EraseObjProperty(who, "#MerchantID");
 endprogram
 
 function ItemID(who,the_item)
-
-	var ided := GetObjProperty( the_item , "IDed" );
-
-	if( !ided )		
-		if( !IsIDable( the_item ) )
-			SendSysmessage( who , "This is a normal item." );
-			SetObjProperty( the_item , "IDed" , 1 );
-			return 1;
-		endif
-	endif 
-
-	if( GetObjProperty( the_item , "UnIDedMagicalItem" ) or 
-		GetObjProperty( the_item , "Enchanted" ) or 
-		GetObjProperty( the_item , "IsGMItem" ) or 
-		GetObjProperty( the_item , "EnchantColor" ) or
-		GetObjProperty( the_item , "StaticName" ) )	
-		if( !ided )
-			SetNameByEnchant( the_item );
-		endif
-		GetItemDetails(who, the_item);			
-	else
-		SendSysmessage( who , "This is a normal item." );
-	endif
-	
-	SetObjProperty( the_item , "IDed" , 1 );
-	
+	IDCore_IdentifyItem(who, the_item, 0);
 	return 1;
-		
-endfunction
-
-function IsIDable( item )
-
-	if( item.graphic >= 0x182a and item.graphic <= 0x1848 )
-		return 0;
-	elseif( item.graphic >= 0x0efb and item.graphic <= 0x0f0e )
-		return 0;
-	elseif( item.graphic >= 0x100e and item.graphic <= 0x1013 )
-		return 0;
-	elseif( IsStackable( item, item ) )
-		return 0;
-	else
-		return 1;
-	endif
-
-endfunction
-
-function GetItemDetails(who, the_item)
-
-	var hasdetails := 0;
-
-	var ncharges   := GetObjProperty( the_item , "charges" );
-	var manastored := GetObjProperty( the_item , "ManaLevel" );
-
-	if( GetObjProperty( the_item , "IsGMItem" ))
-		SendSysMessage( who , "It appears to be a " + the_item.desc + "," , FONT_NORMAL, 2589 );
-	elseif( GetObjProperty( the_item , "isLegendary" ))
-		SendSysMessage( who , "Woohoo! It appears to be a " + the_item.desc + "," , FONT_BOLD, 2578 );
-	elseif( GetObjProperty( the_item , "isRare" ))
-		SendSysMessage( who , "It appears to be a " + the_item.desc + "," , FONT_NORMAL, 2567 );
-	elseif( GetObjProperty( the_item , "isRareProt" ))
-		SendSysMessage( who , "It appears to be a " + the_item.desc + "," , FONT_NORMAL, 68 );
-	elseif( GetObjProperty( the_item , "isUncommonProt" ))
-		SendSysMessage( who , "It appears to be a " + the_item.desc + "," , FONT_NORMAL, 6 );
-	elseif( GetObjProperty( the_item , "isUncommon" ))
-		SendSysMessage( who , "It appears to be a " + the_item.desc + "," , FONT_NORMAL, 53 );
-	else
-		SendSysmessage( who , "It appears to be a " + the_item.desc + "," );
-	endif
-	if( ncharges )
-		var staticname := GetObjProperty( the_item , "StaticName" );
-		var true_name := GetObjProperty( the_item , "tname" );
-				
-		if( staticname )
-			Setname( the_item , staticname );		
-		elseif( true_name ) 
-			Setname( the_item , true_name );
-		endif
-		
-		SendSysmessage( who , "and there's " + ncharges + " charges left in that item." );
-		hasdetails := 1;
-		
-	elseif( manastored )
-		var staticname := GetObjProperty( the_item , "StaticName" );
-		var true_name := GetObjProperty( the_item , "tname" );
-				
-		if( staticname )
-			Setname( the_item , staticname );		
-		elseif( true_name ) 
-			Setname( the_item , true_name );
-		endif
-		
-		SendSysmessage( who , "and there's " + manastored + " mana stored in it." );
-		hasdetails := 1;
-	endif
-
-	if( GetObjProperty( the_item , "EffectCircle") )
-		SendSysmessage( who , "Circle: " + GetObjProperty( the_item , "EffectCircle") );
-		SendSysmessage( who , "Chance: " + GetObjProperty( the_item , "ChanceOfEffect") );
-		hasdetails := 1;
-	endif
-		
-	if( GetObjProperty( the_item , "Poisonlvl") )		
-		SendSysmessage( who , "And it seems to be imbued with a Deadly level " + GetObjProperty( the_item , "Poisonlvl") + " poison!", FONT_NORMAL, 2580 );
-		hasdetails := 1;
-	endif
-
-	return hasdetails;
 
 endfunction

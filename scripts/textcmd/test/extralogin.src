@@ -1,3 +1,4 @@
+// Synopsis: Grant a targeted player an extra simultaneous login slot
 use uo;
 
 program extralogin( who )

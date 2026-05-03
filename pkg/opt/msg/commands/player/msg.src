@@ -1,3 +1,4 @@
+// Synopsis: Open your private message log gump
 use os;
 use os;
 use datafile;

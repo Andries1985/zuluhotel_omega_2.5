@@ -1,3 +1,4 @@
+// Synopsis: Repair or reset a targeted town stone
 use uo;
 
 program textcmd_fixstone( who )

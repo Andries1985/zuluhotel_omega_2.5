@@ -158,6 +158,9 @@ function SetNameByEnchant( item , cursed := 5 )
 
 	//See if the item have a skill mod and apply the name
 	var skillid := GetObjProperty( item , "skilladv" );
+	if ( !(skillid or skillid == 0) )
+		skillid := GetObjProperty( item , "ShieldAdv" );
+	endif
 	if ( skillid or skillid == 0 )
 		RenameBySkill( item , skillid , cursed );
 	endif
@@ -221,6 +224,9 @@ function RenamebySkill( item , id := 0 , cursed := 0)
 	var amount := Cint(GetObjProperty( item , "skilladvamount" ));
 	if (GetObjProperty( item , "WeapAdv" ))
 		amount := Cint( amount / 5 );
+	endif
+	if (GetObjProperty( item , "ShieldAdv" ) )
+		amount := CInt( (amount * 2 ) / 5 );
 	endif
 
 	var divider := Cint( GetObjProperty( item , "SpecMult" ) );

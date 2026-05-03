@@ -1,3 +1,4 @@
+// Synopsis: Recall your totem to your location (once per day)
 
 use os;
 use uo;

@@ -82,8 +82,8 @@ program merchantai()
 	var mydestx := 0;
 	var mydesty := 0;
 	var steps   := 0;
-	var wanders := 60;
-	var next_wander := ReadGameClock();
+	var wanders := 0;
+	var next_wander := ReadGameClock() + RandomDice( 2, 50, 10 );
 
 	while (1)
 		if (me.hidden)
@@ -98,7 +98,7 @@ program merchantai()
 		if (ReadGameClock() > next_wander)
 			if (mydestx != 0)
 				WalkTowardLocation(mydestx, mydesty);
-				if ( (me.x == mydestx and me.y == mydesty) or ( steps > 10 ) )
+				if ( (me.x == mydestx and me.y == mydesty) or ( steps > 15 ) )
 					mydestx := 0;
 					SetAnchor( me.x, me.y, 3, 80 );
 				endif
@@ -106,8 +106,8 @@ program merchantai()
 				Wander();
 				wanders := wanders + 1;
 			endif
-			next_wander := ReadGameClock() + 2;
-			if (wanders > 10)
+			next_wander := ReadGameClock() + RandomDice( 2, 50, 10 );
+			if (wanders > 15)
 				wanders := 0;
 				WalkHome();
 				ev := sleepmode();
@@ -118,7 +118,7 @@ program merchantai()
 
 		if (ev)
 			if (ProcessEvent(ev, mydestx, mydesty, steps))
-				next_wander := ReadGameClock() + 30;
+				next_wander := ReadGameClock() + RandomDice( 2, 50, 10 );
 			endif
 		elseif (ReadGameClock() > next_restock)
 			if ( GetObjProperty(me, "restock") )
@@ -332,8 +332,13 @@ function ProcessEvent(byref ev, byref mydestx, byref mydesty, byref steps)
 		// Toadstool -  Added identifying items for mage/scribe npcs
 		//		Have it start a script so a player can't 'hold' up the merchant
 			elseif ( ev.text["identify"] && (me.npctemplate == "mage" || me.npctemplate == "scribe") )
-				// Check if player already has id window open
-				if (GetObjProperty(ev.source, "#MerchantID") != 1)
+				// Check if player already has id window open (lock is an expiry timestamp)
+				var merchant_id_lock := CInt(GetObjProperty(ev.source, "#MerchantID"));
+				if( merchant_id_lock && merchant_id_lock <= ReadGameClock() )
+					EraseObjProperty(ev.source, "#MerchantID");
+					merchant_id_lock := 0;
+				endif
+				if( !merchant_id_lock )
 					TurnToward( ev.source );
 					PrintTextAbovePrivate( me, "What do you want me to identify?", ev.source );
 					Start_Script("::misc/merchantidentify", {ev.source, me, IDENTIFY});
@@ -917,6 +922,7 @@ function TrainSkill( me, who, item )
 
 				// Set the PC's skill
 				SetBaseSkillBaseValue( who, TrainSkillID, New_Level);
+				RecalculateEquippedSkillBonus( who, TrainSkillID );
 
 				DestroyItem( item );  // Destroy gold
 
@@ -1061,6 +1067,7 @@ var skillamt := GetBaseSKillBaseValue(me, skill)/3 - GetBaseSKillBaseValue(who, 
 
 if (who.spendgold(skillamt))
 	SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt);
+	RecalculateEquippedSkillBonus( who, skill );
 else
 	var goldamt := 0;
 	// Not enough gold for full skill, try less
@@ -1073,6 +1080,7 @@ else
 	if (goldamt > 1 && goldamt <= skillamt)
 		if (who.spendgold(goldamt))
 			SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+goldamt);
+			RecalculateEquippedSkillBonus( who, skill );
 		else
 			return 0; // SHOULD never hit here
 		endif
@@ -1109,6 +1117,7 @@ endif
 
 if (who.spendgold(CInt(skillamt*10)))
 	SetBaseSkillBaseValue( who, skill, GetBaseSKillBaseValue(who, skill)+skillamt*10);
+	RecalculateEquippedSkillBonus( who, skill );
 	return 1;
 else
 	Say("You don't have enough gold to train.");

@@ -407,6 +407,7 @@ function ThiefHeal(who, bandages)
 	var delay 	:= DELAY_TO_HEAL;
 	var healing	:= skilltotal / 12;
 	var healed	:= RandomDiceStr( healing + "d2+" + healing ) + RandomDiceStr( "1d6+2" ) + healing;
+	healed := healed * 2;
 	// percent to heal is the percent of health that the thing needs healing
 	// so if its on 80/100HP this will be 20% needed to heal
 	var percent_to_heal := CDbl(GetHP(who))/CDbl(GetMaxHP(who))*100.00;
