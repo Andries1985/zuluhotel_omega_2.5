@@ -613,7 +613,7 @@ Centralised deposit gating. Checks:
 
 ### `pkg/std/alchemy/bluepotion.src` — 19-line change
 ### `pkg/std/alchemy/whitepotion.src` — 21-line change
-- Potion recipe adjustments
+- Potion recipe adjustments and deterministic tier mapping wired in
 
 ### `pkg/std/alchemy/itemdesc.cfg` — 8-line change
 - Item definition updates for new/adjusted potions
@@ -629,14 +629,137 @@ Centralised deposit gating. Checks:
 - Talisman (`0xffa3`) support hooks
 
 ### `pkg/opt/alchemyplus/itemdesc.cfg` — 93-line change
-- New/updated item definitions for AlchemyPlus potions
+- New/updated item definitions for AlchemyPlus potions; strength values updated for deterministic tiers
 
 ### `pkg/opt/alchemyplus/newpotions.src` — 144-line change
 ### `pkg/opt/alchemyplus/potionbook.src` — 20-line change
 - New potion types and potionbook updates
 
-### Patch Notes (new file)
-- `pkg/std/alchemy/PATCHNOTES-alchemyplus-balance-2026-04-25.md` — 309-line balance patch notes added
+### Internal Patch Notes (new file)
+- `pkg/std/alchemy/docs/PATCHNOTES-alchemyplus-balance-2026-04-25.md` — 309-line balance patch notes
+
+---
+
+## 19a. Potion Balance Overhaul (`f0910e2`, `f6d8da2`)
+
+**Primary files:** `pkg/std/alchemy/bluepotion.src`, `pkg/std/alchemy/whitepotion.src`, `pkg/opt/alchemyplus/newpotions.src`, `scripts/include/dotempmods.inc`, `pkg/std/alchemy/alchemy.src`, `pkg/opt/alchemyplus/alchemyplus.src`
+
+### Design Change: Deterministic Tiers
+All stat-buff, taint, mego, and homeric potions converted from `RandomDiceStr()` outcomes to fixed deterministic values. Formula:
+- `rank = base_tier + ByTrueMage(mage_level)` (min 1)
+- `stat_gain = rank * 10 + 5`
+- `duration = (rank + 1) * 480 seconds`
+- Stat potion cooldown override: 2 seconds at consume time
+
+### DEX / STR / INT Potions (`bluepotion.src`, `whitepotion.src`, `alchemy.src`)
+
+All three stat lines follow the same tier table. Brewed variant selected by mage level via `ByTrueMage()` mapping:
+
+| Potion | Mage Level | Gain | Duration |
+|--------|-----------|------|----------|
+| Lesser | Any | +5 | 8 min |
+| Standard | Non-Mage | +15 | 16 min |
+| Standard | M1 | +25 | 24 min |
+| Standard | M2+ | +35 | 32 min (cap) |
+| Greater | Non / M1 | +45 | 40 min |
+| Greater | M2–3 | +55 | 48 min |
+| Greater | M4–5 | +65 | 56 min |
+| Greater | M6 | +75 | 64 min |
+
+**INT Potion names:** Lesser = *Phandel's Fine Intellect*, Standard = *Fabulous*, Greater = *Fantastic*.
+
+### Taint Transmutations (`newpotions.src` — `DoPolyEffect`)
+
+Deterministic poly mod by effective strength tier (1–5):
+
+| Tier | Poly Mod | AR (floor/2) |
+|------|----------|--------------|
+| 1 | +10 | +5 |
+| 2 | +25 | +12 |
+| 3 | +40 | +20 |
+| 4 | +55 | +27 |
+| 5 | **+75** | +37 |
+
+- `f6d8da2`: Tier 5 (`default` case) raised from **+65 → +75**.
+- AR is computed from poly in temp-mod processing: `floor(poly_mod / 2)`.
+
+| Potion | Mage Level | Poly Mod | AR | Duration |
+|--------|-----------|----------|----|----------|
+| Taint Minor | Non | +10 | +5 | 12 min |
+| Taint Minor | M1–6 | +25 | +12 | 24 min |
+| Taint Major | Non / M1 | +40 | +20 | 36 min |
+| Taint Major | M2–3 | +55 | +27 | 48 min |
+| Taint Major | M4–6 | +75 | +37 | 60 min |
+
+### Mego / AR Protection Potions (`newpotions.src` — `DoProtectionEffect`)
+- `f6d8da2`: `mod_amount := RandomDiceStr(strength + "d2")` → `mod_amount := strength * 2` (deterministic)
+- `f6d8da2`: `duration := strength * 15` → `duration := strength * 15 + 300` (+5 minutes per tier)
+
+### Homeric Might (`newpotions.src`)
+
+| Potion | Mage Level | Bless Mod | Duration |
+|--------|-----------|-----------|----------|
+| Homeric | Non | +15 | 12 min |
+| Homeric | M1 | +30 | 24 min |
+| Homeric | M2–6 | +45 | 36 min |
+| Greater Homeric | Non / M1–2 | +45 | 36 min |
+| Greater Homeric | M3–5 | +60 | 48 min |
+| Greater Homeric | M6 | +75 | 60 min |
+
+---
+
+## 19b. Buff Stacking Enforcement (`f0910e2`, `f6d8da2`)
+
+**File:** `scripts/include/dotempmods.inc` — 102-line change
+
+### `TempModConflicts(existing_key, incoming_key)` — new function
+Called by `AddToStatMods` before applying any temp-mod. Returns 1 (block) on conflict.
+
+**Category definitions:**
+| Category | Keys |
+|----------|------|
+| `stat` | `str`, `cstr`, `dex`, `cdex`, `int`, `cint` |
+| `bless/poly` | `all`, `call`, `ebless`, `cebless`, `poly`, `cpoly` |
+| `ar` | `ar`, `car` |
+| `paralyze` | `p` |
+
+**`f0910e2` (initial):** Blocked all cross-stat combinations — `TempModIsSingleStat()` treated STR, DEX, INT as one category.
+
+**`f6d8da2` (fix):** Per-attribute separation — conflict only fires when same attribute conflicts with itself:
+```
+if( (TempModTouchesStrength(e) && TempModTouchesStrength(i)) ||
+    (TempModTouchesDexterity(e) && TempModTouchesDexterity(i)) ||
+    (TempModTouchesIntelligence(e) && TempModTouchesIntelligence(i)) )
+    return 1;
+```
+Result: STR+DEX+INT can all be active simultaneously; same-stat double-buff still blocked.
+
+**Allow/Block matrix (final state):**
+| Combination | Result |
+|-------------|--------|
+| STR + DEX, STR + INT, DEX + INT | ALLOW |
+| Same stat + same stat | BLOCK |
+| stat + bless/poly | ALLOW |
+| stat + ar | ALLOW |
+| bless + ar | ALLOW |
+| poly + ar | BLOCK |
+| bless/poly + bless/poly (different) | BLOCK |
+| poly + ar | BLOCK (poly contributes AR already) |
+| ar + ar | BLOCK |
+| paralyze + paralyze | BLOCK |
+
+### Protection Spell AR Gating
+**Files:** `pkg/std/spells/protection.src`, `pkg/std/spells/protection with timer.src`, `pkg/std/spells/archprot.src`
+
+- Pre-application check added: if any active mod key is in `{ar, car, poly, cpoly}`, spell is blocked.
+- Blocked cast sends message to caster. Arch Protection silently skips already-buffed targets.
+- `DoProtectionEffect` in `newpotions.src` has same pre-check (blocks Mego if AR/Poly already active).
+
+### Debug Command: `.showbuffcats` (`scripts/textcmd/test/showbuffcats.src` — new, 105 lines)
+- Staff-level command; target any mobile.
+- Outputs each active `#mod` key / category / amount / seconds remaining.
+- Summary line lists occupied buff categories.
+- Intended for verifying stacking enforcement in-game.
 
 ---
 
@@ -811,6 +934,96 @@ Centralised deposit gating. Checks:
 ---
 
 ## 28. NPC Spawn / Townspeople
+
+---
+
+## 28a. Spawn Chest System (New)
+
+**Primary commits:** `5cc13fe` (Elven Chest + spawnpoint logic overhaul), `b015787` (Level 7 loot fix), `f588f97` (checkpoint infinite loop fix), `c3205ae` (lockpicking review feedback)
+
+### `pkg/opt/spawnpoint/checkpoint.src` — 123-line change
+
+#### Activation Gate
+- Spawn chests **only generate** when `pt_data[5] == 300` (wander range field). Any other value aborts chest creation silently. This is the opt-in signal in spawn config.
+- Uses `PROPID_CHEST_SPAWNPOINT_CHEST` (`"SpawnPointChest"`) CProp instead of the old `PROPID_CHEST_TREASURE_CHEST` (`"TreasureChest"`). These are now distinct systems.
+
+#### Weighted Loot Tier Roll
+Chest loot group is determined by a `RandomInt(1000)` roll mapped to groups 301–307:
+
+| Roll Range | Loot Group | Chance |
+|-----------|-----------|--------|
+| 0–19 | 307 | 2% |
+| 20–119 | 306 | 10% |
+| 120–239 | 305 | 12% |
+| 240–389 | 304 | 15% |
+| 390–569 | 303 | 18% |
+| 570–779 | 302 | 21% |
+| 780–999 | 301 | 22% |
+
+#### Magic Level & Lock Difficulty by Tier
+| Loot Group | Magic Level | Magic Chance | Lock Difficulty |
+|-----------|------------|-------------|----------------|
+| 307 | 10 | 80–99% | 140–150 |
+| 306 | 9 | 70–99% | 120–140 |
+| 301–305 | 1–9 (random) | 30–99% | 50–120 |
+
+- `PROPID_CHEST_SPAWN_LEVEL` (`"SpawnChestLevel"`) stores `lootgroup - 300` (1–7) for display on unlock message.
+- Lock difficulty stored as `PROPID_CHEST_SPAWNPOINT_LOCK_DIFFICULTY` (`"SPLockPickDiff"`) — separate from the old `PROPID_CHEST_LOCK_DIFFICULTY`.
+- Old random difficulty (`RandomInt(101)+50`) replaced by tiered system above.
+
+#### Traps
+- **All spawn chests are always trapped** (removed the old `if(!RandomInt(10))` 10% chance gate — now always fires).
+- Trap type: `RandomInt(3)+1` (needle / poison / explosion).
+- Trap strength: `magic_level + 1` (scales with chest tier).
+- `PROPID_CHEST_TRAPPED_BY` set to `"Spawnpoint"` — allows traps.src to handle spawnpoint traps as a distinct case.
+- Chest `usescript` set to `USESCRIPTID_TRAPPED_CONTAINER`.
+
+#### Item Creation & Placement
+- Chest created at `DEFAULT_LOCATION_ITEM_CREATION_*` coords (safe staging location) before being moved, preventing mid-creation world placement.
+- `MoveObjectToLocation` now includes `realm` parameter (fixes cross-realm chest placement bug).
+- Chest set `movable := 0`, `locked := 1` after placement.
+- Chest serial appended to `PROPID_SPAWNPOINT_SPAWNED_OBJECTS` on the spawn point for cleanup tracking.
+- `b015787`: `magic_chance` floor for groups 301–305 lowered from 50% to 30% (wider spread).
+
+#### Infinite Loop Fix (`f588f97`)
+- Checkpoint loop bug that could cause the spawn process to hang indefinitely — fixed.
+
+### `pkg/opt/chests/lockpicking.src` — 99-line change
+
+#### Thief-Only Spawn Chest Lock Picking (`PickTreasureChest` — new function)
+- Spawn point chests (`PROPID_CHEST_SPAWNPOINT_CHEST`) are routed to a dedicated `PickTreasureChest()` function instead of the generic `LockPickTheThing()` path.
+- **Only Thieves can pick spawn chests** — non-thieves (`CLASSEID_THIEF` CProp absent) receive: *"You are not a thief!"* and are blocked.
+- Uses `PROPID_CHEST_SPAWNPOINT_LOCK_DIFFICULTY` for difficulty — tiered to chest loot level (50–150).
+- **Enemy proximity check**: if any hostile is within 4 tiles, the pick attempt is blocked.
+- On **success**: chest unlocked, lockpick consumed, level display message (*"You have unlocked a level X chest!"*), 5-minute self-destruct timer started via `misc/deleter`.
+- On **failure**: standard "unable to pick" message; second skill check determines if lockpick breaks.
+- `LastPickedBySerial` CProp set to picker's serial on unlock (audit trail).
+- `b015787`: Disabled legacy `SpawnTheChest()` call path (now a stub returning 0) — old chest-spawning-from-lockpick flow replaced by spawnpoint system.
+
+### `pkg/std/removetrap/removetrap.src` — 7-line change
+- `EraseObjProperty(item, "trapped_by")` added on successful disarm — previously this CProp was left orphaned.
+
+### `pkg/std/traps/traps.src` — 8-line change
+- Trap type comparison changed from string (`"1"`, `"2"`, `"3"`) to integer (`1`, `2`, `3`) — was silently failing for spawnpoint-set traps (which store integers, not strings).
+
+### `pkg/packethooks/megacliloc/itemdata.src`
+- `IsLockedSpawnPointChest(xObject)` check at top of item tooltip handler.
+- Returns empty props for any container with `SpawnPointChest` CProp that is currently locked — prevents players from reading loot level or item details before picking the chest.
+- `IDCore_IsLockedSpawnPointChest()` in `scripts/include/itemid_core.inc` gates Item ID skill and Talisman ID on locked spawn chests — cannot be identified while locked.
+
+### New PropID Constants (`scripts/include/constants/propids.inc`)
+| Constant | String Value | Purpose |
+|----------|-------------|--------|
+| `PROPID_CHEST_SPAWNPOINT_CHEST` | `"SpawnPointChest"` | Marks chest as spawn point type |
+| `PROPID_CHEST_SPAWNPOINT_LOCK_DIFFICULTY` | `"SPLockPickDiff"` | Tiered lock difficulty |
+| `PROPID_CHEST_SPAWN_LEVEL` | `"SpawnChestLevel"` | Loot tier display (1–7) |
+
+### `config/itemdesc.cfg`
+- **Elven Chest** (`5cc13fe`): New container objtype added for use as the spawn chest graphic.
+
+---
+
+## 28b. NPC Spawn / Townspeople
 
 ### `c442d6c`: Townsfolk AI overhaul
 - Townsfolk now stay within the city they were spawned in

@@ -71,8 +71,9 @@ The Tracking skill has been completely overhauled.
 
 - Talisman gems can now be mined. There are 8 new gems to be found.
 - Talisman crafting also requires a glowing brain, which can be found hunting and carving up corpses.
-- Alchemists can combine the brain with 1 of each of the new gems and a flask to create a Flask of Crystallized Intelligence.
-- Tinkers then can tinker that flask with an ore of your choosing to create the talisman.
+- Alchemists can craft a Flask of Crystallized Intelligence.
+    - Wyrm Heart, Daemon Bone, Dragon Blood, Obsidian, 1 each of the new gems, and a Glowing Brain are needed.
+- Tinkers then can tinker that Flask of Crystallized Intelligence with an ore of your choosing to create the talisman.
 - Once create you can equip the talisman of ID and use it to id items/corpses/bags etc, using a charge for each item ID'd.
     - *Note* The type of ore you use is just for color.  The amount of charges the Talisman has is based on crafter level.
 - Crafters can also create recharge flasks with the Smith of Retort to recharge your Talisman of ID.
@@ -137,6 +138,8 @@ Bard buffs have been normalised across all songs. Buffs are now based on your **
 - If a Boss or Super Boss tamed pet **enters a player house**, it will be automatically confiscated (instead of killed). Boss pets are not permitted inside houses.
     - This will also happen if your pets go wild inside of a safe zone.
     - You will get a ticket you can redeem at a stablemaster.
+        - There is a fine associated with the ticket you must pay to get your pet back.
+    - Untamed boss pets will still die if entering a multi.
 
 ### AI Improvements
 - Caster and Poisoner AI has been fixed.  Mobs that can be tamed that can cast spells will now do so.  Mobs that can poison will now do so again.
@@ -165,7 +168,6 @@ Bankers now have a full suite of banking commands you can use by talking to them
 - The cheque box now only accepts numeric input (no letters or symbols).
 - Player merchants can now give cheques to players.
 - Various speech queue and item transfer bugs fixed.
-- Bankers are excluded from the begging system.
 
 ---
 
@@ -205,6 +207,72 @@ Bankers now have a full suite of banking commands you can use by talking to them
 - **Fixed critical bug**: potions were being lost on the last crafting loop iteration because the bottle was consumed before the potion was created. This has been corrected — the potion is always created before the bottle is consumed.
 - AlchemyPlus error messages improved.
 
+### Potion Balance Overhaul
+
+- Stat potions (DEX/STR/INT), Taints, Megos, and Homeric bless potions have been completely rebalanced. All buff values are now **deterministic** — no more random dice rolls.
+- Alchemists who have invested in **Mage levels** brew more potent variants of these potions. Higher mage levels unlock stronger versions.
+- A 2-second cooldown between stat potions is enforced.
+
+#### DEX / STR / INT Potions
+All three stat types follow the same progression:
+
+| Potion | Brewed By | Gain | Duration |
+|--------|-----------|------|----------|
+| Lesser (Agility / Strength / Intellect) | Any | +5 | 8 min |
+| Standard | Non-Mage | +15 | 16 min |
+| Standard | Mage 1 | +25 | 24 min |
+| Standard | Mage 2+ | +35 | 32 min |
+| Greater | Non-Mage / Mage 1 | +45 | 40 min |
+| Greater | Mage 2–3 | +55 | 48 min |
+| Greater | Mage 4–5 | +65 | 56 min |
+| Greater | Mage 6 | +75 | 64 min |
+
+#### Taint Transmutations (Poly + AR)
+Taints now give a deterministic poly modifier and AR bonus based on potion tier, instead of random rolls.
+
+| Potion | Brewed By | Poly Mod | AR | Duration |
+|--------|-----------|----------|----|----------|
+| Taint Minor | Non-Mage | +10 | +5 | 12 min |
+| Taint Minor | Mage 1–6 | +25 | +12 | 24 min |
+| Taint Major | Non-Mage / Mage 1 | +40 | +20 | 36 min |
+| Taint Major | Mage 2–3 | +55 | +27 | 48 min |
+| Taint Major | Mage 4–6 | +75 | +37 | 60 min |
+
+#### Homeric Might (Bless)
+Homeric potions now use fixed tier values:
+
+| Potion | Brewed By | Bless Mod | Duration |
+|--------|-----------|-----------|----------|
+| Homeric | Non-Mage | +15 | 12 min |
+| Homeric | Mage 1 | +30 | 24 min |
+| Homeric | Mage 2–6 | +45 | 36 min |
+| Greater Homeric | Non-Mage / Mage 1–2 | +45 | 36 min |
+| Greater Homeric | Mage 3–5 | +60 | 48 min |
+| Greater Homeric | Mage 6 | +75 | 60 min |
+
+#### Mego (AR Protection) Potions
+- Mego buff is now deterministic: AR (was a random dice roll).
+- Duration increased by **+5 minutes** across all tiers.
+
+#### Buff Stacking Rules
+A new conflict system now controls which buffs can stack:
+
+| Combination | Can Stack? |
+|-------------|------------|
+| STR + DEX | ✅ Yes |
+| STR + INT | ✅ Yes |
+| DEX + INT | ✅ Yes |
+| STR + STR (two strength buffs) | ❌ No |
+| Bless + AR | ✅ Yes |
+| Poly + AR |  ❌ No |
+| Taint + Mego (Poly already gives AR) | ❌ No |
+| Homeric + Mego | ✅ Yes |
+| Two AR sources | ❌ No |
+| Protection spell + Mego | ❌ No |
+
+- Basically you can have one of either bless or poly, a str, int, dex source, and AR source (if not polyed)
+- **Protection spell** (and Arch Protection) also check for existing AR/Poly buffs before applying — if you already have an AR effect active, the spell is blocked.
+
 ---
 
 ## 🔨 Crafting — Tinkering
@@ -214,7 +282,31 @@ Bankers now have a full suite of banking commands you can use by talking to them
 
 ---
 
-## 🗺️ Treasure Maps
+## � Spawn Chests
+
+Spawn chests are locked, trapped containers that appear in the world at designated spawn points. They have been completely overhauled.
+
+### Who Can Open Them
+- Spawn chests can **only be lockpicked by Thieves**. All other classes are blocked.
+- You must have **no enemies within 4 tiles** while picking — any nearby hostile breaks your concentration.
+- If you successfully pick the lock, you have **5 minutes** to loot the chest before it disappears.
+- On unlock, the chest tells you what level it is: *"You have unlocked a level X chest!"*
+
+### Loot Tiers
+- Every chest that spawns is assigned a random loot tier (1–7) using a weighted roll:
+- Higher tier chests have **harder locks** and **higher magic item chance**.
+
+### Traps
+- **Every spawn chest is trapped** — no exceptions. Trap type is random (needle / poison / explosion) and strength scales with the chest's loot tier.
+- Use the **Remove Trap** skill to disarm before opening, or take the damage.
+
+### Tooltips & Item ID
+- While a spawn chest is **locked**, its tooltip shows nothing — you cannot read its loot level or contents until you successfully pick it.
+- Item ID and Talisman ID skills are also blocked on locked spawn chests.
+
+---
+
+## �🗺️ Treasure Maps
 
 - Treasure map digging now honours **Personal Power Hour** (`#PPHC`) — if you have your personal power hour active, it applies to your dig.
 - The magic item chance per chest is now **randomised** per dig rather than fixed.
@@ -238,10 +330,11 @@ Bankers now have a full suite of banking commands you can use by talking to them
 - **Nyx and Rikktor** moved to **Tier 11** loot.
 - Shields now have their own loot functions with per-skill proc chances (different shield procs depending on relevant combat skill).
 - Dragon armor, kimonos, kamishimo, and new clothing items added to the loot table and enchantable item lists.
+    - male and female kimonos, kamishimo, checkered shirt, jinbaori, obi, hakamashita, tattsukehakama, hakama, elven glasses, elven robes, elven male shirts, elven female shirts, elven pants, elven boots
 - New items added with appropriate restricted class groups and drop locations.
 - Legendary items have been reintroduced with corrected drop rates.
 
----
+--- 
 
 ## 🔍 Item Tooltips
 
@@ -336,6 +429,7 @@ A deadly fusion of blade and song — a duelist who fights with finesse and cont
 ## 🐛 Bug Fixes
 
 - Fixed an issue where players could not mount certain mounts if they weren't a donator mount graphic.
+    - IE. Poisonmare, Nightmare should be ridable again.
 - Fixed a naming issue for shields.
 - Fixed ArmorZone calculation errors that could produce incorrect armor zone lookups.
 - Fixed tracker map reset not clearing correctly between uses.
@@ -344,7 +438,7 @@ A deadly fusion of blade and song — a duelist who fights with finesse and cont
 - HP spawning with less HP (NPCs no longer spawn with incorrect HP values).
 - Various compilation errors fixed.
 - Fixed Warrior for Hire healing bandage spam after being ressed.
-
+- ID bug fixed where you could get stuck in a perma ID state and no longer able to use the skill.  (Relogging shall fix the issue)
 ---
 
 *Thank you for playing Zuluhotel Omega. This update represents months of development work. Please report any bugs to staff.*
