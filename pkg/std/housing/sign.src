@@ -169,6 +169,8 @@ program textcmd_sign( who , sign )
 		GetMaxProps(house);
 	endif
 
+	RecountHouseStorageUsage(house);
+
 	data[8] := GetObjProperty( house , "maxnumlockdowns" ) - GetObjProperty( house , "numlockdowns" ) +"/"+ GetObjProperty( house , "maxnumlockdowns" );
 	data[10] := GetObjProperty( house , "maxnumsecure" ) - GetObjProperty( house , "numsecure" ) +"/"+ GetObjProperty( house , "maxnumsecure" );
 	data[12] := GetObjProperty(house, "maxnumomegacache") - GetObjProperty(house, "numomegacache") + "/" + GetObjProperty(house, "maxnumomegacache");
@@ -450,6 +452,57 @@ function RefreshHouseItems( house )
 		addonitem.decayat := ReadGameClock() + 5184000;
 	endif
 
+endfunction
+
+function RecountHouseStorageUsage(house)
+	if(!house)
+		return;
+	endif
+
+	var max_lockdowns := CInt(GetObjProperty(house, "maxnumlockdowns"));
+	var max_secures := CInt(GetObjProperty(house, "maxnumsecure"));
+	var max_omegacaches := CInt(GetObjProperty(house, "maxnumomegacache"));
+
+	if(!max_lockdowns and !max_secures and !max_omegacaches)
+		GetMaxProps(house);
+		max_lockdowns := CInt(GetObjProperty(house, "maxnumlockdowns"));
+		max_secures := CInt(GetObjProperty(house, "maxnumsecure"));
+		max_omegacaches := CInt(GetObjProperty(house, "maxnumomegacache"));
+	endif
+
+	var used_lockdowns := 0;
+	var used_secures := 0;
+	var used_omegacaches := 0;
+
+	foreach item in (house.items)
+		if(GetObjProperty(item, "lockeddown"))
+			used_lockdowns := used_lockdowns + 1;
+		endif
+		if(item.usescript == USESCRIPTID_SECURE_CONTAINER)
+			used_secures := used_secures + 1;
+		endif
+		if(item.objtype == OMEGACACHE_OBJTYPE)
+			used_omegacaches := used_omegacaches + 1;
+		endif
+	endforeach
+
+	var remaining_lockdowns := max_lockdowns - used_lockdowns;
+	var remaining_secures := max_secures - used_secures;
+	var remaining_omegacaches := max_omegacaches - used_omegacaches;
+
+	if(remaining_lockdowns < 0)
+		remaining_lockdowns := 0;
+	endif
+	if(remaining_secures < 0)
+		remaining_secures := 0;
+	endif
+	if(remaining_omegacaches < 0)
+		remaining_omegacaches := 0;
+	endif
+
+	SetObjProperty(house, "numlockdowns", remaining_lockdowns);
+	SetObjProperty(house, "numsecure", remaining_secures);
+	SetObjProperty(house, "numomegacache", remaining_omegacaches);
 endfunction
 
 function AssignDefaultContainers( house )
@@ -1083,6 +1136,8 @@ function HouseFunctionLock(who, house, num )
 		return;
 	endif
 
+	RecountHouseStorageUsage(house);
+
 	var itemt := Target( who, TGTOPT_NOCHECK_LOS );
 	if(!itemt)
 		SendSysmessage( who, "Canceled." );
@@ -1147,6 +1202,8 @@ function HouseFunctionSecure( who, house, num )
 	if(!house)
 		return;
 	endif
+
+	RecountHouseStorageUsage(house);
 
 	var itemt;
 	if( num == 3 ) // num = 3 (delete)
