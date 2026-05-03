@@ -4,7 +4,7 @@
 
 ---
 
-Welcome to **v1.0.0** — the largest update to Zuluhotel Omega in years. This patch introduces the **Omega Cache**, a complete overhaul of the crafting material storage system, alongside significant improvements to tracking, loot, combat, tamed pets, housing, bard songs, and much more.
+Welcome to **Patch 1.0.0** — the largest update to Zuluhotel Omega in years. This patch introduces the **Omega Cache**, a complete overhaul of the crafting material storage system, alongside significant improvements to tracking, loot, combat, tamed pets, housing, bard songs, and much more.
 
 ---
 
