@@ -61,10 +61,10 @@ if (who.isa(POLCLASS_NPC))
 	var hits := npcdesc[who.npctemplate].HITS;
 	if (GetObjProperty(who, "CustomHitsLevel"))
 		life := CInt(GetObjProperty(who, "CustomHitsLevel"));
-		if ((GetMaxHp(who) != GetHp(who) and !GetObjProperty(who, "firstTimeCustomHp")) || GetMaxHp(who) != GetHp(who) && GetGlobalProperty("CustomHPFix"))
-		SetHP(who, GetMaxHP(who));
-		SetObjProperty(who, "firstTimeCustomHp", 1);
-		endif
+		// if ((GetMaxHp(who) != GetHp(who) and !GetObjProperty(who, "firstTimeCustomHp")) || GetMaxHp(who) != GetHp(who) && GetGlobalProperty("CustomHPFix"))
+		// SetHP(who, GetMaxHP(who));
+		// SetObjProperty(who, "firstTimeCustomHp", 1);
+		// endif
 	endif
 endif
 

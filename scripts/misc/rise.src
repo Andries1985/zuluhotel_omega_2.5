@@ -20,6 +20,7 @@ program rise(corpse)
 		var the_critter := CreateNpcFromTemplate( template , x , y , z );
 		if( the_critter )
 			SetObjProperty( the_critter , "noloot" , 1 );
+			SetObjProperty( the_critter , "RiseLootTransfer" , 1 );
 				
 			if ( !the_critter.backpack )
 				var newbackpack := CreateItemAtLocation(the_critter.x , the_critter.y , the_critter.z , 0xe75 , 1 );
@@ -27,6 +28,7 @@ program rise(corpse)
 			endif
 
 			foreach item in EnumerateItemsInContainer( corpse )
+				SetObjProperty( item , "KeepOnNoLootDeath" , 1 );
 				MoveItemToContainer( item, the_critter.backpack );
 			endforeach
 			
