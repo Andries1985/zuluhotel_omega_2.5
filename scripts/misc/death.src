@@ -175,9 +175,16 @@ program npcdeath(corpse)
 	if( GetObjProperty( corpse, "noloot") )
 		foreach item in EnumerateItemsInContainer( corpse )
 			if( item.container == corpse )
+				if( GetObjProperty( corpse, "RiseLootTransfer" ) and GetObjProperty( item, "KeepOnNoLootDeath" ) )
+					EraseObjProperty( item, "KeepOnNoLootDeath" );
+					continue;
+				endif
 				DestroyItem(item);
 			endif
 		endforeach
+		if( GetObjProperty( corpse, "RiseLootTransfer" ) )
+			EraseObjProperty( corpse, "RiseLootTransfer" );
+		endif
 	else
 		MakeLoot(corpse);
 		RegisterNPC(corpse);
