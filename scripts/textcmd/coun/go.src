@@ -1,156 +1,127 @@
 // Synopsis: Teleport to a named map location via location list gump
 // command .go  started June 19, 2000
 // Zulu (zulu@zuluhotel.com)
-// last updated June 25, 2000
+// Rewritten to use gumps package
 
 use os;
 use uo;
 use cfgfile;
 
 include ":staff:include/staff";
+include ":gumps:gumps";
 include "include/math"; // Used for Mod
 
-const TEXTSTARTLOCY :=  70;  // The location of the top of the gump
-
-var layout := array(      // The layout of the gump with text notes to be added later
-"page 0",
-"nodispose",
-"nomove",
-"resizepic  50   0 2600 540 405", // background
-
-"text 120 59 300 0",
-"text 220 59 300 1",
-"text 270 59 300 2",
-"text 320 59 300 0",
-"text 420 59 300 1",
-"text 470 59 300 2"
-);
-
-var data := array(      // The data array that holds all the text to be displayed in the gump
-       "Location",         //0
-       "Goto",
-       "Send"
-);
+// Gump layout constants
+const HEADER_Y      := 50;  // Y of column headers
+const TEXTSTARTLOCY := 72;  // Y of first location row
+const ROW_HEIGHT    := 18;  // Pixels per row
+const COL1_X        := 72;  // Left column: location name X
+const COL2_X        := 312; // Right column: location name X
+const BTN_GO_OFS    := 160; // Go button X offset from column
+const BTN_SND_OFS   := 200; // Send button X offset from column
+const BTN_Y_OFS     := 5;   // Lower arrow buttons to match text baseline
 
 program textcmd_go( who, text )
 
-/* 	var gCmd := GetObjProperty(who, ".go");
-	if(!gCmd)
-		SendSysMessage( who , "You havn't been granted this command." );
-		LogCommand(who, GetProcess(GetPid()).name, who.name+" is trying to use .go without permission!");
-		return;
-	endif
-	if(who.cmdlevel < 4 && ReadGameClock() > gCmd)
-		SendSysMessage( who , "You can't use this command anymore." );
-		EraseObjProperty(who, ".go");
-		return;
-	endif */
+  // Test to see if the user sent a location via command text.
+  // If not, show gump; else attempt travel to that location.
+  if (!text)
 
-  // Test to see if the user sent a location via command text.  if not show gump, else attempt travel to that location
-  if(!text)
+    var locs    := readconfigfile("::golocs");
+    var MaxLocs := GetConfigMaxIntKey(locs);
 
-    // The name of the current user of this command
-    var tname := lower(who.name);
+    var gump := BuildGoGump(locs, MaxLocs);
+    var result := GFSendGump(who, gump);
 
-    // Create the Array
-    FillInArrays( tname );
-
-    // Display the array and receive a responce from the player
-    var result := SendDialogGump( who, layout, data );
-
-    // If the user canceled, quit
+    // If the user cancelled, quit
     if (result[0] == 0)
       return;
     endif
 
-    // Open files and set veriables
-    var locs    := readconfigfile("golocs");
-    var MaxLocs := GetConfigMaxIntKey(locs);
-    var Dest    := locs[mod(result[0], MaxLocs)];
+    var btn      := result[0];
+    var Dest;
     var Traveler;
 
-    // Determine if we are teleporting ourselves or someone other and set the traveler variable
-    if ( result[0] > MaxLocs ) // teleporting someone else
-       SendSysmessage( who , "Select a MOBILE." );
-       Traveler :=  Target( who , TGTOPT_NOCHECK_LOS );
-
-       if(!Traveler)
-         SendSysmessage( who , "Invalid selection." );
-         return;
-       endif
-		if(result[0] == MaxLocs*2)
-			Dest    := locs[MaxLocs];
-		endif
-    else
-      // Teleporting ourself
+    if (btn > MaxLocs) // Send button -- teleport someone else
+      var idx := btn - MaxLocs;
+      Dest := locs[idx];
+      SendSysmessage(who, "Select a MOBILE.");
+      Traveler := Target(who, TGTOPT_NOCHECK_LOS);
+      if (!Traveler)
+        SendSysmessage(who, "Invalid selection.");
+        return;
+      endif
+    else // Go button -- teleport self
+      Dest     := locs[btn];
       Traveler := who;
     endif
-	if(result[0] == MaxLocs)
-		Dest    := locs[mod(result[0], MaxLocs+1)];
-	endif
-	LogCommand(who, GetProcess(GetPid()).name, traveler.name+"/"+traveler.serial, "Sent TO "+dest.x+" "+dest.y+" "+GetMapInfo(Dest.X, Dest.Y).Z);
-    // Teleport moble
-    var move := MoveObjecttoLocation(Traveler, Dest.X, Dest.Y, Dest.Z, Dest.R ,MOVEOBJECT_FORCELOCATION );
-	if(!move)
-        SendSysMessage( who, "Unable to go there: " + move.errortext );
-	endif
-  else
-	var params := SplitWords( text );
-    if (len(params) < 3) // didn't pass Z
-        params[3] := GetMapInfo( CInt(params[1]), CInt(params[2]) ,CInt(params[3]));
+
+    LogCommand(who, GetProcess(GetPid()).name, traveler.name+"/"+traveler.serial, "Sent TO "+dest.x+" "+dest.y+" "+GetMapInfo(Dest.X, Dest.Y).Z);
+
+    var move := MoveObjectToLocation(Traveler, Dest.X, Dest.Y, Dest.Z, Dest.R, MOVEOBJECT_FORCELOCATION);
+    if (!move)
+      SendSysMessage(who, "Unable to go there: " + move.errortext);
     endif
 
-	var res := MoveObjectToLocation( who, CInt(params[1]), CInt(params[2]), CInt(params[3]), params[4],MOVEOBJECT_FORCELOCATION );
+  else
 
+    var params := SplitWords(text);
+    if (len(params) < 3) // didn't pass Z
+      params[3] := GetMapInfo(CInt(params[1]), CInt(params[2]), CInt(params[3]));
+    endif
+
+    var res := MoveObjectToLocation(who, CInt(params[1]), CInt(params[2]), CInt(params[3]), params[4], MOVEOBJECT_FORCELOCATION);
     if (!res)
-        SendSysMessage( who, "Unable to go there: " + res.errortext );
+      SendSysMessage(who, "Unable to go there: " + res.errortext);
     endif
 
   endif
 
 endprogram
 
-function FillInArrays( tname )
-    var telelocations := readconfigfile("::golocs");
-    var datalen;
-    var layoutlen;
-    var prev_y := cint(TEXTSTARTLOCY);
-    var datindx := 2;
-    var buttonret := 1;
-    var i, CurrLoc, rowloc:=120, locationscount := 0;
-    var numlocations := GetConfigMaxIntKey(telelocations);
-    for( i := 1 ; i <= numlocations; i := i + 1  )
-      CurrLoc := telelocations[i];
-      if ((CurrLoc.TYPE == "all") || (CurrLoc.TYPE == tname))
-        locationscount := locationscount + 1;
-        datalen := GetgoDataLength();
-        layoutlen := GetgoLayoutLength();
-        // Store Name
-        datindx := datalen+1;
-        data[datindx] := CurrLoc.Name;
-        if (mod(locationscount, 19) == 1)
-          // Pointer Down
-          if (locationscount >= 18)
-            rowloc :=320;
-          endif
-          prev_y := TEXTSTARTLOCY;
-        endif
-        layout[GetgoLayoutLength()+1] := ("text " + rowloc +" "+ cstr(prev_y + 20) + " 995 " + datalen);
-        layout[GetgoLayoutLength()+1] := ("button " + (rowloc+110) +" "+cstr(prev_y + 25) + " 2103 2104 1 0 " + ((buttonret+1) / 2)); // Go Button
-        layout[GetgoLayoutLength()+1] := ("button " + (rowloc+160) +" "+cstr(prev_y + 25) + " 2103 2104 1 0 " + (((buttonret+1) / 2) + numlocations)); // Send Button
-        prev_y := prev_y + 15;
-      endif
-      buttonret := buttonret + 2;
-    endfor
-endfunction
+// Builds and returns the go gump using the gumps package API.
+// Go buttons   return values 1..MaxLocs
+// Send buttons return values MaxLocs+1..MaxLocs*2
+function BuildGoGump(byref locs, MaxLocs)
 
-// Returns the Length of the Layout Gump Array
-function GetgoLayoutLength();
-    return (len(layout));
-endfunction
+  // Gump height: header area + rows + bottom padding
+  var rows_per_col := MaxLocs > 20 ? 20 : MaxLocs;
+  var gump_height  := TEXTSTARTLOCY + (rows_per_col * ROW_HEIGHT) + 36;
 
-// Returns the length of the Names Array that populates the gump.
-function GetgoDataLength();
-    return (len(data));
-endfunction
+  var gump := GFCreateGump(50, 50, 540, gump_height);
+  GFResizePic(gump, 20, 20, 3500, 540, gump_height);
+  GFMovable(gump, 0);
+  GFDisposable(gump, 0);
 
+  // Column 1 header
+  GFTextLine(gump, COL1_X, HEADER_Y, 300, "Location");
+  GFTextLine(gump, COL1_X + BTN_GO_OFS  + 5, HEADER_Y, 300, "Goto");
+  GFTextLine(gump, COL1_X + BTN_SND_OFS + 5, HEADER_Y, 300, "Send");
+
+  // Column 2 header
+  GFTextLine(gump, COL2_X, HEADER_Y, 300, "Location");
+  GFTextLine(gump, COL2_X + BTN_GO_OFS  + 5, HEADER_Y, 300, "Goto");
+  GFTextLine(gump, COL2_X + BTN_SND_OFS + 5, HEADER_Y, 300, "Send");
+
+  var col_x := COL1_X;
+  var row_y := TEXTSTARTLOCY;
+  var i := 0;
+
+  for (i := 1; i <= MaxLocs; i := i + 1)
+    var loc := locs[i];
+
+    // Switch to right column after 20 entries
+    if (i == 21)
+      col_x := COL2_X;
+      row_y := TEXTSTARTLOCY;
+    endif
+
+    GFTextLine(gump, col_x, row_y + 3, 995, loc.Name);
+    GFAddButton(gump, col_x + BTN_GO_OFS,  row_y + BTN_Y_OFS, 2103, 2104, GF_CLOSE_BTN, i);           // Go
+    GFAddButton(gump, col_x + BTN_SND_OFS, row_y + BTN_Y_OFS, 2103, 2104, GF_CLOSE_BTN, MaxLocs + i); // Send
+
+    row_y := row_y + ROW_HEIGHT;
+  endfor
+
+  return gump;
+endfunction

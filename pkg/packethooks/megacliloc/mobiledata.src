@@ -54,6 +54,11 @@ program mobiledata(parms)
 
 	if(who.cmdlevel)
 		if(npc)
+			var npc_script := xObject.script;
+			if (!npc_script)
+				npc_script := mob[xObject.npctemplate].script;
+			endif
+
 			prop.clilocid := 1070722;
 			var ms := Cint(GetVitalMaximumValue(xObject, "life") / 100);
 			prop.values := array {"Str: " + GetStrength(xObject) + " HP: " + GetHP(xObject) + "/" + ms};
@@ -82,9 +87,33 @@ program mobiledata(parms)
 				loot_mlevel    := GetConfigInt(_elem, "MagicItemLevel");
 				loot_lootgroup := GetConfigInt(_elem, "lootgroup");
 			endif
-			prop.clilocid := 1070722;
-			prop.values := array {"Loot Grp: " + loot_lootgroup + "  Lvl: " + loot_mlevel + "  Chance: " + loot_mprop + "%"};
-			allprops.append(prop);
+			var loot_line := "";
+			if (TypeOf(loot_lootgroup) == "Integer")
+				loot_line := "Loot Grp: " + loot_lootgroup;
+			endif
+			if (TypeOf(loot_mlevel) == "Integer")
+				if (loot_line)
+					loot_line := loot_line + "  ";
+				endif
+				loot_line := loot_line + "Lvl: " + loot_mlevel;
+			endif
+			if (TypeOf(loot_mprop) == "Integer")
+				if (loot_line)
+					loot_line := loot_line + "  ";
+				endif
+				loot_line := loot_line + "Chance: " + loot_mprop + "%";
+			endif
+			if (loot_line)
+				prop.clilocid := 1070722;
+				prop.values := array {loot_line};
+				allprops.append(prop);
+			endif
+
+			if (npc_script)
+				prop.clilocid := 1070722;
+				prop.values := array {"Script: " + npc_script};
+				allprops.append(prop);
+			endif
 
 			elem_prot := GetObjProperty(xObject, "FireProtection");
 			if(elem_prot)
