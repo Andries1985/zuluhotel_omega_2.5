@@ -1303,14 +1303,14 @@ function MountHorse(horse)
 			MoveObjectToLocation(horse, 5288 , 1176 , 0,"britannia", MOVEOBJECT_FORCELOCATION);
 			RevokePrivilege( horse, "invul" );
 			setobjproperty(horse,"guardkill",1);
-			ApplyRawdamage(horse,GetMaxHP(horse)+3);
+			horse.kill();
 			EquipItem(me,mount);
 			if (horse)
 				MoveObjectToLocation(horse, 5288 , 1176 , 0,"britannia",
 				 MOVEOBJECT_FORCELOCATION);
 				RevokePrivilege(horse, "invul" );
 				setobjproperty(horse,"guardkill",1);
-				applyRawdamage(horse,GetMaxHP(horse)+3);
+				horse.kill();
 			endif
 			set_critical(0);
 		endif

@@ -62,6 +62,7 @@ const CORE_SETTINGS_MAX_VITAL		:= 10000000;
 const CORE_SETTINGS_MIN_REGEN_RATE	:= -30000;
 const CORE_SETTINGS_MAX_REGEN_RATE	:= 30000;
 
+
 // CProp name prefix for regen rate changes
 const CPROP_NAME_PREFIX_REGEN_RATE	:= "NewRegenRateFor";
 

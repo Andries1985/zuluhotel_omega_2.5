@@ -23,7 +23,7 @@ program suicide( who )
 	if( !who.dead )
 		RevokePrivilege( who, "invul" );
 		setobjproperty( who, "guardkill", 1);
-		ApplyRawDamage( who, GetMaxHP(who)+3 );
+		who.kill();
 	else
 		SendSysMessage( who, "That Tickles!" );
 	endif

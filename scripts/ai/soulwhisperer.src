@@ -1,0 +1,472 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+//  soulwhisperer.src: AI for Carrie, The Soul Whisperer
+//
+//  Superboss - Soul Whisperer
+//  At 75%, 50%, and 25% HP she tears open a portal and summons a random
+//  superboss (1-in-1000 chance: champion boss instead).
+//  Portal uses the moongate graphic with a random colour; her own hue also
+//  shifts on each summon.
+//
+//  Based on sum.src (The Summoner) and chaosspellkillpcs.src
+//
+/////////////////////////////////////////////////////////////////////////////
+
+use npc;
+use os;
+use uo;
+use cfgfile;
+
+include "include/myutil";
+include "include/npcbackpacks";
+include "include/attributes";
+
+include "include/eventid";
+include "include/randname";
+include "include/npcutil";
+include "include/objtype";
+include "include/npccast";
+include "include/anchors";
+include "ai/main/chaoskillpcsloop";
+include "ai/combat/chaosfight";
+include "ai/combat/spellcombatevent";
+include "ai/setup/spellsetup";
+include "ai/setup/modsetup";
+include "ai/main/loot";
+include "ai/main/sleepmode";
+
+const HALT_THRESHOLD := 8;
+
+var runaway  := 0;
+var najs75   := 0;   // have we summoned at 75% HP?
+var najs50   := 0;   // have we summoned at 50% HP?
+var najs25   := 0;   // have we summoned at 25% HP?
+var thecritter;
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  program entry point
+//
+/////////////////////////////////////////////////////////////////////////////
+
+program KillPlayers()
+
+	// Assign a random female name with the Soul Whisperer title
+	me.name := AssignName( me, FEMALE_IDX ) + ", Soul Whisperer";
+
+	if ( GetObjProperty( me, "frozen" ) )
+		me.frozen := 1;
+	endif
+
+	SetWarMode( 0 );
+
+	main_AI_loop();
+
+endprogram
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  SummonWithPortal
+//
+//  Creates a coloured moongate portal at the Soul Whisperer's feet,
+//  spawns a random superboss (or 1-in-1000 champion boss) on it,
+//  then dissolves the portal after a dramatic pause.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+function SummonWithPortal()
+
+	// --- Shift summon event to one shared colour ---
+	var summonColor := CInt( Random( 3000 ) );
+	me.color := summonColor;
+
+	// --- Superboss pool (Soul Whisperer excluded to prevent recursion) ---
+	var superBosses := {
+		"glutton",           "chiefparoxysmus",  "worldtree",
+		"monstrousgrizzle",  "spiderlord",        "remorhaz",
+		"wizardfrog",        "kraken",            "vrykollakas",
+		"blueslaad",         "hulk",              "thor",
+		"loke",              "scourgegladiator",  "scourgecommander",
+		"titanwarmaster",    "hyperion",           "buran",
+		"summonboss",        "balrongeneral",      "dreadhorn",
+		"ladymelisande",     "darkfather",         "tiamat",
+		"scourgewyrm",       "dragonqueen",        "dragonking",
+		"ancientwyrm",       "archangel",          "nemesis",
+		"legendaryhunter",   "scourgeterminator",  "plague",
+		"pestilence",        "scourgeinfiltrator", "scourgebattlemaster"
+	};
+
+	// --- Champion boss pool ---
+	var champBosses := {
+		"barracoon", "rikktor", "erebuschaosgod", "nyxseductress"
+	};
+
+	// --- Pick boss template: 1-in-1000 chance for a champion ---
+	var bossTemplate;
+	if ( Random( 1000 ) == 0 )
+		bossTemplate := champBosses[ Random( len( champBosses ) ) + 1 ];
+	else
+		bossTemplate := superBosses[ Random( len( superBosses ) ) + 1 ];
+	endif
+
+	// --- Open the portal using the same summon colour ---
+	var portal := CreateItemAtLocation( me.x, me.y, me.z, 0x0F6C, 1, me.realm );
+	if ( portal )
+		portal.color := summonColor;
+	endif
+
+	// --- Step away from the portal so it appears between boss and summoner ---
+	var startX := me.x;
+	var startY := me.y;
+	var offsets := {
+		{ 2, 0 }, { -2, 0 }, { 0, 2 }, { 0, -2 },
+		{ 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }
+	};
+	var idx := Random( len( offsets ) ) + 1;
+	var moved := 0;
+	var attempts := 0;
+	repeat
+		attempts := attempts + 1;
+		var offset := offsets[ idx ];
+		var moveX := startX + offset[ 1 ];
+		var moveY := startY + offset[ 2 ];
+		if ( MoveObjectToLocation( me, moveX, moveY, me.z, me.realm ) )
+			moved := 1;
+			break;
+		endif
+		idx := idx + 1;
+		if ( idx > len( offsets ) )
+			idx := 1;
+		endif
+	until ( moved or attempts >= len( offsets ) );
+
+	// --- Boss emerges 2 seconds after portal appears ---
+	Sleep( 2 );
+	thecritter := CreateNPCfromTemplate( bossTemplate, startX, startY, me.z, 1, me.realm );
+	if ( thecritter )
+		thecritter.color := summonColor;
+	endif
+
+	// --- Keep portal active for 10 seconds total from appearance ---
+	Sleep( 8 );
+	if ( portal )
+		DestroyItem( portal );
+	endif
+
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  ClearHandsAndAmmo
+//
+/////////////////////////////////////////////////////////////////////////////
+
+function ClearHandsAndAmmo()
+	var weaponone := GetEquipmentByLayer( me, LAYER_HAND1 );
+	var weapontwo := GetEquipmentByLayer( me, LAYER_HAND2 );
+
+	if ( weaponone )
+		MoveItemToContainer( weaponone, me.backpack );
+		DestroyItem( weaponone );
+	endif
+
+	if ( weapontwo )
+		MoveItemToContainer( weapontwo, me.backpack );
+		DestroyItem( weapontwo );
+	endif
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  ReadyMondainStaff
+//
+/////////////////////////////////////////////////////////////////////////////
+
+function ReadyMondainStaff()
+	// Already using staff — check it's actually equipped
+	var equipped := GetEquipmentByLayer( me, LAYER_HAND1 );
+	if ( equipped and equipped.objtype == 0xF229 )
+		SetObjProperty( me, "amethod", "magicstaff" );
+		return;
+	endif
+
+	if ( GetObjProperty( me, "amethod" ) != "magicstaff" )
+		SetObjProperty( me, "amethod", "magicstaff" );
+		PlaySoundEffect( me, 0x0057 );
+		// Destroy any arrows left in backpack from bow mode
+		foreach item in EnumerateItemsInContainer( me.backpack )
+			if ( item.graphic == 0xf3f )
+				DestroyItem( item );
+			endif
+		endforeach
+		ClearHandsAndAmmo();
+		var weaponone := CreateItemInInventory( me.backpack, 0xF229, 1 );
+		SetObjProperty( weaponone, "noloot", 1 );
+		EquipItem( me, weaponone );
+	endif
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  ReadyBanishBow
+//
+/////////////////////////////////////////////////////////////////////////////
+
+function ReadyBanishBow()
+	// Already using bow — check it's actually equipped
+	var equipped := GetEquipmentByLayer( me, LAYER_HAND1 );
+	if ( equipped and equipped.objtype == 0xF22A )
+		SetObjProperty( me, "amethod", "banishbow" );
+		return;
+	endif
+
+	if ( GetObjProperty( me, "amethod" ) != "banishbow" )
+		SetObjProperty( me, "amethod", "banishbow" );
+		PlaySoundEffect( me, 0x0057 );
+		ClearHandsAndAmmo();
+		var weaponone := CreateItemInInventory( me.backpack, 0xF22A, 1 );
+		weaponone.hitscript := ":combat:banishscript";
+		SetObjProperty( weaponone, "noloot", 1 );
+		EquipItem( me, weaponone );
+		// Provide ammo
+		foreach item in EnumerateItemsInContainer( me.backpack )
+			if ( item.graphic == 0xf3f )
+				DestroyItem( item );
+			endif
+		endforeach
+		CreateItemInInventory( me.backpack, 0xf3f, 3000 );
+	endif
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  CheckSummonThresholds
+//
+//  Run HP-threshold summons regardless of combat style (melee or spell).
+//
+/////////////////////////////////////////////////////////////////////////////
+
+function CheckSummonThresholds()
+	if ( GetHP( me ) <= ( GetMaxHP( me ) * 75 / 100 ) )
+		if ( najs75 == 0 )
+			SummonWithPortal();
+			najs75 := 1;
+		endif
+	endif
+
+	if ( GetHP( me ) <= ( GetMaxHP( me ) * 50 / 100 ) )
+		if ( najs50 == 0 )
+			SummonWithPortal();
+			najs50 := 1;
+		endif
+	endif
+
+	if ( GetHP( me ) <= ( GetMaxHP( me ) * 25 / 100 ) )
+		if ( najs25 == 0 )
+			SummonWithPortal();
+			najs25 := 1;
+		endif
+	endif
+endfunction
+
+function IsMagicResistClass( opponent )
+	return ( GetObjProperty( opponent, "IsMage" ) or
+		 GetObjProperty( opponent, "IsMysticArcher" ) or
+		 GetObjProperty( opponent, "IsPaladin" ) or
+		 GetObjProperty( opponent, "IsPowerplayer" ) );
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  UpdateCombatLoadout
+//
+//  Against summoned/animated/charmed attackers, switch to banish bow.
+//  Otherwise keep Mondain's Staff equipped.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+function UpdateCombatLoadout( opponent )
+	if ( GetObjProperty( opponent, "summoned" ) or
+	     GetObjProperty( opponent, "animated" ) or
+	     GetObjProperty( opponent, "charmed" ) or
+	     GetObjProperty( opponent, "EBSummons" ) )
+		// Banish bow against summoned/animated mobs
+		ReadyBanishBow();
+	elseif ( IsMagicResistClass( opponent ) )
+		// Chase magic-resistant classes with the staff.
+		ReadyMondainStaff();
+	else
+		// Non-resistant classes stay on spell pressure.
+		ReadyMondainStaff();
+	endif
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  TryDetectNearbyHidden
+//
+//  Pulse detection only when a hidden player is within 3 tiles.
+//  The shard does not expose a direct DetectHidden skill call in NPC AI,
+//  so this emulates a detect pulse with a short cooldown.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+function TryDetectNearbyHidden()
+	var nextPulse := GetObjProperty( me, "nextDetectHiddenPulse" );
+	if ( nextPulse and nextPulse > ReadGameClock() )
+		return;
+	endif
+
+	var detectSkill := GetBaseSkillBaseValue( me, SKILLID_DETECTINGHIDDEN );
+	if ( !detectSkill or detectSkill <= 0 )
+		return;
+	endif
+
+	foreach mobile in ListMobilesNearLocation( me.x, me.y, me.z, 3, me.realm )
+		if ( mobile and mobile != me and !mobile.npctemplate and mobile.hidden )
+			SetObjProperty( me, "nextDetectHiddenPulse", ReadGameClock() + 10 );
+			PlaySoundEffect( me, 0x0057 );
+
+			var stealthSkill := GetBaseSkillBaseValue( mobile, SKILLID_STEALTH );
+			if ( !stealthSkill )
+				stealthSkill := 0;
+			endif
+
+			if ( Random( detectSkill ) > stealthSkill )
+				mobile.hidden := 0;
+			endif
+			return;
+		endif
+	endforeach
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  CloseDistance
+//
+//  Returns: 1  distance is 0-1 (no move needed)
+//           0  distance >= 2  (still moving)
+//           2  no line of sight
+//
+/////////////////////////////////////////////////////////////////////////////
+
+function CloseDistance( opponent )
+
+	TryDetectNearbyHidden();
+	UpdateCombatLoadout( opponent );
+	CheckSummonThresholds();
+	var meleeResistTarget := IsMagicResistClass( opponent );
+
+	// Dispel any fields blocking line of sight
+	var Near;
+	Near := ListItemsNearLocation( me.x, me.y, me.z, 5 );
+	var kwall    := 0;
+	var runaround := 0;
+	foreach item in Near
+		if ( item.objtype == 0x5f or item.objtype == 0x57 or
+		     item.objtype == 0x3946 or item.objtype == 0x3955 )
+			if ( kwall == 0 )
+				if ( !CheckLineOfSight( me, opponent ) )
+					if ( Random( 2 ) == 1 )
+						SetMana( me, GetMana( me ) + 50 );
+						CastSpell( me, me, "dispel_field" );
+						kwall := 1;
+					else
+						while ( runaround < 15 )
+							runaround := runaround + 1;
+							RunToward( opponent );
+						endwhile
+						runaround := 0;
+					endif
+				endif
+			endif
+		endif
+	endforeach
+
+	var sleepdelay := 300 - ( CInt( me.dexterity ) * 1.5 );
+	if ( sleepdelay < 0 ) sleepdelay := 0; endif
+
+	var d := distance( me, opponent );
+	if ( d > 10 and !meleeResistTarget )
+		RunToward( opponent );
+		Sleepms( sleepdelay );
+		return 0;
+	endif
+
+	if ( meleeResistTarget and d <= 2 )
+		return 1;
+	endif
+
+	case ( d )
+		1:
+		0:
+			// At melee range: always stand and fight, never back away
+			return 1;
+
+		default:
+			runaway := 0;
+			if ( meleeResistTarget )
+				var steps := 0;
+				while ( distance( me, opponent ) > 2 and steps < 40 )
+					RunToward( opponent );
+					steps := steps + 1;
+				endwhile
+
+				if ( distance( me, opponent ) > 2 )
+					SetMana( me, GetMana( me ) + 30 );
+					CastSpell( me, opponent, "teleport" );
+				endif
+
+				if ( distance( me, opponent ) <= 2 )
+					return 1;
+				endif
+				return 0;
+			elseif ( GetMana( me ) < 1000 )
+				// Low mana: close to melee and swing instead of backing off
+				var steps := 0;
+				while ( distance( me, opponent ) > 1 and steps < 40 )
+					RunToward( opponent );
+					steps := steps + 1;
+				endwhile
+				return 0;
+			elseif ( !CheckLineOfSight( me, opponent ) )
+				if ( GetObjProperty( me, "lastnolos" ) != opponent.name )
+					if ( runrandom( opponent ) )
+						Sleepms( sleepdelay );
+					endif
+				endif
+				SetObjProperty( me, "lastnolos", opponent.name );
+				foreach mobile in ListMobilesNearLocation( me.x, me.y, me.z, 9, me.realm )
+					if ( CheckLineOfSight( me, mobile ) and !mobile.npctemplate )
+						opponent := mobile;
+					endif
+				endforeach
+				var choice := Random( 4 ) + 1;
+				if ( choice == 1 )
+					EraseObjProperty( me, "lastnolos" );
+					RestartScript( me );
+				elseif ( choice == 2 )
+					runaround := 0;
+					while ( runaround < 15 )
+						RunToward( opponent );
+						runaround := runaround + 1;
+					endwhile
+				elseif ( choice == 3 )
+					EraseObjProperty( me, "lastnolos" );
+					spellattack( opponent );
+				elseif ( choice == 4 )
+					runaround := 0;
+					while ( runaround < 10 )
+						runrandom( opponent );
+						runaround := runaround + 1;
+					endwhile
+				endif
+				return 2;
+			else
+				spellattack( opponent );
+			endif
+			return 1;
+
+	endcase
+
+endfunction

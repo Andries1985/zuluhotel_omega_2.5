@@ -538,7 +538,7 @@ function Release()
 		PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA );
 		MoveObjectToLocation(me,5288 , 1176 , 0, "britannia", MOVEOBJECT_FORCELOCATION);
 		RevokePrivilege( me, "invul" );
-		ApplyRawdamage( me , GetMaxHP(me) + 3 );
+		me.kill();
 		EraseObjProperty(master, "humuc");
 	else
 		say("*Argh*");

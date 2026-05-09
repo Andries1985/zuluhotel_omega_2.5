@@ -1,0 +1,47 @@
+// Synopsis: Teleport to the nearest spawn point to your current location
+use uo;
+use os;
+use math;
+
+include "include/constants/propids";
+include "include/managers";
+
+program goto_nearest_spawnpoint( who )
+
+	var spawnpoints := SendSpawnPointEvent(EVID_SPAWNPOINT_REQUEST_POINTS);
+	if( !spawnpoints )
+		SendSysMessage( who, "There are no spawn points in the world." );
+		return 0;
+	endif
+
+	var nearest     := 0;
+	var nearestDist := -1;
+	var dist;
+	var dx;
+	var dy;
+
+	foreach point in spawnpoints
+		if( point && point.realm == who.realm )
+			dx   := point.x - who.x;
+			dy   := point.y - who.y;
+			dist := Sqrt( dx*dx + dy*dy );
+			if( nearestDist < 0 || dist < nearestDist )
+				nearestDist := dist;
+				nearest     := point;
+			endif
+		endif
+		SleepMs(2);
+	endforeach
+
+	if( !nearest )
+		SendSysMessage( who, "No spawn point found on this realm." );
+		return 0;
+	endif
+
+	var pt_data := GetObjProperty( nearest, PROPID_SPAWNPOINT_SETTING );
+	var label   := pt_data[2] ? pt_data[2] : "unknown";
+
+	MoveObjectToLocation( who, nearest.x, nearest.y, nearest.z, nearest.realm, MOVEOBJECT_FORCELOCATION );
+	SendSysMessage( who, "Moved to nearest spawn point [" + label + "] at (" + nearest.x + ", " + nearest.y + ", " + nearest.z + ") - dist: " + CInt(nearestDist) + " tiles." );
+
+endprogram
