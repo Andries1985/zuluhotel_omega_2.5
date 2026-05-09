@@ -110,7 +110,7 @@ function SummonWithPortal()
 	endif
 
 	// --- Open the portal using the same summon colour ---
-	var portal := CreateItemAtLocation( me.x, me.y, me.z, 0x0F6C, 1, me.realm );
+	var portal := CreateItemAtLocation( me.x, me.y, me.z, 13279, 1, me.realm );
 	if ( portal )
 		portal.color := summonColor;
 	endif
