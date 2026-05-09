@@ -1,0 +1,222 @@
+// Synopsis: Edit an existing player character using an editable gump
+// Command: .editcharacter
+use uo;
+use vitals;
+
+include "include/attributes";
+include ":gumps:include/gumps";
+
+const BTN_CANCEL := 9000;
+const BTN_APPLY  := 9001;
+
+const ENTRY_NAME    := 1;
+const ENTRY_GENDER  := 2;
+const ENTRY_GRAPHIC := 3;
+const ENTRY_COLOR   := 4;
+const ENTRY_STR     := 5;
+const ENTRY_DEX     := 6;
+const ENTRY_INT     := 7;
+
+const SKILL_ENTRY_BASE := 1000;
+
+program editcharacter( who )
+	var target_char := target( who );
+	if( !target_char )
+		SendSysMessage( who, "Cancelled." );
+		return;
+	endif
+
+	if( !target_char.IsA( POLCLASS_MOBILE ) or target_char.IsA( POLCLASS_NPC ) )
+		SendSysMessage( who, "Target an existing player character, not an NPC." );
+		return;
+	endif
+
+	if( target_char.cmdlevel >= who.cmdlevel and who.cmdlevel < 5 )
+		SendSysMessage( who, "You cannot edit a staff member at or above your level." );
+		return;
+	endif
+
+	var defaults := {};
+	defaults[ENTRY_NAME] := CStr( target_char.name );
+	defaults[ENTRY_GENDER] := CStr( GraphicToGender(target_char.graphic) );
+	defaults[ENTRY_GRAPHIC] := CStr( target_char.graphic );
+	defaults[ENTRY_COLOR] := CStr( target_char.color );
+	defaults[ENTRY_STR] := CStr( GetStrength(target_char) );
+	defaults[ENTRY_DEX] := CStr( GetDexterity(target_char) );
+	defaults[ENTRY_INT] := CStr( GetIntelligence(target_char) );
+
+	var i;
+	for( i := 0; i <= SKILLID__HIGHEST; i := i + 1 )
+		defaults[SKILL_ENTRY_BASE + i] := CStr( GetBaseSkill(target_char, i) );
+	endfor
+
+	var gump := BuildEditCharacterGump( defaults, target_char.acctname, CStr(target_char.serial) );
+	var result := GFSendGump( who, gump );
+
+	if( result[0] == 0 or result[0] == BTN_CANCEL )
+		SendSysMessage( who, "Cancelled." );
+		return;
+	endif
+
+	if( result[0] != BTN_APPLY )
+		SendSysMessage( who, "No action taken." );
+		return;
+	endif
+
+	var name := CStr( GFExtractData(result, ENTRY_NAME) );
+	if( !name )
+		name := defaults[ENTRY_NAME];
+	endif
+
+	var gender := ClampInt( CInt( GFExtractData(result, ENTRY_GENDER) ), 0, 1 );
+	var input_graphic := CInt( GFExtractData(result, ENTRY_GRAPHIC) );
+	var graphic := input_graphic;
+	if( !graphic )
+		graphic := GenderToGraphic( gender );
+	elseif( (input_graphic == target_char.graphic) and (GraphicToGender(target_char.graphic) != gender) )
+		graphic := GenderToGraphic( gender );
+	endif
+
+	var color := ClampInt( CInt( GFExtractData(result, ENTRY_COLOR) ), 0, 10000 );
+	var strength := ClampInt( CInt( GFExtractData(result, ENTRY_STR) ), 10, 300 );
+	var dexterity := ClampInt( CInt( GFExtractData(result, ENTRY_DEX) ), 10, 300 );
+	var intelligence := ClampInt( CInt( GFExtractData(result, ENTRY_INT) ), 10, 300 );
+
+	SetName( target_char, name );
+	target_char.gender := gender;
+	target_char.trueobjtype := graphic;
+	target_char.graphic := graphic;
+	target_char.TrueColor := color;
+	target_char.color := color;
+
+	SetBaseStrength( target_char, strength - GetStrengthMod(target_char) );
+	SetBaseDexterity( target_char, dexterity - GetDexterityMod(target_char) );
+	SetBaseIntelligence( target_char, intelligence - GetIntelligenceMod(target_char) );
+
+	SetVital( target_char, VITALID_LIFE, strength );
+	SetVital( target_char, VITALID_STAMINA, dexterity );
+	SetVital( target_char, VITALID_MANA, intelligence );
+
+	for( i := 0; i <= SKILLID__HIGHEST; i := i + 1 )
+		var entry_id := SKILL_ENTRY_BASE + i;
+		var skill_value := ClampInt( CInt( GFExtractData(result, entry_id) ), 0, 150 );
+		SetBaseSkill( target_char, i, skill_value );
+	endfor
+
+	SendSysMessage( who, "Updated character '" + target_char.name + "'." );
+	SendSysMessage( who, "Gender=" + gender + " Graphic=" + target_char.graphic + " Color=" + target_char.color + "." );
+endprogram
+
+
+function BuildEditCharacterGump( defaults, acctname, serial )
+	var gump := GFCreateGump(20, 20, 2, 560);
+
+	GFResizePic(gump, 20, 20, 9250, 720, 560);
+	GFResizePic(gump, 30, 30, 9350, 700, 540);
+	GFResizePic(gump, 260, 20, 9250, 240, 40);
+	GFResizePic(gump, 270, 30, 9350, 220, 20);
+	GFTextLine(gump, 274, 30, 43, "Edit Existing Character");
+
+	GFAddButton(gump, 565, 48, 2117, 2118, GF_CLOSE_BTN, BTN_APPLY);
+	GFTextLine(gump, 590, 50, 67, "Apply");
+	GFAddButton(gump, 640, 48, 2117, 2118, GF_CLOSE_BTN, BTN_CANCEL);
+	GFTextLine(gump, 665, 50, 33, "Cancel");
+
+	GFResizePic(gump, 45, 82, 9350, 650, 110);
+	GFTextLine(gump, 60, 92, 43, "Identity + Stats");
+
+	GFTextLine(gump, 60, 118, 67, "Name");
+	GFResizePic(gump, 110, 116, 9350, 220, 24);
+	GFTextEntry(gump, 118, 118, 205, 20, 67, defaults[ENTRY_NAME], ENTRY_NAME);
+
+	GFTextLine(gump, 350, 118, 67, "Gender(0/1)");
+	GFResizePic(gump, 440, 116, 9350, 70, 24);
+	GFTextEntry(gump, 448, 118, 55, 20, 67, defaults[ENTRY_GENDER], ENTRY_GENDER);
+
+	GFTextLine(gump, 530, 118, 67, "Graphic");
+	GFResizePic(gump, 585, 116, 9350, 70, 24);
+	GFTextEntry(gump, 593, 118, 55, 20, 67, defaults[ENTRY_GRAPHIC], ENTRY_GRAPHIC);
+
+	GFTextLine(gump, 60, 146, 67, "Account: " + acctname);
+	GFTextLine(gump, 410, 146, 67, "Serial: " + serial);
+
+	GFTextLine(gump, 60, 170, 67, "Color");
+	GFResizePic(gump, 110, 168, 9350, 70, 24);
+	GFTextEntry(gump, 118, 170, 55, 20, 67, defaults[ENTRY_COLOR], ENTRY_COLOR);
+
+	GFTextLine(gump, 210, 170, 67, "Str");
+	GFResizePic(gump, 240, 168, 9350, 70, 24);
+	GFTextEntry(gump, 248, 170, 55, 20, 67, defaults[ENTRY_STR], ENTRY_STR);
+
+	GFTextLine(gump, 340, 170, 67, "Dex");
+	GFResizePic(gump, 375, 168, 9350, 70, 24);
+	GFTextEntry(gump, 383, 170, 55, 20, 67, defaults[ENTRY_DEX], ENTRY_DEX);
+
+	GFTextLine(gump, 475, 170, 67, "Int");
+	GFResizePic(gump, 505, 168, 9350, 70, 24);
+	GFTextEntry(gump, 513, 170, 55, 20, 67, defaults[ENTRY_INT], ENTRY_INT);
+
+	GFResizePic(gump, 45, 220, 9350, 650, 328);
+	GFTextLine(gump, 60, 230, 43, "Skills (Base Values)");
+
+	var col1_x := 60;
+	var col2_x := 280;
+	var col3_x := 500;
+	var y_start := 242;
+	var row_h := 18;
+	var skill;
+
+	for( skill := 0; skill <= SKILLID__HIGHEST; skill := skill + 1 )
+		var column := CInt(skill / 17);
+		var row := skill - (column * 17);
+		var x := col1_x;
+		if( column == 1 )
+			x := col2_x;
+		elseif( column >= 2 )
+			x := col3_x;
+		endif
+
+		var y := y_start + (row * row_h);
+		var entry_id := SKILL_ENTRY_BASE + skill;
+		var name := GetAttributeIdBySkillId(skill);
+		if( !name )
+			name := "Skill " + skill;
+		endif
+		if( name == "Enticement" )
+			name := "Discordance";
+		endif
+
+		GFTextLine(gump, x, y, 67, name);
+		GFResizePic(gump, x + 128, y - 2, 9350, 62, 20);
+		GFTextEntry(gump, x + 133, y, 52, 16, 67, defaults[entry_id], entry_id);
+	endfor
+
+	return gump;
+endfunction
+
+
+function ClampInt( value, minimum, maximum )
+	if( value < minimum )
+		return minimum;
+	endif
+	if( value > maximum )
+		return maximum;
+	endif
+	return value;
+endfunction
+
+
+function GenderToGraphic( gender )
+	if( gender == 1 )
+		return 401;
+	endif
+	return 400;
+endfunction
+
+
+function GraphicToGender( graphic )
+	if( graphic == 401 )
+		return 1;
+	endif
+	return 0;
+endfunction
