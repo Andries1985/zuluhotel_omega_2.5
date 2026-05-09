@@ -400,7 +400,7 @@ program textcmd_testgump( who )
 		if( !client.dead )
 			RevokePrivilege( client, "invul" );
 			SetObjProperty( client , "guardkill" , 1 );
-			ApplyRawDamage( client , GetMaxHP(client) + 3 );
+			client.kill();
 			SendSysMessage( who , playername + " has been killed!" );
 		else
 			SendSysMessage( who , playername + " was dead already!" );

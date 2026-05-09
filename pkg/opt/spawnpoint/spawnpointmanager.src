@@ -96,7 +96,9 @@ endfunction
 function CreatePoint( byref point )
 
 	if( spawnpoints.append(point) )
-		SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","",1,0,4,0,0,0,0,0,0,0,0,"",0} );
+		if( !GetObjProperty( point, PROPID_SPAWNPOINT_SETTING ) )
+			SetObjProperty( point, PROPID_SPAWNPOINT_SETTING, {"NPC","",1,0,4,0,0,0,0,0,0,0,0,"",0} );
+		endif
 		CheckPoint(point);
 		return len(spawnpoints);
 	else

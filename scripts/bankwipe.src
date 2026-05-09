@@ -18,7 +18,7 @@ return;
 	endnum := npctest.serial;
 	RevokePrivilege( npctest, "invul" );
 	setobjproperty(npctest, "guardkill", 1);
-	ApplyRawDamage( npctest, GetMaxHP(npctest)+3 );
+	npctest.kill();
 
 	print("Wiping orphaned bank storage locations");
 
