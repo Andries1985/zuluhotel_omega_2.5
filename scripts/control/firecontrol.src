@@ -14,8 +14,13 @@ program field_control( item )
 	var points  := 25;
 	var power   := 2;
 	var element := FIRE;
+	var specEle := GetObjProperty( item, "specialELE" );
 	var creator := 0;
 	var serial  := Cint( GetObjProperty( item , "Creator" ) );
+
+	if( specEle )
+		element := specEle;
+	endif
 	
 	if( GetObjProperty( item , "ByTrueMage" ) )
 		power := Cint( power * CLASSE_BONUS );
