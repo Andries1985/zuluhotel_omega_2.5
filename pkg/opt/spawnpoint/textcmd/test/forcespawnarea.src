@@ -77,8 +77,11 @@ program textcmd_forcespawnarea(who, params)
         var sp := found[i][1];
         var dista := found[i][2];
         
-        // Send the forcespawn event
-        SendSpawnPointEvent(EVID_SPAWNPOINT_CHECK_POINT, sp);
+        // Clear the next spawning timer to force immediate spawn
+        EraseObjProperty(sp, PROPID_SPAWNPOINT_NEXT_SPAWNING);
+        
+        // Start the checkpoint script directly
+        Start_Script( ":spawnpoint:checkpoint", sp );
         
         report := report + "  [" + forced + "] (" + sp.x + ", " + sp.y + ", " + sp.z + ") - " + dista + " tiles away\n";
         forced += 1;
