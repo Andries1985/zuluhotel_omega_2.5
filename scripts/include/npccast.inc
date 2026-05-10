@@ -262,12 +262,12 @@ function ChampFire(me)
 	var ele := Random(6)+1;
 	var element;
 	case(ele)
-		1: element := "EARTH";
-		2: element := "WATER";
-		3: element := "FIRE";
-		4: element := "AIR";
-		5: element := "NECRO";
-		6: element := "HOLY";
+		1: element := EARTH;
+		2: element := WATER;
+		3: element := FIRE;
+		4: element := AIR;
+		5: element := NECRO;
+		6: element := HOLY;
 	endcase
 
 	players := SmartFilterTamedTargets(me, players);
@@ -468,6 +468,7 @@ Function GetSpellID(spellname)
 	"manavamp"	: spellid := 53;
 	"massdispel"	: spellid := 54;
 	"meteor_swarm"	: spellid := 55;
+	"meteorswarm"	: spellid := 55;
 	"polymorph"	: spellid := 56;
 	"earthquake"	: spellid := 57;
 	"vortex"	: spellid := 58;
@@ -502,6 +503,7 @@ Function GetSpellID(spellname)
 	"earthportal"	: spellid := 87;
 	"naturestouch"	: spellid := 88;
 	"gustofair"	: spellid := 89;
+	"gustoair"	: spellid := 89;
 	"risingfire"	: spellid := 90;
 	"shapeshift"	: spellid := 91;
 	"icestrike"	: spellid := 92;
