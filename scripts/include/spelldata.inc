@@ -115,6 +115,8 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 	//var mageequippedint := 0;
 	//var newdamage := 0;
 
+	Print( "[CHAMPFIRE DEBUG] ApplyElementalDamage: element=" + element + " resultprot=" + resultprot + " dmg_before_prot=" + dmg );
+
 	if( resultprot < 100 )
 		if( GetObjProperty( caster , CLASSEID_MAGE ) )
 			var level := GetClasseLevel(caster);
@@ -134,14 +136,18 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 			// dmg := dmg + newdamage;
 			//Print("Damage after mage bonus: " + dmg);
 		else
-			dmg := dmg - Cint(dmg * resultprot / 100);
+			var prot_reduction := Cint(dmg * resultprot / 100);
+			dmg := dmg - prot_reduction;
+			Print( "[CHAMPFIRE DEBUG] Non-mage prot reduction: " + prot_reduction + " dmg_after_prot=" + dmg );
 		endif
 		if(DEBUG_MODE)
 			PrintTextAbovePrivate( caster , "I've dealt this much Elemental damage: " +dmg, caster );
 			PrintTextAbovePrivate( cast_on , "I received this much Elemental damage: " +dmg, cast_on );
 		endif
 
-		ApplyTheDamage( cast_on , caster , Resisted( caster, cast_on, circle, dmg ) , DMGID_MAGIC + element );
+		var final_dmg := Resisted( caster, cast_on, circle, dmg );
+		Print( "[CHAMPFIRE DEBUG] After Resisted(): final_dmg=" + final_dmg );
+		ApplyTheDamage( cast_on , caster , final_dmg , DMGID_MAGIC + element );
 	else
 		// Toadstool - heals x% of the damage that;s over 100. so 120% protection heals 20% of the damage
 		var amt := CDbl(resultprot)/100.0;
@@ -609,24 +615,31 @@ function GetProtLevel( cast_on, element )
 	case( element )
 
 		FIRE:	prot := GetObjProperty( cast_on , "FireProtection" );
+			Print( "[GETPROTLEVEL DEBUG] FIRE element matched, prot=" + prot );
 			break;
 
 		AIR:	prot := GetObjProperty( cast_on , "AirProtection" );
+			Print( "[GETPROTLEVEL DEBUG] AIR element matched, prot=" + prot );
 			break;
 
 		EARTH:	prot := GetObjProperty( cast_on , "EarthProtection" );
+			Print( "[GETPROTLEVEL DEBUG] EARTH element matched, prot=" + prot );
 			break;
 
 		WATER:	prot := GetObjProperty( cast_on , "WaterProtection" );
+			Print( "[GETPROTLEVEL DEBUG] WATER element matched, prot=" + prot );
 			break;
 
 		NECRO:	prot := GetObjProperty( cast_on , "NecroProtection" );
+			Print( "[GETPROTLEVEL DEBUG] NECRO element matched, prot=" + prot );
 			break;
 
 		HOLY:	prot := GetObjProperty( cast_on , "HolyProtection" );
+			Print( "[GETPROTLEVEL DEBUG] HOLY element matched, prot=" + prot );
 			break;
 
 		default:
+			Print( "[GETPROTLEVEL DEBUG] NO ELEMENT MATCH! element=" + element );
 
 	endcase
 
@@ -1024,7 +1037,6 @@ function Resisted( caster , cast_on , circle , dmg )
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
 		dmg := Cint( dmg * ClasseBonus( cast_on , CLASSEID_WARRIOR ) );
 	endif
-
 	if( dmg < 0 )
 		dmg := 1;
 	endif
