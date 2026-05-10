@@ -1,0 +1,92 @@
+/*
+ * Text Command: .forcespawn <radius>
+ * 
+ * Purpose: Forcespawn all spawnpoints within a given radius from player location
+ * Usage: .forcespawn 200
+ * Triggers: EVID_SPAWNPOINT_CHECK_POINT on all found spawnpoints
+ */
+
+use uo;
+use os;
+
+include "include/managers";
+include "include/constants/objtypes";
+include "include/constants/propids";
+
+program textcmd_forcespawnarea(who, params)
+    var radius;
+    var points;
+    var count := 0;
+    var forced := 0;
+    var report := "";
+    
+    params := Lower(params);
+    params := StrTrim(params);
+    
+    if (!params || !CInt(params))
+        SendSysMessage(who, "Usage: .forcespawn <radius>");
+        return;
+    endif
+    
+    radius := CInt(params);
+    
+    if (radius < 1)
+        SendSysMessage(who, "Radius must be greater than 0.");
+        return;
+    endif
+    
+    SendSysMessage(who, "Searching for spawnpoints within " + radius + " tiles...");
+    
+    // Get all objects in a box around the player
+    points := ListObjectsInBox(who.x - radius, who.y - radius, who.z - 128,
+                               who.x + radius, who.y + radius, who.z + 128,
+                               who.realm);
+    
+    if (!points || len(points) < 1)
+        SendSysMessage(who, "No objects found in that area.");
+        return;
+    endif
+    
+    // Filter for spawnpoints and check distance
+    var found := array{};
+    var i;
+    for (i := 1; i <= len(points); i += 1)
+        var point := points[i];
+        
+        // Check if it's a spawnpoint
+        if (point.objtype != UOBJ_SPAWNPOINT)
+            continue;
+        endif
+        
+        // Calculate distance (true radius, not square)
+        var dx := (who.x - point.x);
+        var dy := (who.y - point.y);
+        var dist := CInt(Sqrt(dx*dx + dy*dy));
+        
+        // Only include if within radius
+        if (dist <= radius)
+            found := found + array{ { point, dist } };
+        endif
+    endfor
+    
+    if (len(found) < 1)
+        SendSysMessage(who, "No spawnpoints found within " + radius + " tiles.");
+        return;
+    endif
+    
+    // Forcespawn each found spawnpoint
+    for (i := 1; i <= len(found); i += 1)
+        var sp := found[i][1];
+        var distance := found[i][2];
+        
+        // Send the forcespawn event
+        SendSpawnPointEvent(EVID_SPAWNPOINT_CHECK_POINT, sp);
+        
+        report := report + "  [" + forced + "] (" + sp.x + ", " + sp.y + ", " + sp.z + ") - " + distance + " tiles away\n";
+        forced += 1;
+    endfor
+    
+    SendSysMessage(who, "Forcespawned " + forced + " spawnpoint(s) within " + radius + " tiles:");
+    SendSysMessage(who, report);
+    
+endprogram
