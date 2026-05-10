@@ -8,27 +8,25 @@
 
 use uo;
 use os;
+use math;
 
 include "include/managers";
 include "include/constants/objtypes";
 include "include/constants/propids";
 
 program textcmd_forcespawnarea(who, params)
+    var p := SplitWords(params);
     var radius;
     var points;
-    var count := 0;
     var forced := 0;
     var report := "";
     
-    params := Lower(params);
-    params := StrTrim(params);
-    
-    if (!params || !CInt(params))
+    if (!p[1] || !CInt(p[1]))
         SendSysMessage(who, "Usage: .forcespawn <radius>");
         return;
     endif
     
-    radius := CInt(params);
+    radius := CInt(p[1]);
     
     if (radius < 1)
         SendSysMessage(who, "Radius must be greater than 0.");
@@ -77,12 +75,12 @@ program textcmd_forcespawnarea(who, params)
     // Forcespawn each found spawnpoint
     for (i := 1; i <= len(found); i += 1)
         var sp := found[i][1];
-        var distance := found[i][2];
+        var dista := found[i][2];
         
         // Send the forcespawn event
         SendSpawnPointEvent(EVID_SPAWNPOINT_CHECK_POINT, sp);
         
-        report := report + "  [" + forced + "] (" + sp.x + ", " + sp.y + ", " + sp.z + ") - " + distance + " tiles away\n";
+        report := report + "  [" + forced + "] (" + sp.x + ", " + sp.y + ", " + sp.z + ") - " + dista + " tiles away\n";
         forced += 1;
     endfor
     
