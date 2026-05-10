@@ -1039,7 +1039,12 @@ function Resisted( caster , cast_on , circle , dmg )
 	// elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
 	// 	dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_PALADIN ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
-		dmg := Cint( dmg * ClasseBonus( cast_on , CLASSEID_WARRIOR ) );
+		if( caster.npctemplate && GetObjProperty( caster , CLASSEID_MAGE ) )
+			var warrior_level := CInt( GetObjProperty( cast_on , CLASSEID_WARRIOR ) );
+			dmg := CInt( dmg * ClasseHalfBonusByLevel( warrior_level ) );
+		else
+			dmg := Cint( dmg * ClasseBonus( cast_on , CLASSEID_WARRIOR ) );
+		endif
 	endif
 	if( dmg < 0 )
 		dmg := 1;
