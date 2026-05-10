@@ -120,9 +120,13 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 	if( resultprot < 100 )
 		if( GetObjProperty( caster , CLASSEID_MAGE ) )
 			var level := GetClasseLevel(caster);
+			Print( "[CHAMPFIRE DEBUG] MAGE BRANCH: caster level=" + level );
 			resultprot := resultprot - (level * 3);
-			resultprot := Cint(dmg * resultprot / 100);
-			dmg := dmg - resultprot;
+			Print( "[CHAMPFIRE DEBUG] MAGE: resultprot after -level*3 = " + resultprot );
+			var mage_prot_reduction := Cint(dmg * resultprot / 100);
+			Print( "[CHAMPFIRE DEBUG] MAGE: prot_reduction = " + mage_prot_reduction );
+			dmg := dmg - mage_prot_reduction;
+			Print( "[CHAMPFIRE DEBUG] MAGE: dmg_after_prot = " + dmg );
 			// foreach thing in ListEquippedItems( caster )
 			// 	if( GetObjProperty( thing, "int" ) )
 			// 		mageequippedint := mageequippedint + Cint( GetObjProperty( thing, "int" ) );
