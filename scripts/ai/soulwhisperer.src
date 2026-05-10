@@ -51,8 +51,12 @@ var thecritter;
 
 program KillPlayers()
 
-	// Assign a random female name with the Soul Whisperer title
-	me.name := AssignName( me, FEMALE_IDX ) + ", Soul Whisperer";
+	// Assign name based on graphic: female for 773, male for 769
+	if ( me.graphic == 769 )
+		me.name := AssignName( me, MALE_IDX ) + ", Soul Whisperer";
+	else
+		me.name := AssignName( me, FEMALE_IDX ) + ", Soul Whisperer";
+	endif
 
 	if ( GetObjProperty( me, "frozen" ) )
 		me.frozen := 1;
@@ -109,10 +113,28 @@ function SummonWithPortal()
 		bossTemplate := superBosses[ Random( len( superBosses ) ) + 1 ];
 	endif
 
+	// --- Summoning taunts ---
+	var summonShouts := {
+		"From shadow and bone, rise and serve!",
+		"Through this rift, obey my will!",
+		"Awaken, hunter of souls!",
+		"I call the ancient terror forth!",
+		"Break the veil and devour them!",
+		"By blood and ruin, come to me!",
+		"Answer my command, dark champion!",
+		"The abyss opens. Step through!",
+		"Kneel to my voice and strike!",
+		"Arise, my servant, and slaughter!",
+		"I tear the world so you may enter!",
+		"From the void, your master calls!"
+	};
+	say( summonShouts[ Random( len( summonShouts ) ) + 1 ] );
+
 	// --- Open the portal using the same summon colour ---
 	var portal := CreateItemAtLocation( me.x, me.y, me.z, 13279, 1, me.realm );
 	if ( portal )
 		portal.color := summonColor;
+		portal.movable := 0;
 	endif
 
 	// --- Step away from the portal so it appears between boss and summoner ---
