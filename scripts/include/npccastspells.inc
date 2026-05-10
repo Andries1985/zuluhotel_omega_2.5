@@ -375,10 +375,6 @@ function SpecialChampFire(caster, cast_on, element)
 	
 	var dmg := CalcSpellDamage( caster ,cast_on , circle );
 	
-	// DEBUG: Log champfire initial hit
-	Print( "[CHAMPFIRE DEBUG] Element passed to ApplyElementalDamage: type=" + TypeOf(element) + " value=" + element + " name=" + eleName );
-	Print( "[CHAMPFIRE DEBUG] Initial damage calculated: " + dmg );
-	
 	ApplyElementalDamage( caster , cast_on , circle , dmg , element );
 	
 	var fields := {};
@@ -390,7 +386,6 @@ function SpecialChampFire(caster, cast_on, element)
 	fields[counter].name := "Field of "+eleName;
 	SetObjProperty(fields[counter], "specialELE", element);
 	SetObjProperty( fields[counter] , "ByTrueMage" , 1 );
-	Print( "[CHAMPFIRE DEBUG] Field created with specialELE=" + GetObjProperty(fields[counter], "specialELE") + " (type=" + TypeOf(GetObjProperty(fields[counter], "specialELE")) + ")" );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
