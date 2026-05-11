@@ -36,6 +36,14 @@ program textcmd_eraseEmptyAccounts( mobile, text )
         var total_scanned := 0;
         var total_empty := 0;
         var total_deleted := 0;
+
+        if( !dry_run )
+                SendSysMessage( mobile, "Saving world state before deletion..." );
+                SaveWorldState();
+                SendSysMessage( mobile, "World saved. Beginning account scan and deletion..." );
+        else
+                SendSysMessage( mobile, "DRY RUN MODE: No deletions will occur. Scanning accounts..." );
+        endif
         
         foreach account_name in ListAccounts()
                 SleepMS(5);
@@ -63,12 +71,18 @@ program textcmd_eraseEmptyAccounts( mobile, text )
                          endif
                 endif
 	endforeach
+
+	if( !dry_run )
+		SendSysMessage( mobile, "Deletion complete. Saving world state..." );
+		SaveWorldState();
+		SendSysMessage( mobile, "World saved." );
+	endif
  
-        if( dry_run )
-                SendSysMessage( mobile, "DRY RUN: scanned "+total_scanned+" accounts. Empty accounts found: "+total_empty+". Deleted: 0." );
-        else
-                SendSysMessage( mobile, "Scanned "+total_scanned+" accounts. Empty accounts found: "+total_empty+". Total accounts deleted: "+total_deleted );
-        endif
+	if( dry_run )
+		SendSysMessage( mobile, "DRY RUN: scanned "+total_scanned+" accounts. Empty accounts found: "+total_empty+". Deleted: 0." );
+	else
+		SendSysMessage( mobile, "Scanned "+total_scanned+" accounts. Empty accounts found: "+total_empty+". Total accounts deleted: "+total_deleted );
+	endif
  
 	return 1;
 endprogram

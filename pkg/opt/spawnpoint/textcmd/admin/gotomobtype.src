@@ -60,7 +60,7 @@ function MakeAndProcessGump( character, found )
 
 	var realmname := "Britannia";
 
-	var gump := GFCreateGump(20, 20, 620, 720);
+	var gump := GFCreateGump(20, 20, 690, 720);
 	GFDisposable(gump, 0);
 	var y := 185;
 	var perpage := 20;
@@ -70,11 +70,11 @@ function MakeAndProcessGump( character, found )
 	var start := 1;
 
 	// The main gump screen
-	GFResizePic(gump, 20, 20, 9250, 620, 725);
+	GFResizePic(gump, 20, 20, 9250, 690, 725);
 
 	// The area background gumps
-	GFResizePic(gump, 38, 180, 9200, 584, 528);
-	GFResizePic(gump, 38, 140, 9200, 584, 40);
+	GFResizePic(gump, 38, 180, 9200, 654, 528);
+	GFResizePic(gump, 38, 140, 9200, 654, 40);
 
 	// Title text
 	GFResizePic(gump, 175, 35, 9200, 155, 20);
@@ -90,7 +90,8 @@ function MakeAndProcessGump( character, found )
 	GFTextLine(gump, 96, 150, 900, "Mob Name");
 	GFTextLine(gump, 250, 150, 900, "Location");
 	GFTextLine(gump, 390, 150, 900, "Region");
-	GFTextLine(gump, 550, 150, 900, "Goto");
+	GFTextLine(gump, 510, 150, 900, "Multi");
+	GFTextLine(gump, 610, 150, 900, "Goto");
 
 	GFTextLine(gump, 240, 708, 1000, "Page 1");
 	GFPage(gump, 1);
@@ -98,7 +99,7 @@ function MakeAndProcessGump( character, found )
 	for( i := start ; i <= found.size() ; i := i + 1 )
 		
 		if (perpage <= 0)
-			GFAddButton(gump, 550, 705, 4005, 4006, 0, page+1); // Next Page button
+			GFAddButton(gump, 620, 705, 4005, 4006, 0, page+1); // Next Page button
 			GFPage(gump, page + 1);
 			GFAddButton(gump, 50, 705, 4014, 4015, 0, page); // Prev Page button
 			page := page + 1;
@@ -114,7 +115,12 @@ function MakeAndProcessGump( character, found )
 			regionname := "Wilderness";
 		endif
 		GFTextLine(gump, 390, y, 0, regionname);
-		GFAddButton(gump, 550, y, 5540, 5541, GF_CLOSE_BTN, i);
+		var inmulti := "No";
+		if (found[i].multi)
+			inmulti := "Yes";
+		endif
+		GFTextLine(gump, 510, y, 0, inmulti);
+		GFAddButton(gump, 610, y, 5540, 5541, GF_CLOSE_BTN, i);
 		perpage := perpage - 1;
 		y := y + 25;
 	endfor
