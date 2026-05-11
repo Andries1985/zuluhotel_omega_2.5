@@ -1,0 +1,60 @@
+// Synopsis: Create a new group spawnpoint at your location with default settings
+use uo;
+use os;
+
+include "include/constants/propids";
+include "include/constants/objtypes";
+include "include/managers";
+
+program createspawnpointgroup( who )
+
+	var spawnpoint := CreateItemAtLocation( who.x, who.y, who.z, UOBJ_SPAWNPOINT, 1, who.realm );
+
+	if( !spawnpoint )
+		SendSysMessage( who, "Could not create spawnpoint here." );
+		return 0;
+	endif
+
+	WaitForSpawnPointDefaults( spawnpoint );
+
+	var pt_data := array;
+	pt_data[1]  := "Group";     // Type
+	pt_data[2]  := "nil";       // Group id/template
+	pt_data[3]  := 1;           // Max
+	pt_data[4]  := 1;           // Appear range
+	pt_data[5]  := 4;           // Wander range
+	pt_data[6]  := 60;          // Frequency
+	pt_data[7]  := 0;           // Enabled
+	pt_data[8]  := 0;           // Spawn one at a time
+	pt_data[9]  := 1;           // Kill spawned NPCs on destroy
+	pt_data[10] := 0;           // Expire time
+	pt_data[11] := 0;           // Expire number
+	pt_data[12] := 0;           // Start hour
+	pt_data[13] := 0;           // End hour
+	pt_data[14] := "";          // Notes
+	pt_data[15] := 0;           // Trigger tile control
+
+	SetObjProperty( spawnpoint, PROPID_SPAWNPOINT_SETTING, pt_data );
+	spawnpoint.name := "SpawnPoint [" + pt_data[3] + " nil]";
+	SendSpawnPointEvent( EVID_SPAWNPOINT_CHECK_POINT, spawnpoint );
+
+	SendSysMessage( who, "Created group spawnpoint at your location with default group settings." );
+	return 1;
+
+endprogram
+
+
+function WaitForSpawnPointDefaults( byref spawnpoint )
+
+	var tries := 0;
+	while( tries < 100 )
+		if( GetObjProperty( spawnpoint, PROPID_SPAWNPOINT_SETTING ) )
+			return 1;
+		endif
+		SleepMs(5);
+		tries := tries + 1;
+	endwhile
+
+	return 0;
+
+endfunction

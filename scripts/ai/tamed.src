@@ -425,7 +425,7 @@ function Release()
 			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
 			MoveObjectToLocation(me,5288 , 1176 , 0, "britannia", MOVEOBJECT_FORCELOCATION);
 			RevokePrivilege( me, "invul" );
-			ApplyRawdamage( me , GetMaxHP(me) + 3 );
+			me.kill();
 		set_critical(0);
 		else
 			say("*Argh*");
@@ -435,10 +435,10 @@ function Release()
 		PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
 		MoveObjectToLocation(me, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
 		RevokePrivilege( me, "invul" );
-		ApplyRawDamage( me , GetMaxHP(me)+3 );
+		me.kill();
 	elseif( animated )
 		RevokePrivilege( me, "invul" );
-		ApplyRawDamage( me , GetMaxHP(me)+3 );
+		me.kill();
 	else
 		if( IsInNOPKArea(me) || IsInGuardedArea(me) || IsInSafeArea(me) || IsInSafeArea(me.master) )
 			ConfiscatePetForRestrictedRelease();
@@ -810,7 +810,7 @@ function OpenMyPack();
 			endif
 			RevokePrivilege( me, "invul" );
 			setobjproperty(me,"guardkill",1);
-			ApplyRawdamage( me, GetMaxHP(me) + 3 );
+			me.kill();
 
 			set_critical(0);
 			
@@ -1604,7 +1604,7 @@ function GoWild()
 		MoveObjectToLocation(me,5288,1176,0, "britannia",MOVEOBJECT_FORCELOCATION);
 		RevokePrivilege( me, "invul" );
 		SetObjProperty(me,"guardkill",1);
-		ApplyRawdamage( me, GetMaxHP(me)+3 );
+		me.kill();
 		return;
 	endif
 

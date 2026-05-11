@@ -667,7 +667,7 @@ function MakeLord(me, mergewith)
 	MoveObjectToLocation( mergewith, 5376, 1081, 0, 0);
 	RevokePrivilege( mergewith, "invul" );
 	setobjproperty( mergewith, "guardkill", 1);
-	ApplyRawDamage( mergewith, Cint(GetMAXHP(mergewith)+3) );
+	mergewith.kill();
 	pmg := me.graphic;
 	ct := GetEquipmentByLayer( me,  LAYER_ROBE );
 	ct.color := 1174;

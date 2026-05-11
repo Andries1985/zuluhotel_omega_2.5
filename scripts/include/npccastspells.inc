@@ -342,22 +342,22 @@ function SpecialChampFire(caster, cast_on, element)
 
 	var elecolor;
 	case(element)
-		"EARTH": elecolor := 1134;
-		"WATER": elecolor := 1167;
-		"FIRE": elecolor := 1172;
-		"AIR": elecolor := 1161;
-		"NECRO": elecolor := 1157;
-		"HOLY": elecolor := 1153;
+		EARTH: elecolor := 1134;
+		WATER: elecolor := 1167;
+		FIRE: elecolor := 1172;
+		AIR: elecolor := 1161;
+		NECRO: elecolor := 1157;
+		HOLY: elecolor := 1153;
 	endcase
 
 	var eleName;
 	case(element)
-		"EARTH": eleName := "Earth";
-		"WATER": eleName := "Water";
-		"FIRE": eleName := "Fire";
-		"AIR": eleName := "Air";
-		"NECRO": eleName := "Necro";
-		"HOLY": eleName := "Holy";
+		EARTH: eleName := "Earth";
+		WATER: eleName := "Water";
+		FIRE: eleName := "Fire";
+		AIR: eleName := "Air";
+		NECRO: eleName := "Necro";
+		HOLY: eleName := "Holy";
 	endcase
 
 	PlayMovingEffectEx(caster, cast_on, FX_SPELL_FIREBALL, SPEED_SPELL_FIREBALL, LOOP_SPELL_FIREBALL, elecolor);
@@ -374,6 +374,7 @@ function SpecialChampFire(caster, cast_on, element)
 	endif
 	
 	var dmg := CalcSpellDamage( caster ,cast_on , circle );
+	
 	ApplyElementalDamage( caster , cast_on , circle , dmg , element );
 	
 	var fields := {};

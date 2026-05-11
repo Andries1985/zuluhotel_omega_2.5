@@ -424,7 +424,7 @@ function sellanimal (who)
 		Say(pet.name + " is worth " + buyamount);
 		SetObjProperty(pet, "guardkill", 1);
 		pet.graphic := 1000;
-		ApplyRawDamage(pet, GetMaxHP(pet)+3);
+		pet.kill();
 
 		CreateItemInBackpack(who, UOBJ_GOLD_COIN, buyamount);
 		return;
@@ -595,7 +595,7 @@ function Save_Pet_Data (ticket, pet)
 
   SetObjProperty(pet, "guardkill", 1);
   pet.graphic := 1000;
-  ApplyRawDamage(pet, GetMaxHP(pet)+3);
+  pet.kill();
 
 endfunction
 

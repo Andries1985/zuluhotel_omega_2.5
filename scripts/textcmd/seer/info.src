@@ -1002,7 +1002,7 @@ program textcmd_info( character , whom )
     if (!who.dead)
       RevokePrivilege( who, "invul" );
       setobjproperty(who, "guardkill", 1);
-      ApplyRawDamage( who, GetMaxHP(who)+3 );
+      who.kill();
       LogCommand(character, GetProcess(GetPid()).name, who.name+"/"+who.serial, "Kill");
       SendSysMessage( character, whoname + " has been killed!" );
     else

@@ -368,7 +368,7 @@ function killme()
 	var count := 0;
 	repeat
 		SleepMS(1000);
-		ApplyRawDamage( me, GetMaxHP(me) + 3 );
+		me.kill();
 		count := count + 1;
 	until(!me || count >= 1000);
 

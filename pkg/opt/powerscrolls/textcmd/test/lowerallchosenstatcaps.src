@@ -1,0 +1,105 @@
+// Synopsis: Lower the chosen stat caps for all characters
+// Command: .lowerallchosenstatcaps
+use uo;
+
+include "include/attributes";
+include ":gumps:include/gumps";
+include "include/itemutil";
+include ":staff:include/staff";
+
+const STAT_CHECKBOX_OFFSET := 2000;
+
+Program tss( who ) 
+
+	var mobile := target(who);
+	if (!mobile)
+		SendSysMessage(who, "Canceled", FONT_NORMAL, 43);
+		return 0;
+	endif
+	
+	if(!GetObjProperty(mobile, "statMatrix"))
+		var newMatrix := {0, 0, 0};
+		SetObjProperty(mobile, "statMatrix", newMatrix);
+	endif
+
+	var matrix := GetObjProperty(mobile, "statMatrix");
+	var gump := GFCreateGump(20, 20, 2, 360);
+
+	GFResizePic(gump, 20, 20, 9250, 400, 260);
+	GFResizePic(gump, 30, 30, 9350, 380, 240);
+	GFResizePic(gump, 70, 20, 9250, 300, 40);
+	GFResizePic(gump, 80, 30, 9350, 280, 20);
+	GFTextLine(gump, 135, 30, 43, "Lower Multiple Stat Caps");
+
+	GFCheckBox(gump, 60, 85, 9026, 9027, 0, 1 + STAT_CHECKBOX_OFFSET);
+	GFTextLine(gump, 100, 85, 67, 130 + matrix[1]);
+	GFTextLine(gump, 155, 85, 67, "Strength");
+
+	GFCheckBox(gump, 60, 115, 9026, 9027, 0, 2 + STAT_CHECKBOX_OFFSET);
+	GFTextLine(gump, 100, 115, 67, 130 + matrix[2]);
+	GFTextLine(gump, 155, 115, 67, "Dexterity");
+
+	GFCheckBox(gump, 60, 145, 9026, 9027, 0, 3 + STAT_CHECKBOX_OFFSET);
+	GFTextLine(gump, 100, 145, 67, 130 + matrix[3]);
+	GFTextLine(gump, 155, 145, 67, "Intelligence");
+
+	GFResizePic(gump, 110, 185, 9350, 260, 70);
+	GFTextLine(gump, 125, 193, 43, "Select stats, then choose lower amount:");
+	GFAddButton(gump, 125, 220, 2117, 2118, 1, 5001);
+	GFTextLine(gump, 150, 222, 67, "-1");
+	GFAddButton(gump, 185, 220, 2117, 2118, 1, 5005);
+	GFTextLine(gump, 210, 222, 67, "-5");
+	GFAddButton(gump, 245, 220, 2117, 2118, 1, 5010);
+	GFTextLine(gump, 270, 222, 67, "-10");
+	GFAddButton(gump, 305, 220, 2117, 2118, 1, 5020);
+	GFTextLine(gump, 330, 222, 67, "-20");
+
+	var result := GFSendGump(who, gump);
+	if(result[0] == 0)
+		SendSysMessage(who, "Cancelled.");
+		return;
+	endif
+
+	var amount := GetLowerAmount(result[0]);
+	if(!amount)
+		SendSysMessage(who, "Choose -1, -5, -10 or -20.");
+		return;
+	endif
+
+	var selected_count := 0;
+	var key;
+	foreach key in (result.keys)
+		if(key > STAT_CHECKBOX_OFFSET and key <= STAT_CHECKBOX_OFFSET + 3)
+			var stat_id := key - STAT_CHECKBOX_OFFSET;
+			matrix[stat_id] := matrix[stat_id] - amount;
+			if(matrix[stat_id] < 0)
+				matrix[stat_id] := 0;
+			endif
+			selected_count := selected_count + 1;
+		endif
+	endforeach
+
+	if(selected_count == 0)
+		SendSysMessage(who, "No stats were selected.");
+		return;
+	endif
+
+	SetObjProperty(mobile, "statMatrix", matrix);
+	LogCommand(who, GetProcess(GetPid()).name, mobile.name+"/"+mobile.serial, "Lowered "+selected_count+" stat cap(s) by "+amount);
+	SendSysMessage(who, "Lowered " + selected_count + " stat cap(s) by " + amount + ". Type .showcaps to verify.");
+	PlayObjectCenteredEffectEx(mobile, 0x33EA, 0x1, 10);
+	PlayObjectCenteredEffectEx(mobile, 0x373A, 0x1, 10);
+	PlaySoundEffect(mobile, 0x5C1);
+
+
+endprogram
+
+function GetLowerAmount(button_id)
+	case(button_id)
+		5001:	return 1;
+		5005:	return 5;
+		5010:	return 10;
+		5020:	return 20;
+		default:	return 0;
+	endcase
+endfunction

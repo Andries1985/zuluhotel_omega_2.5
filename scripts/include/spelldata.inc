@@ -119,8 +119,8 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 		if( GetObjProperty( caster , CLASSEID_MAGE ) )
 			var level := GetClasseLevel(caster);
 			resultprot := resultprot - (level * 3);
-			resultprot := Cint(dmg * resultprot / 100);
-			dmg := dmg - resultprot;
+			var mage_prot_reduction := Cint(dmg * resultprot / 100);
+			dmg := dmg - mage_prot_reduction;
 			// foreach thing in ListEquippedItems( caster )
 			// 	if( GetObjProperty( thing, "int" ) )
 			// 		mageequippedint := mageequippedint + Cint( GetObjProperty( thing, "int" ) );
@@ -134,14 +134,16 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 			// dmg := dmg + newdamage;
 			//Print("Damage after mage bonus: " + dmg);
 		else
-			dmg := dmg - Cint(dmg * resultprot / 100);
+			var prot_reduction := Cint(dmg * resultprot / 100);
+			dmg := dmg - prot_reduction;
 		endif
 		if(DEBUG_MODE)
 			PrintTextAbovePrivate( caster , "I've dealt this much Elemental damage: " +dmg, caster );
 			PrintTextAbovePrivate( cast_on , "I received this much Elemental damage: " +dmg, cast_on );
 		endif
 
-		ApplyTheDamage( cast_on , caster , Resisted( caster, cast_on, circle, dmg ) , DMGID_MAGIC + element );
+		var final_dmg := Resisted( caster, cast_on, circle, dmg );
+		ApplyTheDamage( cast_on , caster , final_dmg , DMGID_MAGIC + element );
 	else
 		// Toadstool - heals x% of the damage that;s over 100. so 120% protection heals 20% of the damage
 		var amt := CDbl(resultprot)/100.0;
@@ -1022,9 +1024,13 @@ function Resisted( caster , cast_on , circle , dmg )
 	// elseif( GetObjProperty( cast_on , CLASSEID_PALADIN ) )
 	// 	dmg := Cint( dmg / ClasseBonus( cast_on , CLASSEID_PALADIN ) );
 	elseif( GetObjProperty( cast_on , CLASSEID_WARRIOR ) )
-		dmg := Cint( dmg * ClasseBonus( cast_on , CLASSEID_WARRIOR ) );
+		if( caster.npctemplate && GetObjProperty( caster , CLASSEID_MAGE ) )
+			var warrior_level := CInt( GetObjProperty( cast_on , CLASSEID_WARRIOR ) );
+			dmg := CInt( dmg * ClasseHalfBonusByLevel( warrior_level ) );
+		else
+			dmg := Cint( dmg * ClasseBonus( cast_on , CLASSEID_WARRIOR ) );
+		endif
 	endif
-
 	if( dmg < 0 )
 		dmg := 1;
 	endif
