@@ -1,9 +1,9 @@
 # Developer Changelog — v1.0.2
-**Range:** `353ad60` (PR #230 merge) → `b1b4956` (HEAD)  
+**Range:** `353ad60` (PR #230 merge) → `005ec2f` (HEAD)  
 **Branch:** Patch-1.0.2  
 **Date:** 2026-05-09  
-**Commits in range:** 3 (excluding cosmetic/patchnote commits)  
-**Files changed:** 29 | +1,111 / -242
+**Commits in range:** 15 (excluding merge commits)  
+**Files changed:** 47 | +2,916 / -283
 
 ---
 
@@ -17,6 +17,8 @@
 6. [Areas Configuration — Fixes & Updates](#6-areas-configuration--fixes--updates)
 7. [Combat System — GetMaxHP Removal](#7-combat-system--getmaxhp-removal)
 8. [NPC Loot — Configuration Updates](#8-npc-loot--configuration-updates)
+9. [Since Last Review (b1b4956 → 005ec2f)](#9-since-last-review-b1b4956--005ec2f)
+10. [Casting Balance & Protection Fixes](#10-casting-balance--protection-fixes)
 
 ---
 
@@ -100,8 +102,8 @@ The test panel now serves as a central hub for staff world-building and debuggin
 | File | Change |
 |------|--------|
 | `pkg/opt/spawnpoint/spawnpointmanager.src` | Spawn type default logic (4 lines) |
-| `pkg/opt/test/createspawnpointchest.src` | New admin tool (60 lines) |
-| `pkg/opt/test/createspawnpointgroup.src` | New admin tool (60 lines) |
+| `pkg/opt/spawnpoint/textcmd/test/createspawnpointchest.src` | New admin tool (60 lines) |
+| `pkg/opt/spawnpoint/textcmd/test/createspawnpointgroup.src` | New admin tool (60 lines) |
 
 ### Overview
 
@@ -117,8 +119,8 @@ Two new commands assist staff in creating these spawnpoint types:
 
 **Files:**
 - `pkg/opt/spawnpoint/spawnpointmanager.src` (updated)
-- `pkg/opt/test/createspawnpointchest.src` (new)
-- `pkg/opt/test/createspawnpointgroup.src` (new)
+- `pkg/opt/spawnpoint/textcmd/test/createspawnpointchest.src` (new)
+- `pkg/opt/spawnpoint/textcmd/test/createspawnpointgroup.src` (new)
 
 ---
 
@@ -165,7 +167,7 @@ A new superboss NPC, "Carrie the Soul Whisperer," has been implemented as a chal
 
 The areas configuration has been significantly refactored to:
 - Fix overlapping and conflicting area definitions
-- Realign guarder/PK areas with current world layout
+- Realign guarded/PK areas with current world layout
 - Remove deprecated or test regions
 - Improve area hierarchy and precedence
 
@@ -241,18 +243,112 @@ New loot groups and item definitions have been added for the Soul Whisperer boss
 
 ---
 
+## 9. Since Last Review (b1b4956 → 005ec2f)
+
+This section captures changes added after the first v1.0.2 draft review point (`b1b4956`).
+
+### 9.1 Soul Whisperer Visual/Variant Updates
+
+**Commits:** `84f40d4`, `b3dba42`, `917fda1`  
+**Files:**
+- `config/npcdesc.cfg`
+- `scripts/ai/soulwhisperer.src`
+
+**What changed:**
+- Soul Whisperer presentation and graphics were adjusted.
+- Additional Soul Whisperer-related variant setup was added in NPC definitions.
+- Patch note alignment commit updated documentation references during this tuning pass.
+
+### 9.2 Champion Fire and NPC Casting Stability
+
+**Commits:** `d5d232a`, `6ba0cce`, `9e93992`, `005ec2f`  
+**Files:**
+- `scripts/include/npccastspells.inc`
+- `scripts/include/spelldata.inc`
+- `scripts/include/npccast.inc`
+- `scripts/control/firecontrol.src`
+- `config/animxlate.cfg`
+- `config/npcdesc.cfg`
+
+**What changed:**
+- Champion Fire behavior was corrected for NPC spell-casting flow.
+- Temporary debug/print instrumentation was added during diagnosis and then removed.
+- Casting support files were tuned so the final state no longer includes debug noise.
+
+### 9.3 NPC Balance Pass (Mage/Caster-Oriented)
+
+**Commits:** `a92c958`, `780de68`, `b3dba42`  
+**Files:**
+- `scripts/include/spelldata.inc`
+- `config/npcdesc.cfg`
+
+**What changed:**
+- Warrior NPC damage behavior against NPC class mages was adjusted.
+- `IsMage` properties were added/tuned on specific NPC templates (including Wraithlord and Undeadflayer).
+- HP and configuration values for selected casting bosses were increased/rebalanced.
+
+### 9.4 Spawnpoint Tooling — Force Spawn Area
+
+**Commits:** `3edfa08`, `ac6fc40`, `84392c8`  
+**Files:**
+- `pkg/opt/spawnpoint/textcmd/test/forcespawnarea.src`
+
+**What changed:**
+- Added a new staff testing utility for forcing spawn behavior in an area.
+- Follow-up commits fixed command/runtime issues and area-mix behavior.
+
+---
+
+## 10. Casting Balance & Protection Fixes
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `config/npcdesc.cfg` | Mage-tier flags and caster template tuning |
+| `scripts/include/spelldata.inc` | Warrior vs mage magic-damage tuning |
+| `scripts/include/npccastspells.inc` | Champ Fire protection handling fixes |
+| `scripts/include/npccast.inc` | Casting flow support updates |
+
+### Overview
+
+This patch includes a focused balance and reliability pass for NPC spellcasting and anti-mage combat behavior.
+
+### Caster Tiering / IsMage Updates
+
+- Additional NPC templates were flagged/tuned with `IsMage` properties so casting behavior aligns with intended mage tiers.
+- Included targeted updates for higher-tier caster templates (including Wraithlord and Undeadflayer variants) and Soul Whisperer-related variants.
+
+### Warrior Magic Damage Tuning
+
+- Warrior-vs-mage interaction values were adjusted in spell data so warriors are less vulnerable to magic burst in specific class matchups.
+- Goal: improve matchup stability without flattening caster identity.
+
+### NPC Spell Definition / Casting Fixes
+
+- Corrected misworded/incorrect NPC spell cast definitions so configured spells now execute as intended.
+- Updated casting support paths and spell metadata to ensure NPC spell selection resolves to valid castable entries.
+
+### Champ Fire Protection Bypass Fix
+
+- Champ Fire casting path was corrected so protection/resist systems are respected as expected.
+- Debug instrumentation used during diagnosis was removed in the final commit state (`005ec2f`).
+
+---
+
 ## Summary of Changes
 
 This patch introduces a comprehensive suite of administrative and gameplay features:
 - **Admin Tools:** Character editor, stat cap commands, enhanced test panel
 - **Spawnpoint System:** Improved defaults and creation commands
 - **Boss Content:** Soul Whisperer superboss with progressive mechanics
+- **Combat Balance:** Mage tiering updates, warrior-vs-mage tuning, Champ Fire protection fix
+- **Spell Reliability:** NPC cast-definition corrections so intended spells are actually cast
 - **Configuration:** Areas rebalancing and cleanup
 - **Code Cleanup:** Removal of deprecated GetMaxHP() calls
 - **Loot System:** New boss-specific loot groups
 
 **Total Impact:**
-- 29 files changed
-- ~1,111 lines added
-- ~242 lines removed
-- 3 major commits
+- 47 files changed
+- ~2,916 lines added
+- ~283 lines removed
+- 15 non-merge commits
