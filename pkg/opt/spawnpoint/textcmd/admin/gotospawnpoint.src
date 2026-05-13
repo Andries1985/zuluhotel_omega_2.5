@@ -1,4 +1,4 @@
-// Synopsis: Teleport to the nearest spawn point matching a loot level or template
+// Synopsis: Teleport to the nearest spawn point matching a group or template
 use uo;
 use os;
 use npc;
@@ -6,14 +6,14 @@ use npc;
 include "include/constants/propids";
 include "include/managers";
 include ":staff:include/staff";
+include ":gumps:include/gumps";
 
 var cfgfile := ReadConfigFile("::npcdesc");
-var groupscfgfile := ReadConfigFile("::groups");
 
 program goto_spawnpoint( who, text )
 
 	if( !text )
-		SendSysMessage( who, "Usage is .gotospawnpoint <template or loot level> <minimum spawn time>" );
+		SendSysMessage( who, "Usage is .gotospawnpoint <template> <minimum spawn time> or .gotospawnpoint group <groupid> <minimum spawn time>" );
 		return 0;
 	endif
 	
@@ -25,13 +25,31 @@ program goto_spawnpoint( who, text )
 	
 	text := SplitWords(text);
 	var wanted := text[1];
+	var wanted_group := 0;
+	var is_group_search := 0;
+	var mintime_arg := 2;
+	if (wanted == "group" && text[2])
+		wanted_group := CInt(text[2]);
+		if (wanted_group > 0)
+			is_group_search := 1;
+			wanted := wanted_group;
+			mintime_arg := 3;
+		endif
+	else
+		var numeric_wanted := CInt(wanted);
+		if (numeric_wanted > 0)
+			is_group_search := 1;
+			wanted_group := numeric_wanted;
+		endif
+	endif
+	Print("[GSP DEBUG] wanted=" + wanted + " is_group_search=" + is_group_search + " wanted_group=" + wanted_group + " mintime_arg=" + mintime_arg);
 	var search;
 	if( !wanted )
 		SendSysMessage( who, "Bug in the command" );
 		return 0;
 	endif
 	
-	var mintime := CInt(text[2]);
+	var mintime := CInt(text[mintime_arg]);
 	var pt_data;
 	var npc;
 	var found := {};
@@ -68,7 +86,7 @@ program goto_spawnpoint( who, text )
 			//endif
 
 
-			if( search == wanted )
+			if ((is_group_search && pt_data[1] == "Group" && CInt(pt_data[2]) == wanted_group) || (!is_group_search && search == wanted))
 				// Min time!
 				if (mintime && CInt(pt_data[6]) <= mintime)
 					found.append(point);
@@ -90,7 +108,7 @@ program goto_spawnpoint( who, text )
 		return 0;
 	endif
 	
-	var res := MakeAndProcessGump( who, found );
+	var res := MakeAndProcessGump( who, found, wanted, is_group_search );
 	if( res )
 		MoveObjecttoLocation( who, res.x, res.y, res.z, "britannia", MOVEOBJECT_FORCELOCATION );
 	LogCommand(who, GetProcess(GetPid()).name, "Went to Location: "+res.x+","+res.y+","+res.z, text);
@@ -99,62 +117,115 @@ program goto_spawnpoint( who, text )
 endprogram
 
 
-function MakeAndProcessGump( who, found )
-
-	var layout	:= array( "page 0",
-				  "resizepic 50  0   2600 370 525",
-				  "resizepic 135 480 5100 200  25",
-				  "text 182 30 5 0" );
-				
-	var data	:= array( "Found Runes" );
-
-
-	var start	:= 1;
-	var count	:= 0;
-	var done	:= 0;
-	var page	:= 1;
-	var perpage	:= 20;
-	var y 	:= 70;
-	var i;
-	var j;
-
-	layout.append( "page " + page );
-	if( len(found) > perpage )
-		layout.append( "button 285 481 5540 5541 0 " + (page + 1) );
+function GetGroupDescription(group_num)
+	if (CInt(group_num) <= 0)
+		Print("[GSP DEBUG] GetGroupDescription skipped: group_num <= 0 (" + group_num + ")");
+		return "";
 	endif
-	
-	for( i := start ; i <= len(found) ; i := i + 1 )
-		if( done == perpage )
-			done 	:= 0;
-			page 	:= page + 1;
-			y 	:= 70;
-			
-			layout.append( "page " + page );
-			layout.append( "button 160 481 5537 5538 0 " + (page - 1) );
-			if( len(found) > (count + perpage) )
-				layout.append( "button 285 481 5540 5541 0 " + (page + 1) );
-			endif
-		endif
-		
-		layout.append( "text 85 " + y + " 0 " + len(data) );
-		layout.append( "button 350 " + (y+3) + " 2118 2117 1 0 " + i );
-		data.append( "Rune #" + i );
-		
-		layout.append( "text 175 " + y + " 0 " + len(data) );
-		data.append( "( " + found[i].x + ", " + found[i].y + ", " + found[i].z + " )" );
 
-		y 	:= y + 20;
-		done 	:= done + 1;
-		count 	:= count + 1;
+	var groups_cfg := ReadConfigFile(":spawnpoint:groups");
+	if (!groups_cfg)
+		Print("[GSP DEBUG] ReadConfigFile(:spawnpoint:groups) failed");
+		return "";
+	endif
+
+	var group_elem := FindConfigElem(groups_cfg, CInt(group_num));
+	if (!group_elem)
+		Print("[GSP DEBUG] FindConfigElem failed for group " + group_num);
+		UnloadConfigFile(":spawnpoint:groups");
+		return "";
+	endif
+
+	var description := GetConfigString(group_elem, "Description");
+	UnloadConfigFile(":spawnpoint:groups");
+	Print("[GSP DEBUG] group " + group_num + " description=" + description);
+
+	if (description)
+		return description;
+	endif
+
+	return "";
+endfunction
+
+
+function MakeAndProcessGump( who, found, wanted, is_group_search )
+
+	var title_count := "Found Runes: " + len(found);
+	var title_filter := "Group/Template: " + wanted;
+	if (is_group_search)
+		var group_desc := GetGroupDescription(wanted);
+		if (group_desc)
+			title_filter := "Group: " + wanted + " (" + group_desc + ")";
+		else
+			title_filter := "Group: " + wanted;
+		endif
+	endif
+
+	var perpage := 20;
+	var pages := CInt((len(found) + perpage - 1) / perpage);
+	if (pages < 1)
+		pages := 1;
+	endif
+
+	var gump_height := 520;
+	var gump := GFCreateGump(40, 30, 600, gump_height);
+	GFResizePic(gump, 20, 20, 3500, 600, gump_height);
+	GFMovable(gump, 0);
+	GFDisposable(gump, 0);
+
+	GFTextLine(gump, 200, 40, 300, title_count);
+	GFTextLine(gump, 175, 56, 300, title_filter);
+	GFTextLine(gump, 75, 78, 995, "Rune");
+	GFTextLine(gump, 125, 78, 995, "Goto");
+	GFTextLine(gump, 165, 78, 995, "Location");
+	GFTextLine(gump, 345, 78, 995, "Region");
+
+	var page := 1;
+	var i;
+	for (page := 1; page <= pages; page := page + 1)
+		GFPage(gump, page);
+
+		if (page > 1)
+			GFAddButton(gump, 60, 482, 5537, 5538, 0, page - 1);
+		endif
+		if (page < pages)
+			GFAddButton(gump, 560, 482, 5540, 5541, 0, page + 1);
+		endif
+
+		var start := ((page - 1) * perpage) + 1;
+		var finish := start + perpage - 1;
+		if (finish > len(found))
+			finish := len(found);
+		endif
+
+		var y := 103;
+		for (i := start; i <= finish; i := i + 1)
+			GFTextLine(gump, 75, y, 0, "#" + i);
+			GFAddButton(gump, 130, y + 2, 2103, 2104, GF_CLOSE_BTN, i);
+
+			var region_realm := found[i].realm;
+			if (!region_realm)
+				region_realm := "britannia";
+			endif
+
+			var regionname := GetRegionNameAtLocation(found[i].x, found[i].y, region_realm);
+			if (!regionname)
+				regionname := "Wilderness";
+			endif
+
+			GFTextLine(gump, 165, y, 0, "( " + found[i].x + ", " + found[i].y + ", " + found[i].z + " )");
+			GFTextLine(gump, 345, y, 0, regionname);
+
+			y := y + 19;
+		endfor
 	endfor
-			
-	var result := SendDialogGump( who , layout , data );
-	if( !result[0] )
+
+	var result := GFSendGump(who, gump);
+	if (!result[0])
 		return;
 	endif
-	
-	result := Cint( result[0] );
-	
+
+	result := CInt(result[0]);
 	return found[result];
 	
 endfunction

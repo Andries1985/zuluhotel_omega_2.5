@@ -1,4 +1,8 @@
+use os;
+use uo;
 use storage;
+include "include/objtype";
+include "include/client";
 
 function find_or_create_storage ( areaname )
 

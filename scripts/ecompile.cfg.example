@@ -37,20 +37,20 @@ PackageRoot=D:\DistroDev\devpkg
 # location. Useful for debugging misbehaving scripts.
 # Default is 0
 #
-GenerateListing=0
+GenerateListing=1
 
 #
 # GenerateDebugInfo
 # Directs eCompile to generated a special *.dbg file.
 # Default is 0
 #
-GenerateDebugInfo=0
+GenerateDebugInfo=1
 
 #
 # GenerateDebugTextInfo
 # Default is 0
 #
-GenerateDebugTextInfo=0
+GenerateDebugTextInfo=1
 
 #
 # VerbosityLevel
