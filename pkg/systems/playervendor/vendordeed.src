@@ -1,0 +1,63 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// Player vendor deed script (moved to playervendor package)
+//
+/////////////////////////////////////////////////////////////////////////////
+
+use os;
+use uo;
+
+const SEARCH_RANGE := 1;
+
+
+program makevendor(who, deed)
+	if(!ReserveItem(deed))
+		return;
+	endif
+
+	// Deed must be directly in the player's root backpack (not nested).
+	if(!who or !who.backpack or deed.container != who.backpack)
+		SendSysMessage(who, "The player vendor deed must be in your backpack to use.");
+		return;
+	endif
+
+	SendSysMessage(who, "Where would you like your vendor");
+	var where := TargetCoordinates(who);
+	var place;
+
+	if(!where)
+		SendSysMessage(who, "canceled");
+		return;
+	endif
+
+	if(checkfornpcs(where))
+		SendSysMessage(who, "You cannot place your vendor here");
+		return;
+	endif
+
+	place := CreateNpcFromTemplate("playervendor", where.x, where.y, where.z);
+	if(!place)
+		SendSysMessage(who, "Your vendor has not been created");
+		return;
+	endif
+
+	var next_pay := ReadGameClock() + 86400;
+	SetObjProperty(place, "p", next_pay);
+	SetObjProperty(place, "master", who.serial);
+	SetObjProperty(place, "mn", who.name);
+	SetObjProperty(place, "pm_initialized", 0);
+
+	DestroyItem(deed);
+	SendSysMessage(who, "You have successfully created a vendor. Dont forget to drop money on him so he wont run off!");
+endprogram
+
+function checkfornpcs(place)
+	var mobiles := ListMobilesNearLocation(place.x, place.y, place.z, SEARCH_RANGE);
+	foreach npc in mobiles
+		if(GetObjProperty(npc, "MerchantType"))
+			return 1;
+		endif
+	endforeach
+
+	return 0;
+endfunction

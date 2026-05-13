@@ -3,39 +3,53 @@ use uo;
 use npc;
 use util;
 use cfgfile;
+use datafile;
 
 include "include/attributes";
 include "include/client";
 include "include/objtype";
 include "include/eventid";
 include "include/utility";
+include "include/randname";
 include ":gumps:yesno";
 include "include/myutil";
-include "include/randname";
 include "include/npcboosts";
+include "include/escrow";
 
 const STARTHAIR		:= 0x2006;
 const ENDHAIR		:= 0x2079;
 
-var storage, inv_fs, inv_pb;
+var storage, inv_fs, inv_pb, inv_1c;
 var me := Self();
 var master := CINT(GetObjProperty(me, "master"));
-var mastername := getobjproperty(me, "mn");
-var cont := getobjproperty(me, "cont");
+var mastername := GetObjProperty(me, "mn");
+var cont := GetObjProperty(me, "cont");
 
 const LAYER_START := 1;
 const LAYER_END	  := 25;
 const TWO_DAYS_SECONDS := 172800;
 const ONE_WEEK_SECONDS := 604800;
+const DAY_SECONDS := 86400;
+const TWO_MONTHS_SECONDS := 5184000;
+const MONTHLY_WAGE_GOLD := 10000;
+const CITY_MONTHLY_WAGE_GOLD := 40000;
+const MONTH_LENGTH_DAYS := 30;
+const OWNER_WARN_COOLDOWN := 300;
+const PAYOUT_PACK_OBJTYPE := UOBJ_BACKPACK;
+const PAYOUT_PACK_MAX_ROOT_ITEMS := 100;
+const PAYOUT_PACK_MAX_WEIGHT := 40000;
+const CHEQUE_MAX_GOLD := 5000000;
+const ESCROW_STORAGE_NAME := "Merchant Escrow";
 
 program merchant()
-	if(!me.backpack)
-		DoMerchantOnCreationSetup();
+	Print("[PLAYERMERCHANT] startup serial=" + me.serial + " name='" + me.name + "' master=" + CInt(GetObjProperty(me, "master")) + " mn='" + CStr(GetObjProperty(me, "mn")) + "'");
+	if(!RefreshMaster())
+		HandleMasterlessMerchantCleanup();
+		exit;
 	endif
 
-	me.graphic := 400+me.gender;
-	if(getobjproperty(me, "frozen"))
-		me.frozen := 1;
+	if(!CInt(GetObjProperty(me, "pm_initialized")))
+		DoMerchantOnCreationSetup(me);
 	endif
 
 	storage := FindStorageArea( "Merchant Storage" );
@@ -45,10 +59,10 @@ program merchant()
 
 	inv_fs := find_or_create_item(storage, me.serial + " FS", 0xE7C);
 	inv_pb := find_or_create_item(storage, me.serial + " PB", 0xE7C);
-	inv_fs := find_or_create_item(storage, me.serial + " 1C", 0xE7C);
-	if(!inv_pb or !inv_fs) exit; endif
+	inv_1c := find_or_create_item(storage, me.serial + " 1C", 0xE7C);
+	if(!inv_pb or !inv_fs or !inv_1c) exit; endif
 
-	setobjproperty(me, "serial", me.serial);
+	SetObjProperty(me, "serial", me.serial);
 
 	EnableEvents( SYSEVENT_ITEM_GIVEN + SYSEVENT_MERCHANT_SOLD  );
 	EnableEvents( SYSEVENT_DAMAGED + SYSEVENT_ENGAGED  );
@@ -56,15 +70,19 @@ program merchant()
 	EnableEvents( SYSEVENT_SPEECH, 1 );
 	var ev;
 
-	var nextpay := getobjproperty(me, "nextpay");
+	var nextpay := GetObjProperty(me, "nextpay");
 	if(!nextpay)
-		nextpay := ReadGameClock()+1800;
-		setobjproperty(me, "nextpay", nextpay);
+		nextpay := ReadGameClock()+DAY_SECONDS;
+		SetObjProperty(me, "nextpay", nextpay);
 	endif
 
 	//LogMyStuff(me);
 
 	while(me)
+		if(!RefreshMaster())
+			HandleMasterlessMerchantCleanup();
+			break;
+		endif
 
 		if(!GetObjProperty(me, "lbc") || GetObjProperty(me, "lbc") < ReadGameClock())
 			SetObjProperty(me, "lbc", ReadGameClock()+5);
@@ -73,10 +91,27 @@ program merchant()
 
 		ev := os::wait_for_event( 120 );
 		if(ev)
+			if(ev.type == "pm_force_fire")
+				var srcserial := 0;
+				var force_escrow := CInt(ev.force_escrow);
+				if(ev.source)
+					srcserial := ev.source.serial;
+				endif
+				Print("[PLAYERMERCHANT] Force fire event for " + me.serial + " from " + srcserial + ", master=" + master + " force_escrow=" + force_escrow);
+				if(srcserial == master)
+					HandleMerchantClosure("forced_by_pmfireme_event", force_escrow);
+					break;
+				else
+					Print("[PLAYERMERCHANT] Ignored force fire event due to owner mismatch.");
+				endif
+				continue;
+			endif
+
 			case(ev.type)
 				SYSEVENT_ENTEREDAREA:
 					//Print("entered area event, my serial is " + me.serial + " and event source is " + ev.source.serial);
 					AnnounceRecentStock(ev.source);
+					WarnOwnerIfOutOfGold(ev.source);
 				SYSEVENT_DAMAGED:
 				SYSEVENT_ENGAGED:
 					me.hidden := 1;
@@ -89,18 +124,10 @@ program merchant()
 					PrintTextAbovePrivate( me, "The total of your purchase is " + ev.amount, ev.source );
 					TakeSale(ev.amount, ev.source);
 				SYSEVENT_ITEM_GIVEN:
-					if(!master)
-						if(ev.item.objtype == UOBJ_GOLD_COIN and ev.item.amount >= 1000)
-							HireMe(ev);
-							nextpay := ReadGameClock()+86400;
-							setobjproperty(me, "nextpay", nextpay);
-						endif
+					if(ev.source.serial == master)
+						StockItem(ev.item, ev.source);
 					else
-						if(ev.source.serial == master)
-							StockItem(ev.item, ev.source);
-						else
-							buyitem(ev.source, ev.item);
-						endif
+						BuyItem(ev.source, ev.item);
 					endif
 			endcase  
 			sleep(1);
@@ -108,8 +135,8 @@ program merchant()
 
 		if( ReadGameClock() > nextpay )
 			GetPay();
-			nextpay := ReadGameClock()+36400;
-			setobjproperty(me, "nextpay", nextpay);
+			nextpay := ReadGameClock()+DAY_SECONDS;
+			SetObjProperty(me, "nextpay", nextpay);
 		endif
         
 	endwhile
@@ -165,6 +192,110 @@ function AnnounceRecentStock(who)
 	endif
 endfunction
 
+function FormatDuration(seconds)
+	if(seconds <= 0)
+		return "0m";
+	endif
+
+	var days := CInt(seconds / DAY_SECONDS);
+	var hours := CInt((seconds % DAY_SECONDS) / 3600);
+	var mins := CInt(((seconds % DAY_SECONDS) % 3600) / 60);
+
+	if(days)
+		return days + "d " + hours + "h";
+	elseif(hours)
+		return hours + "h " + mins + "m";
+	else
+		return mins + "m";
+	endif
+endfunction
+
+function CurrentDebt()
+	return CInt(GetObjProperty(me, "wagedebt"));
+endfunction
+
+function CurrentGoldPool()
+	return CInt(GetObjProperty(me, "g"));
+endfunction
+
+function RefreshMaster()
+	master := CINT(GetObjProperty(me, "master"));
+	return master;
+endfunction
+
+function IsInCityRegion()
+	return CInt(GetRegionString("regions", me.x, me.y, "City", me.realm)) == 1;
+endfunction
+
+function CalculateDailyWage()
+	var carry := CInt(GetObjProperty(me, "wagecarry"));
+	if(carry < 0)
+		carry := 0;
+	endif
+
+	var monthly := MONTHLY_WAGE_GOLD;
+	if(IsInCityRegion())
+		monthly := CITY_MONTHLY_WAGE_GOLD;
+	endif
+
+	carry := carry + monthly;
+	var due := CInt(carry / MONTH_LENGTH_DAYS);
+	carry := carry % MONTH_LENGTH_DAYS;
+
+	SetObjProperty(me, "wagecarry", carry);
+	return due;
+endfunction
+
+function CollectDebtFromPool()
+	var debt := CurrentDebt();
+	var gold := CurrentGoldPool();
+	if(!debt or !gold)
+		return;
+	endif
+
+	var payment := debt;
+	if(payment > gold)
+		payment := gold;
+	endif
+
+	debt := debt - payment;
+	gold := gold - payment;
+
+	SetObjProperty(me, "wagedebt", debt);
+	SetObjProperty(me, "g", gold);
+
+	if(!debt)
+		EraseObjProperty(me, "debtstart");
+	endif
+endfunction
+
+function WarnOwnerIfOutOfGold(byref who)
+	if(!who or who.serial != master)
+		return;
+	endif
+
+	var debt := CurrentDebt();
+	if(!debt)
+		return;
+	endif
+
+	var lastwarn := CInt(GetObjProperty(me, "lastownerwarn"));
+	if(lastwarn and ReadGameClock() < (lastwarn + OWNER_WARN_COOLDOWN))
+		return;
+	endif
+
+	SetObjProperty(me, "lastownerwarn", ReadGameClock());
+	PrintTextAbovePrivate(me, "I am out of gold and owe " + debt + " in wages.", who);
+
+	var debtstart := CInt(GetObjProperty(me, "debtstart"));
+	if(debtstart)
+		var secondsleft := (debtstart + TWO_MONTHS_SECONDS) - ReadGameClock();
+		if(secondsleft > 0)
+			PrintTextAbovePrivate(me, "I will dismiss myself in " + FormatDuration(secondsleft) + " if unpaid.", who);
+		endif
+	endif
+endfunction
+
 
 
 
@@ -172,33 +303,38 @@ endfunction
 //  called when the merchant is first created
 ///////////////////
 
-function DoMerchantOnCreationSetup()
+function DoMerchantOnCreationSetup(byref me)
 
-	sleep(1);
-	me.graphic := 400+me.gender;
-	if( me.name ["<random>"] )
-		me.name := RandomName(me) + ", " + mastername + "'s Merchant";
+	var owner_name := CStr(GetObjProperty(me, "mn"));
+	mastername := GetObjProperty(me, "mn");
+
+	if( me.name["<random>"] )
+		me.gender := Random(2);
+		me.graphic := 400 + me.gender;
+		if(!owner_name)
+			owner_name := "Unknown";
+		endif
+		me.name := RandomName(me) + ", " + owner_name + "'s Merchant";
 	endif
 
+	Sleep(2);
 	if(!me.backpack)
 		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, UOBJ_BACKPACK, 1);
 		EquipItem(me, newbackpack);
 	endif
+	SetObjProperty(me, "pm_initialized", 1);
 
 	var parms := {};
 	parms[1]:= me;
 	parms[2]:= "rich";
 	Say("Ooh, I better get dressed!");
 	start_script("::/misc/dressme", parms);
-	sleep(2);
+	Sleep(2);
 	foreach item in ListEquippedItems(me)
-		setobjproperty(item, "mine", 1);
+		SetObjProperty(item, "mine", 1);
 	endforeach
 
 endfunction
-
-
-
 
 ///////////////////
 //  when someone says something in range of the merchant, this function takes care of it
@@ -207,9 +343,7 @@ endfunction
 function ProcessSpeech(byref ev);
 	if(ev.text["buy"]) 
 		TurnToward( ev.source );
-		if(!master)
-			Say("I am currently unemployed.  Want to hire me?");
-		elseif(CanSellAtThisLocation() )
+		if(CanSellAtThisLocation() )
 			SendBuyWindow( ev.source, inv_fs, self(), inv_pb, VENDOR_SEND_AOS_TOOLTIP );
 		else
 			Say("I wish I could help you, but the queen has forbidden commerce at this location.");
@@ -223,7 +357,7 @@ function ProcessSpeech(byref ev);
 	elseif(ev.text["release"])
 		TurnToward( ev.source );
 		if(ev.source.serial == master)
-			Fireme(ev);
+			FireMe(ev);
 		else
 			Say("I don't even work for you.");
 		endif
@@ -235,52 +369,54 @@ function ProcessSpeech(byref ev);
 	elseif(ev.text["contact"])
 		TurnToward( ev.source );
 		if(ev.source.serial == master)
-			cont := recontact(ev.source);
-			setobjproperty(me, "cont", cont);
+			cont := ReContact(ev.source);
+			SetObjProperty(me, "cont", cont);
 		else
 			Say("You may contact my employer " + cont);
 		endif
 
 	elseif((ev.text["collect"]) and (ev.source.serial == master))
 		TurnToward( ev.source );
-		cashout();
+		CashCheque(ev.source);
 
 	elseif((ev.text["cheque"]) and (ev.source.serial == master))
 		TurnToward( ev.source );
-		cashcheque(ev.source);
+		CashCheque(ev.source);
 
 	elseif((ev.text["status"]) and (ev.source.serial == master))
 		TurnToward( ev.source );
-		statuscheck();
+		StatusCheck();
 
 	elseif((ev.text["wear"]) and (ev.source.serial == master))
 		TurnToward( ev.source );
 		Say("What shall I wear?");
 
 		var this := target(ev.source);
+		if(!this or !this.IsA(POLCLASS_ITEM))
+			Say("Please target an item.");
+			return;
+		endif
 		var i;
 		
 		for( i := LAYER_START ; i <= LAYER_END ; i := i + 1 )
-		var equiped_item := GetEquipmentByLayer((ev.source) , i );
-		if( this == equiped_item )
+		var equipped_item := GetEquipmentByLayer((ev.source) , i );
+		if( this == equipped_item )
 			SendSysMessage((ev.source), "Your merchant can not wear something that you are already wearing" );
 			return;
 		endif
 		endfor
 
-
-
-		wear_item(this);
+		WearItem(this);
 
 	elseif((ev.text["strip"]) and (ev.source.serial == master))
 		TurnToward( ev.source );
 		Say("Ooh, I think I feel a draft!");
-		strip_items(ev.source);
+		StripItems(ev.source);
 
 	elseif((ev.text["undress"]) and (ev.source.serial == master))
 		TurnToward( ev.source );
 		Say("This is so humiliating.");
-		undress_items(ev.source);
+		UndressItems(ev.source);
 
 	elseif((ev.text["follow"]) and (ev.source.serial == master))
 		var myfullname := Lower(me.name);
@@ -295,14 +431,6 @@ function ProcessSpeech(byref ev);
 			Say("If you're talking to me, say " + myname + " follow me.");
 		endif
 
-	elseif(ev.text["hire"])
-		TurnToward( ev.source );
-		if(!master)
-			Say("For 1000 gold to start, plus 50 per day, I'll work for a 5% commission");
-		else
-			Say("I already have a job.");
-		endif
-
 	elseif(ev.text["log"])
 		TurnToward( ev.source );
 		ViewMessageLog(ev.source);
@@ -313,19 +441,18 @@ function ProcessSpeech(byref ev);
 		sleep(1);
 		Say("release, sell, contact, collect, cheque,");
 		sleep(2);
-		Say("wear, undress, strip, follow, stop, hire, status, log and purchase");
+		Say("wear, undress, strip, follow, stop,");
+		sleep(2);
+		Say("status, log and purchase");
 	endif
 
 endfunction
-
-
-
 
 ///////////////////
 //  npc runs along following his master until told to stop
 ///////////////////
 
-function follow(byref mmaster)
+function Follow(byref mmaster)
 
 	var d := distance(mmaster, me);
 	me.dexterity_mod := 500;
@@ -357,24 +484,21 @@ function follow(byref mmaster)
 					Say("Ok, I'll just stand right here.");
 					return;
 				else
-					say("I am following you!");
+					Say("I am following you!");
 				endif
 			else
-				say("I am following you!");
+				Say("I am following you!");
 			endif
 		endif
 	endwhile
 
 endfunction
 
-
-
-
 ///////////////////
 //  called when the vendor's owner gives them another item to sell
 ///////////////////
 
-function stockitem(byref item, byref seller)
+function StockItem(byref item, byref seller)
 
 	if(item.objtype == UOBJ_GOLD_COIN)
 		TakeGold(item);
@@ -473,7 +597,7 @@ function stockitem(byref item, byref seller)
 	if( cost > 0 )
 		item.sellprice := CINT(cost);
 	else
-		say("Well, just keep it, then");
+		Say("Well, just keep it, then");
 		MoveItemToContainer(item, seller.backpack);
 		return;
 	endif
@@ -491,9 +615,6 @@ function stockitem(byref item, byref seller)
 	endif
 
 endfunction
-
-
-
 
 ///////////////////
 //  determines if the item passed is one that can be stacked with existing items
@@ -528,172 +649,490 @@ function IsStackableWithOtherItems(byref item)
 
 endfunction
 
-function cashout()
-
-	var mypay := cint(getObjProperty(me, "mypay"));
-	var mygold := cint(getobjproperty(me, "g"));
-	if(mygold >= mypay)
-		mypay := 0;
-		mygold := mygold - mypay;
-	else
-		mypay := mypay - mygold;
-		mygold := 0;
-	endif
-	SetObjProperty(me, "mypay",mypay);
-	setobjproperty(me, "g", mygold);
-
-	var mstr := Systemfindobjectbyserial(cint(master));
-	if(mygold)
-		var payamt := 0;
-		if(mygold > 60000)
-			payamt := 60000;
-		else
-			payamt := mygold;
-		endif
-
-        if(!createitemincontainer(mstr.backpack, UOBJ_GOLD_COIN, payamt))
-			say("You can't carry anymore gold at the moment!");
-			return 0;
-		else
-			say("Here is your " + payamt );
-		endif 
-
-		mygold := mygold - payamt;
-        setobjproperty(me, "g", mygold);
-		if(!mygold)
-			say("but you have left me nothing towards my future wages.");
-		else
-			say("I still hold " + mygold + " gold.");
-		endif
-	else
-		say("You owe me " + mypay + " gold.");
+function QueueGMPageReport(message)
+	var gmpages := GetGlobalProperty("gmpages");
+	if(!gmpages)
+		gmpages := {};
 	endif
 
-	foreach thingie in ListRootItemsInContainer(me.backpack)
-        	MoveItemToContainer(thingie, mstr.backpack);
-	endforeach
-
+	gmpages.append(me.serial);
+	gmpages.append("[PlayerMerchant] " + message);
+	SetGlobalProperty("gmpages", gmpages);
 endfunction
 
-function cashcheque(byref who)
+function OpenEscrowStorage()
+	var area := FindStorageArea(ESCROW_STORAGE_NAME);
+	if(!area)
+		area := CreateStorageArea(ESCROW_STORAGE_NAME);
+	endif
+	return area;
+endfunction
 
-	var mygold := cint(getobjproperty(me, "g"));
+function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
+	var owner_name := "Unknown Owner";
+	var owner_obj := SystemFindObjectBySerial(CInt(ownerserial), SYSFIND_SEARCH_OFFLINE_MOBILES);
+	if(owner_obj and owner_obj.name)
+		owner_name := owner_obj.name;
+	endif
+
+	var entry_id := ownerserial + "-" + ReadGameClock() + "-" + Random(100000);
+	Print("[PMESCROWDBG] AppendEscrowIndex owner=" + ownerserial + " escrow_name=" + escrow_name + " vendor=" + vendor_name + " entry_id=" + entry_id);
+
+	// Read master serial from merchant object
+	var master := CInt(GetObjProperty(me, "master"));
+	if(!master)
+		Print("[PMESCROWDBG] AppendEscrowIndex aborted: merchant has no master property");
+		return entry_id;
+	endif
+	Print("[PMESCROWDBG] AppendEscrowIndex merchant_serial=" + me.serial + " master=" + master);
+
+	// Get owner object to build per-player datafile name
+	if(!owner_obj)
+		owner_obj := SystemFindObjectBySerial(CInt(ownerserial), SYSFIND_SEARCH_OFFLINE_MOBILES);
+		if(!owner_obj)
+			Print("[PMESCROWDBG] AppendEscrowIndex failed to find owner object for serial " + ownerserial);
+			return entry_id;
+			endif
+		endif
+	// Load or create per-player escrow datafile
+	var df_name := BuildEscrowDatafileName(owner_obj);
+	if(!df_name)
+		Print("[PMESCROWDBG] Failed to build datafile name for owner " + ownerserial);
+		return entry_id;
+	endif
+
+	var df := OpenDataFile(df_name);
+	if(!df)
+		Print("[PMESCROWDBG] Datafile " + df_name + " missing, creating it");
+		CreateDataFile(df_name);
+		df := OpenDataFile(df_name);
+		if(!df)
+			Print("[PMESCROWDBG] Failed to reopen datafile " + df_name);
+			return entry_id;
+		endif
+	endif
+
+	// Get or create element for this vendor (merchant) serial
+	var vendor_key := CStr(me.serial);
+	var vendor_elem := df.FindElement(vendor_key);
+	if(!vendor_elem)
+		Print("[PMESCROWDBG] Creating datafile element " + vendor_key);
+		vendor_elem := df.CreateElement(vendor_key);
+	endif
+	if(!vendor_elem)
+		Print("[PMESCROWDBG] Failed to create/find element " + vendor_key);
+		UnloadDataFile(df_name);
+		return entry_id;
+	endif
+
+	// Get existing entries (stored as format: id|owner|escrow_name|vendor_name|vendor_serial|created|owner_name)
+	var entries_str := vendor_elem.GetProp("entries");
+	var entries := {};
+	Print("[PMESCROWDBG] Existing entries string length=" + CStr(len(entries_str)));
+	if(entries_str)
+		// Parse format: id|owner|escrow_name|vendor_name|vendor_serial|created|owner_name^...
+		var parts := SplitWords(entries_str, "^");
+		Print("[PMESCROWDBG] Parsed existing entries count=" + CStr(len(parts)));
+		foreach part in parts
+			if(part)
+				var fields := SplitWords(part, "|");
+				if(len(fields) >= 7)
+					entries.append({
+						fields[1],
+						CInt(fields[2]),
+						fields[3],
+						fields[4],
+						CInt(fields[5]),
+						CInt(fields[6]),
+						fields[7]
+					});
+				endif
+			endif
+		endforeach
+	endif
+	Print("[PMESCROWDBG] Entries count after parse=" + CStr(len(entries)));
+
+	// Append new entry with merchant serial (me.serial)
+	entries.append({
+		entry_id,
+		CInt(ownerserial),
+		escrow_name,
+		vendor_name,
+		CInt(me.serial),
+		ReadGameClock(),
+		owner_name
+	});
+
+	// Encode entries back to string
+	var encoded := "";
+	foreach entry in entries
+		if(encoded)
+			encoded := encoded + "^";
+		endif
+		encoded := encoded + entry[1] + "|" + entry[2] + "|" + entry[3] + "|" + entry[4] + "|" + entry[5] + "|" + entry[6] + "|" + entry[7];
+	endforeach
+	Print("[PMESCROWDBG] Encoded entries length=" + CStr(len(encoded)));
+
+	vendor_elem.SetProp("entries", encoded);
+	Print("[PMESCROWDBG] Saved escrow entries under " + vendor_key + " in " + df_name);
+	UnloadDataFile(df_name);
+
+	return entry_id;
+endfunction
+
+function SavePackToEscrow(payout_pack, ownerserial, vendor_name)
+	var area := OpenEscrowStorage();
+	if(!area)
+		MoveObjectToLocation(payout_pack, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
+		return 0;
+	endif
+
+	var escrow_name := "PMEscrow " + ownerserial + " " + ReadGameClock() + " " + Random(99999);
+	var escrow_root := CreateRootItemInStorageArea(area, escrow_name, UOBJ_BACKPACK);
+	if(!escrow_root)
+		MoveObjectToLocation(payout_pack, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
+		return 0;
+	endif
+
+	escrow_root.name := "Player Merchant Escrow - " + vendor_name;
+	var root_id := ownerserial + "-" + ReadGameClock() + "-" + Random(100000);
+	SetObjProperty(escrow_root, "root_id", root_id);
+	SetObjProperty(escrow_root, "ownerserial", ownerserial);
+	SetObjProperty(escrow_root, "vendorserial", me.serial);
+	SetObjProperty(escrow_root, "vendorname", vendor_name);
+	SetObjProperty(escrow_root, "created", ReadGameClock());
+
+	if(!MoveItemToContainer(payout_pack, escrow_root))
+		DestroyRootItemInStorageArea(area, escrow_name);
+		MoveObjectToLocation(payout_pack, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
+		return 0;
+	endif
+
+	AppendEscrowIndex(ownerserial, escrow_name, vendor_name);
+	return 1;
+endfunction
+
+function CreatePayoutPack(vendor_name)
+	var payout_pack := CreateItemAtLocation(5288, 1176, 0, PAYOUT_PACK_OBJTYPE, 1, me.realm);
+	if(payout_pack)
+		payout_pack.name := vendor_name + " payout";
+	endif
+	return payout_pack;
+endfunction
+
+function CanPlaceInPayoutPack(payout_pack, item)
+	var roots := ListRootItemsInContainer(payout_pack);
+	if(len(roots) >= PAYOUT_PACK_MAX_ROOT_ITEMS)
+		return 0;
+	endif
+
+	var estweight := CInt(payout_pack.weight) + CInt(item.weight);
+	if(estweight > PAYOUT_PACK_MAX_WEIGHT)
+		return 0;
+	endif
+
+	return 1;
+endfunction
+
+function MoveItemToPayoutPacks(byref packs, byref item, vendor_name)
+	for i := 1 to len(packs)
+		if(CanPlaceInPayoutPack(packs[i], item) and MoveItemToContainer(item, packs[i]))
+			return 1;
+		endif
+	endfor
+
+	var new_payout_pack := CreatePayoutPack(vendor_name);
+	if(!new_payout_pack)
+		return 0;
+	endif
+	packs.append(new_payout_pack);
+
+	if(MoveItemToContainer(item, new_payout_pack))
+		return 1;
+	endif
+
+	return 0;
+endfunction
+
+function CollectContainerToPayoutPacks(byref source, byref packs, vendor_name)
+	foreach item in ListRootItemsInContainer(source)
+		MoveItemToPayoutPacks(packs, item, vendor_name);
+	endforeach
+endfunction
+
+function BuildAssetPacks(vendor_name)
+	var packs := {};
+
+	CollectContainerToPayoutPacks(inv_fs, packs, vendor_name);
+	CollectContainerToPayoutPacks(inv_pb, packs, vendor_name);
+	CollectContainerToPayoutPacks(me.backpack, packs, vendor_name);
+
+	foreach equipped in ListEquippedItems(me)
+		if((equipped.objtype < STARTHAIR or equipped.objtype > ENDHAIR) and equipped != me.backpack)
+			MoveItemToPayoutPacks(packs, equipped, vendor_name);
+		endif
+	endforeach
+
+	return packs;
+endfunction
+
+function AddGoldChequePacks(byref packs, amount, vendor_name)
+	var remaining := CInt(amount);
+	while(remaining > 0)
+		var cheque_amount := remaining;
+		if(cheque_amount > CHEQUE_MAX_GOLD)
+			cheque_amount := CHEQUE_MAX_GOLD;
+		endif
+
+		var payout_pack := CreatePayoutPack(vendor_name);
+		if(!payout_pack)
+			return;
+		endif
+
+		var itemcheck := CreateItemInContainer(payout_pack, CInt(0x14000), 1);
+		if(!itemcheck)
+			DestroyItem(payout_pack);
+			return;
+		endif
+
+		SetObjProperty(itemcheck, "Amount", cheque_amount);
+		SetObjProperty(itemcheck, "checkamount", cheque_amount);
+		SetObjProperty(itemcheck, "CreatedBy", me.name);
+		itemcheck.color := 51;
+		itemcheck.name := "A Cheque for " + cheque_amount + " Gold by " + me.name + ".";
+
+		packs.append(payout_pack);
+		remaining := remaining - cheque_amount;
+	endwhile
+endfunction
+
+function DeliverPackToOwnerOrEscrow(payout_pack, byref owner, ownerserial, vendor_name, force_escrow := 0)
+	if(owner and !force_escrow)
+		var bankbox := FindBankBox(owner);
+		if(bankbox and MoveItemToContainer(payout_pack, bankbox))
+			return 1;
+		endif
+	endif
+
+	if(SavePackToEscrow(payout_pack, ownerserial, vendor_name))
+		return 1;
+	endif
+
+	return 0;
+endfunction
+
+function CashOut(force_escrow := 0)
+	CollectDebtFromPool();
+
+	var ownerserial := CInt(master);
+	var owner := SystemFindObjectBySerial(ownerserial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+	if(!owner)
+		Say("I can't find my employer right now.");
+		QueueGMPageReport("CashOut failed: master not found. Vendor=" + me.name + "(" + me.serial + ") MasterSerial=" + ownerserial + " Loc=" + me.x + "," + me.y + "," + me.z + " Realm=" + me.realm);
+	endif
+
+	var vendor_name := me.name;
+	if(!vendor_name)
+		vendor_name := "Player Merchant";
+	endif
+
+	var packs := BuildAssetPacks(vendor_name);
+
+	var mygold := CurrentGoldPool();
+	if(mygold > 0)
+		AddGoldChequePacks(packs, mygold, vendor_name);
+		SetObjProperty(me, "g", 0);
+	endif
+
+	for i := 1 to len(packs)
+		DeliverPackToOwnerOrEscrow(packs[i], owner, ownerserial, vendor_name, force_escrow);
+		packs[i] := 0;
+	endfor
+	packs := 0;
+endfunction
+
+function CashCheque(byref who)
+	if(!who)
+		return;
+	endif
+
+	CollectDebtFromPool();
+
+	var mygold := CurrentGoldPool();
 	if(mygold <= 0)
 		Say("I don't currently hold any gold for you.");
 		return;
 	endif
 
-	var checkamt := mygold;
-	if(checkamt > 1000000)
-		checkamt := 1000000;
+	var vendor_name := me.name;
+	if(!vendor_name)
+		vendor_name := "Player Merchant";
 	endif
 
-	var placed_in_bank := 0;
-	var itemcheck := CreateItemInContainer(who.backpack, CInt(0x14000), 1);
-	if(!itemcheck)
-		var bankbox := FindBankBox(who);
-		if(bankbox)
-			itemcheck := CreateItemInContainer(bankbox, CInt(0x14000), 1);
-			if(itemcheck)
-				placed_in_bank := 1;
-			endif
-		endif
+	var packs := {};
+	AddGoldChequePacks(packs, mygold, vendor_name);
+	SetObjProperty(me, "g", 0);
 
-		if(!itemcheck)
-			Say("I couldn't place a cheque in your backpack or bank box.");
-			return;
-		endif
-	endif
+	for i := 1 to len(packs)
+		DeliverPackToOwnerOrEscrow(packs[i], who, who.serial, vendor_name, 0);
+		packs[i] := 0;
+	endfor
+	packs := 0;
 
-	SetObjProperty(itemcheck, "Amount", checkamt);
-	SetObjProperty(itemcheck, "checkamount", checkamt);
-	SetObjProperty(itemcheck, "CreatedBy", me.name);
-	itemcheck.color := 51;
-	itemcheck.name := "A Cheque for " + checkamt + " Gold by " + me.name + ".";
-
-	mygold := mygold - checkamt;
-	setobjproperty(me, "g", mygold);
-
-	if(placed_in_bank)
-		Say("I placed your cheque for " + checkamt + " gold in your bank box.");
-	else
-		Say("Here is your cheque for " + checkamt + " gold.");
-	endif
-	if(mygold)
-		Say("I still hold " + mygold + " gold.");
-	else
-		Say("I currently hold no remaining gold for you.");
-	endif
-
+	Say("I converted all available gold to cheque payout.");
+	WarnOwnerIfOutOfGold(who);
 endfunction
 
-function statuscheck()
-
+function StatusCheck()
 	foreach thingie in ListRootItemsInContainer(me.backpack)
-        	Say("I have " + thingie.desc);
+		Say("I have " + thingie.desc);
 		sleepms(500);
 	endforeach
 
-	var mypay := cint(getObjProperty(me, "mypay"));
-	var mygold := cint(getobjproperty(me, "g"));
-
-	if(mygold >= mypay)
-		mypay := 0;
-		mygold := mygold - mypay;
-		say("I currently hold " + mygold + " gold for you.");
-	else
-		mypay := mypay - mygold;
-		mygold := 0;
-		say("You owe me " + mypay + " gold.");
-	endif
-
-	SetObjProperty(me, "mypay",mypay);
-	Setobjproperty(me, "g", mygold);
-
-endfunction
-
-function getpay()
-
-	var mypay := cint(getObjProperty(me, "mypay"))+50;
-	var mygold := cint(getobjproperty(me, "g"));
-	var pastdue := cint(getobjproperty(me, "pastdue"));
-	if(!pastdue)
-		pastdue := 0;
-	endif
-
-	if(mygold >= mypay)
-		mypay := 0;
-		mygold := mygold - mypay;
-	else
-		mypay := mypay - mygold;
-		mygold := 0;
-	endif
-
-	if(mypay)
-		pastdue := pastdue +1;
-		SetObjProperty(me, "pastdue",pastdue);
-		if(pastdue > 2)
-			me.hidden := 1;
-			MoveOBJECTToLocation(me, 5288, 1176, 0, me.realm,  MOVEOBJECT_FORCELOCATION);
-			RevokePrivilege( me, "invul" );
-			setobjproperty(me, "guardkill", 1);
-			var count := 0;
-			repeat
-				SleepMS(1000);
-				me.kill();
-				count := count + 1;
-			until(!me || count >= 1000);
+	var mygold := CurrentGoldPool();
+	var debt := CurrentDebt();
+	if(debt)
+		Say("I currently hold " + mygold + " gold and am owed " + debt + " in wages.");
+		var debtstart := CInt(GetObjProperty(me, "debtstart"));
+		if(debtstart)
+			var left := (debtstart + TWO_MONTHS_SECONDS) - ReadGameClock();
+			if(left > 0)
+				Say("Unpaid timeout: " + FormatDuration(left) + ".");
+			endif
 		endif
 	else
-		EraseObjProperty(me,"pastdue");
+		Say("I currently hold " + mygold + " gold for wages and payouts.");
 	endif
-
-	SetObjProperty(me, "mypay",mypay);
-	Setobjproperty(me, "g", mygold);
-
 endfunction
 
-function recontact(byref who)
+function HandleMerchantClosure(reason, force_escrow := 0)
+	reason := reason;
+	CashOut(force_escrow);
+
+	// Explicitly destroy all merchant storage containers to prevent reference leaks
+	if(inv_fs)
+		var fs_items := {};
+		foreach item in ListRootItemsInContainer(inv_fs)
+			fs_items.append(item);
+		endforeach
+		foreach item in fs_items
+			DestroyItem(item);
+		endforeach
+		DestroyItem(inv_fs);
+		inv_fs := 0;
+	endif
+
+	if(inv_pb)
+		var pb_items := {};
+		foreach item in ListRootItemsInContainer(inv_pb)
+			pb_items.append(item);
+		endforeach
+		foreach item in pb_items
+			DestroyItem(item);
+		endforeach
+		DestroyItem(inv_pb);
+		inv_pb := 0;
+	endif
+
+	if(inv_1c)
+		var ic_items := {};
+		foreach item in ListRootItemsInContainer(inv_1c)
+			ic_items.append(item);
+		endforeach
+		foreach item in ic_items
+			DestroyItem(item);
+		endforeach
+		DestroyItem(inv_1c);
+		inv_1c := 0;
+	endif
+
+	if(me.backpack)
+		var bp_items := {};
+		foreach item in ListRootItemsInContainer(me.backpack)
+			bp_items.append(item);
+		endforeach
+		foreach item in bp_items
+			DestroyItem(item);
+		endforeach
+		inv_fs := 0;
+		inv_pb := 0;
+		inv_1c := 0;
+	endif
+
+	PerformAction(me, ANIM_CAST_DIR);
+	Say("Kal Ort Por");
+	sleep(2);
+	MoveObjectToLocation(me, 5288, 1176, 0, me.realm, MOVEOBJECT_FORCELOCATION);
+	RevokePrivilege(me, "invul");
+	SetObjProperty(me, "guardkill", 1);
+
+	var count := 0;
+	repeat
+		SleepMS(1000);
+		me.kill();
+		count := count + 1;
+	until(!me || count >= 1000);
+endfunction
+
+exported function ForceCashOut(byref who, force_escrow := 0)
+	RefreshMaster();
+
+	if(!who)
+		Print("[PLAYERMERCHANT] ForceCashOut rejected: missing caller.");
+		return 0;
+	endif
+
+	if(who.serial != master)
+		Print("[PLAYERMERCHANT] ForceCashOut rejected: owner mismatch caller=" + who.serial + " master=" + master);
+		return 0;
+	endif
+
+	Print("[PLAYERMERCHANT] ForceCashOut accepted for " + me.serial + " by " + who.serial + " force_escrow=" + force_escrow);
+	HandleMerchantClosure("forced_by_exported_method", force_escrow);
+	return 1;
+endfunction
+
+function HandleMasterlessMerchantCleanup()
+	PerformAction(me, ANIM_CAST_DIR);
+	Say("Kal Ort Por");
+	sleep(2);
+	MoveObjectToLocation(me, 5288, 1176, 0, me.realm, MOVEOBJECT_FORCELOCATION);
+	RevokePrivilege(me, "invul");
+	SetObjProperty(me, "guardkill", 1);
+
+	var count := 0;
+	repeat
+		SleepMS(1000);
+		me.kill();
+		count := count + 1;
+	until(!me || count >= 1000);
+endfunction
+
+function GetPay()
+	var due := CalculateDailyWage();
+	var debt := CurrentDebt() + due;
+	SetObjProperty(me, "wagedebt", debt);
+
+	CollectDebtFromPool();
+	debt := CurrentDebt();
+
+	if(debt)
+		var debtstart := CInt(GetObjProperty(me, "debtstart"));
+		if(!debtstart)
+			debtstart := ReadGameClock();
+			SetObjProperty(me, "debtstart", debtstart);
+		endif
+
+		if((debtstart + TWO_MONTHS_SECONDS) <= ReadGameClock())
+			HandleMerchantClosure("out_of_gold");
+			return;
+		endif
+	else
+		EraseObjProperty(me, "debtstart");
+	endif
+endfunction
+
+function ReContact(byref who)
 
         var cnt := SendTextEntryGump( who, 
 		"How shall I tell people to contact you? ", 
@@ -703,7 +1142,7 @@ function recontact(byref who)
 
 endfunction
 
-function wear_item(byref item)
+function WearItem(byref item)
 
 	foreach thing in ListEquippedItems(me)
 		MoveItemToContainer(thing, inv_pb);
@@ -716,14 +1155,14 @@ function wear_item(byref item)
 			if(GetObjProperty(thingie, "mine"))
 				DestroyItem(thingie);
 			else
-		        	moveObjecttolocation(thingie, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION );
+					MoveObjectToLocation(thingie, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION );
 			endif
 		endif
 	endforeach
 
 endfunction
 
-function strip_items(byref mmaster)
+	function StripItems(byref mmaster)
 
 	if(!mmaster)
 		return;
@@ -734,7 +1173,7 @@ function strip_items(byref mmaster)
 		EquipItem(me, newbackpack);
 	endif
 
-	foreach thing in listequippeditems(me)
+	foreach thing in ListEquippedItems(me)
 		if((thing.objtype < STARTHAIR or thing.objtype > ENDHAIR) and thing != me.backpack )
 			if(!GetObjProperty(thing, "mine"))
 				MoveItemToContainer(thing, inv_pb);
@@ -752,33 +1191,18 @@ function strip_items(byref mmaster)
 
 endfunction
 
-function fireme(byref ev)
-
-	cashout();
-	var mypay := CINT(GetObjProperty(me, "mypay"));
-	if(mypay)
-		Say("You can't fire me, you owe me!");
+function FireMe(byref ev)
+	CollectDebtFromPool();
+	var debt := CurrentDebt();
+	if(debt)
+		Say("I am still owed " + debt + " gold in wages. I'll close out what I can.");
 	endif
 
 	if(!YesNo(ev.source, "Fire him?"))
 		return;
 	endif
 
-	strip_items(ev.source);
-	CreateItemInContainer(ev.source.backpack, 0x7008, 1);
-	PerformAction(me, ANIM_CAST_DIR);
-	Say("Kal Ort Por");
-	sleep(2);
-	PlaySoundEffect(ev.source, SFX_SPELL_RECALL);
-	MoveOBJECTToLocation(me, 5288, 1176, 0, me.realm,  MOVEOBJECT_FORCELOCATION);
-	RevokePrivilege(me, "invul");
-	setobjproperty(me, "guardkill", 1);
-	var count := 0;
-	repeat
-		SleepMS(1000);
-		me.kill();
-		count := count + 1;
-	until(!me || count >= 1000);
+	HandleMerchantClosure("fired_by_owner");
 
 endfunction
 
@@ -789,7 +1213,7 @@ endfunction
 //  add to or remove from the list of items that the merchant buys from other players
 ///////////////////
 
-function addthingstobuy()
+function AddThingsToBuy()
 
 	var buylist := {};
 	var buyprice := { };
@@ -829,9 +1253,9 @@ function addthingstobuy()
 			return;
 		endif
 
-		setobjproperty(me, "buylist", NewBuyList);
-		setobjproperty(me, "buyprice", NewBuyPrice);
-		setobjproperty(me, "buyobj", NewBuyObj);
+		SetObjProperty(me, "buylist", NewBuyList);
+		SetObjProperty(me, "buyprice", NewBuyPrice);
+		SetObjProperty(me, "buyobj", NewBuyObj);
 		return;
 	endif
 
@@ -851,22 +1275,22 @@ function addthingstobuy()
 	BuyList.append(what.desc);
 	BuyPrice.append(price);
 	BuyObj.append(what.objtype);
-	setobjproperty(me, "buylist", BuyList);
-	setobjproperty(me, "buyprice", BuyPrice);
-	setobjproperty(me, "buyobj", BuyObj);
+	SetObjProperty(me, "buylist", BuyList);
+	SetObjProperty(me, "buyprice", BuyPrice);
+	SetObjProperty(me, "buyobj", BuyObj);
 
 
 	if(len(BuyList)==1)
-		say("I will purchase "+BuyList[1]);
+		Say("I will purchase "+BuyList[1]);
 	elseif(len(BuyList)==2)
-		say("I will purchase "+BuyList[1] +" and "+ BuyList[2]);
+		Say("I will purchase "+BuyList[1] +" and "+ BuyList[2]);
 	else
 		var buying := "I will purchase "+buylist[1];
 		for i := 2 to(len(buylist)-1)
 			buying := buying + ", " +buylist[i];
 		endfor
 		buying := buying + " and " + buylist[len(buylist)];
-		say(buying);
+		Say(buying);
 	endif
 
 endfunction
@@ -878,7 +1302,7 @@ function SpoutBuyList(byref you)
 	var i;
 
 	if(!GetObjProperty(me,"buylist"))
-		say("I don't buy anything.");
+		Say("I don't buy anything.");
 		return;
 	else
 		buylist := GetObjProperty(me,"buylist");
@@ -914,7 +1338,7 @@ function NotifyMaster(themessage)
 	endif
 
 	messagelog.append(themessage);
-	setobjproperty(me, "messagelog", messagelog);
+	SetObjProperty(me, "messagelog", messagelog);
 
 	foreach onlinechr in EnumerateOnlineCharacters()
 		if(onlinechr.serial == master)
@@ -946,34 +1370,11 @@ endfunction
 function TakeSale(goldamount, byref who)
 	var whoserial := who.serial;
 	NotifyMaster(who.name + " bought " + goldamount + " gold worth of items.");
+	whoserial := whoserial;
 
-	var mypay := cint(getObjProperty(me, "mypay"));
-	var mygold := cint(getobjproperty(me, "g"));
-	var commission := cint( 0.05 * goldamount);
-
-	if(whoserial == master)
-		if(!mypay)
-			Say("Since I work for you, I won't take a commission on that.");
-			commission := 0;
-		else
-			Say("Normally I wouldn't take commission on that, but you owe me "+ mypay + " gold!");
-		endif
-	endif
-
-	mypay := mypay + commission;
-	goldamount := goldamount - commission;
-	mygold := mygold + goldamount;
-
-	if(mygold >= mypay)
-		mypay := 0;
-		mygold := mygold - mypay;
-	else
-		mypay := mypay - mygold;
-		mygold := 0;
-	endif
-
-	SetObjProperty(me, "mypay",mypay);
-	Setobjproperty(me, "g", mygold);
+	var mygold := CurrentGoldPool() + CInt(goldamount);
+	SetObjProperty(me, "g", mygold);
+	CollectDebtFromPool();
 	
 endfunction
 
@@ -984,59 +1385,14 @@ endfunction
 function TakeGold(byref item)
 
 	var goldamount := item.amount;
-	var mypay := cint(getObjProperty(me, "mypay"));
-	var mygold := cint(getobjproperty(me, "g"));
+	var mygold := CurrentGoldPool() + CInt(goldamount);
+	SetObjProperty(me, "g", mygold);
+	CollectDebtFromPool();
+	mygold := CurrentGoldPool();
 
-	if(mypay)
-		if(goldamount >= mypay)
-			goldamount := goldamount - mypay;
-			mypay := 0;
-		else
-			mypay := mypay - goldamount;
-			goldamount := 0;
-			Say("You still owe me " + mypay + " gold.");
-		endif
-	endif
-
-	if(goldamount)
-		mygold := mygold + goldamount;
-		say("I am holding " + mygold + " gold for you.");
-	endif
-
-	setobjproperty(me, "g", mygold);
-	setobjproperty(me, "mypay", mypay);
+	Say("I am holding " + mygold + " gold in my wage pool.");
 
 	DestroyItem(item);
-
-endfunction
-
-///////////////////
-//  If the merchant has no master and is handed 1000 gold, this function makes the person who handed
-//  them the gold their new master
-///////////////////
-
-function HireMe(byref ev)
-
-	Say("I would be honored to take your service");
-
-	master := ev.source.serial;
-	mastername := ev.source.name;
-	cont := recontact(ev.source);
-
-	setobjproperty(me, "master", ev.source.serial);
-	setobjproperty(me, "mn", ev.source.name);
-
-	var mygold := 0;
-	if(ev.item.amount > 1000)
-		mygold := ev.item.amount - 1000;
-	endif
-
-	setobjproperty(me, "g", mygold);
-	SetObjProperty(me, "mypay",0);
-
-	destroyitem(ev.item);
-	var newname := splitwords(me.name);
-	me.name := newname[1] + ", " + mastername + "'s Merchant";
 
 endfunction
 
@@ -1097,9 +1453,9 @@ function BuyItem(byref you, byref it)
 
 	var itamount := it.amount;
 	var itdesc := it.desc;
-	if( grabitem(it, me.backpack) )
+	if( GrabItem(it, me.backpack) )
 		var goldamount := buyprice[index]*itamount;
-		say("Thank you!  Here's your " + goldamount + " gold.");
+		Say("Thank you!  Here's your " + goldamount + " gold.");
 		while(goldamount > 60000)
 			CreateItemInBackpack(you, UOBJ_GOLD_COIN, 60000);
 			goldamount := goldamount - 60000;
@@ -1113,22 +1469,9 @@ function BuyItem(byref you, byref it)
 	endif
 
 	var theprice := buyprice[index]*itamount;
-	var mypay := cint(getobjproperty(me, "mypay"));
-	var commission := CINT(0.05 * theprice);
-
 	mygold := mygold - theprice;
-	mypay := mypay + commission;
-
-	if(mygold >= mypay)
-		mypay := 0;
-		mygold := mygold - mypay;
-	else
-		mypay := mypay - mygold;
-		mygold := 0;
-	endif
-
-	setobjproperty(me, "mypay", mypay);
-	setobjproperty(me, "g", mygold);
+	SetObjProperty(me, "g", mygold);
+	CollectDebtFromPool();
 endfunction
 
 ///////////////////
@@ -1173,13 +1516,13 @@ endfunction
 //  called when the merchant is told to undress
 ///////////////////
 
-function undress_items(byref you)
+function UndressItems(byref you)
 	if(!me.backpack)
 		var newbackpack := CreateItemAtLocation(5288, 1176, 0, UOBJ_BACKPACK, 1);
 		EquipItem(me, newbackpack);
 	endif
 
-	foreach thing in listequippeditems(me)
+	foreach thing in ListEquippedItems(me)
 		if((thing.objtype < STARTHAIR or thing.objtype > ENDHAIR) and thing != me.backpack)
 			if(GetObjProperty(thing, "mine"))
 				DestroyItem(thing);

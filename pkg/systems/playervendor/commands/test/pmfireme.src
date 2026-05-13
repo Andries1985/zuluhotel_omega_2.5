@@ -1,0 +1,66 @@
+// Command: .pmfireme (test level)
+// Fires your currently owned player merchant and places all assets in escrow for testing
+
+use uo;
+
+program textcmd_pmfireme(who, text)
+	var force_escrow := 0;
+	if(text)
+		var parts := SplitWords(text);
+		if(len(parts))
+			var mode := Lower(parts[1]);
+			if(mode == "escrow")
+				force_escrow := 1;
+			elseif(mode != "normal")
+				SendSysMessage(who, "Usage: .pmfireme [escrow|normal]");
+				return;
+			endif
+		endif
+	endif
+
+	if(force_escrow)
+		SendSysMessage(who, "Escrow mode enabled: payout will skip bank and go to escrow.");
+	endif
+
+	SendSysMessage(who, "Target your player merchant to fire and escrow.");
+	var npc := Target(who, TGTOPT_NOCHECK_LOS);
+	if(!npc or !npc.isa(POLCLASS_NPC))
+		SendSysMessage(who, "That is not a valid NPC.");
+		Print("[PMFIREME] Invalid target by " + who.name + " (" + who.serial + ")");
+		return;
+	endif
+
+	var script_name := npc.script;
+	var master_serial := GetObjProperty(npc, "master");
+	Print("[PMFIREME] User=" + who.name + "(" + who.serial + ") Target=" + npc.name + "(" + npc.serial + ") Script=" + script_name + " Master=" + master_serial);
+
+	// Check if NPC is running the playermerchant script (legacy or namespaced)
+	if(!script_name || (script_name != "playermerchant" and script_name != ":playervendor:playermerchant"))
+		SendSysMessage(who, "That NPC is not a player merchant (script: " + script_name + ").");
+		Print("[PMFIREME] Rejecting target: not playermerchant script.");
+		return;
+	endif
+
+	if(master_serial != who.serial)
+		SendSysMessage(who, "You are not the owner of this merchant.");
+		Print("[PMFIREME] Rejecting target: owner mismatch. Expected=" + who.serial + " Actual=" + master_serial);
+		return;
+	endif
+
+	SendSysMessage(who, "Firing merchant: " + npc.name + " (" + npc.serial + ")");
+	if(!npc.process)
+		SendSysMessage(who, "Merchant has no running process; cannot force fire.");
+		Print("[PMFIREME] NPC process missing.");
+		return;
+	endif
+
+	var ev := struct;
+	ev.type := "pm_force_fire";
+	ev.source := who;
+	ev.reason := "pmfireme";
+	ev.force_escrow := force_escrow;
+
+	var sres := npc.process.sendevent(ev);
+	Print("[PMFIREME] sendevent result=" + sres + " force_escrow=" + force_escrow);
+	SendSysMessage(who, "Fire event sent. Merchant should close out and escrow assets shortly.");
+endprogram
