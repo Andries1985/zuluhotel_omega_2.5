@@ -11,7 +11,8 @@ import os
 import glob
 import re
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(SCRIPT_DIR) if os.path.basename(SCRIPT_DIR).lower() == "pythonscripts" else SCRIPT_DIR
 OUT  = os.path.join(ROOT, "config", "command_synopses.cfg")
 
 SYNOPSIS_RE = re.compile(r'^//\s*Synopsis:\s*(.+)', re.IGNORECASE)

@@ -12,20 +12,11 @@ program textcmd_gotomobtype( character , text )
 	text := SplitWords(text);
 
 	var template := Lower(text[1]);
-	var realm := Lower(text[2]);
+	var realm := "britannia";
 
-	if (!realm)
-		SendSysMessage( character, "Usage is .gotosmobtype <NPCTemplate> <realm>" );
+	if ( !template )
+		SendSysMessage( character, "Usage is .gotosmobtype <NPCTemplate>" );
 		return 0;
-	elseif ( !template )
-		SendSysMessage( character, "Usage is .gotosmobtype <NPCTemplate> <realm>" );
-		return 0;
-	endif
-
-	if (realm == "felucca")
-		realm := "britannia";
-	elseif (realm == "trammel")
-		realm := "britannia_alt";
 	endif
 
 	//check for mobs
@@ -54,7 +45,7 @@ program textcmd_gotomobtype( character , text )
     endforeach
 
 	//Once found the mobs wanted, send to gump to list
-	var chr := MakeAndProcessGump( character, found, realm );
+	var chr := MakeAndProcessGump( character, found );
 	if( chr )
         LogCommand(character, GetProcess(GetPid()).name, chr.name+"/"+chr.serial, "XYZ - "+chr.x+","+chr.y+","+chr.z);
         var moved := MoveObjecttoLocation( character , chr.x , chr.y , chr.z , chr.realm, MOVEOBJECT_FORCELOCATION );
@@ -65,25 +56,11 @@ program textcmd_gotomobtype( character , text )
 
 endprogram
 
-function MakeAndProcessGump( character, found, realm )
+function MakeAndProcessGump( character, found )
 
-	var realmname;
+	var realmname := "Britannia";
 
-	if (realm == "britannia")
-		realmname := "Felucca";
-	elseif (realm == "britannia_alt")
-		realmname := "Trammel";
-	elseif (realm == "malas")
-		realmname := "Malas";
-	elseif (realm == "tokuno")
-		realmname := "Tokuno";
-	elseif (realm == "ilshenar")
-		realmname := "Ilshenar";
-	else
-		realmname := "Error";
-	endif
-
-	var gump := GFCreateGump(20, 20, 500, 720);
+	var gump := GFCreateGump(20, 20, 690, 720);
 	GFDisposable(gump, 0);
 	var y := 185;
 	var perpage := 20;
@@ -93,11 +70,11 @@ function MakeAndProcessGump( character, found, realm )
 	var start := 1;
 
 	// The main gump screen
-	GFResizePic(gump, 20, 20, 9250, 500, 725);
+	GFResizePic(gump, 20, 20, 9250, 690, 725);
 
 	// The area background gumps
-	GFResizePic(gump, 38, 180, 9200, 464, 528);
-	GFResizePic(gump, 38, 140, 9200, 464, 40);
+	GFResizePic(gump, 38, 180, 9200, 654, 528);
+	GFResizePic(gump, 38, 140, 9200, 654, 40);
 
 	// Title text
 	GFResizePic(gump, 175, 35, 9200, 155, 20);
@@ -111,8 +88,10 @@ function MakeAndProcessGump( character, found, realm )
 
 	// Column Titles
 	GFTextLine(gump, 96, 150, 900, "Mob Name");
-	GFTextLine(gump, 300, 150, 900, "Location");
-	GFTextLine(gump, 450, 150, 900, "Goto");
+	GFTextLine(gump, 250, 150, 900, "Location");
+	GFTextLine(gump, 390, 150, 900, "Region");
+	GFTextLine(gump, 510, 150, 900, "Multi");
+	GFTextLine(gump, 610, 150, 900, "Goto");
 
 	GFTextLine(gump, 240, 708, 1000, "Page 1");
 	GFPage(gump, 1);
@@ -120,7 +99,7 @@ function MakeAndProcessGump( character, found, realm )
 	for( i := start ; i <= found.size() ; i := i + 1 )
 		
 		if (perpage <= 0)
-			GFAddButton(gump, 450, 705, 4005, 4006, 0, page+1); // Next Page button
+			GFAddButton(gump, 620, 705, 4005, 4006, 0, page+1); // Next Page button
 			GFPage(gump, page + 1);
 			GFAddButton(gump, 50, 705, 4014, 4015, 0, page); // Prev Page button
 			page := page + 1;
@@ -130,8 +109,18 @@ function MakeAndProcessGump( character, found, realm )
 		endif
 
 		GFTextLine(gump, 96, y, 0, found[i].name);
-		GFTextLine(gump, 300, y, 0, found[i].x + " , " + found[i].y);
-		GFAddButton(gump, 450, y, 5540, 5541, GF_CLOSE_BTN, i);
+		GFTextLine(gump, 250, y, 0, found[i].x + " , " + found[i].y);
+		var regionname := GetRegionName(found[i]);
+		if (!regionname)
+			regionname := "Wilderness";
+		endif
+		GFTextLine(gump, 390, y, 0, regionname);
+		var inmulti := "No";
+		if (found[i].multi)
+			inmulti := "Yes";
+		endif
+		GFTextLine(gump, 510, y, 0, inmulti);
+		GFAddButton(gump, 610, y, 5540, 5541, GF_CLOSE_BTN, i);
 		perpage := perpage - 1;
 		y := y + 25;
 	endfor

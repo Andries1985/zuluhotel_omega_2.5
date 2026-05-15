@@ -1,3 +1,4 @@
+// Synopsis: Force-spawn all spawn points within a radius around your location
 /*
  * Text Command: .forcespawn <radius>
  * 

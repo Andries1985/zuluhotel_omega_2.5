@@ -1,0 +1,346 @@
+// Synopsis: Player-merchant escrow test utility (.pmescrowtest)
+// Usage:
+//   .pmescrowtest seed [entries] [packs_per_entry] [items_per_pack]
+//   .pmescrowtest list
+//   .pmescrowtest clean
+
+use uo;
+use storage;
+use datafile;
+
+include "include/objtype";
+include "include/random";
+include ":playervendor:include/escrow";
+
+const ESCROW_STORAGE_NAME := "Merchant Escrow";
+const TEST_ID_PREFIX := "PMTEST-";
+const TEST_VENDOR_NAME := "[TEST] Player Merchant";
+const DEBUG_PM_ESCROW_TEST := 1;
+const ENTRY_ID_IDX := 1;
+const ENTRY_OWNERSERIAL_IDX := 2;
+const ENTRY_ESCROWNAME_IDX := 3;
+const ENTRY_VENDORNAME_IDX := 4;
+const ENTRY_VENDORSERIAL_IDX := 5;
+const ENTRY_CREATED_IDX := 6;
+const ENTRY_OWNERNAME_IDX := 7;
+
+function DebugMsg(who, msg)
+	if(DEBUG_PM_ESCROW_TEST)
+		Print("[PMTEST s=" + who.serial + "] " + msg);
+	endif
+endfunction
+
+function EntryId(entry)
+	if(entry.id)
+		return entry.id;
+	endif
+	if(len(entry) >= ENTRY_ID_IDX)
+		return entry[ENTRY_ID_IDX];
+	endif
+	return "";
+endfunction
+
+function EntryOwnerSerial(entry)
+	if(entry.ownerserial)
+		return CInt(entry.ownerserial);
+	endif
+	if(len(entry) >= ENTRY_OWNERSERIAL_IDX)
+		return CInt(entry[ENTRY_OWNERSERIAL_IDX]);
+	endif
+	return 0;
+endfunction
+
+function EntryEscrowName(entry)
+	if(entry.escrowname)
+		return entry.escrowname;
+	endif
+	if(len(entry) >= ENTRY_ESCROWNAME_IDX)
+		return entry[ENTRY_ESCROWNAME_IDX];
+	endif
+	return "";
+endfunction
+
+function EntryVendorName(entry)
+	if(entry.vendorname)
+		return entry.vendorname;
+	endif
+	if(len(entry) >= ENTRY_VENDORNAME_IDX)
+		return entry[ENTRY_VENDORNAME_IDX];
+	endif
+	return TEST_VENDOR_NAME;
+endfunction
+
+function EntryVendorSerial(entry)
+	if(entry.vendorserial)
+		return CInt(entry.vendorserial);
+	endif
+	if(len(entry) >= ENTRY_VENDORSERIAL_IDX)
+		return CInt(entry[ENTRY_VENDORSERIAL_IDX]);
+	endif
+	return 0;
+endfunction
+
+function EntryOwnerName(entry)
+	if(entry.ownername)
+		return entry.ownername;
+	endif
+	if(len(entry) >= ENTRY_OWNERNAME_IDX and entry[ENTRY_OWNERNAME_IDX])
+		return entry[ENTRY_OWNERNAME_IDX];
+	endif
+	return "Unknown Owner";
+endfunction
+
+program textcmd_pmescrowtest(who, text)
+	var parts := SplitWords(text);
+	if(!len(parts))
+		SendSysMessage(who, "Usage: .pmescrowtest <seed|list|clean> [entries] [packs_per_entry] [items_per_pack]");
+		return;
+	endif
+
+	var action := Lower(parts[1]);
+	if(action == "seed")
+		var entries := ParseIntOrDefault(parts[2], 3);
+		var packs_per_entry := ParseIntOrDefault(parts[3], 2);
+		var items_per_pack := ParseIntOrDefault(parts[4], 5);
+		SeedEscrowTests(who, entries, packs_per_entry, items_per_pack);
+	elseif(action == "list")
+		ListEscrowTests(who);
+	elseif(action == "clean")
+		CleanEscrowTests(who);
+	else
+		SendSysMessage(who, "Unknown action. Use seed, list, or clean.");
+	endif
+endprogram
+
+function ParseIntOrDefault(raw, default_val)
+	if(!raw)
+		return default_val;
+	endif
+
+	var parsed := CInt(raw);
+	if(parsed <= 0)
+		return default_val;
+	endif
+
+	return parsed;
+endfunction
+
+function OpenEscrowStorage()
+	var area := FindStorageArea(ESCROW_STORAGE_NAME);
+	if(!area)
+		area := CreateStorageArea(ESCROW_STORAGE_NAME);
+	endif
+	return area;
+endfunction
+
+function LoadEscrowEntriesForSerial(who, merchant_serial)
+	var entries := {};
+	var df_name := BuildEscrowDatafileName(who);
+	if(!df_name)
+		return entries;
+	endif
+
+	var file := OpenDataFile(df_name);
+	if(!file)
+		return entries;
+	endif
+
+	var vendor_key := CStr(merchant_serial);
+	var vendor_elem := file.FindElement(vendor_key);
+	if(vendor_elem)
+		var entries_str := vendor_elem.GetProp("entries");
+		if(entries_str)
+			var parts := SplitWords(entries_str, "^");
+			foreach part in parts
+				if(part)
+					var fields := SplitWords(part, "|");
+					if(len(fields) >= 7)
+						entries.append({
+							fields[1],
+							CInt(fields[2]),
+							fields[3],
+							fields[4],
+							CInt(fields[5]),
+							CInt(fields[6]),
+							fields[7]
+						});
+					endif
+				endif
+			endforeach
+		endif
+	endif
+
+	UnloadDataFile(df_name);
+	return entries;
+endfunction
+
+function SaveEscrowEntriesForSerial(who, merchant_serial, entries)
+	var df_name := BuildEscrowDatafileName(who);
+	if(!df_name)
+		return 0;
+	endif
+
+	var file := OpenDataFile(df_name);
+	if(!file)
+		CreateDataFile(df_name);
+		file := OpenDataFile(df_name);
+	endif
+	if(!file)
+		return 0;
+	endif
+
+	var vendor_key := CStr(merchant_serial);
+	var vendor_elem := file.FindElement(vendor_key);
+	if(!vendor_elem)
+		vendor_elem := file.CreateElement(vendor_key);
+	endif
+	if(!vendor_elem)
+		UnloadDataFile(df_name);
+		return 0;
+	endif
+
+	var encoded := "";
+	foreach entry in entries
+		if(encoded)
+			encoded := encoded + "^";
+		endif
+		encoded := encoded + entry[1] + "|" + entry[2] + "|" + entry[3] + "|" + entry[4] + "|" + entry[5] + "|" + entry[6] + "|" + entry[7];
+	endforeach
+
+	vendor_elem.SetProp("entries", encoded);
+	UnloadDataFile(df_name);
+	return 1;
+endfunction
+
+function BuildTestEntryId(ownerserial, idx)
+	return TEST_ID_PREFIX + ownerserial + "-" + ReadGameClock() + "-" + idx + "-" + Random(99999);
+endfunction
+
+function BuildEscrowRootName(ownerserial, idx)
+	return "PMEscrowTest " + ownerserial + " " + ReadGameClock() + " " + idx + " " + Random(99999);
+endfunction
+
+function AppendEscrowEntry(who, entry)
+	var merchant_serial := 0;  // Use 0 for test entries
+	var entries := LoadEscrowEntriesForSerial(who, merchant_serial);
+	entries.append(entry);
+	if(SaveEscrowEntriesForSerial(who, merchant_serial, entries))
+		return len(entries);
+	endif
+
+	return 0;
+endfunction
+
+function SeedEscrowTests(who, entry_count, packs_per_entry, items_per_pack)
+	var area := OpenEscrowStorage();
+	if(!area)
+		SendSysMessage(who, "Unable to open escrow storage area.");
+		return;
+	endif
+
+	var before_entries := LoadEscrowEntriesForSerial(who, 0);
+	DebugMsg(who, "Seed start: who.serial=" + who.serial + " index_count_before=" + len(before_entries));
+
+	var created := 0;
+	for i := 1 to entry_count
+		var escrow_name := BuildEscrowRootName(who.serial, i);
+		var escrow_root := CreateRootItemInStorageArea(area, escrow_name, UOBJ_BACKPACK);
+		if(!escrow_root)
+			DebugMsg(who, "CreateRootItemInStorageArea failed for escrow_name=" + escrow_name);
+			continue;
+		endif
+
+		escrow_root.name := "Player Merchant Escrow - " + TEST_VENDOR_NAME;
+		SetObjProperty(escrow_root, "ownerserial", who.serial);
+		SetObjProperty(escrow_root, "vendorserial", 0);
+		SetObjProperty(escrow_root, "vendorname", TEST_VENDOR_NAME);
+		SetObjProperty(escrow_root, "created", ReadGameClock());
+
+		for p := 1 to packs_per_entry
+			var payout_pack := CreateItemInContainer(escrow_root, UOBJ_BACKPACK, 1);
+			if(!payout_pack)
+				continue;
+			endif
+
+			payout_pack.name := "PM Test Payout " + p;
+
+			for it := 1 to items_per_pack
+				var item := CreateItemInContainer(payout_pack, UOBJ_GOLD_COIN, 1000);
+				if(item)
+					item.name := "PM Test Gold Stack";
+				endif
+			endfor
+		endfor
+
+		var entry := {
+			BuildTestEntryId(who.serial, i),
+			CInt(who.serial),
+			escrow_name,
+			TEST_VENDOR_NAME,
+			0,
+			ReadGameClock(),
+			who.name
+		};
+
+		var total_after_append := AppendEscrowEntry(who, entry);
+		DebugMsg(who, "Appended entry id=" + EntryId(entry) + " ownerserial=" + EntryOwnerSerial(entry) + " total_index_count=" + total_after_append);
+		created := created + 1;
+	endfor
+
+	var after_entries := LoadEscrowEntriesForSerial(who, 0);
+	DebugMsg(who, "Seed done: created=" + created + " index_count_after=" + len(after_entries));
+
+	SendSysMessage(who, "Created " + created + " escrow test entries.");
+	SendSysMessage(who, "Use .escrow to claim them and validate behavior.");
+endfunction
+
+function ListEscrowTests(who)
+	var entries := LoadEscrowEntriesForSerial(who, 0);
+	DebugMsg(who, "List start: who.serial=" + who.serial + " total_entries=" + len(entries));
+
+	var count := 0;
+	for i := 1 to len(entries)
+		var entry_id := EntryId(entries[i]);
+		var entry_owner := EntryOwnerSerial(entries[i]);
+		var entry_escrow_name := EntryEscrowName(entries[i]);
+		var owner_match := (entry_owner == CInt(who.serial));
+		var is_test := (Find(entry_id, TEST_ID_PREFIX, 1) > 0);
+		DebugMsg(who, "Entry[" + i + "] id=" + entry_id + " ownerserial=" + entry_owner + " owner_match=" + owner_match + " is_test=" + is_test);
+		if(owner_match and is_test)
+			count := count + 1;
+			SendSysMessage(who, "Test Entry: " + entry_id + " | " + entry_escrow_name);
+		endif
+	endfor
+
+	if(!count)
+		SendSysMessage(who, "No PM escrow test entries found for your character.");
+	else
+		SendSysMessage(who, "Total PM escrow test entries: " + count);
+	endif
+endfunction
+
+function CleanEscrowTests(who)
+	var area := OpenEscrowStorage();
+	var entries := LoadEscrowEntriesForSerial(who, 0);
+
+	var kept := {};
+	var removed := 0;
+	for i := 1 to len(entries)
+		var entry_id := EntryId(entries[i]);
+		var entry_owner := EntryOwnerSerial(entries[i]);
+		var entry_escrow_name := EntryEscrowName(entries[i]);
+		if(entry_owner == CInt(who.serial))
+			if(area)
+				DestroyRootItemInStorageArea(area, entry_escrow_name);
+			endif
+			removed := removed + 1;
+		else
+			kept.append(entries[i]);
+		endif
+	endfor
+
+	if(removed)
+		SaveEscrowEntriesForSerial(who, 0, kept);
+	endif
+	SendSysMessage(who, "Removed " + removed + " escrow test entries.");
+endfunction

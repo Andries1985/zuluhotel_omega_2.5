@@ -1,0 +1,95 @@
+// Synopsis: Display a status gump for a targeted player merchant
+// Command: .playermerchantstatus
+
+use uo;
+
+const TWO_MONTHS_SECONDS := 5184000;
+const DAY_SECONDS := 86400;
+
+program textcmd_playermerchantstatus(who)
+	SendSysMessage(who, "Target a player merchant.");
+	var vendor := Target(who, TGTOPT_NOCHECK_LOS);
+	if(!vendor or !vendor.isa(POLCLASS_MOBILE))
+		SendSysMessage(who, "Invalid target.");
+		return;
+	endif
+
+	var masterserial := CInt(GetObjProperty(vendor, "master"));
+	if(!masterserial)
+		SendSysMessage(who, "That target has no player-merchant master property.");
+		return;
+	endif
+
+	var masterobj := SystemFindObjectBySerial(masterserial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+	var mastername := GetObjProperty(vendor, "mn");
+	if(masterobj)
+		mastername := masterobj.name;
+	endif
+	if(!mastername)
+		mastername := "Unknown";
+	endif
+
+	var lastonline := "Unknown";
+	if(masterobj and masterobj.acct)
+		lastonline := masterobj.acct.getprop("Login");
+		if(!lastonline)
+			lastonline := "Unknown";
+		endif
+	endif
+
+	var gold := CInt(GetObjProperty(vendor, "g"));
+	var debt := CInt(GetObjProperty(vendor, "wagedebt"));
+	var debtstart := CInt(GetObjProperty(vendor, "debtstart"));
+
+	var goldline := "Gold Pool: " + gold;
+	var timeline := "";
+	if(gold <= 0 and debt > 0 and debtstart)
+		var left := (debtstart + TWO_MONTHS_SECONDS) - ReadGameClock();
+		if(left < 0)
+			left := 0;
+		endif
+		timeline := "Time Until Self-Fire: " + FormatDuration(left);
+	elseif(gold <= 0 and debt > 0)
+		timeline := "Time Until Self-Fire: pending debt-start timestamp";
+	else
+		timeline := "Time Until Self-Fire: n/a";
+	endif
+
+	var layout := {
+		"page 0",
+		"resizepic 40 40 3000 500 260",
+		"text 65 60 53 0",
+		"text 65 90 0 1",
+		"text 65 120 0 2",
+		"text 65 150 0 3",
+		"text 65 180 0 4",
+		"text 65 210 0 5"
+	};
+	var data := {
+		"Player Merchant Status",
+		"Vendor: " + vendor.name + " (" + vendor.serial + ")",
+		"Master: " + mastername + " (" + masterserial + ")",
+		"Master Last Online: " + lastonline,
+		goldline,
+		timeline
+	};
+
+	SendDialogGump(who, layout, data);
+endprogram
+
+function FormatDuration(seconds)
+	if(seconds <= 0)
+		return "0m";
+	endif
+
+	var days := CInt(seconds / DAY_SECONDS);
+	var hours := CInt((seconds % DAY_SECONDS) / 3600);
+	var mins := CInt(((seconds % DAY_SECONDS) % 3600) / 60);
+
+	if(days)
+		return days + "d " + hours + "h";
+	elseif(hours)
+		return hours + "h " + mins + "m";
+	endif
+	return mins + "m";
+endfunction
