@@ -23,7 +23,7 @@ program pvp (who)
 			return;
 		endif
 	endif
-	if (who.x < 5502 or who.x > 5534 or who.y < 1649 or who.y > 1681)
+	if (who.realm != "britannia" or who.x < 5502 or who.x > 5534 or who.y < 1649 or who.y > 1681)
 		SendSysMessage( who, "Cancelled, you are not in the arena." );
 		return;
 	endif
@@ -89,15 +89,15 @@ program pvp (who)
 		SendSysMessage( who, "Select your team mate." );
 		SendSysMessage( who, "(Click yourself for 1 vs 2 PvP)");
 		who2:=target(who, TGTOPT_NOCHECK_LOS);
-		if (who2.npctemplate) 
-			SendSysMessage( who, "Cancelled" );
-			return; 
-		endif
 		if(!who2 or who2.dead )
 			SendSysmessage( who, "Invalid selection." ); 
 			return;
  		endif
-		if (who2.x < 5502 or who2.x > 5534 or who2.y < 1649 or who2.y > 1681)
+		if (who2.npctemplate)
+			SendSysMessage( who, "Cancelled" );
+			return;
+		endif
+		if (who2.realm != "britannia" or who2.x < 5502 or who2.x > 5534 or who2.y < 1649 or who2.y > 1681)
 			SendSysMessage( who, "Cancelled, they are not in the arena." );
 			return;
 		endif
@@ -126,10 +126,6 @@ program pvp (who)
 		//OPPONENT #1
 		SendSysMessage( who, "Select opponent #1:" );
 		player:=target(who, TGTOPT_NOCHECK_LOS);
-		if (player.npctemplate) 
-			SendSysMessage( who, "Cancelled" );
-			return; 
-		endif
 		if(player == who2)
 			SendSysMessage(who,"Player already selected. Cancelled");
 			return;
@@ -138,7 +134,11 @@ program pvp (who)
 			SendSysmessage( who, "Invalid selection." ); 
 			return;
  		endif
-		if (player.x < 5502 or player.x > 5534 or player.y < 1649 or player.y > 1681)
+		if (player.npctemplate)
+			SendSysMessage( who, "Cancelled" );
+			return;
+		endif
+		if (player.realm != "britannia" or player.x < 5502 or player.x > 5534 or player.y < 1649 or player.y > 1681)
 			SendSysMessage( who, "Cancelled, they are not in the arena." );
 			return;
 		endif
@@ -172,10 +172,6 @@ program pvp (who)
 		//OPPONENT #2
 		SendSysMessage( who, "Select opponent #2:" );
 		player2:=target(who, TGTOPT_NOCHECK_LOS);
-		if (player2.npctemplate) 
-			SendSysMessage( who, "Cancelled" );
-			return; 
-		endif
 		if(player2 == who2 or player2 == player)
 			SendSysMessage(who,"Player already selected. Cancelled");
 			return;
@@ -184,7 +180,11 @@ program pvp (who)
 			SendSysmessage( who, "Invalid selection." ); 
 			return;
  		endif
-		if (player2.x < 5502 or player2.x > 5534 or player2.y < 1649 or player2.y > 1681)
+		if (player2.npctemplate)
+			SendSysMessage( who, "Cancelled" );
+			return;
+		endif
+		if (player2.realm != "britannia" or player2.x < 5502 or player2.x > 5534 or player2.y < 1649 or player2.y > 1681)
 			SendSysMessage( who, "Cancelled, they are not in the arena." );
 			return;
 		endif
@@ -224,23 +224,23 @@ program pvp (who)
 		SendSysMessage( who, "Cancelled, the arena is in use" );
 	return;
 	endif
-		if (player.x < 5502 or player.x > 5534 or player.y < 1649 or player.y > 1681 )
+		if (player.realm != "britannia" or player.x < 5502 or player.x > 5534 or player.y < 1649 or player.y > 1681 )
 			SendSysMessage( who, "Cancelled, they are not in the arena." );
 			return;
 		endif
 
-		if (who.x < 5502 or who.x > 5534 or who.y < 1649 or who.y > 1681 )
+		if (who.realm != "britannia" or who.x < 5502 or who.x > 5534 or who.y < 1649 or who.y > 1681 )
 			SendSysMessage( who, "Cancelled, they are not in the arena." );
 			return;
 		endif
 
 	if(GetObjProperty(who,"pvptype")=="2" || GetObjProperty(who,"pvptype")=="4")
-		if (player2.x < 5502 or player2.x > 5534 or player2.y < 1649 or player2.y > 1681 )
+		if (player2.realm != "britannia" or player2.x < 5502 or player2.x > 5534 or player2.y < 1649 or player2.y > 1681 )
 			SendSysMessage( who, "Cancelled, they are not in the arena." );
 			return;
 		endif
 
-		if (who2.x < 5502 or who2.x > 5534 or who2.y < 1649 or who2.y > 1681 )
+		if (who2.realm != "britannia" or who2.x < 5502 or who2.x > 5534 or who2.y < 1649 or who2.y > 1681 )
 			SendSysMessage( who, "Cancelled, they are not in the arena." );
 			return;
 		endif
@@ -300,7 +300,7 @@ program pvp (who)
 
 	SetGlobalProperty("ArenaInUse", 1 );
 	var champ;
-	var Near_Items := ListItemsNearLocation(who.x, who.y, who.z,50 , who.realm);
+	var Near_Items := ListItemsNearLocation(who.x, who.y, who.z,50 , "britannia");
 	foreach thing in Near_Items
 		if (GetObjProperty(thing, "Champion") and GetObjProperty(thing,"PvPTrophy"))
 			champ := GetObjProperty(thing, "Champion");
@@ -365,6 +365,81 @@ program pvp (who)
 			ref := mobile;
 		endif
 	endforeach
+	if (!ref)
+		SendSysMessage(who, "PvP cancelled: no referee is available. Refunding paid funds.");
+		SendSysMessage(player, "PvP cancelled: no referee is available. Refunding paid funds.");
+		if (GetObjProperty(who,"pvptype")=="2" || GetObjProperty(who,"pvptype")=="4")
+			if (who2 and who2 != who)
+				SendSysMessage(who2, "PvP cancelled: no referee is available. Refunding paid funds.");
+			endif
+			if (player2)
+				SendSysMessage(player2, "PvP cancelled: no referee is available. Refunding paid funds.");
+			endif
+		endif
+
+		if(GetObjProperty(who,"pvptype")== "3" || GetObjProperty(who,"pvptype")== "4")
+			RepayGold(who);
+			RepayGold(player);
+			if (GetObjProperty(who,"pvptype")== "4")
+				if (who2 and who2 != who)
+					RepayGold(who2);
+				endif
+				if (player2)
+					RepayGold(player2);
+				endif
+			endif
+		endif
+
+		DeleteFence(who);
+		ClearWalls(who);
+		EraseGlobalProperty("ArenaInUse");
+
+		MoveObjectToLocation( who, 5507, 1653, 22, "britannia");
+		MoveObjectToLocation( player, 5507, 1653, 22, "britannia");
+		if (GetObjProperty(who,"pvptype")=="2" || GetObjProperty(who,"pvptype")=="4")
+			if (who2)
+				MoveObjectToLocation( who2, 5507, 1653, 22, "britannia");
+			endif
+			if (player2)
+				MoveObjectToLocation( player2, 5507, 1653, 22, "britannia");
+			endif
+		endif
+
+		who.frozen := 0;
+		player.frozen := 0;
+		if (GetObjProperty(who,"pvptype")=="2" || GetObjProperty(who,"pvptype")=="4")
+			if (who2)
+				who2.frozen := 0;
+			endif
+			if (player2)
+				player2.frozen := 0;
+			endif
+		endif
+
+		EraseObjProperty( player, "pvping" );
+		EraseObjProperty( who, "pvping" );
+		SetSafeAreaProperties(who);
+		SetSafeAreaProperties(player);
+		EraseObjProperty( who, "lkarma" );
+		EraseObjProperty( who, "lfame" );
+		EraseObjProperty( player, "lkarma" );
+		EraseObjProperty( player, "lfame" );
+		if (GetObjProperty(who,"pvptype")=="2" || GetObjProperty(who,"pvptype")=="4")
+			if (player2)
+				EraseObjProperty( player2, "pvping" );
+				SetSafeAreaProperties(player2);
+				EraseObjProperty( player2, "lkarma" );
+				EraseObjProperty( player2, "lfame" );
+			endif
+			if (who2)
+				EraseObjProperty( who2, "pvping" );
+				SetSafeAreaProperties(who2);
+				EraseObjProperty( who2, "lkarma" );
+				EraseObjProperty( who2, "lfame" );
+			endif
+		endif
+		return;
+	endif
 	Sleep(5);
 	PrintTextAbove( ref, "Get ready - PvP will start in 10 seconds." );
 	sleep(5);
@@ -571,7 +646,7 @@ if ((player2.x < 5508 or player2.x > 5527 or player2.y > 1674 or player2.y < 165
 
 		foreach character in EnumerateOnlineCharacters()
 			if(GetObjProperty(who,"pvptype")== "3")
-				SendSysMessage( character,who.name+" defeated "+player.name+" in the PvP arena and won "+GetObjProperty(who, "GoldPVP")+" gold, in "+length+" secs." );	
+				SendSysMessage( character,who.name+" defeated "+player.name+" in the PvP arena and won a cheque for "+GetObjProperty(who, "GoldPVP")+" gold, in "+length+" secs." );	
 			else
 				SendSysMessage( character,who.name+" defeated "+player.name+" in the PvP arena, in "+length+" secs." );	
 			endif
@@ -600,7 +675,7 @@ if ((player2.x < 5508 or player2.x > 5527 or player2.y > 1674 or player2.y < 165
 
 		foreach character in EnumerateOnlineCharacters()
 			if(GetObjProperty(who,"pvptype")== "3")
-				SendSysMessage( character,player.name+" defeated "+who.name+" in the PvP arena and won "+GetObjProperty(who, "GoldPVP")+" gold, in "+length+" secs." );	
+				SendSysMessage( character,player.name+" defeated "+who.name+" in the PvP arena and won a cheque for "+GetObjProperty(who, "GoldPVP")+" gold, in "+length+" secs." );	
 			else
 				SendSysMessage( character,player.name+" defeated "+who.name+" in the PvP arena, in "+length+" secs." );	
 			endif
@@ -654,9 +729,9 @@ if ((player2.x < 5508 or player2.x > 5527 or player2.y > 1674 or player2.y < 165
 			foreach character in EnumerateOnlineCharacters()
 				if(GetObjProperty(who,"pvptype")== "4")
 					if (who.name != who2.name)
-						SendSysMessage( character,who.name+"/"+who2.name+" defeated "+player.name+"/"+player2.name+" in the PvP arena and won "+GetObjProperty(who, "GoldPVP")+" gold each, in "+length+" secs." );	
+						SendSysMessage( character,who.name+"/"+who2.name+" defeated "+player.name+"/"+player2.name+" in the PvP arena and won a cheque for "+GetObjProperty(who, "GoldPVP")+" gold each, in "+length+" secs." );	
 					else
-						SendSysMessage( character,who.name+" defeated "+player.name+" & "+player2.name+" in the PvP arena and won "+GetObjProperty(who, "GoldPVP")*2+" gold, in "+length+" secs." );	
+						SendSysMessage( character,who.name+" defeated "+player.name+" & "+player2.name+" in the PvP arena and won a cheque for "+GetObjProperty(who, "GoldPVP")*2+" gold, in "+length+" secs." );	
 					endif
 				else
 					if (who.name != who2.name)
@@ -710,9 +785,9 @@ if ((player2.x < 5508 or player2.x > 5527 or player2.y > 1674 or player2.y < 165
 		foreach character in EnumerateOnlineCharacters()
 			if(GetObjProperty(who,"pvptype")== "4")
 				if (who.name != who2.name)
-					SendSysMessage( character,player.name+"/"+player2.name+" defeated "+who.name+"/"+who2.name+" in the PvP arena and won "+GetObjProperty(who, "GoldPVP")+" gold each, in "+length+" secs." );	
+					SendSysMessage( character,player.name+"/"+player2.name+" defeated "+who.name+"/"+who2.name+" in the PvP arena and won a cheque for "+GetObjProperty(who, "GoldPVP")+" gold each, in "+length+" secs." );	
 				else
-					SendSysMessage( character,player.name+" & "+player2.name+" defeated "+who.name+" in the PvP arena and won "+CInt((GetObjProperty(who, "GoldPVP")*3)/2)+" gold, in "+length+" secs." );	
+					SendSysMessage( character,player.name+" & "+player2.name+" defeated "+who.name+" in the PvP arena and won a cheque for "+CInt((GetObjProperty(who, "GoldPVP")*3)/2)+" gold, in "+length+" secs." );	
 				endif
 			else
 				if (who.name != who2.name)
@@ -1150,44 +1225,37 @@ function RepayGold(who)
 	if(!totalsellprice)
 		return;
 	endif
-
-	var rbag := CreateItemInBackpack(who, 0x0E76);
-	rbag.sellprice := 0;
-
-	if (totalsellprice <= 60000)
-		CreateItemInContainer(rbag, 0xeed, totalsellprice);
-	else
-		repeat
-			if (totalsellprice > 60000)
-				CreateItemInContainer(rbag, 0xeed, 60000);
-			else 
-				CreateItemInContainer(rbag, 0xeed, totalsellprice);
-			endif
-			totalsellprice := totalsellprice - 60000;
-		until (totalsellprice <= 0);
-	endif
-
+	CreateCheque(who, totalsellprice);
+	EraseObjProperty(who, "GoldPaid");
 	return;
 endfunction
 
 function payGold(who, goldamt)
-	var totalsellprice := goldamt;
+	CreateCheque(who, goldamt);
+	return;
+endfunction
 
-	var bag := CreateItemInBackpack(who, 0x0E76);
-	bag.sellprice := 0;
-
-	if (totalsellprice <= 60000)
-		CreateItemInContainer(bag, 0xeed, totalsellprice);
-	else
-		repeat
-			if (totalsellprice > 60000)
-				CreateItemInContainer(bag, 0xeed, 60000);
-			else 
-				CreateItemInContainer(bag, 0xeed, totalsellprice);
-			endif
-			totalsellprice := totalsellprice - 60000;
-		until (totalsellprice <= 0);
+function CreateCheque(who, total)
+	if (!total or total <= 0)
+		return;
 	endif
 
-	return;
+	var remaining := total;
+	repeat
+		var chunk := remaining;
+		if (chunk > 5000000)
+			chunk := 5000000;
+		endif
+		var cheque := CreateItemInBackpack(who, CInt(0x14000));
+		if (!cheque)
+			SendSysMessage(who, "Payment failed: unable to create cheque in backpack.");
+			return;
+		endif
+		SetObjProperty( cheque, "Amount", chunk );
+		SetObjProperty( cheque, "checkamount", chunk );
+		SetObjProperty( cheque, "CreatedBy", "PvP Arena" );
+		cheque.color := 51;
+		cheque.name := "A Cheque for " + chunk + " Gold by PvP Arena.";
+		remaining := remaining - chunk;
+	until (remaining <= 0);
 endfunction
