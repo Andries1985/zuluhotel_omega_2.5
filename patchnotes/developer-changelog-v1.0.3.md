@@ -1,9 +1,9 @@
 # Developer Changelog — v1.0.3
-**Range:** `fd0ab98` (Patch 1.0.2 notes update) → `fcb88a0` (HEAD)  
+**Range:** `fd0ab98` (Patch 1.0.2 notes update) → `cf587a4` (HEAD)  
 **Branch:** Patch-1.0.3  
-**Date:** 2026-05-15  
-**Commits in range:** 6 (excluding merge commits)  
-**Files changed:** 33 | +2,392 / -596
+**Date:** 2026-05-15 → 2026-05-17  
+**Commits in range:** 11 (excluding merge commits)  
+**Files changed:** 41 | +2,993 / -736
 
 ---
 
@@ -15,7 +15,8 @@
 4. [Account Maintenance Command Updates](#4-account-maintenance-command-updates)
 5. [Speech Hook Cleanup](#5-speech-hook-cleanup)
 6. [Build/Config Integration Changes](#6-buildconfig-integration-changes)
-7. [Commit Timeline](#7-commit-timeline)
+7. [PvP Arena and Display Fixes](#7-pvp-arena-and-display-fixes)
+8. [Commit Timeline](#8-commit-timeline)
 
 ---
 
@@ -148,14 +149,58 @@ Supporting config/build plumbing was updated to ensure new commands and playerve
 
 ---
 
-## 7. Commit Timeline
+## 7. PvP Arena and Display Fixes
+
+During patch development, several PvP arena mechanics issues and a player display issue were identified and addressed.
+
+### Files Changed
+| File | Change |
+|------|---------|
+| `scripts/items/pvp.src` | Arena mechanics stabilization |
+| `scripts/items/pvp2vs2.src` | 2v2 arena fixes and improvements |
+| `scripts/ai/referee.src` | Referee NPC behavior additions |
+| `scripts/ai/noble.src` | Minor cleanup for arena support |
+| `scripts/textcmd/player/prots.src` | Display fix for equipped INT on mages |
+| `config/npcdesc.cfg` | Referee NPC configuration update |
+
+### 7.1 PvP Arena Mechanics Fixes
+
+**Commits:** `216bf8b` (PVP Error), `9b9053e` (PVP Arena Fixes)  
+**Changes:**
+- Single-arena (1v1) PvP system: refined match flow and error handling.
+- 2v2 Arena: significant improvements to team coordination, match logic, and recovery from edge cases.
+- Noble arena participant initialization and tracking cleaned up.
+
+### 7.2 Referee NPC Improvements
+
+**Commit:** `3841a92` (More Referee Fixes)  
+**Changes:**
+- Expanded referee NPC functions to better manage arena events and support new mechanics.
+- Referee configuration updated in NPC definitions.
+
+### 7.3 Player Character Display — Prots Command
+
+**Commit:** `cf587a4` (Prots fix to show equipped INT)  
+**Changes:**
+- `.prots` command now correctly displays **Equipped INT** for mage-class characters.
+- Non-mage characters display "Not mage" instead of undefined values.
+- Provides clarity on magic equipment bonuses in real time.
+
+---
+
+## 8. Commit Timeline
 
 1. `1924540` — Update to gotomobtypes and eraseemptyaccounts command  
 2. `cff900f` — Gotomobtypes and eraseemptyaccounts updates  
 3. `c8795d2` — Updated Admin commands  
 4. `873be49` — Speechhook print removed  
 5. `5bb6706` — Checks are counted for balance  
-6. `fcb88a0` — Player Vendor Update (escrow, fire-me path, wage model)
+6. `fcb88a0` — Player Vendor Update (escrow, fire-me path, wage model)  
+7. `e49d63a` — Patch notes  
+8. `216bf8b` — PVP Error  
+9. `9b9053e` — PVP Arena Fixes  
+10. `3841a92` — More Referee Fixes  
+11. `cf587a4` — Prots fix to show equipped INT
 
 ---
 
@@ -170,7 +215,7 @@ Patch 1.0.3 is primarily a systems-and-operations update centered on player vend
 - **Runtime Cleanup:** speech hook debug output refinement
 
 **Total Impact:**
-- 33 files changed
-- ~2,392 lines added
-- ~596 lines removed
-- 6 non-merge commits
+- 41 files changed
+- ~2,993 lines added
+- ~736 lines removed
+- 11 non-merge commits
