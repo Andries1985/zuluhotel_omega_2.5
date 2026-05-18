@@ -14,10 +14,9 @@ const HALT_THRESHOLD := 2; // how close before he barks?
 var me := Self();
 
 program noble ()
-    var isReferee := GetObjProperty(me, "referee");
     var hasTownBounds := InitTownBounds();
 
-    if (!hasTownBounds and !isReferee)
+	if (!hasTownBounds)
 		return;
 	endif
 
