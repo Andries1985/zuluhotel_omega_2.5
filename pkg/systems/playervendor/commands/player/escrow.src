@@ -1,0 +1,439 @@
+// Synopsis: Claim player-merchant escrow packages
+// Command: .escrow
+
+use uo;
+use storage;
+use datafile;
+use polsys;
+
+include "include/objtype";
+include ":playervendor:include/escrow";
+
+const ESCROW_STORAGE_NAME := "Merchant Escrow";
+const DEBUG_MODE := 1;
+
+const ENTRY_ID_IDX := 1;
+const ENTRY_OWNERSERIAL_IDX := 2;
+const ENTRY_ESCROWNAME_IDX := 3;
+const ENTRY_VENDORNAME_IDX := 4;
+const ENTRY_VENDORSERIAL_IDX := 5;
+const ENTRY_CREATED_IDX := 6;
+const ENTRY_OWNERNAME_IDX := 7;
+
+function EscrowDebugMsg(who, msg)
+	if(DEBUG_MODE)
+		Print("[ESCROW s=" + who.serial + "] " + msg);
+	endif
+endfunction
+
+function EntryId(entry)
+	if(len(entry) >= ENTRY_ID_IDX)
+		return entry[ENTRY_ID_IDX];
+	endif
+	return "";
+endfunction
+
+function EntryEscrowName(entry)
+	if(len(entry) >= ENTRY_ESCROWNAME_IDX)
+		return entry[ENTRY_ESCROWNAME_IDX];
+	endif
+	return "";
+endfunction
+
+function EntryVendorName(entry)
+	if(len(entry) >= ENTRY_VENDORNAME_IDX)
+		return entry[ENTRY_VENDORNAME_IDX];
+	endif
+	return "Player Merchant";
+endfunction
+
+function EntryOwnerName(entry)
+	if(len(entry) >= ENTRY_OWNERNAME_IDX and entry[ENTRY_OWNERNAME_IDX])
+		return entry[ENTRY_OWNERNAME_IDX];
+	endif
+	return "Unknown Owner";
+endfunction
+
+function LoadEscrowEntriesForSerial(who, merchant_serial)
+	var entries := {};
+	var df_name := BuildEscrowDatafileName(who);
+	if(!df_name)
+		EscrowDebugMsg(who, "LoadEscrowEntriesForSerial: empty datafile name for merchant=" + merchant_serial);
+		return entries;
+	endif
+	EscrowDebugMsg(who, "LoadEscrowEntriesForSerial: df=" + df_name + " merchant=" + merchant_serial);
+
+	var file := OpenDataFile(df_name);
+	if(!file)
+		EscrowDebugMsg(who, "LoadEscrowEntriesForSerial: failed to open df=" + df_name);
+		return entries;
+	endif
+
+	var vendor_key := CStr(merchant_serial);
+	var vendor_elem := file.FindElement(vendor_key);
+	if(vendor_elem)
+		var entries_str := vendor_elem.GetProp("entries");
+		if(entries_str)
+			var parts := SplitWords(entries_str, "^");
+			foreach part in parts
+				if(part)
+					var fields := SplitWords(part, "|");
+					if(len(fields) >= 7)
+						entries.append({
+							fields[1],
+							CInt(fields[2]),
+							fields[3],
+							fields[4],
+							CInt(fields[5]),
+							CInt(fields[6]),
+							fields[7]
+						});
+					endif
+				endif
+			endforeach
+		endif
+	else
+		EscrowDebugMsg(who, "LoadEscrowEntriesForSerial: no vendor element for key=" + vendor_key);
+	endif
+
+	UnloadDataFile(df_name);
+	EscrowDebugMsg(who, "LoadEscrowEntriesForSerial: loaded entries=" + len(entries) + " merchant=" + merchant_serial);
+	return entries;
+endfunction
+
+program textcmd_escrow(who)
+	ShowEscrowGump(who, 1);
+endprogram
+
+function ShowEscrowGump(who, page)
+	EscrowDebugMsg(who, "ShowEscrowGump: requested page=" + page);
+	// Load all entries by iterating merchant elements in player's datafile.
+	var df_name := BuildEscrowDatafileName(who);
+	if(!df_name)
+		EscrowDebugMsg(who, "ShowEscrowGump: failed to build datafile name");
+		SendSysMessage(who, "You have no escrow packages.");
+		return;
+	endif
+
+	var df := OpenDataFile(df_name);
+	if(!df)
+		EscrowDebugMsg(who, "ShowEscrowGump: failed to open datafile " + df_name);
+		SendSysMessage(who, "You have no escrow packages.");
+		return;
+	endif
+
+	var all_entries := {};
+	foreach vendor_key in (df.Keys())
+		var vendor_elem := df.FindElement(vendor_key);
+		if(!vendor_elem)
+			continue;
+		endif
+
+		var entries_str := vendor_elem.GetProp("entries");
+		if(!entries_str)
+			continue;
+		endif
+
+		var parts := SplitWords(entries_str, "^");
+		foreach part in parts
+			if(part)
+				var fields := SplitWords(part, "|");
+				if(len(fields) >= 7)
+					all_entries.append({
+						fields[1],
+						CInt(fields[2]),
+						fields[3],
+						fields[4],
+						CInt(fields[5]),
+						CInt(fields[6]),
+						fields[7]
+					});
+				endif
+			endif
+		endforeach
+	endforeach
+	UnloadDataFile(df_name);
+
+	if(!len(all_entries))
+		EscrowDebugMsg(who, "ShowEscrowGump: no entries in datafile " + df_name);
+		SendSysMessage(who, "You have no escrow packages.");
+		return;
+	endif
+
+	// Pagination: 5 entries per page
+	const ENTRIES_PER_PAGE := 5;
+	var max_pages := CInt((len(all_entries) + ENTRIES_PER_PAGE - 1) / ENTRIES_PER_PAGE);
+	if(page < 1)
+		page := 1;
+	endif
+	if(page > max_pages)
+		page := max_pages;
+	endif
+	EscrowDebugMsg(who, "ShowEscrowGump: effective page=" + page + " total_entries=" + len(all_entries) + " max_pages=" + max_pages);
+
+	var start_idx := (page - 1) * ENTRIES_PER_PAGE + 1;
+	var end_idx := start_idx + ENTRIES_PER_PAGE - 1;
+	if(end_idx > len(all_entries))
+		end_idx := len(all_entries);
+	endif
+
+	var layout := { "page 0", "resizepic 20 20 2620 750 520", "text 30 40 53 0", "text 30 62 53 1", "text 475 40 63 2" };
+	var data := { "Player Merchant Escrow", "Select where to claim each package:", "Page " + page + " of " + max_pages };
+
+	if(page > 1)
+		layout.append("button 440 470 5537 5538 1 0 9001");
+		data.append("Prev");
+		layout.append("text 462 468 53 " + (len(data)-1));
+	endif
+
+	if(page < max_pages)
+		layout.append("button 520 470 5540 5541 1 0 9002");
+		data.append("Next");
+		layout.append("text 542 468 53 " + (len(data)-1));
+	endif
+
+	var row_y := 92;
+	for idx := start_idx to end_idx
+		var merchant_label := "Merchant: " + EntryVendorName(all_entries[idx]) + " (Serial: " + all_entries[idx][ENTRY_VENDORSERIAL_IDX] + ")";
+		data.append(merchant_label);
+		layout.append("text 30 " + row_y + " 53 " + (len(data)-1));
+		row_y := row_y + 22;
+
+		var owner_label := "Owner: " + EntryOwnerName(all_entries[idx]) + " (Serial: " + all_entries[idx][ENTRY_OWNERSERIAL_IDX] + ")";
+		data.append(owner_label);
+		layout.append("text 30 " + row_y + " 53 " + (len(data)-1));
+		row_y := row_y + 28;
+
+		layout.append("button 150 " + row_y + " 4005 4007 1 0 " + (2000 + idx));
+		data.append("To Bank");
+		layout.append("text 182 " + row_y + " 53 " + (len(data)-1));
+
+		layout.append("button 280 " + row_y + " 4005 4007 1 0 " + (1000 + idx));
+		data.append("To Backpack");
+		layout.append("text 312 " + row_y + " 53 " + (len(data)-1));
+
+		row_y := row_y + 28;
+	endfor
+
+	var result := SendDialogGump(who, layout, data);
+	if(!result or !result[0])
+		EscrowDebugMsg(who, "ShowEscrowGump: closed without selection");
+		return;
+	endif
+
+	var btn := CInt(result[0]);
+	EscrowDebugMsg(who, "ShowEscrowGump: button pressed=" + btn + " on page=" + page);
+	if(btn == 9001)
+		ShowEscrowGump(who, page - 1);
+		return;
+	endif
+
+	if(btn == 9002)
+		ShowEscrowGump(who, page + 1);
+		return;
+	endif
+
+	if((btn >= 1000 and btn <= 1999) or (btn >= 2000 and btn <= 2999))
+		var to_bank := (btn >= 2000) ? 1 : 0;
+		var entry_idx := (btn >= 2000) ? (btn - 2000) : (btn - 1000);
+		EscrowDebugMsg(who, "ShowEscrowGump: decoded selection entry_idx=" + entry_idx + " to_bank=" + to_bank);
+
+		if(entry_idx >= 1 and entry_idx <= len(all_entries))
+			ClaimEscrowEntry(who, all_entries[entry_idx], to_bank);
+			ShowEscrowGump(who, page);
+		else
+			EscrowDebugMsg(who, "ShowEscrowGump: selection out of range entry_idx=" + entry_idx + " total=" + len(all_entries));
+		endif
+	else
+		EscrowDebugMsg(who, "ShowEscrowGump: unhandled button=" + btn);
+	endif
+endfunction
+
+function DestroyContainerAndContents(byref container)
+	if(!container)
+		return;
+	endif
+
+	var item_count := 0;
+	var items_to_destroy := {};
+	foreach item in EnumerateItemsInContainer(container)
+		if(item.container == container)
+			items_to_destroy.append(item);
+			item_count := item_count + 1;
+		endif
+	endforeach
+
+	EscrowDebugMsg(0, "DestroyContainerAndContents: destroying " + item_count + " items in container");
+	foreach item in items_to_destroy
+		DestroyItem(item);
+		item := 0;
+	endforeach
+	items_to_destroy := 0;
+
+	DestroyItem(container);
+	container := 0;
+endfunction
+
+function ClaimEscrowEntry(who, entry, to_bank)
+	var area := FindStorageArea(ESCROW_STORAGE_NAME);
+	if(!area)
+		EscrowDebugMsg(who, "ClaimEscrowEntry: escrow storage unavailable for entry_id=" + EntryId(entry));
+		SendSysMessage(who, "Escrow storage is unavailable.");
+		return;
+	endif
+
+	var entry_id := EntryId(entry);
+	var entry_escrow_name := EntryEscrowName(entry);
+	EscrowDebugMsg(who, "ClaimEscrowEntry: entry_id=" + entry_id + " escrow_name=" + entry_escrow_name + " to_bank=" + to_bank);
+
+	var root := FindRootItemInStorageArea(area, entry_escrow_name);
+	if(!root)
+		EscrowDebugMsg(who, "ClaimEscrowEntry: root not found, pruning index for entry_id=" + entry_id);
+		SendSysMessage(who, "That escrow package was not found.");
+		RemoveEscrowEntryById(who, entry_id);
+		return;
+	endif
+
+	EscrowDebugMsg(who, "ClaimEscrowEntry: found root " + entry_escrow_name + " root.name=" + root.name);
+
+	var dest;
+	if(to_bank)
+		dest := FindBankBox(who);
+		if(!dest)
+			EscrowDebugMsg(who, "ClaimEscrowEntry: bank box unavailable for entry_id=" + entry_id);
+			SendSysMessage(who, "Your bank box is unavailable.");
+			return;
+		endif
+	else
+		dest := who.backpack;
+		if(!dest)
+			EscrowDebugMsg(who, "ClaimEscrowEntry: backpack unavailable for entry_id=" + entry_id);
+			SendSysMessage(who, "You have no backpack to receive escrow items.");
+			return;
+		endif
+	endif
+
+	EscrowDebugMsg(who, "ClaimEscrowEntry: destination resolved type=" + (to_bank ? "bank" : "backpack"));
+
+	var moved := 0;
+	foreach item in EnumerateItemsInContainer(root)
+		if(item.container != root)
+			continue;
+		endif
+
+		if(MoveItemToContainer(item, dest))
+			moved := moved + 1;
+		else
+			if(to_bank)
+				SendSysMessage(who, "Bank is full or over limits. Remaining items stayed in escrow.");
+			else
+				SendSysMessage(who, "Backpack is full or overweight. Remaining items stayed in escrow.");
+			endif
+			break;
+		endif
+	endforeach
+
+	var remaining_root_items := 0;
+	foreach rem in EnumerateItemsInContainer(root)
+		if(rem.container == root)
+			remaining_root_items := remaining_root_items + 1;
+		endif
+	endforeach
+
+	EscrowDebugMsg(who, "ClaimEscrowEntry: moved=" + moved + " remaining_root_items=" + remaining_root_items + " entry_id=" + entry_id);
+
+	if(!remaining_root_items)
+		EscrowDebugMsg(who, "ClaimEscrowEntry: root empty, destroying and pruning entry_id=" + entry_id);
+		DestroyContainerAndContents(root);
+		root := 0;
+		DestroyRootItemInStorageArea(area, entry_escrow_name);
+		RemoveEscrowEntryById(who, entry_id);
+		SendSysMessage(who, "Escrow package claimed.");
+	elseif(moved)
+		EscrowDebugMsg(who, "ClaimEscrowEntry: partial claim complete for entry_id=" + entry_id);
+		SendSysMessage(who, "Partial claim completed; remaining items are still in escrow.");
+		root := 0;
+	else
+		EscrowDebugMsg(who, "ClaimEscrowEntry: no items moved for entry_id=" + entry_id);
+		SendSysMessage(who, "No items could be moved from escrow.");
+		root := 0;
+	endif
+endfunction
+
+function RemoveEscrowEntryById(who, entry_id)
+	var player_serial := who.serial;
+	var df_name := BuildEscrowDatafileName(who);
+	EscrowDebugMsg(who, "RemoveEscrowEntryById: start entry_id=" + entry_id + " df=" + df_name);
+	if(!df_name)
+		EscrowDebugMsg(who, "RemoveEscrowEntryById: failed to build datafile name for entry_id=" + entry_id);
+		return;
+	endif
+
+	var file := OpenDataFile(df_name);
+	if(!file)
+		EscrowDebugMsg(who, "RemoveEscrowEntryById: failed to open datafile " + df_name);
+		return;
+	endif
+
+	var found := 0;
+	// Enumerate all merchant serial keys in the datafile
+	foreach vendor_key in (file.Keys())
+		var vendor_elem := file.FindElement(vendor_key);
+		if(vendor_elem)
+			var entries_str := vendor_elem.GetProp("entries");
+			if(entries_str)
+				var parts := SplitWords(entries_str, "^");
+				var new_parts := {};
+
+				foreach part in parts
+					if(part)
+						var fields := SplitWords(part, "|");
+						if(len(fields) >= 1 and fields[1] != entry_id)
+							new_parts.append(part);
+						elseif(len(fields) >= 1 and fields[1] == entry_id)
+							found := 1;
+							EscrowDebugMsg(who, "RemoveEscrowEntryById: found entry_id=" + entry_id + " in merchant=" + vendor_key);
+						endif
+					endif
+				endforeach
+
+				if(found)
+					if(len(new_parts) > 0)
+						var encoded := "";
+						foreach p in new_parts
+							if(encoded)
+								encoded := encoded + "^";
+							endif
+							encoded := encoded + p;
+						endforeach
+						vendor_elem.SetProp("entries", encoded);
+						EscrowDebugMsg(who, "RemoveEscrowEntryById: updated merchant=" + vendor_key + " with " + len(new_parts) + " entries");
+					else
+						file.DeleteElement(vendor_key);
+						EscrowDebugMsg(who, "RemoveEscrowEntryById: deleted empty vendor element " + vendor_key);
+					endif
+					break;
+				endif
+			endif
+		endif
+	endforeach
+
+	UnloadDataFile(df_name);
+	if(!found)
+		EscrowDebugMsg(who, "RemoveEscrowEntryById: entry_id " + entry_id + " not found in any merchant element");
+	endif
+endfunction
+
+function FindBankBox(character)
+	var worldbank := OpenWorldBank();
+	var bank_obj_name := "Bankbox of " + character.serial;
+	return FindRootItemInStorageArea(worldbank, bank_obj_name);
+endfunction
+
+function OpenWorldBank()
+	var bank := FindStorageArea("World Bank");
+	if(!bank)
+		bank := CreateStorageArea("World Bank");
+	endif
+	return bank;
+endfunction

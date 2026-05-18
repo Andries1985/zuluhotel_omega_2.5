@@ -1,0 +1,165 @@
+// Synopsis: Migrate player-merchant inventory from legacy 1C containers to FS containers
+// Command: .migratevendorstorage
+//
+// BACKGROUND:
+//   In Patch-1.0.2, a typo caused inv_fs to be overwritten with the 1C container reference,
+//   meaning all for-sale stock was stored in "serial 1C" instead of "serial FS".
+//   Patch-1.0.3 fixes the variable assignment, but existing merchants now appear to have
+//   empty inventories because FS was always empty under the old code.
+//
+//   This one-time migration moves all items from "serial 1C" to "serial FS" for every
+//   playervendor NPC in all realms.
+//
+// USAGE:
+//   .migratevendorstorage          -- dry run (no changes, just logs what would happen)
+//   .migratevendorstorage commit   -- perform the actual migration
+//
+// SAFETY:
+//   - Only moves when FS is empty and 1C has items (never overwrites real FS stock)
+//   - Skips merchants where FS already has items (already on new code)
+//   - All actions are logged via Print and sent to the invoking staff member
+
+use uo;
+use storage;
+use os;
+
+include "include/myutil";
+
+const MERCHANT_STORAGE := "Merchant Storage";
+
+program textcmd_migratevendorstorage(who, text)
+	var dry_run := 1;
+	if(text)
+		var parts := SplitWords(Lower(text));
+		if(len(parts) >= 1 and parts[1] == "commit")
+			dry_run := 0;
+		endif
+	endif
+
+	if(dry_run)
+		SendSysMessage(who, "[MigrateVendorStorage] DRY RUN mode - no changes will be made. Use '.migratevendorstorage commit' to apply.");
+		Print("[MigrateVendorStorage] DRY RUN started by " + who.name);
+	else
+		SendSysMessage(who, "[MigrateVendorStorage] COMMIT mode - changes will be applied.");
+		Print("[MigrateVendorStorage] COMMIT started by " + who.name);
+	endif
+
+	var storage_area := FindStorageArea(MERCHANT_STORAGE);
+	if(!storage_area)
+		SendSysMessage(who, "[MigrateVendorStorage] ERROR: Could not find '" + MERCHANT_STORAGE + "' storage area.");
+		Print("[MigrateVendorStorage] ERROR: Could not find storage area.");
+		return;
+	endif
+
+	var realms := {"britannia", "britannia_alt", "ilshenar", "malas", "tokuno"};
+	var realm_sizes := {
+		{7167, 4095},
+		{7167, 4095},
+		{2303, 1599},
+		{2559, 2047},
+		{1447, 1447}
+	};
+
+	var total_checked  := 0;
+	var total_migrated := 0;
+	var total_skipped  := 0;
+	var total_errors   := 0;
+	var total_noaction := 0;
+
+	for r := 1 to len(realms)
+		var realm_name  := realms[r];
+		var realm_maxx  := realm_sizes[r][1];
+		var realm_maxy  := realm_sizes[r][2];
+
+		var mobiles := ListMobilesInBox(0, 0, -128, realm_maxx, realm_maxy, 127, realm_name);
+		foreach mob in mobiles
+			if(!mob or !mob.IsA(POLCLASS_NPC))
+				continue;
+			endif
+			if(mob.npctemplate != "playervendor")
+				continue;
+			endif
+
+			total_checked := total_checked + 1;
+
+			var serial_str := CStr(mob.serial);
+			var inv_1c := FindRootItemInStorageArea(storage_area, serial_str + " 1C");
+			var inv_fs := FindRootItemInStorageArea(storage_area, serial_str + " FS");
+
+			var count_1c := 0;
+			var count_fs := 0;
+			if(inv_1c)
+				count_1c := len(ListRootItemsInContainer(inv_1c));
+			endif
+			if(inv_fs)
+				count_fs := len(ListRootItemsInContainer(inv_fs));
+			endif
+
+			var msg := "[MigrateVendorStorage] Vendor '" + mob.name + "' serial=" + serial_str +
+			           " realm=" + realm_name + " 1C_items=" + count_1c + " FS_items=" + count_fs;
+
+			if(count_fs > 0)
+				// FS already has items -- already on new code or manually stocked
+				Print(msg + " => SKIP (FS non-empty)");
+				total_skipped := total_skipped + 1;
+
+			elseif(count_1c == 0)
+				// Neither container has items -- nothing to migrate
+				Print(msg + " => NO_ACTION (both empty)");
+				total_noaction := total_noaction + 1;
+
+			else
+				// FS is empty, 1C has items -- this is the bug state, migrate
+				Print(msg + " => MIGRATE " + count_1c + " items");
+
+				if(!dry_run)
+					if(!inv_fs)
+						// FS container doesn't exist yet -- create it
+						inv_fs := CreateRootItemInStorageArea(storage_area, serial_str + " FS", 0xE7C);
+						if(!inv_fs)
+							Print("[MigrateVendorStorage] ERROR: Could not create FS container for serial " + serial_str);
+							total_errors := total_errors + 1;
+							continue;
+						endif
+					endif
+
+					var moved := 0;
+					var failed := 0;
+					foreach item in ListRootItemsInContainer(inv_1c)
+						if(MoveItemToContainer(item, inv_fs))
+							moved := moved + 1;
+						else
+							Print("[MigrateVendorStorage] WARNING: Failed to move item " + item.serial + " (" + item.desc + ") for vendor " + serial_str);
+							failed := failed + 1;
+						endif
+					endforeach
+
+					if(failed > 0)
+						Print("[MigrateVendorStorage] Vendor " + serial_str + ": moved " + moved + ", failed " + failed);
+						total_errors := total_errors + 1;
+					else
+						Print("[MigrateVendorStorage] Vendor " + serial_str + ": migrated " + moved + " items OK");
+						total_migrated := total_migrated + 1;
+					endif
+				else
+					total_migrated := total_migrated + 1;
+				endif
+			endif
+
+			sleepms(10);
+		endforeach
+	endfor
+
+	var summary := "[MigrateVendorStorage] DONE. checked=" + total_checked +
+	               " migrated=" + total_migrated +
+	               " skipped_fs_nonempty=" + total_skipped +
+	               " no_action_both_empty=" + total_noaction +
+	               " errors=" + total_errors;
+
+	if(dry_run)
+		summary := summary + " (DRY RUN - no changes applied)";
+	endif
+
+	Print(summary);
+	SendSysMessage(who, summary);
+endprogram

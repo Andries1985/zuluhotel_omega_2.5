@@ -13,7 +13,7 @@ program pvp (who)
 	var lkarma;
 	var lfame;
 	Detach();
-	if (who.x < 750 or who.x > 757 or who.y > 1487 or who.y < 1472 )
+	if (who.realm != "britannia" or who.x < 750 or who.x > 757 or who.y > 1487 or who.y < 1472 )
 		SendSysMessage( who, "Cancelled, you are not in the arena." );
 		return;
 	endif
@@ -25,16 +25,15 @@ program pvp (who)
 
 	var player:=target(who, TGTOPT_NOCHECK_LOS);
 
-	if (player.npctemplate) 
-		SendSysMessage( who, "Cancelled" );
-		return; 
-	endif
-
 	if(!player or player.dead or player.name == who.name )
 		SendSysmessage( who, "Invalid selection." ); 
 		return;
  	endif
-	if (player.x < 750 or player.x > 757 or player.y > 1487 or player.y < 1472 )
+	if (player.npctemplate)
+		SendSysMessage( who, "Cancelled" );
+		return;
+	endif
+	if (player.realm != "britannia" or player.x < 750 or player.x > 757 or player.y > 1487 or player.y < 1472 )
 		SendSysMessage( who, "Cancelled, they are not in the arena." );
 		return;
 	endif
@@ -54,8 +53,8 @@ program pvp (who)
 	endif
 	SetGlobalProperty("ArenaInUse", 1 );
 	MakeFence ();
-	MoveObjectToLocation( who, 775, 1467, -28, "ilshenar");
-	MoveObjectToLocation( player, 775, 1492, -28, "ilshenar");
+	MoveObjectToLocation( who, 775, 1467, -28, "britannia");
+	MoveObjectToLocation( player, 775, 1492, -28, "britannia");
 	lkarma := GetObjProperty(player, "Karma");
 	lfame := GetObjProperty(player, "Fame");
 	SetObjProperty(player, "lkarma", lkarma);
@@ -67,12 +66,29 @@ program pvp (who)
 	SetObjProperty(player, "pvping", 1);
 	SetObjProperty(who, "pvping", 1);
 	var IsRef;
-	foreach mobile in ListMobilesNearLocation( who.x, who.y, who.z, 40, "ilshenar" )
+	foreach mobile in ListMobilesNearLocation( who.x, who.y, who.z, 40, "britannia" )
 		IsRef:= GetObjProperty( mobile, "referee");
 		if (IsRef)
 			ref := mobile;
 		endif
 	endforeach
+	if (!ref)
+		SendSysMessage(who, "PvP cancelled: no referee is available. Refunding paid funds.");
+		SendSysMessage(player, "PvP cancelled: no referee is available. Refunding paid funds.");
+		RepayGold(who);
+		RepayGold(player);
+		MoveObjectToLocation( who, 754, 1479, -28, "britannia");
+		MoveObjectToLocation( player, 754, 1479, -28, "britannia");
+		EraseObjProperty( player, "pvping" );
+		EraseObjProperty( who, "pvping" );
+		DeleteFence(who);
+		EraseGlobalProperty("ArenaInUse");
+		EraseObjProperty( who, "lkarma" );
+		EraseObjProperty( who, "lfame" );
+		EraseObjProperty( player, "lkarma" );
+		EraseObjProperty( player, "lfame" );
+		return;
+	endif
     PrintTextAbove( ref, "Get ready - PvP will start in 20 seconds." );
 	Sleepms(10000);
 	PrintTextAbove( ref, "10 seconds..." );
@@ -102,7 +118,7 @@ program pvp (who)
 		
 		if (toolong == 240 )
 			PrintTextAbove( who, "PvP in progress 1 minutes left" );
-			PrintTextAbove( who, "PvP in progress 1 minutes left" );			
+			PrintTextAbove( player, "PvP in progress 1 minutes left" );			
 		elseif (toolong == 180 )
 			PrintTextAbove( who, "PvP in progress 2 minutes left" );
 			PrintTextAbove( player, "PvP in progress 2 minutes left" );			
@@ -180,7 +196,6 @@ program pvp (who)
 		PrintTextAbove( ref, "It was a draw!" );
 		foreach character in EnumerateOnlineCharacters()
 	SendSysMessage( character,who.name+" & "+player.name+" both died in the PvP arena, in "+length+" secs." );
-	PrintTextAbove( ref , character,player.name+" defeated "+who.name+" in the PvP arena, in "+length+" secs." );
 	
 //	wintext := character,who.name+" defeated "+player.name+" in the PvP arena, in "+length+" seconds";
 //    Broadcast( wintext, FONT_BOLD, 33 );
@@ -216,7 +231,6 @@ program pvp (who)
 		SetObjProperty(player,"pvplosses",score);
 		foreach character in EnumerateOnlineCharacters()
 SendSysMessage( character,who.name+" defeated "+player.name+" in the PvP arena, in "+length+" secs." );	
-PrintTextAbove( ref , character,player.name+" defeated "+who.name+" in the PvP arena, in "+length+" secs." );
 //	wintext := character,who.name+" defeated "+player.name+" in the PvP arena, in "+length+" secs.";
 //    Broadcast( wintext, FONT_BOLD, 33 );
 		SetHP(who, GetMaxHP(who));
@@ -251,7 +265,6 @@ PrintTextAbove( ref , character,player.name+" defeated "+who.name+" in the PvP a
 		SetObjProperty(who,"pvplosses",score);
 		foreach character in EnumerateOnlineCharacters()
 		SendSysMessage( character,player.name+" defeated "+who.name+" in the PvP arena, in "+length+" secs." );	
-		PrintTextAbove( ref , character,player.name+" defeated "+who.name+" in the PvP arena, in "+length+" secs." );
 //		wintext := character,who.name+" defeated "+player.name+" in the PvP arena, in "+length+" secs.";
 //    	Broadcast( wintext, FONT_BOLD, 33 );
 		SetHP(who, GetMaxHP(who));
@@ -280,8 +293,8 @@ PrintTextAbove( ref , character,player.name+" defeated "+who.name+" in the PvP a
 		PrintTextAbove( ref, "5 minutes is up. PvP is cancelled." );	
 	endif
 	MakeFence();
-	MoveObjectToLocation( who, 775, 1467, -28, "ilshenar");
-	MoveObjectToLocation( player, 775, 1492, -28, "ilshenar");
+	MoveObjectToLocation( who, 775, 1467, -28, "britannia");
+	MoveObjectToLocation( player, 775, 1492, -28, "britannia");
 	player.frozen := 0;
 	who.frozen := 0;
 	sleep (4);	
@@ -296,8 +309,8 @@ PrintTextAbove( ref , character,player.name+" defeated "+who.name+" in the PvP a
 	Sleep (3);
 	PrintTextAbove( ref, "Teleporting you out.." );	
 	sleep (5);
-	MoveObjectToLocation( who, 754, 1479, -28, "ilshenar");
-	MoveObjectToLocation( player, 754, 1479, -28, "ilshenar");
+	MoveObjectToLocation( who, 754, 1479, -28, "britannia");
+	MoveObjectToLocation( player, 754, 1479, -28, "britannia");
 	EraseObjProperty( player, "pvping" );
 	EraseObjProperty( who, "pvping" );
 	DeleteFence(ref);
@@ -343,105 +356,105 @@ endfunction
 
 function MakeFence ()
 	var fnc;
-	fnc := CreateItemAtLocation(776, 1493, -28, 2083, 1, "ilshenar");
+	fnc := CreateItemAtLocation(776, 1493, -28, 2083, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(775, 1493, -28, 2083, 1, "ilshenar");
+	fnc := CreateItemAtLocation(775, 1493, -28, 2083, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(774, 1493, -28, 2083, 1, "ilshenar");
+	fnc := CreateItemAtLocation(774, 1493, -28, 2083, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(776, 1490, -28, 2083, 1, "ilshenar");
+	fnc := CreateItemAtLocation(776, 1490, -28, 2083, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(775, 1490, -28, 2083, 1, "ilshenar");
+	fnc := CreateItemAtLocation(775, 1490, -28, 2083, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(774, 1490, -28, 2083, 1, "ilshenar");
+	fnc := CreateItemAtLocation(774, 1490, -28, 2083, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(776,1493, -28, 2081, 1, "ilshenar");
+	fnc := CreateItemAtLocation(776,1493, -28, 2081, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(776,1492, -28, 2081, 1, "ilshenar");
+	fnc := CreateItemAtLocation(776,1492, -28, 2081, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(776,1491, -28, 2081, 1, "ilshenar");
+	fnc := CreateItemAtLocation(776,1491, -28, 2081, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(773,1493, -28, 2081, 1, "ilshenar");
+	fnc := CreateItemAtLocation(773,1493, -28, 2081, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(773,1492, -28, 2081, 1, "ilshenar");
+	fnc := CreateItemAtLocation(773,1492, -28, 2081, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
-	fnc := CreateItemAtLocation(773,1491, -28, 2081, 1, "ilshenar");
+	fnc := CreateItemAtLocation(773,1491, -28, 2081, 1, "britannia");
 	SetObjProperty( fnc, "pvpfence",1);
 	fnc.color := 1172;
 //lampor
- 	fnc := CreateItemAtLocation(776,1493, -28, 2848, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(776,1493, -28, 2848, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 2737;
- 	fnc := CreateItemAtLocation(773,1493, -28, 2848, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(773,1493, -28, 2848, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 2737;
- 	fnc := CreateItemAtLocation(773,1490, -28, 2848, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(773,1490, -28, 2848, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 2737;
- 	fnc := CreateItemAtLocation(776,1490, -28, 2848, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(776,1490, -28, 2848, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 2737;
 
 //andra h�lft
- 	fnc := CreateItemAtLocation(774,1465, -28, 2083, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(774,1465, -28, 2083, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(775,1465, -28, 2083, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(775,1465, -28, 2083, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1); 
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(776,1465, -28, 2083, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(776,1465, -28, 2083, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(776,1466, -28, 2081, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(776,1466, -28, 2081, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(776,1467, -28, 2081, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(776,1467, -28, 2081, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(776,1468, -28, 2081, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(776,1468, -28, 2081, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(773,1466, -28, 2081, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(773,1466, -28, 2081, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(773,1467, -28, 2081, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(773,1467, -28, 2081, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(773,1468, -28, 2081, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(773,1468, -28, 2081, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(774,1468, -28, 2083, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(774,1468, -28, 2083, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(775,1468, -28, 2083, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(775,1468, -28, 2083, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
- 	fnc := CreateItemAtLocation(776,1468, -28, 2083, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(776,1468, -28, 2083, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 1172;
 
 //lampor andra h�lft
-	fnc := CreateItemAtLocation(773,1465, -28, 2848, 1, "ilshenar");
+	fnc := CreateItemAtLocation(773,1465, -28, 2848, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 2737;
- 	fnc := CreateItemAtLocation(776,1468, -28, 2848, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(776,1468, -28, 2848, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 2737;
- 	fnc := CreateItemAtLocation(776,1465, -28, 2848, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(776,1465, -28, 2848, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 2737;
- 	fnc := CreateItemAtLocation(773,1468, -28, 2848, 1, "ilshenar");
+ 	fnc := CreateItemAtLocation(773,1468, -28, 2848, 1, "britannia");
  	SetObjProperty( fnc, "pvpfence",1);
  	fnc.color := 2737;
 
@@ -450,13 +463,47 @@ endfunction
 function DeleteFence ( lee )
 	var Near;
 	var ispvpfence;
-	Near := ListItemsNearLocation( lee.x , lee.y , lee.z , 50, "ilshenar");
+	Near := ListItemsNearLocation( lee.x , lee.y , lee.z , 50, "britannia");
 	foreach item in Near
 		ispvpfence := GetObjProperty( item, "pvpfence");
 		if (ispvpfence)
 			DestroyItem(item);
 		endif
 	endforeach
+endfunction
+
+function RepayGold(who)
+	var totalsellprice := GetObjProperty(who, "GoldPaid");
+	if(!totalsellprice)
+		return;
+	endif
+	CreateCheque(who, totalsellprice);
+	EraseObjProperty(who, "GoldPaid");
+endfunction
+
+function CreateCheque(who, total)
+	if (!total or total <= 0)
+		return;
+	endif
+
+	var remaining := total;
+	repeat
+		var chunk := remaining;
+		if (chunk > 5000000)
+			chunk := 5000000;
+		endif
+		var cheque := CreateItemInBackpack(who, CInt(0x14000));
+		if (!cheque)
+			SendSysMessage(who, "Refund failed: unable to create cheque in backpack.");
+			return;
+		endif
+		SetObjProperty( cheque, "Amount", chunk );
+		SetObjProperty( cheque, "checkamount", chunk );
+		SetObjProperty( cheque, "CreatedBy", "PvP Arena" );
+		cheque.color := 51;
+		cheque.name := "A Cheque for " + chunk + " Gold by PvP Arena.";
+		remaining := remaining - chunk;
+	until (remaining <= 0);
 endfunction
 
 		

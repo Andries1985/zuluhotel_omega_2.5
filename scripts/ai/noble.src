@@ -14,8 +14,9 @@ const HALT_THRESHOLD := 2; // how close before he barks?
 var me := Self();
 
 program noble ()
+    var hasTownBounds := InitTownBounds();
 
-	if (!InitTownBounds())
+	if (!hasTownBounds)
 		return;
 	endif
 
@@ -33,7 +34,6 @@ program noble ()
     
     EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED, HALT_THRESHOLD);
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
-    EnableEvents( SYSEVENT_OPPONENT_MOVED );
 
 	if (getobjproperty(me, "frozen"))
 		me.frozen := 1;
@@ -43,11 +43,10 @@ program noble ()
     set_priority(10);
 
 
-    // (Old while loop removed; only the new, shared-saying-based loop remains)
+    // Keep one blocking wait per loop; avoid a tight event loop that can trigger runaway cycles.
     var ev;
     var next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
     while (1)
-        WanderWithinTown();
         ev := os::wait_for_event( 120 );
         case (ev.type)
             SYSEVENT_SPEECH:
@@ -68,10 +67,11 @@ program noble ()
             SYSEVENT_DISENGAGED:
                 SayRandomFromArray(DISENGAGED_SAYINGS);
         endcase
-        if (ReadGameClock() >= next_wander)
+        if (hasTownBounds and ReadGameClock() >= next_wander)
             WanderWithinTown();
             next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
         endif
+        Sleepms(1);
     endwhile
 endprogram
 

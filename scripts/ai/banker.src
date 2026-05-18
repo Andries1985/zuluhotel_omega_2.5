@@ -407,6 +407,12 @@ function Balance( you )
 	foreach item in EnumerateItemsInContainer(FindBankBox( you ))
 		if( item.objtype == 0x0EED )
 			myamt := myamt + item.amount;
+		elseif( item.objtype == 0x14000 )
+			var chequeamt := CInt( GetObjProperty( item, "Amount" ) );
+			if( !chequeamt )
+				chequeamt := CInt( GetObjProperty( item, "checkamount" ) );
+			endif
+			myamt := myamt + chequeamt;
 		endif
 	endforeach
 

@@ -9,16 +9,16 @@ include "include/spelldata";
 include ":versebook:include/versefunctions";
 
 var earth, fire, water, air, necro, poison, physical, freeaction, holy;
-var healing, magicefficiency;
+var healing, magicefficiency, mageequippedint;
 var magicimmunity, magicreflection, tempmagicimmunity, tempmagicreflection, temppoisonimmunity, bardicefficiency;
 
 program Prots(who)
 
 CalculateImmunities(who);
 
-var gump := GFCreateGump(15, 15, 510, 400);
-GFResizePic(gump, 15, 15, 9270, 510, 400);
-GFResizePic(gump, 25, 25, 9350,490, 380);
+var gump := GFCreateGump(15, 15, 510, 415);
+GFResizePic(gump, 15, 15, 9270, 510, 415);
+GFResizePic(gump, 25, 25, 9350,490, 395);
 GFTextLine(gump, 205, 30, 53, "Protection Information");
 GFResizePic(gump, 35, 65, 9350, 470, 105);
 GFTextLine(gump, 40, 70, 0,  "Earth Protection");
@@ -39,28 +39,34 @@ GFTextLine(gump, 430, 120, GetTextColour(physical), physical);
 GFTextLine(gump, 270, 145, 0,  "Poison Protection");
 GFTextLine(gump, 430, 145, GetTextColour(poison), poison);
 
-GFResizePic(gump, 35, 185, 9350, 470, 55);
+GFResizePic(gump, 35, 185, 9350, 470, 80);
 GFTextLine(gump, 40, 190, 0,  "Healing Bonus");
 GFTextLine(gump, 200, 190, GetTextColour(healing),healing);
-GFTextLine(gump, 40, 215, 0,  "Magic Efficiency");
-GFTextLine(gump, 200, 215, GetTextColourPercent(magicefficiency),magicefficiency+"%");
+GFTextLine(gump, 40, 215, 0,  "Equipped INT");
+if(GetObjProperty( who, CLASSEID_MAGE ))
+	GFTextLine(gump, 200, 215, GetTextColour(mageequippedint),mageequippedint);
+else
+	GFTextLine(gump, 200, 215, 999,"Not mage");
+endif
+GFTextLine(gump, 40, 240, 0,  "Bardic Efficiency");
+GFTextLine(gump, 200, 240, GetTextColourPercent(bardicefficiency),bardicefficiency+"%");
 GFTextLine(gump, 270, 190, 0,  "Free Action");
 GFTextLine(gump, 430, 190, GetTextColourOnOff(freeaction),freeaction);
-GFTextLine(gump, 270, 215, 0,  "Bardic Efficiency");
-GFTextLine(gump, 430, 215, GetTextColourPercent(bardicefficiency),bardicefficiency+"%");
+GFTextLine(gump, 270, 215, 0,  "Magic Efficiency");
+GFTextLine(gump, 430, 215, GetTextColourPercent(magicefficiency),magicefficiency+"%");
 
-GFResizePic(gump, 35, 255, 9350, 470, 130);
-GFTextLine(gump, 40, 260, 0,  "Permanent Magic Immnunity (Blackrock)");
-GFTextLine(gump, 320, 260, GetTextColour(magicimmunity),magicimmunity);
-GFTextLine(gump, 40, 285, 0,  "Permanent Magic Reflection (Moonstone)");
-GFTextLine(gump, 320, 285, GetTextColour(magicreflection),magicreflection);
-GFTextLine(gump, 40, 310, 0,  "Temporary Magic Immnunity (Absorbsion)");
-GFTextLine(gump, 320, 310, GetTextColour(tempmagicimmunity),tempmagicimmunity+" charges");
-GFTextLine(gump, 40, 335, 0,  "Temporary Magic Reflection (Warding)");
-GFTextLine(gump, 320, 335, GetTextColour(tempmagicreflection),tempmagicreflection+" charges");
+GFResizePic(gump, 35, 280, 9350, 470, 130);
+GFTextLine(gump, 40, 285, 0,  "Permanent Magic Immnunity (Blackrock)");
+GFTextLine(gump, 320, 285, GetTextColour(magicimmunity),magicimmunity);
+GFTextLine(gump, 40, 310, 0,  "Permanent Magic Reflection (Moonstone)");
+GFTextLine(gump, 320, 310, GetTextColour(magicreflection),magicreflection);
+GFTextLine(gump, 40, 335, 0,  "Temporary Magic Immnunity (Absorbsion)");
+GFTextLine(gump, 320, 335, GetTextColour(tempmagicimmunity),tempmagicimmunity+" charges");
+GFTextLine(gump, 40, 360, 0,  "Temporary Magic Reflection (Warding)");
+GFTextLine(gump, 320, 360, GetTextColour(tempmagicreflection),tempmagicreflection+" charges");
 
-GFTextLine(gump, 40, 360, 0,  "Temporary Poison Immunity (Antidotes)");
-GFTextLine(gump, 320, 360, GetTextColour(temppoisonimmunity),temppoisonimmunity+" charges");
+GFTextLine(gump, 40, 385, 0,  "Temporary Poison Immunity (Antidotes)");
+GFTextLine(gump, 320, 385, GetTextColour(temppoisonimmunity),temppoisonimmunity+" charges");
 
 var data := GFSendGump(who, gump);
 
@@ -81,12 +87,13 @@ function CalculateImmunities(who)
 
 	healing := CInt(GetObjProperty(who, "HealingIncrease"));
 	magicefficiency := GetMagicEfficiencyPenalty( who );
+	mageequippedint := GetMageEquippedInt( who );
 	bardicefficiency := GetBardicEfficiencyProts( who );
 
 	if (magicefficiency < 0)
 		magicefficiency := abs(magicefficiency);
 	else
-		magicefficiency := magicefficiency - (magicefficiency*2);
+		magicefficiency := magicefficiency - (magicefficiency * 2);
 	endif
 
 	if(!GetObjProperty( who , CLASSEID_WARRIOR ))
@@ -103,6 +110,23 @@ function CalculateImmunities(who)
 	endif
 
 	temppoisonimmunity := GetPoisonCharges(who);
+
+endfunction
+
+function GetMageEquippedInt(who)
+
+	if(!GetObjProperty( who, CLASSEID_MAGE ))
+		return 0;
+	endif
+
+	var totalint := 0;
+	foreach item in ListEquippedItems( who )
+		if( GetObjProperty( item, "int" ) )
+			totalint := totalint + CInt( GetObjProperty( item, "int" ) );
+		endif
+	endforeach
+
+	return totalint;
 
 endfunction
 

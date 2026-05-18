@@ -3,6 +3,7 @@ use uo;
 use storage;
 include "include/objtype";
 include "include/client";
+include "include/random";
 
 
 const ARTIFACT_BOX := "artifactbox";

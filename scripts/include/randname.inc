@@ -49,7 +49,7 @@ endfunction
 
 function AssignName( me , index )
 
-    var cfg := ReadConfigFile( "names" );
+    var cfg := ReadConfigFile( "::names" );
     var elem := FindConfigElem( cfg , index );
     var number := GetConfigInt( elem , "Count" ); 
 
@@ -72,16 +72,15 @@ function PreserveTitle( me )
   var myname := me.name;
   var start := find( myname , ">" , 1 );
 
-if( !start )
-  return;
-endif
+  if( !start )
+    return;
+  endif
 
   var title := myname[ start+1 , (len( myname ) - 8) ];
-if( !title )
-  return("");
-endif
+  if( !title )
+    return("");
+  endif
 
-	
   return( title );
 
 endfunction

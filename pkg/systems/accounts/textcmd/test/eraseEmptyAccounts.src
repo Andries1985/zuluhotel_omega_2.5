@@ -1,0 +1,93 @@
+// Synopsis: Delete all accounts that have no characters
+/*
+        Created by *Edwards
+        For FantasiaShard.com
+
+        Edwards@FantasiaShard.com
+
+        2010-04-17
+*/
+use uo;
+use os;
+
+include "include/security";
+include ":accounts:accounts";
+
+program textcmd_eraseEmptyAccounts( mobile, text )
+
+        if( mobile.cmdlevel < 5 )
+                SendSysMessage( mobile, "Only max command level can use this command." );
+                return 0;
+        endif
+
+        var dry_run := 0;
+        if( text )
+                text := Lower( text );
+                if( text == "dryrun" || text == "dry-run" || text == "preview" )
+                        dry_run := 1;
+                endif
+        endif
+
+        // if( !AuthorizationCode( mobile ))
+        //         SendSysMessage( mobile, "Cancelled." );
+        //         return 0;
+        // endif
+
+        var total_scanned := 0;
+        var total_empty := 0;
+        var total_deleted := 0;
+
+        if( !dry_run )
+                SendSysMessage( mobile, "Saving world state before deletion..." );
+                SaveWorldState();
+                SendSysMessage( mobile, "World saved. Beginning account scan and deletion..." );
+        else
+                SendSysMessage( mobile, "DRY RUN MODE: No deletions will occur. Scanning accounts..." );
+        endif
+        
+        foreach account_name in ListAccounts()
+                SleepMS(5);
+
+                var account := FindAccount( account_name );
+                if( account.errortext )
+                        SendSysMessage( mobile, "Error couldn't read account "+account_name+" -->"+account.errortext );
+                        continue;
+                endif
+
+                total_scanned += 1;
+
+                if( !CheckIfCharacterExists( account ))
+                         total_empty += 1;
+
+                         if( dry_run )
+                                  continue;
+                         endif
+
+                         var delete := ACCT_DeleteAccount( account );
+                         if( delete.errortext )
+                                  SendSysMessage( mobile, "Error couldn't delete account "+account_name+" -->"+delete.errortext );
+                         else
+                                  total_deleted += 1;
+                         endif
+                endif
+	endforeach
+
+	if( !dry_run )
+		SendSysMessage( mobile, "Deletion complete. Saving world state..." );
+		SaveWorldState();
+		SendSysMessage( mobile, "World saved." );
+	endif
+ 
+	if( dry_run )
+		SendSysMessage( mobile, "DRY RUN: scanned "+total_scanned+" accounts. Empty accounts found: "+total_empty+". Deleted: 0." );
+	else
+		SendSysMessage( mobile, "Scanned "+total_scanned+" accounts. Empty accounts found: "+total_empty+". Total accounts deleted: "+total_deleted );
+	endif
+ 
+	return 1;
+endprogram
+
+function CheckIfCharacterExists( account )
+        // ACCT_GetNumCharacters follows the account system's max-character configuration.
+        return ( ACCT_GetNumCharacters( account ) > 0 );
+endfunction
