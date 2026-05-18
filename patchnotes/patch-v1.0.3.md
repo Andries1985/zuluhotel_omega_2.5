@@ -91,6 +91,16 @@ Player-visible effect: fewer odd edge cases around vendor support flows.
 
 ---
 
+## 🏟️ PvP Arena — Fixes and Improvements
+
+During development, several PvP arena issues were identified and corrected:
+
+- **Single-Arena (1v1):** Match flow and mechanics stabilized for more reliable gameplay.
+- **2v2 Arena:** Comprehensive fixes to team coordination, match logic, and error recovery.
+- **Prots Display:** The `.prots` command now correctly shows your **Equipped INT** bonus for mage-class characters, making it easier to see your magic equipment's contribution.
+
+---
+
 ## 🛠️ Administrator Highlights (High-Level)
 
 For shard administrators and event staff, Patch 1.0.3 also includes:
@@ -106,6 +116,7 @@ For shard administrators and event staff, Patch 1.0.3 also includes:
 ✅ **Escrow Added** — Use `.escrow` to recover vendor packages  
 ✅ **Vendor Upkeep Added** — Vendors now cost gold over time (city and non-city wage tiers)  
 ✅ **Auto-Dismiss Safety** — Unpaid vendors can close themselves; assets are cashed out with escrow fallback  
+✅ **PvP Arena Fixes** — 1v1 and 2v2 arena stabilization; prots display correction  
 ✅ **Economy Clarity** — Banker balance now counts checks too
 
 ---
