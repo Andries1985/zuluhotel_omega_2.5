@@ -1,0 +1,33 @@
+use npc;
+use os;
+use uo;
+
+include "include/randname";
+include "include/vetement";
+
+var me := Self();
+
+program referee()
+	if (me.name["<random>"])
+		if (me.gender == 0)
+			Habille( me , "noblemale" );
+		else
+			Habille( me , "noblefemale" );
+		endif
+		SetName( me , RandomName( me ) );
+	endif
+
+	SetObjProperty( me, "serial", me.serial );
+	SetObjProperty( me, "noloot", 1 );
+
+	if (getobjproperty(me, "frozen"))
+		me.frozen := 1;
+	endif
+
+	SetWarMode( 0 );
+	set_priority( 10 );
+
+	while (1)
+		sleep( 60 );
+	endwhile
+endprogram
