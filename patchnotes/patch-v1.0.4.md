@@ -1,0 +1,53 @@
+# Patch Notes — v1.0.4
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: May 23, 2026**
+
+---
+
+Welcome to **Patch 1.0.4**. This update focuses on **vendor escrow reliability**, **Soul Whisperer event stability**, and a few quality-of-life fixes.
+
+---
+
+## 🛒 Player Vendors — Escrow Fixes
+
+Escrow package retrieval was improved so vendor escrow is less likely to appear empty when packages exist.
+
+If you had escrow visibility issues before, claiming should now be more reliable.
+
+---
+
+## 🧠 Skill Gain — Power Hour Double Gain Fix
+
+Power Hour double skill gain was not applying correctly before; it now works and doubles skillpoints after all other modifiers.
+
+---
+
+## 🌌 Soul Whisperer — Portal/Summon Flow Fix
+
+Soul Whisperer summon portal flow was reworked for more reliable timing and cleanup.
+
+### Player Impact
+
+You should see more consistent portal summon behavior during Soul Whisperer threshold events.
+
+---
+
+## 🌐 InfoVault Command URL Fix
+
+The player `.infovault` command now points to the corrected website path:
+
+- `https://zuluhotelomega.com/infovault`
+
+---
+
+## 📋 Summary
+
+✅ Vendor escrow claiming reliability improved  
+✅ Power Hour double gain now functions correctly  
+✅ Infinite Gems expanded with new gem entries  
+✅ Soul Whisperer portal flow stabilized  
+✅ `.infovault` URL corrected
+
+---
+
+**Thank you for playing Zuluhotel Omega 2.5! Report bugs on Discord.**
