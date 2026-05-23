@@ -18,7 +18,7 @@ If you had escrow visibility issues before, claiming should now be more reliable
 
 ## 🧠 Skill Gain — Power Hour Double Gain Fix
 
-Power Hour double skill gain was not applying correctly before; it now works and doubles skillpoints after all other modifiers.
+Power Hour now correctly doubles skillpoints after all other modifiers.
 
 ---
 
@@ -40,12 +40,19 @@ The player `.infovault` command now points to the corrected website path:
 
 ---
 
+## 🐾 NPC Template Cleanup
+
+Several NPC template flags were cleaned up to better match their intended behavior.  (Removal of IsMage from most NPCs until we fix the intended behaviour).
+
+---
+
 ## 📋 Summary
 
 ✅ Vendor escrow claiming reliability improved  
 ✅ Power Hour double gain now functions correctly  
 ✅ Infinite Gems expanded with new gem entries  
 ✅ Soul Whisperer portal flow stabilized  
+✅ NPC template cleanup applied  
 ✅ `.infovault` URL corrected
 
 ---

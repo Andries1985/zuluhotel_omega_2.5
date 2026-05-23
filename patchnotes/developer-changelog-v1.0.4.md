@@ -12,8 +12,9 @@
 1. [Player Vendor Escrow Filename/Resolution Fixes](#1-player-vendor-escrow-filenameresolution-fixes)
 2. [Skill Gain and InfoVault Adjustments](#2-skill-gain-and-infovault-adjustments)
 3. [Soul Whisperer Portal Flow Rework](#3-soul-whisperer-portal-flow-rework)
-4. [Test Command Additions](#4-test-command-additions)
-5. [Commit Timeline](#5-commit-timeline)
+4. [NPC Descriptor Cleanup](#4-npc-descriptor-cleanup)
+5. [Test Command Additions](#5-test-command-additions)
+6. [Commit Timeline](#6-commit-timeline)
 
 ---
 
@@ -55,7 +56,7 @@ This patch stabilizes escrow persistence and retrieval by standardizing canonica
 ### Files Changed
 | File | Change |
 |------|--------|
-| `scripts/include/skillpoints.inc` | Power Hour multiplier moved to raw-point stage to avoid double scaling path |
+| `scripts/include/skillpoints.inc` | Power Hour double gain now applies after other modifiers |
 | `scripts/textcmd/player/infovault.src` | Corrected message text + URL path (`/infovault`) |
 | `pkg/opt/shilitems/infinitegems.src` | Added 8 gem objtypes and matching placement coordinates |
 
@@ -63,7 +64,7 @@ This patch stabilizes escrow persistence and retrieval by standardizing canonica
 
 Miscellaneous gameplay and player-command fixes:
 
-- Power Hour gain modifier application was moved lower in the calculation flow to correct double-gain behavior.
+- Power Hour now correctly doubles skillpoints after all other modifiers.
 - `.infovault` command now opens the corrected site endpoint.
 - Infinite gem generator now includes additional gem variants.
 
@@ -100,7 +101,25 @@ Soul Whisperer summoning now delegates delayed boss spawn and portal lifetime ha
 
 ---
 
-## 4. Test Command Additions
+## 4. NPC Descriptor Cleanup
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `config/npcdesc.cfg` | Commented out a number of `IsMage` template flags across NPC definitions |
+
+### Overview
+
+NPC descriptor cleanup was applied to several templates by removing active `IsMage` flags from selected creatures and bosses.
+
+### Expected Impact
+
+- Helps keep NPC classification aligned with intended behavior
+- Reduces unintended mage-tagged behavior on templates that should not use it
+
+---
+
+## 5. Test Command Additions
 
 ### Files Changed
 | File | Change |
@@ -113,7 +132,7 @@ Added a test command workflow to support merchant takeover and escrow transfer v
 
 ---
 
-## 5. Commit Timeline
+## 6. Commit Timeline
 
 1. `a10acd1` — Fix player-vendor escrow filename stability and remove legacy vendordeed pay key  
 2. `142e73d` — Fixed double skill gain power hour added new gems to infinitegems infovault fix  
@@ -130,6 +149,7 @@ Patch 1.0.4 is a reliability-focused follow-up with targeted fixes:
 - **Playervendor Escrow:** canonical filename resolution, legacy compatibility, key-level migration support
 - **Gameplay Math:** corrected Power Hour gain application stage
 - **Utility/QoL:** Infinite Gems expansion and `.infovault` URL correction
+- **NPC Data:** descriptor cleanup for several templates in `npcdesc.cfg`
 - **Event Logic:** Soul Whisperer portal flow offloaded to dedicated worker script
 - **Test Tooling:** merchant takeover escrow test command
 
