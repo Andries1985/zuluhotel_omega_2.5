@@ -1185,6 +1185,10 @@ endfunction
 		MoveItemToContainer(item, inv_pb);
 	endforeach
 
+	foreach bpitem in ListRootItemsInContainer(me.backpack)
+		MoveItemToContainer(bpitem, inv_pb);
+	endforeach
+
 	foreach thingie in ListRootItemsInContainer(inv_pb)
 		MoveItemToContainer(thingie, mmaster.backpack);
 	endforeach
