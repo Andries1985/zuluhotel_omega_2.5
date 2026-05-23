@@ -1,11 +1,12 @@
-// Synopsis: Player-merchant escrow test utility (.pmescrowtest)
+// Synopsis: Take over a targeted player merchant and claim matching escrow packs
+// Command: .pmtakeover (test level)
+
 use uo;
 use storage;
 
 include "util/bank";
 
-
-program pmescrowtest(who)
+program textcmd_pmtakeover(who, text)
 	SendSysMessage(who, "Target the player merchant to claim.");
 
 	var merchant := Target(who);
