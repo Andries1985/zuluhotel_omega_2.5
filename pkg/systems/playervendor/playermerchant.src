@@ -40,9 +40,17 @@ const PAYOUT_PACK_MAX_ROOT_ITEMS := 100;
 const PAYOUT_PACK_MAX_WEIGHT := 40000;
 const CHEQUE_MAX_GOLD := 5000000;
 const ESCROW_STORAGE_NAME := "Merchant Escrow";
+const DEBUG_PLAYERMERCHANT := 0;
+
+function PMDebug(msg)
+	msg := msg;
+	if(DEBUG_PLAYERMERCHANT)
+		Print(msg);
+	endif
+endfunction
 
 program merchant()
-	Print("[PLAYERMERCHANT] startup serial=" + me.serial + " name='" + me.name + "' master=" + CInt(GetObjProperty(me, "master")) + " mn='" + CStr(GetObjProperty(me, "mn")) + "'");
+	PMDebug("[PLAYERMERCHANT] startup serial=" + me.serial + " name='" + me.name + "' master=" + CInt(GetObjProperty(me, "master")) + " mn='" + CStr(GetObjProperty(me, "mn")) + "'");
 	if(!RefreshMaster())
 		HandleMasterlessMerchantCleanup();
 		exit;
@@ -97,12 +105,12 @@ program merchant()
 				if(ev.source)
 					srcserial := ev.source.serial;
 				endif
-				Print("[PLAYERMERCHANT] Force fire event for " + me.serial + " from " + srcserial + ", master=" + master + " force_escrow=" + force_escrow);
+				PMDebug("[PLAYERMERCHANT] Force fire event for " + me.serial + " from " + srcserial + ", master=" + master + " force_escrow=" + force_escrow);
 				if(srcserial == master)
 					HandleMerchantClosure("forced_by_pmfireme_event", force_escrow);
 					break;
 				else
-					Print("[PLAYERMERCHANT] Ignored force fire event due to owner mismatch.");
+					PMDebug("[PLAYERMERCHANT] Ignored force fire event due to owner mismatch.");
 				endif
 				continue;
 			endif
@@ -676,38 +684,38 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 	endif
 
 	var entry_id := ownerserial + "-" + ReadGameClock() + "-" + Random(100000);
-	Print("[PMESCROWDBG] AppendEscrowIndex owner=" + ownerserial + " escrow_name=" + escrow_name + " vendor=" + vendor_name + " entry_id=" + entry_id);
+	PMDebug("[PMESCROWDBG] AppendEscrowIndex owner=" + ownerserial + " escrow_name=" + escrow_name + " vendor=" + vendor_name + " entry_id=" + entry_id);
 
 	// Read master serial from merchant object
 	var master := CInt(GetObjProperty(me, "master"));
 	if(!master)
-		Print("[PMESCROWDBG] AppendEscrowIndex aborted: merchant has no master property");
+		PMDebug("[PMESCROWDBG] AppendEscrowIndex aborted: merchant has no master property");
 		return entry_id;
 	endif
-	Print("[PMESCROWDBG] AppendEscrowIndex merchant_serial=" + me.serial + " master=" + master);
+	PMDebug("[PMESCROWDBG] AppendEscrowIndex merchant_serial=" + me.serial + " master=" + master);
 
 	// Get owner object to build per-player datafile name
 	if(!owner_obj)
 		owner_obj := SystemFindObjectBySerial(CInt(ownerserial), SYSFIND_SEARCH_OFFLINE_MOBILES);
 		if(!owner_obj)
-			Print("[PMESCROWDBG] AppendEscrowIndex failed to find owner object for serial " + ownerserial);
+			PMDebug("[PMESCROWDBG] AppendEscrowIndex failed to find owner object for serial " + ownerserial);
 			return entry_id;
 			endif
 		endif
 	// Load or create per-player escrow datafile
 	var df_name := ResolveEscrowDatafileNameForSerial(owner_obj, me.serial, 1);
 	if(!df_name)
-		Print("[PMESCROWDBG] Failed to build datafile name for owner " + ownerserial);
+		PMDebug("[PMESCROWDBG] Failed to build datafile name for owner " + ownerserial);
 		return entry_id;
 	endif
 
 	var df := OpenDataFile(df_name);
 	if(!df)
-		Print("[PMESCROWDBG] Datafile " + df_name + " missing, creating it");
+		PMDebug("[PMESCROWDBG] Datafile " + df_name + " missing, creating it");
 		CreateDataFile(df_name);
 		df := OpenDataFile(df_name);
 		if(!df)
-			Print("[PMESCROWDBG] Failed to reopen datafile " + df_name);
+			PMDebug("[PMESCROWDBG] Failed to reopen datafile " + df_name);
 			return entry_id;
 		endif
 	endif
@@ -716,11 +724,11 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 	var vendor_key := CStr(me.serial);
 	var vendor_elem := df.FindElement(vendor_key);
 	if(!vendor_elem)
-		Print("[PMESCROWDBG] Creating datafile element " + vendor_key);
+		PMDebug("[PMESCROWDBG] Creating datafile element " + vendor_key);
 		vendor_elem := df.CreateElement(vendor_key);
 	endif
 	if(!vendor_elem)
-		Print("[PMESCROWDBG] Failed to create/find element " + vendor_key);
+		PMDebug("[PMESCROWDBG] Failed to create/find element " + vendor_key);
 		UnloadDataFile(df_name);
 		return entry_id;
 	endif
@@ -728,11 +736,11 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 	// Get existing entries (stored as format: id|owner|escrow_name|vendor_name|vendor_serial|created|owner_name)
 	var entries_str := vendor_elem.GetProp("entries");
 	var entries := {};
-	Print("[PMESCROWDBG] Existing entries string length=" + CStr(len(entries_str)));
+	PMDebug("[PMESCROWDBG] Existing entries string length=" + CStr(len(entries_str)));
 	if(entries_str)
 		// Parse format: id|owner|escrow_name|vendor_name|vendor_serial|created|owner_name^...
 		var parts := SplitWords(entries_str, "^");
-		Print("[PMESCROWDBG] Parsed existing entries count=" + CStr(len(parts)));
+		PMDebug("[PMESCROWDBG] Parsed existing entries count=" + CStr(len(parts)));
 		foreach part in parts
 			if(part)
 				var fields := SplitWords(part, "|");
@@ -750,7 +758,7 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 			endif
 		endforeach
 	endif
-	Print("[PMESCROWDBG] Entries count after parse=" + CStr(len(entries)));
+	PMDebug("[PMESCROWDBG] Entries count after parse=" + CStr(len(entries)));
 
 	// Append new entry with merchant serial (me.serial)
 	entries.append({
@@ -771,10 +779,10 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 		endif
 		encoded := encoded + entry[1] + "|" + entry[2] + "|" + entry[3] + "|" + entry[4] + "|" + entry[5] + "|" + entry[6] + "|" + entry[7];
 	endforeach
-	Print("[PMESCROWDBG] Encoded entries length=" + CStr(len(encoded)));
+	PMDebug("[PMESCROWDBG] Encoded entries length=" + CStr(len(encoded)));
 
 	vendor_elem.SetProp("entries", encoded);
-	Print("[PMESCROWDBG] Saved escrow entries under " + vendor_key + " in " + df_name);
+	PMDebug("[PMESCROWDBG] Saved escrow entries under " + vendor_key + " in " + df_name);
 	UnloadDataFile(df_name);
 
 	return entry_id;
@@ -1078,16 +1086,16 @@ exported function ForceCashOut(byref who, force_escrow := 0)
 	RefreshMaster();
 
 	if(!who)
-		Print("[PLAYERMERCHANT] ForceCashOut rejected: missing caller.");
+		PMDebug("[PLAYERMERCHANT] ForceCashOut rejected: missing caller.");
 		return 0;
 	endif
 
 	if(who.serial != master)
-		Print("[PLAYERMERCHANT] ForceCashOut rejected: owner mismatch caller=" + who.serial + " master=" + master);
+		PMDebug("[PLAYERMERCHANT] ForceCashOut rejected: owner mismatch caller=" + who.serial + " master=" + master);
 		return 0;
 	endif
 
-	Print("[PLAYERMERCHANT] ForceCashOut accepted for " + me.serial + " by " + who.serial + " force_escrow=" + force_escrow);
+	PMDebug("[PLAYERMERCHANT] ForceCashOut accepted for " + me.serial + " by " + who.serial + " force_escrow=" + force_escrow);
 	HandleMerchantClosure("forced_by_exported_method", force_escrow);
 	return 1;
 endfunction
