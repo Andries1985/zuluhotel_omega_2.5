@@ -695,7 +695,7 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 			endif
 		endif
 	// Load or create per-player escrow datafile
-	var df_name := BuildEscrowDatafileName(owner_obj);
+	var df_name := ResolveEscrowDatafileNameForSerial(owner_obj, me.serial, 1);
 	if(!df_name)
 		Print("[PMESCROWDBG] Failed to build datafile name for owner " + ownerserial);
 		return entry_id;

@@ -1,0 +1,63 @@
+// Synopsis: Player-merchant escrow test utility (.pmescrowtest)
+use uo;
+use storage;
+
+include "util/bank";
+
+
+program pmescrowtest(who)
+	SendSysMessage(who, "Target the player merchant to claim.");
+
+	var merchant := Target(who);
+	if(!merchant or !merchant.isa(POLCLASS_MOBILE))
+		SendSysMessage(who, "Invalid target.");
+		return 0;
+	endif
+
+	if(CStr(merchant.script) != "playermerchant")
+		SendSysMessage(who, "That target is not a player merchant.");
+		return 0;
+	endif
+
+	SetObjProperty(merchant, "master", who.serial);
+	SetObjProperty(merchant, "mn", who.name);
+
+	var merchant_name := CStr(merchant.name);
+	var comma_pos := find(merchant_name, ",", 2);
+	if(comma_pos)
+		merchant_name := merchant_name[1, comma_pos - 1];
+	endif
+	merchant.name := merchant_name + ", " + who.name + "'s Merchant";
+
+	var escrow_area := FindStorageArea("Merchant Escrow");
+	if(!escrow_area)
+		SendSysMessage(who, "Merchant Escrow storage area was not found.");
+		return 1;
+	endif
+
+	var bankbox := FindBankBox(who);
+	var dest := bankbox;
+	if(!dest)
+		dest := who.backpack;
+	endif
+
+	var moved := 0;
+	var rootescrow := escrow_area.GetRootItemList();
+	foreach roots in rootescrow
+		if(CInt(GetObjProperty(roots, "vendorserial")) == CInt(merchant.serial))
+			SetObjProperty(roots, "ownerserial", who.serial);
+			if(dest and MoveItemToContainer(roots, dest))
+				moved := moved + 1;
+			endif
+		endif
+	endforeach
+
+	SendSysMessage(who, "Merchant ownership moved to " + who.name + ".");
+	if(moved)
+		SendSysMessage(who, "Moved " + moved + " escrow pack(s) to your bank or backpack.");
+	else
+		SendSysMessage(who, "No escrow packs were found for that merchant.");
+	endif
+
+	return 1;
+endprogram

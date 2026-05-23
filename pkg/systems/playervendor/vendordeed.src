@@ -42,7 +42,6 @@ program makevendor(who, deed)
 	endif
 
 	var next_pay := ReadGameClock() + 86400;
-	SetObjProperty(place, "p", next_pay);
 	SetObjProperty(place, "master", who.serial);
 	SetObjProperty(place, "mn", who.name);
 	SetObjProperty(place, "pm_initialized", 0);
