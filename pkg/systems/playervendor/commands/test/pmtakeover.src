@@ -6,7 +6,7 @@ use storage;
 
 include "util/bank";
 
-program textcmd_pmtakeover(who, text)
+program textcmd_pmtakeover(who)
 	SendSysMessage(who, "Target the player merchant to claim.");
 
 	var merchant := Target(who);
@@ -15,7 +15,9 @@ program textcmd_pmtakeover(who, text)
 		return 0;
 	endif
 
-	if(CStr(merchant.script) != "playermerchant")
+	var script_name := CStr(merchant.script);
+    Print("Merchant script: " + script_name);
+	if(!script_name or (script_name != "playermerchant" and script_name != ":playervendor:playermerchant"))
 		SendSysMessage(who, "That target is not a player merchant.");
 		return 0;
 	endif
