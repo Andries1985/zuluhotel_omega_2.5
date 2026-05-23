@@ -6,8 +6,8 @@ include "include/packets";
 
 program vote(who)
 
-SendSysMessage(who, "Opening the Omega info-vault!");
+SendSysMessage(who, "Opening the Omega infovault!");
 sleep(2);
-OpenWebSite(who, "https://zuluhotelomega.com/info-vault"); 
+OpenWebSite(who, "https://zuluhotelomega.com/infovault"); 
 
 endprogram
