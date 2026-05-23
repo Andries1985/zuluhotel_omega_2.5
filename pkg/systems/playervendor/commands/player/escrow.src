@@ -66,25 +66,33 @@ endfunction
 
 function ListEscrowMerchantSerials(who)
 	var serials := {};
-	var area := FindStorageArea(ESCROW_STORAGE_NAME);
-	if(!area)
+	var df_name := BuildEscrowDatafileName(who);
+	if(!df_name)
 		return serials;
 	endif
 
-	foreach root in area.GetRootItemList()
-		if(!root)
+	var file := OpenDataFile(df_name);
+	if(!file)
+		EscrowDebugMsg(who, "ListEscrowMerchantSerials: failed to open datafile " + df_name);
+		return serials;
+	endif
+
+	foreach vendor_key in (file.Keys())
+		if(!vendor_key)
 			continue;
 		endif
 
-		if(CInt(GetObjProperty(root, "ownerserial")) != CInt(who.serial))
+		var vendor_serial := CInt(vendor_key);
+		if(!vendor_serial)
 			continue;
 		endif
 
-		var vendor_serial := CInt(GetObjProperty(root, "vendorserial"));
 		if(!HasSerial(serials, vendor_serial))
 			serials.append(vendor_serial);
 		endif
 	endforeach
+
+	UnloadDataFile(df_name);
 
 	return serials;
 endfunction
