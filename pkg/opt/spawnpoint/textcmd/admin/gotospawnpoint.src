@@ -42,7 +42,7 @@ program goto_spawnpoint( who, text )
 			wanted_group := numeric_wanted;
 		endif
 	endif
-	Print("[GSP DEBUG] wanted=" + wanted + " is_group_search=" + is_group_search + " wanted_group=" + wanted_group + " mintime_arg=" + mintime_arg);
+	//Print("[GSP DEBUG] wanted=" + wanted + " is_group_search=" + is_group_search + " wanted_group=" + wanted_group + " mintime_arg=" + mintime_arg);
 	var search;
 	if( !wanted )
 		SendSysMessage( who, "Bug in the command" );
@@ -119,26 +119,26 @@ endprogram
 
 function GetGroupDescription(group_num)
 	if (CInt(group_num) <= 0)
-		Print("[GSP DEBUG] GetGroupDescription skipped: group_num <= 0 (" + group_num + ")");
+		//Print("[GSP DEBUG] GetGroupDescription skipped: group_num <= 0 (" + group_num + ")");
 		return "";
 	endif
 
 	var groups_cfg := ReadConfigFile(":spawnpoint:groups");
 	if (!groups_cfg)
-		Print("[GSP DEBUG] ReadConfigFile(:spawnpoint:groups) failed");
+		//Print("[GSP DEBUG] ReadConfigFile(:spawnpoint:groups) failed");
 		return "";
 	endif
 
 	var group_elem := FindConfigElem(groups_cfg, CInt(group_num));
 	if (!group_elem)
-		Print("[GSP DEBUG] FindConfigElem failed for group " + group_num);
+		//Print("[GSP DEBUG] FindConfigElem failed for group " + group_num);
 		UnloadConfigFile(":spawnpoint:groups");
 		return "";
 	endif
 
 	var description := GetConfigString(group_elem, "Description");
 	UnloadConfigFile(":spawnpoint:groups");
-	Print("[GSP DEBUG] group " + group_num + " description=" + description);
+	//Print("[GSP DEBUG] group " + group_num + " description=" + description);
 
 	if (description)
 		return description;

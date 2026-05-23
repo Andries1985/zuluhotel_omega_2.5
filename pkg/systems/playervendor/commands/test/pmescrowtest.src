@@ -135,7 +135,7 @@ endfunction
 
 function LoadEscrowEntriesForSerial(who, merchant_serial)
 	var entries := {};
-	var df_name := BuildEscrowDatafileName(who);
+	var df_name := ResolveEscrowDatafileNameForSerial(who, merchant_serial, 0);
 	if(!df_name)
 		return entries;
 	endif
@@ -175,7 +175,7 @@ function LoadEscrowEntriesForSerial(who, merchant_serial)
 endfunction
 
 function SaveEscrowEntriesForSerial(who, merchant_serial, entries)
-	var df_name := BuildEscrowDatafileName(who);
+	var df_name := ResolveEscrowDatafileNameForSerial(who, merchant_serial, 1);
 	if(!df_name)
 		return 0;
 	endif

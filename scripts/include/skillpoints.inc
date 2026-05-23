@@ -98,11 +98,6 @@ function AwardSkillPoints( who, skillid, points )
 		points := Cint( points * 1.1 );
 	endif	
 
-	//Powerhour
-	if(GetGlobalProperty("PHS") || GetObjProperty(who, "#PPHS"))
-		points := Cint( points * 2 );
-	endif	
-
 	//RPers receive increased skill gain due to no macroing rules.
 	if(GetObjProperty(who, "IsRPer"))
 		points := Cint( points * 1.5 );
@@ -316,6 +311,11 @@ var skill := GetAttributeIdBySkillId(skillid);
 				endif
 			endif
 		endif
+	endif
+
+	//Powerhour
+	if(GetGlobalProperty("PHS") || GetObjProperty(who, "#PPHS"))
+		rawpoints := Cint( rawpoints * 2 );
 	endif
 
 	return AwardRawAttributePoints(who, GetAttributeIdBySkillId(skillid), rawpoints);

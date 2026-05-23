@@ -695,7 +695,7 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 			endif
 		endif
 	// Load or create per-player escrow datafile
-	var df_name := BuildEscrowDatafileName(owner_obj);
+	var df_name := ResolveEscrowDatafileNameForSerial(owner_obj, me.serial, 1);
 	if(!df_name)
 		Print("[PMESCROWDBG] Failed to build datafile name for owner " + ownerserial);
 		return entry_id;
@@ -1183,6 +1183,10 @@ endfunction
 
 	foreach item in ListRootItemsInContainer(inv_fs)
 		MoveItemToContainer(item, inv_pb);
+	endforeach
+
+	foreach bpitem in ListRootItemsInContainer(me.backpack)
+		MoveItemToContainer(bpitem, inv_pb);
 	endforeach
 
 	foreach thingie in ListRootItemsInContainer(inv_pb)
