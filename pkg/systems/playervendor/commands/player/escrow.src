@@ -10,7 +10,7 @@ include "include/objtype";
 include ":playervendor:include/escrow";
 
 const ESCROW_STORAGE_NAME := "Merchant Escrow";
-const DEBUG_MODE := 1;
+const DEBUG_MODE := 0;
 
 const ENTRY_ID_IDX := 1;
 const ENTRY_OWNERSERIAL_IDX := 2;
@@ -21,6 +21,8 @@ const ENTRY_CREATED_IDX := 6;
 const ENTRY_OWNERNAME_IDX := 7;
 
 function EscrowDebugMsg(who, msg)
+	who := who;
+	msg := msg;
 	if(DEBUG_MODE)
 		Print("[ESCROW s=" + who.serial + "] " + msg);
 	endif

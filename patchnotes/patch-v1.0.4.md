@@ -14,6 +14,8 @@ Escrow package retrieval was improved so vendor escrow is less likely to appear 
 
 If you had escrow visibility issues before, claiming should now be more reliable.
 
+Strip command now gives you any items in the player vendors backpack as well.
+
 ---
 
 ## 🧠 Skill Gain — Power Hour Double Gain Fix
