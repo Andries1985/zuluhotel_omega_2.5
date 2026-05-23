@@ -1,0 +1,28 @@
+use npc;
+use os;
+use uo;
+
+program soulwhispererportal( parms )
+
+	var portal := parms[1];
+	var bossTemplate := parms[2];
+	var x := parms[3];
+	var y := parms[4];
+	var z := parms[5];
+	var realm := parms[6];
+	var summonColor := parms[7];
+
+	// Boss emerges 5 seconds after portal appears.
+	Sleep( 5 );
+	var spawned := CreateNPCfromTemplate( bossTemplate, x, y, z, 1, realm );
+	if ( spawned )
+		spawned.color := summonColor;
+	endif
+
+	// Keep portal active for 10 seconds total from appearance.
+	Sleep( 10 );
+	if ( portal )
+		DestroyItem( portal );
+	endif
+
+endprogram

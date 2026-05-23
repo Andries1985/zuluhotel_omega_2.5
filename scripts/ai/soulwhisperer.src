@@ -4,7 +4,7 @@
 //
 //  Superboss - Soul Whisperer
 //  At 75%, 50%, and 25% HP she tears open a portal and summons a random
-//  superboss (1-in-1000 chance: champion boss instead).
+//  superboss (11-in-1000 chance: champion boss instead).
 //  Portal uses the moongate graphic with a random colour; her own hue also
 //  shifts on each summon.
 //
@@ -73,8 +73,7 @@ endprogram
 //  SummonWithPortal
 //
 //  Creates a coloured moongate portal at the Soul Whisperer's feet,
-//  spawns a random superboss (or 1-in-1000 champion boss) on it,
-//  then dissolves the portal after a dramatic pause.
+//  then offloads spawn and cleanup timing to a detached worker script.
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -105,9 +104,9 @@ function SummonWithPortal()
 		"barracoon", "rikktor", "erebuschaosgod", "nyxseductress"
 	};
 
-	// --- Pick boss template: 1-in-1000 chance for a champion ---
+	// --- Pick boss template: 11-in-1000 chance for a champion ---
 	var bossTemplate;
-	if ( Random( 1000 ) == 0 )
+	if ( Random( 1000 ) <= 10 )
 		bossTemplate := champBosses[ Random( len( champBosses ) ) + 1 ];
 	else
 		bossTemplate := superBosses[ Random( len( superBosses ) ) + 1 ];
@@ -162,18 +161,12 @@ function SummonWithPortal()
 		endif
 	until ( moved or attempts >= len( offsets ) );
 
-	// --- Boss emerges 2 seconds after portal appears ---
-	Sleep( 2 );
-	thecritter := CreateNPCfromTemplate( bossTemplate, startX, startY, me.z, 1, me.realm );
-	if ( thecritter )
-		thecritter.color := summonColor;
-	endif
-
-	// --- Keep portal active for 10 seconds total from appearance ---
-	Sleep( 8 );
+	// --- Offload delayed summon + portal cleanup to detached scripts ---
 	if ( portal )
-		DestroyItem( portal );
+		SetObjProperty( portal, "SoulWhispererPortal", 1 );
+		start_script( "misc/deleter", { portal, 60 } );
 	endif
+	start_script( "misc/soulwhispererportal", { portal, bossTemplate, startX, startY, me.z, me.realm, summonColor } );
 
 endfunction
 
