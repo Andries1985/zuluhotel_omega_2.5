@@ -15,7 +15,7 @@ include ":playervendor:include/escrow";
 const ESCROW_STORAGE_NAME := "Merchant Escrow";
 const TEST_ID_PREFIX := "PMTEST-";
 const TEST_VENDOR_NAME := "[TEST] Player Merchant";
-const DEBUG_PM_ESCROW_TEST := 1;
+const DEBUG_PM_ESCROW_TEST := 0;
 const ENTRY_ID_IDX := 1;
 const ENTRY_OWNERSERIAL_IDX := 2;
 const ENTRY_ESCROWNAME_IDX := 3;
