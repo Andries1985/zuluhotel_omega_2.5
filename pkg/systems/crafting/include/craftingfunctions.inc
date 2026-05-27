@@ -43,8 +43,10 @@ function ApplyMaterialProperties(byref product_desc, material, is_exceptional, c
 	var material_desc := material_cfg[mat_objtype];
 
 	product_desc.Desc := material_desc.Name +" "+product_desc.Desc;
-	// Use stored quality if present, else fall back to config
-	if(mat_quality)
+	// Use stored quality only when it's a real upgrade (refined cache ingot).
+	// Default POL item.quality is 1.0, which would otherwise clobber the
+	// ore-config tier with 1.0 for vanilla backpack ingots.
+	if(mat_quality > 1.0)
 		product_desc.Quality := mat_quality;
 	else
 		product_desc.Quality := material_desc.Quality;
