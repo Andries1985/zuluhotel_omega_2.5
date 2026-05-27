@@ -22,7 +22,8 @@ program dotalismanid( who, talisman )
     var delay := BASE_DELAY;
 
     if ( (lastid+delay) > ReadGameClock() )
-        SendSysMessage(who, "You must wait to use the talisman again.");
+        var remaining := (lastid + delay) - ReadGameClock();
+        SendSysMessage(who, "You must wait " + remaining + " second" + (remaining == 1 ? "" : "s") + " to use the talisman again.");
         return 0;
     endif
     
