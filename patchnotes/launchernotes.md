@@ -1,4 +1,4 @@
-]633;E;echo "# Latest Changes";9061217f-9f4e-41d9-9b5d-f2bf5df7d83a]633;C# Latest Changes
+# Latest Changes
 Always check Discord announcements for all the patch notes.
 
 ## What Changed
