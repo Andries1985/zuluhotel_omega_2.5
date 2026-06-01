@@ -1,12 +1,5 @@
-# Patch Notes — v1.0.0
-**Zuluhotel Omega 2.5 | Live Shard**  
-**Date: May 2, 2026**
-
----
-
-Welcome to **Patch 1.0.0** — the largest update to Zuluhotel Omega in years. This patch introduces the **Omega Cache**, a complete overhaul of the crafting material storage system, alongside significant improvements to tracking, loot, combat, tamed pets, housing, bard songs, and much more.
-
----
+]633;E;echo "# Latest Changes";9061217f-9f4e-41d9-9b5d-f2bf5df7d83a]633;C# Latest Changes
+Always check Discord announcements for all the patch notes.
 
 ## What Changed
 
@@ -442,5 +435,6 @@ A deadly fusion of blade and song — a duelist who fights with finesse and cont
 - Fixed Warrior for Hire healing bandage spam after being ressed.
 - ID bug fixed where you could get stuck in a perma ID state and no longer able to use the skill.  (Relogging shall fix the issue)
 ---
+
 
 Thanks for playing Zuluhotel Omega 2.5.
