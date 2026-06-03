@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.0.5
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: June 3, 2026**
+
+---
+
+Welcome to **Patch 1.0.5**. This update focuses on **Talisman of ID reliability**, **tamed pet behavior after master death**, and **stable/trainer safety fixes**.
+
+---
 
 ## What Changed
 
