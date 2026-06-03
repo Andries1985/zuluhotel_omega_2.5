@@ -114,6 +114,7 @@ function TalismanID( who, delay, talisman )
 
 	if (the_item.isa(POLCLASS_CONTAINER))
 	 	if ((skillID >= MIN_SKILLFORBATCH) & (intelligence >= MIN_INTFORBATCH))
+			var result;
 			var itemlist := IDCore_CollectContainerMagicItems(the_item);
 			if (itemlist.Size() == 0)
 				SendSysMessage(who, "There's nothing to identify in there.");
@@ -122,7 +123,7 @@ function TalismanID( who, delay, talisman )
 			else
 				SendSysMessage(who,"Your vast intellect tries to uncover the mysteries of your hoard.", FONT_NORMAL, 2601 );
 				SendSysMessage(who,"There's "+itemlist.Size()+" magical items to identify.", FONT_NORMAL, 2601 );
-				var result := IDCore_IdentifyContainerItems(
+				result := IDCore_IdentifyContainerItems(
 					who,
 					the_item,
 					0,
