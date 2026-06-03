@@ -77,7 +77,7 @@ endif
 
 program TamedAI()
 
-	if (master.npctemplate)
+	if (master and master.npctemplate)
 		if (getobjproperty(me,"#restarting"))
 			GoWild();
 		else
@@ -299,7 +299,7 @@ function CloseDistance( opponent )
 				if (DEBUG_MODE)
 					PrintTextAbove(me, "good mana too close");
 				endif
-				if (RunAwayFrom( opponent ));
+				if (RunAwayFrom( opponent ))
 					Sleepms(sleepdelay);
 					return 1;
 				else
@@ -310,7 +310,7 @@ function CloseDistance( opponent )
 				if (DEBUG_MODE)
 					PrintTextAbove(me, "not enough mana");
 				endif
-				if(!WalkToward( opponent ));
+				if(!WalkToward( opponent ))
 					Sleepms(sleepdelay);
 					return 1;
 				else
@@ -1294,15 +1294,18 @@ function ProcessSpeech(ev)
 	elseif (evtext["all follow"])
 		autonomous_defense := 0;
 		ClearAttackQueues();
+		var follow_targetname := "";
 		if (evtext["follow me"])
 			following	:= ev.source;
+			follow_targetname := ev.source.name;
 		else
 			var what := AcquireTargetWithSpeechLock(TGTOPT_CHECK_LOS);
 			if (what)
+				follow_targetname := what.name;
 				AllCommand(EVID_ALL_FOLLOW_CMD, what);
 			endif
 		endif
-		if (dragonspeak) dragontalk("follow", following.name); endif
+		if (dragonspeak and follow_targetname) dragontalk("follow", follow_targetname); endif
 	elseif (evtext[mename + " transfer"] or (evtext["all transfer"]))
 		Transfer();
 	elseif (evtext[mename + " release"] or (evtext["all release"]))
