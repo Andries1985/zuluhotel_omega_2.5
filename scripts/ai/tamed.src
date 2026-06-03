@@ -49,6 +49,7 @@ var guardattackers := array;
 var selfattackers := array;
 var following := 0;
 var staying := 0;
+var masterwasdead := 0;
 var nextwatch := ReadGameClock();
 var freetime := cint(ReadGameClock() + 2400);
 var lastspeechkey := "";
@@ -962,6 +963,26 @@ function MainAILoop()
 			if (selftarget)
 				Fight(selftarget);
 			endif
+		endif
+
+		// When the master dies, switch to "all stop" behavior and stay in self-defense mode
+		// until explicitly commanded again.
+		if (master and master.dead)
+			if (!masterwasdead)
+				masterwasdead := 1;
+				autonomous_defense := 1;
+				guarding := 0;
+				guardinghp := 0;
+				following := 0;
+				ClearAttackQueues();
+			endif
+		elseif (master and masterwasdead)
+			masterwasdead := 0;
+			autonomous_defense := 1;
+			guarding := 0;
+			guardinghp := 0;
+			following := 0;
+			ClearAttackQueues();
 		endif
 
 		if (master and !autonomous_defense and !guarding and !staying and !following)
