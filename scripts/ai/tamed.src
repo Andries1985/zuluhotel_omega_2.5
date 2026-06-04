@@ -1116,25 +1116,18 @@ function Follow()
 		if( !Iscowner( master, multi3 ) and !Iscowner( master, multi2 ))
 			if( !IsFriend( master, multi3) and !IsFriend( master, multi2))
 				if (following.multi and !master.multi)
-					following := 0;
 					return;
 				elseif (!following.multi and master.multi)
-					following := 0;
 					return;
 				elseif (me.multi and !master.multi)
-					following := 0;
 					return;
 				elseif (!me.multi and master.multi)
-					following := 0;
 					return;
 				elseif (me.multi and !following.multi)
-					following := 0;
 					return;
 				elseif (!me.multi and following.multi)
-					following := 0;
 					return;
 				elseif(!CheckLineOfSight(me, following))
-					following := 0;
 					return;
 				endif
 			endif
@@ -1145,25 +1138,18 @@ function Follow()
 		if( !Iscowner( master, multi2 ))
 			if( !IsFriend( master, multi2))
 				if (following.multi and !master.multi)
-					following := 0;
 					return;
 				elseif (!following.multi and master.multi)
-					following := 0;
 					return;
 				elseif (me.multi and !master.multi)
-					following := 0;
 					return;
 				elseif (!me.multi and master.multi)
-					following := 0;
 					return;
 				elseif (me.multi and !following.multi)
-					following := 0;
 					return;
 				elseif (!me.multi and following.multi)
-					following := 0;
 					return;
 				elseif(!CheckLineOfSight(me, following))
-					following := 0;
 					return;
 				endif
 			endif
@@ -1174,25 +1160,18 @@ function Follow()
 		if( !Iscowner( master, multi3 ))
 			if( !IsFriend( master, multi3))
 				if (following.multi and !master.multi)
-					following := 0;
 					return;
 				elseif (!following.multi and master.multi)
-					following := 0;
 					return;
 				elseif (me.multi and !master.multi)
-					following := 0;
 					return;
 				elseif (!me.multi and master.multi)
-					following := 0;
 					return;
 				elseif (me.multi and !following.multi)
-					following := 0;
 					return;
 				elseif (!me.multi and following.multi)
-					following := 0;
 					return;
 				elseif(!CheckLineOfSight(me, following))
-					following := 0;
 					return;
 				endif
 			endif
