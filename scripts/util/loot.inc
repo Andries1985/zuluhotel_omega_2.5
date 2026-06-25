@@ -32,7 +32,7 @@ function make_loot (objtype, container)
 	if (mypack)
 		if (GetObjProperty(container, "summoned"))
 			foreach thingie in EnumerateItemsInContainer(mypack)
-				MoveItemToLocation(thingie, container.x, container.y, container.z, MOVEITEM_NORMAL );
+				MoveObjectToLocation(thingie, container.x, container.y, container.z, thingie.realm, MOVEOBJECT_NORMAL );
 			endforeach
 		else
 			foreach thingie in EnumerateItemsInContainer(mypack)

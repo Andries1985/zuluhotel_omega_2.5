@@ -50,7 +50,7 @@ function MoveMyPack(me)
 		endif
 	endforeach
 
-	MoveItemToLocation(mypack,5123, 1779, 0, MOVEITEM_FORCELOCATION);
+	MoveObjectToLocation(mypack,5123, 1779, 0, mypack.realm, MOVEOBJECT_FORCELOCATION);
 
 	return mypack;
 
@@ -185,7 +185,7 @@ function SwapClothes(me, npc)
 	var mypack := me.backpack;
 
 	if (hispack)
-		MoveItemToLocation(hispack, 5123, 1779, 0, MOVEITEM_FORCELOCATION);
+		MoveObjectToLocation(hispack, 5123, 1779, 0, hispack.realm, MOVEOBJECT_FORCELOCATION);
 	else
 		hispack := CreateItemAtLocation(5123, 1779, 0, 0xe75,1);
 	endif

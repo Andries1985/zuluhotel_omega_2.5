@@ -15,6 +15,7 @@
 4. [Bank Resource Usage Fix - Cartography, Camping, Blacksmithy](#4-bank-resource-usage-fix---cartography-camping-blacksmithy)
 5. [Player Merchant - Hidden/Concealed Announce Guard](#5-player-merchant---hiddenconcealed-announce-guard)
 6. [Commit Timeline](#6-commit-timeline)
+7. [Post-Range Hotfixes - Runebook Overflow and MoveObject Migration](#7-post-range-hotfixes---runebook-overflow-and-moveobject-migration)
 
 ---
 
@@ -193,3 +194,50 @@ Several crafting scripts had bugs where resources could be consumed from or vali
 | `8497a62` | 2026-06-03 | Talisman compile fix |
 | `f30136a` | 2026-06-04 | Tamed following fix for under tower overhangs |
 | `1d47820` | 2026-06-25 | Artifact updates — added 2 new artifact items, fixed using resources from banks, fix cartography errors on use and skill gain while in bank |
+
+---
+
+## 7. Post-Range Hotfixes - Runebook Overflow and MoveObject Migration
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `pkg/std/runebook/runeoninsert.src` | Reworked recall-scroll recharge overflow path: partial consume to free-charge amount; overflow return to backpack or ground; fallback destroys only excess scrolls with user message while recharge still succeeds |
+| `pkg/std/runebook/runecaninsert.src` | Kept insertion gate compatible with overflow recharge behavior (does not block oversized stack insert when runebook has free charges) |
+| `scripts/util/loot.inc` | Migrated deprecated `MoveItemToLocation` call to `MoveObjectToLocation` |
+| `scripts/include/std.inc` | Updated movement helper wrappers to use `MoveObjectToLocation` instead of deprecated item-move API |
+| `scripts/include/rituals.inc` | Migrated `MoveItemToLocation` calls to `MoveObjectToLocation` |
+| `scripts/include/possess.inc` | Migrated `MoveItemToLocation` calls to `MoveObjectToLocation` |
+| `scripts/include/chaoseffects.inc` | Migrated `MoveItemToLocation` call to `MoveObjectToLocation` |
+| `pkg/std/housing/utility.inc` | Migrated fallback item placement from `MoveItemToLocation` to `MoveObjectToLocation` |
+
+### Overview
+
+After the v1.0.6 commit range, a runebook edge case was fixed where inserting a recall-scroll stack larger than remaining book charges could fail in overflow-handling branches and leave bad outcomes when backpack/ground return paths were constrained. The recharge flow now guarantees successful charge application when at least one charge can be consumed, while handling overflow scrolls safely.
+
+In the same hotfix pass, deprecated `MoveItemToLocation` script calls were migrated to `MoveObjectToLocation` in all touched files to align with modern POL API guidance and avoid reliance on removed/deprecated movement functions.
+
+### Notable Functional Changes
+
+**Runebook (`runeoninsert.src`):**
+- `recharge_amount` is capped to `maxcharges - charges`.
+- Script subtracts only `recharge_amount` from the inserted stack.
+- Leftover scrolls (`scrolls.amount` after subtraction) are handled in this order:
+  - `MoveItemToContainer(..., who.backpack)`
+  - `MoveObjectToLocation(..., who.x, who.y, GetWorldHeight(...), who.realm, MOVEOBJECT_NORMAL)`
+  - if both fail: `DestroyItem(scrolls)` and user-facing warning about destroyed excess scrolls.
+- Recharge does not fail when overflow return fails; only excess scrolls are discarded.
+- Charge state is still clamped to `maxcharges`, and revision increment is preserved.
+
+**Move API migration:**
+- All modified files now call `MoveObjectToLocation` for world-placement behavior.
+- Helper code in `scripts/include/std.inc` remains backward-compatible at call site level (`MoveItem(...)` wrapper still exists), but internally routes through `MoveObjectToLocation`.
+
+### Expected Impact
+
+- Dragging an oversized recall-scroll stack onto a partially charged runebook now reliably recharges the runebook by available capacity.
+- Overflow scroll behavior is deterministic under constrained inventory/terrain conditions:
+  - return to backpack if possible;
+  - else drop to ground if possible;
+  - else destroy overflow with explicit player notification.
+- No expected gameplay behavior changes from the movement API migration itself; changes are compatibility/maintenance-focused.

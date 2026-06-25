@@ -70,6 +70,27 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 ---
 
+## 📘 Runebook - Recall Scroll Overflow Fix
+
+### Player Impact
+
+- Runebooks now recharge correctly when a scroll stack is larger than remaining charges.
+- Example: dropping 2 recall scrolls on a runebook missing 1 charge now recharges the book by 1 as expected.
+- Any extra scrolls are returned to backpack when possible.
+- If backpack is full, extras are dropped to the ground when possible.
+- If backpack return and ground drop both fail, only the excess scrolls are destroyed and recharge still succeeds.
+
+---
+
+## 🛠️ Internal - Script API Compatibility Cleanup
+
+### Player Impact
+
+- No gameplay change expected.
+- Deprecated `MoveItemToLocation` script calls were migrated to `MoveObjectToLocation` in affected scripts for modern POL compatibility.
+
+---
+
 ## 📋 Summary
 
 ✅ Champion Relics added — summon a boss from your artifact  
@@ -77,7 +98,9 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 ✅ Camping kindling sourced only from backpack or ground  
 ✅ Jewelry crafting gold check now properly exits on failure  
 ✅ Tamed pet following fixed for tower/multi overhang geometry  
-✅ Player merchant stock announcements suppressed while hidden/concealed
+✅ Player merchant stock announcements suppressed while hidden/concealed  
+✅ Runebook recall-scroll overflow now recharges safely and handles extras correctly  
+✅ Deprecated item-move API calls migrated for core compatibility
 
 ---
 
