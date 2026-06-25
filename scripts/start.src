@@ -28,5 +28,8 @@ find_or_create_storage("Merchant Storage");
 
 start_script("EquipTemplateValidation");
 
+start_script(":ArtifactSystem:artifact_startup_sweeper");
+start_script(":ArtifactSystem:artifact_daily_sweeper");
+
 //start_script("CustomHpFix");
 

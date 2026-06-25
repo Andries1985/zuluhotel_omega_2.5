@@ -146,6 +146,7 @@ function MakeJewelry( character , ore )
 	
 	if( ore.amount < 100 )
 		SendSysmessage( character , "It doesn't look like you used enough gold" );
+		return;
 	endif
 
 	if( CheckSkill( character , SKILLID_BLACKSMITHY , -1 , 0 ) )

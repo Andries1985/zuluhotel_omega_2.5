@@ -1,0 +1,11 @@
+use os;
+include ":ArtifactSystem:artifact";
+
+const ARTIFACT_SWEEP_INTERVAL := 86400;
+
+program artifact_daily_sweeper()
+	while(1)
+		SweepExpiredArtifacts("Daily");
+		sleep(ARTIFACT_SWEEP_INTERVAL);
+	endwhile
+endprogram
