@@ -8,6 +8,8 @@ Welcome to **Patch 1.0.0** — the largest update to Zuluhotel Omega in years. T
 
 ---
 
+## What Changed
+
 ## 🏺 Omega Cache
 
 The **Omega Cache** is a brand-new craftable container you can place in your house. It stores an enormous quantity of crafting materials in a single location — no more spreading ingots, hides, logs, and reagents across dozens of chests.
@@ -441,4 +443,4 @@ A deadly fusion of blade and song — a duelist who fights with finesse and cont
 - ID bug fixed where you could get stuck in a perma ID state and no longer able to use the skill.  (Relogging shall fix the issue)
 ---
 
-*Thank you for playing Zuluhotel Omega. This update represents months of development work. Please report any bugs to staff.*
+Thanks for playing Zuluhotel Omega 2.5.

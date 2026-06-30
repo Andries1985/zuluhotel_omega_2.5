@@ -166,19 +166,20 @@ while (1)
 		endif
 
 		newpet := CreateNPCfromtemplate (petname, ev.source.x, ev.source.y,ev.source.z);
-
-		DestroyItem( item );
-                SetObjProperty(newpet, "master", ev.source.serial);
-                SetObjProperty(newpet, "prevtamed", 1);
-				newpet.script := "tamed";
-                RestartScript (newpet);
+    if (newpet)
+      DestroyItem( item );
+                	SetObjProperty(newpet, "master", ev.source.serial);
+                	SetObjProperty(newpet, "prevtamed", 1);
+        newpet.script := "tamed";
+                	RestartScript (newpet);
+    endif
 		endif
 
                 endforeach
 		set_priority( 50 );
 
             SYSEVENT_ITEM_GIVEN:
-	        if (ev.item.objtype==UOBJ_GOLD_COIN);
+          if (ev.item.objtype==UOBJ_GOLD_COIN)
                 TrainSkill( me , ev.source , ev.item );
 		else
 		TurnToward (ev.source);
@@ -329,7 +330,7 @@ function TrainSkill( me , who , item )
                 if (GoldReceived > CurrentNPCCost)
                   // The NPC can't help the player
                   say("I cannot train thee to that level.");
-                  MoveItemToContainer( who.backpack , item );
+                  MoveItemToContainer( item, who.backpack );
                   return;
                 else
                   // The NPC can help, but we need to adjust
@@ -363,17 +364,17 @@ function TrainSkill( me , who , item )
           else
             // PC just paid NPC to be trained but NPC doesn't have the skill.
             say("I'm not as good as thee.  Please find another to train thee.");
-            MoveItemToContainer( who.backpack , item );
+            MoveItemToContainer( item, who.backpack );
           endif
       else
           // NPC does not have that skill to train the PC.  Return gold
           Say("I don't know that skill. Why don't you ask me what i can train you in?");
-          MoveItemToContainer( who.backpack , item );
+          MoveItemToContainer( item, who.backpack );
       endif
   else
      // PC gave NPC something else other then gold.  Return it.
      say("Bah, I have no use for this. Be off with ye.");
-     MoveItemToContainer( who.backpack , item );
+     MoveItemToContainer( item, who.backpack );
      // TODO: OSI has a "Desires" property with all npc's.  I think it's used to determine if an NPC
      //  gives out clues to a minor quest or reputation bonus, depending on the item donated <Type and value>
   endif
@@ -466,6 +467,12 @@ function Load_Ticket_Data (me, who, ticket)
     tempdata := GetObjProperty(ticket, "pettemplate");
     newpet := CreateNPCFromTemplate(tempdata, me.x, me.y, me.z);
 
+    if(!newpet)
+      Say("I could not retrieve your pet right now. Please try again in a moment.");
+      MoveItemToContainer(ticket, who.backpack);
+      return;
+    endif
+
     newpet.name := petname;
     SetMana(newpet, CInt(GetObjProperty(ticket, "petmana")));
     newpet.color := GetObjProperty(ticket, "petcolor");
@@ -497,6 +504,12 @@ function Load_Ticket_Data (me, who, ticket)
 
     tempdata := GetObjProperty(ticket, "pettemplate");
     newpet := CreateNPCFromTemplate(tempdata, me.x, me.y, me.z);
+
+    if(!newpet)
+      Say("I could not retrieve your pet right now. Please try again in a moment.");
+      MoveItemToContainer(ticket, who.backpack);
+      return;
+    endif
 
     newpet.name := GetObjProperty(ticket, "petname");
     //SetHp(newpet, GetMaxHp(newpet));
@@ -535,6 +548,10 @@ function stable(who)
 	Say("Which pet would you like to Stable");
 
 	var pet := Target (who);
+  if (!pet)
+    SendSysmessage(who, "canceled.");
+    return;
+  endif
 
 	if( GetObjProperty( pet, "DonatorMount") )
 		Say("You cannot stable that!");

@@ -22,15 +22,17 @@ program dotalismanid( who, talisman )
     var delay := BASE_DELAY;
 
     if ( (lastid+delay) > ReadGameClock() )
-        SendSysMessage(who, "You must wait to use the talisman again.");
+        var remaining := (lastid + delay) - ReadGameClock();
+        SendSysMessage(who, "You must wait " + remaining + " second" + (remaining == 1 ? "" : "s") + " to use the talisman again.");
         return 0;
     endif
     
-    TalismanID(who, delay, talisman);
-    if( talisman )
-        IncRevision( talisman );
+    var used_talisman := TalismanID(who, delay, talisman);
+    if( used_talisman )
+        if( talisman )
+            IncRevision( talisman );
+        endif
+        SetObjProperty(who, "#LastID", ReadGameClock());
     endif
-
-    SetObjProperty(who, "#LastID", ReadGameClock());
 
 endprogram

@@ -47,7 +47,7 @@ program TownPerson()
 		me.frozen := 1;
 	endif
 
-    WanderWithinTown();
+    //WanderWithinTown();
 
     SetWarMode( 0 );
     set_priority(10);
