@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.6
-**Range:** `9b695eb` (origin/Patch-1.0.5) -> `1d47820` (HEAD)  
+**Range:** `9b695eb` (origin/Patch-1.0.5) -> `d1f52d9` (HEAD)  
 **Branch:** Patch-1.0.6  
-**Date:** 2026-06-03 -> 2026-06-25  
-**Commits in range:** 3 (excluding merge commits)  
-**Files changed:** 16 | +407 / -29
+**Date:** 2026-06-03 -> 2026-06-30  
+**Commits in range:** 6 (excluding merge commits)  
+**Files changed:** 30 | +876 / -87
 
 ---
 
@@ -15,7 +15,9 @@
 4. [Bank Resource Usage Fix - Cartography, Camping, Blacksmithy](#4-bank-resource-usage-fix---cartography-camping-blacksmithy)
 5. [Player Merchant - Hidden/Concealed Announce Guard](#5-player-merchant---hiddenconcealed-announce-guard)
 6. [Commit Timeline](#6-commit-timeline)
-7. [Post-Range Hotfixes - Runebook Overflow and MoveObject Migration](#7-post-range-hotfixes---runebook-overflow-and-moveobject-migration)
+7. [Runebook Overflow Fix and MoveObject Migration](#7-runebook-overflow-fix-and-moveobject-migration)
+8. [High Priest Relationship Prompt, Dual Planar Gate Change, and Life Crystal Loot Expansion](#8-high-priest-relationship-prompt-dual-planar-gate-change-and-life-crystal-loot-expansion)
+9. [Patchnotes and Launcher Copy Maintenance](#9-patchnotes-and-launcher-copy-maintenance)
 
 ---
 
@@ -194,10 +196,13 @@ Several crafting scripts had bugs where resources could be consumed from or vali
 | `8497a62` | 2026-06-03 | Talisman compile fix |
 | `f30136a` | 2026-06-04 | Tamed following fix for under tower overhangs |
 | `1d47820` | 2026-06-25 | Artifact updates — added 2 new artifact items, fixed using resources from banks, fix cartography errors on use and skill gain while in bank |
+| `1e993f0` | 2026-06-25 | Patchnotes update |
+| `fd01eae` | 2026-06-25 | Fix for runebooks with full backpack; updated deprecated code |
+| `d1f52d9` | 2026-06-30 | Added more life crystals to junk; High Priest relationship cost prompt; Dual Planar protection check removal |
 
 ---
 
-## 7. Post-Range Hotfixes - Runebook Overflow and MoveObject Migration
+## 7. Runebook Overflow Fix and MoveObject Migration
 
 ### Files Changed
 | File | Change |
@@ -213,7 +218,7 @@ Several crafting scripts had bugs where resources could be consumed from or vali
 
 ### Overview
 
-After the v1.0.6 commit range, a runebook edge case was fixed where inserting a recall-scroll stack larger than remaining book charges could fail in overflow-handling branches and leave bad outcomes when backpack/ground return paths were constrained. The recharge flow now guarantees successful charge application when at least one charge can be consumed, while handling overflow scrolls safely.
+Within the v1.0.6 range, a runebook edge case was fixed where inserting a recall-scroll stack larger than remaining book charges could fail in overflow-handling branches and leave bad outcomes when backpack/ground return paths were constrained. The recharge flow now guarantees successful charge application when at least one charge can be consumed, while handling overflow scrolls safely.
 
 In the same hotfix pass, deprecated `MoveItemToLocation` script calls were migrated to `MoveObjectToLocation` in all touched files to align with modern POL API guidance and avoid reliance on removed/deprecated movement functions.
 
@@ -241,3 +246,67 @@ In the same hotfix pass, deprecated `MoveItemToLocation` script calls were migra
   - else drop to ground if possible;
   - else destroy overflow with explicit player notification.
 - No expected gameplay behavior changes from the movement API migration itself; changes are compatibility/maintenance-focused.
+
+---
+
+## 8. High Priest Relationship Prompt, Dual Planar Gate Change, and Life Crystal Loot Expansion
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `scripts/ai/highpriest.src` | Added `relationship` speech-response path while priest is upset; reports exact donation requirement based on class level |
+| `pkg/systems/combat/dualplanaronhit.src` | Removed (commented out) protection/immunity gate in Dual Planar on-hit flow |
+| `config/nlootgroup.cfg` | Added `lifecrystal` to additional `Group Junk` entries |
+
+### Overview
+
+This pass added three gameplay-facing adjustments: better discoverability for High Priest relationship repair cost, a behavior change in Dual Planar on-hit immunity handling, and broader loot-table coverage for life crystals in junk-group rolls.
+
+### Notable Functional Changes
+
+**High Priest (`highpriest.src`):**
+- When player has `PriestUpset`, priest now checks speech text for `relationship`/`Relationship`.
+- Calculates donation requirement as `GetClasseLevel(player) * 2500`.
+- If class level is unavailable/zero, priest provides fallback line: any donation can begin repair.
+- Existing refusal lines remain for other upset-state speech.
+
+**Dual Planar (`dualplanaronhit.src`):**
+- `IsProtected(...)` immunity/cursed handling block has been disabled (commented).
+- Effect path no longer early-exits on `IMMUNED` in this script block.
+- Circle scaling from `CURSED` branch is no longer applied from that gate.
+
+**Loot Group (`nlootgroup.cfg`):**
+- `Item lifecrystal` added in four additional places under `Group Junk`.
+- Increases junk-table opportunities to roll life crystals.
+
+### Expected Impact
+
+- Players can explicitly ask High Priest how much gold is needed to repair relationship status.
+- Dual Planar on-hit behavior is now more permissive against previously gated protected targets.
+- Life crystals should appear more frequently from junk-category loot sources.
+
+---
+
+## 9. Patchnotes and Launcher Copy Maintenance
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `patchnotes/developer-changelog-v1.0.6.md` | Expanded dev changelog content during patchnote update commit sequence |
+| `patchnotes/patch-v1.0.6.md` | Player-facing patch notes updated with new gameplay changes |
+| `patchnotes/launchernotes.md` | Launcher copy synchronized with player-impact notes |
+
+### Overview
+
+Patchnotes were updated in-range to keep player-facing and developer-facing notes aligned with all delivered v1.0.6 work, including later hotfixes and follow-up gameplay adjustments.
+
+### Notable Functional Changes
+
+- Added/expanded v1.0.6 sections for runebook overflow handling and compatibility migration notes.
+- Synchronized launcher copy to the same player-impact bullets used in patch notes.
+- Preserved the standard launcher structure: `Latest Changes` header, Discord disclaimer line, `## What Changed`, summary, closing thanks line.
+
+### Expected Impact
+
+- No gameplay behavior change directly from this section.
+- Reduces drift between in-game changes and published communication artifacts.

@@ -1,10 +1,10 @@
 # Patch Notes - v1.0.6
 **Zuluhotel Omega 2.5 | Live Shard**  
-**Date: June 25, 2026**
+**Date: June 30, 2026**
 
 ---
 
-Welcome to **Patch 1.0.6**. This update introduces **Champion Relics** — a new type of artifact that lets you call down a champion boss — alongside a sweep of crafting and skill-gain bug fixes.
+Welcome to **Patch 1.0.6**. This update introduces **Champion Relics**, fixes several crafting/resource edge cases, resolves runebook overflow behavior, and adds follow-up gameplay tuning for High Priest, Dual Planar, and loot tables.
 
 ---
 
@@ -91,6 +91,34 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 ---
 
+## ⛪ High Priest - Relationship Cost Prompt
+
+### Player Impact
+
+- If your relationship with the High Priest is upset, you can now say **relationship** to see exactly how much gold is required to repair it.
+- The required donation scales with your class level (`class level * 2500`).
+- If no class level is detected, the priest now gives a fallback hint that any donation amount can begin repairing the relationship.
+
+---
+
+## ⚔️ Dual Planar - Protection Gate Removed
+
+### Player Impact
+
+- The protection/immunity gate on Dual Planar's on-hit effect was removed.
+- This means previously protected targets are no longer skipped by that specific immunity branch.
+
+---
+
+## 💎 Loot Tables - More Life Crystal Coverage
+
+### Player Impact
+
+- `lifecrystal` was added to additional entries within the Junk loot group.
+- You should now see broader life crystal availability from junk-group loot rolls.
+
+---
+
 ## 📋 Summary
 
 ✅ Champion Relics added — summon a boss from your artifact  
@@ -100,7 +128,10 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 ✅ Tamed pet following fixed for tower/multi overhang geometry  
 ✅ Player merchant stock announcements suppressed while hidden/concealed  
 ✅ Runebook recall-scroll overflow now recharges safely and handles extras correctly  
-✅ Deprecated item-move API calls migrated for core compatibility
+✅ Deprecated item-move API calls migrated for core compatibility  
+✅ High Priest now reports relationship repair gold requirement  
+✅ Dual Planar immunity/protection gate removed on hit logic  
+✅ Life crystal appears in more Junk loot entries
 
 ---
 

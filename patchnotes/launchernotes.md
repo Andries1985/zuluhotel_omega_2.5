@@ -63,6 +63,55 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 ---
 
+## 📘 Runebook - Recall Scroll Overflow Fix
+
+### Player Impact
+
+- Runebooks now recharge correctly when a scroll stack is larger than remaining charges.
+- Example: dropping 2 recall scrolls on a runebook missing 1 charge now recharges the book by 1 as expected.
+- Any extra scrolls are returned to backpack when possible.
+- If backpack is full, extras are dropped to the ground when possible.
+- If backpack return and ground drop both fail, only the excess scrolls are destroyed and recharge still succeeds.
+
+---
+
+## 🛠️ Internal - Script API Compatibility Cleanup
+
+### Player Impact
+
+- No gameplay change expected.
+- Deprecated `MoveItemToLocation` script calls were migrated to `MoveObjectToLocation` in affected scripts for modern POL compatibility.
+
+---
+
+## ⛪ High Priest - Relationship Cost Prompt
+
+### Player Impact
+
+- If your relationship with the High Priest is upset, you can now say **relationship** to see exactly how much gold is required to repair it.
+- The required donation scales with your class level (`class level * 2500`).
+- If no class level is detected, the priest now gives a fallback hint that any donation amount can begin repairing the relationship.
+
+---
+
+## ⚔️ Dual Planar - Protection Gate Removed
+
+### Player Impact
+
+- The protection/immunity gate on Dual Planar's on-hit effect was removed.
+- This means previously protected targets are no longer skipped by that specific immunity branch.
+
+---
+
+## 💎 Loot Tables - More Life Crystal Coverage
+
+### Player Impact
+
+- `lifecrystal` was added to additional entries within the Junk loot group.
+- You should now see broader life crystal availability from junk-group loot rolls.
+
+---
+
 ## 📋 Summary
 
 ✅ Champion Relics added — summon a boss from your artifact  
@@ -70,7 +119,12 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 ✅ Camping kindling sourced only from backpack or ground  
 ✅ Jewelry crafting gold check now properly exits on failure  
 ✅ Tamed pet following fixed for tower/multi overhang geometry  
-✅ Player merchant stock announcements suppressed while hidden/concealed
+✅ Player merchant stock announcements suppressed while hidden/concealed  
+✅ Runebook recall-scroll overflow now recharges safely and handles extras correctly  
+✅ Deprecated item-move API calls migrated for core compatibility  
+✅ High Priest now reports relationship repair gold requirement  
+✅ Dual Planar immunity/protection gate removed on hit logic  
+✅ Life crystal appears in more Junk loot entries
 
 ---
 
