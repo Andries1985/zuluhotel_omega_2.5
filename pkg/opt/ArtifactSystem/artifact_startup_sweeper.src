@@ -1,0 +1,6 @@
+use os;
+include ":ArtifactSystem:artifact";
+
+program artifact_startup_sweeper()
+	SweepExpiredArtifacts("Startup");
+endprogram

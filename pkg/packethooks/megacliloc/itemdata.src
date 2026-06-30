@@ -364,6 +364,18 @@ program itemdata(parms)
 			prop.clilocid := 1063514; // "Artifact"
 			prop.values := array {};
 			allprops.append(prop);
+
+			var artifactexpireat := CInt(GetObjProperty(xObject, "#ArtifactExpireAt"));
+			if (artifactexpireat)
+				var remain := artifactexpireat - ReadGameClock();
+				prop.clilocid := 1070722; // Nothing
+				if (remain <= 0)
+					prop.values := array {"Artifact expired, pending sweep"};
+				else
+					prop.values := array {"Artifact expires in " + FormatDuration(remain)};
+				endif
+				allprops.append(prop);
+			endif
 		endif
 		if(IsCBoost(xObject) || xObject.isa(POLCLASS_EQUIPMENT))
 			prop.clilocid := 1063515; // Item Quality:
@@ -462,4 +474,34 @@ function GetSkillName( skillid )
     	var cfg := ReadConfigFile( ":shilhook:skillsdef" );
     	return cfg[skillid].name;
     	
+endfunction
+
+function FormatDuration(total_seconds)
+	var seconds := CInt(total_seconds);
+	if (seconds < 0)
+		seconds := 0;
+	endif
+
+	var days := CInt(seconds / 86400);
+	seconds := seconds - (days * 86400);
+
+	var hours := CInt(seconds / 3600);
+	seconds := seconds - (hours * 3600);
+
+	var minutes := CInt(seconds / 60);
+	seconds := seconds - (minutes * 60);
+
+	var result := "";
+	if (days)
+		result := result + days + "d ";
+	endif
+	if (days || hours)
+		result := result + hours + "h ";
+	endif
+	if (days || hours || minutes)
+		result := result + minutes + "m ";
+	endif
+	result := result + seconds + "s";
+
+	return result;
 endfunction

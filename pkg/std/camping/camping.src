@@ -23,6 +23,21 @@ include "include/classes";
 
 CONST POINT_VALUE := 200;
 
+function ItemIsInBackpackScope(character, item)
+    if(item.serial == character.backpack.serial)
+        return 1;
+    elseif(item.container != character.backpack)
+        foreach thing in EnumerateItemsInContainer(character.backpack)
+            if(item.serial == thing.serial)
+                return 1;
+            endif
+        endforeach
+    else
+        return 1;
+    endif
+    return 0;
+endfunction
+
 program UseWood( character, wood )
 
     var newitem;
@@ -37,6 +52,11 @@ program UseWood( character, wood )
         PrintTextAbovePrivate( wood, "You can't reach that!", character );
         return;
     endif
+
+	if(wood.container and !ItemIsInBackpackScope(character, wood))
+		SendSysMessage(character, "That kindling must be in your backpack or on the ground.");
+		return;
+	endif
 
     /*if (wood.container)
         PrintTextAbovePrivate( wood, "Put that on the ground first!", character );

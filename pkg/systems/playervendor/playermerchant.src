@@ -190,7 +190,7 @@ function RecentStockTimeText()
 endfunction
 
 function AnnounceRecentStock(who)
-	if(!who or who.npctemplate or !HasRecentStock())
+	if(!who or who.npctemplate or who.hidden or who.concealed or !HasRecentStock())
 		return;
 	endif
 

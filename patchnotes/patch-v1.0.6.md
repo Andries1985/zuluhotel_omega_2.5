@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.0.6
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: June 30, 2026**
+
+---
+
+Welcome to **Patch 1.0.6**. This update introduces **Champion Relics**, fixes several crafting/resource edge cases, resolves runebook overflow behavior, and adds follow-up gameplay tuning for High Priest, Dual Planar, and loot tables.
+
+---
 
 ## What Changed
 
