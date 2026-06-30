@@ -54,6 +54,7 @@ program championrelic(who, item)
 	PlaySoundEffect(boss, 0x01FE);
 	SendSysMessage(who, "The relic shatters and calls forth a champion!", FONT_NORMAL, RELIC_FONT_COLOR);
 
+	ReleaseItem(item);
 	DestroyItem(item);
 	return 1;
 
