@@ -91,14 +91,14 @@ program dualplanaronhit( parms )
 	endif
 	PlaySoundEffect( targ , SFX_SPELL_ASTRAL_STORM );
 	var circle := 5;
-	var immunity := IsProtected( defender , targ , circle );
-	if( immunity == IMMUNED )
-		EraseObjProperty( targ , "Windsbreath" );
-		return;
-	endif
-	if( immunity == CURSED )
-		circle := circle * 2;
-	endif
+	// var immunity := IsProtected( defender , targ , circle );
+	// if( immunity == IMMUNED )
+	// 	EraseObjProperty( targ , "Windsbreath" );
+	// 	return;
+	// endif
+	// if( immunity == CURSED )
+	// 	circle := circle * 2;
+	// endif
 	var duration := ModifyWithMagicEfficiency( defender , 5 );
 
 	//Reduce time from magic resistance
