@@ -219,10 +219,7 @@ function ConfirmItemPurchase(who, item)
 			endif
 		endforeach
 
-		Print("VanityShop purchase: desc=" + item_desc + " type=" + item_type + " amount=" + vanitystuff[item].Amount + " cost=" + item_cost + " tokens=" + token_amount);
-
 		if (token_amount < item_cost)
-			Print("VanityShop purchase blocked: not enough tokens.");
 			SendSysMessage(who, "You don't have enough Omega Tokens.");
 			EraseObjProperty( who, PROPID_MOBILE_BROWSING );
 			return 0;
@@ -230,10 +227,8 @@ function ConfirmItemPurchase(who, item)
 
 		var requested_amount := vanitystuff[item].Amount;
 		if (requested_amount > 1)
-			Print("VanityShop bundle start: type=" + item_type + " amount=" + requested_amount);
 			var temp_bag := CreateItemAtLocation( who.x, who.y, who.z, 0x0E76, 1, who.realm );
 			if (!temp_bag)
-				Print("VanityShop create failed: could not create temporary bag.");
 				SendSysMessage(who, "You need more room in your backpack.");
 				EraseObjProperty( who, PROPID_MOBILE_BROWSING );
 				return 0;
@@ -241,10 +236,8 @@ function ConfirmItemPurchase(who, item)
 
 			var created_count := 0;
 			while (created_count < requested_amount)
-				Print("VanityShop bundle item create: type=" + item_type + " part=" + (created_count + 1) + " of " + requested_amount);
 				var bundle_item := CreateItemInContainer( temp_bag, item_type, 1 );
 				if (!bundle_item)
-					Print("VanityShop create failed: part=" + (created_count + 1) + " of " + requested_amount + " err=" + bundle_item.errortext);
 					DestroyItem(temp_bag);
 					SendSysMessage(who, "You need more room in your backpack.");
 					EraseObjProperty( who, PROPID_MOBILE_BROWSING );
@@ -253,25 +246,19 @@ function ConfirmItemPurchase(who, item)
 				created_count += 1;
 			endwhile
 
-			Print("VanityShop bundle filled: type=" + item_type + " count=" + requested_amount);
 			if (!MoveItemToContainer( temp_bag, who.backpack ))
-				Print("VanityShop move failed: temporary bag could not be moved into backpack.");
 				DestroyItem(temp_bag);
 				SendSysMessage(who, "You need more room in your backpack.");
 				EraseObjProperty( who, PROPID_MOBILE_BROWSING );
 				return 0;
 			endif
-
-			Print("VanityShop bundle moved to backpack: type=" + item_type + " count=" + requested_amount);
 		else
 			var single_item := CreateItemInBackpack( who, item_type, 1 );
 			if (!single_item)
-				Print("VanityShop create failed: single item could not be created in backpack.");
 				SendSysMessage(who, "You need more room in your backpack.");
 				EraseObjProperty( who, PROPID_MOBILE_BROWSING );
 				return 0;
 			endif
-			Print("VanityShop single item created: type=" + item_type + " amount=1");
 		endif
 
 		var cost_left := item_cost;
@@ -285,7 +272,6 @@ function ConfirmItemPurchase(who, item)
 				endif
 			endif
 		endforeach
-		Print("VanityShop purchase complete: type=" + item_type + " amount=" + requested_amount + " cost=" + item_cost);
 		SendSysMessage(who, "The "+item_desc+" has been placed in your backpack, enjoy!", 3, 53);
 	else
 		SendSysMessage(who, "Purchase cancelled.");
