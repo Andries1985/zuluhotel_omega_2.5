@@ -1,0 +1,287 @@
+// Synopsis: Remove a targeted character from their current town membership and sync townstone data
+use uo;
+use os;
+use datafile;
+
+const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
+const TOWNSTONE_OBJTYPE := 0xa320;
+const VOTE_RUNE_OBJTYPE := 0xa321;
+const TOWNSTONE_SEARCH_RANGE := 10000;
+
+program textcmd_removetownmember(who)
+	SendSysMessage(who, "Select the character to remove from their town.");
+	var target_char := Target(who);
+
+	if(!target_char)
+		SendSysMessage(who, "Cancelled.");
+		return;
+	endif
+
+	if(!target_char.acctname)
+		SendSysMessage(who, "That target is not a player character.");
+		return;
+	endif
+
+	var town_id := CInt(GetObjProperty(target_char, "town"));
+	if(!town_id)
+		SendSysMessage(who, target_char.name + " is not a member of any town.");
+		return;
+	endif
+
+	var town_name := GetTownName(town_id);
+	var stone := FindTownstoneByTownId(town_id, town_name);
+	if(!stone)
+		SendSysMessage(who, "Could not locate a townstone for town id " + CStr(town_id) + ".");
+		return;
+	endif
+
+	var citizen := GetObjProperty(stone, "citizen");
+	if(!citizen)
+		citizen := {};
+	endif
+
+	var removed_from_list := RemoveCitizenAccount(citizen, target_char.acctname);
+	if(removed_from_list)
+		SetObjProperty(stone, "citizen", citizen);
+	endif
+
+	var populacao := CInt(GetObjProperty(stone, "populacao"));
+	if(populacao < 0)
+		populacao := 0;
+	endif
+	if(removed_from_list and populacao > 0)
+		populacao := populacao - 1;
+		SetObjProperty(stone, "populacao", populacao);
+	endif
+
+	CleanupElectionMembership(stone, target_char, populacao);
+
+	EraseObjProperty(target_char, "town");
+	var cleaned_name := StripTownSuffix(target_char.name, town_name);
+	if(cleaned_name != target_char.name)
+		target_char.name := cleaned_name;
+	endif
+
+	SyncTownstoneState(stone);
+
+	SendSysMessage(target_char, "You are no longer citizen of " + town_name + ".");
+	SendSysMessage(who, "Removed " + target_char.name + " from " + town_name + ".");
+endprogram
+
+
+function FindTownstoneByTownId(town_id, town_name)
+	if(!town_id)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(df and town_name)
+		var elem := df.FindElement(town_name);
+		if(elem)
+			var serial := CInt(elem.GetProp("stone_serial"));
+			if(serial)
+				var direct_stone := SystemFindObjectBySerial(serial);
+				if(direct_stone and direct_stone.objtype == TOWNSTONE_OBJTYPE)
+					UnloadDataFile(TOWNSTONE_DATAFILE);
+					return direct_stone;
+				endif
+			endif
+		endif
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+	endif
+
+	var stones := ListItemsNearLocationOfType(0, 0, LIST_IGNORE_Z, TOWNSTONE_SEARCH_RANGE, TOWNSTONE_OBJTYPE, "britannia");
+	if(!stones or !stones.size())
+		return 0;
+	endif
+
+	foreach stone in stones
+		if(!stone or stone.objtype != TOWNSTONE_OBJTYPE)
+			continue;
+		endif
+
+		if(CInt(GetObjProperty(stone, "town")) == CInt(town_id))
+			return stone;
+		endif
+
+		if(town_name and CStr(GetObjProperty(stone, "regionname")) == CStr(town_name))
+			return stone;
+		endif
+	endforeach
+
+	return 0;
+endfunction
+
+
+function CleanupElectionMembership(stone, target_char, populacao)
+	var eleicoes := CInt(GetObjProperty(stone, "eleicao"));
+	var pleibicito := GetObjProperty(stone, "pleibicito");
+	if(!eleicoes and !pleibicito)
+		return;
+	endif
+
+	var candidatos := GetObjProperty(stone, "candidatos");
+	if(!candidatos)
+		candidatos := {};
+	endif
+
+	var newlist := {};
+	foreach serial in candidatos
+		if(serial != target_char.serial and serial != target_char.name)
+			newlist.append(serial);
+		endif
+	endforeach
+	SetObjProperty(stone, "candidatos", newlist);
+
+	var votos := CInt(GetObjProperty(stone, "votos"));
+	if(votos < 0)
+		votos := 0;
+	endif
+
+	foreach runa in EnumerateItemsInContainer(stone)
+		if(runa.objtype == VOTE_RUNE_OBJTYPE and GetObjProperty(runa, "serial") == target_char.acctname)
+			DestroyItem(runa);
+			if(votos > 0)
+				votos := votos - 1;
+			endif
+			break;
+		endif
+	endforeach
+
+	SetObjProperty(stone, "votos", votos);
+	if(populacao > 0)
+		SetObjProperty(stone, "votepercent", CInt((votos * 100) / populacao));
+	else
+		SetObjProperty(stone, "votepercent", 0);
+	endif
+endfunction
+
+
+function RemoveCitizenAccount(citizen_list, account_name)
+	if(!citizen_list or !account_name)
+		return 0;
+	endif
+
+	var i;
+	for(i := 1; i <= citizen_list.size(); i := i + 1)
+		if(Lower(CStr(citizen_list[i])) == Lower(CStr(account_name)))
+			citizen_list.erase(i);
+			return 1;
+		endif
+	endfor
+
+	return 0;
+endfunction
+
+
+function GetTownName(town_id)
+	var town_list := GetGlobalProperty("townlist");
+	if(town_list and town_list[town_id])
+		return CStr(town_list[town_id]);
+	endif
+	return "";
+endfunction
+
+
+function OpenTownstoneDataFile()
+	var df := OpenDataFile(TOWNSTONE_DATAFILE);
+	if(!df)
+		CreateDataFile(TOWNSTONE_DATAFILE, flags := DF_KEYTYPE_STRING);
+		df := OpenDataFile(TOWNSTONE_DATAFILE);
+	endif
+	return df;
+endfunction
+
+
+function SyncTownstoneState(stone)
+	if(!stone)
+		return;
+	endif
+
+	var town_id := CInt(GetObjProperty(stone, "town"));
+	if(!town_id)
+		return;
+	endif
+
+	var town_name := GetTownName(town_id);
+	if(!town_name)
+		town_name := CStr(GetObjProperty(stone, "regionname"));
+	endif
+	if(!town_name)
+		return;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(town_name);
+	if(!elem)
+		elem := df.CreateElement(town_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	if(gold < 0)
+		gold := 0;
+	endif
+
+	elem.SetProp("gold", gold);
+	elem.SetProp("town_id", town_id);
+	elem.SetProp("stone_serial", stone.serial);
+	elem.SetProp("mayor", GetObjProperty(stone, "mayor"));
+	elem.SetProp("mayorserial", CInt(GetObjProperty(stone, "mayorserial")));
+	elem.SetProp("populacao", CInt(GetObjProperty(stone, "populacao")));
+	elem.SetProp("eleicao", CInt(GetObjProperty(stone, "eleicao")));
+	elem.SetProp("pleibicito", GetObjProperty(stone, "pleibicito"));
+	elem.SetProp("candidatos", GetObjProperty(stone, "candidatos"));
+	elem.SetProp("votos", CInt(GetObjProperty(stone, "votos")));
+	elem.SetProp("votepercent", CInt(GetObjProperty(stone, "votepercent")));
+	elem.SetProp("timer", CInt(GetObjProperty(stone, "timer")));
+	elem.SetProp("Pleibicito_Result", GetObjProperty(stone, "Pleibicito_Result"));
+	elem.SetProp("nextcitizenelection", CInt(GetObjProperty(stone, "nextcitizenelection")));
+	elem.SetProp("citizen", GetObjProperty(stone, "citizen"));
+
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction
+
+
+function StripTownSuffix(character_name, town_name)
+	if(!character_name or !town_name)
+		return character_name;
+	endif
+
+	var safe_town_name := StrReplace(town_name, "'", "");
+	var stripped_name := StripExactSuffix(character_name, " of " + safe_town_name);
+	if(stripped_name != character_name)
+		return stripped_name;
+	endif
+
+	return StripExactSuffix(character_name, " of " + town_name);
+endfunction
+
+
+function StripExactSuffix(base_text, suffix)
+	if(!base_text or !suffix)
+		return base_text;
+	endif
+
+	var start_pos := Find(base_text, suffix, 1);
+	if(!start_pos)
+		return base_text;
+	endif
+
+	if((start_pos + Len(suffix) - 1) != Len(base_text))
+		return base_text;
+	endif
+
+	if(start_pos <= 1)
+		return base_text;
+	endif
+
+	return base_text[1, start_pos - 1];
+endfunction

@@ -142,7 +142,7 @@ function SyncTownstoneState(item)
 endfunction
 
 function BroadcastSystemLine(message)
-	Broadcast(CStr(message), FONT_RUNE, 25);
+	Broadcast(CStr(message), FONT_SHADOW, 25);
 endfunction
 
 function EnsureTownstoneElectionWatcher()
@@ -152,8 +152,6 @@ function EnsureTownstoneElectionWatcher()
 
 	Start_Script(":townstone:electionwatch");
 endfunction
-
-
 
 
 function candidato(who, item)
@@ -203,7 +201,7 @@ function voteto(who, item, choose)
 	votos := votos+1;
 	SetObjProperty(item, "votos",  votos);
 
-	SendSysMessage(who, "You just voted to " + candidatos[(2*choose)] );
+	SendSysMessage(who, "You just voted for " + candidatos[(2*choose)] );
 	var current_votepercent := SetVotepercentage(item);
 	SyncTownstoneState(item);
 
@@ -240,7 +238,8 @@ function eleicao(item);
 	case(type)
 		1: if(votos < 3)
 			BroadcastSystemLine("Election Result");
-			BroadcastSystemLine("Town: " + city + " | Winner: No winner (not enough votes)");
+			BroadcastSystemLine("Town: " + city);
+			BroadcastSystemLine("Winner: No winner (not enough votes)");
 			SetObjProperty(item, "eleicao", 0);
 			SetObjProperty(item, "candidatos", { });
 			SetObjProperty(item, "votos", 0);
@@ -248,7 +247,8 @@ function eleicao(item);
 			SetObjProperty(item, "timer", 0);
 		elseif(choose)
 			BroadcastSystemLine("Election Result");
-			BroadcastSystemLine("Town: " + city + " | Winner: " + candidatos[choose*2]);
+			BroadcastSystemLine("Town: " + city);
+			BroadcastSystemLine("Winner: " + candidatos[choose*2]);
 			SetObjProperty(item, "mayor",  candidatos[choose*2]);
 			SetObjProperty(item, "mayorserial",  candidatos[choose*2-1]);
 			SetObjProperty(item, "eleicao", 0);
@@ -259,7 +259,8 @@ function eleicao(item);
 			SetObjProperty(item, "timer", 0);
 		else
 			BroadcastSystemLine("Election Result");
-			BroadcastSystemLine("Town: " + city + " | Winner: No winner (tie)");
+			BroadcastSystemLine("Town: " + city);
+			BroadcastSystemLine("Winner: No winner (tie)");
 			SetObjProperty(item, "eleicao", 0);
 			SetObjProperty(item, "candidatos", { });
 			SetObjProperty(item, "votos", 0);
