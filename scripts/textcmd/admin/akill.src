@@ -12,21 +12,21 @@ program akill( who, dist )
         SendSysMessage( who, "Killing all npcs in range of "+dist+" tiles." );
 
 	foreach mob in ListMobilesNearLocation( who.x, who.y, LIST_IGNORE_Z, dist, who.realm )
-		if (mob != who)
+		if (mob != who && !mob.cmdlevel)
 			RevokePrivilege( mob, "invul" );
 			mob.kill();
 		endif
 	endforeach
 		
 	foreach mob in ListMobilesNearLocationEx( who.x, who.y, LIST_IGNORE_Z, dist, LISTEX_FLAG_HIDDEN, who.realm )
-		if (mob != who)
+		if (mob != who && !mob.cmdlevel)
 			RevokePrivilege( mob, "invul" );
 			mob.kill();
 		endif
 	endforeach
 
 	foreach mob in ListMobilesNearLocationEx( who.x, who.y, LIST_IGNORE_Z, dist, LISTEX_FLAG_CONCEALED, who.realm )
-		if (mob != who)
+		if (mob != who && !mob.cmdlevel)
 			RevokePrivilege( mob, "invul" );
 			mob.kill();
 		endif
