@@ -106,6 +106,10 @@ while (1)
 						Sleep( 1 );
 						Say( "Thine past behavior made thee unworthy in the eyes of the Virtues" );
 					endif
+
+				elseif( event.text["relationship"] or event.text["Relationship"] )
+					TurnToward( event.source );
+					Say( "Our relationship is already in good standing." );
 					
 				elseif( event.text["Greeting"] or event.text["Hail"] or event.text["greeting"] or event.text["Hi"] or event.text["hi"] or event.text["Hello"] or event.text["hello"])
 					TurnToward( event.source );
