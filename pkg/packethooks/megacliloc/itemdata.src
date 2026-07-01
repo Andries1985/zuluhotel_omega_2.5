@@ -361,8 +361,12 @@ program itemdata(parms)
 
 		var artifact := GetObjProperty(xObject, "Artifact");
 		if(artifact)
-			prop.clilocid := 1063514; // "Artifact"
-			prop.values := array {};
+			// prop.clilocid := 1063514; // "Artifact"
+			// prop.values := array {};
+			// allprops.append(prop);
+
+			prop.clilocid := 1042971; // ~1_NOTHING~
+			prop.values := array {"<BASEFONT COLOR=#ff9900>Artifact</BASEFONT>"};
 			allprops.append(prop);
 
 			var artifactexpireat := CInt(GetObjProperty(xObject, "#ArtifactExpireAt"));
