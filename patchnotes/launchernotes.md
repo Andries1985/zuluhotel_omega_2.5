@@ -135,6 +135,34 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 ---
 
+## 🛍️ Vanity Shop - Bulk Transcription Options
+
+### Player Impact
+
+- New bundle purchase options were added for transcription-related vanity items.
+- You can now buy certain transcription items in bulk packs (including higher-count bundles) instead of one-by-one only.
+- Bundle creation now includes stricter backpack-space handling to reduce failed purchase edge cases.
+
+---
+
+## 🎨 Vanity Item Tools - Backpack Scope Restriction
+
+### Player Impact
+
+- Custom item dye and custom item rename tools now only work on items inside your backpack.
+- Attempting to target items outside backpack scope now shows an explicit message and safely exits.
+
+---
+
+## 🛡️ Staff Command Safety - .akill
+
+### Player Impact
+
+- `.akill` now skips mobiles with command level, preventing staff characters from being killed by the command.
+- NPC and normal-player kill behavior remains unchanged.
+
+---
+
 ## 📋 Summary
 
 ✅ Champion Relics added — summon a boss from your artifact  
@@ -150,7 +178,10 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 ✅ Life crystal appears in more Junk loot entries  
 ✅ World Gem added and Artifact Box made movable  
 ✅ High Priest gives a good-standing relationship response  
-✅ INT-based skill gain tuning updated
+✅ INT-based skill gain tuning updated  
+✅ Vanity shop now supports bulk options for transcription items  
+✅ Custom item dye/rename now require target item in backpack  
+✅ `.akill` now excludes staff mobiles
 
 ---
 

@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.6
-**Range:** `9b695eb` (origin/Patch-1.0.5) -> `34ef696` (HEAD)  
+**Range:** `9b695eb` (origin/Patch-1.0.5) -> `9b8a144` (HEAD)  
 **Branch:** Patch-1.0.6  
 **Date:** 2026-06-03 -> 2026-07-01  
-**Commits in range:** 15 (excluding merge commits)  
-**Files changed:** 34 | +1204 / -153
+**Commits in range:** 17 (excluding merge commits)  
+**Files changed:** 39 | +1445 / -181
 
 ---
 
@@ -17,9 +17,10 @@
 6. [Commit Timeline](#6-commit-timeline)
 7. [Runebook Overflow Fix and MoveObject Migration](#7-runebook-overflow-fix-and-moveobject-migration)
 8. [High Priest Relationship Prompt, Dual Planar Gate Change, and Life Crystal Loot Expansion](#8-high-priest-relationship-prompt-dual-planar-gate-change-and-life-crystal-loot-expansion)
-9. [Patchnotes and Launcher Copy Maintenance](#9-patchnotes-and-launcher-copy-maintenance)
+13. [Patchnotes and Launcher Copy Maintenance](#13-patchnotes-and-launcher-copy-maintenance)
 10. [Omega Cache and Areas Refresh Fixes](#10-omega-cache-and-areas-refresh-fixes)
 11. [INT Skill Advancement Updates](#11-int-skill-advancement-updates)
+12. [Vanity Shop Bulk Options and Akill Staff Safety](#12-vanity-shop-bulk-options-and-akill-staff-safety)
 
 ---
 
@@ -223,6 +224,8 @@ Several crafting scripts had bugs where resources could be consumed from or vali
 | `490bdf6` | 2026-07-01 | INT skill gain updates |
 | `3e3a029` | 2026-07-01 | Added relationship advice if in good standing |
 | `34ef696` | 2026-07-01 | Added in world gem along with 2 week timer; changed color of artifact cliloc |
+| `852ba1c` | 2026-07-01 | Updated patchnotes |
+| `9b8a144` | 2026-07-01 | Added bulk options for transcription items; fixed `.akill` so it does not hit staff |
 
 ---
 
@@ -361,7 +364,49 @@ The skill definition file received a broad tuning pass on advancement values, es
 
 ---
 
-## 9. Patchnotes and Launcher Copy Maintenance
+## 12. Vanity Shop Bulk Options and Akill Staff Safety
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `pkg/opt/vanityshop/vanityshop.src` | Added bundle-capable vanity listings and purchase flow (single and multi-amount options) |
+| `pkg/opt/powerscrolls/itemdesc.cfg` | Added `VanityCost` to item `0x9A89` to enable vanity shop listing |
+| `pkg/opt/vanityshop/customitemdye.src` | Restricted dye target scope to items in player backpack |
+| `pkg/opt/vanityshop/customitemname.src` | Restricted rename target scope to items in player backpack |
+| `scripts/textcmd/admin/akill.src` | Added command-level guard so `.akill` does not kill staff mobiles |
+
+### Overview
+
+This update expands vanity shop purchasing behavior with bulk options for transcription-related items and tightens target-scope safety for custom vanity tools. It also hardens the `.akill` admin command to avoid affecting staff characters.
+
+### Notable Functional Changes
+
+**Vanity Shop (`vanityshop.src`):**
+- Introduced `AddVanityItem(...)` helper with explicit `Amount` support.
+- Added multi-quantity listing/purchase paths (including bundled amounts) for selected entries.
+- Bundle purchases create items in a temporary container then move into backpack, with explicit failure handling when space is insufficient.
+- Expanded debug prints around purchase flow and token validation.
+
+**Transcription-related vanity availability:**
+- Added `VanityCost 2` to `0x9A89` in powerscroll itemdesc so it participates in vanity item config parsing.
+
+**Custom vanity tool scope:**
+- Dye and rename scripts now require target item to be in `who.backpack`.
+- Invalid scope exits cleanly with a user message and item releases.
+
+**Admin command safety (`akill.src`):**
+- Added `!mob.cmdlevel` condition to all nearby-mobile kill loops.
+- Prevents `.akill` from killing staff accounts while preserving intended non-staff kill behavior.
+
+### Expected Impact
+
+- Players can buy selected transcription vanity items in bundles instead of only single-item purchases.
+- Vanity rename/dye interactions are now constrained to backpack-contained items for safer targeting.
+- Staff are protected from accidental `.akill` collateral in operational use.
+
+---
+
+## 13. Patchnotes and Launcher Copy Maintenance
 
 ### Files Changed
 | File | Change |
