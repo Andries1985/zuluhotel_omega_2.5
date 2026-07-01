@@ -129,7 +129,7 @@ function RechargeBook( who, runebook, scrolls )
 
 	if( scrolls and scrolls.amount )
 		if( !MoveItemToContainer( scrolls, who.backpack ) )
-			if( !MoveObjectToLocation( scrolls, who.x, who.y, GetWorldHeight( who.x, who.y ), who.realm, MOVEOBJECT_NORMAL ) )
+			if( !MoveObjectToLocation( scrolls, who.x, who.y, who.z, who.realm, MOVEOBJECT_FORCELOCATION ) )
 				var lost_scrolls := Cint( scrolls.amount );
 				DestroyItem( scrolls );
 				SendSysMessage( who, "Your backpack is full and the ground is blocked. " + lost_scrolls + " extra recall scrolls were destroyed." );
