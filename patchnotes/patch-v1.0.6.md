@@ -1,10 +1,10 @@
 # Patch Notes - v1.0.6
 **Zuluhotel Omega 2.5 | Live Shard**  
-**Date: June 30, 2026**
+**Date: July 1, 2026**
 
 ---
 
-Welcome to **Patch 1.0.6**. This update introduces **Champion Relics**, fixes several crafting/resource edge cases, resolves runebook overflow behavior, and adds follow-up gameplay tuning for High Priest, Dual Planar, and loot tables.
+Welcome to **Patch 1.0.6**. This update introduces **Champion Relics** and the **World Gem**, fixes several crafting/resource edge cases, resolves runebook overflow behavior, and adds follow-up gameplay tuning for High Priest, Dual Planar, loot tables, and INT-based skill advancement.
 
 ---
 
@@ -70,6 +70,18 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 ---
 
+## 💎 World Gem - New Artifact Utility
+
+### Player Impact
+
+- A new artifact item, the **World Gem**, has been added to the Artifact Box.
+- The World Gem can bless a targeted item when used.
+- World Gems have a **2-week expiry timer** and show their remaining time in the item tooltip.
+- Artifact tooltip styling has been updated to a brighter highlighted color.
+- The Artifact Box itself is now movable.
+
+---
+
 ## 📘 Runebook - Recall Scroll Overflow Fix
 
 ### Player Impact
@@ -98,6 +110,7 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 - If your relationship with the High Priest is upset, you can now say **relationship** to see exactly how much gold is required to repair it.
 - The required donation scales with your class level (`class level * 2500`).
 - If no class level is detected, the priest now gives a fallback hint that any donation amount can begin repairing the relationship.
+- If your relationship is already in good standing, the priest now says so directly.
 
 ---
 
@@ -119,6 +132,16 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 ---
 
+## 🧠 INT Skill Advancement Tuning
+
+### Player Impact
+
+- Several INT-based skill advancement rates have been retuned.
+- This affects how quickly some intelligence-linked skills advance over time.
+- No new skill system was added; this is a balance/tuning pass.
+
+---
+
 ## 📋 Summary
 
 ✅ Champion Relics added — summon a boss from your artifact  
@@ -131,7 +154,10 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 ✅ Deprecated item-move API calls migrated for core compatibility  
 ✅ High Priest now reports relationship repair gold requirement  
 ✅ Dual Planar immunity/protection gate removed on hit logic  
-✅ Life crystal appears in more Junk loot entries
+✅ Life crystal appears in more Junk loot entries  
+✅ World Gem added and Artifact Box made movable  
+✅ High Priest gives a good-standing relationship response  
+✅ INT-based skill gain tuning updated
 
 ---
 

@@ -128,8 +128,12 @@ function RechargeBook( who, runebook, scrolls )
 	endif
 
 	if( scrolls and scrolls.amount )
-		if( !MoveItemToContainer( scrolls, who.backpack ) )
-			if( !MoveObjectToLocation( scrolls, who.x, who.y, who.z, who.realm, MOVEOBJECT_FORCELOCATION ) )
+		var moved_to_pack := MoveItemToContainer( scrolls, who.backpack );
+
+		if( !moved_to_pack )
+			var moved_to_ground := MoveObjectToLocation( scrolls, who.x, who.y, who.z, who.realm, MOVEOBJECT_FORCELOCATION );
+
+			if( !moved_to_ground )
 				var lost_scrolls := Cint( scrolls.amount );
 				DestroyItem( scrolls );
 				SendSysMessage( who, "Your backpack is full and the ground is blocked. " + lost_scrolls + " extra recall scrolls were destroyed." );
@@ -139,8 +143,12 @@ function RechargeBook( who, runebook, scrolls )
 		endif
 	endif
 
-	if( scrolls )
+	// Do not destroy overflow that was successfully moved to backpack/ground.
+	// Only clean up if overflow somehow remains in the runebook container.
+	if( scrolls and scrolls.container == runebook )
+		var stranded_scrolls := CInt( scrolls.amount );
 		DestroyItem( scrolls );
+		SendSysMessage( who, "Extra recall scrolls could not be moved and were destroyed." );
 	endif
 
 	charges := charges + recharge_amount;
