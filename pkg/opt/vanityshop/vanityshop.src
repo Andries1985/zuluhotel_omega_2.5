@@ -44,39 +44,62 @@ function GetConfigItems(file)
 	
 	foreach key in keylist
 
-		var item := struct{"Type","Name","Desc","Graphic","Color","Cost"};
 		var element := FindConfigElem(itemcfgfile,key);
 		var isvanity := GetConfigString(element, "VanityCost");
 
 		if (isvanity)
             var dirty_desc := GetConfigString(element, "Desc");
             var clean_desc := SplitWords(dirty_desc,"%");
-			item.Type := key;
-			item.Name := GetConfigString(element, "Name");
-			item.Desc := clean_desc[1];
-			item.Graphic := GetConfigInt(element, "Graphic");
-			item.Color := GetConfigInt(element, "Color");
-			item.Cost := GetConfigInt(element, "VanityCost");
 
-			var i := vanitystuff.Size();
-			if (i)
-				while (i)
-					if (item.Cost >= vanitystuff[i].Cost)
-						vanitystuff.Insert(i+1,item);
-                        break;
-					elseif (i==1)
-                        vanitystuff.Insert(1,item);
-                    endif
-					i -= 1;
-				endwhile
-                
+			if (key == "0x9A90")
+				AddVanityItem(key, element, clean_desc, 1);
+			elseif (key == "0x9A89")
+				// Power Tome is not sold directly in the vanity shop.
+			elseif (key == "0x9B00")
+				AddVanityItem(key, element, clean_desc, 1);
+				AddVanityItem(key, element, clean_desc, 5);
+				AddVanityItem(key, element, clean_desc, 10);
 			else
-				vanitystuff.append(item);
+				AddVanityItem(key, element, clean_desc, 1);
 			endif
 
 		endif
 
 	endforeach
+
+endfunction
+
+function AddVanityItem(key, element, clean_desc, amount)
+
+	var item := struct{"Type","Name","Desc","Graphic","Color","Cost","Amount"};
+	item.Type := key;
+	item.Name := GetConfigString(element, "Name");
+	item.Desc := clean_desc[1];
+	item.Graphic := GetConfigInt(element, "Graphic");
+	item.Color := GetConfigInt(element, "Color");
+	item.Cost := GetConfigInt(element, "VanityCost");
+	item.Amount := amount;
+
+	if (amount > 1)
+		item.Desc := item.Desc + " x" + Cstr(amount);
+		item.Cost := item.Cost * amount;
+	endif
+
+	var i := vanitystuff.Size();
+	if (i)
+		while (i)
+			if (item.Cost >= vanitystuff[i].Cost)
+				vanitystuff.Insert(i+1,item);
+				return;
+			elseif (i==1)
+				vanitystuff.Insert(1,item);
+				return;
+			endif
+			i -= 1;
+		endwhile
+	else
+		vanitystuff.append(item);
+	endif
 
 endfunction
 
@@ -194,11 +217,61 @@ function ConfirmItemPurchase(who, item)
 			endif
 		endforeach
 
+		Print("VanityShop purchase: desc=" + item_desc + " type=" + item_type + " amount=" + vanitystuff[item].Amount + " cost=" + item_cost + " tokens=" + token_amount);
+
 		if (token_amount < item_cost)
+			Print("VanityShop purchase blocked: not enough tokens.");
 			SendSysMessage(who, "You don't have enough Omega Tokens.");
 			EraseObjProperty( who, PROPID_MOBILE_BROWSING );
 			return 0;
 		endif
+
+		var requested_amount := vanitystuff[item].Amount;
+		if (requested_amount > 1)
+			Print("VanityShop bundle start: type=" + item_type + " amount=" + requested_amount);
+			var temp_bag := CreateItemAtLocation( who.x, who.y, who.z, 0x0E76, 1, who.realm );
+			if (!temp_bag)
+				Print("VanityShop create failed: could not create temporary bag.");
+				SendSysMessage(who, "You need more room in your backpack.");
+				EraseObjProperty( who, PROPID_MOBILE_BROWSING );
+				return 0;
+			endif
+
+			var created_count := 0;
+			while (created_count < requested_amount)
+				Print("VanityShop bundle item create: type=" + item_type + " part=" + (created_count + 1) + " of " + requested_amount);
+				var bundle_item := CreateItemInContainer( temp_bag, item_type, 1 );
+				if (!bundle_item)
+					Print("VanityShop create failed: part=" + (created_count + 1) + " of " + requested_amount + " err=" + bundle_item.errortext);
+					DestroyItem(temp_bag);
+					SendSysMessage(who, "You need more room in your backpack.");
+					EraseObjProperty( who, PROPID_MOBILE_BROWSING );
+					return 0;
+				endif
+				created_count += 1;
+			endwhile
+
+			Print("VanityShop bundle filled: type=" + item_type + " count=" + requested_amount);
+			if (!MoveItemToContainer( temp_bag, who.backpack ))
+				Print("VanityShop move failed: temporary bag could not be moved into backpack.");
+				DestroyItem(temp_bag);
+				SendSysMessage(who, "You need more room in your backpack.");
+				EraseObjProperty( who, PROPID_MOBILE_BROWSING );
+				return 0;
+			endif
+
+			Print("VanityShop bundle moved to backpack: type=" + item_type + " count=" + requested_amount);
+		else
+			var single_item := CreateItemInBackpack( who, item_type, 1 );
+			if (!single_item)
+				Print("VanityShop create failed: single item could not be created in backpack.");
+				SendSysMessage(who, "You need more room in your backpack.");
+				EraseObjProperty( who, PROPID_MOBILE_BROWSING );
+				return 0;
+			endif
+			Print("VanityShop single item created: type=" + item_type + " amount=1");
+		endif
+
 		var cost_left := item_cost;
 		foreach item in EnumerateItemsInContainer( who.backpack )
 			if( item.objtype == OBJ_OMEGA_TOKEN )
@@ -210,8 +283,7 @@ function ConfirmItemPurchase(who, item)
 				endif
 			endif
 		endforeach
-		
-		CreateItemInBackpack( who, item_type, 1 );
+		Print("VanityShop purchase complete: type=" + item_type + " amount=" + requested_amount + " cost=" + item_cost);
 		SendSysMessage(who, "The "+item_desc+" has been placed in your backpack, enjoy!", 3, 53);
 	else
 		SendSysMessage(who, "Purchase cancelled.");
