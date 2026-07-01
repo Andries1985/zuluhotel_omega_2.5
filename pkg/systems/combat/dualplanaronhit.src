@@ -99,29 +99,31 @@ program dualplanaronhit( parms )
 	// if( immunity == CURSED )
 	// 	circle := circle * 2;
 	// endif
-	var duration := ModifyWithMagicEfficiency( defender , 5 );
-
-	//Reduce time from magic resistance
-	var skillresist := Cint(GetEffectiveSkill(targ, SKILLID_MAGICRESISTANCE));
-	skillresist := 1.0 + (CDbl(skillresist)*3.5/1000.0);
-	duration := duration / skillresist;
-	
-	//Reduce time further for mages?
-	var characterClass := GetObjProperty(targ, "IsMage");
-	var classresist := 1;
-	if (characterClass > 0)
-		classresist := 1+ (CDbl(characterClass)*0.05);
-	endif
-	duration := duration/classresist;
-	
-	//Reduce time due to Holy Protection
 	var holyprot := CInt(GetObjProperty(targ, "HolyProtection"));
-	duration := Cint(duration * (1-(holyprot*0.75)/100));
+	if (holyprot < 0)
+		holyprot := 0;
+	elseif (holyprot > 95)
+		holyprot := 95;
+	endif
 
-	//Reduce 25% for Free Action
 	var freeaction := GetObjProperty(targ, "FreeAction");
+	var duration;
 	if (freeaction)
-		duration := duration * 0.75;
+		// Free Action branch: 0..5 seconds (95 -> 0, 0 -> 5)
+		duration := CInt(((95 - holyprot) * 5) / 95);
+	else
+		// Non-Free Action branch: 0..7 seconds (95 -> 0, 0 -> 7)
+		duration := CInt(((95 - holyprot) * 7) / 95);
+		// Ensure sub-1 values still paralyze for 1s unless fully protected at 95.
+		if (holyprot < 95 && duration <= 0)
+			duration := 1;
+		endif
+	endif
+
+	Print("[Windsbreath] attacker=" + attacker.name + " defender=" + defender.name + " target=" + targ.name + " holyprot=" + holyprot + " freeaction=" + freeaction + " duration=" + duration);
+	PrintTextAbovePrivate(defender, "Windsbreath on " + targ.name + ": " + CInt(duration) + "s (HP " + holyprot + ", FA " + freeaction + ")", defender);
+	if (targ != defender)
+		PrintTextAbovePrivate(targ, "Windsbreath duration: " + CInt(duration) + "s (HP " + holyprot + ", FA " + freeaction + ")", targ);
 	endif
 	
 	if (duration > 0)
@@ -131,6 +133,9 @@ program dualplanaronhit( parms )
 		endif
 		BuffOn(targ, "paralyze", 1, CInt(duration));
 		var fxduration := CInt(duration-2);
+		if (fxduration < 1)
+			fxduration := 1;
+		endif
 		PlayStationaryEffect(targ.x, targ.y, targ.z, 0x17bd, fxduration);
 		PlayStationaryEffect(targ.x-1, targ.y, targ.z, 0x17ca, fxduration);
 		PlayStationaryEffect(targ.x+1, targ.y, targ.z, 0x17cc, fxduration);
