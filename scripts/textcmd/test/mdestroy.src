@@ -1,0 +1,41 @@
+// Synopsis: Repeatedly destroy targeted items until cancelled
+//
+// Like .destroy, but re-prompts after each successful target.
+//
+
+use uo;
+
+include ":staff:include/staff";
+
+program textcmd_mdestroy( who )
+    SendSysMessage( who, "Please target items to destroy. Cancel to stop." );
+
+    while (1)
+        var destroytarget := TargetCoordinates( who );
+        if ( !destroytarget )
+            break;
+        endif
+
+        var tgt := destroytarget.item;
+        if ( !tgt )
+            SendSysMessage( who, "You can only destroy items" );
+            continue;
+        endif
+
+        if ( !tgt.isa(POLCLASS_ITEM) )
+            SendSysMessage( who, "You can only destroy items" );
+            continue;
+        endif
+
+        LogCommand( who, GetProcess(GetPid()).name, tgt.desc + "/" + tgt.serial, "AT LOC - " + tgt.x + "," + tgt.y + "," + tgt.z );
+
+        if ( who.cmdlevel < 3 )
+            if ( GetObjProperty(tgt, "LFucker") != who.serial + "/" + who.name )
+                SendSysMessage( who, "You can only destroy items you have created" );
+                continue;
+            endif
+        endif
+
+        DestroyItem( tgt );
+    endwhile
+endprogram

@@ -29,6 +29,8 @@ var me := Self();
 
 const BTN_CONFIRM_BANK_DEPOSIT_ALL := 1;
 const BTN_CANCEL_BANK_DEPOSIT_ALL := 2;
+const BTN_CONFIRM_CHEQUE_AMOUNT := 3;
+const BTN_CANCEL_CHEQUE_AMOUNT := 4;
 const BANK_SPEECH_COOLDOWN := 5;
 const BANK_Z_TOLERANCE := 8;
 
@@ -388,6 +390,42 @@ function ConfirmBankDepositAll( who )
 
 endfunction
 
+function PromptChequeAmount(who, available_gold)
+	var w := 430;
+	var h := 210;
+	var gx := (800 - w) / 2;
+	var gy := (600 - h) / 2;
+	var gump := GFCreateGump(gx, gy);
+
+	GFPage(gump, 0);
+	GFResizePic(gump, 0, 0, 9270, w, h);
+	GFResizePic(gump, 10, 10, 9350, w - 20, h - 20);
+
+	GFTextLine(gump, 24, 28, 0, "How much gold did you want to make a cheque for?");
+	GFTextLine(gump, 24, 56, 0, "Available Gold Coin:");
+	GFTextLine(gump, 24, 78, 0, CStr(available_gold));
+
+	GFResizePic(gump, 24, 108, 9350, w - 48, 24);
+	GFTextEntry(gump, 32, 110, w - 64, 20, 0, "", 1);
+
+	GFAddButton(gump, 120, h - 40, 4005, 4007, GF_CLOSE_BTN, BTN_CONFIRM_CHEQUE_AMOUNT);
+	GFTextLine(gump, 155, h - 40, 63, "Okay");
+	GFAddButton(gump, 250, h - 40, 4017, 4019, GF_CLOSE_BTN, BTN_CANCEL_CHEQUE_AMOUNT);
+	GFTextLine(gump, 285, h - 40, 0, "Cancel");
+
+	var result := GFSendGump(who, gump);
+	if(CInt(result[0]) != BTN_CONFIRM_CHEQUE_AMOUNT)
+		return "";
+	endif
+
+	var entered := CStr(GFExtractData(result, 1));
+	if(Find(entered, "errortext", 0))
+		return "";
+	endif
+
+	return entered;
+endfunction
+
 function OpenBank( you )
 
 	var bankbox := FindBankBox( you );
@@ -449,7 +487,7 @@ function MakeCheque( you )
 		return;
 	endif
 
-	tamount_text := CStr( SendTextEntryGump(you, "How much gold did you want to make a cheque for? ", TE_CANCEL_ENABLE, TE_STYLE_NORMAL, 10));
+	tamount_text := PromptChequeAmount(you, myamt);
 
 	if( !IsDigitsOnly( tamount_text ) )
 		SendSysMessage( you, "Cheque amounts must contain numbers only." );
