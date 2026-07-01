@@ -53,6 +53,8 @@ function GetConfigItems(file)
 
 			if (key == "0x9A90")
 				AddVanityItem(key, element, clean_desc, 1);
+				AddVanityItem(key, element, clean_desc, 5);
+				AddVanityItem(key, element, clean_desc, 10);
 			elseif (key == "0x9A89")
 				// Power Tome is not sold directly in the vanity shop.
 			elseif (key == "0x9B00")
