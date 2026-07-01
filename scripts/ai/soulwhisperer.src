@@ -262,6 +262,10 @@ endfunction
 /////////////////////////////////////////////////////////////////////////////
 
 function CheckSummonThresholds()
+	if ( GetObjProperty( me, "RiseLootTransfer" ) )
+		return;
+	endif
+
 	if ( GetHP( me ) <= ( GetMaxHP( me ) * 75 / 100 ) )
 		if ( najs75 == 0 )
 			SummonWithPortal();
