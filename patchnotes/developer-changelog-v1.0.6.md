@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.6
-**Range:** `9b695eb` (origin/Patch-1.0.5) -> `c43d7fa` (HEAD)  
+**Range:** `9b695eb` (origin/Patch-1.0.5) -> `63dadb5` (HEAD)  
 **Branch:** Patch-1.0.6  
 **Date:** 2026-06-03 -> 2026-07-01  
-**Commits in range:** 21 (excluding merge commits)  
-**Files changed:** 61 | +5859 / -648
+**Commits in range:** 23 (excluding merge commits)  
+**Files changed:** 61 | +5994 / -648
 
 ---
 
@@ -231,6 +231,8 @@ Several crafting scripts had bugs where resources could be consumed from or vali
 | `f3920aa` | 2026-07-01 | Townstone package rewrite; datastore migration; banker cheque update; treasury/admin commands |
 | `5a8af3b` | 2026-07-01 | Election updates when timer expires whether gump is open or not |
 | `c43d7fa` | 2026-07-01 | Final Townstone fixes |
+| `3ba67e8` | 2026-07-01 | Patch Notes Update |
+| `63dadb5` | 2026-07-01 | Transcendence bulk scrolls added back in |
 
 ---
 
@@ -389,6 +391,7 @@ This update expands vanity shop purchasing behavior with bulk options for transc
 **Vanity Shop (`vanityshop.src`):**
 - Introduced `AddVanityItem(...)` helper with explicit `Amount` support.
 - Added multi-quantity listing/purchase paths (including bundled amounts) for selected entries.
+- Restored bundled `x5` and `x10` options for transcendence scroll entries.
 - Bundle purchases create items in a temporary container then move into backpack, with explicit failure handling when space is insufficient.
 - Expanded debug prints around purchase flow and token validation.
 
@@ -406,6 +409,7 @@ This update expands vanity shop purchasing behavior with bulk options for transc
 ### Expected Impact
 
 - Players can buy selected transcription vanity items in bundles instead of only single-item purchases.
+- Transcendence scroll bulk bundle options are available again.
 - Vanity rename/dye interactions are now constrained to backpack-contained items for safer targeting.
 - Staff are protected from accidental `.akill` collateral in operational use.
 

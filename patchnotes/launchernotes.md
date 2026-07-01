@@ -141,6 +141,7 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 - New bundle purchase options were added for transcription-related vanity items.
 - You can now buy certain transcription items in bulk packs (including higher-count bundles) instead of one-by-one only.
+- Transcendence scroll bulk bundle options were added back in.
 - Bundle creation now includes stricter backpack-space handling to reduce failed purchase edge cases.
 
 ---
@@ -204,6 +205,7 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 ✅ High Priest gives a good-standing relationship response  
 ✅ INT-based skill gain tuning updated  
 ✅ Vanity shop now supports bulk options for transcription items  
+✅ Transcendence scroll bulk bundles were restored  
 ✅ Custom item dye/rename now require target item in backpack  
 ✅ `.akill` now excludes staff mobiles  
 ✅ Townstones now persist treasury/election data more reliably  
