@@ -650,6 +650,10 @@ if(len(pleibicito) < 2 or !pleibicito)
 	pleibicito := 0;
 endif
 
+if(eleicoes or pleibicito)
+	EnsureTownstoneElectionWatcher();
+endif
+
 var poll_full_participation := (pleibicito and populacao > 0 and votos >= populacao);
 if((eleicoes or pleibicito) and ((timer > 0 and timer < ReadGameClock()) or poll_full_participation))
 	eleicao(item);

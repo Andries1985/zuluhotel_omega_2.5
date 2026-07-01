@@ -21,6 +21,7 @@ program textcmd_townbankstatus(who)
 	var regions := {};
 	var golds := {};
 	var stones_exist := {};
+	var seen_regions := {};
 	var total_gold := 0;
 
 	var i;
@@ -29,6 +30,11 @@ program textcmd_townbankstatus(who)
 		if(!region_name)
 			continue;
 		endif
+		if(seen_regions[region_name])
+			continue;
+		endif
+
+		seen_regions[region_name] := 1;
 
 		var gold := GetTownBankGold(region_name);
 		total_gold := total_gold + gold;

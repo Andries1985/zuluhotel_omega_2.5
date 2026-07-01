@@ -145,6 +145,14 @@ function BroadcastSystemLine(message)
 	Broadcast(CStr(message), FONT_RUNE, 25);
 endfunction
 
+function EnsureTownstoneElectionWatcher()
+	if(GetGlobalProperty("#TownstoneElectionWatcherRunning"))
+		return;
+	endif
+
+	Start_Script(":townstone:electionwatch");
+endfunction
+
 
 
 
@@ -332,6 +340,7 @@ function ConvocarEleicoes(who, item)
 	SetObjProperty(item, "timer", ReadGameClock() + ELECTION_DURATION );
 	SetObjProperty(item, "votepercent", 0);
 	SyncTownstoneState(item);
+	EnsureTownstoneElectionWatcher();
 
 			BroadcastSystemLine("Elections for " + city + " are open!");
 
@@ -375,6 +384,7 @@ function ConvocarPleibicito(who, item)
 	SetObjProperty(item, "votepercent", 0);
 	SetObjProperty(item, "Pleibicito_Result", {});
 	SyncTownstoneState(item);
+	EnsureTownstoneElectionWatcher();
 
 	BroadcastSystemLine("New poll for " + city );
 
