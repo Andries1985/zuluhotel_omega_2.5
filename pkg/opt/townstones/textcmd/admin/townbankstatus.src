@@ -14,6 +14,7 @@ const BTN_NEXT := 7002;
 const BTN_CLOSE := 7003;
 const BTN_TOGGLE_UPGRADES_BASE := 8000;
 const BTN_TOGGLE_DONATIONS_BASE := 10000;
+const BTN_DELETE_REGION_BASE := 12000;
 const ROWS_PER_PAGE := 10;
 
 program textcmd_townbankstatus(who)
@@ -49,6 +50,7 @@ program textcmd_townbankstatus(who)
 	var regions := {};
 	var golds := {};
 	var stones_exist := {};
+	var has_region_data := {};
 	var upgrades_enabled := {};
 	var donations_enabled := {};
 	var seen_regions := dictionary;
@@ -83,6 +85,7 @@ program textcmd_townbankstatus(who)
 		regions.append(region_name);
 		golds.append(gold);
 		stones_exist.append(has_stone);
+		has_region_data.append(has_data);
 		upgrades_enabled.append(IsTownBankFeatureEnabled(region_name, "allow_upgrades"));
 		donations_enabled.append(IsTownBankFeatureEnabled(region_name, "allow_donations"));
 		added_regions := added_regions + 1;
@@ -93,7 +96,7 @@ program textcmd_townbankstatus(who)
 		return;
 	endif
 
-	ShowTownBankStatusGump(who, regions, golds, stones_exist, upgrades_enabled, donations_enabled, total_gold);
+	ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, total_gold);
 
 endprogram
 
@@ -205,7 +208,7 @@ function HasTownBankRegionData(region_name)
 endfunction
 
 
-function ShowTownBankStatusGump(who, regions, golds, stones_exist, upgrades_enabled, donations_enabled, total_gold)
+function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, total_gold)
 	var total := regions.size();
 	if(!total)
 		return;
@@ -227,11 +230,11 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, upgrades_enab
 			end_idx := total;
 		endif
 
-		var gump := GFCreateGump(20, 20, 820, 380);
+		var gump := GFCreateGump(20, 20, 900, 380);
 		GFDisposable(gump, 0);
 		GFMovable(gump, 1);
-		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 820, 380);
-		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 790, 350);
+		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 900, 380);
+		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 870, 350);
 		GFPage(gump, 1);
 
 		GFTextLine(gump, 28, 28, 1153, "Town Treasury Status");
@@ -241,7 +244,8 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, upgrades_enab
 		GFTextLine(gump, 260, 88, 1153, "Treasury");
 		GFTextLine(gump, 430, 88, 53, "Upgrades");
 		GFTextLine(gump, 560, 88, 53, "Donations");
-		GFTextLine(gump, 690, 88, 1153, "Stone In World");
+		GFTextLine(gump, 670, 88, 1153, "Stone");
+		GFTextLine(gump, 760, 88, 38, "Delete");
 
 		var row := 0;
 		var i;
@@ -257,9 +261,16 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, upgrades_enab
 			GFTextLine(gump, 595, y, donations_enabled[i] ? 63 : 38, donations_enabled[i] ? "On" : "Off");
 
 			if(stones_exist[i])
-				GFTextLine(gump, 690, y, 63, "Yes");
+				GFTextLine(gump, 670, y, 63, "Yes");
 			else
-				GFTextLine(gump, 690, y, 38, "No");
+				GFTextLine(gump, 670, y, 38, "No");
+			endif
+
+			if(has_region_data[i] and !stones_exist[i])
+				GFAddButton(gump, 760, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_DELETE_REGION_BASE + i);
+				GFTextLine(gump, 795, y, 38, "Del");
+			else
+				GFTextLine(gump, 795, y, 1153, "-");
 			endif
 			row := row + 1;
 		endfor
@@ -270,8 +281,8 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, upgrades_enab
 		endif
 
 		if(page < total_pages)
-			GFAddButton(gump, 730, 332, 2117, 2118, GF_CLOSE_BTN, BTN_NEXT);
-			GFTextLine(gump, 690, 334, 1153, "Next");
+			GFAddButton(gump, 810, 332, 2117, 2118, GF_CLOSE_BTN, BTN_NEXT);
+			GFTextLine(gump, 770, 334, 1153, "Next");
 		endif
 
 		GFAddButton(gump, 250, 332, 2152, 2151, GF_CLOSE_BTN, BTN_CLOSE);
@@ -298,10 +309,78 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, upgrades_enab
 			SetTownBankFeatureEnabled(CStr(regions[donation_idx]), "allow_donations", new_donation_state);
 			donations_enabled[donation_idx] := new_donation_state;
 			continue;
+		elseif(res[0] > BTN_DELETE_REGION_BASE and res[0] <= (BTN_DELETE_REGION_BASE + total))
+			var delete_idx := res[0] - BTN_DELETE_REGION_BASE;
+			var delete_region := CStr(regions[delete_idx]);
+
+			if(stones_exist[delete_idx])
+				SendSysMessage(who, "Cannot delete region data while a live townstone still exists for " + delete_region + ".");
+				continue;
+			endif
+
+			if(!has_region_data[delete_idx])
+				SendSysMessage(who, "No datafile entry exists for " + delete_region + ".");
+				continue;
+			endif
+
+			if(!DeleteTownBankRegionData(delete_region))
+				SendSysMessage(who, "Failed to delete datafile entry for " + delete_region + ".");
+				continue;
+			endif
+
+			if(golds[delete_idx] > 0)
+				total_gold := total_gold - CInt(golds[delete_idx]);
+				if(total_gold < 0)
+					total_gold := 0;
+				endif
+			endif
+
+			regions.erase(delete_idx);
+			golds.erase(delete_idx);
+			stones_exist.erase(delete_idx);
+			has_region_data.erase(delete_idx);
+			upgrades_enabled.erase(delete_idx);
+			donations_enabled.erase(delete_idx);
+
+			total := regions.size();
+			if(!total)
+				SendSysMessage(who, "Deleted " + delete_region + " from townstone_data. No regions remain.");
+				return;
+			endif
+
+			total_pages := CInt((total + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE);
+			if(page > total_pages)
+				page := total_pages;
+			endif
+
+			SendSysMessage(who, "Deleted townbank data for " + delete_region + ".");
+			continue;
 		else
 			return;
 		endif
 	endwhile
+endfunction
+
+
+function DeleteTownBankRegionData(region_name)
+	if(!region_name)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	df.DeleteElement(region_name);
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	return 1;
 endfunction
 
 
