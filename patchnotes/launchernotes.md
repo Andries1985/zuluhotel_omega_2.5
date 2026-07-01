@@ -163,6 +163,30 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 ---
 
+## 🏛️ Townstones - Treasury, Elections, and Persistence Rework
+
+### Player Impact
+
+- Townstones were reworked to use persistent datastore-backed town data.
+- Town treasury gold is now tracked persistently and shown directly on the townstone.
+- Citizens can donate cheque gold to the town treasury from the townstone gump.
+- Election and poll flows were reworked for improved reliability.
+- Election/poll expiry now resolves even if nobody has the townstone gump open.
+- Latest poll results are shown on the townstone after a poll ends.
+- Town election cooldown messaging is clearer, including time-until-next-election information.
+- Townstone data now survives delete/recreate flows for the same region.
+
+---
+
+## 🏦 Banker - Cheque Prompt Improvement
+
+### Player Impact
+
+- Bankers now better account for the total gold you can convert into cheques when prompting cheque creation.
+- This improves cheque usability when your available value includes cheque-backed amounts, not just loose gold.
+
+---
+
 ## 📋 Summary
 
 ✅ Champion Relics added — summon a boss from your artifact  
@@ -181,7 +205,10 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 ✅ INT-based skill gain tuning updated  
 ✅ Vanity shop now supports bulk options for transcription items  
 ✅ Custom item dye/rename now require target item in backpack  
-✅ `.akill` now excludes staff mobiles
+✅ `.akill` now excludes staff mobiles  
+✅ Townstones now persist treasury/election data more reliably  
+✅ Town treasury donations, balances, and poll/election handling were reworked  
+✅ Banker cheque creation now uses improved total-available prompting
 
 ---
 
