@@ -1,0 +1,582 @@
+// Synopsis: Display town treasury balances and toggle upgrades/donations per city
+use uo;
+use os;
+use basic;
+use datafile;
+use cfgfile;
+include ":gumps:gumps";
+
+const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
+const TOWNSTONE_OBJTYPE := 0xa320;
+const TOWNSTONE_SEARCH_RANGE := 10000;
+const BTN_PREV := 7001;
+const BTN_NEXT := 7002;
+const BTN_CLOSE := 7003;
+const BTN_TOGGLE_UPGRADES_BASE := 8000;
+const BTN_TOGGLE_DONATIONS_BASE := 10000;
+const ROWS_PER_PAGE := 10;
+
+program textcmd_townbankstatus(who)
+	var town_list := GetGlobalProperty("townlist");
+	var datafile_regions := GetTownRegionsFromDatafile();
+	if((!town_list or !town_list.size()) and (!datafile_regions or !datafile_regions.size()))
+		Start_Script(":townstone:townlistbootstrap");
+		town_list := GetGlobalProperty("townlist");
+		datafile_regions := GetTownRegionsFromDatafile();
+	endif
+
+	if((!town_list or !town_list.size()) and (!datafile_regions or !datafile_regions.size()))
+		datafile_regions := GetTownRegionsFromLiveStones();
+	endif
+
+	if((!town_list or !town_list.size()) and (!datafile_regions or !datafile_regions.size()))
+		SendSysMessage(who, "No town regions found in townlist or townstone datafile.");
+		return;
+	endif
+
+	var candidate_regions := GetCandidateTownRegions();
+	if((!candidate_regions or !candidate_regions.size()) and datafile_regions and datafile_regions.size())
+		candidate_regions := datafile_regions;
+	endif
+	if(!candidate_regions or !candidate_regions.size())
+		candidate_regions := GetTownRegionsFromLiveStones();
+	endif
+	if(!candidate_regions or !candidate_regions.size())
+		SendSysMessage(who, "No town regions found for status display.");
+		return;
+	endif
+
+	var regions := {};
+	var golds := {};
+	var stones_exist := {};
+	var upgrades_enabled := {};
+	var donations_enabled := {};
+	var seen_regions := dictionary;
+	var total_gold := 0;
+	var added_regions := 0;
+	var skipped_regions := 0;
+
+	var candidate_idx;
+	for(candidate_idx := 1; candidate_idx <= candidate_regions.size(); candidate_idx := candidate_idx + 1)
+		var raw_entry := candidate_regions[candidate_idx];
+		var region_name := Trim(CStr(raw_entry));
+		if(Len(region_name) < 1)
+			skipped_regions := skipped_regions + 1;
+			continue;
+		endif
+
+		var region_key := region_name;
+		if(seen_regions[region_key])
+			continue;
+		endif
+		seen_regions[region_key] := 1;
+
+		var has_data := HasTownBankRegionData(region_name);
+		var has_stone := HasLiveTownstoneForRegion(region_name, 0);
+		if(!has_data and !has_stone)
+			skipped_regions := skipped_regions + 1;
+			continue;
+		endif
+
+		var gold := GetTownBankGold(region_name);
+		total_gold := total_gold + gold;
+		regions.append(region_name);
+		golds.append(gold);
+		stones_exist.append(has_stone);
+		upgrades_enabled.append(IsTownBankFeatureEnabled(region_name, "allow_upgrades"));
+		donations_enabled.append(IsTownBankFeatureEnabled(region_name, "allow_donations"));
+		added_regions := added_regions + 1;
+	endfor
+
+	if(!regions.size())
+		SendSysMessage(who, "No town regions found in townlist.");
+		return;
+	endif
+
+	ShowTownBankStatusGump(who, regions, golds, stones_exist, upgrades_enabled, donations_enabled, total_gold);
+
+endprogram
+
+
+function GetCandidateTownRegions()
+	var candidates := {};
+	var seen := dictionary;
+
+	var city_regions := GetCityRegionsFromConfig();
+	if(city_regions and city_regions.size())
+		var city_idx;
+		for(city_idx := 1; city_idx <= city_regions.size(); city_idx := city_idx + 1)
+			var city_name := Trim(CStr(city_regions[city_idx]));
+			if(Len(city_name) < 1)
+				continue;
+			endif
+			var city_key := Lower(city_name);
+			if(seen[city_key])
+				continue;
+			endif
+			seen[city_key] := 1;
+			candidates.append(city_name);
+		endfor
+	endif
+
+	var data_regions := GetTownRegionsFromDatafile();
+	if(data_regions and data_regions.size())
+		var data_idx;
+		for(data_idx := 1; data_idx <= data_regions.size(); data_idx := data_idx + 1)
+			var data_name := Trim(CStr(data_regions[data_idx]));
+			if(Len(data_name) < 1)
+				continue;
+			endif
+			var data_key := Lower(data_name);
+			if(seen[data_key])
+				continue;
+			endif
+			seen[data_key] := 1;
+			candidates.append(data_name);
+		endfor
+	endif
+
+	return candidates;
+endfunction
+
+
+function GetCityRegionsFromConfig()
+	UnloadConfigFile("regions");
+	var regions_cfg := ReadConfigFile("::regions/regions");
+	if(!regions_cfg)
+		return {};
+	endif
+
+	var region_names := GetConfigStringKeys(regions_cfg);
+	if(!region_names or !region_names.size())
+		region_names := GetConfigStringArray(regions_cfg[1], "Region");
+	endif
+
+	if(!region_names or !region_names.size())
+		return {};
+	endif
+
+	var city_regions := {};
+	var region_idx;
+	for(region_idx := 1; region_idx <= region_names.size(); region_idx := region_idx + 1)
+		var region_name := CStr(region_names[region_idx]);
+		var elem := regions_cfg[region_name];
+		if(!elem)
+			elem := FindConfigElem(regions_cfg, region_name);
+		endif
+		if(!elem)
+			continue;
+		endif
+
+		var city_raw := GetConfigString(elem, "City");
+		if(city_raw.errortext)
+			continue;
+		endif
+
+		if(CInt(city_raw) != 1)
+			continue;
+		endif
+
+		city_regions.append(CStr(region_name));
+	endfor
+
+	return city_regions;
+endfunction
+
+
+function HasTownBankRegionData(region_name)
+	if(!region_name)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+
+	if(elem)
+		return 1;
+	endif
+
+	return 0;
+endfunction
+
+
+function ShowTownBankStatusGump(who, regions, golds, stones_exist, upgrades_enabled, donations_enabled, total_gold)
+	var total := regions.size();
+	if(!total)
+		return;
+	endif
+
+	var page := 1;
+	var total_pages := CInt((total + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE);
+
+	while(1)
+		if(page < 1)
+			page := 1;
+		elseif(page > total_pages)
+			page := total_pages;
+		endif
+
+		var start_idx := ((page - 1) * ROWS_PER_PAGE) + 1;
+		var end_idx := start_idx + ROWS_PER_PAGE - 1;
+		if(end_idx > total)
+			end_idx := total;
+		endif
+
+		var gump := GFCreateGump(20, 20, 820, 380);
+		GFDisposable(gump, 0);
+		GFMovable(gump, 1);
+		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 820, 380);
+		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 790, 350);
+		GFPage(gump, 1);
+
+		GFTextLine(gump, 28, 28, 1153, "Town Treasury Status");
+		GFTextLine(gump, 28, 48, 1153, "Page " + CStr(page) + " of " + CStr(total_pages));
+		GFTextLine(gump, 28, 68, 1153, "Total town treasury gold: " + CStr(total_gold));
+		GFTextLine(gump, 28, 88, 1153, "Town");
+		GFTextLine(gump, 260, 88, 1153, "Treasury");
+		GFTextLine(gump, 430, 88, 53, "Upgrades");
+		GFTextLine(gump, 560, 88, 53, "Donations");
+		GFTextLine(gump, 690, 88, 1153, "Stone In World");
+
+		var row := 0;
+		var i;
+		for(i := start_idx; i <= end_idx; i := i + 1)
+			var y := 112 + (row * 22);
+			GFTextLine(gump, 28, y, 1153, CStr(regions[i]));
+			GFTextLine(gump, 260, y, 1153, CStr(golds[i]) + " gold");
+
+			GFAddButton(gump, 430, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_TOGGLE_UPGRADES_BASE + i);
+			GFTextLine(gump, 465, y, upgrades_enabled[i] ? 63 : 38, upgrades_enabled[i] ? "On" : "Off");
+
+			GFAddButton(gump, 560, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_TOGGLE_DONATIONS_BASE + i);
+			GFTextLine(gump, 595, y, donations_enabled[i] ? 63 : 38, donations_enabled[i] ? "On" : "Off");
+
+			if(stones_exist[i])
+				GFTextLine(gump, 690, y, 63, "Yes");
+			else
+				GFTextLine(gump, 690, y, 38, "No");
+			endif
+			row := row + 1;
+		endfor
+
+		if(page > 1)
+			GFAddButton(gump, 28, 332, 2117, 2118, GF_CLOSE_BTN, BTN_PREV);
+			GFTextLine(gump, 63, 334, 1153, "Previous");
+		endif
+
+		if(page < total_pages)
+			GFAddButton(gump, 730, 332, 2117, 2118, GF_CLOSE_BTN, BTN_NEXT);
+			GFTextLine(gump, 690, 334, 1153, "Next");
+		endif
+
+		GFAddButton(gump, 250, 332, 2152, 2151, GF_CLOSE_BTN, BTN_CLOSE);
+		GFTextLine(gump, 285, 334, 1153, "Close");
+
+		var res := GFSendGump(who, gump);
+		if(!res[0] or res[0] == BTN_CLOSE)
+			return;
+		elseif(res[0] == BTN_PREV)
+			page := page - 1;
+			continue;
+		elseif(res[0] == BTN_NEXT)
+			page := page + 1;
+			continue;
+		elseif(res[0] > BTN_TOGGLE_UPGRADES_BASE and res[0] <= (BTN_TOGGLE_UPGRADES_BASE + total))
+			var upgrade_idx := res[0] - BTN_TOGGLE_UPGRADES_BASE;
+			var new_upgrade_state := upgrades_enabled[upgrade_idx] ? 0 : 1;
+			SetTownBankFeatureEnabled(CStr(regions[upgrade_idx]), "allow_upgrades", new_upgrade_state);
+			upgrades_enabled[upgrade_idx] := new_upgrade_state;
+			continue;
+		elseif(res[0] > BTN_TOGGLE_DONATIONS_BASE and res[0] <= (BTN_TOGGLE_DONATIONS_BASE + total))
+			var donation_idx := res[0] - BTN_TOGGLE_DONATIONS_BASE;
+			var new_donation_state := donations_enabled[donation_idx] ? 0 : 1;
+			SetTownBankFeatureEnabled(CStr(regions[donation_idx]), "allow_donations", new_donation_state);
+			donations_enabled[donation_idx] := new_donation_state;
+			continue;
+		else
+			return;
+		endif
+	endwhile
+endfunction
+
+
+function IsTownBankFeatureEnabled(region_name, prop_name)
+	if(!region_name)
+		return 1;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 1;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 1;
+	endif
+
+	var flag_value := Lower(CStr(elem.GetProp(prop_name)));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+
+	if(flag_value == "off" or flag_value == "0")
+		return 0;
+	endif
+
+	return 1;
+endfunction
+
+
+function SetTownBankFeatureEnabled(region_name, prop_name, enabled)
+	if(!region_name)
+		return;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	elem.SetProp(prop_name, enabled ? "on" : "off");
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction
+
+
+function OpenTownstoneDataFile()
+	var df := OpenDataFile(TOWNSTONE_DATAFILE);
+	if(!df)
+		CreateDataFile(TOWNSTONE_DATAFILE, flags := DF_KEYTYPE_STRING);
+		df := OpenDataFile(TOWNSTONE_DATAFILE);
+	endif
+	return df;
+endfunction
+
+
+function GetTownBankGold(region_name)
+	if(!region_name)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	if(gold < 0)
+		gold := 0;
+	endif
+	return gold;
+endfunction
+
+
+function GetTownRegionsFromDatafile()
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return {};
+	endif
+
+	var keys := df.Keys();
+	var region_list := {};
+	if(keys)
+		var key_idx;
+		for(key_idx := 1; key_idx <= keys.size(); key_idx := key_idx + 1)
+			var key_text := Trim(CStr(keys[key_idx]));
+			if(Len(key_text) >= 1)
+				region_list.append(key_text);
+			endif
+		endfor
+	endif
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+
+	return region_list;
+endfunction
+
+
+function GetTownRegionsFromLiveStones()
+	var regions := {};
+	var seen := dictionary;
+
+	var stones := ListItemsNearLocationOfType(0, 0, LIST_IGNORE_Z, TOWNSTONE_SEARCH_RANGE, TOWNSTONE_OBJTYPE, "britannia");
+	if(!stones or !stones.size())
+		return regions;
+	endif
+
+	foreach stone in stones
+		if(!stone or stone.objtype != TOWNSTONE_OBJTYPE)
+			continue;
+		endif
+
+		var region_name := CStr(GetObjProperty(stone, "regionname"));
+		if(!region_name)
+			continue;
+		endif
+
+		if(seen[region_name])
+			continue;
+		endif
+
+		seen[region_name] := 1;
+		regions.append(region_name);
+	endforeach
+
+	return regions;
+endfunction
+
+
+function HasLiveTownstoneForRegion(region_name, town_id)
+	if(!region_name)
+		return 0;
+	endif
+
+	var region_range := {};
+	var lost_lands_range := {};
+	var use_lost_lands_fallback := 0;
+
+	UnloadConfigFile("regions");
+	var regions_cfg := ReadConfigFile("::regions/regions");
+	if(regions_cfg)
+		region_range := GetRegionRange(regions_cfg, region_name);
+		lost_lands_range := GetRegionRange(regions_cfg, "The Lost Lands");
+		if(region_range.size() >= 4 and lost_lands_range.size() >= 4 and IsRangeInsideRange(region_range, lost_lands_range))
+			use_lost_lands_fallback := 1;
+		endif
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(elem)
+		var direct_serial := CInt(elem.GetProp("stone_serial"));
+		if(direct_serial)
+			var direct_stone := SystemFindObjectBySerial(direct_serial);
+			if(IsTownstoneMatch(direct_stone, region_name, town_id, region_range, lost_lands_range, use_lost_lands_fallback))
+				UnloadDataFile(TOWNSTONE_DATAFILE);
+				return 1;
+			endif
+		endif
+	endif
+
+	var town_list := GetGlobalProperty("townlist");
+	if(town_list and town_list.size())
+		var i;
+		for(i := 1; i <= town_list.size(); i := i + 1)
+			var known_region := CStr(town_list[i]);
+			if(!known_region)
+				continue;
+			endif
+
+			var known_elem := df.FindElement(known_region);
+			if(!known_elem)
+				continue;
+			endif
+
+			var stone_serial := CInt(known_elem.GetProp("stone_serial"));
+			if(!stone_serial)
+				continue;
+			endif
+
+			var stone := SystemFindObjectBySerial(stone_serial);
+			if(IsTownstoneMatch(stone, region_name, town_id, region_range, lost_lands_range, use_lost_lands_fallback))
+				UnloadDataFile(TOWNSTONE_DATAFILE);
+				return 1;
+			endif
+		endfor
+	endif
+
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	return 0;
+endfunction
+
+
+function IsTownstoneMatch(stone, region_name, town_id, region_range, lost_lands_range, use_lost_lands_fallback)
+	if(!stone or stone.objtype != 0xa320)
+		return 0;
+	endif
+
+	if(town_id and CInt(GetObjProperty(stone, "town")) == CInt(town_id))
+		return 1;
+	endif
+
+	var stone_region := CStr(GetObjProperty(stone, "regionname"));
+	if(stone_region and CStr(stone_region) == CStr(region_name))
+		return 1;
+	endif
+
+	if(region_range.size() >= 4 and IsPointInRange(stone.x, stone.y, region_range))
+		return 1;
+	endif
+
+	if(use_lost_lands_fallback and lost_lands_range.size() >= 4 and IsPointInRange(stone.x, stone.y, lost_lands_range))
+		return 1;
+	endif
+
+	return 0;
+endfunction
+
+
+function GetRegionRange(regions_cfg, region_name)
+	if(!regions_cfg or !region_name)
+		return {};
+	endif
+
+	var elem := regions_cfg[region_name];
+	if(!elem)
+		elem := FindConfigElem(regions_cfg, region_name);
+	endif
+	if(!elem)
+		return {};
+	endif
+
+	var coords := GetConfigStringArray(elem, "Range");
+	if(!coords or coords.size() < 4)
+		return {};
+	endif
+
+	return { CInt(coords[1]), CInt(coords[2]), CInt(coords[3]), CInt(coords[4]) };
+endfunction
+
+
+function IsPointInRange(x, y, range)
+	if(!range or range.size() < 4)
+		return 0;
+	endif
+
+	return (x >= range[1] and x <= range[3] and y >= range[2] and y <= range[4]);
+endfunction
+
+
+function IsRangeInsideRange(inner_range, outer_range)
+	if(!inner_range or inner_range.size() < 4 or !outer_range or outer_range.size() < 4)
+		return 0;
+	endif
+
+	return (inner_range[1] >= outer_range[1] and
+			inner_range[2] >= outer_range[2] and
+			inner_range[3] <= outer_range[3] and
+			inner_range[4] <= outer_range[4]);
+endfunction

@@ -1,0 +1,244 @@
+use uo;
+use os;
+use datafile;
+
+include "tstone";
+
+const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
+const WATCHER_PROP := "#TownstoneElectionWatcherRunning";
+const WATCHER_INTERVAL_SECONDS := 5;
+const TOWNSTONE_OBJTYPE := 0xa320;
+const TOWNSTONE_SEARCH_RANGE := 10000;
+
+
+var user;
+var stone;
+var citizen;
+var city;
+var mayor;
+var mayorserial;
+var populacao;
+var eleicoes;
+var pleibicito;
+var candidatos;
+var votepercent;
+var votos;
+var timer;
+var Pleibicito_Result;
+var nextcitizenelection;
+
+
+program TownstoneElectionWatcher()
+	if(GetGlobalProperty(WATCHER_PROP))
+		return;
+	endif
+
+	SetGlobalProperty(WATCHER_PROP, 1);
+	SysLog("[TownstoneElectionWatcher] started");
+
+	while(1)
+		var active_count := ProcessActiveTownstones();
+		if(active_count <= 0)
+			break;
+		endif
+
+		Sleep(WATCHER_INTERVAL_SECONDS);
+	endwhile
+
+	EraseGlobalProperty(WATCHER_PROP);
+	SysLog("[TownstoneElectionWatcher] stopped");
+endprogram
+
+
+function ProcessActiveTownstones()
+	var townstones := ListItemsNearLocationOfType(0, 0, LIST_IGNORE_Z, TOWNSTONE_SEARCH_RANGE, TOWNSTONE_OBJTYPE, "britannia");
+	if(!townstones or !townstones.size())
+		return 0;
+	endif
+
+	var now := ReadGameClock();
+	var active_count := 0;
+
+	foreach item in townstones
+		if(!item)
+			continue;
+		endif
+
+		if(!CInt(GetObjProperty(item, "town")))
+			continue;
+		endif
+
+		LoadTownstoneState(item);
+		if(!(eleicoes or pleibicito))
+			continue;
+		endif
+
+		var poll_full_participation := (pleibicito and populacao > 0 and votos >= populacao);
+		if((timer > 0 and timer <= now) or poll_full_participation)
+			eleicao(item);
+			LoadTownstoneState(item);
+		endif
+
+		if(eleicoes or pleibicito)
+			active_count := active_count + 1;
+		endif
+	endforeach
+
+	return active_count;
+endfunction
+
+
+function LoadTownstoneState(item)
+	stone := CInt(GetObjProperty(item, "town"));
+	city := GetTownName(stone);
+	if(!city)
+		city := CStr(GetObjProperty(item, "regionname"));
+	endif
+
+	mayor := GetObjProperty(item, "mayor");
+	mayorserial := CInt(GetObjProperty(item, "mayorserial"));
+	populacao := CInt(GetObjProperty(item, "populacao"));
+	eleicoes := CInt(GetObjProperty(item, "eleicao"));
+	pleibicito := GetObjProperty(item, "pleibicito");
+	candidatos := GetObjProperty(item, "candidatos");
+	votepercent := CInt(GetObjProperty(item, "votepercent"));
+	votos := CInt(GetObjProperty(item, "votos"));
+	timer := CInt(GetObjProperty(item, "timer"));
+	Pleibicito_Result := GetObjProperty(item, "Pleibicito_Result");
+	nextcitizenelection := CInt(GetObjProperty(item, "nextcitizenelection"));
+	citizen := GetObjProperty(item, "citizen");
+
+	if(!citizen)
+		citizen := {};
+	endif
+	if(!candidatos)
+		candidatos := {};
+	endif
+	if(!populacao)
+		populacao := 0;
+	endif
+	if(!votos)
+		votos := 0;
+	endif
+	if(!votepercent)
+		votepercent := 0;
+	endif
+	if(!mayor or !mayorserial)
+		mayor := "No mayor";
+		mayorserial := 0;
+	endif
+	if(!timer)
+		timer := 0;
+	endif
+	if(!nextcitizenelection)
+		nextcitizenelection := 0;
+	endif
+	if(!Pleibicito_Result)
+		Pleibicito_Result := {};
+	endif
+	if(len(pleibicito) < 2 or !pleibicito)
+		pleibicito := 0;
+	endif
+endfunction
+
+
+function OpenTownstoneDataFile()
+	var df := OpenDataFile(TOWNSTONE_DATAFILE);
+	if(!df)
+		CreateDataFile(TOWNSTONE_DATAFILE, flags := DF_KEYTYPE_STRING);
+		df := OpenDataFile(TOWNSTONE_DATAFILE);
+	endif
+	return df;
+endfunction
+
+
+function TouchTownstoneRegionEntry(item, region_name)
+	if(!region_name)
+		return;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	if(gold < 0)
+		gold := 0;
+	endif
+
+	var mayor_state := GetObjProperty(item, "mayor");
+	if(!mayor_state)
+		mayor_state := "No mayor";
+	endif
+	var mayorserial_state := CInt(GetObjProperty(item, "mayorserial"));
+	if(mayorserial_state < 0)
+		mayorserial_state := 0;
+	endif
+	var populacao_state := CInt(GetObjProperty(item, "populacao"));
+	if(populacao_state < 0)
+		populacao_state := 0;
+	endif
+	var eleicao_state := CInt(GetObjProperty(item, "eleicao"));
+	if(eleicao_state < 0)
+		eleicao_state := 0;
+	endif
+	var pleibicito_state := GetObjProperty(item, "pleibicito");
+	if(!pleibicito_state)
+		pleibicito_state := 0;
+	endif
+	var candidatos_state := GetObjProperty(item, "candidatos");
+	if(!candidatos_state)
+		candidatos_state := {};
+	endif
+	var votos_state := CInt(GetObjProperty(item, "votos"));
+	if(votos_state < 0)
+		votos_state := 0;
+	endif
+	var votepercent_state := CInt(GetObjProperty(item, "votepercent"));
+	if(votepercent_state < 0)
+		votepercent_state := 0;
+	endif
+	var timer_state := CInt(GetObjProperty(item, "timer"));
+	if(timer_state < 0)
+		timer_state := 0;
+	endif
+	var poll_result_state := GetObjProperty(item, "Pleibicito_Result");
+	if(!poll_result_state)
+		poll_result_state := {};
+	endif
+	var next_election_state := CInt(GetObjProperty(item, "nextcitizenelection"));
+	if(next_election_state < 0)
+		next_election_state := 0;
+	endif
+	var citizen_state := GetObjProperty(item, "citizen");
+	if(!citizen_state)
+		citizen_state := {};
+	endif
+
+	elem.SetProp("gold", gold);
+	elem.SetProp("town_id", CInt(GetObjProperty(item, "town")));
+	elem.SetProp("stone_serial", item.serial);
+	elem.SetProp("mayor", mayor_state);
+	elem.SetProp("mayorserial", mayorserial_state);
+	elem.SetProp("populacao", populacao_state);
+	elem.SetProp("eleicao", eleicao_state);
+	elem.SetProp("pleibicito", pleibicito_state);
+	elem.SetProp("candidatos", candidatos_state);
+	elem.SetProp("votos", votos_state);
+	elem.SetProp("votepercent", votepercent_state);
+	elem.SetProp("timer", timer_state);
+	elem.SetProp("Pleibicito_Result", poll_result_state);
+	elem.SetProp("nextcitizenelection", next_election_state);
+	elem.SetProp("citizen", citizen_state);
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction

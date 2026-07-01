@@ -1,0 +1,82 @@
+use uo;
+use os;
+use datafile;
+
+const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
+
+program Logon(who)
+	var town_id := CInt(GetObjProperty(who, "town"));
+	if(!town_id)
+		return 1;
+	endif
+
+	var town_list := GetGlobalProperty("townlist");
+	if(!town_list or !town_list[town_id])
+		return 1;
+	endif
+
+	var region_name := CStr(town_list[town_id]);
+	if(!region_name)
+		return 1;
+	endif
+
+	var df := OpenDataFile(TOWNSTONE_DATAFILE);
+	if(!df)
+		return 1;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 1;
+	endif
+
+	var eleicao := CInt(elem.GetProp("eleicao"));
+	var pleibicito := elem.GetProp("pleibicito");
+	var timer := CInt(elem.GetProp("timer"));
+	var votepercent := CInt(elem.GetProp("votepercent"));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+
+	if(eleicao)
+		SendSysMessage(who, "Town notice: An election is running in " + region_name + ".");
+		SendSysMessage(who, "Current participation: " + CStr(votepercent) + "%.");
+		if(timer > ReadGameClock())
+			SendSysMessage(who, "Election ends in " + FormatDuration(timer - ReadGameClock()) + ".");
+		endif
+	endif
+
+	if(pleibicito and Len(CStr(pleibicito)) >= 2)
+		SendSysMessage(who, "Town notice: A poll is running in " + region_name + ".");
+		SendSysMessage(who, "Poll question: " + CStr(pleibicito));
+		SendSysMessage(who, "Current participation: " + CStr(votepercent) + "%.");
+		if(timer > ReadGameClock())
+			SendSysMessage(who, "Poll ends in " + FormatDuration(timer - ReadGameClock()) + ".");
+		endif
+	endif
+
+	return 1;
+endprogram
+
+
+function FormatDuration(seconds_left)
+	if(seconds_left <= 0)
+		return "0m";
+	endif
+
+	var days := CInt(seconds_left / 86400);
+	var timeremaining := seconds_left - (days * 86400);
+	var hours := CInt(timeremaining / 3600);
+	timeremaining := timeremaining - (hours * 3600);
+	var minutes := CInt(timeremaining / 60);
+
+	var parts := "";
+	if(days > 0)
+		parts := parts + CStr(days) + "d ";
+	endif
+	if(hours > 0 or days > 0)
+		parts := parts + CStr(hours) + "h ";
+	endif
+	parts := parts + CStr(minutes) + "m";
+
+	return parts;
+endfunction

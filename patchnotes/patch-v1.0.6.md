@@ -4,7 +4,7 @@
 
 ---
 
-Welcome to **Patch 1.0.6**. This update introduces **Champion Relics** and the **World Gem**, fixes several crafting/resource edge cases, resolves runebook overflow behavior, and adds follow-up gameplay tuning for High Priest, Dual Planar, loot tables, and INT-based skill advancement.
+Welcome to **Patch 1.0.6**. This update introduces **Champion Relics** and the **World Gem**, fixes several crafting/resource edge cases, resolves runebook overflow behavior, adds follow-up gameplay tuning for High Priest, Dual Planar, loot tables, and INT-based skill advancement, and overhauls the Townstone system with treasury, election, and persistence improvements.
 
 ---
 
@@ -148,6 +148,7 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 - New bundle purchase options were added for transcription-related vanity items.
 - You can now buy certain transcription items in bulk packs (including higher-count bundles) instead of one-by-one only.
+- Transcendence scroll bulk bundle options were added back in.
 - Bundle creation now includes stricter backpack-space handling to reduce failed purchase edge cases.
 
 ---
@@ -170,6 +171,30 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 ---
 
+## 🏛️ Townstones - Treasury, Elections, and Persistence Rework
+
+### Player Impact
+
+- Townstones were reworked to use persistent datastore-backed town data.
+- Town treasury gold is now tracked persistently and shown directly on the townstone.
+- Citizens can donate cheque gold to the town treasury from the townstone gump.
+- Election and poll flows were reworked for improved reliability.
+- Election/poll expiry now resolves even if nobody has the townstone gump open.
+- Latest poll results are shown on the townstone after a poll ends.
+- Town election cooldown messaging is clearer, including time-until-next-election information.
+- Townstone data now survives delete/recreate flows for the same region.
+
+---
+
+## 🏦 Banker - Cheque Prompt Improvement
+
+### Player Impact
+
+- Bankers now better account for the total gold you can convert into cheques when prompting cheque creation.
+- This improves cheque usability when your available value includes cheque-backed amounts, not just loose gold.
+
+---
+
 ## 📋 Summary
 
 ✅ Champion Relics added — summon a boss from your artifact  
@@ -187,8 +212,12 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 ✅ High Priest gives a good-standing relationship response  
 ✅ INT-based skill gain tuning updated  
 ✅ Vanity shop now supports bulk options for transcription items  
+✅ Transcendence scroll bulk bundles were restored  
 ✅ Custom item dye/rename now require target item in backpack  
-✅ `.akill` now excludes staff mobiles
+✅ `.akill` now excludes staff mobiles  
+✅ Townstones now persist treasury/election data more reliably  
+✅ Town treasury donations, balances, and poll/election handling were reworked  
+✅ Banker cheque creation now uses improved total-available prompting
 
 ---
 

@@ -80,18 +80,18 @@ endif
 
 // endprogram
 
-var gump := GFCreateGump(20, 20, 700, 635);
+var gump := GFCreateGump(20, 20, 800, 635);
 
 // The main gump screen
 //GFResizePic(gump, 20, 20, 9250, 230, 400);
 //GFGumpPic(gump, 20, 20, 3500);
-GFResizePic(gump, 20, 20, 3500, 700, 635);
+GFResizePic(gump, 20, 20, 3500, 800, 635);
 
 //GFResizePic(gump, 70, 32, 9200, 131, 27);
 
-GFHTMLArea(gump, 35, 55, 660, 575, displayinfo, 1, 1);
+GFHTMLArea(gump, 35, 55, 760, 575, displayinfo, 1, 1);
 
-GFTextLine(gump, 300, 35, 67, "Command List");
+GFTextLine(gump, 350, 35, 67, "Command List");
 
 var result := GFSendGump(who, gump);
 

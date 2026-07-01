@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.6
-**Range:** `9b695eb` (origin/Patch-1.0.5) -> `9b8a144` (HEAD)  
+**Range:** `9b695eb` (origin/Patch-1.0.5) -> `63dadb5` (HEAD)  
 **Branch:** Patch-1.0.6  
 **Date:** 2026-06-03 -> 2026-07-01  
-**Commits in range:** 17 (excluding merge commits)  
-**Files changed:** 39 | +1445 / -181
+**Commits in range:** 23 (excluding merge commits)  
+**Files changed:** 61 | +5994 / -648
 
 ---
 
@@ -17,10 +17,11 @@
 6. [Commit Timeline](#6-commit-timeline)
 7. [Runebook Overflow Fix and MoveObject Migration](#7-runebook-overflow-fix-and-moveobject-migration)
 8. [High Priest Relationship Prompt, Dual Planar Gate Change, and Life Crystal Loot Expansion](#8-high-priest-relationship-prompt-dual-planar-gate-change-and-life-crystal-loot-expansion)
+9. [Omega Cache and Areas Refresh Fixes](#9-omega-cache-and-areas-refresh-fixes)
+10. [INT Skill Advancement Updates](#10-int-skill-advancement-updates)
+11. [Vanity Shop Bulk Options and Akill Staff Safety](#11-vanity-shop-bulk-options-and-akill-staff-safety)
+12. [Townstone Rewrite, Treasury, and Election Watcher](#12-townstone-rewrite-treasury-and-election-watcher)
 13. [Patchnotes and Launcher Copy Maintenance](#13-patchnotes-and-launcher-copy-maintenance)
-10. [Omega Cache and Areas Refresh Fixes](#10-omega-cache-and-areas-refresh-fixes)
-11. [INT Skill Advancement Updates](#11-int-skill-advancement-updates)
-12. [Vanity Shop Bulk Options and Akill Staff Safety](#12-vanity-shop-bulk-options-and-akill-staff-safety)
 
 ---
 
@@ -226,6 +227,12 @@ Several crafting scripts had bugs where resources could be consumed from or vali
 | `34ef696` | 2026-07-01 | Added in world gem along with 2 week timer; changed color of artifact cliloc |
 | `852ba1c` | 2026-07-01 | Updated patchnotes |
 | `9b8a144` | 2026-07-01 | Added bulk options for transcription items; fixed `.akill` so it does not hit staff |
+| `5fd5275` | 2026-07-01 | Patchnotes update |
+| `f3920aa` | 2026-07-01 | Townstone package rewrite; datastore migration; banker cheque update; treasury/admin commands |
+| `5a8af3b` | 2026-07-01 | Election updates when timer expires whether gump is open or not |
+| `c43d7fa` | 2026-07-01 | Final Townstone fixes |
+| `3ba67e8` | 2026-07-01 | Patch Notes Update |
+| `63dadb5` | 2026-07-01 | Transcendence bulk scrolls added back in |
 
 ---
 
@@ -316,7 +323,7 @@ This pass added three gameplay-facing adjustments: better discoverability for Hi
 
 ---
 
-## 10. Omega Cache and Areas Refresh Fixes
+## 9. Omega Cache and Areas Refresh Fixes
 
 ### Files Changed
 | File | Change |
@@ -341,7 +348,7 @@ These are maintenance/staff-facing fixes. The Omega Cache path now initializes c
 
 ---
 
-## 11. INT Skill Advancement Updates
+## 10. INT Skill Advancement Updates
 
 ### Files Changed
 | File | Change |
@@ -364,7 +371,7 @@ The skill definition file received a broad tuning pass on advancement values, es
 
 ---
 
-## 12. Vanity Shop Bulk Options and Akill Staff Safety
+## 11. Vanity Shop Bulk Options and Akill Staff Safety
 
 ### Files Changed
 | File | Change |
@@ -384,6 +391,7 @@ This update expands vanity shop purchasing behavior with bulk options for transc
 **Vanity Shop (`vanityshop.src`):**
 - Introduced `AddVanityItem(...)` helper with explicit `Amount` support.
 - Added multi-quantity listing/purchase paths (including bundled amounts) for selected entries.
+- Restored bundled `x5` and `x10` options for transcendence scroll entries.
 - Bundle purchases create items in a temporary container then move into backpack, with explicit failure handling when space is insufficient.
 - Expanded debug prints around purchase flow and token validation.
 
@@ -401,8 +409,83 @@ This update expands vanity shop purchasing behavior with bulk options for transc
 ### Expected Impact
 
 - Players can buy selected transcription vanity items in bundles instead of only single-item purchases.
+- Transcendence scroll bulk bundle options are available again.
 - Vanity rename/dye interactions are now constrained to backpack-contained items for safer targeting.
 - Staff are protected from accidental `.akill` collateral in operational use.
+
+---
+
+## 12. Townstone Rewrite, Treasury, and Election Watcher
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `pkg/opt/townstones/tstone.src` | Major townstone gump/state rewrite: persistent treasury display, cheque donation flow, latest poll result display, election cooldown messaging, candidate/poll pagination, datastore sync hooks |
+| `pkg/opt/townstones/tstone.inc` | Reworked election/poll resolution logic, datastore synchronization, watcher startup hooks, and citizen election cooldown handling |
+| `pkg/opt/townstones/electionwatch.src` | New background watcher that resolves elections/polls when timers expire even without an open gump |
+| `pkg/opt/townstones/itemdesc.cfg` | Updated townstone item descriptors |
+| `pkg/opt/townstones/logon.src` | Restores and syncs townstone-related player state on login |
+| `pkg/opt/townstones/start.src` | Starts town list bootstrap on package startup |
+| `pkg/opt/townstones/townlistbootstrap.src` | Bootstraps/repairs cached town list data used by townstone package |
+| `pkg/opt/townstones/upgrades.cfg` | New townstone upgrade configuration surface |
+| `pkg/opt/townstones/textcmd/admin/createtownstone.src` | New primary admin command to create/recreate a townstone while restoring saved datastore state |
+| `pkg/opt/townstones/textcmd/admin/createstone.src` | Removed/replaced older create command path |
+| `pkg/opt/townstones/textcmd/admin/fixstone.src` | Updated repair/reset behavior for datastore-backed townstones |
+| `pkg/opt/townstones/textcmd/admin/cleartownmembers.src` | New admin command to clear all members and sync townstone state |
+| `pkg/opt/townstones/textcmd/admin/removetownmember.src` | New admin command to remove one targeted member and clean vote/candidate state |
+| `pkg/opt/townstones/textcmd/admin/resetpoll.src` | New admin command to clear only poll data from a townstone |
+| `pkg/opt/townstones/textcmd/admin/gettowngold.src` | New admin command to withdraw treasury gold into a cheque |
+| `pkg/opt/townstones/textcmd/admin/townbankstatus.src` | New admin treasury overview/toggle gump command for all towns |
+| `scripts/ai/banker.src` | Banker cheque creation prompt now accounts for total cheque-convertible value more accurately |
+| `pkg/std/dundee/globeofsosaria.src` | Added townstone/town data integration helper behavior to globe interactions |
+| `pkg/std/dundee/itemdesc.cfg` | Added itemdesc support for the updated Dundee/townstone helper item surface |
+| `scripts/textcmd/player/commands.src` | Registered player-facing townstone command access/synopsis entries |
+| `scripts/textcmd/test/mdestroy.src` | Added/updated test helper relevant to removing/destroying objects during townstone work |
+| `config/command_synopses.cfg` | Regenerated to include new admin/player command synopsis data |
+
+### Overview
+
+The Townstone package was substantially rewritten. Town data now persists in a datastore keyed by town/region, allowing townstones to be recreated without losing mayor/population/treasury/election state. Treasury management, election handling, poll state, and staff tooling were expanded, and a background watcher now resolves elections and polls when their timers expire even if no player has the townstone gump open.
+
+### Notable Functional Changes
+
+**Datastore-backed town persistence:**
+- Townstone state is now mirrored into `:townstone:townstone_data`.
+- Persisted fields include mayor, mayor serial, population, election/poll state, candidates, votes, poll results, cooldown timers, treasury gold, and stone serial.
+- Recreating a townstone for an existing region restores saved state instead of starting from scratch.
+
+**Town treasury and cheque donation flow:**
+- Townstone gump now shows current treasury gold.
+- Added `Donate cheque` path on the townstone gump.
+- Treasury gold is tracked per region and exposed through admin commands such as town bank status and treasury withdrawal.
+- `gettowngold` creates treasury-labelled cheques in backpack and reduces the stored town gold total.
+
+**Election and poll reliability:**
+- Added `TownstoneElectionWatcher` polling loop with a 5-second interval.
+- Elections/polls now resolve when timer expires even if the townstone gump is closed.
+- Polls can also auto-resolve on full participation.
+- Latest poll result is stored and shown back on the gump.
+- Citizen-triggered election cooldown is persisted via `nextcitizenelection`.
+
+**Townstone gump/UI flow:**
+- Rebuilt gump supports paged candidate/poll option lists.
+- Mayor/citizen/non-citizen views are more explicit.
+- Gump now shows mayorship term remaining, poll/election timer remaining, treasury total, and latest poll result.
+
+**Admin/staff tooling:**
+- Added commands to create/recreate townstones, clear all members, remove one member, reset poll state, view all town treasuries, and withdraw town treasury gold.
+- Member removal also cleans related candidate/vote state and syncs datastore.
+- Startup/bootstrap and login sync paths were added to keep townlist and townstone state consistent.
+
+**Banker cheque update:**
+- Banker cheque flow now totals available cheque-convertible amount more accurately before prompting for cheque amount.
+
+### Expected Impact
+
+- Towns now retain core state across townstone recreation and server maintenance.
+- Town elections and polls are less likely to stall waiting on player interaction.
+- Treasury donation/visibility is now first-class in the townstone system.
+- Staff have significantly better tooling for repairing or administering towns.
 
 ---
 
