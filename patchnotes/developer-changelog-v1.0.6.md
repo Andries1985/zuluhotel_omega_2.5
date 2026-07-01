@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.6
-**Range:** `9b695eb` (origin/Patch-1.0.5) -> `d1f52d9` (HEAD)  
+**Range:** `9b695eb` (origin/Patch-1.0.5) -> `34ef696` (HEAD)  
 **Branch:** Patch-1.0.6  
-**Date:** 2026-06-03 -> 2026-06-30  
-**Commits in range:** 6 (excluding merge commits)  
-**Files changed:** 30 | +876 / -87
+**Date:** 2026-06-03 -> 2026-07-01  
+**Commits in range:** 15 (excluding merge commits)  
+**Files changed:** 34 | +1204 / -153
 
 ---
 
@@ -18,6 +18,8 @@
 7. [Runebook Overflow Fix and MoveObject Migration](#7-runebook-overflow-fix-and-moveobject-migration)
 8. [High Priest Relationship Prompt, Dual Planar Gate Change, and Life Crystal Loot Expansion](#8-high-priest-relationship-prompt-dual-planar-gate-change-and-life-crystal-loot-expansion)
 9. [Patchnotes and Launcher Copy Maintenance](#9-patchnotes-and-launcher-copy-maintenance)
+10. [Omega Cache and Areas Refresh Fixes](#10-omega-cache-and-areas-refresh-fixes)
+11. [INT Skill Advancement Updates](#11-int-skill-advancement-updates)
 
 ---
 
@@ -74,19 +76,20 @@ The `Follow()` function had a pattern where every early-return branch (multi mis
 | File | Change |
 |------|--------|
 | `pkg/opt/ArtifactSystem/artifact.inc` | Added `ARTIFACT_EXPIRE_PROP` const, null-safe `getItemArtifactBox`, recycle prop cleanup, `SweepExpiredArtifacts` and `SweepExpiredArtifactsInContainer` functions |
-| `pkg/opt/ArtifactSystem/artifactbox.src` | Added Champion Relic objtype consts, decay timer assignment on pull, null guard |
+| `pkg/opt/ArtifactSystem/artifactbox.src` | Added Champion Relic and World Gem objtype consts, decay timer assignment on pull, null guard |
 | `pkg/opt/ArtifactSystem/championrelic.src` | New script — use handler for Champion Relics; spawns a champion boss and destroys relic |
-| `pkg/opt/ArtifactSystem/itemdesc.cfg` | Added item entries for Champion Relic Tier 1 (`0x7991`) and Tier 2 (`0x7992`) |
+| `pkg/opt/ArtifactSystem/itemdesc.cfg` | Added item entries for Champion Relic Tier 1 (`0x7991`), Tier 2 (`0x7992`), and World Gem (`0x7993`) |
 | `pkg/opt/ArtifactSystem/artifact_daily_sweeper.src` | New script — daily daemon that calls `SweepExpiredArtifacts` |
 | `pkg/opt/ArtifactSystem/artifact_startup_sweeper.src` | New script — one-shot startup sweep to catch any expired artifacts from before the feature existed |
-| `pkg/packethooks/megacliloc/itemdata.src` | Added artifact expiry countdown display and `FormatDuration()` helper |
+| `pkg/opt/ArtifactSystem/worldgem.src` | New script — blesses targeted items and consumes the World Gem |
+| `pkg/packethooks/megacliloc/itemdata.src` | Added artifact expiry countdown display, artifact color styling update, and `FormatDuration()` helper |
 | `scripts/start.src` | Registered artifact sweeper daemons at startup |
 | `.gitignore` | Minor update |
 | `pkg/opt/ArtifactSystem/artifact-system-summary.txt` | Internal system documentation |
 
 ### Overview
 
-Two new artifact items have been added to the Artifact System: Champion Relics (Tier 1 and Tier 2). These are obtained from the artifact box and allow players to summon a champion-level boss when activated. Relics have a 14-day decay timer and are destroyed on use. A sweep system was also added to automatically remove expired relics from all storage areas.
+Three artifact items have been added or updated in the Artifact System: Champion Relics (Tier 1 and Tier 2) and the World Gem. Champion Relics are obtained from the artifact box and allow players to summon a champion-level boss when activated. The World Gem is a targeted bless-use item. All three use the same 14-day artifact decay flow. A sweep system was also added to automatically remove expired relics from all storage areas.
 
 ### Notable Functional Changes
 
@@ -94,6 +97,8 @@ Two new artifact items have been added to the Artifact System: Champion Relics (
 - `0x7991` — Champion Relic (Tier 1): `MagicItemLevel i10`, activates barracoon or erebuschaosgod.
 - `0x7992` — Champion Relic (Tier 2): `MagicItemLevel i11`, activates rikktor or nyxseductress.
 - Both use graphic `0x3CC1` and are tagged with `Artifact i1` CProp.
+- `0x7993` — World Gem: `graphic 0x3DDA`, blesses a targeted item and is tagged with `Artifact i1` CProp.
+- Artifact box itself is now movable (`Weight 5`, `Movable i1`).
 
 **Artifact Box Distribution:**
 - When a Champion Relic is pulled from the artifact box, it receives:
@@ -102,6 +107,7 @@ Two new artifact items have been added to the Artifact System: Champion Relics (
   - `RelicUID` set to a random integer for uniqueness tracking.
 - When a relic is recycled back into the artifact box, all expiry/uid props are erased so it restarts fresh on next pull.
 - Added null guard: if artifact box is empty, `getItemArtifactBox()` returns `0` (no crash).
+- World Gem also receives the 14-day decay timer when pulled from the artifact box.
 
 **Champion Relic Use Script (`championrelic.src`):**
 - Blocks activation in safe areas, guarded areas, and NOPK areas.
@@ -109,6 +115,12 @@ Two new artifact items have been added to the Artifact System: Champion Relics (
 - Plays visual effect (`0x3728`) and sound (`0x01FE`) on boss spawn location.
 - Destroys the relic on successful boss spawn.
 - Returns graceful failure message if `CreateNpcFromTemplate` fails.
+
+**World Gem Use Script (`worldgem.src`):**
+- Prompts the user to target an item.
+- Refuses invalid targets and already-blessed items.
+- Sets the target's `newbie` flag to bless it.
+- Consumes the gem after a successful bless.
 
 **Expiry Sweeper:**
 - `SweepExpiredArtifacts(scope)` iterates all storage areas and recursively checks containers for expired artifact items (where `expire_at <= now`). Destroys expired items and logs a summary.
@@ -118,14 +130,17 @@ Two new artifact items have been added to the Artifact System: Champion Relics (
 
 **MegaCliloc Expiry Display:**
 - Artifact items tagged with `#ArtifactExpireAt` now show a human-readable countdown in item tooltips.
+- Artifact label color was changed to a highlighted orange style.
 - Display: `"Artifact expires in Xd Xh Xm Xs"` (or `"Artifact expired, pending sweep"` if timer elapsed).
 - `FormatDuration(total_seconds)` helper added to handle days/hours/minutes/seconds formatting.
 
 ### Expected Impact
 
 - Champion Relics are now obtainable from artifact boxes and can be activated in the open world to summon a champion-class boss.
+- World Gem can be used from the artifact box to bless a target item.
 - Expired relics are swept from player storage/banks automatically.
 - Players can inspect relic time-remaining from item tooltip.
+- Artifact items now present with updated orange artifact styling in the tooltip.
 
 ---
 
@@ -199,6 +214,15 @@ Several crafting scripts had bugs where resources could be consumed from or vali
 | `1e993f0` | 2026-06-25 | Patchnotes update |
 | `fd01eae` | 2026-06-25 | Fix for runebooks with full backpack; updated deprecated code |
 | `d1f52d9` | 2026-06-30 | Added more life crystals to junk; High Priest relationship cost prompt; Dual Planar protection check removal |
+| `5d7836f` | 2026-06-30 | Patch Notes Update |
+| `b597f9b` | 2026-06-30 | Max Cache error |
+| `fa8fa68` | 2026-06-30 | Artifact Fix |
+| `e643e1c` | 2026-07-01 | Areas change; artifact box made movable |
+| `369ee35` | 2026-07-01 | Try and move recall scrolls to feet when bag is full |
+| `aa8d527` | 2026-07-01 | Scrolls kept on runebook insert if backpack is full; drop to ground |
+| `490bdf6` | 2026-07-01 | INT skill gain updates |
+| `3e3a029` | 2026-07-01 | Added relationship advice if in good standing |
+| `34ef696` | 2026-07-01 | Added in world gem along with 2 week timer; changed color of artifact cliloc |
 
 ---
 
@@ -268,6 +292,7 @@ This pass added three gameplay-facing adjustments: better discoverability for Hi
 - When player has `PriestUpset`, priest now checks speech text for `relationship`/`Relationship`.
 - Calculates donation requirement as `GetClasseLevel(player) * 2500`.
 - If class level is unavailable/zero, priest provides fallback line: any donation can begin repair.
+- If the relationship is already in good standing, priest now says so directly.
 - Existing refusal lines remain for other upset-state speech.
 
 **Dual Planar (`dualplanaronhit.src`):**
@@ -282,8 +307,57 @@ This pass added three gameplay-facing adjustments: better discoverability for Hi
 ### Expected Impact
 
 - Players can explicitly ask High Priest how much gold is needed to repair relationship status.
+- Players now get a direct answer when the relationship is already in good standing.
 - Dual Planar on-hit behavior is now more permissive against previously gated protected targets.
 - Life crystals should appear more frequently from junk-category loot sources.
+
+---
+
+## 10. Omega Cache and Areas Refresh Fixes
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `pkg/opt/omegacache/placecache.src` | Fixed lazy-init cache slot variable name so house Omega Cache counts initialize cleanly |
+| `pkg/opt/areas/textcmd/admin/areas.src` | Added immediate online area-status refresh after `.areas` edits |
+
+### Overview
+
+These are maintenance/staff-facing fixes. The Omega Cache path now initializes cache counters without the previous variable naming issue, and the areas admin command now refreshes online characters immediately so safe/NOPK state changes apply without needing to leave and re-enter the region.
+
+### Notable Functional Changes
+
+- `placecache.src` now stores the initial cache count in `maxcache` instead of reusing a generic `max` local.
+- `areas.src` now includes `:areas:include/areafunctions` and calls `RefreshOnlineAreaStatus()` after saving edited area data.
+- `RefreshOnlineAreaStatus()` re-evaluates safe-area and NOPK state for online characters after area edits.
+
+### Expected Impact
+
+- Omega Cache values initialize correctly on houses/signs that had not yet been opened.
+- Staff editing area data see the resulting status changes applied immediately to players already online.
+
+---
+
+## 11. INT Skill Advancement Updates
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `pkg/opt/shilhook/skillsdef.cfg` | Rebalanced several `IntAdv` and a few related advancement values across skill definitions |
+
+### Overview
+
+The skill definition file received a broad tuning pass on advancement values, especially for intelligence-based skills.
+
+### Notable Functional Changes
+
+- Several INT-linked skill advancement profiles were increased or adjusted, including skills such as Alchemy, Item Identification, Peacemaking, Inscription, Evaluating Intelligence, Tracking, Veterinary, Magery-related skills, and others.
+- A few non-INT advancement lines were also cleaned up or retuned alongside the intelligence pass.
+
+### Expected Impact
+
+- Skill gain pacing for affected skills is now different than before.
+- This is a tuning pass, not a rules/system rewrite.
 
 ---
 
