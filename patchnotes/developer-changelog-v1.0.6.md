@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.6
-**Range:** `9b695eb` (origin/Patch-1.0.5) -> `63dadb5` (HEAD)  
+**Range:** `9b695eb` (origin/Patch-1.0.5) -> `4b5c17b` (HEAD)  
 **Branch:** Patch-1.0.6  
-**Date:** 2026-06-03 -> 2026-07-01  
-**Commits in range:** 23 (excluding merge commits)  
-**Files changed:** 61 | +5994 / -648
+**Date:** 2026-06-03 -> 2026-07-02  
+**Commits in range:** 29 (excluding merge commits)  
+**Files changed:** 66 | +6278 / -667
 
 ---
 
@@ -21,7 +21,8 @@
 10. [INT Skill Advancement Updates](#10-int-skill-advancement-updates)
 11. [Vanity Shop Bulk Options and Akill Staff Safety](#11-vanity-shop-bulk-options-and-akill-staff-safety)
 12. [Townstone Rewrite, Treasury, and Election Watcher](#12-townstone-rewrite-treasury-and-election-watcher)
-13. [Patchnotes and Launcher Copy Maintenance](#13-patchnotes-and-launcher-copy-maintenance)
+13. [Tracking, Winds Breath, Reanimation, and Admin Cleanup](#13-tracking-winds-breath-reanimation-and-admin-cleanup)
+14. [Patchnotes and Launcher Copy Maintenance](#14-patchnotes-and-launcher-copy-maintenance)
 
 ---
 
@@ -233,6 +234,12 @@ Several crafting scripts had bugs where resources could be consumed from or vali
 | `c43d7fa` | 2026-07-01 | Final Townstone fixes |
 | `3ba67e8` | 2026-07-01 | Patch Notes Update |
 | `63dadb5` | 2026-07-01 | Transcendence bulk scrolls added back in |
+| `f6b586d` | 2026-07-01 | Patch Notes Update |
+| `4700fed` | 2026-07-01 | Added deletion support for old town datastore regions |
+| `f8dfd1b` | 2026-07-01 | Reanimated creature loot transfer update; Soul Whisperer summon restriction |
+| `dd7eee0` | 2026-07-01 | Vanity vendor debug removal |
+| `60358cd` | 2026-07-01 | Winds Breath updates; class stats command added |
+| `4b5c17b` | 2026-07-02 | Tracking fix so players can be tracked again |
 
 ---
 
@@ -475,6 +482,7 @@ The Townstone package was substantially rewritten. Town data now persists in a d
 **Admin/staff tooling:**
 - Added commands to create/recreate townstones, clear all members, remove one member, reset poll state, view all town treasuries, and withdraw town treasury gold.
 - Member removal also cleans related candidate/vote state and syncs datastore.
+- Town treasury status gump can now delete stale region data rows when no stone exists for that region.
 - Startup/bootstrap and login sync paths were added to keep townlist and townstone state consistent.
 
 **Banker cheque update:**
@@ -489,7 +497,61 @@ The Townstone package was substantially rewritten. Town data now persists in a d
 
 ---
 
-## 13. Patchnotes and Launcher Copy Maintenance
+## 13. Tracking, Winds Breath, Reanimation, and Admin Cleanup
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `pkg/std/tracking/tracking.src` | Restored trackable player category handling in tracking menu flow |
+| `pkg/systems/combat/dualplanaronhit.src` | Reworked Winds Breath paralysis duration formula around Holy Protection and Free Action; added clamp and debug output |
+| `scripts/textcmd/test/classstats.src` | New test/admin command that scans accounts and displays class/level distribution shard-wide |
+| `scripts/ai/chaosmultikillpcs.src` | Marked risen creatures for loot transfer and preserved moved loot on no-loot death path |
+| `scripts/ai/newbiemultikillpcs.src` | Same risen-creature loot transfer/preservation updates for newbie variant |
+| `scripts/ai/soulwhisperer.src` | Prevented reanimated Soul Whisperers from triggering summon-threshold boss summons |
+| `pkg/opt/vanityshop/vanityshop.src` | Removed temporary vanity vendor debug `Print(...)` statements after bulk purchase work |
+| `pkg/opt/townstones/textcmd/admin/townbankstatus.src` | Added stale region-data deletion controls to the treasury status gump |
+| `config/command_synopses.cfg` | Regenerated to include new command synopsis updates |
+
+### Overview
+
+This batch combines several late follow-up fixes: tracking now lists players again, Winds Breath paralysis timing was simplified and tied directly to Holy Protection/Free Action, reanimated creatures now preserve transferred loot more reliably, reanimated Soul Whisperers no longer summon bosses, vanity shop debug logging was removed, and town treasury admin UI gained stale-region cleanup controls. A new class stats command was also introduced for shard-wide distribution inspection.
+
+### Notable Functional Changes
+
+**Tracking (`tracking.src`):**
+- Added explicit `IsTrackablePlayer(mobile)` handling before NPC template checks.
+- Restores `Players` as a trackable category when valid nearby players are present.
+
+**Winds Breath (`dualplanaronhit.src`):**
+- Removed prior duration reductions based on magic resistance / mage class scaling in favor of Holy Protection and Free Action branches.
+- `HolyProtection` is clamped to `0..95`.
+- Free Action branch now computes duration on a `0..5` second scale.
+- Non-Free Action branch computes duration on a `0..7` second scale and enforces a minimum 1 second duration when protection is below full immunity.
+- FX duration now has a minimum floor of 1 to avoid invalid effect timing.
+- Added `Print()` and `PrintTextAbovePrivate()` debug output for Winds Breath duration calculation.
+
+**Reanimated creature loot transfer:**
+- Risen creatures now receive `RiseLootTransfer`.
+- Items moved from the original servant backpack are tagged `KeepOnNoLootDeath` before transfer.
+- Reanimated Soul Whisperers skip `CheckSummonThresholds()` when carrying the rise-transfer marker.
+
+**Class stats command:**
+- Added `classstats` test/admin command that scans all accounts/characters, aggregates class counts per level, and presents them in a gump.
+
+**Vanity/town admin cleanup:**
+- Removed temporary vanity vendor debug spam from purchase flow.
+- Town bank status gump now exposes delete controls for leftover datastore regions that no longer have a stone in the world.
+
+### Expected Impact
+
+- Players can use Tracking to find nearby players again.
+- Winds Breath paralysis should now behave more predictably against Holy Protection and Free Action.
+- Reanimated creatures are less likely to lose intended transferred loot, and raised Soul Whisperers no longer chain into boss summon behavior.
+- Staff have better shard-inspection and town-data cleanup tooling.
+
+---
+
+## 14. Patchnotes and Launcher Copy Maintenance
 
 ### Files Changed
 | File | Change |

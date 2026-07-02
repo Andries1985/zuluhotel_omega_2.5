@@ -60,6 +60,14 @@ program track(who)
 	var tiletype;
 	foreach mobile in nearby
 		if((mobile != who) and (!mobile.dead))
+			if(IsTrackablePlayer(mobile))
+				if(!CategoryIndex(category_types, "Players"))
+					category_count := category_count + 1;
+					category_types[category_count] := "Players";
+					category_icons[category_count] := GetTrackingTypeIcon("Players");
+				endif
+				continue;
+			endif
 			if(!mobile.npctemplate)
 				continue;
 			endif
@@ -102,6 +110,14 @@ program track(who)
 	
 	foreach mobile in nearby
 		if((mobile != who) and (!mobile.dead))
+			if(IsTrackablePlayer(mobile))
+				if(listtype == "Players")
+					menucount := menucount + 1;
+					critter_ids[menucount] := mobile;
+					AddMenuItem(track_menu, 0x25F9, mobile.name);
+				endif
+				continue;
+			endif
 			if(!mobile.npctemplate)
 				continue;
 			endif
@@ -234,6 +250,10 @@ function CategoryIndex(categories, value)
 	return 0;
 endfunction
 
+function IsTrackablePlayer(mobile)
+	return (!mobile.npctemplate && mobile.acctname);
+endfunction
+
 function NormalizeTrackingType(value)
 	if(!value)
 		return "";
@@ -281,6 +301,7 @@ function GetTrackingTypeIcon(value)
 		"Ophidian":			return 0x2134;
 		"Orc":				return 0x20E0;
 		"Plant":			return 0x20D2;
+		"Players":			return 0x25F9;
 		"Ratkin":			return 0x20E3;
 		"Slime":			return 0x20E8;
 		"Terathan":			return 0x212C;

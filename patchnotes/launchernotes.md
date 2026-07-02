@@ -188,6 +188,34 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 
 ---
 
+## 🧭 Tracking - Player Tracking Restored
+
+### Player Impact
+
+- Tracking can now properly detect and list nearby players again.
+- The tracking menu once again restores a dedicated **Players** category when valid player targets are nearby.
+
+---
+
+## 🌪️ Winds Breath - Duration Update
+
+### Player Impact
+
+- Winds Breath paralysis duration now scales directly from Holy Protection and Free Action instead of the previous layered resistance/class formula.
+- Targets with Free Action now receive a shorter max paralysis duration than targets without it.
+- Very high Holy Protection can fully negate the paralysis duration.
+
+---
+
+## ☠️ Reanimated Creatures - Loot and Summon Fixes
+
+### Player Impact
+
+- Reanimated creatures now transfer and preserve loot correctly during rise/animation flows.
+- Reanimated Soul Whisperers can no longer summon bosses after being raised.
+
+---
+
 ## 📋 Summary
 
 ✅ Champion Relics added — summon a boss from your artifact  
@@ -210,7 +238,10 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 ✅ `.akill` now excludes staff mobiles  
 ✅ Townstones now persist treasury/election data more reliably  
 ✅ Town treasury donations, balances, and poll/election handling were reworked  
-✅ Banker cheque creation now uses improved total-available prompting
+✅ Banker cheque creation now uses improved total-available prompting  
+✅ Tracking can detect players again  
+✅ Winds Breath paralysis duration was reworked around Holy Protection and Free Action  
+✅ Reanimated creatures now preserve loot correctly and Soul Whisperers no longer summon bosses when raised
 
 ---
 
