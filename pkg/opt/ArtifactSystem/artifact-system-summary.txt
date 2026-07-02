@@ -1,0 +1,100 @@
+Artifact System Comprehensive Summary (Zuluhotel Omega 2.5)
+
+Overview
+The artifact system is a global recycle-and-random-distribution pool for rare items. It lets staff mark items as artifacts, stores them in a global server-side container, and distributes them to players via consumable artifact boxes. Artifact items are normally recycled back into the pool when destroyed/decayed instead of being permanently deleted.
+
+What You Can Do
+1) Mark any item as an artifact so it is protected from permanent loss on normal destruction.
+2) Store artifact items in a global artifact container (shared server-side storage, not character-specific).
+3) Give players artifact boxes (loot/event rewards) that grant one random artifact from the global pool.
+4) Permanently delete an artifact when needed (admin-only bypass of recycle behavior).
+5) Open and manage the artifact pool directly as staff.
+
+Admin Commands
+1) .makeartifact
+- Purpose: Convert a targeted item into an artifact.
+- Behavior: Sets ObjProperty "Artifact" to 1 on the targeted item.
+- Access: Administrator (CmdLevel 4).
+
+2) .openartifact
+- Purpose: Open the artifact management container.
+- Behavior: Opens the global artifact storage container via special container UI.
+- Access: Administrator (CmdLevel 4).
+
+3) .destroyartifact
+- Purpose: Permanently destroy an artifact item.
+- Behavior: Removes ObjProperty "Artifact" first, then destroys the item so it does not recycle.
+- Access: Administrator (CmdLevel 4).
+
+How It Works Internally
+1) Global storage backend
+- Constant ARTIFACT_BOX is "artifactbox".
+- System opens/creates storage area "World Bank".
+- System finds/creates root item "artifactbox" in World Bank as a bankbox object.
+- This is the persistent global pool that holds artifact items.
+
+2) Recycling behavior on destruction
+- Main shard destruction flow checks for ObjProperty "Artifact".
+- If present, item is moved into the global artifact box and destruction is canceled.
+- Result: artifact item is recycled instead of deleted.
+
+3) Random draw distribution
+- Artifact box (loot item) double-click script:
+  a) Enumerates items in the global artifact box.
+  b) Selects one random entry.
+  c) Moves selected item to player backpack.
+  d) Destroys the artifact box item itself.
+- Result: one box = one random pull from the artifact pool.
+
+4) Artifact box item definition
+- Item type 0x7990.
+- Name: artifactbox.
+- Visual: graphic 0x0E80, color 1997.
+- Script: artifactbox (double-click behavior).
+- DestroyScript: ::maindestroy.
+
+5) Package status
+- Package artifactsystem is enabled by default.
+
+Operational Lifecycle (Typical)
+1) Staff marks curated rare items using .makeartifact.
+2) Staff places those items into the global pool via .openartifact.
+3) Loot/events grant artifactbox items to players.
+4) Player opens box and gets one random artifact from the pool.
+5) If that artifact is later destroyed/decays through normal destroy flow, it is recycled back into the global pool.
+6) If staff needs true deletion, use .destroyartifact.
+
+Important Caveats and Quirks
+1) Global shared pool, uniform randomness
+- Current selection is uniform random over the current container contents.
+- No weighting, pity logic, cooldowns, player-specific filtering, or anti-duplicate logic by default.
+
+2) Empty pool edge case
+- The artifactbox script attempts MoveItemToContainer(item, player.backpack) before checking if item is valid.
+- If the pool is empty, behavior depends on engine tolerance for null item move.
+- Practical note: keep at least one item in pool or add script guard logic.
+
+3) Recycling relies on destroy pipeline
+- Artifact recovery depends on the live maindestroy hook path being used.
+- Items bypassing that path may not recycle.
+
+4) Naming quirk in command script
+- File is destroyartifact.src, but program name is textcmd_destroyunique.
+- Usually works if command registration is file-based; still a maintainability inconsistency.
+
+5) Legacy wording in docs
+- ReadMe mixes "unique" and "artifact" terms from earlier naming history.
+- Functional behavior in code is artifact-based.
+
+Content/Design Guidance
+1) Mark only items that should be recyclable and persistent in circulation.
+2) Curate pool contents regularly; distribution quality is exactly what is currently in pool.
+3) Tune artifactbox drop rate to preserve rarity (each box can produce one artifact pull).
+4) Use .destroyartifact for retirement of problematic artifacts so they do not re-enter rotation.
+
+Potential Improvements (Optional)
+1) Add empty-pool safety check before attempting item move.
+2) Add weighted rarity selection instead of flat random.
+3) Add audit logging (who pulled what, when, source box serial).
+4) Add anti-duplicate or cooldown logic per player/account.
+5) Normalize command naming (textcmd_destroyartifact) for clarity.

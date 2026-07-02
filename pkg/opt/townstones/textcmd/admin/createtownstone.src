@@ -1,0 +1,426 @@
+// Synopsis: Create a new town stone from City regions without an active stone
+use uo;
+use os;
+use cfgfile;
+use datafile;
+
+include ":gumps:gumps";
+
+const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
+const BTN_PREV := 7001;
+const BTN_NEXT := 7002;
+const BTN_CANCEL := 7003;
+const BTN_PICK_BASE := 8000;
+const REGIONS_PER_PAGE := 10;
+
+program textcmd_createtownstone(who)
+	var options := GetAvailableCityRegions();
+	if(!options or !options.size())
+		SendSysMessage(who, "No City=1 regions are available for townstone creation.");
+		return;
+	endif
+
+	var name := PickRegionFromGump(who, options);
+	if(!name)
+		SendSysMessage(who, "Canceled");
+		return;
+	endif
+
+	if(HasActiveTownstoneForRegion(name))
+		SendSysMessage(who, "That region already has an active townstone.");
+		return;
+	endif
+
+	var townnames := GetGlobalProperty("townlist");
+	if(!townnames or !len(townnames))
+		townnames := { };
+	endif
+
+	var insertpoint := FindTownIndexByName(townnames, name);
+	if(!insertpoint)
+		townnames.append(name);
+		insertpoint := townnames.size();
+		SetGlobalProperty("townlist", townnames);
+	endif
+
+	if(HasLiveTownstoneConflict(name, insertpoint, townnames))
+		SendSysMessage(who, "That region already has an active townstone.");
+		return;
+	endif
+
+	var item := CreateItemAtLocation(who.x, who.y, who.z, 0xa320, 1);
+	if(!item)
+		SendSysMessage(who, "Failed to create townstone.");
+		return;
+	endif
+
+	item.name := item.name + " of " + name;
+	SetObjProperty(item, "town", insertpoint);
+	SetObjProperty(item, "regionname", name);
+	SetObjProperty(item, "eleicao", 0);
+	RestoreTownstoneStateFromDatafile(item, name, insertpoint);
+
+	UpdateTownstoneRegionEntry(name, insertpoint, item.serial);
+	SendSysMessage(who, "Created townstone for region " + name + ".");
+endprogram
+
+
+function OpenTownstoneDataFile()
+	var df := OpenDataFile(TOWNSTONE_DATAFILE);
+	if(!df)
+		CreateDataFile(TOWNSTONE_DATAFILE, flags := DF_KEYTYPE_STRING);
+		df := OpenDataFile(TOWNSTONE_DATAFILE);
+	endif
+	return df;
+endfunction
+
+
+function FindTownIndexByName(townnames, region_name)
+	if(!townnames or !region_name)
+		return 0;
+	endif
+
+	var i;
+	for(i := 1; i <= townnames.size(); i := i + 1)
+		if(CStr(townnames[i]) == CStr(region_name))
+			return i;
+		endif
+	endfor
+
+	return 0;
+endfunction
+
+
+function HasActiveTownstoneForRegion(region_name)
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	var stone_serial := CInt(elem.GetProp("stone_serial"));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	if(!stone_serial)
+		return 0;
+	endif
+
+	var stone := SystemFindObjectBySerial(stone_serial);
+	if(stone and stone.objtype == 0xa320)
+		return 1;
+	endif
+
+	var townnames := GetGlobalProperty("townlist");
+	if(!townnames or !townnames.size())
+		townnames := {};
+	endif
+	if(HasLiveTownstoneConflict(region_name, 0, townnames))
+		return 1;
+	endif
+
+	return 0;
+endfunction
+
+
+function HasLiveTownstoneConflict(region_name, town_index, townnames)
+	if(!region_name)
+		return 0;
+	endif
+
+	if(!townnames or !townnames.size())
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	UnloadConfigFile("regions");
+	var regions_cfg := ReadConfigFile("::regions/regions");
+	var target_region_range := GetRegionRange(regions_cfg, region_name);
+	var lost_lands_range := GetRegionRange(regions_cfg, "The Lost Lands");
+	var use_lost_lands_fallback := 0;
+	if(target_region_range.size() >= 4 and lost_lands_range.size() >= 4 and IsRangeInsideRange(target_region_range, lost_lands_range))
+		use_lost_lands_fallback := 1;
+	endif
+
+	var i;
+	for(i := 1; i <= townnames.size(); i := i + 1)
+		var known_region := CStr(townnames[i]);
+		if(!known_region)
+			continue;
+		endif
+
+		var elem := df.FindElement(known_region);
+		if(!elem)
+			continue;
+		endif
+
+		var stone_serial := CInt(elem.GetProp("stone_serial"));
+		if(!stone_serial)
+			continue;
+		endif
+
+		var stone := SystemFindObjectBySerial(stone_serial);
+		if(!stone or stone.objtype != 0xa320)
+			continue;
+		endif
+
+		var stone_region := CStr(GetObjProperty(stone, "regionname"));
+		var stone_town_id := CInt(GetObjProperty(stone, "town"));
+		if((stone_region and CStr(stone_region) == CStr(region_name)) or
+			(town_index and stone_town_id == CInt(town_index)) or
+			(target_region_range.size() >= 4 and IsPointInRange(stone.x, stone.y, target_region_range)) or
+			(use_lost_lands_fallback and lost_lands_range.size() >= 4 and IsPointInRange(stone.x, stone.y, lost_lands_range)))
+			UnloadDataFile(TOWNSTONE_DATAFILE);
+			return 1;
+		endif
+	endfor
+
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	return 0;
+endfunction
+
+
+function GetRegionRange(regions_cfg, region_name)
+	if(!regions_cfg or !region_name)
+		return {};
+	endif
+
+	var elem := regions_cfg[region_name];
+	if(!elem)
+		elem := FindConfigElem(regions_cfg, region_name);
+	endif
+	if(!elem)
+		return {};
+	endif
+
+	var coords := GetConfigStringArray(elem, "Range");
+	if(!coords or coords.size() < 4)
+		return {};
+	endif
+
+	return { CInt(coords[1]), CInt(coords[2]), CInt(coords[3]), CInt(coords[4]) };
+endfunction
+
+
+function IsPointInRange(x, y, range)
+	if(!range or range.size() < 4)
+		return 0;
+	endif
+
+	return (x >= range[1] and x <= range[3] and y >= range[2] and y <= range[4]);
+endfunction
+
+
+function IsRangeInsideRange(inner_range, outer_range)
+	if(!inner_range or inner_range.size() < 4 or !outer_range or outer_range.size() < 4)
+		return 0;
+	endif
+
+	return (inner_range[1] >= outer_range[1] and
+			inner_range[2] >= outer_range[2] and
+			inner_range[3] <= outer_range[3] and
+			inner_range[4] <= outer_range[4]);
+endfunction
+
+
+function UpdateTownstoneRegionEntry(region_name, town_index, stone_serial)
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	if(gold < 0)
+		gold := 0;
+	endif
+
+	elem.SetProp("gold", gold);
+	elem.SetProp("town_id", CInt(town_index));
+	elem.SetProp("stone_serial", CInt(stone_serial));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction
+
+
+function RestoreTownstoneStateFromDatafile(item, region_name, town_index)
+	if(!item or !region_name)
+		return;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	SetObjProperty(item, "town", CInt(town_index));
+	SetObjProperty(item, "regionname", region_name);
+	SetObjProperty(item, "mayor", elem.GetProp("mayor"));
+	SetObjProperty(item, "mayorserial", CInt(elem.GetProp("mayorserial")));
+	SetObjProperty(item, "populacao", CInt(elem.GetProp("populacao")));
+	SetObjProperty(item, "eleicao", CInt(elem.GetProp("eleicao")));
+	SetObjProperty(item, "pleibicito", elem.GetProp("pleibicito"));
+	SetObjProperty(item, "candidatos", elem.GetProp("candidatos"));
+	SetObjProperty(item, "votos", CInt(elem.GetProp("votos")));
+	SetObjProperty(item, "votepercent", CInt(elem.GetProp("votepercent")));
+	SetObjProperty(item, "timer", CInt(elem.GetProp("timer")));
+	SetObjProperty(item, "Pleibicito_Result", elem.GetProp("Pleibicito_Result"));
+	SetObjProperty(item, "nextcitizenelection", CInt(elem.GetProp("nextcitizenelection")));
+	SetObjProperty(item, "citizen", elem.GetProp("citizen"));
+
+	if(!GetObjProperty(item, "mayor"))
+		SetObjProperty(item, "mayor", "No mayor");
+	endif
+
+	if(!GetObjProperty(item, "candidatos"))
+		SetObjProperty(item, "candidatos", {});
+	endif
+
+	if(!GetObjProperty(item, "Pleibicito_Result"))
+		SetObjProperty(item, "Pleibicito_Result", {});
+	endif
+
+	if(!GetObjProperty(item, "citizen"))
+		SetObjProperty(item, "citizen", {});
+	endif
+
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction
+
+
+function GetAvailableCityRegions()
+	UnloadConfigFile("regions");
+	var regions_cfg := ReadConfigFile("::regions/regions");
+	if(!regions_cfg)
+		return {};
+	endif
+
+	var region_names := GetConfigStringKeys(regions_cfg);
+	if(!region_names or !region_names.size())
+		region_names := GetConfigStringArray(regions_cfg[1], "Region");
+	endif
+
+	if(!region_names or !region_names.size())
+		return {};
+	endif
+	var available := {};
+
+	foreach region_name in region_names
+		var elem := regions_cfg[region_name];
+		if(!elem)
+			elem := FindConfigElem(regions_cfg, region_name);
+		endif
+		if(!elem)
+			continue;
+		endif
+
+		var city_raw := GetConfigString(elem, "City");
+		if(city_raw.errortext)
+			continue;
+		endif
+
+		var city_flag := CInt(city_raw);
+		if(city_flag != 1)
+			continue;
+		endif
+
+		if(!HasActiveTownstoneForRegion(region_name))
+			available.append(region_name);
+		endif
+	endforeach
+	return available;
+endfunction
+
+
+function PickRegionFromGump(who, regions)
+	var total := regions.size();
+	if(!total)
+		return 0;
+	endif
+
+	var page := 1;
+	var total_pages := CInt((total + REGIONS_PER_PAGE - 1) / REGIONS_PER_PAGE);
+
+	while(1)
+		if(page < 1)
+			page := 1;
+		elseif(page > total_pages)
+			page := total_pages;
+		endif
+
+		var start_idx := ((page - 1) * REGIONS_PER_PAGE) + 1;
+		var end_idx := start_idx + REGIONS_PER_PAGE - 1;
+		if(end_idx > total)
+			end_idx := total;
+		endif
+
+		var gump := GFCreateGump(20, 20, 560, 380);
+		GFDisposable(gump, 0);
+		GFMovable(gump, 1);
+		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 560, 380);
+		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 530, 350);
+		GFPage(gump, 1);
+
+		GFTextLine(gump, 28, 28, 1153, "Create Townstone - Pick City Region");
+		GFTextLine(gump, 28, 48, 1153, "Only City=1 regions without active townstones are listed.");
+		GFTextLine(gump, 28, 68, 1153, "Page " + CStr(page) + " of " + CStr(total_pages));
+
+		var row := 0;
+		var i;
+		for(i := start_idx; i <= end_idx; i := i + 1)
+			var y := 95 + (row * 24);
+			GFAddButton(gump, 28, y, 2474, 2473, GF_CLOSE_BTN, BTN_PICK_BASE + i);
+			GFTextLine(gump, 63, y + 2, 1153, CStr(regions[i]));
+			row := row + 1;
+		endfor
+
+		if(page > 1)
+			GFAddButton(gump, 28, 332, 2117, 2118, GF_CLOSE_BTN, BTN_PREV);
+			GFTextLine(gump, 63, 334, 1153, "Previous");
+		endif
+
+		if(page < total_pages)
+			GFAddButton(gump, 470, 332, 2117, 2118, GF_CLOSE_BTN, BTN_NEXT);
+			GFTextLine(gump, 430, 334, 1153, "Next");
+		endif
+
+		GFAddButton(gump, 250, 332, 2152, 2151, GF_CLOSE_BTN, BTN_CANCEL);
+		GFTextLine(gump, 285, 334, 1153, "Cancel");
+
+		var res := GFSendGump(who, gump);
+		if(!res[0] or res[0] == BTN_CANCEL)
+			return 0;
+		elseif(res[0] == BTN_PREV)
+			page := page - 1;
+			continue;
+		elseif(res[0] == BTN_NEXT)
+			page := page + 1;
+			continue;
+		elseif(res[0] > BTN_PICK_BASE and res[0] <= (BTN_PICK_BASE + total))
+			var index := res[0] - BTN_PICK_BASE;
+			return regions[index];
+		else
+			return 0;
+		endif
+	endwhile
+endfunction

@@ -5,7 +5,7 @@ use polsys;
 include "include/client";
 include "include/objtype";
 
-program on_insert( who, runebook, movetype, inserttype, item, existing_stack, amount_to_add )
+program on_insert( who, runebook, unused movetype, unused inserttype, item, unused existing_stack, unused amount_to_add )
 	
 	set_critical(1);
 	
@@ -109,24 +109,51 @@ function RechargeBook( who, runebook, scrolls )
 	
 	var maxamount	 := Cint( maxcharges - charges );
 	var amount	 := Cint( scrolls.amount );
+	var recharge_amount := amount;
 	
 	if( maxamount <= 0 )
 		SendSysMessage( who, "This runebook is full." );
 		set_critical(0);
 		return 0;
-		
-	elseif( amount >= maxamount )
-		var to_substract := maxamount;
-		if( SubtractAmount( scrolls, to_substract ) )
-			charges := maxcharges;
-		endif
-		
-	elseif( DestroyItem( scrolls ) )
-		charges := charges + amount;
 	endif
-	
+
+	if( amount > maxamount )
+		recharge_amount := maxamount;
+	endif
+
+	if( !SubtractAmount( scrolls, recharge_amount ) )
+		SendSysMessage( who, "The runebook could not be recharged." );
+		set_critical(0);
+		return 0;
+	endif
+
 	if( scrolls and scrolls.amount )
-		MoveItemToContainer( scrolls, who.backpack );
+		var moved_to_pack := MoveItemToContainer( scrolls, who.backpack );
+
+		if( !moved_to_pack )
+			var moved_to_ground := MoveObjectToLocation( scrolls, who.x, who.y, who.z, who.realm, MOVEOBJECT_FORCELOCATION );
+
+			if( !moved_to_ground )
+				var lost_scrolls := Cint( scrolls.amount );
+				DestroyItem( scrolls );
+				SendSysMessage( who, "Your backpack is full and the ground is blocked. " + lost_scrolls + " extra recall scrolls were destroyed." );
+			else
+				SendSysMessage( who, "Your backpack is too full, so the extra recall scrolls were dropped at your feet." );
+			endif
+		endif
+	endif
+
+	// Do not destroy overflow that was successfully moved to backpack/ground.
+	// Only clean up if overflow somehow remains in the runebook container.
+	if( scrolls and scrolls.container == runebook )
+		var stranded_scrolls := CInt( scrolls.amount );
+		DestroyItem( scrolls );
+		SendSysMessage( who, "Extra recall scrolls could not be moved and were destroyed." );
+	endif
+
+	charges := charges + recharge_amount;
+	if( charges > maxcharges )
+		charges := maxcharges;
 	endif
 
 	PlaySoundEffect( who, 0x1f1);
@@ -138,5 +165,4 @@ function RechargeBook( who, runebook, scrolls )
 	
 	set_critical(0);
 	return 1;
-	
 endfunction

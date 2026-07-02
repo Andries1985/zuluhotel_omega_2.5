@@ -44,39 +44,64 @@ function GetConfigItems(file)
 	
 	foreach key in keylist
 
-		var item := struct{"Type","Name","Desc","Graphic","Color","Cost"};
 		var element := FindConfigElem(itemcfgfile,key);
 		var isvanity := GetConfigString(element, "VanityCost");
 
 		if (isvanity)
             var dirty_desc := GetConfigString(element, "Desc");
             var clean_desc := SplitWords(dirty_desc,"%");
-			item.Type := key;
-			item.Name := GetConfigString(element, "Name");
-			item.Desc := clean_desc[1];
-			item.Graphic := GetConfigInt(element, "Graphic");
-			item.Color := GetConfigInt(element, "Color");
-			item.Cost := GetConfigInt(element, "VanityCost");
 
-			var i := vanitystuff.Size();
-			if (i)
-				while (i)
-					if (item.Cost >= vanitystuff[i].Cost)
-						vanitystuff.Insert(i+1,item);
-                        break;
-					elseif (i==1)
-                        vanitystuff.Insert(1,item);
-                    endif
-					i -= 1;
-				endwhile
-                
+			if (key == "0x9A90")
+				AddVanityItem(key, element, clean_desc, 1);
+				AddVanityItem(key, element, clean_desc, 5);
+				AddVanityItem(key, element, clean_desc, 10);
+			elseif (key == "0x9A89")
+				// Power Tome is not sold directly in the vanity shop.
+			elseif (key == "0x9B00")
+				AddVanityItem(key, element, clean_desc, 1);
+				AddVanityItem(key, element, clean_desc, 5);
+				AddVanityItem(key, element, clean_desc, 10);
 			else
-				vanitystuff.append(item);
+				AddVanityItem(key, element, clean_desc, 1);
 			endif
 
 		endif
 
 	endforeach
+
+endfunction
+
+function AddVanityItem(key, element, clean_desc, amount)
+
+	var item := struct{"Type","Name","Desc","Graphic","Color","Cost","Amount"};
+	item.Type := key;
+	item.Name := GetConfigString(element, "Name");
+	item.Desc := clean_desc[1];
+	item.Graphic := GetConfigInt(element, "Graphic");
+	item.Color := GetConfigInt(element, "Color");
+	item.Cost := GetConfigInt(element, "VanityCost");
+	item.Amount := amount;
+
+	if (amount > 1)
+		item.Desc := item.Desc + " x" + Cstr(amount);
+		item.Cost := item.Cost * amount;
+	endif
+
+	var i := vanitystuff.Size();
+	if (i)
+		while (i)
+			if (item.Cost >= vanitystuff[i].Cost)
+				vanitystuff.Insert(i+1,item);
+				return;
+			elseif (i==1)
+				vanitystuff.Insert(1,item);
+				return;
+			endif
+			i -= 1;
+		endwhile
+	else
+		vanitystuff.append(item);
+	endif
 
 endfunction
 
@@ -199,6 +224,43 @@ function ConfirmItemPurchase(who, item)
 			EraseObjProperty( who, PROPID_MOBILE_BROWSING );
 			return 0;
 		endif
+
+		var requested_amount := vanitystuff[item].Amount;
+		if (requested_amount > 1)
+			var temp_bag := CreateItemAtLocation( who.x, who.y, who.z, 0x0E76, 1, who.realm );
+			if (!temp_bag)
+				SendSysMessage(who, "You need more room in your backpack.");
+				EraseObjProperty( who, PROPID_MOBILE_BROWSING );
+				return 0;
+			endif
+
+			var created_count := 0;
+			while (created_count < requested_amount)
+				var bundle_item := CreateItemInContainer( temp_bag, item_type, 1 );
+				if (!bundle_item)
+					DestroyItem(temp_bag);
+					SendSysMessage(who, "You need more room in your backpack.");
+					EraseObjProperty( who, PROPID_MOBILE_BROWSING );
+					return 0;
+				endif
+				created_count += 1;
+			endwhile
+
+			if (!MoveItemToContainer( temp_bag, who.backpack ))
+				DestroyItem(temp_bag);
+				SendSysMessage(who, "You need more room in your backpack.");
+				EraseObjProperty( who, PROPID_MOBILE_BROWSING );
+				return 0;
+			endif
+		else
+			var single_item := CreateItemInBackpack( who, item_type, 1 );
+			if (!single_item)
+				SendSysMessage(who, "You need more room in your backpack.");
+				EraseObjProperty( who, PROPID_MOBILE_BROWSING );
+				return 0;
+			endif
+		endif
+
 		var cost_left := item_cost;
 		foreach item in EnumerateItemsInContainer( who.backpack )
 			if( item.objtype == OBJ_OMEGA_TOKEN )
@@ -210,8 +272,6 @@ function ConfirmItemPurchase(who, item)
 				endif
 			endif
 		endforeach
-		
-		CreateItemInBackpack( who, item_type, 1 );
 		SendSysMessage(who, "The "+item_desc+" has been placed in your backpack, enjoy!", 3, 53);
 	else
 		SendSysMessage(who, "Purchase cancelled.");

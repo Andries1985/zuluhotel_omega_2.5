@@ -13,6 +13,38 @@ const POINTS_MULTIPLIER := 15;
 // Cache ResourceRequest for blank maps — set when player targets cache
 var mapRequest := 0;
 
+function GetNewMapMaterialCost(who)
+	var material := 10;
+	// Require half resources during Crafting PH
+	if(GetGlobalProperty("PHC") || GetObjProperty(who, "#PPHC"))
+		material := Ceil(material/2);
+	endif
+	return material;
+endfunction
+
+function EnsureMapResources(who, amount)
+	if(GetAvailableResource(who, mapRequest).total < amount)
+		SendSysMessage(who, "You don't have enough resources.");
+		return 0;
+	endif
+	return 1;
+endfunction
+
+function ItemIsInBackpackScope(who, item)
+	if(item.serial == who.backpack.serial)
+		return 1;
+	elseif(item.container != who.backpack)
+		foreach thing in EnumerateItemsInContainer(who.backpack)
+			if(item.serial == thing.serial)
+				return 1;
+			endif
+		endforeach
+	else
+		return 1;
+	endif
+	return 0;
+endfunction
+
 program go_go_gadget_map( who, blank )
 
 	// Handle Omega Cache targeting
@@ -23,6 +55,11 @@ program go_go_gadget_map( who, blank )
 			return;
 		endif
 	else
+		if(blank.objtype == 0x6001 and !ItemIsInBackpackScope(who, blank))
+			SendSysMessage(who, "That blank map must be in your backpack.");
+			return;
+		endif
+
 		if (blank.objtype<>0x6001)
 		foreach item in EnumerateItemsInContainer(who.backpack)
 		if (item.objtype ==0x6001)
@@ -53,6 +90,9 @@ program go_go_gadget_map( who, blank )
 
 	case (choice.index)
 		1: 	difficulty := 20;
+			if(!EnsureMapResources(who, 1))
+				break;
+			endif
 			sendDiff( who , difficulty );
 			if( CheckSkill( who, SKILLID_CARTOGRAPHY , difficulty , Cint(difficulty * POINTS_MULTIPLIER)) )
 				props := array( "var" , who.x - 265 , who.y - 260 , who.x + 265 , who.y + 260 , 200 , 200 );
@@ -64,6 +104,9 @@ program go_go_gadget_map( who, blank )
 			break;
 
 		2: 	difficulty := 50;
+			if(!EnsureMapResources(who, 1))
+				break;
+			endif
 			sendDiff( who , difficulty );
 			if( CheckSkill( who, SKILLID_CARTOGRAPHY , difficulty , Cint(difficulty * POINTS_MULTIPLIER) ))
 				props := array( "regional" , who.x - 850 , who.y - 800 , who.x + 850 , who.y + 800 , 400 , 400 );
@@ -75,6 +118,9 @@ program go_go_gadget_map( who, blank )
 			break;
 
 		3:	difficulty := 80;
+			if(!EnsureMapResources(who, 1))
+				break;
+			endif
 			sendDiff( who , difficulty );
 			if( CheckSkill( who, SKILLID_CARTOGRAPHY , difficulty , Cint(difficulty * POINTS_MULTIPLIER) ))
 	   			props := array( "world" , 0 , 0 , 5119 , 4095 , 500 , 400 );
@@ -86,6 +132,9 @@ program go_go_gadget_map( who, blank )
 			break;
 
 		4:	difficulty := 110;
+			if(!EnsureMapResources(who, GetNewMapMaterialCost(who)))
+				break;
+			endif
 			sendDiff( who , difficulty );
 			if( CheckSkill( who, SKILLID_CARTOGRAPHY , difficulty , Cint(difficulty * POINTS_MULTIPLIER) ))
 				makeNewmap( who , blank, 1 );
@@ -100,6 +149,9 @@ program go_go_gadget_map( who, blank )
 			break;
 
 		5:	difficulty := 110;
+			if(!EnsureMapResources(who, GetNewMapMaterialCost(who)))
+				break;
+			endif
 			sendDiff( who , difficulty );
 			if( CheckSkill( who, SKILLID_CARTOGRAPHY , difficulty , Cint(difficulty * POINTS_MULTIPLIER) ))
 				makeNewmap( who , blank, 2 );
@@ -149,11 +201,7 @@ function makemap( who, mapdef , blank )
 endfunction
 
 function makeNewmap( who, blank, choice )
-	var material := 10;
-	//Require half resources during Crafting PH
-	if(GetGlobalProperty("PHC") || GetObjProperty(who, "#PPHC"))
-		material := Ceil(material/2);
-	endif
+	var material := GetNewMapMaterialCost(who);
 	if(GetAvailableResource(who, mapRequest).total < material)
 		sendsysmessage(who, "You don't have enough materials to do that.");
 		return;

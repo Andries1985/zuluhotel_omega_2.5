@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.0.6
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: July 1, 2026**
+
+---
+
+Welcome to **Patch 1.0.6**. This update introduces **Champion Relics** and the **World Gem**, fixes several crafting/resource edge cases, resolves runebook overflow behavior, adds follow-up gameplay tuning for High Priest, Dual Planar, loot tables, INT-based skill advancement, tracking, and reanimation behavior, and overhauls the Townstone system with treasury, election, and persistence improvements.
+
+---
 
 ## What Changed
 
@@ -70,7 +77,7 @@ Cartography had bugs where skill gain could occur or maps could be created even 
 - A new artifact item, the **World Gem**, has been added to the Artifact Box.
 - The World Gem can bless a targeted item when used.
 - World Gems have a **2-week expiry timer** and show their remaining time in the item tooltip.
-- Artifact tooltip styling now uses a brighter highlighted color.
+- Artifact tooltip styling has been updated to a brighter highlighted color.
 - The Artifact Box itself is now movable.
 
 ---

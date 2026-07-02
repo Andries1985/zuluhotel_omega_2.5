@@ -1,0 +1,41 @@
+use uo;
+
+include "include/client";
+
+const WORLD_GEM_FONT_COLOR := 43;
+
+program worldgem(who, item)
+
+	if(!ReserveItem(item))
+		return 0;
+	endif
+
+	SendSysMessage(who, "Select an item to bless with the world gem.", FONT_NORMAL, WORLD_GEM_FONT_COLOR);
+	var target_item := Target(who);
+
+	if (!target_item)
+		SendSysMessage(who, "You decide not to use the world gem.", FONT_NORMAL, WORLD_GEM_FONT_COLOR);
+		ReleaseItem(item);
+		return 0;
+	endif
+
+	if(!target_item.isa(POLCLASS_ITEM))
+		SendSysMessage(who, "You can only target items.", FONT_NORMAL, 2595);
+		ReleaseItem(item);
+		return 0;
+	endif
+
+	if(target_item.newbie)
+		SendSysMessage(who, "That item is already blessed.", FONT_NORMAL, WORLD_GEM_FONT_COLOR);
+		ReleaseItem(item);
+		return 0;
+	endif
+
+	target_item.newbie := 1;
+	SendSysMessage(who, "The world gem blesses the item.", FONT_NORMAL, WORLD_GEM_FONT_COLOR);
+
+	ReleaseItem(item);
+	DestroyItem(item);
+	return 1;
+
+endprogram

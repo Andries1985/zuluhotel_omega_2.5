@@ -214,7 +214,7 @@ function ChaosMutation(who)
 			foreach success in ListEquippedItems(who);
 				x := who.x + Random(11) - 5;
 				y := who.y + Random(11) - 5;
-				MoveItemToLocation(success, x, y, GetWorldHeight(x, y),0 );
+				MoveObjectToLocation(success, x, y, GetWorldHeight(x, y), success.realm, MOVEOBJECT_NORMAL );
 			endforeach
 			SendSysMessage(who, "You feel colder...");
 			return;

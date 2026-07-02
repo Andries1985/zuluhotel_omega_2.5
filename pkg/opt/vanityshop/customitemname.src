@@ -1,4 +1,4 @@
-// This will work on anything! 
+// This only works on items in the player's backpack.
 
 use os;
 use uo;
@@ -33,6 +33,13 @@ program CustomItemName (who, soulpen)
 
 	if (!item.isa(POLCLASS_ITEM))
 		SendSysmessage( who, "You can only rename items!" );
+		Releaseitem(soulpen);
+		Releaseitem(item);
+		return;
+	endif
+
+	if (item.container != who.backpack)
+		SendSysmessage( who, "You can only rename items in your backpack!" );
 		Releaseitem(soulpen);
 		Releaseitem(item);
 		return;

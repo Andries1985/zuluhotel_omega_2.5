@@ -1,4 +1,4 @@
-// This will work on anything! 
+// This only works on items in the player's backpack.
 // It'll even change a Dye Tub or Runic Dye Tub to any special color, 
 // which can then be reused, based on their limitations.
 
@@ -43,6 +43,13 @@ program CustomItemDye (who, omegadye)
 	
 	if (!item.isa(POLCLASS_ITEM))
 		SendSysmessage( who, "You can only dye items!" );
+		Releaseitem(omegadye);
+		Releaseitem(item);
+		return;
+	endif
+
+	if (item.container != who.backpack)
+		SendSysmessage( who, "You can only dye items in your backpack!" );
 		Releaseitem(omegadye);
 		Releaseitem(item);
 		return;

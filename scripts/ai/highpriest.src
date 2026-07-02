@@ -89,9 +89,27 @@ while (1)
 			SYSEVENT_SPEECH:
 				if( GetObjProperty( event.source , "PriestUpset" ) )
 					TurnToward( event.source );
-					Say( "No, I won't listen to thy request.");
-					Sleep( 1 );
-					Say( "Thine past behavior made thee unworthy in the eyes of the Virtues" );
+					if( event.text["relationship"] or event.text["Relationship"] )
+						var player := event.source;
+						var getlevel := GetClasseLevel(player);
+						if(!getlevel)
+							getlevel := 0;
+						endif
+						var repaircost := getlevel*2500;
+						if( repaircost < 1 )
+							Say( "A donation of any amount of gold will let thee begin repairing this relationship." );
+						else
+							Say( "To repair our relationship, thou must donate at least " + repaircost + " gold pieces." );
+						endif
+					else
+						Say( "No, I won't listen to thy request.");
+						Sleep( 1 );
+						Say( "Thine past behavior made thee unworthy in the eyes of the Virtues" );
+					endif
+
+				elseif( event.text["relationship"] or event.text["Relationship"] )
+					TurnToward( event.source );
+					Say( "Our relationship is already in good standing." );
 					
 				elseif( event.text["Greeting"] or event.text["Hail"] or event.text["greeting"] or event.text["Hi"] or event.text["hi"] or event.text["Hello"] or event.text["hello"])
 					TurnToward( event.source );

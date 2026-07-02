@@ -314,7 +314,7 @@ function ProcessRitual( who , item , byref magic_circle , the_ritual , keep_circ
 	var manapool := 0;
 
 	if( item )
-		MoveItemToLocation( item , cx , cy , cz , MOVEITEM_FORCELOCATION );
+		MoveObjectToLocation( item , cx , cy , cz , item.realm, MOVEOBJECT_FORCELOCATION );
 		item.movable := 0;
 	endif
 
@@ -553,12 +553,12 @@ function ProcessRitual( who , item , byref magic_circle , the_ritual , keep_circ
 
 				if( item )
 					item.movable := 1;
-					MoveItemToLocation( item , item.x , item.y , item.z+2 , MOVEITEM_FORCELOCATION );
+					MoveObjectToLocation( item , item.x , item.y , item.z+2 , item.realm, MOVEOBJECT_FORCELOCATION );
 					item.movable := 0;
 				endif
 
 				manapile.movable := 1;
-				MoveItemToLocation( manapile , manapile.x , manapile.y , manapile.z-2 , MOVEITEM_FORCELOCATION );
+				MoveObjectToLocation( manapile , manapile.x , manapile.y , manapile.z-2 , manapile.realm, MOVEOBJECT_FORCELOCATION );
 				manapile.movable := 0;
 
 				loop	:= 0;

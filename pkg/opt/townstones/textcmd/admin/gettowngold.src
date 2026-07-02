@@ -1,0 +1,169 @@
+// Synopsis: Withdraw gold from a targeted townstone treasury into a cheque
+use uo;
+use os;
+use datafile;
+
+const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
+const CHEQUE_OBJTYPE := 0x14000;
+
+program textcmd_gettowngold(who)
+	SendSysMessage(who, "Select the townstone to withdraw from.");
+	var stone := Target(who);
+	if(!stone)
+		SendSysMessage(who, "Cancelled.");
+		return;
+	endif
+
+	var town_id := CInt(GetObjProperty(stone, "town"));
+	if(!town_id)
+		SendSysMessage(who, "That target is not a valid townstone.");
+		return;
+	endif
+
+	var town_list := GetGlobalProperty("townlist");
+	var region_name := "";
+	if(town_list and town_list[town_id])
+		region_name := CStr(town_list[town_id]);
+	endif
+	if(!region_name)
+		region_name := CStr(GetObjProperty(stone, "regionname"));
+	endif
+	if(!region_name)
+		SendSysMessage(who, "Could not determine region name for this townstone.");
+		return;
+	endif
+
+	var current_gold := GetTownBankGold(region_name);
+	if(current_gold <= 0)
+		SendSysMessage(who, "Town treasury has no gold available.");
+		return;
+	endif
+
+	var amount_text := SendTextEntryGump(who, "Withdraw how much gold? Available: " + current_gold, 12);
+	if(!amount_text)
+		SendSysMessage(who, "Cancelled.");
+		return;
+	endif
+
+	var withdraw_amount := CInt(amount_text);
+	if(withdraw_amount <= 0)
+		SendSysMessage(who, "Withdrawal amount must be greater than zero.");
+		return;
+	endif
+
+	if(withdraw_amount > current_gold)
+		SendSysMessage(who, "Not enough gold in treasury. Available: " + current_gold + ".");
+		return;
+	endif
+
+	var cheque := CreateItemInBackpack(who, CHEQUE_OBJTYPE, 1);
+	if(!cheque)
+		SendSysMessage(who, "Could not create cheque in your backpack.");
+		return;
+	endif
+
+	SetObjProperty(cheque, "Amount", withdraw_amount);
+	SetObjProperty(cheque, "checkamount", withdraw_amount);
+	SetObjProperty(cheque, "CreatedBy", "Townstone Treasury");
+	cheque.color := 51;
+	cheque.name := "A Treasury Cheque for " + withdraw_amount + " Gold (" + region_name + ").";
+
+	SetTownBankGold(region_name, current_gold - withdraw_amount);
+	UpdateTownstoneRegionEntry(region_name, town_id, stone.serial);
+
+	SendSysMessage(who, "Withdrew " + withdraw_amount + " gold from " + region_name + ". Remaining treasury: " + (current_gold - withdraw_amount) + " gold.");
+
+endprogram
+
+
+function OpenTownstoneDataFile()
+	var df := OpenDataFile(TOWNSTONE_DATAFILE);
+	if(!df)
+		CreateDataFile(TOWNSTONE_DATAFILE, flags := DF_KEYTYPE_STRING);
+		df := OpenDataFile(TOWNSTONE_DATAFILE);
+	endif
+	return df;
+endfunction
+
+
+function GetTownBankGold(region_name)
+	if(!region_name)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	if(gold < 0)
+		gold := 0;
+	endif
+	return gold;
+endfunction
+
+
+function SetTownBankGold(region_name, new_amount)
+	if(!region_name)
+		return;
+	endif
+
+	if(new_amount < 0)
+		new_amount := 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	elem.SetProp("gold", CInt(new_amount));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction
+
+
+function UpdateTownstoneRegionEntry(region_name, town_id, stone_serial)
+	if(!region_name)
+		return;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	if(gold < 0)
+		gold := 0;
+	endif
+	elem.SetProp("gold", gold);
+	elem.SetProp("town_id", CInt(town_id));
+	elem.SetProp("stone_serial", CInt(stone_serial));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction

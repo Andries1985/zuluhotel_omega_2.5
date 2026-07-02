@@ -1,0 +1,61 @@
+use uo;
+
+include "include/areas";
+include "include/random";
+include "include/client";
+
+const RELIC_FONT_COLOR := 43;
+
+program championrelic(who, item)
+
+	if(!ReserveItem(item))
+		return 0;
+	endif
+
+	if (IsInSafeArea(who))
+		SendSysMessage(who, "You cannot activate this relic in a safe area.", FONT_NORMAL, RELIC_FONT_COLOR);
+		return 0;
+	endif
+
+	if (IsInGuardedArea(who))
+		SendSysMessage(who, "You cannot activate this relic in a guarded area.", FONT_NORMAL, RELIC_FONT_COLOR);
+		return 0;
+	endif
+
+	if (IsInNOPKArea(who))
+		SendSysMessage(who, "You cannot activate this relic in this area.", FONT_NORMAL, RELIC_FONT_COLOR);
+		return 0;
+	endif
+
+	var level := CInt(GetObjProperty(item, "MagicItemLevel"));
+	var templates;
+
+	if (level == 10)
+		templates := {"barracoon", "erebuschaosgod"};
+	elseif (level == 11)
+		templates := {"rikktor", "nyxseductress"};
+	else
+		SendSysMessage(who, "This relic has an invalid tier.", FONT_NORMAL, 2595);
+		return 0;
+	endif
+
+	var template := templates[RandomInt(templates.Size()) + 1];
+	var spawnx := who.x + RandomInt(3) - 1;
+	var spawny := who.y + RandomInt(3) - 1;
+	var spawnz := who.z;
+	var boss := CreateNpcFromTemplate(template, spawnx, spawny, spawnz, 0, who.realm);
+
+	if (!boss)
+		SendSysMessage(who, "The relic fizzles and fails to summon.", FONT_NORMAL, 2595);
+		return 0;
+	endif
+
+	PlayStationaryEffect(boss.x, boss.y, boss.z, 0x3728, 10, 0x10, 0);
+	PlaySoundEffect(boss, 0x01FE);
+	SendSysMessage(who, "The relic shatters and calls forth a champion!", FONT_NORMAL, RELIC_FONT_COLOR);
+
+	ReleaseItem(item);
+	DestroyItem(item);
+	return 1;
+
+endprogram

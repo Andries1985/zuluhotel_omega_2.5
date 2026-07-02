@@ -1,4 +1,5 @@
 include "setup";
+include "include/attributes";
 
 const VIEW_SECURE := 2;
 const ADD_TO_SECURE := 3;
@@ -83,7 +84,7 @@ function UpgradeSecure(who, container, boxo)
 		if (item.serial != boxo.serial)
 			if (item.container.serial == boxo.serial) // Moving top level items only
 				if (!MoveItemToContainer(item, container))
-					MoveItemToLocation(item, who.x, who.y, who.z, MOVEITEM_FORCELOCATION);
+					MoveObjectToLocation(item, who.x, who.y, who.z, who.realm, MOVEOBJECT_FORCELOCATION);
 					SendSysMessage(who, item.desc+" placed at your feet as the secure is full.", 3, 67);
 				endif
 			endif
@@ -106,7 +107,7 @@ endfunction
 // friend list to new. Once world wipse, remove all this.
 //
 ///////////////////////////////////////////////////////////////////////////////////
-function UpdateFriendFunction(house, sign)
+function UpdateFriendFunction(house, unused sign)
 
 	// Friends exist, meaning new system in place
 	if (GetObjProperty(house, "Friends"))

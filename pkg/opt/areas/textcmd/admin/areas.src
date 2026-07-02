@@ -15,6 +15,7 @@ use cfgfile;
 include ":staff:include/staff";
 include ":gumps:include/gumps";
 include "include/areas";
+include ":areas:include/areafunctions";
 include "include/constants/cfgfiles";
 include "include/constants/propids";
 
@@ -145,6 +146,7 @@ if (result[0] > 1 && result < 7)
 endif
 
 SetAllValues(result.keys);
+RefreshOnlineAreaStatus();
 
 SendSysMessage(who, "Data saved.");
 
@@ -212,6 +214,41 @@ function SetAllValues(data)
 	SetGlobalProperty(PROPID_GLOBAL_AREAS_NOPK, nopk);
 	SetGlobalProperty(PROPID_GLOBAL_AREAS_RPAREA, rparea);
 
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+// Toadstool + Omega
+//
+// RefreshOnlineAreaStatus() - Re-evaluates dynamic area properties for online
+// players so .areas changes apply immediately without requiring area re-entry.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function RefreshOnlineAreaStatus()
+	foreach character in EnumerateOnlineCharacters()
+		var in_safe := IsInSafeArea(character);
+		var had_safe := GetObjProperty(character, "InSafeArea");
+		if (in_safe)
+			if (!had_safe)
+				SetSafeAreaProperties(character);
+			endif
+		elseif (had_safe)
+			RemoveSafeAreaProperties(character, 1);
+		endif
+
+		var in_nopk := IsInNOPKArea(character);
+		var had_nopk := GetObjProperty(character, "NOPKAREA");
+		if (in_safe)
+			if (had_nopk)
+				RemoveNOPK(character);
+			endif
+		elseif (in_nopk)
+			if (!had_nopk)
+				SetNOPK(character);
+			endif
+		elseif (had_nopk)
+			RemoveNOPK(character);
+		endif
+	endforeach
 endfunction
 ////////////////////////////////////////////////////////////////////////////////////
 // Toadstool

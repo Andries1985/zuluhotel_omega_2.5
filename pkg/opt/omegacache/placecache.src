@@ -34,9 +34,9 @@ program place_omegacache(who, deed)
 
 	// Lazy-init cache slots if not yet set (new house, sign never opened)
 	if(GetObjProperty(house, "numomegacache") == error)
-		var max := GetMaxOmegaCacheForHouse(house.objtype);
-		SetObjProperty(house, "numomegacache", max);
-		SetObjProperty(house, "maxnumomegacache", max);
+		var maxcache := GetMaxOmegaCacheForHouse(house.objtype);
+		SetObjProperty(house, "numomegacache", maxcache);
+		SetObjProperty(house, "maxnumomegacache", maxcache);
 	endif
 
 	// Check cache limit (numomegacache = remaining slots, same pattern as numsecure)

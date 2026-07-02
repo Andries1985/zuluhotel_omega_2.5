@@ -1,0 +1,89 @@
+use uo;
+use os;
+use datafile;
+
+const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
+const TOWNSTONE_OBJTYPE := 0xa320;
+const TOWNSTONE_SEARCH_RANGE := 10000;
+
+program BootstrapTownList()
+	var existing := GetGlobalProperty("townlist");
+	if(existing and existing.size())
+		return;
+	endif
+
+	var town_list := BuildTownListFromDatafile();
+	if(!town_list or !town_list.size())
+		town_list := BuildTownListFromLiveStones();
+	endif
+
+	if(town_list and town_list.size())
+		SetGlobalProperty("townlist", town_list);
+		SysLog("[Townstones] Rebuilt townlist with " + CStr(town_list.size()) + " entries.");
+	else
+		SysLog("[Townstones] Could not rebuild townlist (no townstone data found).");
+	endif
+endprogram
+
+function BuildTownListFromDatafile()
+	var df := OpenDataFile(TOWNSTONE_DATAFILE);
+	if(!df)
+		return {};
+	endif
+
+	var keys := df.Keys();
+	if(!keys or !keys.size())
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return {};
+	endif
+
+	var town_list := {};
+	foreach region_name in keys
+		if(!region_name)
+			continue;
+		endif
+
+		var elem := df.FindElement(region_name);
+		if(!elem)
+			continue;
+		endif
+
+		var town_id := CInt(elem.GetProp("town_id"));
+		if(town_id > 0 and !town_list[town_id])
+			town_list[town_id] := CStr(region_name);
+		endif
+	endforeach
+
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	return town_list;
+endfunction
+
+function BuildTownListFromLiveStones()
+	var town_list := {};
+	var stones := ListItemsNearLocationOfType(0, 0, LIST_IGNORE_Z, TOWNSTONE_SEARCH_RANGE, TOWNSTONE_OBJTYPE, "britannia");
+	if(!stones or !stones.size())
+		return town_list;
+	endif
+
+	foreach stone in stones
+		if(!stone or stone.objtype != TOWNSTONE_OBJTYPE)
+			continue;
+		endif
+
+		var town_id := CInt(GetObjProperty(stone, "town"));
+		if(town_id <= 0)
+			continue;
+		endif
+
+		var region_name := CStr(GetObjProperty(stone, "regionname"));
+		if(!region_name)
+			continue;
+		endif
+
+		if(!town_list[town_id])
+			town_list[town_id] := region_name;
+		endif
+	endforeach
+
+	return town_list;
+endfunction

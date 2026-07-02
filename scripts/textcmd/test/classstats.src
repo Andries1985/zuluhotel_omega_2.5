@@ -1,0 +1,151 @@
+// Synopsis: Display a shard-wide class and level distribution gump
+use uo;
+use os;
+
+include ":gumps:include/gumps";
+include "include/classes";
+
+program textcmd_classstats( who )
+	var collected := CollectClassCounts();
+	var class_ids := collected[1];
+	var class_levels := collected[2];
+	var class_counts := collected[3];
+	var total_characters := collected[4];
+	var classed_characters := collected[5];
+
+	ShowClassStatsGump( who, class_ids, class_levels, class_counts, total_characters, classed_characters );
+endprogram
+
+
+function CollectClassCounts()
+	var class_ids := {};
+	var class_levels := {};
+	var class_counts := {};
+	var total_characters := 0;
+	var classed_characters := 0;
+
+	foreach acct_name in ListAccounts()
+		var account := FindAccount( acct_name );
+		if ( !account )
+			continue;
+		endif
+
+		var i;
+		for ( i := 1; i <= 5; i := i + 1 )
+			var character := account.GetCharacter( i );
+			if ( !character )
+				continue;
+			endif
+
+			total_characters := total_characters + 1;
+
+			var class_id := GetClass( character );
+			if ( !class_id )
+				continue;
+			endif
+
+			var level := CInt( GetObjProperty( character, class_id ) );
+			if ( level < 1 )
+				continue;
+			endif
+			if ( level > 6 )
+				level := 6;
+			endif
+
+			classed_characters := classed_characters + 1;
+
+			var idx := FindClassLevelIndex( class_ids, class_levels, class_id, level );
+			if ( idx )
+				class_counts[idx] := class_counts[idx] + 1;
+			else
+				class_ids.append( class_id );
+				class_levels.append( level );
+				class_counts.append( 1 );
+			endif
+		endfor
+
+		SleepMS( 5 );
+	endforeach
+
+	return { class_ids, class_levels, class_counts, total_characters, classed_characters };
+endfunction
+
+
+function FindClassLevelIndex( class_ids, class_levels, class_id, level )
+	var i;
+	for ( i := 1; i <= class_ids.Size(); i := i + 1 )
+		if ( (class_ids[i] == class_id) and (class_levels[i] == level) )
+			return i;
+		endif
+	endfor
+
+	return 0;
+endfunction
+
+
+
+
+function GetClassLevelCount( class_ids, class_levels, class_counts, class_id, level )
+	var idx := FindClassLevelIndex( class_ids, class_levels, class_id, level );
+	if ( idx )
+		return class_counts[idx];
+	endif
+
+	return 0;
+endfunction
+
+
+function ShowClassStatsGump( who, class_ids, class_levels, class_counts, total_characters, classed_characters )
+	const COL_CLASS := 40;
+	const COL_TOTAL := 180;
+	const COL_C1 := 235;
+	const COL_C2 := 280;
+	const COL_C3 := 325;
+	const COL_C4 := 370;
+	const COL_C5 := 415;
+	const COL_C6 := 460;
+
+	var gump := GFCreateGump( 20, 20, 600, 390 );
+	GFDisposable( gump, 0 );
+	GFResizePic( gump, 20, 20, 3500, 600, 390 );
+
+	GFTextLine( gump, 235, 40, 53, "Class Distribution" );
+	GFTextLine( gump, 40, 70, 0, "Total characters scanned:" );
+	GFTextLine( gump, 240, 70, 67, CStr( total_characters ) );
+	GFTextLine( gump, 40, 88, 0, "Characters with class:" );
+	GFTextLine( gump, 240, 88, 67, CStr( classed_characters ) );
+
+	GFTextLine( gump, COL_CLASS, 112, 53, "All classes (static):" );
+	GFTextLine( gump, COL_CLASS, 130, 53, "Class" );
+	GFTextLine( gump, COL_TOTAL, 130, 53, "Total" );
+	GFTextLine( gump, COL_C1, 130, 53, "C1" );
+	GFTextLine( gump, COL_C2, 130, 53, "C2" );
+	GFTextLine( gump, COL_C3, 130, 53, "C3" );
+	GFTextLine( gump, COL_C4, 130, 53, "C4" );
+	GFTextLine( gump, COL_C5, 130, 53, "C5" );
+	GFTextLine( gump, COL_C6, 130, 53, "C6" );
+
+	var y := 148;
+	foreach class_id in GetClasseIds()
+		var class_name := GetClasseName( class_id );
+		var c1 := GetClassLevelCount( class_ids, class_levels, class_counts, class_id, 1 );
+		var c2 := GetClassLevelCount( class_ids, class_levels, class_counts, class_id, 2 );
+		var c3 := GetClassLevelCount( class_ids, class_levels, class_counts, class_id, 3 );
+		var c4 := GetClassLevelCount( class_ids, class_levels, class_counts, class_id, 4 );
+		var c5 := GetClassLevelCount( class_ids, class_levels, class_counts, class_id, 5 );
+		var c6 := GetClassLevelCount( class_ids, class_levels, class_counts, class_id, 6 );
+		var class_total := c1 + c2 + c3 + c4 + c5 + c6;
+
+		GFTextLine( gump, COL_CLASS, y, 53, class_name );
+		GFTextLine( gump, COL_TOTAL, y, 0, CStr(class_total) );
+		GFTextLine( gump, COL_C1, y, 0, CStr(c1) );
+		GFTextLine( gump, COL_C2, y, 0, CStr(c2) );
+		GFTextLine( gump, COL_C3, y, 0, CStr(c3) );
+		GFTextLine( gump, COL_C4, y, 0, CStr(c4) );
+		GFTextLine( gump, COL_C5, y, 0, CStr(c5) );
+		GFTextLine( gump, COL_C6, y, 0, CStr(c6) );
+		y := y + 22;
+	endforeach
+
+	GFSendGump( who, gump );
+endfunction

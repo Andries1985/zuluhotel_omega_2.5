@@ -1,13 +1,14 @@
-// Synopsis: Repair or reset a targeted town stone
+// Synopsis: Reset poll data on a targeted town stone without resetting the whole stone
 use uo;
 use datafile;
 
 const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
 
-program textcmd_fixstone( who )
+program textcmd_resetpoll(who)
 
-    Sendsysmessage( who , "Select townstone to clear." );
-    var stone := Target( who );
+    SendSysMessage(who, "Select townstone to reset poll data.");
+    var stone := Target(who);
+
     if(!stone)
         SendSysMessage(who, "Cancelled.");
         return;
@@ -19,16 +20,26 @@ program textcmd_fixstone( who )
         return;
     endif
 
-    eraseobjproperty (stone,"mayor");
-    eraseobjproperty (stone,"mayorserial");
-    eraseobjproperty (stone,"pleibicito");
-    eraseobjproperty (stone,"Pleibicito_Result");
-    eraseobjproperty (stone,"timer");
-    eraseobjproperty (stone,"nextcitizenelection");
-    eraseobjproperty (stone,"populacao");
-    eraseobjproperty (stone,"votepercent");
-    eraseobjproperty (stone,"votos");
-    setobjproperty (stone,"eleicao",0);
+    var had_poll := GetObjProperty(stone, "pleibicito");
+    var had_result := GetObjProperty(stone, "Pleibicito_Result");
+
+    EraseObjProperty(stone, "pleibicito");
+    EraseObjProperty(stone, "Pleibicito_Result");
+    SetObjProperty(stone, "candidatos", {});
+    SetObjProperty(stone, "votos", 0);
+    SetObjProperty(stone, "votepercent", 0);
+
+    // Polls and elections are mutually exclusive. Keep timer if election is running.
+    if(!CInt(GetObjProperty(stone, "eleicao")))
+        EraseObjProperty(stone, "timer");
+    endif
+
+    if(had_poll or had_result)
+        SendSysMessage(who, "Poll data has been reset for this town stone.");
+    else
+        SendSysMessage(who, "No active poll data was found, but poll fields were reset.");
+    endif
+
     SyncTownstoneState(stone);
 
 endprogram

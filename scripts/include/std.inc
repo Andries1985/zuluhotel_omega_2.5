@@ -326,11 +326,11 @@ endfunction
 function MoveItemToForcedLocation (item, x, y, z)
 	if (!item.movable)
 		item.movable := 1;
-		var result := MoveItemToLocation(item, x, y, z, MOVEITEM_FORCELOCATION);
+		var result := MoveObjectToLocation(item, x, y, z, item.realm, MOVEOBJECT_FORCELOCATION);
 		item.movable := 0;
 		return result;
 	endif
-	return MoveItemToLocation(item, x, y, z, MOVEITEM_FORCELOCATION);
+	return MoveObjectToLocation(item, x, y, z, item.realm, MOVEOBJECT_FORCELOCATION);
 endfunction
 
 // HellRaider <zion@uo.com.br> 2000-12-13
@@ -348,7 +348,7 @@ function MoveItem (item, byref place, flags := MOVEITEM_NORMAL)
 				place[3] := GetWorldHeight(place[1], place[2]);
 				continue;
 			default:
-				return MoveItemToLocation(item, place[1], place[2], place[3], flags);
+				return MoveObjectToLocation(item, place[1], place[2], place[3], item.realm, flags);
 		endif
 	endif
 	var result := error;
