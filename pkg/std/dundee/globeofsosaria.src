@@ -10,6 +10,7 @@ const SOSARIA_MIN_X := 0;
 const SOSARIA_MIN_Y := 0;
 const SOSARIA_MAX_X := 7167;
 const SOSARIA_MAX_Y := 4095;
+const EXCLUDED_REGION_NAME := "randorin";
 
 program use_globe(who, globe)
 
@@ -25,7 +26,7 @@ if(next_use and next_use > now and !who.cmdlevel)
 	return;
 endif
 
-var townstone := FindRandomTownStone();
+var townstone := FindRandomTownStone(who);
 if(!townstone)
 	SendSysMessage(who, "The Globe of Sosaria cannot find an active town stone.");
 	return;
@@ -42,7 +43,7 @@ SendSysMessage(who, "The Globe of Sosaria failed to find a clear spot beside the
 
 endprogram
 
-function FindRandomTownStone()
+function FindRandomTownStone(who)
 	var townstones := ListItemsNearLocationOfType(0, 0, LIST_IGNORE_Z, TOWNSTONE_SEARCH_RANGE, TOWNSTONE_OBJTYPE, "britannia");
 	if(!townstones or !townstones.size())
 		return 0;
@@ -50,7 +51,7 @@ function FindRandomTownStone()
 
 	var eligible := { };
 	foreach stone in townstones
-		if(IsSosariaTownStone(stone))
+		if(IsSosariaTownStone(who, stone))
 			eligible.append(stone);
 		endif
 	endforeach
@@ -62,7 +63,11 @@ function FindRandomTownStone()
 	return eligible[RandomInt(eligible.size()) + 1];
 endfunction
 
-function IsSosariaTownStone(stone)
+function IsSosariaTownStone(who, stone)
+	if(IsExcludedTownStone(who, stone))
+		return 0;
+	endif
+
 	var x := CInt(stone.x);
 	var y := CInt(stone.y);
 
@@ -74,6 +79,29 @@ function IsSosariaTownStone(stone)
 	endif
 
 	return 1;
+endfunction
+
+function IsExcludedTownStone(who, stone)
+	if(who and who.cmdlevel)
+		return 0;
+	endif
+
+	var region_name := CStr(GetObjProperty(stone, "regionname"));
+	if(!region_name)
+		var town_id := CInt(GetObjProperty(stone, "town"));
+		if(town_id)
+			var townnames := GetGlobalProperty("townlist");
+			if(townnames and town_id <= townnames.size())
+				region_name := CStr(townnames[town_id]);
+			endif
+		endif
+	endif
+
+	if(Lower(region_name) == EXCLUDED_REGION_NAME)
+		return 1;
+	endif
+
+	return 0;
 endfunction
 
 function TeleportBesideStone(who, stone)
