@@ -32,47 +32,13 @@ program dualplanaronhit( parms )
 		else
 			targ := attacker;
 		endif
-		// Print("Target is: " + targ.name);
-		// Print("Attacker is: " + attacker.name);
-		// Print("Defender is: " + defender.name);
 
 		if ( GetObjProperty( targ , "Windsbreath" ) == 1)
-			//Print("Windsbreath is still running!");
 			return 0;
 		endif
 
 		SetObjProperty( targ , "Windsbreath" , 1 );
 
-		// var spelldmg := CalcSpellDamage( defender, targ , 5 );
-		// Print("Spell damage before resist in Dual Planar OnHit: " + spelldmg);
-		// spelldmg := Resisted( defender , targ , 9 , spelldmg );
-		// Print("Spell damage after resist in Dual Planar OnHit: " + spelldmg);
-
-		// // PlayMovingEffect( defender, targ, FX_SPELL_HOLY_BOLT, SPEED_SPELL_HOLY_BOLT, LOOP_SPELL_HOLY_BOLT );
-		// // PlaySoundEffect( targ, SFX_SPELL_HOLY_BOLT );
-		// // ApplyPlanarDamage( defender, targ, 1, spelldmg, DMGID_HOLY );
-		// // Sleepms( 250 );
-
-		// // PlayMovingEffect( defender, targ, FX_SPELL_ABYSSAL_FLAME, SPEED_SPELL_ABYSSAL_FLAME, LOOP_SPELL_ABYSSAL_FLAME );
-		// // PlaySoundEffect( targ, SFX_SPELL_ABYSSAL_FLAME );
-		// // ApplyPlanarDamage( defender, targ, 1, spelldmg, DMGID_NECRO );
-		// //Sleepms( 250 );
-
-		// PlayMovingEffect( defender, targ, FX_SPELL_ASTRAL_STORM, SPEED_SPELL_ASTRAL_STORM, LOOP_SPELL_ASTRAL_STORM );
-		// PlaySoundEffect( targ, SFX_SPELL_ASTRAL_STORM );
-		// start_script(":holybook:astralstorm_damage", {defender, targ, 5});
-		// //ApplyPlanarDamage( defender, targ, 1, spelldmg, DMGID_HOLY );
-		// Sleepms( 250 );
-
-		// // PlayMovingEffect( defender, targ, FX_SPELL_SPECTER_TOUCH, SPEED_SPELL_SPECTER_TOUCH, LOOP_SPELL_SPECTER_TOUCH );
-		// // PlaySoundEffect( targ, SFX_SPELL_SPECTER_TOUCH );
-		// // ApplyPlanarDamage( defender, targ, 1, spelldmg, DMGID_NECRO );
-		// // Sleepms( 250 );
-
-		// if(DEBUG_MODE)
-		// 	PrintTextAbovePrivate( defender , "I'm dealing this much spell damage: " +spelldmg, defender );
-		// endif
-	//endif
 	
 	if( basedamage != rawdamage )
 		rawdamage := rawdamage - 15;
@@ -91,14 +57,7 @@ program dualplanaronhit( parms )
 	endif
 	PlaySoundEffect( targ , SFX_SPELL_ASTRAL_STORM );
 	var circle := 5;
-	// var immunity := IsProtected( defender , targ , circle );
-	// if( immunity == IMMUNED )
-	// 	EraseObjProperty( targ , "Windsbreath" );
-	// 	return;
-	// endif
-	// if( immunity == CURSED )
-	// 	circle := circle * 2;
-	// endif
+
 	var holyprot := CInt(GetObjProperty(targ, "HolyProtection"));
 	if (holyprot < 0)
 		holyprot := 0;
@@ -109,23 +68,14 @@ program dualplanaronhit( parms )
 	var freeaction := GetObjProperty(targ, "FreeAction");
 	var duration;
 	if (freeaction)
-		// Free Action branch: 0..5 seconds (95 -> 0, 0 -> 5)
 		duration := CInt(((95 - holyprot) * 5) / 95);
 	else
-		// Non-Free Action branch: 0..7 seconds (95 -> 0, 0 -> 7)
 		duration := CInt(((95 - holyprot) * 7) / 95);
-		// Ensure sub-1 values still paralyze for 1s unless fully protected at 95.
 		if (holyprot < 95 && duration <= 0)
 			duration := 1;
 		endif
 	endif
 
-	Print("[Windsbreath] attacker=" + attacker.name + " defender=" + defender.name + " target=" + targ.name + " holyprot=" + holyprot + " freeaction=" + freeaction + " duration=" + duration);
-	PrintTextAbovePrivate(defender, "Windsbreath on " + targ.name + ": " + CInt(duration) + "s (HP " + holyprot + ", FA " + freeaction + ")", defender);
-	if (targ != defender)
-		PrintTextAbovePrivate(targ, "Windsbreath duration: " + CInt(duration) + "s (HP " + holyprot + ", FA " + freeaction + ")", targ);
-	endif
-	
 	if (duration > 0)
 		if (!wasfrozen)
 			targ.frozen := 1;
@@ -157,7 +107,6 @@ program dualplanaronhit( parms )
 		targ.frozen :=0;
 	endif
 	targ.SetParalyzed(0);
-	//EraseObjProperty( defender , "#Casting" );
 	BuffOff(targ,"paralyze");
 	IncRevision(targ);
 	EraseObjProperty( targ , "Windsbreath" );
