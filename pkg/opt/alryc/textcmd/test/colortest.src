@@ -1,0 +1,74 @@
+// Synopsis: Spawn a color range on one graphic in a nearby line/grid for hue testing
+use uo;
+
+const DEFAULT_PER_ROW := 25;
+const MAX_PER_ROW := 50;
+const MAX_RANGE := 600;
+const DEFAULT_GRAPHIC := 0x1f03;
+
+program colortest(who, text)
+    var args := SplitWords(text);
+    if (len(args) < 2)
+        SendSysMessage(who, "Usage: .colortest <startcolor> <endcolor> [graphic] [perrow]");
+        return;
+    endif
+
+    var start_color := CInt(args[1]);
+    var end_color := CInt(args[2]);
+
+    if (start_color < 0 OR end_color < 0)
+        SendSysMessage(who, "Color values must be non-negative.");
+        return;
+    endif
+
+    if (start_color > end_color)
+        var tmp := start_color;
+        start_color := end_color;
+        end_color := tmp;
+    endif
+
+    var total := (end_color - start_color) + 1;
+    if (total > MAX_RANGE)
+        SendSysMessage(who, "Range too large (" + total + "). Max supported is " + MAX_RANGE + ".");
+        return;
+    endif
+
+    var graphic := DEFAULT_GRAPHIC;
+    if (len(args) >= 3)
+        graphic := CInt(args[3]);
+    endif
+
+    var per_row := DEFAULT_PER_ROW;
+    if (len(args) >= 4)
+        per_row := CInt(args[4]);
+    endif
+    if (per_row < 1 OR per_row > MAX_PER_ROW)
+        SendSysMessage(who, "perrow must be between 1 and " + MAX_PER_ROW + ".");
+        return;
+    endif
+
+    var start_x := who.x + 1;
+    var start_y := who.y + 1;
+    var z := who.z;
+    var created := 0;
+    var color;
+
+    for (color := start_color; color <= end_color; color := color + 1)
+        var index := color - start_color;
+        var col := index % per_row;
+        var row := CInt(index / per_row);
+        var x := start_x + col;
+        var y := start_y + row;
+
+        var item := CreateItemAtLocation(x, y, z, graphic, 1, who.realm);
+        if (item)
+            item.color := color;
+            created := created + 1;
+            SetObjProperty(item, "StaffCreatedSerial", who.serial);
+            SetObjProperty(item, "StaffCreatedName", who.name);
+            item.name := "colortest " + color;
+        endif
+    endfor
+
+    SendSysMessage(who, "Spawned " + created + " hues from " + start_color + " to " + end_color + ".");
+endprogram

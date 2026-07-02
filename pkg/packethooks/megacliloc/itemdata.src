@@ -57,6 +57,25 @@ program itemdata(parms)
 		prop.clilocid := 1038000; // Unidentified
 		prop.values := array {};
 		allprops.append(prop);
+
+		var artifact := GetObjProperty(xObject, "Artifact");
+		if(artifact)
+			prop.clilocid := 1042971; // ~1_NOTHING~
+			prop.values := array {"<BASEFONT COLOR=#ff9900>Artifact</BASEFONT>"};
+			allprops.append(prop);
+
+			var artifactexpireat := CInt(GetObjProperty(xObject, "#ArtifactExpireAt"));
+			if (artifactexpireat)
+				var remain := artifactexpireat - ReadGameClock();
+				prop.clilocid := 1070722; // Nothing
+				if (remain <= 0)
+					prop.values := array {"Artifact expired, pending sweep"};
+				else
+					prop.values := array {"Artifact expires in " + FormatDuration(remain)};
+				endif
+				allprops.append(prop);
+			endif
+		endif
 	else
 		if(xObject.isa(POLCLASS_EQUIPMENT) || IsJewel(xObject))
 			var armod := GetObjProperty(xObject, "ArBonus");

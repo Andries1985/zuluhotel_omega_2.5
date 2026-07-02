@@ -8,7 +8,7 @@ const TOWNSTONE_OBJTYPE := 0xa320;
 const TOWNSTONE_SEARCH_RANGE := 10000;
 const SOSARIA_MIN_X := 0;
 const SOSARIA_MIN_Y := 0;
-const SOSARIA_MAX_X := 6151;
+const SOSARIA_MAX_X := 7167;
 const SOSARIA_MAX_Y := 4095;
 
 program use_globe(who, globe)
