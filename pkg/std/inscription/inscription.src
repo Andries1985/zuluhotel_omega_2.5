@@ -115,6 +115,12 @@ program DoInscription( character )
 		SendSysMessage( character , "You can't do that." );
 		return;
 		//CheckIfEmpty( character , item );
+
+	// elseif( GetObjProperty( item , "EnchantedWith" ) )
+	// 	RechargeEngravedItem( character , item , Cint(GetObjProperty( item , "EnchantedWith" )) );
+
+	// elseif( IsExceptionalItem( item ) )
+	// 	EnchantItem( character , item );
 		
 	elseif( GetObjProperty( item , "Rechargeable" ) )
 		RechargeItem( character , item );

@@ -5,7 +5,7 @@ include "include/math";
 include "include/client";
 
 const CITIZEN_ELECTION_COOLDOWN := (60*24*3600); // 2 months in seconds
-const ELECTION_DURATION := (2*60); // 2 minutes in seconds (testing)
+const ELECTION_DURATION := (7*24*3600); // 1 week in seconds
 
 function countvotes(item)
 
