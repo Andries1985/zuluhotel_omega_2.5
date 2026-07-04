@@ -49,6 +49,10 @@ var affected := ListMobilesNearLocation( who.x, who.y, who.z, range, who.realm )
 affected := SmartBoost(who, affected);
 
 foreach person in affected
+	if (person.IsA(POLCLASS_NPC) && person.script != "tamed")
+		continue;
+	endif
+
 	if (CheckLineOfSight( who, person ) && person != who)
 	
 		sleep(2);
