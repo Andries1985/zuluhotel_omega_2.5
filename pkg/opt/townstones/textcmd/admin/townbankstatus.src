@@ -7,6 +7,7 @@ use cfgfile;
 include ":gumps:gumps";
 
 const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
+const PLAYERTOWNS_CFG := ":townstone:playertowns";
 const TOWNSTONE_OBJTYPE := 0xa320;
 const TOWNSTONE_SEARCH_RANGE := 10000;
 const BTN_PREV := 7001;
@@ -14,7 +15,9 @@ const BTN_NEXT := 7002;
 const BTN_CLOSE := 7003;
 const BTN_TOGGLE_UPGRADES_BASE := 8000;
 const BTN_TOGGLE_DONATIONS_BASE := 10000;
+const BTN_TOGGLE_AVAILABLE_BASE := 13000;
 const BTN_DELETE_REGION_BASE := 12000;
+const BTN_TOGGLE_PURCHASED_BASE := 14000;
 const ROWS_PER_PAGE := 10;
 
 program textcmd_townbankstatus(who)
@@ -53,6 +56,10 @@ program textcmd_townbankstatus(who)
 	var has_region_data := {};
 	var upgrades_enabled := {};
 	var donations_enabled := {};
+	var player_purchase_prices := {};
+	var player_purchased := {};
+	var player_available := {};
+	var player_cfg := LoadPlayerTownsConfig();
 	var seen_regions := dictionary;
 	var total_gold := 0;
 	var added_regions := 0;
@@ -88,6 +95,10 @@ program textcmd_townbankstatus(who)
 		has_region_data.append(has_data);
 		upgrades_enabled.append(IsTownBankFeatureEnabled(region_name, "allow_upgrades"));
 		donations_enabled.append(IsTownBankFeatureEnabled(region_name, "allow_donations"));
+		var player_info := GetPlayerTownInfo(player_cfg, region_name);
+		player_purchase_prices.append(player_info[1]);
+		player_purchased.append(player_info[2]);
+		player_available.append(player_info[3]);
 		added_regions := added_regions + 1;
 	endfor
 
@@ -96,7 +107,7 @@ program textcmd_townbankstatus(who)
 		return;
 	endif
 
-	ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, total_gold);
+	ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, player_purchase_prices, player_purchased, player_available, total_gold);
 
 endprogram
 
@@ -208,7 +219,7 @@ function HasTownBankRegionData(region_name)
 endfunction
 
 
-function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, total_gold)
+function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, player_purchase_prices, player_purchased, player_available, total_gold)
 	var total := regions.size();
 	if(!total)
 		return;
@@ -230,47 +241,58 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_da
 			end_idx := total;
 		endif
 
-		var gump := GFCreateGump(20, 20, 900, 380);
+		var gump := GFCreateGump(20, 20, 1160, 380);
 		GFDisposable(gump, 0);
 		GFMovable(gump, 1);
-		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 900, 380);
-		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 870, 350);
+		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 1160, 380);
+		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 1130, 350);
 		GFPage(gump, 1);
 
 		GFTextLine(gump, 28, 28, 1153, "Town Treasury Status");
 		GFTextLine(gump, 28, 48, 1153, "Page " + CStr(page) + " of " + CStr(total_pages));
 		GFTextLine(gump, 28, 68, 1153, "Total town treasury gold: " + CStr(total_gold));
 		GFTextLine(gump, 28, 88, 1153, "Town");
-		GFTextLine(gump, 260, 88, 1153, "Treasury");
-		GFTextLine(gump, 430, 88, 53, "Upgrades");
-		GFTextLine(gump, 560, 88, 53, "Donations");
-		GFTextLine(gump, 670, 88, 1153, "Stone");
-		GFTextLine(gump, 760, 88, 38, "Delete");
+		GFTextLine(gump, 230, 88, 1153, "Treasury");
+		GFTextLine(gump, 385, 88, 53, "Upgrades");
+		GFTextLine(gump, 495, 88, 53, "Donations");
+		GFTextLine(gump, 610, 88, 53, "Available");
+		GFTextLine(gump, 715, 88, 53, "Purchased");
+		GFTextLine(gump, 825, 88, 1153, "Price");
+		GFTextLine(gump, 955, 88, 1153, "Stone");
+		GFTextLine(gump, 1035, 88, 38, "Delete");
 
 		var row := 0;
 		var i;
 		for(i := start_idx; i <= end_idx; i := i + 1)
 			var y := 112 + (row * 22);
 			GFTextLine(gump, 28, y, 1153, CStr(regions[i]));
-			GFTextLine(gump, 260, y, 1153, CStr(golds[i]) + " gold");
+			GFTextLine(gump, 230, y, 1153, CStr(golds[i]) + " gold");
 
-			GFAddButton(gump, 430, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_TOGGLE_UPGRADES_BASE + i);
-			GFTextLine(gump, 465, y, upgrades_enabled[i] ? 63 : 38, upgrades_enabled[i] ? "On" : "Off");
+			GFAddButton(gump, 385, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_TOGGLE_UPGRADES_BASE + i);
+			GFTextLine(gump, 420, y, upgrades_enabled[i] ? 63 : 38, upgrades_enabled[i] ? "On" : "Off");
 
-			GFAddButton(gump, 560, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_TOGGLE_DONATIONS_BASE + i);
-			GFTextLine(gump, 595, y, donations_enabled[i] ? 63 : 38, donations_enabled[i] ? "On" : "Off");
+			GFAddButton(gump, 495, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_TOGGLE_DONATIONS_BASE + i);
+			GFTextLine(gump, 530, y, donations_enabled[i] ? 63 : 38, donations_enabled[i] ? "On" : "Off");
+
+			GFAddButton(gump, 610, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_TOGGLE_AVAILABLE_BASE + i);
+			GFTextLine(gump, 645, y, player_available[i] ? 63 : 38, player_available[i] ? "Yes" : "No");
+
+			GFAddButton(gump, 715, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_TOGGLE_PURCHASED_BASE + i);
+			GFTextLine(gump, 750, y, player_purchased[i] ? 63 : 38, player_purchased[i] ? "Yes" : "No");
+
+			GFTextLine(gump, 825, y, 1153, player_purchase_prices[i] > 0 ? (CStr(player_purchase_prices[i]) + " gold") : "N/A");
 
 			if(stones_exist[i])
-				GFTextLine(gump, 670, y, 63, "Yes");
+				GFTextLine(gump, 955, y, 63, "Yes");
 			else
-				GFTextLine(gump, 670, y, 38, "No");
+				GFTextLine(gump, 955, y, 38, "No");
 			endif
 
 			if(has_region_data[i] and !stones_exist[i])
-				GFAddButton(gump, 760, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_DELETE_REGION_BASE + i);
-				GFTextLine(gump, 795, y, 38, "Del");
+				GFAddButton(gump, 1035, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_DELETE_REGION_BASE + i);
+				GFTextLine(gump, 1070, y, 38, "Del");
 			else
-				GFTextLine(gump, 795, y, 1153, "-");
+				GFTextLine(gump, 1070, y, 1153, "-");
 			endif
 			row := row + 1;
 		endfor
@@ -281,8 +303,8 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_da
 		endif
 
 		if(page < total_pages)
-			GFAddButton(gump, 810, 332, 2117, 2118, GF_CLOSE_BTN, BTN_NEXT);
-			GFTextLine(gump, 770, 334, 1153, "Next");
+			GFAddButton(gump, 1070, 332, 2117, 2118, GF_CLOSE_BTN, BTN_NEXT);
+			GFTextLine(gump, 1030, 334, 1153, "Next");
 		endif
 
 		GFAddButton(gump, 250, 332, 2152, 2151, GF_CLOSE_BTN, BTN_CLOSE);
@@ -308,6 +330,26 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_da
 			var new_donation_state := donations_enabled[donation_idx] ? 0 : 1;
 			SetTownBankFeatureEnabled(CStr(regions[donation_idx]), "allow_donations", new_donation_state);
 			donations_enabled[donation_idx] := new_donation_state;
+			continue;
+		elseif(res[0] > BTN_TOGGLE_AVAILABLE_BASE and res[0] <= (BTN_TOGGLE_AVAILABLE_BASE + total))
+			var available_idx := res[0] - BTN_TOGGLE_AVAILABLE_BASE;
+			var available_region := CStr(regions[available_idx]);
+			var new_available_state := player_available[available_idx] ? 0 : 1;
+			if(SetRuntimePlayerTownAvailableState(available_region, new_available_state))
+				player_available[available_idx] := new_available_state;
+			else
+				SendSysMessage(who, "Failed to update available state for " + available_region + ".");
+			endif
+			continue;
+		elseif(res[0] > BTN_TOGGLE_PURCHASED_BASE and res[0] <= (BTN_TOGGLE_PURCHASED_BASE + total))
+			var purchased_idx := res[0] - BTN_TOGGLE_PURCHASED_BASE;
+			var region_name := CStr(regions[purchased_idx]);
+			var new_purchased_state := player_purchased[purchased_idx] ? 0 : 1;
+			if(SetRuntimePlayerTownPurchasedState(region_name, new_purchased_state))
+				player_purchased[purchased_idx] := new_purchased_state;
+			else
+				SendSysMessage(who, "Failed to update purchased state for " + region_name + ".");
+			endif
 			continue;
 		elseif(res[0] > BTN_DELETE_REGION_BASE and res[0] <= (BTN_DELETE_REGION_BASE + total))
 			var delete_idx := res[0] - BTN_DELETE_REGION_BASE;
@@ -341,6 +383,9 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_da
 			has_region_data.erase(delete_idx);
 			upgrades_enabled.erase(delete_idx);
 			donations_enabled.erase(delete_idx);
+			player_purchase_prices.erase(delete_idx);
+			player_purchased.erase(delete_idx);
+			player_available.erase(delete_idx);
 
 			total := regions.size();
 			if(!total)
@@ -359,6 +404,186 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_da
 			return;
 		endif
 	endwhile
+endfunction
+
+
+function LoadPlayerTownsConfig()
+	var cfg_map := dictionary;
+	var cfg := ReadConfigFile(PLAYERTOWNS_CFG);
+	if(!cfg)
+		return cfg_map;
+	endif
+
+	var keys := GetConfigStringKeys(cfg);
+	if(!keys or !keys.size())
+		return cfg_map;
+	endif
+
+	var i;
+	for(i := 1; i <= keys.size(); i := i + 1)
+		var key := CStr(keys[i]);
+		var elem := cfg[key];
+		if(!elem)
+			elem := FindConfigElem(cfg, key);
+		endif
+		if(!elem)
+			continue;
+		endif
+
+		var region_name := Trim(CStr(GetConfigString(elem, "RegionName")));
+		if(!region_name)
+			region_name := Trim(CStr(key));
+		endif
+		if(!region_name)
+			continue;
+		endif
+
+		var purchase_price := SafeNonNegativeInt(GetConfigInt(elem, "PurchasePrice"));
+		var available := GetRuntimePlayerTownAvailableState(region_name, 1);
+
+		cfg_map[Lower(region_name)] := { purchase_price, 0, available };
+	endfor
+
+	return cfg_map;
+endfunction
+
+
+function GetPlayerTownInfo(cfg_map, region_name)
+	var info := { 0, 0, 1 };
+	if(!cfg_map or !region_name)
+		return info;
+	endif
+
+	var cfg_entry := cfg_map[Lower(CStr(region_name))];
+	if(!cfg_entry)
+		return info;
+	endif
+
+	info[1] := SafeNonNegativeInt(cfg_entry[1]);
+	info[2] := GetRuntimePlayerTownPurchasedState(region_name, 0);
+	info[3] := GetRuntimePlayerTownAvailableState(region_name, 1);
+
+	return info;
+endfunction
+
+
+function GetRuntimePlayerTownPurchasedState(region_name, default_value)
+	if(!region_name)
+		return default_value;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return default_value;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return default_value;
+	endif
+
+	var raw := CStr(elem.GetProp("playertown_purchased"));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	if(!raw)
+		return default_value;
+	endif
+
+	return ParseEnabled(raw);
+endfunction
+
+
+function GetRuntimePlayerTownAvailableState(region_name, default_value)
+	if(!region_name)
+		return default_value;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return default_value;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return default_value;
+	endif
+
+	var raw := CStr(elem.GetProp("playertown_available"));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	if(!raw)
+		return default_value;
+	endif
+
+	return ParseEnabled(raw);
+endfunction
+
+
+function SetRuntimePlayerTownPurchasedState(region_name, purchased)
+	if(!region_name)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	elem.SetProp("playertown_purchased", purchased ? "1" : "0");
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	return 1;
+endfunction
+
+
+function SetRuntimePlayerTownAvailableState(region_name, available)
+	if(!region_name)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	elem.SetProp("playertown_available", available ? "1" : "0");
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	return 1;
+endfunction
+
+
+function SafeNonNegativeInt(raw_value)
+	var value := CInt(raw_value);
+	if(value < 0)
+		value := 0;
+	endif
+	return value;
+endfunction
+
+
+function ParseEnabled(raw_value)
+	var value := Lower(CStr(raw_value));
+	if(value == "off" or value == "0" or value == "no" or value == "false")
+		return 0;
+	endif
+	return 1;
 endfunction
 
 

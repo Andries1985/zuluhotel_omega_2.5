@@ -1,0 +1,67 @@
+// Synopsis: Spawn a graphic range in a nearby line/grid for animation preview testing
+use uo;
+
+const DEFAULT_PER_ROW := 25;
+const MAX_PER_ROW := 50;
+const MAX_RANGE := 500;
+
+program animationtest(who, text)
+    var args := SplitWords(text);
+    if (len(args) < 2)
+        SendSysMessage(who, "Usage: .animationtest <startgraphic> <endgraphic> [perrow]");
+        return;
+    endif
+
+    var start_graphic := CInt(args[1]);
+    var end_graphic := CInt(args[2]);
+
+    if (start_graphic < 0 OR end_graphic < 0)
+        SendSysMessage(who, "Graphic values must be non-negative.");
+        return;
+    endif
+
+    if (start_graphic > end_graphic)
+        var tmp := start_graphic;
+        start_graphic := end_graphic;
+        end_graphic := tmp;
+    endif
+
+    var total := (end_graphic - start_graphic) + 1;
+    if (total > MAX_RANGE)
+        SendSysMessage(who, "Range too large (" + total + "). Max supported is " + MAX_RANGE + ".");
+        return;
+    endif
+
+    var per_row := DEFAULT_PER_ROW;
+    if (len(args) >= 3)
+        per_row := CInt(args[3]);
+    endif
+    if (per_row < 1 OR per_row > MAX_PER_ROW)
+        SendSysMessage(who, "perrow must be between 1 and " + MAX_PER_ROW + ".");
+        return;
+    endif
+
+    var start_x := who.x + 1;
+    var start_y := who.y + 1;
+    var z := who.z;
+    var created := 0;
+
+    var objtype;
+    for (objtype := start_graphic; objtype <= end_graphic; objtype := objtype + 1)
+        var index := objtype - start_graphic;
+        var col := index % per_row;
+        var row := CInt(index / per_row);
+        var x := start_x + col;
+        var y := start_y + row;
+
+        var item := CreateItemAtLocation(x, y, z, objtype, 1, who.realm);
+        if (item)
+            created := created + 1;
+            SetObjProperty(item, "StaffCreatedSerial", who.serial);
+            SetObjProperty(item, "StaffCreatedName", who.name);
+            item.name := "animationtest " + objtype;
+        endif
+    endfor
+
+    SendSysMessage(who, "Spawned " + created + " graphics from " + start_graphic + " to " + end_graphic + ".");
+endprogram

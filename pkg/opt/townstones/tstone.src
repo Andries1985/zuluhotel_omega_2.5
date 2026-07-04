@@ -10,6 +10,36 @@ include "tstone";
 const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
 const TOWNSTONE_UPGRADES_CFG := ":townstone:upgrades";
 
+function NormalizeUpgradeType(raw_type)
+	var normalized := CStr(raw_type);
+	if(!normalized)
+		return "Vendors";
+	endif
+
+	normalized := Upper(normalized);
+	if(normalized == "STAFF")
+		return "Staff";
+	elseif(normalized == "AREA" or normalized == "AREAS")
+		return "Areas";
+	elseif(normalized == "VENDOR" or normalized == "VENDORS")
+		return "Vendors";
+	elseif(normalized == "FIDDLER")
+		return "Fiddler";
+	elseif(normalized == "ITEM" or normalized == "ITEMS")
+		return "Items";
+	endif
+
+	return "Vendors";
+endfunction
+
+function NormalizeUpgradeAnimation(raw_animation)
+	var normalized := Upper(CStr(raw_animation));
+	if(normalized == "YES" or normalized == "Y" or normalized == "1" or normalized == "TRUE")
+		return "Yes";
+	endif
+	return "No";
+endfunction
+
 function LoadTownUpgrades()
 	var upgrades := {};
 	var cfg := ReadConfigFile(TOWNSTONE_UPGRADES_CFG);
@@ -27,6 +57,8 @@ function LoadTownUpgrades()
 		var desc := CStr(GetConfigString(elem, "Desc"));
 		var cost := CInt(GetConfigInt(elem, "Cost"));
 		var graphic := CInt(GetConfigInt(elem, "Graphic"));
+		var type := NormalizeUpgradeType(GetConfigString(elem, "Type"));
+		var animation := NormalizeUpgradeAnimation(GetConfigString(elem, "Animation"));
 
 		if(!name)
 			name := CStr(upgrade_key);
@@ -43,9 +75,33 @@ function LoadTownUpgrades()
 		upgrades.append(desc);
 		upgrades.append(cost);
 		upgrades.append(graphic);
+		upgrades.append(type);
+		upgrades.append(animation);
 	endforeach
 
 	return upgrades;
+endfunction
+
+function FilterTownUpgradesByType(upgrades, selected_type)
+	var filtered := {};
+	var wanted_type := NormalizeUpgradeType(selected_type);
+	var total := CInt(upgrades.size() / 7);
+	var i;
+	for(i := 1; i <= total; i := i + 1)
+		var base := ((i - 1) * 7) + 1;
+		var upgrade_type := NormalizeUpgradeType(upgrades[base + 5]);
+		if(upgrade_type == wanted_type)
+			filtered.append(upgrades[base]);
+			filtered.append(upgrades[base + 1]);
+			filtered.append(upgrades[base + 2]);
+			filtered.append(upgrades[base + 3]);
+			filtered.append(upgrades[base + 4]);
+			filtered.append(upgrade_type);
+			filtered.append(NormalizeUpgradeAnimation(upgrades[base + 6]));
+		endif
+	endfor
+
+	return filtered;
 endfunction
 
 function PurchaseTownUpgrade(who, item, upgrades, choice)
@@ -64,13 +120,13 @@ function PurchaseTownUpgrade(who, item, upgrades, choice)
 		return;
 	endif
 
-	var total := CInt(upgrades.size() / 5);
+	var total := CInt(upgrades.size() / 7);
 	if(choice > total)
 		SendSysMessage(who, "Invalid upgrade selection.");
 		return;
 	endif
 
-	var base := ((choice - 1) * 5) + 1;
+	var base := ((choice - 1) * 7) + 1;
 	var upgrade_desc := CStr(upgrades[base + 2]);
 	var upgrade_cost := CInt(upgrades[base + 3]);
 	if(upgrade_cost <= 0)
@@ -97,53 +153,21 @@ function PurchaseTownUpgrade(who, item, upgrades, choice)
 	SendSysMessage(who, "Purchased upgrade ticket: " + upgrade_desc + " for " + FormatGoldAmount(upgrade_cost) + " gold.");
 endfunction
 
-function ShowTownUpgradePictureGump(who, upgrades, choice)
-	if(choice < 1)
-		return;
-	endif
-
-	var total := CInt(upgrades.size() / 5);
-	if(choice > total)
-		return;
-	endif
-
-	var base := ((choice - 1) * 5) + 1;
-	var upgrade_desc := CStr(upgrades[base + 2]);
-	var graphic := CInt(upgrades[base + 4]);
-	if(graphic <= 0)
-		return;
-	endif
-
-	var gump := GFCreateGump(20, 20, 300, 230);
-	GFDisposable(gump, 0);
-	GFMovable(gump, 0);
-	GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 300, 230);
-	GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 270, 200);
-	GFPage(gump, 1);
-
-	GFTextLine(gump, 28, 28, 1153, "Upgrade Preview");
-	GFTextLine(gump, 28, 50, 1153, upgrade_desc);
-	GFTextLine(gump, 28, 72, 1153, "Graphic: " + CStr(graphic));
-	GFTilePic(gump, 120, 110, graphic);
-	GFAddButton(gump, 120, 185, 2152, 2151, GF_CLOSE_BTN, 1);
-	GFTextLine(gump, 155, 187, 1153, "Close");
-
-	GFSendGump(who, gump);
-endfunction
-
-function OpenTownUpgradesGump(who, item)
+function OpenTownUpgradesGump(who, item, selected_type := "Vendors")
 	const ENTRIES_PER_PAGE_UPGRADES := 10;
 	const BTN_PREV_UPGRADES := 6101;
 	const BTN_NEXT_UPGRADES := 6102;
 	const BTN_CLOSE_UPGRADES := 6103;
+	const BTN_BACK_UPGRADES := 6104;
+	const BTN_JUMP_UPGRADES := 6105;
+	const ENTRY_JUMP_PAGE := 6106;
 	const BTN_PURCHASE_BASE := 12000;
-	const BTN_PICTURE_BASE := 13000;
 	const TXT_COLOR_UPGRADES := 1153;
 	const TXT_COLOR_UPGRADES_HEADER := 53;
 	const LIST_HEADER_Y := 78;
 	const LIST_START_Y := 102;
-	const LIST_ROW_STEP := 38;
-	const FOOTER_Y := 515;
+	const LIST_ROW_STEP := 63;
+	const FOOTER_Y := 773;
 
 	if(CInt(GetObjProperty(item, "mayorserial")) != who.serial)
 		SendSysMessage(who, "Only the mayor can purchase town upgrades.");
@@ -155,10 +179,12 @@ function OpenTownUpgradesGump(who, item)
 		return;
 	endif
 
-	var upgrades := LoadTownUpgrades();
-	var count := CInt(upgrades.size() / 5);
+	selected_type := NormalizeUpgradeType(selected_type);
+
+	var upgrades := FilterTownUpgradesByType(LoadTownUpgrades(), selected_type);
+	var count := CInt(upgrades.size() / 7);
 	if(count <= 0)
-		SendSysMessage(who, "No upgrades are configured.");
+		SendSysMessage(who, "No upgrades are configured for " + selected_type + ".");
 		return;
 	endif
 
@@ -179,58 +205,78 @@ function OpenTownUpgradesGump(who, item)
 		endif
 
 		var town_gold := GetTownBankGold(city);
-		var gump := GFCreateGump(20, 20, 800, 560);
+		var gump := GFCreateGump(20, 20, 940, 840);
 		GFDisposable(gump, 0);
 		GFMovable(gump, 0);
-		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 800, 560);
-		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 770, 530);
+		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 940, 840);
+		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 910, 810);
 		GFPage(gump, 1);
 
-		GFTextLine(gump, 28, 28, TXT_COLOR_UPGRADES, "Town Upgrades for " + city);
+		GFTextLine(gump, 28, 28, TXT_COLOR_UPGRADES, "Town Upgrades for " + city + " - " + selected_type);
 		GFTextLine(gump, 28, 48, TXT_COLOR_UPGRADES, "Treasury: " + FormatGoldAmount(town_gold) + " gold");
-		GFTextLine(gump, 600, 48, TXT_COLOR_UPGRADES, "Page " + CStr(page) + "/" + CStr(total_pages));
+		GFTextLine(gump, 730, 48, TXT_COLOR_UPGRADES, "Page " + CStr(page) + "/" + CStr(total_pages));
 		GFTextLine(gump, 28, LIST_HEADER_Y, TXT_COLOR_UPGRADES_HEADER, "Item");
-		GFTextLine(gump, 190, LIST_HEADER_Y, TXT_COLOR_UPGRADES_HEADER, "Description");
-		GFTextLine(gump, 460, LIST_HEADER_Y, TXT_COLOR_UPGRADES_HEADER, "Cost");
+		GFTextLine(gump, 175, LIST_HEADER_Y, TXT_COLOR_UPGRADES_HEADER, "A");
+		GFTextLine(gump, 220, LIST_HEADER_Y, TXT_COLOR_UPGRADES_HEADER, "Description");
+		GFTextLine(gump, 505, LIST_HEADER_Y, TXT_COLOR_UPGRADES_HEADER, "Cost");
+		GFTextLine(gump, 730, LIST_HEADER_Y, TXT_COLOR_UPGRADES_HEADER, "Preview");
 
 		var row := 0;
 		var i;
 		for(i := start_idx; i <= end_idx; i := i + 1)
-			var base := ((i - 1) * 5) + 1;
+			var base := ((i - 1) * 7) + 1;
 			var upgrade_name := CStr(upgrades[base + 1]);
 			var upgrade_desc := CStr(upgrades[base + 2]);
 			var upgrade_cost := CInt(upgrades[base + 3]);
 			var upgrade_graphic := CInt(upgrades[base + 4]);
+			var upgrade_animation := NormalizeUpgradeAnimation(upgrades[base + 6]);
+			var animation_short := "N";
+			if(upgrade_animation == "Yes")
+				animation_short := "Y";
+			endif
 			var line_y := LIST_START_Y + (row * LIST_ROW_STEP);
 
 			GFTextLine(gump, 28, line_y, TXT_COLOR_UPGRADES, TruncateForGump(upgrade_name, 22));
-			GFTextLine(gump, 190, line_y, TXT_COLOR_UPGRADES, upgrade_desc);
-			GFTextLine(gump, 460, line_y, TXT_COLOR_UPGRADES, FormatGoldAmount(upgrade_cost) + " gold");
-			GFAddButton(gump, 620, line_y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_PURCHASE_BASE + i);
-			GFTextLine(gump, 655, line_y, TXT_COLOR_UPGRADES, "Buy");
+			GFTextLine(gump, 175, line_y, TXT_COLOR_UPGRADES, animation_short);
+			GFTextLine(gump, 220, line_y, TXT_COLOR_UPGRADES, TruncateForGump(upgrade_desc, 36));
+			GFTextLine(gump, 505, line_y, TXT_COLOR_UPGRADES, FormatGoldAmount(upgrade_cost) + " gold");
 			if(upgrade_graphic > 0)
-				GFAddButton(gump, 700, line_y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_PICTURE_BASE + i);
-				GFTextLine(gump, 735, line_y, TXT_COLOR_UPGRADES, "Pic");
+				GFTilePic(gump, 745, line_y - 4, upgrade_graphic);
 			endif
+			GFAddButton(gump, 840, line_y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_PURCHASE_BASE + i);
+			GFTextLine(gump, 875, line_y, TXT_COLOR_UPGRADES, "Buy");
 
 			row := row + 1;
 		endfor
 
+		GFAddButton(gump, 28, FOOTER_Y, 2117, 2118, GF_CLOSE_BTN, BTN_BACK_UPGRADES);
+		GFTextLine(gump, 63, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Back");
+
 		if(page > 1)
-			GFAddButton(gump, 28, FOOTER_Y, 2117, 2118, GF_CLOSE_BTN, BTN_PREV_UPGRADES);
-			GFTextLine(gump, 63, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Previous");
+			GFAddButton(gump, 150, FOOTER_Y, 2117, 2118, GF_CLOSE_BTN, BTN_PREV_UPGRADES);
+			GFTextLine(gump, 185, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Previous");
 		endif
+
+		GFTextLine(gump, 250, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Page " + CStr(page) + "/" + CStr(total_pages));
 
 		if(page < total_pages)
-			GFAddButton(gump, 680, FOOTER_Y, 2117, 2118, GF_CLOSE_BTN, BTN_NEXT_UPGRADES);
-			GFTextLine(gump, 715, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Next");
+			GFAddButton(gump, 820, FOOTER_Y, 2117, 2118, GF_CLOSE_BTN, BTN_NEXT_UPGRADES);
+			GFTextLine(gump, 855, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Next");
 		endif
 
-		GFAddButton(gump, 365, FOOTER_Y, 2152, 2151, GF_CLOSE_BTN, BTN_CLOSE_UPGRADES);
-		GFTextLine(gump, 400, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Close");
+		GFTextLine(gump, 550, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Page:");
+		GFResizePic(gump, 595, FOOTER_Y, 9500, 70, 22);
+		GFTextEntry(gump, 602, FOOTER_Y + 2, 58, 18, TXT_COLOR_UPGRADES, CStr(page), ENTRY_JUMP_PAGE);
+		GFAddButton(gump, 670, FOOTER_Y, 2474, 2473, GF_CLOSE_BTN, BTN_JUMP_UPGRADES);
+		GFTextLine(gump, 705, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Go");
+
+		GFAddButton(gump, 440, FOOTER_Y, 2152, 2151, GF_CLOSE_BTN, BTN_CLOSE_UPGRADES);
+		GFTextLine(gump, 475, FOOTER_Y + 2, TXT_COLOR_UPGRADES, "Close");
 
 		var res := GFSendGump(who, gump);
 		if(!res[0] or res[0] == BTN_CLOSE_UPGRADES)
+			return;
+		elseif(res[0] == BTN_BACK_UPGRADES)
 			return;
 		elseif(res[0] == BTN_PREV_UPGRADES)
 			page := page - 1;
@@ -238,14 +284,84 @@ function OpenTownUpgradesGump(who, item)
 		elseif(res[0] == BTN_NEXT_UPGRADES)
 			page := page + 1;
 			continue;
-		elseif(res[0] > BTN_PICTURE_BASE and res[0] <= (BTN_PICTURE_BASE + count))
-			var pic_choice := res[0] - BTN_PICTURE_BASE;
-			ShowTownUpgradePictureGump(who, upgrades, pic_choice);
+		elseif(res[0] == BTN_JUMP_UPGRADES)
+			var requested_page := CInt(GFExtractData(res, ENTRY_JUMP_PAGE));
+			if(requested_page < 1 or requested_page > total_pages)
+				SendSysMessage(who, "Invalid page. Enter a value between 1 and " + CStr(total_pages) + ".");
+			else
+				page := requested_page;
+			endif
 			continue;
 		elseif(res[0] > BTN_PURCHASE_BASE and res[0] <= (BTN_PURCHASE_BASE + count))
 			var choice := res[0] - BTN_PURCHASE_BASE;
 			PurchaseTownUpgrade(who, item, upgrades, choice);
 			continue;
+		else
+			return;
+		endif
+	endwhile
+endfunction
+
+function OpenTownUpgradeTypeGump(who, item)
+	const BTN_CLOSE_TYPES := 6200;
+	const BTN_TYPE_STAFF := 6201;
+	const BTN_TYPE_AREAS := 6202;
+	const BTN_TYPE_VENDORS := 6203;
+	const BTN_TYPE_FIDDLER := 6204;
+	const BTN_TYPE_ITEMS := 6205;
+	const TXT_COLOR_TYPES := 1153;
+
+	if(CInt(GetObjProperty(item, "mayorserial")) != who.serial)
+		SendSysMessage(who, "Only the mayor can purchase town upgrades.");
+		return;
+	endif
+
+	if(!IsTownUpgradesEnabled(city))
+		SendSysMessage(who, "Town upgrades are disabled for " + city + ".");
+		return;
+	endif
+
+	while(1)
+		var gump := GFCreateGump(80, 80, 470, 320);
+		GFDisposable(gump, 0);
+		GFMovable(gump, 0);
+		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 470, 320);
+		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 440, 290);
+
+		GFTextLine(gump, 28, 28, TXT_COLOR_TYPES, "Town Upgrades - Select Category");
+		GFTextLine(gump, 28, 50, TXT_COLOR_TYPES, "Treasury: " + FormatGoldAmount(GetTownBankGold(city)) + " gold");
+
+		GFAddButton(gump, 36, 92, 2474, 2473, GF_CLOSE_BTN, BTN_TYPE_VENDORS);
+		GFTextLine(gump, 76, 94, TXT_COLOR_TYPES, "Vendors");
+
+		GFAddButton(gump, 36, 128, 2474, 2473, GF_CLOSE_BTN, BTN_TYPE_ITEMS);
+		GFTextLine(gump, 76, 130, TXT_COLOR_TYPES, "Items");
+
+		GFAddButton(gump, 36, 164, 2474, 2473, GF_CLOSE_BTN, BTN_TYPE_AREAS);
+		GFTextLine(gump, 76, 166, TXT_COLOR_TYPES, "Areas");
+
+		GFAddButton(gump, 220, 92, 2474, 2473, GF_CLOSE_BTN, BTN_TYPE_STAFF);
+		GFTextLine(gump, 260, 94, TXT_COLOR_TYPES, "Staff");
+
+		GFAddButton(gump, 220, 128, 2474, 2473, GF_CLOSE_BTN, BTN_TYPE_FIDDLER);
+		GFTextLine(gump, 260, 130, TXT_COLOR_TYPES, "Fiddler");
+
+		GFAddButton(gump, 190, 260, 2152, 2151, GF_CLOSE_BTN, BTN_CLOSE_TYPES);
+		GFTextLine(gump, 225, 262, TXT_COLOR_TYPES, "Close");
+
+		var res := GFSendGump(who, gump);
+		if(!res[0] or res[0] == BTN_CLOSE_TYPES)
+			return;
+		elseif(res[0] == BTN_TYPE_STAFF)
+			OpenTownUpgradesGump(who, item, "Staff");
+		elseif(res[0] == BTN_TYPE_AREAS)
+			OpenTownUpgradesGump(who, item, "Areas");
+		elseif(res[0] == BTN_TYPE_VENDORS)
+			OpenTownUpgradesGump(who, item, "Vendors");
+		elseif(res[0] == BTN_TYPE_FIDDLER)
+			OpenTownUpgradesGump(who, item, "Fiddler");
+		elseif(res[0] == BTN_TYPE_ITEMS)
+			OpenTownUpgradesGump(who, item, "Items");
 		else
 			return;
 		endif
@@ -1054,7 +1170,7 @@ case (res[0])
 
 	2001: ConvocarPleibicito(who, item); 
 
-	2100: OpenTownUpgradesGump(who, item);
+	2100: OpenTownUpgradeTypeGump(who, item);
 
 	2002: ConvocarEleicoes(who, item); 
 

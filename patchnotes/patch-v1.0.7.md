@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.0.7
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: July 4, 2026**
+
+---
+
+Welcome to **Patch 1.0.7**. This update focuses on a major **Townstone upgrades expansion**, **Globe of Sosaria travel improvements**, **Soul Whisperer summon-threshold reliability**, and new **staff visual testing tools** for animated graphics and hue previews.
+
+---
 
 ## What Changed
 
