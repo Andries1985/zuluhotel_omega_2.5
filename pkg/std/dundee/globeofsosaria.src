@@ -3,7 +3,7 @@ use uo;
 include "include/random";
 include "include/client";
 
-const GLOBE_COOLDOWN_SECONDS := 24 * 60 * 60;
+const GLOBE_COOLDOWN_SECONDS := 8 * 60 * 60;
 const TOWNSTONE_OBJTYPE := 0xa320;
 const TOWNSTONE_SEARCH_RANGE := 10000;
 const SOSARIA_MIN_X := 0;
@@ -26,7 +26,14 @@ if(next_use and next_use > now and !who.cmdlevel)
 	return;
 endif
 
-var townstone := FindRandomTownStone(who);
+var townstone := FindTownStoneForCharacter(who);
+var used_own_townstone := 0;
+if(townstone)
+	used_own_townstone := 1;
+endif
+if(!townstone)
+	townstone := FindRandomTownStone(who);
+endif
 if(!townstone)
 	SendSysMessage(who, "The Globe of Sosaria cannot find an active town stone.");
 	return;
@@ -35,13 +42,55 @@ endif
 if(TeleportBesideStone(who, townstone))
 	SetObjProperty(who, "#GlobeOfSosariaCooldown", now + GLOBE_COOLDOWN_SECONDS);
 	PlaySoundEffect(who, SFX_SPELL_TELEPORT);
-	SendSysMessage(who, "The globe hums and twists the world around you.");
+	if(used_own_townstone)
+		SendSysMessage(who, "The globe hums and returns you to your town stone.");
+	else
+		SendSysMessage(who, "The globe hums and sends you to a random town stone.");
+	endif
 	return;
 endif
 
 SendSysMessage(who, "The Globe of Sosaria failed to find a clear spot beside the town stone.");
 
 endprogram
+
+function FindTownStoneForCharacter(who)
+	if(!who)
+		return 0;
+	endif
+
+	var town_id := CInt(GetObjProperty(who, "town"));
+	if(!town_id)
+		return 0;
+	endif
+
+	var town_name := "";
+	var town_list := GetGlobalProperty("townlist");
+	if(town_list and town_list[town_id])
+		town_name := CStr(town_list[town_id]);
+	endif
+
+	var stones := ListItemsNearLocationOfType(0, 0, LIST_IGNORE_Z, TOWNSTONE_SEARCH_RANGE, TOWNSTONE_OBJTYPE, "britannia");
+	if(!stones or !stones.size())
+		return 0;
+	endif
+
+	foreach stone in stones
+		if(!stone or stone.objtype != TOWNSTONE_OBJTYPE)
+			continue;
+		endif
+
+		if(CInt(GetObjProperty(stone, "town")) == town_id)
+			return stone;
+		endif
+
+		if(town_name and CStr(GetObjProperty(stone, "regionname")) == town_name)
+			return stone;
+		endif
+	endforeach
+
+	return 0;
+endfunction
 
 function FindRandomTownStone(who)
 	var townstones := ListItemsNearLocationOfType(0, 0, LIST_IGNORE_Z, TOWNSTONE_SEARCH_RANGE, TOWNSTONE_OBJTYPE, "britannia");

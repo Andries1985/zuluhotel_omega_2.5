@@ -1,0 +1,426 @@
+// Synopsis: Show player-run town status with donations, mayor, population, and feature status.
+use uo;
+use os;
+use basic;
+use datafile;
+use cfgfile;
+include ":gumps:gumps";
+
+const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
+const PLAYERTOWNS_CFG := ":townstone:playertowns";
+const BTN_PREV := 9101;
+const BTN_NEXT := 9102;
+const BTN_CLOSE := 9103;
+const ROWS_PER_PAGE := 12;
+
+program textcmd_playerruntowns(who)
+	var regions := GetCandidateTownRegions();
+	if(!regions or !regions.size())
+		SendSysMessage(who, "No town regions found.");
+		return;
+	endif
+
+	ShowPlayerRunTownsGump(who, regions);
+endprogram
+
+function ShowPlayerRunTownsGump(who, regions)
+	var total := regions.size();
+	if(total < 1)
+		return;
+	endif
+
+	var page := 1;
+	var total_pages := CInt((total + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE);
+
+	while(1)
+		if(page < 1)
+			page := 1;
+		elseif(page > total_pages)
+			page := total_pages;
+		endif
+
+		var start_idx := ((page - 1) * ROWS_PER_PAGE) + 1;
+		var end_idx := start_idx + ROWS_PER_PAGE - 1;
+		if(end_idx > total)
+			end_idx := total;
+		endif
+
+		var gump := GFCreateGump(20, 20, 880, 430);
+		GFDisposable(gump, 0);
+		GFMovable(gump, 1);
+		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 880, 430);
+		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 850, 400);
+		GFPage(gump, 1);
+
+		GFTextLine(gump, 28, 28, 1153, "Player-Run Town Status");
+		GFTextLine(gump, 28, 48, 1153, "Page " + CStr(page) + " of " + CStr(total_pages));
+		GFTextLine(gump, 28, 76, 1153, "Town");
+		GFTextLine(gump, 180, 76, 53, "Purchased");
+		GFTextLine(gump, 270, 76, 1153, "Price");
+		GFTextLine(gump, 395, 76, 53, "Avail");
+		GFTextLine(gump, 445, 76, 1153, "Donations");
+		GFTextLine(gump, 530, 76, 1153, "Pop");
+		GFTextLine(gump, 585, 76, 1153, "Mayor");
+		GFTextLine(gump, 705, 76, 53, "Upgrades");
+		GFTextLine(gump, 790, 76, 53, "Donations");
+
+		var df := OpenTownstoneDataFile();
+		var playertowns_cfg := LoadPlayerTownsConfig();
+		var row := 0;
+		var i;
+		for(i := start_idx; i <= end_idx; i := i + 1)
+			var region_name := CStr(regions[i]);
+			var y := 100 + (row * 22);
+
+			var elem := 0;
+			if(df)
+				elem := df.FindElement(region_name);
+			endif
+
+			var gold := 0;
+			var mayor := "No mayor";
+			var mayorserial := 0;
+			var population := 0;
+			var upgrades_enabled := 1;
+			var donations_enabled := 1;
+			var purchase_price := 0;
+			var purchased := 0;
+			var available := 1;
+
+			var player_info := GetPlayerTownInfo(playertowns_cfg, region_name);
+			purchase_price := player_info[1];
+			purchased := player_info[2];
+			available := player_info[3];
+
+			if(elem)
+				gold := SafeNonNegativeInt(elem.GetProp("gold"));
+				mayor := CStr(elem.GetProp("mayor"));
+				if(!mayor)
+					mayor := "No mayor";
+				endif
+				mayorserial := SafeNonNegativeInt(elem.GetProp("mayorserial"));
+				population := SafeNonNegativeInt(elem.GetProp("populacao"));
+				upgrades_enabled := ParseEnabled(elem.GetProp("allow_upgrades"));
+				donations_enabled := ParseEnabled(elem.GetProp("allow_donations"));
+			endif
+
+			GFTextLine(gump, 28, y, 1153, TruncateForGump(region_name, 20));
+			GFTextLine(gump, 180, y, purchased ? 63 : 38, purchased ? "Yes" : "No");
+			GFTextLine(gump, 270, y, 1153, purchase_price > 0 ? (FormatGoldAmount(purchase_price) + " gold") : "N/A");
+			GFTextLine(gump, 395, y, available ? 63 : 38, available ? "Yes" : "No");
+			GFTextLine(gump, 445, y, 1153, FormatGoldAmount(gold) + " gold");
+			GFTextLine(gump, 530, y, 1153, CStr(population));
+			GFTextLine(gump, 585, y, 1153, TruncateForGump(mayor, 16));
+			GFTextLine(gump, 705, y, upgrades_enabled ? 63 : 38, upgrades_enabled ? "On" : "Off");
+			GFTextLine(gump, 790, y, donations_enabled ? 63 : 38, donations_enabled ? "On" : "Off");
+
+			row := row + 1;
+		endfor
+
+		if(df)
+			UnloadDataFile(TOWNSTONE_DATAFILE);
+		endif
+
+		if(page > 1)
+			GFAddButton(gump, 28, 384, 2117, 2118, GF_CLOSE_BTN, BTN_PREV);
+			GFTextLine(gump, 63, 386, 1153, "Previous");
+		endif
+
+		if(page < total_pages)
+			GFAddButton(gump, 790, 384, 2117, 2118, GF_CLOSE_BTN, BTN_NEXT);
+			GFTextLine(gump, 750, 386, 1153, "Next");
+		endif
+
+		GFAddButton(gump, 402, 384, 2152, 2151, GF_CLOSE_BTN, BTN_CLOSE);
+		GFTextLine(gump, 437, 386, 1153, "Close");
+
+		var res := GFSendGump(who, gump);
+		if(!res[0] or res[0] == BTN_CLOSE)
+			return;
+		elseif(res[0] == BTN_PREV)
+			page := page - 1;
+			continue;
+		elseif(res[0] == BTN_NEXT)
+			page := page + 1;
+			continue;
+		else
+			return;
+		endif
+	endwhile
+endfunction
+
+function GetCandidateTownRegions()
+	var candidates := {};
+	var seen := dictionary;
+
+	var city_regions := GetCityRegionsFromConfig();
+	if(city_regions and city_regions.size())
+		var city_idx;
+		for(city_idx := 1; city_idx <= city_regions.size(); city_idx := city_idx + 1)
+			var city_name := Trim(CStr(city_regions[city_idx]));
+			if(Len(city_name) < 1)
+				continue;
+			endif
+			var city_key := Lower(city_name);
+			if(seen[city_key])
+				continue;
+			endif
+			seen[city_key] := 1;
+			candidates.append(city_name);
+		endfor
+	endif
+
+	var data_regions := GetTownRegionsFromDatafile();
+	if(data_regions and data_regions.size())
+		var data_idx;
+		for(data_idx := 1; data_idx <= data_regions.size(); data_idx := data_idx + 1)
+			var data_name := Trim(CStr(data_regions[data_idx]));
+			if(Len(data_name) < 1)
+				continue;
+			endif
+			var data_key := Lower(data_name);
+			if(seen[data_key])
+				continue;
+			endif
+			seen[data_key] := 1;
+			candidates.append(data_name);
+		endfor
+	endif
+
+	return candidates;
+endfunction
+
+function GetTownRegionsFromDatafile()
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return {};
+	endif
+
+	var keys := df.Keys();
+	var region_list := {};
+	if(keys)
+		var key_idx;
+		for(key_idx := 1; key_idx <= keys.size(); key_idx := key_idx + 1)
+			var key_text := Trim(CStr(keys[key_idx]));
+			if(Len(key_text) >= 1)
+				region_list.append(key_text);
+			endif
+		endfor
+	endif
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+
+	return region_list;
+endfunction
+
+function GetCityRegionsFromConfig()
+	UnloadConfigFile("regions");
+	var regions_cfg := ReadConfigFile("::regions/regions");
+	if(!regions_cfg)
+		return {};
+	endif
+
+	var region_names := GetConfigStringKeys(regions_cfg);
+	if(!region_names or !region_names.size())
+		region_names := GetConfigStringArray(regions_cfg[1], "Region");
+	endif
+
+	if(!region_names or !region_names.size())
+		return {};
+	endif
+
+	var city_regions := {};
+	var region_idx;
+	for(region_idx := 1; region_idx <= region_names.size(); region_idx := region_idx + 1)
+		var region_name := CStr(region_names[region_idx]);
+		var elem := regions_cfg[region_name];
+		if(!elem)
+			elem := FindConfigElem(regions_cfg, region_name);
+		endif
+		if(!elem)
+			continue;
+		endif
+
+		var city_raw := GetConfigString(elem, "City");
+		if(city_raw.errortext)
+			continue;
+		endif
+		if(CInt(city_raw) != 1)
+			continue;
+		endif
+
+		city_regions.append(CStr(region_name));
+	endfor
+
+	return city_regions;
+endfunction
+
+function OpenTownstoneDataFile()
+	var df := OpenDataFile(TOWNSTONE_DATAFILE);
+	if(!df)
+		CreateDataFile(TOWNSTONE_DATAFILE, flags := DF_KEYTYPE_STRING);
+		df := OpenDataFile(TOWNSTONE_DATAFILE);
+	endif
+	return df;
+endfunction
+
+function ParseEnabled(raw_value)
+	var value := Lower(CStr(raw_value));
+	if(value == "off" or value == "0")
+		return 0;
+	endif
+	return 1;
+endfunction
+
+function SafeNonNegativeInt(raw_value)
+	var value := CInt(raw_value);
+	if(value < 0)
+		value := 0;
+	endif
+	return value;
+endfunction
+
+function LoadPlayerTownsConfig()
+	var cfg_map := dictionary;
+	var cfg := ReadConfigFile(PLAYERTOWNS_CFG);
+	if(!cfg)
+		return cfg_map;
+	endif
+
+	var keys := GetConfigStringKeys(cfg);
+	if(!keys or !keys.size())
+		return cfg_map;
+	endif
+
+	var i;
+	for(i := 1; i <= keys.size(); i := i + 1)
+		var key := CStr(keys[i]);
+		var elem := cfg[key];
+		if(!elem)
+			elem := FindConfigElem(cfg, key);
+		endif
+		if(!elem)
+			continue;
+		endif
+
+		var region_name := Trim(CStr(GetConfigString(elem, "RegionName")));
+		if(!region_name)
+			region_name := Trim(CStr(key));
+		endif
+		if(!region_name)
+			continue;
+		endif
+
+		var purchase_price := SafeNonNegativeInt(GetConfigInt(elem, "PurchasePrice"));
+		var available := GetRuntimePlayerTownAvailableState(region_name, 1);
+
+		cfg_map[Lower(region_name)] := { purchase_price, 0, available };
+	endfor
+
+	return cfg_map;
+endfunction
+
+function GetPlayerTownInfo(cfg_map, region_name)
+	var info := { 0, 0, 1 };
+	if(!cfg_map or !region_name)
+		return info;
+	endif
+
+	var cfg_entry := cfg_map[Lower(CStr(region_name))];
+	if(!cfg_entry)
+		return info;
+	endif
+
+	info[1] := SafeNonNegativeInt(cfg_entry[1]);
+	info[2] := GetRuntimePlayerTownPurchasedState(region_name, 0);
+	info[3] := GetRuntimePlayerTownAvailableState(region_name, 1);
+	return info;
+endfunction
+
+function GetRuntimePlayerTownPurchasedState(region_name, default_value)
+	if(!region_name)
+		return default_value;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return default_value;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return default_value;
+	endif
+
+	var raw := CStr(elem.GetProp("playertown_purchased"));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	if(!raw)
+		return default_value;
+	endif
+
+	return ParseEnabled(raw);
+endfunction
+
+function GetRuntimePlayerTownAvailableState(region_name, default_value)
+	if(!region_name)
+		return default_value;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return default_value;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return default_value;
+	endif
+
+	var raw := CStr(elem.GetProp("playertown_available"));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	if(!raw)
+		return default_value;
+	endif
+
+	return ParseEnabled(raw);
+endfunction
+
+function FormatGoldAmount(amount)
+	var numeric_amount := CInt(amount);
+	var sign := "";
+	if(numeric_amount < 0)
+		sign := "-";
+		numeric_amount := 0 - numeric_amount;
+	endif
+
+	var digits := CStr(numeric_amount);
+	if(len(digits) <= 3)
+		return sign + digits;
+	endif
+
+	var formatted := "";
+	while(len(digits) > 3)
+		formatted := "," + digits[len(digits) - 2, 3] + formatted;
+		digits := digits[1, len(digits) - 3];
+	endwhile
+
+	return sign + digits + formatted;
+endfunction
+
+function TruncateForGump(text, max_chars)
+	var trimmed_text := CStr(text);
+	if(!trimmed_text)
+		return "";
+	endif
+
+	if(max_chars < 4)
+		return trimmed_text;
+	endif
+
+	if(len(trimmed_text) > max_chars)
+		return trimmed_text[1, max_chars - 3] + "...";
+	endif
+
+	return trimmed_text;
+endfunction

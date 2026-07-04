@@ -38,9 +38,6 @@ include "ai/main/sleepmode";
 const HALT_THRESHOLD := 8;
 
 var runaway  := 0;
-var najs75   := 0;   // have we summoned at 75% HP?
-var najs50   := 0;   // have we summoned at 50% HP?
-var najs25   := 0;   // have we summoned at 25% HP?
 var thecritter;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -266,24 +263,34 @@ function CheckSummonThresholds()
 		return;
 	endif
 
+	if ( GetObjProperty( me, "SoulWhispererSummonCount" ) >= 3 )
+		return;
+	endif
+
 	if ( GetHP( me ) <= ( GetMaxHP( me ) * 75 / 100 ) )
-		if ( najs75 == 0 )
+		if ( !GetObjProperty( me, "SoulWhispererSummon75" ) )
+			SetObjProperty( me, "SoulWhispererSummon75", 1 );
+			SetObjProperty( me, "SoulWhispererSummonCount", CInt( GetObjProperty( me, "SoulWhispererSummonCount" ) ) + 1 );
 			SummonWithPortal();
-			najs75 := 1;
+			return;
 		endif
 	endif
 
 	if ( GetHP( me ) <= ( GetMaxHP( me ) * 50 / 100 ) )
-		if ( najs50 == 0 )
+		if ( !GetObjProperty( me, "SoulWhispererSummon50" ) )
+			SetObjProperty( me, "SoulWhispererSummon50", 1 );
+			SetObjProperty( me, "SoulWhispererSummonCount", CInt( GetObjProperty( me, "SoulWhispererSummonCount" ) ) + 1 );
 			SummonWithPortal();
-			najs50 := 1;
+			return;
 		endif
 	endif
 
 	if ( GetHP( me ) <= ( GetMaxHP( me ) * 25 / 100 ) )
-		if ( najs25 == 0 )
+		if ( !GetObjProperty( me, "SoulWhispererSummon25" ) )
+			SetObjProperty( me, "SoulWhispererSummon25", 1 );
+			SetObjProperty( me, "SoulWhispererSummonCount", CInt( GetObjProperty( me, "SoulWhispererSummonCount" ) ) + 1 );
 			SummonWithPortal();
-			najs25 := 1;
+			return;
 		endif
 	endif
 endfunction
