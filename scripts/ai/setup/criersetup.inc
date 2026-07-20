@@ -4,11 +4,15 @@ set_critical(0);
 var me := self();
 var npccfg := readconfigfile("npcdesc");
 var speechelem := npccfg[me.npctemplate];
-var speech := getconfigstring(speechelem, "speech") ;
-var saywords := speechelem.saywords;
-var flee_point := speechelem.flee_point;
-if (!flee_point)
-        flee_point := 10;
+var speech := "";
+var saywords := 0;
+var flee_point := 10;
+if (speechelem and speechelem != error)
+        speech := getconfigstring(speechelem, "speech");
+        saywords := speechelem.saywords;
+        if (speechelem.flee_point)
+                flee_point := speechelem.flee_point;
+        endif
 endif
 
 if (!me.backpack)

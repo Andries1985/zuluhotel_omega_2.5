@@ -1084,9 +1084,106 @@ endfunction
 // Withdraw Operations
 // ============================================================
 
+// Validates that a withdraw destination is safe and reachable.
+// Returns 1 if valid, 0 if rejected (sends message to player).
+function ValidateWithdrawDestination(who, access, dest)
+	if(!dest or !dest.isa(POLCLASS_CONTAINER))
+		SendSysMessage(who, "That is not a container.");
+		return 0;
+	endif
+
+	// Never allow withdrawing into an Omega Cache (or into something inside one),
+	// otherwise OnInsert can immediately re-capture the item and look like it vanished.
+	var chain := dest;
+	while(chain)
+		if(chain.objtype == OMEGACACHE_OBJTYPE)
+			SendSysMessage(who, "You cannot withdraw items into an Omega Cache container.");
+			return 0;
+		endif
+		if(chain.isa(POLCLASS_CORPSE))
+			SendSysMessage(who, "You cannot withdraw items into a corpse.");
+			return 0;
+		endif
+		chain := chain.container;
+	endwhile
+
+	if(!Accessible(who, dest))
+		SendSysMessage(who, "You can't reach that.");
+		return 0;
+	endif
+
+	// Range check against top-level world object.
+	var world_obj := dest;
+	while(world_obj.container)
+		world_obj := world_obj.container;
+	endwhile
+	if(Distance(who, world_obj) > 2)
+		SendSysMessage(who, "That is too far away.");
+		return 0;
+	endif
+
+	// Always allow own backpack/container chain.
+	chain := dest;
+	while(chain)
+		if(chain.serial == who.backpack.serial)
+			return 1;
+		endif
+		chain := chain.container;
+	endwhile
+
+	// Never allow direct placement into another character's worn containers.
+	if(world_obj.isa(POLCLASS_MOBILE) and world_obj.serial != who.serial)
+		SendSysMessage(who, "You can only withdraw to your own backpack or containers in this house.");
+		return 0;
+	endif
+
+	// If no access context was provided, stop here.
+	if(!access)
+		return 1;
+	endif
+
+	// Not in backpack: destination must be inside the same house as the cache.
+	var in_house := 0;
+	chain := dest;
+	while(chain)
+		if(chain.multi and chain.multi.serial == access.house.serial)
+			in_house := 1;
+			break;
+		endif
+		chain := chain.container;
+	endwhile
+
+	if(!in_house)
+		SendSysMessage(who, "You can only withdraw to your backpack or to containers within this house.");
+		return 0;
+	endif
+
+	// If target is a secure container, require add permission on that house.
+	chain := dest;
+	while(chain)
+		if(chain.usescript == USESCRIPTID_SECURE_CONTAINER)
+			var owner_serial := GetObjProperty(access.house, "ownerserial");
+			if(who.serial != owner_serial and !IsCowner(who, access.house))
+				if(!IsFriend(who, access.house, ADD_TO_SECURE))
+					SendSysMessage(who, "You don't have permission to place items in that container.");
+					return 0;
+				endif
+			endif
+			break;
+		endif
+		chain := chain.container;
+	endwhile
+
+	return 1;
+endfunction
+
 // Withdraws items from the cache to a destination container.
-function DoWithdraw(who, df, key, amount, destination)
+function DoWithdraw(who, df, key, amount, destination, access := 0)
 	_debug_who := who;
+
+	if(!ValidateWithdrawDestination(who, access, destination))
+		return 0;
+	endif
 
 	var elem := df.FindElement(key);
 	if(!elem)
@@ -1187,14 +1284,13 @@ function DoWithdraw(who, df, key, amount, destination)
 endfunction
 
 // Prompts for a destination container. Returns 0 on cancel.
-function PromptDestination(who)
+function PromptDestination(who, access := 0)
 	SendSysMessage(who, "Target a container to receive items, or press ESC to cancel.");
 	var dest := Target(who);
 	if(!dest)
 		SendSysMessage(who, "Cancelled.");
 		return 0;
-	elseif(!dest.isa(POLCLASS_CONTAINER))
-		SendSysMessage(who, "That is not a container.");
+	elseif(!ValidateWithdrawDestination(who, access, dest))
 		return 0;
 	endif
 	return dest;
@@ -1688,12 +1784,12 @@ function RunOmegaCacheGump(who, access)
 					var amount := ParseDecimal(amount_str);
 					if(amount > 0)
 						if(!dest)
-							dest := PromptDestination(who);
+							dest := PromptDestination(who, access);
 							if(!dest)
 								break;
 							endif
 						endif
-						DoWithdraw(who, df, key, amount, dest);
+						DoWithdraw(who, df, key, amount, dest, access);
 						withdrew_any := 1;
 					endif
 				endforeach
@@ -1729,10 +1825,10 @@ function RunOmegaCacheGump(who, access)
 						if(to_backpack)
 							dest := who.backpack;
 						else
-							dest := PromptDestination(who);
+							dest := PromptDestination(who, access);
 						endif
 						if(dest)
-							DoWithdraw(who, df, key, amount, dest);
+							DoWithdraw(who, df, key, amount, dest, access);
 						endif
 					else
 						SendSysMessage(who, "Enter an amount to withdraw.");

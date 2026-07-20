@@ -80,7 +80,7 @@ program textcmd_cache(who, text)
 		endif
 
 		var key := BuildItemKey(tgt);
-		DoWithdraw(who, df, key, amount, who.backpack);
+		DoWithdraw(who, df, key, amount, who.backpack, access);
 
 	elseif(text == "list")
 		DoListCategories(who, df);

@@ -53,6 +53,9 @@ program Person()
     SetWarMode( 0 );
     set_priority(10);
 
+    // Start movement right away so newly spawned townsfolk do not stand idle.
+    WanderWithinTown();
+
     var ev;
     var next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
     while (1)

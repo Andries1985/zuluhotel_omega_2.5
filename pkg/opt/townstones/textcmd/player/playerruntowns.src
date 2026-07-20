@@ -61,8 +61,9 @@ function ShowPlayerRunTownsGump(who, regions)
 		GFTextLine(gump, 445, 76, 1153, "Donations");
 		GFTextLine(gump, 530, 76, 1153, "Pop");
 		GFTextLine(gump, 585, 76, 1153, "Mayor");
-		GFTextLine(gump, 705, 76, 53, "Upgrades");
-		GFTextLine(gump, 790, 76, 53, "Donations");
+		GFTextLine(gump, 705, 76, 53, "Election");
+		GFTextLine(gump, 770, 76, 53, "Upgrades");
+		GFTextLine(gump, 825, 76, 53, "Donations");
 
 		var df := OpenTownstoneDataFile();
 		var playertowns_cfg := LoadPlayerTownsConfig();
@@ -81,6 +82,7 @@ function ShowPlayerRunTownsGump(who, regions)
 			var mayor := "No mayor";
 			var mayorserial := 0;
 			var population := 0;
+			var election_running := 0;
 			var upgrades_enabled := 1;
 			var donations_enabled := 1;
 			var purchase_price := 0;
@@ -100,6 +102,7 @@ function ShowPlayerRunTownsGump(who, regions)
 				endif
 				mayorserial := SafeNonNegativeInt(elem.GetProp("mayorserial"));
 				population := SafeNonNegativeInt(elem.GetProp("populacao"));
+				election_running := SafeNonNegativeInt(elem.GetProp("eleicao")) ? 1 : 0;
 				upgrades_enabled := ParseEnabled(elem.GetProp("allow_upgrades"));
 				donations_enabled := ParseEnabled(elem.GetProp("allow_donations"));
 			endif
@@ -111,8 +114,9 @@ function ShowPlayerRunTownsGump(who, regions)
 			GFTextLine(gump, 445, y, 1153, FormatGoldAmount(gold) + " gold");
 			GFTextLine(gump, 530, y, 1153, CStr(population));
 			GFTextLine(gump, 585, y, 1153, TruncateForGump(mayor, 16));
-			GFTextLine(gump, 705, y, upgrades_enabled ? 63 : 38, upgrades_enabled ? "On" : "Off");
-			GFTextLine(gump, 790, y, donations_enabled ? 63 : 38, donations_enabled ? "On" : "Off");
+			GFTextLine(gump, 705, y, election_running ? 63 : 38, election_running ? "Yes" : "No");
+			GFTextLine(gump, 770, y, upgrades_enabled ? 63 : 38, upgrades_enabled ? "On" : "Off");
+			GFTextLine(gump, 825, y, donations_enabled ? 63 : 38, donations_enabled ? "On" : "Off");
 
 			row := row + 1;
 		endfor

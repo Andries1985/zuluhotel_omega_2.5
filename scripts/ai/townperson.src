@@ -47,10 +47,11 @@ program TownPerson()
 		me.frozen := 1;
 	endif
 
-    //WanderWithinTown();
-
     SetWarMode( 0 );
     set_priority(10);
+
+    // Start movement right away so newly spawned townsfolk do not stand idle.
+    WanderWithinTown();
 
     // (Old while loop removed; only the new, shared-saying-based loop remains)
     var ev;

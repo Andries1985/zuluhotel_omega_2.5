@@ -1,0 +1,40 @@
+// Synopsis: Create a bank cheque in your backpack (up to shard max of 5000000 gold)
+use uo;
+
+const CHEQUE_OBJTYPE := 0x14000;
+const MAX_CHECK_AMOUNT := 5000000;
+
+program makecheck(who, text)
+	var amount := 0;
+	var args := SplitWords(text);
+
+	if(args and args.size() >= 1)
+		amount := CInt(args[1]);
+	else
+		amount := CInt(SendTextEntryGump(who, "Enter cheque amount (1-5000000)", TE_CANCEL_ENABLE, TE_STYLE_NORMAL, 12));
+	endif
+
+	if(amount <= 0)
+		SendSysMessage(who, "Usage: .makecheck <amount> (1-5000000)");
+		return;
+	endif
+
+	if(amount > MAX_CHECK_AMOUNT)
+		SendSysMessage(who, "Amount exceeds cheque max. Clamping to " + CStr(MAX_CHECK_AMOUNT) + ".");
+		amount := MAX_CHECK_AMOUNT;
+	endif
+
+	var cheque := CreateItemInBackpack(who, CHEQUE_OBJTYPE, 1);
+	if(!cheque)
+		SendSysMessage(who, "Could not create cheque in your backpack.");
+		return;
+	endif
+
+	SetObjProperty(cheque, "Amount", amount);
+	SetObjProperty(cheque, "checkamount", amount);
+	SetObjProperty(cheque, "CreatedBy", "Alryc Test Command");
+	cheque.color := 51;
+	cheque.name := "A Cheque for " + CStr(amount) + " Gold.";
+
+	SendSysMessage(who, "Created cheque for " + CStr(amount) + " gold.");
+endprogram

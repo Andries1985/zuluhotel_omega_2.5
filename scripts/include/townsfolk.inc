@@ -78,6 +78,7 @@ function FleeOpenDistance( opponent )
                         return 1;
                 default:
                         TryOpenNearbyNpcDoors();
+                        StepCivilianThroughDoorIfNeeded();
                         RunAwayFrom( opponent );
                         return 0;
         endcase

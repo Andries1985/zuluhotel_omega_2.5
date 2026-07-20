@@ -5,6 +5,7 @@ use basic;
 use datafile;
 use cfgfile;
 include ":gumps:gumps";
+include ":gumps:yesno";
 
 const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
 const PLAYERTOWNS_CFG := ":townstone:playertowns";
@@ -18,7 +19,15 @@ const BTN_TOGGLE_DONATIONS_BASE := 10000;
 const BTN_TOGGLE_AVAILABLE_BASE := 13000;
 const BTN_DELETE_REGION_BASE := 12000;
 const BTN_TOGGLE_PURCHASED_BASE := 14000;
+const BTN_POPULATION_BASE := 15000;
 const ROWS_PER_PAGE := 10;
+const MEMBER_ROWS_PER_PAGE := 10;
+const MEMBER_BTN_PREV := 16001;
+const MEMBER_BTN_NEXT := 16002;
+const MEMBER_BTN_CLOSE := 16003;
+const MEMBER_BTN_REMOVE_BASE := 17000;
+const TOWN_MAX_CHAR_SLOTS := 7;
+const VOTE_RUNE_OBJTYPE := 0xa321;
 
 program textcmd_townbankstatus(who)
 	var town_list := GetGlobalProperty("townlist");
@@ -59,6 +68,8 @@ program textcmd_townbankstatus(who)
 	var player_purchase_prices := {};
 	var player_purchased := {};
 	var player_available := {};
+	var town_ids := {};
+	var populations := {};
 	var player_cfg := LoadPlayerTownsConfig();
 	var seen_regions := dictionary;
 	var total_gold := 0;
@@ -99,6 +110,9 @@ program textcmd_townbankstatus(who)
 		player_purchase_prices.append(player_info[1]);
 		player_purchased.append(player_info[2]);
 		player_available.append(player_info[3]);
+		var town_id := GetTownIdByRegionName(region_name);
+		town_ids.append(town_id);
+		populations.append(GetTownPopulation(region_name, town_id));
 		added_regions := added_regions + 1;
 	endfor
 
@@ -107,7 +121,7 @@ program textcmd_townbankstatus(who)
 		return;
 	endif
 
-	ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, player_purchase_prices, player_purchased, player_available, total_gold);
+	ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, player_purchase_prices, player_purchased, player_available, town_ids, populations, total_gold);
 
 endprogram
 
@@ -151,6 +165,592 @@ function GetCandidateTownRegions()
 	endif
 
 	return candidates;
+endfunction
+
+
+function ShowTownMemberManagerGump(who, region_name, town_id)
+	if(!region_name)
+		SendSysMessage(who, "Invalid town region.");
+		return;
+	endif
+
+	var page := 1;
+	while(1)
+		var stone := FindTownstoneByRegion(region_name, town_id);
+		if(!stone)
+			SendSysMessage(who, "No live townstone found for " + CStr(region_name) + ".");
+			return;
+		endif
+
+		var members := GetTownMembersForStone(stone, CInt(GetObjProperty(stone, "town")));
+		var total := members.size();
+		if(!total)
+			SendSysMessage(who, "No members found for " + CStr(region_name) + ".");
+			return;
+		endif
+
+		var total_pages := CInt((total + MEMBER_ROWS_PER_PAGE - 1) / MEMBER_ROWS_PER_PAGE);
+		if(page < 1)
+			page := 1;
+		elseif(page > total_pages)
+			page := total_pages;
+		endif
+
+		var start_idx := ((page - 1) * MEMBER_ROWS_PER_PAGE) + 1;
+		var end_idx := start_idx + MEMBER_ROWS_PER_PAGE - 1;
+		if(end_idx > total)
+			end_idx := total;
+		endif
+
+		var gump := GFCreateGump(30, 30, 1020, 410);
+		GFDisposable(gump, 0);
+		GFMovable(gump, 1);
+		GFResizePic(gump, 0, 0, GFGetCfgConst("Defaults", "BackGround"), 1020, 410);
+		GFResizePic(gump, 15, 15, GFGetCfgConst("Defaults", "ForeGround"), 990, 380);
+		GFPage(gump, 1);
+
+		GFTextLine(gump, 28, 28, 1153, "Town Members: " + CStr(region_name));
+		GFTextLine(gump, 28, 48, 1153, "Page " + CStr(page) + " of " + CStr(total_pages));
+		GFTextLine(gump, 28, 68, 1153, "Member Name");
+		GFTextLine(gump, 760, 68, 1153, "Account");
+		GFTextLine(gump, 900, 68, 38, "Remove");
+
+		var row := 0;
+		var i;
+		for(i := start_idx; i <= end_idx; i := i + 1)
+			var y := 92 + (row * 24);
+			var entry := members[i];
+			GFTextCrop(gump, 28, y, 720, 20, 1153, CStr(entry[1]));
+			GFTextCrop(gump, 760, y, 130, 20, 1153, CStr(entry[2]));
+			GFAddButton(gump, 900, y - 2, 2474, 2473, GF_CLOSE_BTN, MEMBER_BTN_REMOVE_BASE + i);
+			GFTextLine(gump, 934, y, 38, "Del");
+			row := row + 1;
+		endfor
+
+		if(page > 1)
+			GFAddButton(gump, 28, 362, 2117, 2118, GF_CLOSE_BTN, MEMBER_BTN_PREV);
+			GFTextLine(gump, 63, 364, 1153, "Previous");
+		endif
+
+		if(page < total_pages)
+			GFAddButton(gump, 900, 362, 2117, 2118, GF_CLOSE_BTN, MEMBER_BTN_NEXT);
+			GFTextLine(gump, 935, 364, 1153, "Next");
+		endif
+
+		GFAddButton(gump, 250, 362, 2152, 2151, GF_CLOSE_BTN, MEMBER_BTN_CLOSE);
+		GFTextLine(gump, 285, 364, 1153, "Close");
+
+		var res := GFSendGump(who, gump);
+		if(!res[0] or res[0] == MEMBER_BTN_CLOSE)
+			return;
+		elseif(res[0] == MEMBER_BTN_PREV)
+			page := page - 1;
+			continue;
+		elseif(res[0] == MEMBER_BTN_NEXT)
+			page := page + 1;
+			continue;
+		elseif(res[0] > MEMBER_BTN_REMOVE_BASE and res[0] <= (MEMBER_BTN_REMOVE_BASE + total))
+			var remove_idx := res[0] - MEMBER_BTN_REMOVE_BASE;
+			var remove_entry := members[remove_idx];
+			if(!remove_entry)
+				continue;
+			endif
+
+			var member_name := CStr(remove_entry[1]);
+			var member_acct := CStr(remove_entry[2]);
+			if(!YesNo(who, "Remove " + member_name + " from " + CStr(region_name) + "?", "Remove", "Cancel"))
+				continue;
+			endif
+
+			var remove_result := RemoveTownMemberByAccount(stone, region_name, CInt(GetObjProperty(stone, "town")), member_acct);
+			if(remove_result)
+				SendSysMessage(who, "Removed " + member_name + " from " + CStr(region_name) + ".");
+			else
+				SendSysMessage(who, "Failed to remove " + member_name + " from " + CStr(region_name) + ".");
+			endif
+			continue;
+		else
+			return;
+		endif
+	endwhile
+endfunction
+
+
+function GetTownMembersForStone(stone, town_id)
+	var members := {};
+	if(!stone)
+		return members;
+	endif
+
+	var citizen := GetObjProperty(stone, "citizen");
+	if(!citizen)
+		citizen := {};
+	endif
+
+	var i;
+	for(i := 1; i <= citizen.size(); i := i + 1)
+		var account_name := Trim(CStr(citizen[i]));
+		if(!account_name)
+			continue;
+		endif
+
+		var display := ResolveTownMemberDisplay(account_name, town_id);
+		if(!display[2])
+			continue;
+		endif
+		members.append({display[1], account_name, display[2]});
+	endfor
+
+	return members;
+endfunction
+
+
+function ResolveTownMemberDisplay(account_name, town_id)
+	var result := {account_name, 0};
+	if(!account_name)
+		return result;
+	endif
+
+	var account := FindAccount(account_name);
+	if(!account)
+		return result;
+	endif
+
+	var slot;
+	for(slot := 1; slot <= TOWN_MAX_CHAR_SLOTS; slot := slot + 1)
+		var character := account.GetCharacter(slot);
+		if(!character)
+			continue;
+		endif
+
+		if(town_id and CInt(GetObjProperty(character, "town")) != CInt(town_id))
+			continue;
+		endif
+
+		result[1] := CStr(character.name);
+		result[2] := CInt(character.serial);
+		return result;
+	endfor
+
+	return result;
+endfunction
+
+
+function RemoveTownMemberByAccount(stone, region_name, town_id, account_name)
+	if(!stone or !region_name or !account_name)
+		return 0;
+	endif
+
+	var citizen := GetObjProperty(stone, "citizen");
+	if(!citizen)
+		citizen := {};
+	endif
+
+	var removed_from_list := RemoveCitizenAccount(citizen, account_name);
+	if(removed_from_list)
+		SetObjProperty(stone, "citizen", citizen);
+	endif
+
+	var removed_serials := {};
+	var removed_names := {};
+	var account := FindAccount(account_name);
+	if(account)
+		var slot;
+		for(slot := 1; slot <= TOWN_MAX_CHAR_SLOTS; slot := slot + 1)
+			var character := account.GetCharacter(slot);
+			if(!character)
+				continue;
+			endif
+
+			if(town_id and CInt(GetObjProperty(character, "town")) != CInt(town_id))
+				continue;
+			endif
+
+			removed_serials.append(CInt(character.serial));
+			removed_names.append(CStr(character.name));
+
+			EraseObjProperty(character, "town");
+			var cleaned_name := StripTownSuffix(CStr(character.name), CStr(region_name));
+			if(cleaned_name != CStr(character.name))
+				character.name := cleaned_name;
+			endif
+			SendSysMessage(character, "You are no longer citizen of " + CStr(region_name) + ".");
+		endfor
+	endif
+
+	var refreshed_citizens := {};
+	var citizen_idx;
+	for(citizen_idx := 1; citizen_idx <= citizen.size(); citizen_idx := citizen_idx + 1)
+		var citizen_account := Trim(CStr(citizen[citizen_idx]));
+		if(!citizen_account)
+			continue;
+		endif
+		if(Lower(citizen_account) == Lower(CStr(account_name)))
+			continue;
+		endif
+
+		var citizen_display := ResolveTownMemberDisplay(citizen_account, town_id);
+		if(citizen_display[2])
+			refreshed_citizens.append(citizen_account);
+		endif
+	endfor
+	if(refreshed_citizens.size() != citizen.size() or removed_from_list)
+		SetObjProperty(stone, "citizen", refreshed_citizens);
+	endif
+
+	var is_mayor := IsMayorAccount(stone, account_name, removed_serials);
+
+	var populacao := CInt(GetObjProperty(stone, "populacao"));
+	if(populacao < 0)
+		populacao := 0;
+	endif
+	if(removed_from_list and populacao > 0)
+		populacao := populacao - 1;
+	endif
+	SetObjProperty(stone, "populacao", populacao);
+
+	CleanupElectionMembershipForAccount(stone, account_name, removed_serials, removed_names, populacao, is_mayor);
+
+	if(is_mayor)
+		EraseObjProperty(stone, "mayor");
+		EraseObjProperty(stone, "mayorserial");
+		SetObjProperty(stone, "nextcitizenelection", 0);
+	endif
+
+	SyncTownstoneState(stone, region_name, town_id);
+	return 1;
+endfunction
+
+
+function CleanupElectionMembershipForAccount(stone, account_name, removed_serials, removed_names, populacao, is_mayor)
+	if(!stone)
+		return;
+	endif
+
+	var eleicoes := CInt(GetObjProperty(stone, "eleicao"));
+	var pleibicito := GetObjProperty(stone, "pleibicito");
+
+	if(eleicoes)
+		var candidatos := GetObjProperty(stone, "candidatos");
+		if(!candidatos)
+			candidatos := {};
+		endif
+
+		var newlist := {};
+		var idx;
+		for(idx := 1; idx <= candidatos.size(); idx := idx + 2)
+			var cand_serial := candidatos[idx];
+			var cand_name := candidatos[idx + 1];
+			var remove_candidate := IsSerialInList(CInt(cand_serial), removed_serials) or IsNameInList(CStr(cand_name), removed_names);
+			if(!remove_candidate)
+				newlist.append(cand_serial);
+				newlist.append(cand_name);
+			endif
+		endfor
+
+		SetObjProperty(stone, "candidatos", newlist);
+	endif
+
+	var votos := CInt(GetObjProperty(stone, "votos"));
+	if(votos < 0)
+		votos := 0;
+	endif
+
+	foreach runa in EnumerateItemsInContainer(stone)
+		if(runa.objtype == VOTE_RUNE_OBJTYPE and Lower(CStr(GetObjProperty(runa, "serial"))) == Lower(CStr(account_name)))
+			DestroyItem(runa);
+			if(votos > 0)
+				votos := votos - 1;
+			endif
+		endif
+	endforeach
+
+	SetObjProperty(stone, "votos", votos);
+	if(populacao > 0)
+		SetObjProperty(stone, "votepercent", CInt((votos * 100) / populacao));
+	else
+		SetObjProperty(stone, "votepercent", 0);
+	endif
+
+	if(is_mayor and (eleicoes or pleibicito))
+		// If the removed member was mayor, close any ongoing election/poll to avoid orphaned state.
+		SetObjProperty(stone, "eleicao", 0);
+		SetObjProperty(stone, "pleibicito", 0);
+		SetObjProperty(stone, "candidatos", {});
+		SetObjProperty(stone, "votos", 0);
+		SetObjProperty(stone, "votepercent", 0);
+		SetObjProperty(stone, "timer", 0);
+		foreach vote_rune in EnumerateItemsInContainer(stone)
+			if(vote_rune.objtype == VOTE_RUNE_OBJTYPE)
+				DestroyItem(vote_rune);
+			endif
+		endforeach
+	endif
+endfunction
+
+
+function FindTownstoneByRegion(region_name, town_id)
+	if(!region_name)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(df)
+		var elem := df.FindElement(region_name);
+		if(elem)
+			var serial := CInt(elem.GetProp("stone_serial"));
+			if(serial)
+				var direct_stone := SystemFindObjectBySerial(serial);
+				if(direct_stone and direct_stone.objtype == TOWNSTONE_OBJTYPE)
+					UnloadDataFile(TOWNSTONE_DATAFILE);
+					return direct_stone;
+				endif
+			endif
+		endif
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+	endif
+
+	var stones := ListItemsNearLocationOfType(0, 0, LIST_IGNORE_Z, TOWNSTONE_SEARCH_RANGE, TOWNSTONE_OBJTYPE, "britannia");
+	if(!stones or !stones.size())
+		return 0;
+	endif
+
+	foreach stone in stones
+		if(!stone or stone.objtype != TOWNSTONE_OBJTYPE)
+			continue;
+		endif
+
+		if(town_id and CInt(GetObjProperty(stone, "town")) == CInt(town_id))
+			return stone;
+		endif
+
+		if(CStr(GetObjProperty(stone, "regionname")) == CStr(region_name))
+			return stone;
+		endif
+	endforeach
+
+	return 0;
+endfunction
+
+
+function GetTownPopulation(region_name, town_id)
+	var stone := FindTownstoneByRegion(region_name, town_id);
+	if(stone)
+		var pop := CInt(GetObjProperty(stone, "populacao"));
+		if(pop < 0)
+			pop := 0;
+		endif
+
+		if(pop <= 0)
+			var citizen := GetObjProperty(stone, "citizen");
+			if(citizen and citizen.size())
+				pop := citizen.size();
+			endif
+		endif
+
+		return pop;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	var data_pop := CInt(elem.GetProp("populacao"));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	if(data_pop < 0)
+		data_pop := 0;
+	endif
+
+	return data_pop;
+endfunction
+
+
+function GetTownIdByRegionName(region_name)
+	if(!region_name)
+		return 0;
+	endif
+
+	var town_list := GetGlobalProperty("townlist");
+	if(!town_list or !town_list.size())
+		return 0;
+	endif
+
+	var idx;
+	for(idx := 1; idx <= town_list.size(); idx := idx + 1)
+		if(Lower(CStr(town_list[idx])) == Lower(CStr(region_name)))
+			return idx;
+		endif
+	endfor
+
+	return 0;
+endfunction
+
+
+function IsMayorAccount(stone, account_name, removed_serials)
+	if(!stone or !account_name)
+		return 0;
+	endif
+
+	var mayor_serial := CInt(GetObjProperty(stone, "mayorserial"));
+	if(mayor_serial and IsSerialInList(mayor_serial, removed_serials))
+		return 1;
+	endif
+
+	if(!mayor_serial)
+		return 0;
+	endif
+
+	var mayor_mobile := SystemFindObjectBySerial(mayor_serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+	if(!mayor_mobile)
+		mayor_mobile := SystemFindObjectBySerial(mayor_serial);
+	endif
+	if(!mayor_mobile)
+		return 0;
+	endif
+
+	return (Lower(CStr(mayor_mobile.acctname)) == Lower(CStr(account_name)));
+endfunction
+
+
+function RemoveCitizenAccount(citizen_list, account_name)
+	if(!citizen_list or !account_name)
+		return 0;
+	endif
+
+	var i;
+	for(i := 1; i <= citizen_list.size(); i := i + 1)
+		if(Lower(CStr(citizen_list[i])) == Lower(CStr(account_name)))
+			citizen_list.erase(i);
+			return 1;
+		endif
+	endfor
+
+	return 0;
+endfunction
+
+
+function IsSerialInList(serial_value, serials)
+	if(!serials or !serials.size())
+		return 0;
+	endif
+
+	var i;
+	for(i := 1; i <= serials.size(); i := i + 1)
+		if(CInt(serials[i]) == CInt(serial_value))
+			return 1;
+		endif
+	endfor
+
+	return 0;
+endfunction
+
+
+function IsNameInList(name_value, names)
+	if(!name_value or !names or !names.size())
+		return 0;
+	endif
+
+	var lookup_name := Lower(CStr(name_value));
+	var i;
+	for(i := 1; i <= names.size(); i := i + 1)
+		if(Lower(CStr(names[i])) == lookup_name)
+			return 1;
+		endif
+	endfor
+
+	return 0;
+endfunction
+
+
+function SyncTownstoneState(stone, region_name, town_id)
+	if(!stone or !region_name)
+		return;
+	endif
+
+	if(!town_id)
+		town_id := CInt(GetObjProperty(stone, "town"));
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	if(gold < 0)
+		gold := 0;
+	endif
+
+	elem.SetProp("gold", gold);
+	elem.SetProp("town_id", town_id);
+	elem.SetProp("stone_serial", stone.serial);
+	elem.SetProp("mayor", GetObjProperty(stone, "mayor"));
+	elem.SetProp("mayorserial", CInt(GetObjProperty(stone, "mayorserial")));
+	elem.SetProp("populacao", CInt(GetObjProperty(stone, "populacao")));
+	elem.SetProp("eleicao", CInt(GetObjProperty(stone, "eleicao")));
+	elem.SetProp("pleibicito", GetObjProperty(stone, "pleibicito"));
+	elem.SetProp("candidatos", GetObjProperty(stone, "candidatos"));
+	elem.SetProp("votos", CInt(GetObjProperty(stone, "votos")));
+	elem.SetProp("votepercent", CInt(GetObjProperty(stone, "votepercent")));
+	elem.SetProp("timer", CInt(GetObjProperty(stone, "timer")));
+	elem.SetProp("Pleibicito_Result", GetObjProperty(stone, "Pleibicito_Result"));
+	elem.SetProp("nextcitizenelection", CInt(GetObjProperty(stone, "nextcitizenelection")));
+	elem.SetProp("citizen", GetObjProperty(stone, "citizen"));
+
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction
+
+
+function StripTownSuffix(character_name, town_name)
+	if(!character_name or !town_name)
+		return character_name;
+	endif
+
+	var safe_town_name := StrReplace(town_name, "'", "");
+	var stripped_name := StripExactSuffix(character_name, " of " + safe_town_name);
+	if(stripped_name != character_name)
+		return stripped_name;
+	endif
+
+	return StripExactSuffix(character_name, " of " + town_name);
+endfunction
+
+
+function StripExactSuffix(base_text, suffix)
+	if(!base_text or !suffix)
+		return base_text;
+	endif
+
+	var start_pos := Find(base_text, suffix, 1);
+	if(!start_pos)
+		return base_text;
+	endif
+
+	if((start_pos + Len(suffix) - 1) != Len(base_text))
+		return base_text;
+	endif
+
+	if(start_pos <= 1)
+		return base_text;
+	endif
+
+	return base_text[1, start_pos - 1];
 endfunction
 
 
@@ -219,7 +819,7 @@ function HasTownBankRegionData(region_name)
 endfunction
 
 
-function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, player_purchase_prices, player_purchased, player_available, total_gold)
+function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_data, upgrades_enabled, donations_enabled, player_purchase_prices, player_purchased, player_available, town_ids, populations, total_gold)
 	var total := regions.size();
 	if(!total)
 		return;
@@ -258,8 +858,9 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_da
 		GFTextLine(gump, 610, 88, 53, "Available");
 		GFTextLine(gump, 715, 88, 53, "Purchased");
 		GFTextLine(gump, 825, 88, 1153, "Price");
-		GFTextLine(gump, 955, 88, 1153, "Stone");
-		GFTextLine(gump, 1035, 88, 38, "Delete");
+		GFTextLine(gump, 930, 88, 1153, "Population");
+		GFTextLine(gump, 1020, 88, 1153, "Stone");
+		GFTextLine(gump, 1090, 88, 38, "Delete");
 
 		var row := 0;
 		var i;
@@ -281,18 +882,20 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_da
 			GFTextLine(gump, 750, y, player_purchased[i] ? 63 : 38, player_purchased[i] ? "Yes" : "No");
 
 			GFTextLine(gump, 825, y, 1153, player_purchase_prices[i] > 0 ? (CStr(player_purchase_prices[i]) + " gold") : "N/A");
+			GFAddButton(gump, 930, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_POPULATION_BASE + i);
+			GFTextLine(gump, 965, y, 1153, CStr(populations[i]));
 
 			if(stones_exist[i])
-				GFTextLine(gump, 955, y, 63, "Yes");
+				GFTextLine(gump, 1020, y, 63, "Yes");
 			else
-				GFTextLine(gump, 955, y, 38, "No");
+				GFTextLine(gump, 1020, y, 38, "No");
 			endif
 
 			if(has_region_data[i] and !stones_exist[i])
-				GFAddButton(gump, 1035, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_DELETE_REGION_BASE + i);
-				GFTextLine(gump, 1070, y, 38, "Del");
+				GFAddButton(gump, 1090, y - 2, 2474, 2473, GF_CLOSE_BTN, BTN_DELETE_REGION_BASE + i);
+				GFTextLine(gump, 1120, y, 38, "Del");
 			else
-				GFTextLine(gump, 1070, y, 1153, "-");
+				GFTextLine(gump, 1120, y, 1153, "-");
 			endif
 			row := row + 1;
 		endfor
@@ -318,6 +921,18 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_da
 			continue;
 		elseif(res[0] == BTN_NEXT)
 			page := page + 1;
+			continue;
+		elseif(res[0] > BTN_POPULATION_BASE and res[0] <= (BTN_POPULATION_BASE + total))
+			var population_idx := res[0] - BTN_POPULATION_BASE;
+			var pop_region := CStr(regions[population_idx]);
+			ShowTownMemberManagerGump(who, pop_region, CInt(town_ids[population_idx]));
+
+			// Refresh potentially changed row values after member management.
+			var refreshed_town_id := GetTownIdByRegionName(pop_region);
+			town_ids[population_idx] := refreshed_town_id;
+			populations[population_idx] := GetTownPopulation(pop_region, refreshed_town_id);
+			stones_exist[population_idx] := HasLiveTownstoneForRegion(pop_region, refreshed_town_id);
+			has_region_data[population_idx] := HasTownBankRegionData(pop_region);
 			continue;
 		elseif(res[0] > BTN_TOGGLE_UPGRADES_BASE and res[0] <= (BTN_TOGGLE_UPGRADES_BASE + total))
 			var upgrade_idx := res[0] - BTN_TOGGLE_UPGRADES_BASE;
@@ -386,6 +1001,8 @@ function ShowTownBankStatusGump(who, regions, golds, stones_exist, has_region_da
 			player_purchase_prices.erase(delete_idx);
 			player_purchased.erase(delete_idx);
 			player_available.erase(delete_idx);
+			town_ids.erase(delete_idx);
+			populations.erase(delete_idx);
 
 			total := regions.size();
 			if(!total)

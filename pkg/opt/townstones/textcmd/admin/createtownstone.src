@@ -80,9 +80,11 @@ function FindTownIndexByName(townnames, region_name)
 		return 0;
 	endif
 
+	var lookup_region := Lower(CStr(region_name));
+
 	var i;
 	for(i := 1; i <= townnames.size(); i := i + 1)
-		if(CStr(townnames[i]) == CStr(region_name))
+		if(Lower(CStr(townnames[i])) == lookup_region)
 			return i;
 		endif
 	endfor
@@ -114,6 +116,10 @@ function HasActiveTownstoneForRegion(region_name)
 		return 1;
 	endif
 
+	if(HasAnyLiveTownstoneForRegion(region_name))
+		return 1;
+	endif
+
 	var townnames := GetGlobalProperty("townlist");
 	if(!townnames or !townnames.size())
 		townnames := {};
@@ -121,6 +127,31 @@ function HasActiveTownstoneForRegion(region_name)
 	if(HasLiveTownstoneConflict(region_name, 0, townnames))
 		return 1;
 	endif
+
+	return 0;
+endfunction
+
+
+function HasAnyLiveTownstoneForRegion(region_name)
+	if(!region_name)
+		return 0;
+	endif
+
+	var stones := ListItemsNearLocationOfType(0, 0, LIST_IGNORE_Z, 10000, 0xa320, "britannia");
+	if(!stones or !stones.size())
+		return 0;
+	endif
+
+	var lookup_region := Lower(CStr(region_name));
+	foreach stone in stones
+		if(!stone or stone.objtype != 0xa320)
+			continue;
+		endif
+
+		if(Lower(CStr(GetObjProperty(stone, "regionname"))) == lookup_region)
+			return 1;
+		endif
+	endforeach
 
 	return 0;
 endfunction

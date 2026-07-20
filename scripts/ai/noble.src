@@ -42,6 +42,9 @@ program noble ()
     SetWarMode( 0 );
     set_priority(10);
 
+    // Start movement right away so newly spawned nobles do not stand idle.
+    WanderWithinTown();
+
 
     // Keep one blocking wait per loop; avoid a tight event loop that can trigger runaway cycles.
     var ev;

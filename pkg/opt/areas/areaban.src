@@ -3,7 +3,7 @@ use uo;
 
 include "include/areas";
 
-const MINS_BETWEEN_CHECKS := 10;
+const MINS_BETWEEN_CHECKS := 5;
 
 program areaban( who )
 

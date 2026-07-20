@@ -1,0 +1,415 @@
+// Synopsis: Restart all spawnpoints in a selected region using restart or restartmax mode
+use uo;
+use os;
+use cfgfile;
+
+include "include/constants/objtypes";
+include "include/managers";
+include ":gumps:gumps";
+include ":spawnpoint:restartspawnpoint";
+
+program restartspawnpointarea(who)
+	var facet_btn := ShowFacetSelectionGump(who);
+	if(!facet_btn)
+		SendSysMessage(who, "Cancelled.");
+		return 0;
+	endif
+
+	var facet_info := GetFacetInfo(CInt(facet_btn));
+	if(!facet_info || !facet_info.size())
+		SendSysMessage(who, "Invalid realm selection.");
+		return 0;
+	endif
+
+	var realm := CStr(facet_info[1]);
+	var locations := BuildLocationsForRealm(realm);
+	if(!locations || !locations.size())
+		SendSysMessage(who, "No locations found in golocs_by_id.cfg for realm: " + realm + ".");
+		return 0;
+	endif
+
+	var result := SelectLocationActionGump(who, locations);
+	if(!result || result[0] == 0)
+		SendSysMessage(who, "Cancelled.");
+		return 0;
+	endif
+
+	var maxlocs := len(locations);
+	var btn := CInt(result[0]);
+	var is_max := 0;
+	var selected_index := btn;
+	if(btn > maxlocs)
+		is_max := 1;
+		selected_index := btn - maxlocs;
+	endif
+
+	if(selected_index < 1 || selected_index > maxlocs)
+		SendSysMessage(who, "Invalid location selected.");
+		return 0;
+	endif
+
+	var selected_location := locations[selected_index];
+	var selected_region := CStr(selected_location.Key);
+	var region_ranges := selected_location.Ranges;
+	if(!region_ranges || !region_ranges.size())
+		SendSysMessage(who, "Selected location has no valid Range entries in golocs_by_id.cfg.");
+		return 0;
+	endif
+
+	var points := SendSpawnPointEvent(EVID_SPAWNPOINT_REQUEST_POINTS);
+	if(!points)
+		SendSysMessage(who, "No spawnpoints are currently registered.");
+		return 0;
+	endif
+
+	var processed := 0;
+	var i;
+	for(i := 1; i <= points.size(); i := i + 1)
+		var point := points[i];
+		if(!point || point.objtype != UOBJ_SPAWNPOINT)
+			continue;
+		endif
+
+		if(Lower(CStr(point.realm)) != Lower(realm))
+			continue;
+		endif
+
+		if(!IsPointInsideAnyRange(point.x, point.y, region_ranges))
+			continue;
+		endif
+
+		RestartSpawnPointWithMode(point, is_max);
+		processed := processed + 1;
+		SleepMs(2);
+	endfor
+
+	if(processed < 1)
+		SendSysMessage(who, "No spawnpoints found for location: " + CStr(selected_location.Name) + " <" + CStr(selected_region) + ">.");
+		return 0;
+	endif
+
+	if(is_max)
+		SendSysMessage(who, "Restarted and max-filled " + processed + " spawnpoint(s) for location: " + CStr(selected_location.Name) + " <" + CStr(selected_region) + ">.");
+	else
+		SendSysMessage(who, "Restarted " + processed + " spawnpoint(s) for location: " + CStr(selected_location.Name) + " <" + CStr(selected_region) + ">.");
+	endif
+
+	return 1;
+
+endprogram
+
+
+function ShowFacetSelectionGump(who)
+	var gump := GFCreateGump(50, 50, 280, 400);
+	GFMovable(gump, 1);
+	GFResizePic(gump, 50, 50, 3500, 280, 400);
+
+	GFTextLine(gump, 175, 100, 52, "Select Realm");
+	GFTextLine(gump, 125, 125, 1086, "Felucca");
+	GFAddButton(gump, 225, 130, 2360, 2361, GF_CLOSE_BTN, 2);
+	GFTextLine(gump, 125, 150, 1086, "Trammel");
+	GFAddButton(gump, 225, 155, 2360, 2361, GF_CLOSE_BTN, 4);
+	GFTextLine(gump, 125, 175, 1086, "Malas");
+	GFAddButton(gump, 225, 180, 2360, 2361, GF_CLOSE_BTN, 6);
+	GFTextLine(gump, 125, 200, 1086, "Ilshenar");
+	GFAddButton(gump, 225, 205, 2360, 2361, GF_CLOSE_BTN, 8);
+	GFTextLine(gump, 125, 225, 1086, "Tokuno");
+	GFAddButton(gump, 225, 230, 2360, 2361, GF_CLOSE_BTN, 10);
+	GFTextLine(gump, 125, 250, 1086, "Termur");
+	GFAddButton(gump, 225, 255, 2360, 2361, GF_CLOSE_BTN, 12);
+
+	var data := GFSendGump(who, gump);
+	if(!data || !data[0])
+		return 0;
+	endif
+
+	return CInt(data[0]);
+
+endfunction
+
+
+function GetFacetInfo(facetbutton)
+	case(facetbutton)
+		2:
+			return {"britannia", "Felucca"};
+		4:
+			return {"britannia_alt", "Trammel"};
+		6:
+			return {"malas", "Malas"};
+		8:
+			return {"ilshenar", "Ilshenar"};
+		10:
+			return {"tokuno", "Tokuno"};
+		12:
+			return {"termur", "Termur"};
+		default:
+			return {};
+	endcase
+endfunction
+
+
+function SelectLocationActionGump(who, locations)
+	var gump := GFCreateGump(20, 20, 680, 620);
+	GFDisposable(gump, 0);
+	GFResizePic(gump, 20, 20, 9250, 680, 620);
+	GFResizePic(gump, 34, 56, 9200, 652, 34);
+	GFResizePic(gump, 34, 92, 9200, 652, 492);
+
+	GFResizePic(gump, 280, 35, 9200, 170, 20);
+	GFTextLine(gump, 330, 35, 67, "Restart Spawnpoints");
+
+	GFTextLine(gump, 50, 68, 900, "Location");
+	GFTextLine(gump, 380, 68, 900, "Type");
+	GFTextLine(gump, 500, 68, 900, "Restart");
+	GFTextLine(gump, 575, 68, 900, "Max");
+
+	var y := 100;
+	var page := 1;
+	var perpage := 23;
+	var maxlocs := len(locations);
+	var i;
+
+	GFTextLine(gump, 325, 592, 1000, "Page 1");
+	GFPage(gump, 1);
+
+	for(i := 1; i <= maxlocs; i := i + 1)
+		if(perpage <= 0)
+			GFAddButton(gump, 570, 589, 4005, 4006, 0, page + 1);
+			GFPage(gump, page + 1);
+			GFAddButton(gump, 110, 589, 4014, 4015, 0, page);
+			page := page + 1;
+			GFTextLine(gump, 325, 592, 1000, "Page " + page);
+			y := 100;
+			perpage := 23;
+		endif
+
+		GFTextLine(gump, 50, y, 0, locations[i].Name + " <" + locations[i].Key + ">");
+		GFTextLine(gump, 380, y, 0, locations[i].Type);
+		GFAddButton(gump, 520, y - 3, 5540, 5541, GF_CLOSE_BTN, i);
+		GFAddButton(gump, 585, y - 3, 5540, 5541, GF_CLOSE_BTN, i + maxlocs);
+
+		perpage := perpage - 1;
+		y := y + 20;
+	endfor
+
+	return GFSendGump(who, gump);
+endfunction
+
+
+function BuildLocationsForRealm(realm)
+	var locations := {};
+	var cfg := ReadGoLocCfg();
+	if(!cfg)
+		return locations;
+	endif
+
+	var keys := GetConfigStringKeys(cfg);
+	if(!keys || !keys.size())
+		return locations;
+	endif
+
+	var realm_lc := Lower(CStr(realm));
+	var i;
+	for(i := 1; i <= keys.size(); i := i + 1)
+		var key_name := CStr(keys[i]);
+		if(!key_name)
+			continue;
+		endif
+
+		var elem := cfg[key_name];
+		if(!elem)
+			elem := FindConfigElem(cfg, key_name);
+		endif
+		if(!elem)
+			continue;
+		endif
+
+		var region_realm := Lower(CStr(GetConfigString(elem, "Realm")));
+		if(region_realm != realm_lc)
+			continue;
+		endif
+
+		var ranges := GetRangesFromElem(elem);
+		if(!ranges || !ranges.size())
+			continue;
+		endif
+
+		var loc := struct;
+		loc.Key := key_name;
+		loc.Name := CStr(GetConfigString(elem, "Name"));
+		if(!loc.Name)
+			loc.Name := key_name;
+		endif
+		loc.Type := CStr(GetConfigString(elem, "Type"));
+		if(!loc.Type)
+			loc.Type := "None";
+		endif
+		loc.Realm := region_realm;
+		loc.Ranges := ranges;
+		locations.append(loc);
+	endfor
+
+	return ReorderLocationsForDisplay(locations);
+
+endfunction
+
+
+function ReorderLocationsForDisplay(locs)
+	var ordered := {};
+
+	ordered := AppendLocationsByType(ordered, locs, "Jail");
+	ordered := AppendLocationsByType(ordered, locs, "City");
+	ordered := AppendLocationsByType(ordered, locs, "Shrine");
+	ordered := AppendLocationsByType(ordered, locs, "Graveyard");
+	ordered := AppendLocationsByType(ordered, locs, "Dungeon");
+	ordered := AppendLocationsByType(ordered, locs, "POI");
+	ordered := AppendLocationsByType(ordered, locs, "None");
+
+	foreach entry in locs
+		if(!LocationAlreadyAdded(ordered, entry))
+			ordered.append(entry);
+		endif
+	endforeach
+
+	return ordered;
+endfunction
+
+
+function AppendLocationsByType(ordered, locs, wanted_type)
+	foreach entry in locs
+		if(GetLocationTypeLabel(entry) == wanted_type && !LocationAlreadyAdded(ordered, entry))
+			ordered.append(entry);
+		endif
+	endforeach
+
+	return ordered;
+endfunction
+
+
+function LocationAlreadyAdded(ordered, candidate)
+	foreach entry in ordered
+		if(entry.Key == candidate.Key)
+			return 1;
+		endif
+	endforeach
+	return 0;
+endfunction
+
+
+function GetLocationTypeLabel(loc)
+	return NormalizeTypeLabel(CStr(loc.Type));
+endfunction
+
+
+function NormalizeTypeLabel(region_type)
+	region_type := Trim(region_type);
+	if(!region_type)
+		return "None";
+	endif
+
+	case(Lower(region_type))
+		"poi":
+			return "POI";
+		"city":
+			return "City";
+		"shrine":
+			return "Shrine";
+		"dungeon":
+			return "Dungeon";
+		"graveyard":
+			return "Graveyard";
+		"jail":
+			return "Jail";
+		"none":
+			return "None";
+	endcase
+
+	return region_type;
+endfunction
+
+
+function ReadGoLocCfg()
+	var cfg := ReadConfigFile("golocs_by_id");
+	if(cfg)
+		return cfg;
+	endif
+
+	cfg := ReadConfigFile("::golocs_by_id");
+	if(cfg)
+		return cfg;
+	endif
+
+	cfg := ReadConfigFile("::config/golocs_by_id");
+	return cfg;
+
+endfunction
+
+
+function GetRangesFromElem(elem)
+	var ranges := {};
+	var raw_ranges := GetConfigStringArray(elem, "Range");
+	if(raw_ranges && raw_ranges.size())
+		var i;
+		for(i := 1; i <= raw_ranges.size(); i := i + 1)
+			var parsed := ParseRangeLine(CStr(raw_ranges[i]));
+			if(parsed)
+				ranges.append(parsed);
+			endif
+		endfor
+	else
+		var single_range := ParseRangeLine(CStr(GetConfigString(elem, "Range")));
+		if(single_range)
+			ranges.append(single_range);
+		endif
+	endif
+
+	return ranges;
+
+endfunction
+
+
+function ParseRangeLine(line)
+
+	if(!line)
+		return 0;
+	endif
+
+	var p := SplitWords(line);
+	if(!p[1] || !p[2] || !p[3] || !p[4])
+		return 0;
+	endif
+
+	var x1 := CInt(p[1]);
+	var y1 := CInt(p[2]);
+	var x2 := CInt(p[3]);
+	var y2 := CInt(p[4]);
+
+	if(x1 > x2)
+		var swapx := x1;
+		x1 := x2;
+		x2 := swapx;
+	endif
+	if(y1 > y2)
+		var swapy := y1;
+		y1 := y2;
+		y2 := swapy;
+	endif
+
+	return { x1, y1, x2, y2 };
+
+endfunction
+
+
+function IsPointInsideAnyRange(x, y, ranges)
+
+	var i;
+	for(i := 1; i <= ranges.size(); i := i + 1)
+		var r := ranges[i];
+		if(x >= r[1] && x <= r[3] && y >= r[2] && y <= r[4])
+			return 1;
+		endif
+	endfor
+
+	return 0;
+
+endfunction
