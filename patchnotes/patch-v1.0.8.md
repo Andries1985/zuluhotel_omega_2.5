@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.0.8
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: July 20, 2026**
+
+---
+
+Welcome to **Patch 1.0.8**. This update focuses on **player-run town administration**, **area-policy fixes**, **town NPC cleanup**, and a set of support-side script and balance updates.
+
+---
 
 ## What Changed
 
