@@ -10,6 +10,7 @@ const AREA_POLICY_DATAFILE_PREFIX := ":areas:area_policies_";
 const AREA_POLICY_META_ELEMENT := "__meta__";
 const AREA_POLICY_MASK_PROP := "Mask";
 const AREA_POLICY_SCHEMA_VERSION := 2;
+const AREA_POLICY_DEFAULT_REALM := "britannia";
 
 const AREA_POLICY_GUARDED := 1;
 const AREA_POLICY_NO_RECALL_TO := 2;
@@ -131,12 +132,21 @@ function BuildAreaKey(area_line)
 endfunction
 
 
+function SanitizePolicyRealm(realm)
+	realm := Lower(CStr(realm));
+	if(!realm || realm == "<uninitialized object>")
+		return AREA_POLICY_DEFAULT_REALM;
+	endif
+	return realm;
+endfunction
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Realm/config access
 ///////////////////////////////////////////////////////////////////////////////
 
 function GetRealmAreaLines(realm)
-	realm := Lower(CStr(realm));
+	realm := SanitizePolicyRealm(realm);
 	var areas_cfg := ReadConfigfile(CFGFILE_AREAS);
 	if(!areas_cfg)
 		return error{"errortext":="Cannot read areas config"};
@@ -173,7 +183,7 @@ var _parsed_area_lines_cache := dictionary;
 const AREA_POLICY_CACHE_PREFIX := "zh.areapolicy.parsed.";
 
 function GetParsedRealmAreaLines(realm)
-	realm := Lower(CStr(realm));
+	realm := SanitizePolicyRealm(realm);
 
 	// Layer 1: per-program in-RAM cache.
 	var cached := _parsed_area_lines_cache[realm];
@@ -258,7 +268,7 @@ endfunction
 
 
 function ResolveAreaMatchAtLocation(x, y, realm)
-	realm := Lower(CStr(realm));
+	realm := SanitizePolicyRealm(realm);
 
 	var parsed := GetParsedRealmAreaLines(realm);
 	if(parsed == error)
@@ -301,7 +311,7 @@ endfunction
 
 
 function ResolvePolicyAtLocation(x, y, realm)
-	realm := Lower(CStr(realm));
+	realm := SanitizePolicyRealm(realm);
 
 	var global_mask := GetGlobalBypassMask(realm);
 	var area_key := ResolveAreaKeyAtLocation(x, y, realm);
@@ -322,7 +332,7 @@ endfunction
 // 4 extra reads per resolve are cheap.
 
 function GetGlobalBypassMask(realm)
-	realm := Lower(CStr(realm));
+	realm := SanitizePolicyRealm(realm);
 	var mask := 0;
 	mask := mask | CInt(GetPolicyMask(realm, AREA_POLICY_GLOBAL_ID_WHOLEWORLD));
 	mask := mask | CInt(GetPolicyMask(realm, AREA_POLICY_GLOBAL_ID_WHOLEWORLD_LEGACY));
@@ -348,7 +358,7 @@ endfunction
 ///////////////////////////////////////////////////////////////////////////////
 
 function GetRealmPolicyDescriptor(realm)
-	return AREA_POLICY_DATAFILE_PREFIX + Lower(CStr(realm));
+	return AREA_POLICY_DATAFILE_PREFIX + SanitizePolicyRealm(realm);
 endfunction
 
 
