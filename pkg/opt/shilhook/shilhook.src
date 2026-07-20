@@ -39,27 +39,53 @@ exported function ShilCheckSkill( who, skillid, difficulty, points )
 
 endfunction
 
+function GetSkillGainEffective( who, skillid )
+
+	var effective_skill := GetEffectiveSkill( who, skillid );
+	var base_skill := GetBaseSkill( who, skillid );
+	var skill_cap := GetPlayerSkillCap( who, skillid );
+
+	if( base_skill < skill_cap and effective_skill >= skill_cap )
+		return base_skill;
+	endif
+
+	return effective_skill;
+
+endfunction
+
+function GetDifficultyCheckChance( skill, difficulty )
+
+	var chance := Cint( skill - difficulty + 20 );
+
+	if( chance < 0 )
+		return 0;
+	elseif( chance < 2 )
+		chance := 2;
+		return chance;
+	else
+		chance := Cint( chance * 2.5 );
+		if( chance > 98 )
+			chance := 98;
+		endif
+		return chance;
+	endif
+
+endfunction
+
 
 function DifficultySkillCheck( who, skillid, difficulty, points )
 
 	var skill	:= GetEffectiveSkill( who, skillid );
+	var gain_skill := GetSkillGainEffective( who, skillid );
 	if( skill == 0 )
 		if( who.IsA(POLCLASS_NPC) )
 			return 0;
 		endif
 	endif
 	
-	var chance	:= Cint( skill - difficulty + 20 );
-	
-	if( chance < 0 )
+	var chance := GetDifficultyCheckChance( skill, difficulty );
+	if( chance == 0 )
 		return 0;
-	elseif( chance == 0 )
-		chance := 2;
-	else
-		chance := Cint( chance * 2.5 );
-		if( chance > 98 )
-			chance := 98;
-		endif
 	endif
 
 	var check := RandomInt(100);
@@ -77,7 +103,8 @@ function DifficultySkillCheck( who, skillid, difficulty, points )
 	endif
 
 	if( !who.npctemplate )
-		points := Cint( points * Cdbl(1.0 - (Cdbl(chance) / 100.0)) );
+		var gain_chance := GetDifficultyCheckChance( gain_skill, difficulty );
+		points := Cint( points * Cdbl(1.0 - (Cdbl(gain_chance) / 100.0)) );
 		if( points > 0 )
 			AwardSkillPoints( who, skillid, points );
 		endif

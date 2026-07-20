@@ -30,7 +30,7 @@ if (character.cmdlevel)
       speech := CStr(packet.GetString(speechstart, speechlen));
    else
       var speechlen := (packet.GetInt16(1) - 13)/2;
-      speech := CChrZ(packet.GetUnicodeString(speechstart, speechlen));
+      speech := packet.GetUnicodeString(speechstart, speechlen);
    endif 
 
       // Guard against packet decode errors returning non-string values.

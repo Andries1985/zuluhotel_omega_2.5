@@ -1,0 +1,35 @@
+// Synopsis: Restart a targeted spawnpoint using current settings and clear all active spawned objects
+use uo;
+use os;
+
+include "include/constants";
+include "include/client";
+include "include/constants/objtypes";
+include ":spawnpoint:restartspawnpoint";
+
+program restartspawnpoint(who, input)
+	var spawnpoint;
+	if(!input)
+		SendSysMessage(who, "Select Spawnpoint");
+		spawnpoint := TargetCoordinates(who).item;
+	else
+		spawnpoint := SystemFindObjectBySerial(CInt(input));
+		if(!spawnpoint || spawnpoint.objtype != UOBJ_SPAWNPOINT)
+			SendSysMessage(who, "That's not a Spawnpoint. Usage: .restartspawnpoint [serial]", FONT_NORMAL, 2595);
+			return 0;
+		endif
+	endif
+
+	if(!spawnpoint || spawnpoint.objtype != UOBJ_SPAWNPOINT)
+		SendSysMessage(who, "No valid spawnpoint selected.", FONT_NORMAL, 2595);
+		return 0;
+	endif
+
+	RestartSpawnPointWithMode(spawnpoint, 0);
+	PrintTextAbovePrivate(spawnpoint, "*restarted*", who, FONT_NORMAL, 2595);
+
+	var pt_data := EnsureSpawnPointSettings(spawnpoint);
+	SendSysMessage(who, "Spawnpoint restarted. Next spawn in " + CInt(pt_data[6]) + " minute(s).", FONT_NORMAL, 2595);
+	return 1;
+
+endprogram

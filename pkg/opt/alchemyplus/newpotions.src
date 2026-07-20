@@ -209,7 +209,7 @@ function DoProtectionEffect( me , item , what )
 
 	var strength	 := GetPotionStr( item , what );
 	var mod_amount := strength * 2;
-	var duration   := strength * 15 + 300;
+	var duration   := strength * 15 + 3000;
 	if( !CanMod( me , "ar" ) )
 		SendSysMessage( me , "Already under the influence!" );
 		return;

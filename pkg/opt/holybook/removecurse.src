@@ -58,7 +58,14 @@ program cast_earth_blessing( parms )
 		EraseObjProperty( caster , "#Casting" );
 		return;
 	endif
-	var chance := ((GetAttribute( caster, ATTRIBUTEID_ITEMID ))/2);
+	var chance;
+	if( GetObjProperty( caster , CLASSEID_PALADIN ) )
+		var magery := GetEffectiveSkill( caster , SKILLID_MAGERY );
+		var resist := GetEffectiveSkill( caster , SKILLID_MAGICRESISTANCE );
+		chance := CInt( ( magery + resist ) / 4 );
+	else
+		chance := CInt( GetEffectiveSkill( caster , SKILLID_ITEMID ) / 2 );
+	endif
 	if (GetObjProperty(item,"Cursed") && GetObjProperty(item,"Cursed") != 3)
 		if (Random (100)+1 < chance)
 			SendSysMessage( caster, "You successfully remove the curse." );

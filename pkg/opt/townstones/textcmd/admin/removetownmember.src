@@ -45,6 +45,25 @@ program textcmd_removetownmember(who)
 		SetObjProperty(stone, "citizen", citizen);
 	endif
 
+	var refreshed_citizens := {};
+	var citizen_idx;
+	for(citizen_idx := 1; citizen_idx <= citizen.size(); citizen_idx := citizen_idx + 1)
+		var citizen_account := Trim(CStr(citizen[citizen_idx]));
+		if(!citizen_account)
+			continue;
+		endif
+		if(Lower(citizen_account) == Lower(CStr(target_char.acctname)))
+			continue;
+		endif
+
+		if(AccountHasTownMember(citizen_account, town_id))
+			refreshed_citizens.append(citizen_account);
+		endif
+	endfor
+	if(refreshed_citizens.size() != citizen.size() or removed_from_list)
+		SetObjProperty(stone, "citizen", refreshed_citizens);
+	endif
+
 	var populacao := CInt(GetObjProperty(stone, "populacao"));
 	if(populacao < 0)
 		populacao := 0;
@@ -168,6 +187,34 @@ function RemoveCitizenAccount(citizen_list, account_name)
 			citizen_list.erase(i);
 			return 1;
 		endif
+	endfor
+
+	return 0;
+endfunction
+
+
+function AccountHasTownMember(account_name, town_id)
+	if(!account_name)
+		return 0;
+	endif
+
+	var account := FindAccount(account_name);
+	if(!account)
+		return 0;
+	endif
+
+	var slot;
+	for(slot := 1; slot <= 7; slot := slot + 1)
+		var character := account.GetCharacter(slot);
+		if(!character)
+			continue;
+		endif
+
+		if(town_id and CInt(GetObjProperty(character, "town")) != CInt(town_id))
+			continue;
+		endif
+
+		return 1;
 	endfor
 
 	return 0;

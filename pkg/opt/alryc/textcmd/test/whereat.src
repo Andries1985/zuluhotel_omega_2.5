@@ -1,0 +1,117 @@
+// Synopsis: Show location and target details for a selected mobile, item, or map tile
+use uo;
+use os;
+
+program whereat(who)
+	SendSysMessage(who, "Target a mobile, item, or map tile (ESC to inspect yourself).");
+
+	var whattarget := TargetCoordinates(who);
+	var selected := ResolveSelection(whattarget, who);
+
+	var target_name := selected[1];
+	var target_type := selected[2];
+	var target_serial := CInt(selected[3]);
+	var target_objtype := CInt(selected[4]);
+	var target_x := CInt(selected[5]);
+	var target_y := CInt(selected[6]);
+	var target_z := CInt(selected[7]);
+	var target_realm := CStr(selected[8]);
+
+	var region_name := GetRegionNameAtLocation(target_x, target_y, target_realm);
+	if (!region_name)
+		region_name := "Unknown";
+	endif
+
+	var map_info := GetMapInfo(target_x, target_y, target_realm);
+	var landtile := 0;
+	if (map_info)
+		landtile := CInt(map_info.landtile);
+	endif
+
+	var summary := "WhereAt: " + target_type + " '" + target_name + "'";
+	var id_line := "Serial=" + CStr(target_serial) + " ObjType=" + CStr(Hex(target_objtype));
+	var pos_line := "Pos=" + CStr(target_x) + "," + CStr(target_y) + "," + CStr(target_z) + " Realm=" + target_realm + " Region=" + region_name;
+	var tile_line := "LandTile=" + CStr(Hex(landtile));
+	var go_line := ".gorealm " + CStr(target_x) + " " + CStr(target_y) + " " + CStr(target_z) + " " + target_realm;
+
+	SendSysMessage(who, summary);
+	SendSysMessage(who, id_line);
+	SendSysMessage(who, pos_line);
+	SendSysMessage(who, tile_line);
+	SendSysMessage(who, "Goto: " + go_line);
+
+	Print("[whereat] " + who.name + " -> " + summary);
+	Print("[whereat] " + id_line);
+	Print("[whereat] " + pos_line);
+	Print("[whereat] " + tile_line);
+	Print("[whereat] goto " + go_line);
+endprogram
+
+function ResolveSelection(whattarget, who)
+	if (!whattarget)
+		return BuildSelectionFromMobile(who, "Self");
+	endif
+
+	if (whattarget.mobile)
+		return BuildSelectionFromMobile(whattarget.mobile, "Mobile");
+	endif
+
+	if (whattarget.item)
+		return BuildSelectionFromItem(whattarget.item, "Item");
+	endif
+
+	var realm := who.realm;
+	if (whattarget.realm)
+		realm := CStr(whattarget.realm);
+	endif
+
+	return {
+		"Map Tile",
+		"Tile",
+		0,
+		0,
+		CInt(whattarget.x),
+		CInt(whattarget.y),
+		CInt(whattarget.z),
+		realm
+	};
+endfunction
+
+function BuildSelectionFromMobile(mobile, label)
+	var display_name := CStr(mobile.name);
+	if (!display_name)
+		display_name := "(unnamed mobile)";
+	endif
+
+	return {
+		display_name,
+		label,
+		CInt(mobile.serial),
+		CInt(mobile.objtype),
+		CInt(mobile.x),
+		CInt(mobile.y),
+		CInt(mobile.z),
+		CStr(mobile.realm)
+	};
+endfunction
+
+function BuildSelectionFromItem(item, label)
+	var display_name := CStr(item.name);
+	if (!display_name)
+		display_name := CStr(item.desc);
+	endif
+	if (!display_name)
+		display_name := "(unnamed item)";
+	endif
+
+	return {
+		display_name,
+		label,
+		CInt(item.serial),
+		CInt(item.objtype),
+		CInt(item.x),
+		CInt(item.y),
+		CInt(item.z),
+		CStr(item.realm)
+	};
+endfunction
