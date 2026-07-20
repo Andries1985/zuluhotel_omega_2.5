@@ -73,22 +73,31 @@ function Buildhouse( character, deed )
     if (!where) return; endif
 
     if (character.cmdlevel < 4)
-	//var antigate := ListItemsNearLocation(where.x, where.y, where.z, 50, where.realm);
-	var antihouse :=  ListObjectsInBox( where.x-25, where.y-25, where.z-25, where.x+25,where.y+25,where.z+25 );
-	foreach item in antihouse
-		if (item.objtype == 0xa3c8)
-			SendSysMessage( character, "You can't place your house this close to a dungeon." );
-			return;
-		endif
-	endforeach
+    if(IsHousePlacementBlockedByRegionType(housetype, where, "city"))
+        PrintTextAbovePrivate(deed, "You can't build in cities.", character);
+        return;
+    endif
 
-    var systele :=  ListObjectsInBox( where.x-25, where.y-25, where.z-25, where.x+25,where.y+25,where.z+25, where.realm );
-	foreach item in systele
-		if (item.objtype == 0x6200)
-			SendSysMessage( character, "System Teleporter nearby, no house allowed." );
-			return;
-		endif
-	endforeach
+    if(IsHousePlacementBlockedByRegionType(housetype, where, "dungeon"))
+        PrintTextAbovePrivate(deed, "You can't build in dungeons.", character);
+        return;
+    endif
+
+    if(IsHousePlacementBlockedByRegionType(housetype, where, "shrine"))
+        PrintTextAbovePrivate(deed, "You can't build near shrines.", character);
+        return;
+    endif
+
+    if(IsHousePlacementBlockedByRegionType(housetype, where, "graveyard"))
+        PrintTextAbovePrivate(deed, "You can't build in graveyards.", character);
+        return;
+    endif
+
+    var blocked_reason := IsHousePlacementBlockedByNearbySpecialObjects(where);
+    if(blocked_reason)
+        SendSysMessage(character, blocked_reason);
+        return;
+    endif
 
     var landtype := hex(GetMapInfo( where.x, where.y ).landtile);
 
@@ -110,11 +119,6 @@ function Buildhouse( character, deed )
 
     if (where.objtype>=0x515 and where.objtype<=0x518)// cobblestone
         PrintTextAbovePrivate( deed, "You can't build on the road.", character );
-        return;
-    endif
-
-    if (CheckCity(character)==1)
-        PrintTextAbovePrivate( deed, "You can't build in cities.", character );
         return;
     endif
 
@@ -443,6 +447,105 @@ function CreatehouseKeysAndBuiltDeed( character, housetype, where, deed )
     result .+ house := house;
     
     return result;
+endfunction
+
+function NormalizeRegionType(region_type)
+    case(Lower(CStr(region_type)))
+        "poi":
+            return "poi";
+        "city":
+            return "city";
+        "shrine":
+            return "shrine";
+        "dungeon":
+            return "dungeon";
+        "graveyard":
+            return "graveyard";
+        "jail":
+            return "jail";
+        "none":
+            return "none";
+    endcase
+
+    return Lower(CStr(region_type));
+endfunction
+
+function IsHousePlacementBlockedByRegionType(housetype, where, region_type)
+    var bounds := GetHouseFootprintBounds(housetype, where.x, where.y);
+    if(!bounds)
+        return 0;
+    endif
+
+    var regions_cfg := ReadConfigFile("::regions/regions");
+    if(!regions_cfg)
+        return 0;
+    endif
+
+    var wanted_region_type := NormalizeRegionType(region_type);
+    var keys := GetConfigStringKeys(regions_cfg);
+    if(!keys)
+        return 0;
+    endif
+
+    var x1 := bounds[1];
+    var y1 := bounds[2];
+    var x2 := bounds[3];
+    var y2 := bounds[4];
+
+    foreach key in keys
+        var region := FindConfigElem(regions_cfg, key);
+        if(!region)
+            continue;
+        endif
+
+        if(NormalizeRegionType(GetConfigString(region, "Type")) != wanted_region_type)
+            continue;
+        endif
+
+        var region_realm := Lower(CStr(GetConfigString(region, "Realm")));
+        if(region_realm and (region_realm != Lower(CStr(where.realm))))
+            continue;
+        endif
+
+        var range := GetConfigStringArray(region, "Range");
+        if(!range or range.size() < 4)
+            continue;
+        endif
+
+        var rx1 := CInt(range[1]);
+        var ry1 := CInt(range[2]);
+        var rx2 := CInt(range[3]);
+        var ry2 := CInt(range[4]);
+
+        if((x1 <= rx2) and (x2 >= rx1) and (y1 <= ry2) and (y2 >= ry1))
+            return 1;
+        endif
+    endforeach
+
+    return 0;
+endfunction
+
+function IsHousePlacementBlockedByNearbySpecialObjects(where)
+    foreach item in ListObjectsInBox(where.x-25, where.y-25, where.z-25, where.x+25, where.y+25, where.z+25, where.realm)
+        if(item.objtype == 0xa3c8)
+            return "You can't place your house this close to a dungeon.";
+        endif
+
+        if(item.objtype == 0x6200)
+            return "System Teleporter nearby, no house allowed.";
+        endif
+    endforeach
+
+    return "";
+endfunction
+
+function GetHouseFootprintBounds(housetype, x, y)
+    var dims := GetMultiDimensions(housetype);
+    if(!dims)
+        return 0;
+    endif
+
+    return { x + dims.xmin, y + dims.ymin, x + dims.xmax, y + dims.ymax };
 endfunction
 
 
