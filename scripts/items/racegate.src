@@ -1,6 +1,8 @@
 use uo;
 use basic;
 
+include ":admin:include/adminpanel";
+
 program walkon_racegate(who, me)
 
 var equipt := getobjproperty(me, "equipt");
@@ -31,5 +33,6 @@ if (color)
         who.truecolor := color;
 endif
 setobjproperty(who, "race", racename);
+RecordCharacterNameChange(who, who.name + " [" + racename + "]", ADMINPANEL_INITIATOR_PLAYER);
 who.name := who.name + " [" + racename + "]";
 endprogram

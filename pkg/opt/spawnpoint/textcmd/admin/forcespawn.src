@@ -18,6 +18,11 @@ program forcespawn(who, input)
 		endif
 	endif
 
+	if(!spawnpoint || spawnpoint.objtype != 0xa300)
+		SendSysMessage( who, "No valid spawnpoint selected.", FONT_NORMAL, 2595);
+		return 0;
+	endif
+
 	var pt_data := GetObjProperty( spawnpoint, PROPID_SPAWNPOINT_SETTING );
 	if(pt_data[15])
 		SetObjProperty(spawnpoint, "Triggered", 1);

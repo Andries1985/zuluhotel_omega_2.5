@@ -1,0 +1,390 @@
+// Synopsis: Browse accounts and view each character's recorded name/death/poison history and account notes
+// command .testadminpanel
+use uo;
+use os;
+
+include ":admin:include/adminpanel";
+include ":accounts:include/accounts";
+include ":gumps:include/gumps";
+
+const BTN_BACK             := 9000;
+const BTN_BROWSE_ACCOUNTS  := 1;
+
+const ACCOUNTS_PER_PAGE := 8;
+
+var LETTERS := {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+
+program textcmd_testadminpanel(who)
+	var state := "main";
+	var selected_letter := "";
+	var selected_account := "";
+	var selected_char := 0;
+
+	while(1)
+		if(state == "main")
+			var choice := ShowMainPanel(who);
+			if(choice == BTN_BROWSE_ACCOUNTS)
+				state := "letters";
+			else
+				return;
+			endif
+
+		elseif(state == "letters")
+			var letter_result := ShowLetterPicker(who);
+			if(!letter_result)
+				return;
+			elseif(letter_result == BTN_BACK)
+				state := "main";
+			else
+				selected_letter := letter_result;
+				state := "accounts";
+			endif
+
+		elseif(state == "accounts")
+			var account_result := ShowAccountList(who, selected_letter);
+			if(!account_result)
+				return;
+			elseif(account_result == BTN_BACK)
+				state := "letters";
+			else
+				selected_account := account_result;
+				state := "characters";
+			endif
+
+		elseif(state == "characters")
+			var char_result := ShowCharacterList(who, selected_account);
+			if(!char_result)
+				return;
+			elseif(char_result == BTN_BACK)
+				state := "accounts";
+			else
+				selected_char := char_result;
+				state := "detail";
+			endif
+
+		elseif(state == "detail")
+			var detail_result := ShowCharacterDetail(who, selected_account, selected_char);
+			if(detail_result == BTN_BACK)
+				state := "characters";
+			else
+				return;
+			endif
+		endif
+	endwhile
+endprogram
+
+
+function ShowMainPanel(who)
+	var gump := GFCreateGump(50, 50, 320, 140);
+	GFResizePic(gump, 0, 0, 9250, 320, 140);
+	GFResizePic(gump, 10, 10, 9350, 300, 120);
+	GFTextLine(gump, 20, 20, 43, "Admin Data Panel");
+
+	GFAddButton(gump, 20, 55, 2117, 2118, GF_CLOSE_BTN, BTN_BROWSE_ACCOUNTS);
+	GFTextLine(gump, 50, 55, 67, "Browse by Account");
+
+	GFAddButton(gump, 20, 95, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
+	GFTextLine(gump, 50, 95, 33, "Close");
+
+	var result := GFSendGump(who, gump);
+	return result[0];
+endfunction
+
+
+function CountAccountsByLetter()
+	var counts := dictionary;
+	var i;
+	for(i := 1; i <= LETTERS.size(); i := i + 1)
+		counts[LETTERS[i]] := 0;
+	endfor
+
+	foreach acctname in (ListAccounts())
+		var name := CStr(acctname);
+		if(!name)
+			continue;
+		endif
+		var first := Upper(name[1,1]);
+		if(counts.Exists(first))
+			counts[first] := counts[first] + 1;
+		endif
+	endforeach
+
+	return counts;
+endfunction
+
+
+function ShowLetterPicker(who)
+	var counts := CountAccountsByLetter();
+
+	var cols := 5;
+	var col_w := 118;
+	var row_h := 34;
+	var x0 := 25;
+	var y0 := 60;
+
+	var rows := CInt((LETTERS.size() - 1) / cols) + 1;
+	var back_y := y0 + (rows * row_h) + 10;
+	var gump_height := back_y + 40;
+	var gump_width := x0 + (cols * col_w) + 25;
+
+	var gump := GFCreateGump(50, 50, gump_width, gump_height);
+	GFResizePic(gump, 0, 0, 9250, gump_width, gump_height);
+	GFResizePic(gump, 10, 10, 9350, gump_width - 20, gump_height - 20);
+	GFTextLine(gump, 20, 20, 43, "Browse Accounts - Choose a Letter");
+
+	var i;
+	for(i := 1; i <= LETTERS.size(); i := i + 1)
+		var letter := LETTERS[i];
+		var col := (i - 1) % cols;
+		var row := CInt((i - 1) / cols);
+		var x := x0 + (col * col_w);
+		var y := y0 + (row * row_h);
+
+		var count := counts[letter];
+		if(!count)
+			count := 0;
+		endif
+
+		if(count > 0)
+			GFAddButton(gump, x, y, 2117, 2118, GF_CLOSE_BTN, i);
+			GFTextLine(gump, x + 28, y + 2, 67, letter + " (" + count + ")");
+		else
+			GFTextLine(gump, x + 28, y + 2, 900, letter + " (0)");
+		endif
+	endfor
+
+	GFAddButton(gump, 20, back_y, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
+	GFTextLine(gump, 50, back_y, 33, "Back");
+
+	var result := GFSendGump(who, gump);
+	if(!result[0])
+		return 0;
+	endif
+	if(result[0] == BTN_BACK)
+		return BTN_BACK;
+	endif
+
+	return LETTERS[result[0]];
+endfunction
+
+
+function GetAccountsForLetter(letter)
+	var matches := {};
+	foreach acctname in (ListAccounts())
+		var name := CStr(acctname);
+		if(!name)
+			continue;
+		endif
+		if(Upper(name[1,1]) == letter)
+			matches.append(name);
+		endif
+	endforeach
+	matches.sort();
+	return matches;
+endfunction
+
+
+function ShowAccountList(who, letter)
+	var accounts := GetAccountsForLetter(letter);
+	var total := accounts.size();
+
+	if(!total)
+		SendSysMessage(who, "No accounts start with '" + letter + "'.");
+		return BTN_BACK;
+	endif
+
+	var perpage := ACCOUNTS_PER_PAGE;
+	var total_pages := CInt((total - 1) / perpage) + 1;
+
+	var gump := GFCreateGump(50, 50, 460, 460);
+	GFResizePic(gump, 0, 0, 9250, 460, 460);
+	GFResizePic(gump, 10, 10, 9350, 440, 440);
+	GFTextLine(gump, 20, 20, 43, "Accounts starting with '" + letter + "' (" + total + ")");
+
+	GFAddButton(gump, 20, 420, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
+	GFTextLine(gump, 50, 420, 33, "Back to Letters");
+
+	var i;
+	var page := 0;
+	var y := 0;
+	for(i := 1; i <= total; i := i + 1)
+		var slot := (i - 1) % perpage;
+		if(slot == 0)
+			page := page + 1;
+			GFPage(gump, page);
+			y := 55;
+
+			if(page > 1)
+				GFAddButton(gump, 20, 390, 4014, 4015, GF_PAGE_BTN, page - 1);
+				GFTextLine(gump, 55, 390, 67, "Prev Page");
+			endif
+			if(page < total_pages)
+				GFAddButton(gump, 280, 390, 4005, 4006, GF_PAGE_BTN, page + 1);
+				GFTextLine(gump, 315, 390, 67, "Next Page");
+			endif
+		endif
+
+		var account_name := accounts[i];
+		var account := FindAccount(account_name);
+		var ip := "";
+		var last_login := "";
+		if(account && !account.errortext)
+			ip := CStr(account.GetProp("IP"));
+			last_login := FormatEpochTimestamp(ACCT_GetLastLogin(account));
+		endif
+		if(!ip)
+			ip := "(unknown)";
+		endif
+		if(!last_login)
+			last_login := "(never)";
+		endif
+
+		GFAddButton(gump, 20, y, 2117, 2118, GF_CLOSE_BTN, i);
+		GFTextLine(gump, 50, y, 0, account_name);
+		GFTextLine(gump, 60, y + 18, 900, "IP: "+ip+"   Last Login: "+last_login);
+		y := y + 40;
+	endfor
+
+	var result := GFSendGump(who, gump);
+	if(!result[0])
+		return 0;
+	endif
+	if(result[0] == BTN_BACK)
+		return BTN_BACK;
+	endif
+
+	return accounts[result[0]];
+endfunction
+
+
+function ShowCharacterList(who, acctname)
+	var account := FindAccount(acctname);
+	if(!account or account.errortext)
+		SendSysMessage(who, "Could not find account '" + acctname + "'.");
+		return BTN_BACK;
+	endif
+
+	var characters := ACCT_GetCharacters(account);
+	if(!characters.size())
+		SendSysMessage(who, "No characters found on '" + acctname + "'.");
+		return BTN_BACK;
+	endif
+
+	var note_info := GetLatestNoteInfo(account);
+	var latest_note := note_info.note;
+	if(!latest_note)
+		latest_note := "(no notes)";
+	endif
+	var note_lines := GFWordWrap(latest_note, 350);
+	var notes_total := GetStoredNoteHistory(acctname).size();
+
+	var attribution := "- ";
+	if(note_info.initiator)
+		attribution := attribution + note_info.initiator;
+	else
+		attribution := attribution + "Unknown";
+	endif
+	if(note_info.timestamp)
+		attribution := attribution + ", " + note_info.timestamp;
+	endif
+
+	var notes_y0 := 66;
+	var note_line_h := 20;
+	var chars_y0 := notes_y0 + (note_lines.size() * note_line_h) + (note_line_h * 2) + 14;
+	var height := chars_y0 + (characters.size() * 24) + 40;
+
+	var gump := GFCreateGump(50, 50, 420, height);
+	GFResizePic(gump, 0, 0, 9250, 420, height);
+	GFResizePic(gump, 10, 10, 9350, 400, height - 20);
+	GFTextLine(gump, 20, 20, 43, "Account: "+acctname);
+	GFTextLine(gump, 20, 44, 67, "Notes");
+
+	var y := notes_y0;
+	var i;
+	for(i := 1; i <= note_lines.size(); i := i + 1)
+		GFTextLine(gump, 25, y, 0, note_lines[i]);
+		y := y + note_line_h;
+	endfor
+	GFTextLine(gump, 25, y, 900, attribution);
+	y := y + note_line_h;
+	GFTextLine(gump, 25, y, 900, "("+notes_total+" note record(s) in datafile)");
+
+	y := chars_y0;
+	for(i := 1; i <= characters.size(); i := i + 1)
+		GFAddButton(gump, 20, y, 2117, 2118, GF_CLOSE_BTN, i);
+		GFTextLine(gump, 50, y, 0, CStr(characters[i].name));
+		y := y + 24;
+	endfor
+
+	GFAddButton(gump, 20, y + 5, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
+	GFTextLine(gump, 50, y + 5, 33, "Back to Accounts");
+
+	var result := GFSendGump(who, gump);
+	if(!result[0])
+		return 0;
+	endif
+	if(result[0] == BTN_BACK)
+		return BTN_BACK;
+	endif
+
+	return characters[result[0]];
+endfunction
+
+
+// Renders a titled block of lines into `gump`, advancing `y` past it -
+// shared by every section on the character-detail screen so adding another
+// subtitle later is a one-line addition, not a layout rewrite.
+function RenderHistorySection(byref gump, title, lines, byref y)
+	GFTextLine(gump, 20, y, 67, title);
+	y := y + 24;
+	var i;
+	for(i := 1; i <= lines.size(); i := i + 1)
+		GFTextLine(gump, 25, y, 0, lines[i]);
+		y := y + 22;
+	endfor
+	y := y + 10;
+endfunction
+
+
+function ShowCharacterDetail(who, acctname, mobile)
+	var names := BuildNameHistorySummary(mobile, 10);
+	var deaths := BuildDeathHistorySummary(mobile, 5);
+	var poisons := BuildPoisonHistorySummary(mobile, 5);
+
+	if(!deaths.lines.size())
+		deaths.lines.append("(no deaths recorded)");
+	endif
+	if(!poisons.lines.size())
+		poisons.lines.append("(no poisonings recorded)");
+	endif
+
+	var top_offset := 70;
+	var section_heights := (34 + (names.lines.size() * 22))
+		+ (34 + (deaths.lines.size() * 22))
+		+ (34 + (poisons.lines.size() * 22));
+	var footer_h := 22;
+	var button_h := 35;
+
+	var height := top_offset + section_heights + footer_h + button_h;
+
+	var gump := GFCreateGump(50, 50, 480, height);
+	GFResizePic(gump, 0, 0, 9250, 480, height);
+	GFResizePic(gump, 10, 10, 9350, 460, height - 20);
+	GFTextLine(gump, 20, 20, 43, "Character Information");
+	GFTextLine(gump, 20, 44, 67, acctname);
+
+	var y := top_offset;
+	RenderHistorySection(gump, "Names", names.lines, y);
+	RenderHistorySection(gump, "Killed By", deaths.lines, y);
+	RenderHistorySection(gump, "Poisoned By", poisons.lines, y);
+
+	var footer := "More in datafile: "+names.remaining+" name record(s), "+deaths.remaining+" death record(s), "+poisons.remaining+" poison record(s)";
+	GFTextLine(gump, 20, y, 900, footer);
+	y := y + footer_h;
+
+	GFAddButton(gump, 20, y, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
+	GFTextLine(gump, 50, y, 33, "Back to Characters");
+
+	var result := GFSendGump(who, gump);
+	return result[0];
+endfunction

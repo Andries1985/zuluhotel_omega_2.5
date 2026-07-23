@@ -7,6 +7,7 @@ include "include/classes";
 include "include/dotempmods";
 include "include/areas";
 include "include/constants/locations";
+include ":admin:include/adminpanel";
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -210,6 +211,7 @@ function AutoJail (looter)
 	endif
 	acc.setprop("Release", (ReadGameClock() + jaildays));
 	acc.setprop("Notes", note);
+	RecordAccountNote(acc, note, ADMINPANEL_INITIATOR_SYSTEM);
 	looter.frozen := 1;
 	MoveObjectToLocation( looter, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z, "britannia", MOVEOBJECT_FORCELOCATION);
 	SendSysMessage( looter, "You have been jailed for attempted town looting.");
