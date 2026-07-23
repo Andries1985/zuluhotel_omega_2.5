@@ -1,10 +1,10 @@
 # Patch Notes - v1.0.8
 **Zuluhotel Omega 2.5 | Live Shard**  
-**Date: July 20, 2026**
+**Date: July 23, 2026**
 
 ---
 
-Welcome to **Patch 1.0.8**. This update focuses on **player-run town administration**, **area-policy fixes**, **town NPC cleanup**, and a set of support-side script and balance updates.
+Welcome to **Patch 1.0.8**. This update focuses on **player-run town administration**, **area-policy fixes**, **name-change exploit closure**, **house placement rules**, **crafting/Omega Cache fixes**, and a set of support-side script, performance, and balance updates.
 
 ---
 
@@ -20,13 +20,46 @@ Welcome to **Patch 1.0.8**. This update focuses on **player-run town administrat
 
 ---
 
-## Areas - Castle Boundary Fixes
+## Name Changes - Exploit Closed and Fixes
 
 ### Player Impact
 
-- Area policy data was moved into per-realm datafiles, and the resolver now caches parsed area lines for lower server load.
+- Closed an exploit where a player could end up holding both a plain name (like "Pig") and a town-suffixed version of it ("Pig of Trinsic") at the same time by juggling alt characters while joining and leaving a town.
+- Name matching is now case-insensitive — "Bop", "bop", and "BOP" are treated as the same name and can no longer all exist at once.
+- New characters, and anyone using the rename gump, can no longer pick a name that contains a town name.
+- Fixed a bug that let a name end up with a leading/trailing/double space, which could silently create duplicate-looking character names.
+- Fixed the cause of a reported ~50 second delay and stacked rename gumps when changing your name.
+- Leaving a town with a name that's already taken by someone else no longer traps you — you'll be prompted to pick a new name instead.
+- Staff renaming tools (`.setname`, `.setprop name`, and the rename button in `.info`) now check names the same way player renames do, so a player can no longer end up with an invalid or duplicate name through a staff tool. This does not affect NPC renaming.
+
+---
+
+## Housing - Placement Restrictions
+
+### Player Impact
+
+- House placement now checks your entire house footprint (not just where you're standing) against city, dungeon, shrine, and graveyard zones, so houses can no longer be placed overlapping those areas.
+
+---
+
+## Areas - Castle Boundary Fixes and Performance
+
+### Player Impact
+
+- Area policy data was moved into per-realm datafiles, and the resolver now caches parsed area lines and policy flags for lower server load.
 - The area map was expanded and refreshed across all realms, including new shrines, dungeon entrances, and many more points of interest.
 - Enter and leave text was updated alongside the area data, and the Lord British Castle and Lord Blackthornes Castle boundaries were corrected as part of that refresh.
+- Fixed a datafile save error that could occur before an area's realm was fully set up.
+
+---
+
+## Crafting - Omega Cache Fixes
+
+### Player Impact
+
+- The smithy hammer can now correctly pull ingots (and bone, for bone armor) directly from your Omega Cache — this was supposed to work before but was broken.
+- The smithy retort (used to craft crafting-power upgrades like Oil, Alloy, Varnish, Compound, and Recharge Powder) can now also pull materials from your Omega Cache if you run out in your backpack.
+- Fixed several leveled Strength and Cure Potions (and their Greater versions) showing up under "Other" in the Omega Cache instead of "Potions."
 
 ---
 
@@ -67,6 +100,14 @@ Welcome to **Patch 1.0.8**. This update focuses on **player-run town administrat
 
 ---
 
+## Performance
+
+### Player Impact
+
+- Fixed two commands (`.go` and the developer house/boat locator tools) that were heavy enough to occasionally trip the server's runaway-script safeguard — no player-facing behavior change, just faster and lighter on the server.
+
+---
+
 ## Staff and Support Tools
 
 ### Player Impact
@@ -88,11 +129,16 @@ Welcome to **Patch 1.0.8**. This update focuses on **player-run town administrat
 ## Summary
 
 - Townstone status and membership handling were expanded.
+- A town-suffix name-collision exploit was closed, and several related naming bugs were fixed.
+- House placement now respects city, dungeon, shrine, and graveyard boundaries.
 - Lord British Castle and Blackthornes area boundaries were corrected.
+- The smithy hammer and smithy retort now correctly use the Omega Cache.
+- A handful of leveled potions were moved into the correct Omega Cache category.
 - Remove Curse now uses a better success formula and valid target filter.
 - Protection effects now last longer.
 - Skill gain handling was retuned for higher-skill edge cases.
 - Town NPCs start wandering immediately after spawning.
+- Two hot commands were made significantly faster.
 - Staff support commands and data generators were refreshed.
 
 Thanks for playing Zuluhotel Omega 2.5.

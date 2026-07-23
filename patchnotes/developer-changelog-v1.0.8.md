@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.8
-**Range:** `9f8189f` (origin/Patch-1.0.7) -> `a3c99f6` (HEAD)  
+**Range:** `9f8189f` (origin/Patch-1.0.7) -> `HEAD` + uncommitted working tree  
 **Branch:** Patch-1.0.8  
-**Date:** 2026-06-20 -> 2026-07-20  
-**Commits in range:** 3 (excluding merge commits)  
-**Files changed:** 40 | +10208 / -1253
+**Date:** 2026-06-20 -> 2026-07-23  
+**Commits in range:** 7 (excluding merge commits), plus uncommitted working-tree changes  
+**Files changed:** 48 committed (+10477 / -1316), plus 5 files with uncommitted changes (+343 / -237)
 
 ---
 
@@ -12,31 +12,35 @@
 1. [Scope Summary](#1-scope-summary)
 2. [Commit Timeline](#2-commit-timeline)
 3. [Townstones - Player-Run Town Administration and Membership Cleanup](#3-townstones---player-run-town-administration-and-membership-cleanup)
-4. [Areas - Policy Engine Rewrite and Castle Boundary Fixes](#4-areas---policy-engine-rewrite-and-castle-boundary-fixes)
+4. [Areas - Policy Engine Rewrite, Realm Sanitization, and Mask-Value Cache](#4-areas---policy-engine-rewrite-realm-sanitization-and-mask-value-cache)
 5. [Go Locations - Indexed Config Generation and Range Fallback](#5-go-locations---indexed-config-generation-and-range-fallback)
 6. [Spawnpoint - Restart Helpers and Region-Wide Reset Commands](#6-spawnpoint---restart-helpers-and-region-wide-reset-commands)
-7. [Gameplay Tuning and Script Fixes](#7-gameplay-tuning-and-script-fixes)
-8. [Support Data and Tooling](#8-support-data-and-tooling)
-9. [Exhaustive File-by-File Change List](#9-exhaustive-file-by-file-change-list)
-10. [Risk and Regression Notes](#10-risk-and-regression-notes)
+7. [Housing - Region-Based Placement Restrictions](#7-housing---region-based-placement-restrictions)
+8. [Naming and Identity - Town-Suffix Exploit Closure and Validation Hardening](#8-naming-and-identity---town-suffix-exploit-closure-and-validation-hardening)
+9. [Performance - Shutdown Time and Hot-Path Algorithm Fixes](#9-performance---shutdown-time-and-hot-path-algorithm-fixes)
+10. [Crafting - Omega Cache Integration Fixes](#10-crafting---omega-cache-integration-fixes)
+11. [Omega Cache - Potion Categorization Fix](#11-omega-cache---potion-categorization-fix)
+12. [Gameplay Tuning and Script Fixes](#12-gameplay-tuning-and-script-fixes)
+13. [Support Data and Tooling](#13-support-data-and-tooling)
+14. [Exhaustive File-by-File Change List](#14-exhaustive-file-by-file-change-list)
+15. [Risk and Regression Notes](#15-risk-and-regression-notes)
 
 ---
 
 ## 1. Scope Summary
 
-Patch 1.0.8 is dominated by three big surfaces:
+Patch 1.0.8 grew across two work windows. The first (through `a3c99f6`) was dominated by the datafile-backed area policy rewrite, the go-location indexing pass, and the player-run townstone/admin cleanup — see sections 3, 5, and 6 for that material, carried forward unchanged from the earlier draft of this document.
 
-- a datafile-backed area policy rewrite with cache and invalidation support,
-- a go-location indexing pass driven by a generated `golocs_by_id.cfg`,
-- and a substantial player-run townstone/admin cleanup pass with better persistence and membership handling.
+The second window (`7bdc099` through the current uncommitted state) closed a live-reported name-collision exploit, fixed a duplicate-character bug it was related to, added region-based house placement restrictions, fixed a real performance regression in the areas package and in two hot commands, and completed Omega Cache integration for two crafting scripts that had been missed or left broken during the original cache rollout:
 
-It also includes spawnpoint restart tooling, new staff test commands, and gameplay tuning in the remove-curse, protection, and skill-gain paths.
-
-Large insertion volume comes mostly from generated and expanded data assets:
-
-- `regions/regions.cfg` was expanded heavily to carry the metadata needed for the new go-location index.
-- `config/golocs_by_id.cfg` was generated as the new indexed source used by `.go` and spawnpoint region selection.
-- `pkg/opt/areas/include/areapolicy.inc` is a new policy resolver layer with cache and persistence helpers.
+- A town-suffix name-collision exploit was closed: players could no longer hold both "X" and "X of Town" at once, town names are now blocked in freely-chosen names, and name comparisons are case-insensitive.
+- A live 50-second rename-gump hang, and a resulting duplicate-character bug ("two Paladin Rahl of Occlo"), were root-caused to an O(accounts x 5) full `regions.cfg` re-parse per name check, and fixed with a proper cache.
+- Staff rename paths (`.setprop name`, `.setname`, `.info`'s rename button) now run through the same name validation as player-initiated renames, scoped to player characters only.
+- House placement now blocks city, dungeon, shrine, and graveyard regions by footprint (not just a single point check), replacing an older, narrower check.
+- The area-policy mask lookup (`GetPolicyMask`) is now cached; it was previously hitting the datafile subsystem on every single area-policy check, including every AI tick for every mobile shard-wide.
+- Two independent O(n^2) algorithms (`.go`'s location-reorder pass, and a shared multi-array sort used by `.gotomulti`/`.gotoboat`) were replaced with linear/O(n log n) equivalents after script-log evidence showed both tripping the runaway-script watchdog.
+- The smithy hammer's Omega Cache targeting path was found to be dead code due to a bad merge and was rewritten to match every other crafting script's pattern; the crafter-boost smithy retort had never been integrated with the cache at all and now is.
+- A gap in the Omega Cache's category map left 12 leveled potion objtypes (Greater Strength/Cure Potion tiers, etc.) falling into the "Other" bucket instead of "Potions."
 
 ---
 
@@ -47,6 +51,11 @@ Large insertion volume comes mostly from generated and expanded data assets:
 | `32a2b3a` | 2026-06-20 | backup script path restore |
 | `dbfbe79` | 2026-07-20 | Areas fix for lord british castle and blackthornes |
 | `a3c99f6` | 2026-07-20 | Bunch of patches for player run towns |
+| `7bdc099` | 2026-07-20 | Patch Notes and save datafile error |
+| `065ed28` | 2026-07-20 | House placement not allowed in cities |
+| `21bb91e` | 2026-07-23 | Name Change update |
+| `09bf876` | 2026-07-23 | Areas Fix, and naming fixes |
+| *(uncommitted)* | 2026-07-23 | Blacksmithy/crafter-boost Omega Cache fixes, potion categorization fix, `.go`/sort-helper performance fixes |
 
 ---
 
@@ -84,13 +93,13 @@ Large insertion volume comes mostly from generated and expanded data assets:
 
 ---
 
-## 4. Areas - Policy Engine Rewrite and Castle Boundary Fixes
+## 4. Areas - Policy Engine Rewrite, Realm Sanitization, and Mask-Value Cache
 
 ### Files Changed
 
 | File | Change |
 |------|--------|
-| `pkg/opt/areas/include/areapolicy.inc` | New datafile-backed policy engine, parsed-line cache, global bypass masks, and prune and invalidate helpers |
+| `pkg/opt/areas/include/areapolicy.inc` | New datafile-backed policy engine, parsed-line cache, global bypass masks, realm-name sanitization, and a mask-value cache |
 | `pkg/opt/areas/include/areapolicy.inc.bak` | Backup copy of the pre-rewrite policy implementation |
 | `pkg/opt/areas/textcmd/admin/areas.src` | Rewritten `.areas` admin gump for viewing and toggling area policy flags |
 | `pkg/opt/areas/EnterAreaDelay.src` | Updated to use the new policy resolver path |
@@ -104,12 +113,14 @@ Large insertion volume comes mostly from generated and expanded data assets:
 
 - The area policy layer now lives in a dedicated resolver backed by per-realm datafiles:
   - masks are stored per area id,
-  - a world-catchall bypass mask is OR-merged from known global ids,
+  - a world-catchall bypass mask is OR-merged from known global ids (`feluccawholeworld`, `wholeworld`, `britannia`, `trammelwholeworld`) — confirmed still a one-directional OR merge, so a whole-realm flag (e.g. setting Felucca or Britannia to RP) can force a policy bit on everywhere in that realm, but an individual area still can't opt back out of it since OR can't clear a bit,
   - parsed area lines are cached both per program and in a global property,
   - cache invalidation is fingerprinted by source line count.
 - The admin `.areas` workflow now works as a single gump-driven editor for common policy flags such as guarded, no recall, no marking, anti-magic, forbidden, no looting, safe-area, no-PK, and RP-area behavior.
 - `areas.cfg` includes the specific Lord British Castle and Lord Blackthornes Castle boundary fix from `dbfbe79`.
 - The hot-path area checks now resolve through the new policy layer instead of repeatedly re-parsing config lines.
+- **Realm-name sanitization (`7bdc099`):** every realm-taking function in `areapolicy.inc` (`GetRealmAreaLines`, `GetParsedRealmAreaLines`, `ResolveAreaMatchAtLocation`, `ResolvePolicyAtLocation`, `GetGlobalBypassMask`, `GetRealmPolicyDescriptor`) previously did a bare `Lower(CStr(realm))`. A new `SanitizePolicyRealm(realm)` now falls back to `"britannia"` whenever the incoming realm is blank or the literal string `"<uninitialized object>"`, fixing a datafile-save error that occurred when a realm value hadn't been initialized yet.
+- **Mask-value cache (`09bf876`):** `GetPolicyMask(realm, area_id)` was hitting the datafile subsystem (`OpenDataFile` + `FindElement` + `GetProp`) on every single area-policy check, and `GetGlobalBypassMask()` calls it 4 more times per resolve for the world-catchall ids — up to 5 datafile round trips per check, on every AI tick for every mobile shard-wide. `GetPolicyMask` is now backed by a per-realm `dictionary` (`area_id -> mask`), cached both per-program and in a `GlobalProperty` (`zh.areapolicy.maskcache.<realm>`), using `.Exists()` rather than truthiness so a cached mask of `0` (the common case) isn't mistaken for "not cached." The cache is invalidated precisely on `SetPolicyMask()` writes (single area id) and wholesale on `PruneStaleRealmPolicies()` (whole-realm bulk delete). This mirrors the existing parsed-line cache and was verified against the ZH3.0 sibling repo's simpler (no world-catchall) implementation for reference before implementing.
 
 ---
 
@@ -133,7 +144,7 @@ Large insertion volume comes mostly from generated and expanded data assets:
   - the center point of the configured `Range`.
 - A `dnp` `GoLoc` value is treated as an intentional skip.
 - `0,0,0` explicit coordinates are treated as a placeholder and are replaced from the range center when possible.
-- Location ordering is normalized by type (`Jail`, `City`, `Shrine`, `Graveyard`, `Dungeon`, `POI`, `None`) before any leftover entries are appended.
+- Location ordering is normalized by type (`Jail`, `City`, `Shrine`, `Graveyard`, `Dungeon`, `POI`, `None`) before any leftover entries are appended. See section 9 for the algorithmic rewrite of this ordering pass.
 - The generator script exists so the index can be rebuilt from `regions.cfg` instead of hand-maintaining the go list.
 
 ---
@@ -164,7 +175,113 @@ Large insertion volume comes mostly from generated and expanded data assets:
 
 ---
 
-## 7. Gameplay Tuning and Script Fixes
+## 7. Housing - Region-Based Placement Restrictions
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `pkg/std/housing/housedeed.src` | House placement now checked against region types by footprint; dungeon/system-teleporter proximity check extracted into a helper |
+
+### Notable Functional Changes
+
+- Replaced the old single-tile `CheckCity(character)==1` check (which only tested the placing character's own location) with `IsHousePlacementBlockedByRegionType(housetype, where, region_type)`, called once each for `"city"`, `"dungeon"`, `"shrine"`, and `"graveyard"`. This computes the house's full footprint via `GetHouseFootprintBounds(housetype, x, y)` (multi dimensions applied to the placement point) and rejects placement if that footprint overlaps any `regions.cfg` region of the matching `Type`, scoped to the placing character's realm.
+- `NormalizeRegionType(region_type)` lowercases and validates the region-type string used for comparison against `regions.cfg`'s `Type` field.
+- The old inline dungeon-item / system-teleporter proximity checks (`ListObjectsInBox` scans for objtype `0xa3c8` and `0x6200`) were extracted into `IsHousePlacementBlockedByNearbySpecialObjects(where)`, which returns the rejection message directly instead of duplicating the `ListObjectsInBox` scan and message send inline.
+- Staff (`character.cmdlevel >= 4`) are unaffected — all of the above is still gated behind the existing `if (character.cmdlevel < 4)` check.
+
+---
+
+## 8. Naming and Identity - Town-Suffix Exploit Closure and Validation Hardening
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `scripts/include/NameChecker.inc` | Town-suffix-aware duplicate detection, case-insensitive comparison, whitespace normalization, bad-spacing rejection, and caching |
+| `pkg/opt/townstones/tstone.src` | `Citizenship()`/`CanselCityzenship()` now duplicate-check before applying a town-suffixed or stripped name |
+| `scripts/misc/namechanger.src` | Passes `force_town_check := 1`; added "bad spacing" error message |
+| `scripts/misc/oncreate.src` | Passes `force_town_check := 1` |
+| `scripts/textcmd/admin/setname.src` | `.setname` now runs through `CheckName`, scoped to player characters only |
+| `scripts/textcmd/gm/setprop.src` | `.setprop name` now runs through `CheckName`, scoped to player characters only |
+| `scripts/textcmd/seer/info.src` | `.info`'s rename button now runs through `CheckName`, scoped to player characters only |
+
+### Background
+
+A live exploit was reported: a player could join a town as "X" (becoming "X of Town"), create a second character also named "X" on an alt, then leave the town (reverting the first character to bare "X"), ending up holding both "X" and "X of Town" simultaneously — and bypass case-sensitivity to also claim near-duplicates like "Bop"/"bop"/"BOP". Investigating this also surfaced a live duplicate-character bug (two characters both named "Paladin Rahl of Occlo") and a report of a ~50 second hang with stacked rename gumps after a related fix — both root-caused and fixed here.
+
+### Notable Functional Changes
+
+- **`GetKnownTownNames()`** — replaces the old static `bLTowns`-only blacklist scan with a merged list from three sources: the static `bLTowns` fallback, every `City=1` region in `regions.cfg` (covers player-run townstone regions), and `GetGlobalProperty("townlist")` (covers a townstone whose region entry was later removed). Cached per-program and in a `GlobalProperty` (`zh.namechecker.knowntownnames`); `InvalidateKnownTownNamesCache()` is exposed but not yet wired to any call site (regions.cfg is effectively static at runtime today).
+- **`StripTownSuffix(name, town_names := 0)`** — strips a trailing `" of <Town>"` for any known town so name-uniqueness comparisons treat `"a pig"` and `"a pig of Trinsic"` as the same identity, closing the join/leave/alt exploit above. Accepts an optional pre-fetched `town_names` list to avoid recomputing it in a loop.
+- **`NormalizeNameForCompare(name)`** — lowercases, collapses runs of interior spaces to one, and trims leading/trailing spaces before comparison.
+- **`IsNameTaken(candidate_name, exclude_serial := 0)`** — scans up to 5 character slots per account, comparing `NormalizeNameForCompare(StripTownSuffix(name, town_names))`, case-insensitively, excluding `exclude_serial`. Replaces the old exact-string, case-sensitive comparison in `CheckName` (which never caught `"Bop"` vs `"bop"`).
+- **`CheckName(name, who := 0, force_town_check := 0)`** — new `force_town_check` parameter: pass `1` whenever the player is actively choosing a brand-new name (character creation, the rename gump, staff rename tools) so town names are always blocked regardless of the player's current town membership; login/reconnect revalidation of an already-assigned, legitimately town-suffixed name leaves this `0`. Also added an unconditional bad-spacing rejection (`name[1] == " " || name[len(name)] == " " || find(name, "  ", 0)`) — leading/trailing/doubled spaces were technically "legal characters" under the old per-character validation loop, but let a base name like `"Rahl "` silently become `"Rahl  of Town"` once a town suffix was appended, evading exact-match duplicate detection. This check is unconditional (not gated by `force_town_check`), so it also self-heals an already-malformed stored name on next login revalidation — this is exactly how the shard's one existing malformed record (`"Paladin Rahl  of Occlo"`, confirmed via `data/pcs.txt` to be the only such record shard-wide) will get caught and forced through a rename.
+- **`pkg/opt/townstones/tstone.src`**: `Citizenship(who, item)` now computes the candidate town-suffixed name and calls `IsNameTaken()` before any state mutation, aborting with a message if the resulting name is already in use, rather than mutating town membership and then blindly assigning a colliding name. `CanselCityzenship(who, item)` (leave-town) computes the stripped base name, and if `IsNameTaken()` finds it colliding, sets the character's name to `"AlreadyUsed"` and force-starts `misc/namechanger` instead of blocking the leave — citizen-list removal, population decrement, and the `town` property erasure all still proceed unconditionally, so the player isn't stuck in town membership limbo while they pick a new name.
+- **Staff rename paths** now validate through the same `CheckName()` path as player-driven renames, all explicitly scoped to player characters (`what.acct` / `targ.acct` / `who.acct` checks) so NPC renaming by staff is untouched:
+  - `.setname` (`scripts/textcmd/admin/setname.src`)
+  - `.setprop name` (`scripts/textcmd/gm/setprop.src`)
+  - `.info`'s rename button (`scripts/textcmd/seer/info.src`)
+- **Performance root cause (the 50-second hang):** the original `IsNameTaken`/`StripTownSuffix` implementation called `GetKnownTownNames()` (a full `regions.cfg` re-parse) on every character-slot comparison. With 5,169 accounts x up to 5 slots, that was ~25,000 redundant full-config re-parses per `CheckName` call — the direct cause of the reported hang and stacked rename gumps. Fixed by hoisting `GetKnownTownNames()` to once per `IsNameTaken`/`CheckName` call (passed through as a parameter) and adding the cache described above.
+
+---
+
+## 9. Performance - Shutdown Time and Hot-Path Algorithm Fixes
+
+### Background
+
+Investigated a live report that "POL Cleanup" during shutdown takes noticeably longer since the areas-to-datafile migration, alongside a slow ~1 hour post-startup CPU stabilization period. `log/script.log` showed the runaway-script watchdog firing on `scripts/textcmd/coun/go.ecl` (3 times) and `pkg/opt/alryc/textcmd/test/gotomulti.ecl` (2 times) — both algorithmic, not areas-related. Note: `log/pol.log` does not capture the console-only cleanup messages, so the runaway scripts are strong circumstantial evidence and worthwhile independent fixes on their own merits, not a proven root cause of the shutdown-time regression specifically (the areas mask-value cache in section 4 is the more directly-implicated fix for that).
+
+### Files Changed (uncommitted)
+
+| File | Change |
+|------|--------|
+| `scripts/textcmd/coun/go.src` | `ReorderLocationsForDisplay()` rewritten from an O(n^2)*8 pass to a single O(n) bucketing pass |
+| `scripts/include/string.inc` | `SortMultiArrayByIndex()` rewritten from an O(n^2) selection sort to an O(n log n) iterative bottom-up merge sort |
+
+### Notable Functional Changes
+
+- **`.go`'s `ReorderLocationsForDisplay()`**: previously called `AppendLocationsByType()` once per type bucket (Jail/City/Shrine/Graveyard/Dungeon/POI/None — 7 passes), each of which rescanned the entire, continuously-growing `ordered` output list via `LocationAlreadyAdded()` for every candidate to dedupe by `Id` or by `Name+X+Y+Z+R` — effectively O(n^2) x 8 passes total (7 typed + 1 final catch-all). With ~200 Britannia go-locations alone, this was heavy enough to trip the runaway-script watchdog. Rewritten as a single O(n) pass: build a `LocationDedupeKey(loc)` (prefers `"id:<Id>"`, falls back to `"xy:<Name>:<X>:<Y>:<Z>:<R>"`), dedupe against a `seen` dictionary once, bucket by `GetLocationTypeLabel()` into a `dictionary` of arrays, then emit known-type buckets in priority order followed by any custom/unrecognized-type entries in original encounter order. Output ordering is unchanged from the old implementation; only the algorithm changed. `AppendLocationsByType()` and `LocationAlreadyAdded()` were removed (confirmed via repo-wide grep that nothing else referenced them).
+- **`SortMultiArrayByIndex(MultiArray, SubIndex)`** (`scripts/include/string.inc`): previously an O(n^2) nested-loop selection sort. Rewritten as an iterative bottom-up merge sort (O(n log n)) via a new `MergeRunsByIndex(MultiArray, low, mid, high, SubIndex)` helper, same ascending-by-`SubIndex` output ordering. This is a shared include used by both `pkg/opt/alryc/textcmd/test/gotomulti.src` (`SortHouseMultisByLastLogin`, sorting up to 418 multi records) and `gotoboat.src` (`SortBoatsByLastLogin`) — fixing it here benefits both call sites without touching either file. The merge-loop write-position variable was originally named `out`, which is a reserved word in EScript/POL; renamed to `write_idx`.
+
+---
+
+## 10. Crafting - Omega Cache Integration Fixes
+
+### Files Changed (uncommitted)
+
+| File | Change |
+|------|--------|
+| `pkg/std/blacksmithy/make_blacksmith_items.src` | `use_hammer` rewritten so Omega Cache targeting is reachable; dead/duplicate legacy code removed |
+| `pkg/opt/crafterboost/make_crafter_boosts.src` | Full Omega Cache integration added (previously backpack-only) |
+
+### Notable Functional Changes
+
+- **Blacksmithy (`make_blacksmith_items.src`)**: `use_hammer` previously performed an unconditional `ReserveItem(use_on)` and an unconditional `IsInContainer(character.backpack, use_on)` check *before* any Omega Cache objtype check — unlike every other cache-integrated crafting script (`alchemy.src`, `tinkering.src`, `carpentry.src`, `make_cloth_items.src`, `cooking.src`, `cartography.src`, `inscription.src`), which all check for the cache objtype first. Since the Omega Cache container is a placed house item, it's never "in your backpack," so targeting the cache directly for a plain ingot craft failed with "That item has to be in your backpack." before ever reaching the cache-handling code lower in the file. The only path that worked was the bone-armor sub-flow (target a bone item from backpack first, then target the cache when prompted for ingots), because that second `Target()` call bypassed the broken top-level check. The file also had two near-duplicate copies of the bone/ingot crafting logic (apparent leftover from a bad merge when cache integration was added), including a fallthrough where "no anvil nearby" would silently retry the same target as a plain ingot craft. Rewrote `use_hammer` to check for the cache objtype first (matching the established pattern across the codebase), and factored the repeated ingot-targeting logic into `ResolveIngotTarget(character)` and the anvil-proximity check into `NearAnvil(character)`.
+- **Crafter boosts (`make_crafter_boosts.src`)**: the smithy retort (crafting Oil/Alloy/Varnish/Compound/Recharge Powder from Brimstone/Bloodspawn/Daemon Bone/Bat Wing/Dragon's Blood plus an ingot, log, hide, or gem) had never been integrated with the Omega Cache — it didn't include `resourcemanager.inc` and used the plain backpack-only `FindSubstance`/`ConsumeSubstance` helpers throughout, so it would simply stop (insufficient-materials path) if a player ran out of the targeted material in their backpack, regardless of whether a nearby cache had more. Added `resourcemanager`/`omegacache_utils` includes and converted both the explicitly-targeted material and the implicit fixed reagent (which the player never targets directly) to `ResourceRequest`s:
+  - The initial target and the Brimstone-combine second target now both check for `OMEGACACHE_OBJTYPE` and route through `SelectMaterialFromCache()`, matching the established pattern.
+  - A new `MakeReagentRequest(who, objtype)` builds a backpack-first, cache-fallback `ResourceRequest` for the fixed reagent (mirrors `MakeBackpackRequest()`, but without needing a physical item reference, since the reagent is never targeted by the player).
+  - `LeaseResource`/`ExtendResourceLease`/`ReleaseResourceLease`/`ConsumeResource`/`GetAvailableResource` now drive both materials through the crafting loop, matching `MakeBlacksmithItems`'s pattern; the loop's early-exit paths (missing empty flask, can't reach it, can't reserve it) now `break` instead of `return`, so `AutoLoop_finish()` always runs.
+  - A small `ObjtypeStruct(objtype)` helper lets the existing item-based `IsIngot`/`IsLog`/`IsGem2` (which only ever read `.objtype` off their argument) be reused against a bare objtype from a cache selection, instead of duplicating their range logic locally.
+  - Scope note: the empty-flask consumption for the Recharge Powder product line remains backpack-only (unchanged) — flasks were out of scope for this fix.
+
+---
+
+## 11. Omega Cache - Potion Categorization Fix
+
+### Files Changed (uncommitted)
+
+| File | Change |
+|------|--------|
+| `pkg/opt/omegacache/categories.cfg` | Added 12 missing leveled-potion objtypes to the `Potions` category |
+
+### Notable Functional Changes
+
+- `categories.cfg`'s `Potions` category had two adjacent documented ranges — "Mage-class potion variants (0xFF19-0xFF3F)" ending at `0xFF40`, and "AlchemyPlus potions (0xFF4E-0xFF95, 0xFFA2)" starting at `0xFF4E` — with a gap at `0xFF41`-`0xFF4D` that neither range covered. That gap is exactly where `pkg/std/alchemy/itemdesc.cfg`'s leveled potion tiers live: Strength Potion [Level 2] (`0xFF41`), Greater Strength Potion [Level 1-3] (`0xFF42`-`0xFF44`), Cure Potion [Level 1-3] (`0xFF45`-`0xFF47`), and Greater Cure Potion [Level 1-5] (`0xFF48`-`0xFF4C`). Since `BuildCategoryMap()` in `omegacache.inc` defaults any unmatched objtype straight to `"Other"`, these 12 potions were showing up in the wrong category bucket in the cache UI. Added all 12 objtypes to the `Potions` category, closing the gap. Confirmed via a full cross-reference of `pkg/std/alchemy/itemdesc.cfg` against `categories.cfg` that no other alchemy objtypes have a similar gap. Cosmetic UI-grouping fix only — no gameplay value changes.
+
+---
+
+## 12. Gameplay Tuning and Script Fixes
 
 ### Files Changed
 
@@ -181,6 +298,7 @@ Large insertion volume comes mostly from generated and expanded data assets:
 | `scripts/ai/setup/criersetup.inc` | Crier setup now guards missing config more safely and defaults the flee point cleanly |
 | `scripts/ai/townperson.src` | Town NPC startup now begins wandering immediately after spawn |
 | `scripts/ai/townsfolk.inc` | Townfolk helper updated to stay aligned with the new spawn and movement behavior |
+| `scripts/EquipTemplateValidation.src` | Boot-time equip-config validator deduplicated: removed a dead `else` branch, extracted a shared `ValidateEquipEntries()` used across Armor/Weapon/Equip instead of three near-identical inline blocks |
 
 ### Notable Functional Changes
 
@@ -192,10 +310,11 @@ Large insertion volume comes mostly from generated and expanded data assets:
 - The speech hook fix keeps staff speech logging working even when the packet contains Unicode speech data.
 - Town NPCs no longer sit idle right after spawn; they start their wander cycle immediately.
 - Crier setup became more defensive around missing NPC config entries.
+- `EquipTemplateValidation.src` is a one-shot boot-time validator (~1,279 entries) — the cleanup is a code-quality/maintenance change, not a meaningful perf contributor on its own.
 
 ---
 
-## 8. Support Data and Tooling
+## 13. Support Data and Tooling
 
 ### Files Changed
 
@@ -217,9 +336,9 @@ Large insertion volume comes mostly from generated and expanded data assets:
 
 ---
 
-## 9. Exhaustive File-by-File Change List
+## 14. Exhaustive File-by-File Change List
 
-All files changed in `Patch-1.0.7..Patch-1.0.8`:
+All files changed in `Patch-1.0.7..HEAD`, plus current uncommitted working-tree changes:
 
 | File | Notes |
 |------|-------|
@@ -236,10 +355,12 @@ All files changed in `Patch-1.0.7..Patch-1.0.8`:
 | `pkg/opt/areas/LeaveArea.src` | Switched to the new area-policy resolution flow |
 | `pkg/opt/areas/areaban.src` | Updated for the new area-policy path |
 | `pkg/opt/areas/areas.cfg` | Area policy and region data refresh, including castle fixes |
-| `pkg/opt/areas/include/areapolicy.inc` | New policy resolver and cache layer |
+| `pkg/opt/areas/include/areapolicy.inc` | Policy resolver/cache layer, plus realm sanitization and mask-value cache |
 | `pkg/opt/areas/include/areapolicy.inc.bak` | Backup of the pre-rewrite policy layer |
 | `pkg/opt/areas/textcmd/admin/areas.src` | Rewritten area policy admin gump and flag editor |
+| `pkg/opt/crafterboost/make_crafter_boosts.src` | *(uncommitted)* Full Omega Cache integration added |
 | `pkg/opt/holybook/removecurse.src` | Revised Remove Curse chance logic |
+| `pkg/opt/omegacache/categories.cfg` | *(uncommitted)* 12 leveled-potion objtypes added to the Potions category |
 | `pkg/opt/shilhook/shilhook.src` | Skill gain and difficulty refactor |
 | `pkg/opt/spawnpoint/config/groups.cfg` | Spawnpoint group config update |
 | `pkg/opt/spawnpoint/include/restartspawnpoint.inc` | Shared spawnpoint restart helper |
@@ -249,25 +370,41 @@ All files changed in `Patch-1.0.7..Patch-1.0.8`:
 | `pkg/opt/townstones/textcmd/admin/createtownstone.src` | Creation workflow tightened and state restoration added |
 | `pkg/opt/townstones/textcmd/admin/removetownmember.src` | New town member removal command |
 | `pkg/opt/townstones/textcmd/admin/townbankstatus.src` | Major town status, member management, and runtime state expansion |
+| `pkg/opt/townstones/tstone.src` | `Citizenship`/`CanselCityzenship` now duplicate-check before mutating a name |
 | `pkg/packethooks/speech/receivespeechhook.src` | Unicode speech packet decode fix |
+| `pkg/std/blacksmithy/make_blacksmith_items.src` | *(uncommitted)* Omega Cache targeting fixed, dead code removed |
+| `pkg/std/housing/housedeed.src` | Region-based city/dungeon/shrine/graveyard placement restrictions |
 | `pkg/std/treasuremap/treasure.cfg` | One treasure location adjusted |
 | `pol.cfg` | Profiling and sysload watchers enabled |
 | `pythonscripts/generate_golocs_by_id.py` | New generator for indexed go-location config |
 | `regions/regions.cfg` | Large region metadata expansion and normalization |
+| `scripts/EquipTemplateValidation.src` | Dead branch removed, shared validation helper extracted |
 | `scripts/ai/noble.src` | Nobles now wander immediately after spawn |
 | `scripts/ai/person.src` | Townsfolk now wander immediately after spawn |
 | `scripts/ai/setup/criersetup.inc` | Safer crier config handling |
 | `scripts/ai/townperson.src` | Town NPCs now wander immediately after spawn |
+| `scripts/include/NameChecker.inc` | Town-suffix exploit closure, case-insensitive dedupe, bad-spacing rejection, caching |
 | `scripts/include/anchors.inc` | Anchor and lookup helpers updated for new area behavior |
 | `scripts/include/areas.inc` | Area helper rewrite to match the new policy layer |
+| `scripts/include/string.inc` | *(uncommitted)* `SortMultiArrayByIndex` rewritten to O(n log n) merge sort |
 | `scripts/include/townsfolk.inc` | Townfolk helper alignment update |
-| `scripts/textcmd/coun/go.src` | `.go` rebuilt around indexed go locations and range fallback |
+| `scripts/misc/namechanger.src` | `force_town_check := 1`, "bad spacing" error message |
+| `scripts/misc/oncreate.src` | `force_town_check := 1` |
+| `scripts/textcmd/admin/setname.src` | Now runs through `CheckName`, PC-scoped |
+| `scripts/textcmd/coun/go.src` | *(uncommitted)* `ReorderLocationsForDisplay` rewritten to O(n); `.go` also rebuilt around indexed go locations and range fallback (earlier in the patch) |
+| `scripts/textcmd/gm/setprop.src` | `.setprop name` now runs through `CheckName`, PC-scoped |
+| `scripts/textcmd/seer/info.src` | Rename button now runs through `CheckName`, PC-scoped |
 
 ---
 
-## 10. Risk and Regression Notes
+## 15. Risk and Regression Notes
 
 1. `regions/regions.cfg` and `config/golocs_by_id.cfg` are now tightly coupled. Any future region edit should regenerate the go-location index rather than hand-editing the generated file.
-2. The new area policy cache uses global properties and a line-count fingerprint. If `areas.cfg` changes shape, cache invalidation needs to remain intact or stale policy data can persist.
+2. The area-policy caches (parsed-line cache and the new mask-value cache) use global properties and, for the parsed-line cache, a line-count fingerprint. If `areas.cfg` changes shape, cache invalidation needs to remain intact or stale policy data can persist. The mask-value cache is invalidated precisely on `SetPolicyMask`/`PruneStaleRealmPolicies` writes, so it should stay correct as long as no other code path writes the `AREA_POLICY_MASK_PROP` datafile property directly.
 3. Town member removal now touches citizen lists, population, and election or poll state. That makes the new cleanup path more complete, but it also raises the importance of testing member removal against live stones and offline accounts.
 4. `RestartSpawnPointWithMode(...)` can checkpoint repeatedly during max-fill mode. That is intentional, but it means the new region-wide restart command should still be treated as a staff maintenance tool rather than a routine hot command.
+5. `GetKnownTownNames()`'s cache has no automatic invalidation wired to `createtownstone`/region edits yet — a brand-new town's name won't be recognized as a "town name" for the free-name-choice block, nor will its residents' suffixes be stripped for dedupe purposes, until `InvalidateKnownTownNamesCache()` is called or the server restarts. Low practical risk today since new town creation is infrequent and staff-driven, but worth wiring up if that becomes a live pain point.
+6. The town-suffix duplicate-name fixes and the house-placement region checks are both new *rejection* paths in previously-permissive flows — worth a live smoke test on a known player-run town (join/leave/rename) and a known city-adjacent building parcel before this goes fully live, since both change behavior at the boundary rather than just internals.
+7. The blacksmithy and crafter-boost Omega Cache fixes change previously-broken or entirely-missing behavior into working behavior — this is a net-new capability for players (the failure mode was "doesn't work," not "we're removing something"), but should still get a quick live test: hammer-to-cache targeting for a plain ingot craft, bone-armor dual-material with the cache as either material, and a crafter-boost upgrade with the target material sourced from a cache.
+8. The `.go` and shared-sort algorithmic rewrites are drop-in replacements with verified-identical output ordering (hand-traced on a small example for the merge sort; the `.go` reorder was verified against its old semantics directly). Risk is low, but both are hot, frequently-run staff commands, so a live spot check (a `.go` menu with a large realm, and `.gotomulti`/`.gotoboat` with the current multi/boat counts) is still worthwhile.
+9. The potion-categorization fix is UI-only (Omega Cache category grouping) and carries no gameplay risk.

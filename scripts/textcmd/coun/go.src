@@ -185,47 +185,74 @@ function SelectDestinationGump( who, locs )
   return GFSendGump(who, gump);
 endfunction
 
+// Groups locs by type in priority order (Jail/City/Shrine/Graveyard/Dungeon/
+// POI/None), then appends anything with a custom/unrecognized RegionType
+// label last - same output as before, but a single O(n) pass instead of the
+// old 8-pass approach that re-scanned the growing "ordered" list for every
+// entry (O(n^2)*8). With ~200 go-locations just for Britannia, that old
+// version was heavy enough to occasionally trip the runaway-script watchdog.
 function ReorderLocationsForDisplay( locs )
+  var type_priority := {"Jail", "City", "Shrine", "Graveyard", "Dungeon", "POI", "None"};
+  var known_types := dictionary;
+  foreach wanted_type in type_priority
+    known_types.Insert(wanted_type, 1);
+  endforeach
+
+  // Single pass: dedupe (same Id, or same Name+X+Y+Z+R) and bucket by type.
+  var type_buckets := dictionary;
+  var seen := dictionary;
+
+  foreach entry in locs
+    var dedupe_key := LocationDedupeKey(entry);
+    if (seen.Exists(dedupe_key))
+      continue;
+    endif
+    seen.Insert(dedupe_key, 1);
+
+    var label := GetLocationTypeLabel(entry);
+    var bucket := type_buckets[label];
+    if (!bucket)
+      bucket := {};
+    endif
+    bucket.append(entry);
+    type_buckets[label] := bucket;
+  endforeach
+
   var ordered := {};
 
-  ordered := AppendLocationsByType(ordered, locs, "Jail");
-  ordered := AppendLocationsByType(ordered, locs, "City");
-  ordered := AppendLocationsByType(ordered, locs, "Shrine");
-  ordered := AppendLocationsByType(ordered, locs, "Graveyard");
-  ordered := AppendLocationsByType(ordered, locs, "Dungeon");
-  ordered := AppendLocationsByType(ordered, locs, "POI");
-  ordered := AppendLocationsByType(ordered, locs, "None");
-
-  foreach entry in locs
-    if(!LocationAlreadyAdded(ordered, entry))
-      ordered.append(entry);
+  // Known types first, in priority order, each bucket in original encounter order.
+  foreach wanted_type in type_priority
+    var bucket := type_buckets[wanted_type];
+    if (bucket)
+      foreach entry in bucket
+        ordered.append(entry);
+      endforeach
     endif
   endforeach
 
-  return ordered;
-endfunction
-
-function AppendLocationsByType( ordered, locs, wanted_type )
+  // Anything with a custom RegionType label goes last. Re-walk locs (still
+  // O(n)) rather than flatten type_buckets directly, since dictionary key
+  // order isn't guaranteed to match original encounter order.
+  var emitted := dictionary;
   foreach entry in locs
-    if(GetLocationTypeLabel(entry) == wanted_type && !LocationAlreadyAdded(ordered, entry))
-      ordered.append(entry);
-    endif
-  endforeach
-
-  return ordered;
-endfunction
-
-function LocationAlreadyAdded( ordered, candidate )
-  foreach entry in ordered
-    if(entry.Id && candidate.Id)
-      if(entry.Id == candidate.Id)
-        return 1;
+    var label := GetLocationTypeLabel(entry);
+    if (!known_types.Exists(label))
+      var dedupe_key := LocationDedupeKey(entry);
+      if (seen.Exists(dedupe_key) && !emitted.Exists(dedupe_key))
+        ordered.append(entry);
+        emitted.Insert(dedupe_key, 1);
       endif
-    elseif(entry.Name == candidate.Name && entry.X == candidate.X && entry.Y == candidate.Y && entry.Z == candidate.Z && entry.R == candidate.R)
-      return 1;
     endif
   endforeach
-  return 0;
+
+  return ordered;
+endfunction
+
+function LocationDedupeKey( loc )
+  if (loc.Id)
+    return "id:" + CStr(loc.Id);
+  endif
+  return "xy:" + CStr(loc.Name) + ":" + CStr(loc.X) + ":" + CStr(loc.Y) + ":" + CStr(loc.Z) + ":" + CStr(loc.R);
 endfunction
 
 function GetLocationTypeLabel( loc )
