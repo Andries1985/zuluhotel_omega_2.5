@@ -13,6 +13,7 @@ include "include/findcity";
 include ":gumps:gumps_ex";
 include ":gumps:yesno";
 include "include/constants/locations";
+include ":admin:include/adminpanel";
 
 var layout := {
 "page 0",
@@ -327,6 +328,7 @@ program textcmd_testgump( who )
 		endfor
 
 		acc.setprop( "Notes" , note );
+		RecordAccountNote( acc, note, ADMINPANEL_INITIATOR_STAFF );
 
 		return;
 
@@ -484,6 +486,7 @@ var abv:=getobjproperty(who,"abv"),result:=find(who.name," ["+abv+"]",1),name:=w
 
 result:=result-1;
 name:=name[1,result];
+RecordCharacterNameChange(who,name,ADMINPANEL_INITIATOR_STAFF);
 who.name:=name;
 endfunction
 

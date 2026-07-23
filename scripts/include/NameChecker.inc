@@ -241,3 +241,19 @@ endif
 return 1;
 
 endfunction
+
+// Human-readable explanation for a CheckName() failure reason code (the
+// [2] element of its returned {0, reason} array), so callers can tell staff
+// WHY a name was rejected instead of a single generic "invalid" message that
+// makes every rejection look like a duplicate-name hit.
+function NameCheckFailureReason(reason_code)
+	case (reason_code)
+		"too long":    return "it is longer than "+MAX_LENGTH+" characters";
+		"too short":   return "it is shorter than "+MIN_LENGTH+" characters";
+		"bad spacing": return "it starts/ends with a space, or contains a double space";
+		"blacklist":   return "it contains a reserved/blacklisted word";
+		"bLTowns":     return "it contains a town name";
+		"duplicate":   return "another character already has that name";
+		default:       return "it failed name validation";
+	endcase
+endfunction

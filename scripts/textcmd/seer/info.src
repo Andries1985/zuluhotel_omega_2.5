@@ -18,6 +18,7 @@ include ":gumps:yesno";
 include ":gumps:gumps_ex";
 include "include/math";
 include ":staff:include/staff";
+include ":admin:include/adminpanel";
 include "include/constants/locations";
 include "include/NameChecker";
 
@@ -772,12 +773,17 @@ program textcmd_info( character , whom )
   if (result[0]==24) // rename
 
     newname := RequestInput( character, character.backpack, "Enter a new name:");
+    var name_check := 1;
+    if (who.acct)
+      name_check := CheckName(newname, who, 1);
+    endif
 
     if (!newname)
       SendSysMessage(character, "Canceled.");
-    elseif (who.acct && CheckName(newname, who, 1) != 1)
-      SendSysMessage(character, "That name is invalid or already in use.");
+    elseif (name_check != 1)
+      SendSysMessage(character, "That name was rejected because "+NameCheckFailureReason(name_check[2])+".");
     else
+      RecordCharacterNameChange( who , newname, ADMINPANEL_INITIATOR_STAFF );
       SetName( who , newname );
       SendSysMessage(who, "Your name has been changed.");
       LogCommand(character, GetProcess(GetPid()).name, who.name+"/"+who.serial, "Name Change: "+newname);
@@ -943,6 +949,7 @@ program textcmd_info( character , whom )
 
   if(note)
     acc.setprop("Notes", note);
+    RecordAccountNote(acc, note, ADMINPANEL_INITIATOR_STAFF);
   endif
   LogCommand(character, GetProcess(GetPid()).name, who.name+"/"+who.serial, "Set Note: "+note);
   return;
@@ -1102,6 +1109,7 @@ function fixnameguild(who)
 
   result:=result-1;
   name:=name[1,result];
+  RecordCharacterNameChange(who,name,ADMINPANEL_INITIATOR_STAFF);
   who.name:=name;
 endfunction
 

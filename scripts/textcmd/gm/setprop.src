@@ -10,6 +10,7 @@ use os;
 
 include ":staff:include/staff";
 include "include/NameChecker";
+include ":admin:include/adminpanel";
 
 program SetProp(who, text)
 
@@ -30,6 +31,7 @@ if (text.size() > 1)
 	foreach thing in text
 		pval := pval+thing+" ";
 	endforeach
+	pval := pval[1, len(pval)-1];
 else
 	pval := text[1];
 endif
@@ -65,9 +67,10 @@ endif
 if (Lower(pname) == "name" && targ.isa(POLCLASS_MOBILE) && targ.acct)
 	var name_check := CheckName(pval, targ, 1);
 	if (name_check != 1)
-		SendSysMessage(who, "That name is invalid or already in use - cannot set it on a player character.", 3, 33);
+		SendSysMessage(who, "Cannot set that name - "+NameCheckFailureReason(name_check[2])+".", 3, 33);
 		return 0;
 	endif
+	RecordCharacterNameChange(targ, pval, ADMINPANEL_INITIATOR_STAFF);
 endif
 
 // First part of the message

@@ -3,6 +3,7 @@ use uo;
 
 include ":staff:include/staff";
 include "include/client";
+include ":admin:include/adminpanel";
 
 program changename( who  )
 	SendSysMessage( who , "Who do you want to give a name change?", FONT_NORMAL, 2601 );
@@ -23,6 +24,7 @@ program changename( who  )
 
 	if(newname)
 		SetObjProperty(targ, "OldName", oldname);
+		RecordCharacterNameChange(targ, Cstr(newname), ADMINPANEL_INITIATOR_STAFF);
 		targ.name := Cstr(newname);
 		PrintTextAbove(targ, "I was known as "+oldname+" and now I'm now known as "+newname);
 	else
