@@ -50,7 +50,7 @@ program oncreate(who,skillids)
     SetObjProperty(who, "BeardColour", CInt((GetEquipmentByLayer(who, LAYER_BEARD).color)));
 	
     // Name Check
-    var check := CheckName(who.name,who);
+    var check := CheckName(who.name,who,1);
     if (check[1] == 0 || check != 1)
 		who.name := "AlreadyUsed";
 	    start_script("misc/namechanger", {who, check[2]}); 

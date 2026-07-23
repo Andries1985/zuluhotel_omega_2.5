@@ -52,7 +52,7 @@ var data:= GFSendGump(who, gump);
 
 var newname := GFExtractData(data, 5);
 
-var valid := CheckName(newname, who);
+var valid := CheckName(newname, who, 1);
 
 if (valid[1] == 0)	
 	if (who.connected)
