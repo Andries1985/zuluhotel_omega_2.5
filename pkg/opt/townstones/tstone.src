@@ -6,6 +6,7 @@ use cfgfile;
 include "/include/math";
 include ":gumps:gumps";
 include "tstone";
+include "include/NameChecker";
 
 const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
 const TOWNSTONE_UPGRADES_CFG := ":townstone:upgrades";
@@ -1231,7 +1232,13 @@ var result := find(who.name, "of "+city, 1);
 var name := who.name;
 result := result-2;
 name := name[1,result];
-who.name := name;
+
+if (IsNameTaken(name, who.serial))
+	who.name := "AlreadyUsed";
+	start_script("misc/namechanger", {who, "duplicate"});
+else
+	who.name := name;
+endif
 
 set_critical(1);
 
@@ -1254,6 +1261,14 @@ endfunction
 
 function Citizenship(who, item)
 
+city := StrReplace(city, "'", "");
+var candidate_name := who.name + " of " + city;
+
+if (IsNameTaken(candidate_name, who.serial))
+	SendSysMessage(who, "You cannot join " + city + " right now - the name '" + candidate_name + "' is already in use by another character. Please resolve that first.");
+	return;
+endif
+
 set_critical(1);
 
 foreach dude in citizen
@@ -1272,9 +1287,7 @@ SetObjProperty(item, "populacao", populacao);
 
 set_critical(0);
 
-city := StrReplace(city, "'", "");
-
-who.name := who.name + " of " + city;
+who.name := candidate_name;
 
 sendsysmessage(who, "Now you are citizen of " + city);
 
