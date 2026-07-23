@@ -327,7 +327,7 @@ program textcmd_sign( who , sign )
 						if(GetObjProperty( house , "ownerserial") == who.serial)
 							RemoveHouseFromCharacter(who, house.serial);
 						else
-							RemoveHouseFromCharacter(GetObjProperty(house, "ownerserial"), house.serial);
+							RemoveHouseFromCharacter(SystemFindObjectBySerial(CInt(GetObjProperty(house, "ownerserial")), SYSFIND_SEARCH_OFFLINE_MOBILES), house.serial);
 						endif
 
 						// Destroy any remaining Omega Cache containers

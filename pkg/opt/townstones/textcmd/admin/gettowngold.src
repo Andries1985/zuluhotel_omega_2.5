@@ -14,6 +14,11 @@ program textcmd_gettowngold(who)
 		return;
 	endif
 
+	if(stone.objtype != 0xa320)
+		SendSysMessage(who, "That target is not a valid townstone.");
+		return;
+	endif
+
 	var town_id := CInt(GetObjProperty(stone, "town"));
 	if(!town_id)
 		SendSysMessage(who, "That target is not a valid townstone.");
@@ -51,13 +56,16 @@ program textcmd_gettowngold(who)
 		return;
 	endif
 
-	if(withdraw_amount > current_gold)
-		SendSysMessage(who, "Not enough gold in treasury. Available: " + current_gold + ".");
+	// Re-validates and debits against the live balance in one pass, rather than
+	// trusting the `current_gold` snapshot taken before the text-entry gump blocked.
+	if(!TryDebitTownBankGold(region_name, withdraw_amount))
+		SendSysMessage(who, "Not enough gold in treasury for that withdrawal.");
 		return;
 	endif
 
 	var cheque := CreateItemInBackpack(who, CHEQUE_OBJTYPE, 1);
 	if(!cheque)
+		CreditTownBankGold(region_name, withdraw_amount);
 		SendSysMessage(who, "Could not create cheque in your backpack.");
 		return;
 	endif
@@ -68,10 +76,9 @@ program textcmd_gettowngold(who)
 	cheque.color := 51;
 	cheque.name := "A Treasury Cheque for " + withdraw_amount + " Gold (" + region_name + ").";
 
-	SetTownBankGold(region_name, current_gold - withdraw_amount);
 	UpdateTownstoneRegionEntry(region_name, town_id, stone.serial);
 
-	SendSysMessage(who, "Withdrew " + withdraw_amount + " gold from " + region_name + ". Remaining treasury: " + (current_gold - withdraw_amount) + " gold.");
+	SendSysMessage(who, "Withdrew " + withdraw_amount + " gold from " + region_name + ". Remaining treasury: " + GetTownBankGold(region_name) + " gold.");
 
 endprogram
 
@@ -135,6 +142,71 @@ function SetTownBankGold(region_name, new_amount)
 	endif
 
 	elem.SetProp("gold", CInt(new_amount));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction
+
+
+// Debits `cost` from the treasury in a single read-validate-write pass against
+// the live datafile value, instead of trusting a balance snapshot taken earlier.
+// Returns 1 and applies the debit only if funds were sufficient; returns 0 and
+// changes nothing otherwise.
+function TryDebitTownBankGold(region_name, cost)
+	if(!region_name or cost <= 0)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	if(gold < 0)
+		gold := 0;
+	endif
+
+	if(gold < cost)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	elem.SetProp("gold", CInt(gold - cost));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	return 1;
+endfunction
+
+
+function CreditTownBankGold(region_name, amount)
+	if(!region_name or amount <= 0)
+		return;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	if(gold < 0)
+		gold := 0;
+	endif
+
+	elem.SetProp("gold", CInt(gold + amount));
 	UnloadDataFile(TOWNSTONE_DATAFILE);
 endfunction
 

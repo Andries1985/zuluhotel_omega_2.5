@@ -135,6 +135,33 @@ endfunction
 function CleanupElectionMembership(stone, target_char, populacao)
 	var eleicoes := CInt(GetObjProperty(stone, "eleicao"));
 	var pleibicito := GetObjProperty(stone, "pleibicito");
+
+	var mayor_serial := CInt(GetObjProperty(stone, "mayorserial"));
+	var is_mayor := (mayor_serial and mayor_serial == CInt(target_char.serial));
+
+	if(is_mayor)
+		EraseObjProperty(stone, "mayor");
+		EraseObjProperty(stone, "mayorserial");
+		SetObjProperty(stone, "nextcitizenelection", 0);
+	endif
+
+	if(is_mayor and (eleicoes or pleibicito))
+		// Removed member was mayor - close any running election/poll so it
+		// doesn't orphan candidate/vote state around a mayor who no longer exists.
+		SetObjProperty(stone, "eleicao", 0);
+		SetObjProperty(stone, "pleibicito", 0);
+		SetObjProperty(stone, "candidatos", {});
+		SetObjProperty(stone, "votos", 0);
+		SetObjProperty(stone, "votepercent", 0);
+		SetObjProperty(stone, "timer", 0);
+		foreach vote_rune in EnumerateItemsInContainer(stone)
+			if(vote_rune.objtype == VOTE_RUNE_OBJTYPE)
+				DestroyItem(vote_rune);
+			endif
+		endforeach
+		return;
+	endif
+
 	if(!eleicoes and !pleibicito)
 		return;
 	endif
@@ -144,12 +171,18 @@ function CleanupElectionMembership(stone, target_char, populacao)
 		candidatos := {};
 	endif
 
+	// candidatos is stored as [serial, name, serial, name, ...] pairs - must be
+	// walked two at a time, not as a flat list, or removal desyncs every pair after it.
 	var newlist := {};
-	foreach serial in candidatos
-		if(serial != target_char.serial and serial != target_char.name)
-			newlist.append(serial);
+	var cand_idx;
+	for(cand_idx := 1; cand_idx <= candidatos.size(); cand_idx := cand_idx + 2)
+		var cand_serial := candidatos[cand_idx];
+		var cand_name := candidatos[cand_idx + 1];
+		if(CInt(cand_serial) != target_char.serial and CStr(cand_name) != CStr(target_char.name))
+			newlist.append(cand_serial);
+			newlist.append(cand_name);
 		endif
-	endforeach
+	endfor
 	SetObjProperty(stone, "candidatos", newlist);
 
 	var votos := CInt(GetObjProperty(stone, "votos"));
@@ -277,21 +310,41 @@ function SyncTownstoneState(stone)
 		gold := 0;
 	endif
 
+	var mayor_state := GetObjProperty(stone, "mayor");
+	if(!mayor_state)
+		mayor_state := "No mayor";
+	endif
+
+	var candidatos_state := GetObjProperty(stone, "candidatos");
+	if(!candidatos_state)
+		candidatos_state := {};
+	endif
+
+	var pleibicito_result_state := GetObjProperty(stone, "Pleibicito_Result");
+	if(!pleibicito_result_state)
+		pleibicito_result_state := {};
+	endif
+
+	var citizen_state := GetObjProperty(stone, "citizen");
+	if(!citizen_state)
+		citizen_state := {};
+	endif
+
 	elem.SetProp("gold", gold);
 	elem.SetProp("town_id", town_id);
 	elem.SetProp("stone_serial", stone.serial);
-	elem.SetProp("mayor", GetObjProperty(stone, "mayor"));
+	elem.SetProp("mayor", mayor_state);
 	elem.SetProp("mayorserial", CInt(GetObjProperty(stone, "mayorserial")));
 	elem.SetProp("populacao", CInt(GetObjProperty(stone, "populacao")));
 	elem.SetProp("eleicao", CInt(GetObjProperty(stone, "eleicao")));
-	elem.SetProp("pleibicito", GetObjProperty(stone, "pleibicito"));
-	elem.SetProp("candidatos", GetObjProperty(stone, "candidatos"));
+	elem.SetProp("pleibicito", CInt(GetObjProperty(stone, "pleibicito")));
+	elem.SetProp("candidatos", candidatos_state);
 	elem.SetProp("votos", CInt(GetObjProperty(stone, "votos")));
 	elem.SetProp("votepercent", CInt(GetObjProperty(stone, "votepercent")));
 	elem.SetProp("timer", CInt(GetObjProperty(stone, "timer")));
-	elem.SetProp("Pleibicito_Result", GetObjProperty(stone, "Pleibicito_Result"));
+	elem.SetProp("Pleibicito_Result", pleibicito_result_state);
 	elem.SetProp("nextcitizenelection", CInt(GetObjProperty(stone, "nextcitizenelection")));
-	elem.SetProp("citizen", GetObjProperty(stone, "citizen"));
+	elem.SetProp("citizen", citizen_state);
 
 	UnloadDataFile(TOWNSTONE_DATAFILE);
 endfunction
