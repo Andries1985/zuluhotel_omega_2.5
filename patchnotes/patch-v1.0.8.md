@@ -108,6 +108,16 @@ Welcome to **Patch 1.0.8**. This update focuses on **player-run town administrat
 
 ---
 
+## Staff Tools - Character and Account History Tracking
+
+### Player Impact
+
+- No direct gameplay change expected. Staff now have a new internal tool to look up an account's characters and review name-change, death, poisoning, and account-note history, so support and moderation questions can be answered faster.
+- If a staff member ever rejects a name change (via `.setprop`, `.setname`, or `.info`), the message now tells you the actual reason (too long/short, bad spacing, reserved word, contains a town name, or already in use) instead of one generic "invalid or already in use" message.
+- Fixed a bug where `.setprop name` could silently reject a valid new name due to an invisible trailing space it was adding itself.
+
+---
+
 ## Staff and Support Tools
 
 ### Player Impact
@@ -139,6 +149,7 @@ Welcome to **Patch 1.0.8**. This update focuses on **player-run town administrat
 - Skill gain handling was retuned for higher-skill edge cases.
 - Town NPCs start wandering immediately after spawning.
 - Two hot commands were made significantly faster.
+- Staff now have a new character/account history tracking tool, and name-rejection messages are clearer.
 - Staff support commands and data generators were refreshed.
 
 Thanks for playing Zuluhotel Omega 2.5.

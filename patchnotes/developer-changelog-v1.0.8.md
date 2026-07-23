@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.8
-**Range:** `9f8189f` (origin/Patch-1.0.7) -> `HEAD` + uncommitted working tree  
+**Range:** `9f8189f` (origin/Patch-1.0.7) -> `7c27772` (HEAD)  
 **Branch:** Patch-1.0.8  
 **Date:** 2026-06-20 -> 2026-07-23  
-**Commits in range:** 7 (excluding merge commits), plus uncommitted working-tree changes  
-**Files changed:** 48 committed (+10477 / -1316), plus 5 files with uncommitted changes (+343 / -237)
+**Commits in range:** 10 (excluding merge commits)  
+**Files changed:** 84 (+12970 / -1689)
 
 ---
 
@@ -22,8 +22,9 @@
 11. [Omega Cache - Potion Categorization Fix](#11-omega-cache---potion-categorization-fix)
 12. [Gameplay Tuning and Script Fixes](#12-gameplay-tuning-and-script-fixes)
 13. [Support Data and Tooling](#13-support-data-and-tooling)
-14. [Exhaustive File-by-File Change List](#14-exhaustive-file-by-file-change-list)
-15. [Risk and Regression Notes](#15-risk-and-regression-notes)
+14. [Staff Tooling - Character/Account Audit Panel and Name/Death/Poison/Note Tracking](#14-staff-tooling---characteraccount-audit-panel-and-namedeathpoisonnote-tracking)
+15. [Exhaustive File-by-File Change List](#15-exhaustive-file-by-file-change-list)
+16. [Risk and Regression Notes](#16-risk-and-regression-notes)
 
 ---
 
@@ -31,7 +32,7 @@
 
 Patch 1.0.8 grew across two work windows. The first (through `a3c99f6`) was dominated by the datafile-backed area policy rewrite, the go-location indexing pass, and the player-run townstone/admin cleanup — see sections 3, 5, and 6 for that material, carried forward unchanged from the earlier draft of this document.
 
-The second window (`7bdc099` through the current uncommitted state) closed a live-reported name-collision exploit, fixed a duplicate-character bug it was related to, added region-based house placement restrictions, fixed a real performance regression in the areas package and in two hot commands, and completed Omega Cache integration for two crafting scripts that had been missed or left broken during the original cache rollout:
+The second window (`7bdc099` through `b347427`) closed a live-reported name-collision exploit, fixed a duplicate-character bug it was related to, added region-based house placement restrictions, fixed a real performance regression in the areas package and in two hot commands, and completed Omega Cache integration for two crafting scripts that had been missed or left broken during the original cache rollout:
 
 - A town-suffix name-collision exploit was closed: players could no longer hold both "X" and "X of Town" at once, town names are now blocked in freely-chosen names, and name comparisons are case-insensitive.
 - A live 50-second rename-gump hang, and a resulting duplicate-character bug ("two Paladin Rahl of Occlo"), were root-caused to an O(accounts x 5) full `regions.cfg` re-parse per name check, and fixed with a proper cache.
@@ -41,6 +42,8 @@ The second window (`7bdc099` through the current uncommitted state) closed a liv
 - Two independent O(n^2) algorithms (`.go`'s location-reorder pass, and a shared multi-array sort used by `.gotomulti`/`.gotoboat`) were replaced with linear/O(n log n) equivalents after script-log evidence showed both tripping the runaway-script watchdog.
 - The smithy hammer's Omega Cache targeting path was found to be dead code due to a bad merge and was rewritten to match every other crafting script's pattern; the crafter-boost smithy retort had never been integrated with the cache at all and now is.
 - A gap in the Omega Cache's category map left 12 leveled potion objtypes (Greater Strength/Cure Potion tiers, etc.) falling into the "Other" bucket instead of "Potions."
+
+A third window (`7c27772`) added a full staff-facing character/account audit tool and wired full name-change, death, poisoning, and account-note tracking into every script that touches them — see section 14. Two additional commits landed in this range (`b347427`, `232ee95`); `b347427`'s crafting/performance/potion-category work is already covered above (sections 9-11), and `232ee95` (a townstone treasury-race, election-cleanup, and townlist-bootstrap fix pass) is not detailed in this document.
 
 ---
 
@@ -55,7 +58,9 @@ The second window (`7bdc099` through the current uncommitted state) closed a liv
 | `065ed28` | 2026-07-20 | House placement not allowed in cities |
 | `21bb91e` | 2026-07-23 | Name Change update |
 | `09bf876` | 2026-07-23 | Areas Fix, and naming fixes |
-| *(uncommitted)* | 2026-07-23 | Blacksmithy/crafter-boost Omega Cache fixes, potion categorization fix, `.go`/sort-helper performance fixes |
+| `b347427` | 2026-07-23 | Patch notes, and fixes for omega cache, as well as optimization for go gomulti and goboat (see sections 9-11) |
+| `232ee95` | 2026-07-23 | Townstone fixes, Minstel and townsfolk fix (not detailed in this document) |
+| `7c27772` | 2026-07-23 | New test panel up along with datafiles (see section 14) |
 
 ---
 
@@ -336,9 +341,76 @@ Investigated a live report that "POL Cleanup" during shutdown takes noticeably l
 
 ---
 
-## 14. Exhaustive File-by-File Change List
+## 14. Staff Tooling - Character/Account Audit Panel and Name/Death/Poison/Note Tracking
 
-All files changed in `Patch-1.0.7..HEAD`, plus current uncommitted working-tree changes:
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `pkg/opt/admin/pkg.cfg` | New minimal package, created solely to give the new datafile a registered namespace (`data/ds/admin/`) |
+| `pkg/opt/admin/include/adminpanel.inc` | New shared data layer: name/death/poisoning/account-note history recording, retrieval, and summary building |
+| `pkg/opt/admin/textcmd/test/testadminpanel.src` | New `.testadminpanel` staff gump: account browsing and full character audit history |
+| `config/cmds.cfg` | Added `DIR pkg/opt/admin/textcmd/test` under the `Test` cmdlevel block |
+| `scripts/include/NameChecker.inc` | Added `NameCheckFailureReason(reason_code)` to translate a `CheckName()` rejection code into a human-readable reason |
+| `scripts/textcmd/gm/setprop.src` | Fixed a trailing-space bug in the value-rebuild loop; `.setprop name` now shows the real rejection reason and records the change |
+| `scripts/textcmd/admin/setname.src` | `.setname` now shows the real rejection reason and records the change |
+| `scripts/textcmd/seer/info.src` | `.info`'s rename button and `fixnameguild` now show the real rejection reason (rename button) and record the change |
+| `scripts/textcmd/gm/changename.src` | `.changename` now records the change |
+| `scripts/textcmd/test/editcharacter.src` | `.editcharacter` now records the change |
+| `pkg/commands/commands/gm/mobedit.src` | `mobedit`'s name field now records the change |
+| `pkg/opt/spawnpoint/textcmd/admin/newmobedit.src` | `newmobedit`'s name field now records the change |
+| `scripts/misc/namechanger.src` | The player rename gump now records the change |
+| `scripts/items/racegate.src` | Race-gate name suffixing now records the change |
+| `pkg/opt/roleplaying/rperstone.src` | RPer faction join (`[RPer]` suffix) now records the change |
+| `scripts/textcmd/admin/removerper.src` | RPer faction removal (name restore) now records the change |
+| `scripts/textcmd/admin/admin.src` | `admin.src`'s `fixnameguild` now records the change; the NOTES action now records an account note |
+| `scripts/misc/chrdeath.src` | Character death now records a death entry (killer, killer's account, coordinates) |
+| `scripts/include/dotempmods.inc` | `SetPoison()` now records a poisoning entry alongside the existing `PoisonedBy` cprop |
+| `scripts/textcmd/coun/notes.src` | `.notes` now records an account note (Staff-initiated) |
+| `pkg/opt/loot/antiloot.inc` | `AutoJail()` now records an account note (System-initiated) |
+| `pkg/opt/spawnpoint/textcmd/admin/despawn.src` | Fixed `program` name (was still `forcespawn`, copy-pasted from that file); added a null/invalid-spawnpoint guard |
+| `pkg/opt/spawnpoint/textcmd/admin/primespawn.src` | Same `program` name fix and null/invalid-spawnpoint guard as `despawn.src` |
+| `pkg/opt/spawnpoint/textcmd/admin/forcespawn.src` | Added the same null/invalid-spawnpoint guard |
+| `pkg/opt/spawnpoint/textcmd/admin/gotomobtype.src` | Removed a leftover debug `Print("stuff")` call |
+| `pkg/opt/spawnpoint/textcmd/admin/restartspawnpointarea.src` | `ReorderLocationsForDisplay()` rewritten from the same O(n^2)*8-pass shape fixed for `.go` in section 9 to a single O(n) dedupe-and-bucket pass |
+
+### Background
+
+Building the audit panel required first finding every place in the codebase where a player character's name can actually change, so each one could be wired into the new tracking layer; that sweep turned up a live bug (`.setprop`'s trailing-space append, section 8 already covers the underlying `CheckName` bad-spacing rejection it was tripping) and several small pre-existing bugs in unrelated spawnpoint commands that were touched only incidentally while adding `RecordCharacterNameChange` calls to `newmobedit.src`'s neighbors.
+
+### Notable Functional Changes
+
+**New staff command `.testadminpanel` (Test cmdlevel):**
+- Gump flow: choose "Account" -> pick a letter A-Z (5-column grid, dynamically sized to the letter count so it can't overflow) -> paged account list (8 per page, each row showing the account name as a button plus its IP and last login date) -> character list for that account -> character detail.
+- `ShowCharacterList` (the account-landing screen) shows the account name, a "Notes" subtitle with the full word-wrapped latest account note (via the existing `GFWordWrap()` utility, so the gump is sized to the actual wrapped line count instead of truncating), an attribution line (`"- <initiator>, <timestamp>"` or `"- Unknown"`), a running count of stored note records, and then the account's characters as buttons.
+- `ShowCharacterDetail` shows a "Character Information" title with "Names", "Killed By", and "Poisoned By" subtitled sections (10/5/5 most-recent-first respectively), each ending with a "more in datafile" total count.
+
+**New shared data layer (`pkg/opt/admin/include/adminpanel.inc`):**
+- One DataFile per account (`AdminPanelFilespec`, under `data/ds/admin/`), created in a dedicated new `admin` package purely because DataFile filespecs must resolve to a real, registered `pkg.cfg` package name.
+- Name and death/poisoning history is keyed per character serial (a reserved `"_account_"` element key holds account-wide note history instead), so history stays attached to a character across renames rather than being keyed by name.
+- Every recorded entry stores a timestamp (`FormatEpochTimestamp`), the recording script's name (`CurrentScriptName()`, via `GetProcess(GetPid()).name` - the same idiom `staff.inc`'s `LogCommand` already uses), and an initiator classification (`Staff`/`Player`/`System`).
+- `TrimHistoryToLimit` caps every history array at 100 entries (`ADMINPANEL_MAX_HISTORY`), erasing from the front, applied on every write so none of the four tracked histories can grow unbounded.
+- `RecordCharacterNameChange` only records when `mobile.isa(POLCLASS_MOBILE) && mobile.acct` - NPCs have no account and are never recorded, confirmed no hook fires on any NPC/template renaming path.
+- The first time a character's name history is recorded, if history is empty, the character's pre-change name is bootstrapped in as an "unknown"-origin entry (blank script/initiator/timestamp) so a character that existed before this tracking was added isn't misattributed a fabricated origin.
+- `RecordCharacterDeath` resolves the killer's account independently via `SystemFindObjectBySerial(killer_serial, SYSFIND_SEARCH_OFFLINE_MOBILES)` rather than depending on `chrdeath.src`'s existing online-only name resolution, so the killer's account still shows if they've since logged off.
+- `RecordAccountNote`/`GetLatestNoteInfo`: the account's existing single `Notes` cprop remains the untouched source of truth for the note itself; a parallel `notes_history` array (also capped at 100) records every write with attribution. `GetLatestNoteInfo` cross-references the two by comparing note text and falls back to blank attribution if they don't match, so a note set through any not-yet-wired path is shown as `"Unknown"` rather than misattributed to the wrong staffer.
+
+**Wiring - every character rename site found in the codebase now calls `RecordCharacterNameChange`, scoped to accounts only:**
+- Staff-initiated: `.setprop name`, `.setname`, `.info`'s rename button, `.info`'s `fixnameguild`, `admin.src`'s `fixnameguild`, `.changename`, `.editcharacter`, `mobedit`/`newmobedit`, `.removerper`.
+- Player-initiated: the rename gump (`namechanger.src`), race-gate name suffixing (`racegate.src`), and RPer faction join (`rperstone.src`, appending `" [RPer]"`).
+- Account notes (`RecordAccountNote`): `.notes`, `.info`'s NOTES action, and `admin.src`'s NOTES action (all Staff-initiated); `antiloot.inc`'s `AutoJail()` (System-initiated, fires on repeat town-looting offenses).
+
+**Bug fixes surfaced during the sweep:**
+- `.setprop`'s value-rebuild loop appended a trailing space after every word, including the last (e.g. `"Paladin Rahl One "`), which silently tripped `CheckName`'s bad-spacing rejection while showing a generic "already in use" message that masked the real cause. Fixed the trailing space (`pval := pval[1, len(pval)-1];`) and added `NameCheckFailureReason()` so `.setprop`, `.setname`, and `.info`'s rename button all now show the actual rejection reason.
+- `despawn.src` and `primespawn.src` both still had `program forcespawn(...)` as their program declaration (evidently copy-pasted from `forcespawn.src` when those two commands were created) instead of matching their own filenames; corrected, and a null/invalid-spawnpoint guard was added to both plus `forcespawn.src` itself.
+- Removed a leftover debug `Print("stuff")` call in `gotomobtype.src`.
+- `restartspawnpointarea.src` had its own copy of the same O(n^2)*8-pass location-reordering logic documented in section 9 for `.go`; rewritten to the identical single O(n) dedupe-then-bucket pattern (dedupe by `Key`, bucket by type label, emit known types in priority order, then unrecognized-type entries in original encounter order).
+
+---
+
+## 15. Exhaustive File-by-File Change List
+
+All files changed in `Patch-1.0.7..HEAD`:
 
 | File | Notes |
 |------|-------|
@@ -351,6 +423,9 @@ All files changed in `Patch-1.0.7..HEAD`, plus current uncommitted working-tree 
 | `pkg/opt/alryc/textcmd/test/gotomulti.src` | New multi location and teleport developer tool |
 | `pkg/opt/alryc/textcmd/test/makecheck.src` | New cheque creation developer tool |
 | `pkg/opt/alryc/textcmd/test/whereat.src` | New target-inspection developer tool |
+| `pkg/opt/admin/pkg.cfg` | New package created to host the audit-panel datafile namespace |
+| `pkg/opt/admin/include/adminpanel.inc` | New name/death/poison/note tracking data layer |
+| `pkg/opt/admin/textcmd/test/testadminpanel.src` | New `.testadminpanel` staff audit gump |
 | `pkg/opt/areas/EnterAreaDelay.src` | Switched to the new area-policy resolution flow |
 | `pkg/opt/areas/LeaveArea.src` | Switched to the new area-policy resolution flow |
 | `pkg/opt/areas/areaban.src` | Updated for the new area-policy path |
@@ -358,23 +433,31 @@ All files changed in `Patch-1.0.7..HEAD`, plus current uncommitted working-tree 
 | `pkg/opt/areas/include/areapolicy.inc` | Policy resolver/cache layer, plus realm sanitization and mask-value cache |
 | `pkg/opt/areas/include/areapolicy.inc.bak` | Backup of the pre-rewrite policy layer |
 | `pkg/opt/areas/textcmd/admin/areas.src` | Rewritten area policy admin gump and flag editor |
-| `pkg/opt/crafterboost/make_crafter_boosts.src` | *(uncommitted)* Full Omega Cache integration added |
+| `pkg/opt/crafterboost/make_crafter_boosts.src` | Full Omega Cache integration added |
 | `pkg/opt/holybook/removecurse.src` | Revised Remove Curse chance logic |
-| `pkg/opt/omegacache/categories.cfg` | *(uncommitted)* 12 leveled-potion objtypes added to the Potions category |
+| `pkg/opt/loot/antiloot.inc` | `AutoJail()` now records an account note (System-initiated) |
+| `pkg/opt/omegacache/categories.cfg` | 12 leveled-potion objtypes added to the Potions category |
+| `pkg/opt/roleplaying/rperstone.src` | RPer faction join now records a name change |
 | `pkg/opt/shilhook/shilhook.src` | Skill gain and difficulty refactor |
 | `pkg/opt/spawnpoint/config/groups.cfg` | Spawnpoint group config update |
 | `pkg/opt/spawnpoint/include/restartspawnpoint.inc` | Shared spawnpoint restart helper |
+| `pkg/opt/spawnpoint/textcmd/admin/despawn.src` | Fixed `program` name mismatch, added null/invalid-spawnpoint guard |
+| `pkg/opt/spawnpoint/textcmd/admin/forcespawn.src` | Added null/invalid-spawnpoint guard |
+| `pkg/opt/spawnpoint/textcmd/admin/gotomobtype.src` | Removed leftover debug `Print("stuff")` call |
+| `pkg/opt/spawnpoint/textcmd/admin/newmobedit.src` | Name field now records a name change |
+| `pkg/opt/spawnpoint/textcmd/admin/primespawn.src` | Fixed `program` name mismatch, added null/invalid-spawnpoint guard |
 | `pkg/opt/spawnpoint/textcmd/admin/restartspawnpoint.src` | Restart command now uses the helper |
-| `pkg/opt/spawnpoint/textcmd/admin/restartspawnpointarea.src` | New region-wide restart command |
+| `pkg/opt/spawnpoint/textcmd/admin/restartspawnpointarea.src` | New region-wide restart command; `ReorderLocationsForDisplay` also rewritten to O(n) |
 | `pkg/opt/spawnpoint/textcmd/admin/restartspawnpointmax.src` | Force-fill restart command updated |
 | `pkg/opt/townstones/textcmd/admin/createtownstone.src` | Creation workflow tightened and state restoration added |
 | `pkg/opt/townstones/textcmd/admin/removetownmember.src` | New town member removal command |
 | `pkg/opt/townstones/textcmd/admin/townbankstatus.src` | Major town status, member management, and runtime state expansion |
 | `pkg/opt/townstones/tstone.src` | `Citizenship`/`CanselCityzenship` now duplicate-check before mutating a name |
 | `pkg/packethooks/speech/receivespeechhook.src` | Unicode speech packet decode fix |
-| `pkg/std/blacksmithy/make_blacksmith_items.src` | *(uncommitted)* Omega Cache targeting fixed, dead code removed |
+| `pkg/std/blacksmithy/make_blacksmith_items.src` | Omega Cache targeting fixed, dead code removed |
 | `pkg/std/housing/housedeed.src` | Region-based city/dungeon/shrine/graveyard placement restrictions |
 | `pkg/std/treasuremap/treasure.cfg` | One treasure location adjusted |
+| `pkg/commands/commands/gm/mobedit.src` | Name field now records a name change |
 | `pol.cfg` | Profiling and sysload watchers enabled |
 | `pythonscripts/generate_golocs_by_id.py` | New generator for indexed go-location config |
 | `regions/regions.cfg` | Large region metadata expansion and normalization |
@@ -383,21 +466,30 @@ All files changed in `Patch-1.0.7..HEAD`, plus current uncommitted working-tree 
 | `scripts/ai/person.src` | Townsfolk now wander immediately after spawn |
 | `scripts/ai/setup/criersetup.inc` | Safer crier config handling |
 | `scripts/ai/townperson.src` | Town NPCs now wander immediately after spawn |
-| `scripts/include/NameChecker.inc` | Town-suffix exploit closure, case-insensitive dedupe, bad-spacing rejection, caching |
+| `scripts/include/NameChecker.inc` | Town-suffix exploit closure, case-insensitive dedupe, bad-spacing rejection, caching; `NameCheckFailureReason()` added |
 | `scripts/include/anchors.inc` | Anchor and lookup helpers updated for new area behavior |
 | `scripts/include/areas.inc` | Area helper rewrite to match the new policy layer |
-| `scripts/include/string.inc` | *(uncommitted)* `SortMultiArrayByIndex` rewritten to O(n log n) merge sort |
+| `scripts/include/dotempmods.inc` | `SetPoison()` now records a poisoning entry |
+| `scripts/include/string.inc` | `SortMultiArrayByIndex` rewritten to O(n log n) merge sort |
 | `scripts/include/townsfolk.inc` | Townfolk helper alignment update |
-| `scripts/misc/namechanger.src` | `force_town_check := 1`, "bad spacing" error message |
+| `scripts/items/racegate.src` | Race-gate name suffixing now records a name change |
+| `scripts/misc/chrdeath.src` | Character death now records a death entry |
+| `scripts/misc/namechanger.src` | `force_town_check := 1`, "bad spacing" error message; rename gump now records a name change |
 | `scripts/misc/oncreate.src` | `force_town_check := 1` |
-| `scripts/textcmd/admin/setname.src` | Now runs through `CheckName`, PC-scoped |
-| `scripts/textcmd/coun/go.src` | *(uncommitted)* `ReorderLocationsForDisplay` rewritten to O(n); `.go` also rebuilt around indexed go locations and range fallback (earlier in the patch) |
-| `scripts/textcmd/gm/setprop.src` | `.setprop name` now runs through `CheckName`, PC-scoped |
-| `scripts/textcmd/seer/info.src` | Rename button now runs through `CheckName`, PC-scoped |
+| `scripts/textcmd/admin/admin.src` | `fixnameguild` now records a name change; NOTES action now records an account note |
+| `scripts/textcmd/admin/removerper.src` | RPer removal now records a name change |
+| `scripts/textcmd/admin/setname.src` | Now runs through `CheckName`, PC-scoped; shows real rejection reason; records name changes |
+| `scripts/textcmd/coun/go.src` | `ReorderLocationsForDisplay` rewritten to O(n); `.go` also rebuilt around indexed go locations and range fallback (earlier in the patch) |
+| `scripts/textcmd/coun/notes.src` | `.notes` now records an account note |
+| `scripts/textcmd/gm/changename.src` | `.changename` now records a name change |
+| `scripts/textcmd/gm/setprop.src` | `.setprop name` now runs through `CheckName`, PC-scoped; trailing-space bug fixed; shows real rejection reason; records name changes |
+| `scripts/textcmd/seer/info.src` | Rename button now runs through `CheckName`, PC-scoped, shows real rejection reason, and records name changes; `fixnameguild` and NOTES action also record |
+| `scripts/textcmd/test/editcharacter.src` | Name field now records a name change |
+| `config/cmds.cfg` | New `DIR` entry for `.testadminpanel` under the `Test` cmdlevel |
 
 ---
 
-## 15. Risk and Regression Notes
+## 16. Risk and Regression Notes
 
 1. `regions/regions.cfg` and `config/golocs_by_id.cfg` are now tightly coupled. Any future region edit should regenerate the go-location index rather than hand-editing the generated file.
 2. The area-policy caches (parsed-line cache and the new mask-value cache) use global properties and, for the parsed-line cache, a line-count fingerprint. If `areas.cfg` changes shape, cache invalidation needs to remain intact or stale policy data can persist. The mask-value cache is invalidated precisely on `SetPolicyMask`/`PruneStaleRealmPolicies` writes, so it should stay correct as long as no other code path writes the `AREA_POLICY_MASK_PROP` datafile property directly.
@@ -408,3 +500,7 @@ All files changed in `Patch-1.0.7..HEAD`, plus current uncommitted working-tree 
 7. The blacksmithy and crafter-boost Omega Cache fixes change previously-broken or entirely-missing behavior into working behavior — this is a net-new capability for players (the failure mode was "doesn't work," not "we're removing something"), but should still get a quick live test: hammer-to-cache targeting for a plain ingot craft, bone-armor dual-material with the cache as either material, and a crafter-boost upgrade with the target material sourced from a cache.
 8. The `.go` and shared-sort algorithmic rewrites are drop-in replacements with verified-identical output ordering (hand-traced on a small example for the merge sort; the `.go` reorder was verified against its old semantics directly). Risk is low, but both are hot, frequently-run staff commands, so a live spot check (a `.go` menu with a large realm, and `.gotomulti`/`.gotoboat` with the current multi/boat counts) is still worthwhile.
 9. The potion-categorization fix is UI-only (Omega Cache category grouping) and carries no gameplay risk.
+10. The audit panel's four history arrays (names, deaths, poisonings, account notes) hard-trim to 100 entries, erasing the oldest first. This is intentional to bound datafile growth, but it means very active characters/accounts will lose their oldest audit history over time rather than growing indefinitely — worth knowing before staff rely on it for long-term investigation.
+11. `GetLatestNoteInfo()`'s attribution is derived by comparing the account's live `Notes` cprop text against the last `notes_history` entry; if a note is ever set through a path that isn't wired to `RecordAccountNote` (or was set before this feature existed), the panel will correctly show blank/"Unknown" attribution rather than a wrong name — by design, but staff should not read a blank attribution as "nobody knows," only as "not recorded through a tracked path."
+12. `.testadminpanel` is read/write-audit-only and gated to the `Test` cmdlevel; it does not change any player-facing behavior. The only behavior changes with any player visibility from this section are the `.setprop`/`.setname`/`.info` rejection-message wording (now shows the real reason instead of a generic one) and the `despawn`/`primespawn`/`forcespawn` null-spawnpoint guard — both staff-tool-only surfaces.
+13. This document's commit range (`9f8189f..7c27772`) includes two commits not detailed here: `b347427` (already covered by sections 9-11) and `232ee95` ("Townstone fixes, Minstel and townsfolk fix" — a townstone treasury-race-condition fix, election/mayor-removal cleanup, a candidate-list pairing bug fix, and a townlist-bootstrap self-heal on login). If player-facing patch notes are needed for `232ee95`, it should get its own review pass rather than being folded in here secondhand.

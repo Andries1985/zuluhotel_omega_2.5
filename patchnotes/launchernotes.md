@@ -97,6 +97,16 @@ Always check Discord announcements for all the patch notes.
 
 ---
 
+## Staff Tools - Character and Account History Tracking
+
+### Player Impact
+
+- No direct gameplay change expected. Staff now have a new internal tool to look up an account's characters and review name-change, death, poisoning, and account-note history.
+- If a staff member ever rejects a name change, the message now tells you the actual reason instead of one generic message.
+- Fixed a bug where `.setprop name` could silently reject a valid new name due to an invisible trailing space it was adding itself.
+
+---
+
 ## Staff and Support Tools
 
 ### Player Impact
@@ -119,6 +129,7 @@ Always check Discord announcements for all the patch notes.
 - Skill gain handling was retuned for higher-skill edge cases.
 - Town NPCs start wandering immediately after spawning.
 - Two hot commands were made significantly faster.
+- Staff now have a new character/account history tracking tool, and name-rejection messages are clearer.
 - Staff support commands and data generators were refreshed.
 
 Thanks for playing Zuluhotel Omega 2.5.
