@@ -135,8 +135,7 @@ function PurchaseTownUpgrade(who, item, upgrades, choice)
 		return;
 	endif
 
-	var current_gold := GetTownBankGold(city);
-	if(current_gold < upgrade_cost)
+	if(GetTownBankGold(city) < upgrade_cost)
 		SendSysMessage(who, "Not enough town treasury gold. Required: " + FormatGoldAmount(upgrade_cost) + ".");
 		return;
 	endif
@@ -149,7 +148,14 @@ function PurchaseTownUpgrade(who, item, upgrades, choice)
 
 	ticket.name := "Ticket for " + upgrade_desc;
 
-	SetTownBankGold(city, current_gold - upgrade_cost);
+	// Re-validates and debits against the live balance in one pass so a concurrent
+	// purchase/donation on the same town can't cause a lost update or double-spend.
+	if(!TryDebitTownBankGold(city, upgrade_cost))
+		DestroyItem(ticket);
+		SendSysMessage(who, "Not enough town treasury gold. Required: " + FormatGoldAmount(upgrade_cost) + ".");
+		return;
+	endif
+
 	TouchTownstoneRegionEntry(item, city);
 	SendSysMessage(who, "Purchased upgrade ticket: " + upgrade_desc + " for " + FormatGoldAmount(upgrade_cost) + " gold.");
 endfunction
@@ -686,6 +692,72 @@ function SetTownBankGold(region_name, new_amount)
 	UnloadDataFile(TOWNSTONE_DATAFILE);
 endfunction
 
+
+// Debits `cost` from the treasury in a single read-validate-write pass against
+// the live datafile value, instead of trusting a balance snapshot read earlier
+// (which is stale by the time a purchase/donation actually commits).
+// Returns 1 and applies the debit only if funds were sufficient; returns 0 and
+// changes nothing otherwise.
+function TryDebitTownBankGold(region_name, cost)
+	if(!region_name or cost <= 0)
+		return 0;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return 0;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	if(gold < 0)
+		gold := 0;
+	endif
+
+	if(gold < cost)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return 0;
+	endif
+
+	elem.SetProp("gold", CInt(gold - cost));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+	return 1;
+endfunction
+
+
+function CreditTownBankGold(region_name, amount)
+	if(!region_name or amount <= 0)
+		return;
+	endif
+
+	var df := OpenTownstoneDataFile();
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(region_name);
+	if(!elem)
+		elem := df.CreateElement(region_name);
+	endif
+	if(!elem)
+		UnloadDataFile(TOWNSTONE_DATAFILE);
+		return;
+	endif
+
+	var gold := CInt(elem.GetProp("gold"));
+	if(gold < 0)
+		gold := 0;
+	endif
+
+	elem.SetProp("gold", CInt(gold + amount));
+	UnloadDataFile(TOWNSTONE_DATAFILE);
+endfunction
+
 function GetChequeGoldAmount(item)
 	if(!item)
 		return 0;
@@ -731,11 +803,9 @@ function DonateTownCheque(who, item)
 		return;
 	endif
 
-	var current_gold := GetTownBankGold(city);
-	var new_total := current_gold + amount;
-	SetTownBankGold(city, new_total);
+	CreditTownBankGold(city, amount);
 	TouchTownstoneRegionEntry(item, city);
-	SendSysMessage(who, "You donated " + amount + " gold to " + city + ". New town balance: " + new_total + " gold.");
+	SendSysMessage(who, "You donated " + amount + " gold to " + city + ". New town balance: " + GetTownBankGold(city) + " gold.");
 endfunction
 
 function IsPlayerCandidate(who)
@@ -1111,7 +1181,7 @@ if(!Pleibicito_Result)
 	Pleibicito_Result := {};
 endif
 
-if(len(pleibicito) < 2 or !pleibicito)
+if(!pleibicito or Len(CStr(pleibicito)) < 2)
 	pleibicito := 0;
 endif
 
@@ -1147,7 +1217,7 @@ if((eleicoes or pleibicito) and ((timer > 0 and timer < ReadGameClock()) or poll
 	if(!Pleibicito_Result)
 		Pleibicito_Result := {};
 	endif
-	if(len(pleibicito) < 2 or !pleibicito)
+	if(!pleibicito or Len(CStr(pleibicito)) < 2)
 		pleibicito := 0;
 	endif
 endif
@@ -1200,19 +1270,18 @@ function CanselCityzenship(who, item)
 
 var i;
 
-if(eleicoes or pleibicito)			
-	
-	var newlist := {};
-	foreach serial in candidatos
-		if(serial != who.serial && serial != who.name)
-			newlist.append(serial);
-		endif
+if(eleicoes or pleibicito)
 
-	/*	if (serial == who.serial)
-			SendSysMessage(who, "You can't give up citizenship while being a candidade during elections");
-			return;
-		endif*/
-	endforeach
+	var newlist := {};
+	var cand_idx;
+	for(cand_idx := 1; cand_idx <= candidatos.size(); cand_idx := cand_idx + 2)
+		var cand_serial := candidatos[cand_idx];
+		var cand_name := candidatos[cand_idx + 1];
+		if(CInt(cand_serial) != who.serial and CStr(cand_name) != CStr(who.name))
+			newlist.append(cand_serial);
+			newlist.append(cand_name);
+		endif
+	endfor
 	SetObjProperty(item, "candidatos", newlist);
 
 	foreach runa in EnumerateItemsInContainer( item )
@@ -1228,10 +1297,17 @@ if(eleicoes or pleibicito)
 	endforeach
 endif
 
-var result := find(who.name, "of "+city, 1);
+// City name is joined/searched with apostrophes stripped (see Citizenship()),
+// so the same stripped form must be used here or the search never matches.
+var safe_city := StrReplace(city, "'", "");
+var result := find(who.name, "of "+safe_city, 1);
 var name := who.name;
-result := result-2;
-name := name[1,result];
+if(result)
+	result := result-2;
+	if(result >= 1)
+		name := name[1,result];
+	endif
+endif
 
 if (IsNameTaken(name, who.serial))
 	who.name := "AlreadyUsed";
@@ -1242,14 +1318,21 @@ endif
 
 set_critical(1);
 
+var removed_from_citizen := 0;
 for(i:=1; i<=citizen.size(); i:=i+1)
 	if(citizen[i] == who.acctname)
 		citizen.erase(i);
+		removed_from_citizen := 1;
 		break;
 	endif
 endfor
-		
-populacao := populacao -1;
+
+if(removed_from_citizen and populacao > 0)
+	populacao := populacao -1;
+endif
+if(populacao < 0)
+	populacao := 0;
+endif
 SetObjProperty(item, "populacao", populacao);
 SetObjProperty(item, "citizen", citizen);
 EraseObjProperty(who, "town");
@@ -1261,8 +1344,8 @@ endfunction
 
 function Citizenship(who, item)
 
-city := StrReplace(city, "'", "");
-var candidate_name := who.name + " of " + city;
+var safe_city := StrReplace(city, "'", "");
+var candidate_name := who.name + " of " + safe_city;
 
 if (IsNameTaken(candidate_name, who.serial))
 	SendSysMessage(who, "You cannot join " + city + " right now - the name '" + candidate_name + "' is already in use by another character. Please resolve that first.");

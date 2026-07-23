@@ -71,17 +71,16 @@ include "include/eventid";
 //  Returns: 1 if distance is already 10, 0 if movement was attempted.
 //
 /////////////////////////////////////////////////////////////////////////////
-function FleeOpenDistance( opponent )
+function FleeOpenDistance( opponent, halt_threshold )
         var me := Self();
-        case (Distance( me, opponent ))
-                10:
-                        return 1;
-                default:
-                        TryOpenNearbyNpcDoors();
-                        StepCivilianThroughDoorIfNeeded();
-                        RunAwayFrom( opponent );
-                        return 0;
-        endcase
+        if (Distance( me, opponent ) >= halt_threshold)
+                return 1;
+        endif
+
+        TryOpenNearbyNpcDoors();
+        StepCivilianThroughDoorIfNeeded();
+        RunAwayFrom( opponent );
+        return 0;
 endfunction
 
 /////////////////////////////////////////////////////////////////////////////
@@ -102,7 +101,10 @@ function RunFromOpponent( opponent, HALT_THRESHOLD )
 			break outer;
 		endif
 
-		waittime := FleeOpenDistance( opponent ) * 15;
+		waittime := FleeOpenDistance( opponent, HALT_THRESHOLD ) * 15;
+		if (!waittime)
+			waittime := 1;
+		endif
 
 		var ev := wait_for_event( waittime );
 		case (ev.type)

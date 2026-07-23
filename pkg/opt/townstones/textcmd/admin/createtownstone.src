@@ -304,36 +304,40 @@ function RestoreTownstoneStateFromDatafile(item, region_name, town_index)
 		return;
 	endif
 
+	var mayor_state := elem.GetProp("mayor");
+	if(!mayor_state)
+		mayor_state := "No mayor";
+	endif
+
+	var candidatos_state := elem.GetProp("candidatos");
+	if(!candidatos_state)
+		candidatos_state := {};
+	endif
+
+	var pleibicito_result_state := elem.GetProp("Pleibicito_Result");
+	if(!pleibicito_result_state)
+		pleibicito_result_state := {};
+	endif
+
+	var citizen_state := elem.GetProp("citizen");
+	if(!citizen_state)
+		citizen_state := {};
+	endif
+
 	SetObjProperty(item, "town", CInt(town_index));
 	SetObjProperty(item, "regionname", region_name);
-	SetObjProperty(item, "mayor", elem.GetProp("mayor"));
+	SetObjProperty(item, "mayor", mayor_state);
 	SetObjProperty(item, "mayorserial", CInt(elem.GetProp("mayorserial")));
 	SetObjProperty(item, "populacao", CInt(elem.GetProp("populacao")));
 	SetObjProperty(item, "eleicao", CInt(elem.GetProp("eleicao")));
-	SetObjProperty(item, "pleibicito", elem.GetProp("pleibicito"));
-	SetObjProperty(item, "candidatos", elem.GetProp("candidatos"));
+	SetObjProperty(item, "pleibicito", CInt(elem.GetProp("pleibicito")));
+	SetObjProperty(item, "candidatos", candidatos_state);
 	SetObjProperty(item, "votos", CInt(elem.GetProp("votos")));
 	SetObjProperty(item, "votepercent", CInt(elem.GetProp("votepercent")));
 	SetObjProperty(item, "timer", CInt(elem.GetProp("timer")));
-	SetObjProperty(item, "Pleibicito_Result", elem.GetProp("Pleibicito_Result"));
+	SetObjProperty(item, "Pleibicito_Result", pleibicito_result_state);
 	SetObjProperty(item, "nextcitizenelection", CInt(elem.GetProp("nextcitizenelection")));
-	SetObjProperty(item, "citizen", elem.GetProp("citizen"));
-
-	if(!GetObjProperty(item, "mayor"))
-		SetObjProperty(item, "mayor", "No mayor");
-	endif
-
-	if(!GetObjProperty(item, "candidatos"))
-		SetObjProperty(item, "candidatos", {});
-	endif
-
-	if(!GetObjProperty(item, "Pleibicito_Result"))
-		SetObjProperty(item, "Pleibicito_Result", {});
-	endif
-
-	if(!GetObjProperty(item, "citizen"))
-		SetObjProperty(item, "citizen", {});
-	endif
+	SetObjProperty(item, "citizen", citizen_state);
 
 	UnloadDataFile(TOWNSTONE_DATAFILE);
 endfunction

@@ -697,21 +697,41 @@ function SyncTownstoneState(stone, region_name, town_id)
 		gold := 0;
 	endif
 
+	var mayor_state := GetObjProperty(stone, "mayor");
+	if(!mayor_state)
+		mayor_state := "";
+	endif
+
+	var candidatos_state := GetObjProperty(stone, "candidatos");
+	if(!candidatos_state)
+		candidatos_state := {};
+	endif
+
+	var pleibicito_result_state := GetObjProperty(stone, "Pleibicito_Result");
+	if(!pleibicito_result_state)
+		pleibicito_result_state := {};
+	endif
+
+	var citizen_state := GetObjProperty(stone, "citizen");
+	if(!citizen_state)
+		citizen_state := {};
+	endif
+
 	elem.SetProp("gold", gold);
 	elem.SetProp("town_id", town_id);
 	elem.SetProp("stone_serial", stone.serial);
-	elem.SetProp("mayor", GetObjProperty(stone, "mayor"));
+	elem.SetProp("mayor", mayor_state);
 	elem.SetProp("mayorserial", CInt(GetObjProperty(stone, "mayorserial")));
 	elem.SetProp("populacao", CInt(GetObjProperty(stone, "populacao")));
 	elem.SetProp("eleicao", CInt(GetObjProperty(stone, "eleicao")));
-	elem.SetProp("pleibicito", GetObjProperty(stone, "pleibicito"));
-	elem.SetProp("candidatos", GetObjProperty(stone, "candidatos"));
+	elem.SetProp("pleibicito", CInt(GetObjProperty(stone, "pleibicito")));
+	elem.SetProp("candidatos", candidatos_state);
 	elem.SetProp("votos", CInt(GetObjProperty(stone, "votos")));
 	elem.SetProp("votepercent", CInt(GetObjProperty(stone, "votepercent")));
 	elem.SetProp("timer", CInt(GetObjProperty(stone, "timer")));
-	elem.SetProp("Pleibicito_Result", GetObjProperty(stone, "Pleibicito_Result"));
+	elem.SetProp("Pleibicito_Result", pleibicito_result_state);
 	elem.SetProp("nextcitizenelection", CInt(GetObjProperty(stone, "nextcitizenelection")));
-	elem.SetProp("citizen", GetObjProperty(stone, "citizen"));
+	elem.SetProp("citizen", citizen_state);
 
 	UnloadDataFile(TOWNSTONE_DATAFILE);
 endfunction
@@ -1421,8 +1441,13 @@ function HasLiveTownstoneForRegion(region_name, town_id)
 				continue;
 			endif
 
+			// Lost Lands fallback is deliberately disabled here: this stone was
+			// fetched via a DIFFERENT region's recorded stone_serial, so treating
+			// "somewhere in Lost Lands" as a match would let any Lost-Lands town's
+			// stone falsely satisfy a lookup for this one. Only town_id/regionname/
+			// own-range identity checks are trustworthy for stones found this way.
 			var stone := SystemFindObjectBySerial(stone_serial);
-			if(IsTownstoneMatch(stone, region_name, town_id, region_range, lost_lands_range, use_lost_lands_fallback))
+			if(IsTownstoneMatch(stone, region_name, town_id, region_range, lost_lands_range, 0))
 				UnloadDataFile(TOWNSTONE_DATAFILE);
 				return 1;
 			endif
