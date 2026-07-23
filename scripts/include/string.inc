@@ -162,6 +162,11 @@ endfunction
 // is, the 'y' member. Returns '0' if the SubIndex is invalid
 // (only checks against the first index)
 
+// Rewritten (2026) from an O(n^2) nested-loop selection sort to an iterative
+// bottom-up merge sort - O(n log n). The old version was heavy enough at a
+// few hundred elements to risk tripping the runaway-script watchdog for any
+// caller sorting a shard-wide collection (houses, boats, etc). Same ascending
+// order by SubIndex as before.
 function SortMultiArrayByIndex(MultiArray, SubIndex)
 
 	var ArrayLen := Len(MultiArray);
@@ -173,21 +178,71 @@ function SortMultiArrayByIndex(MultiArray, SubIndex)
 		return 0;
 	endif
 
-	var i, k, f, s;
-	for(i := 1; i < ArrayLen; i := i + 1)
-		for( k := i+1; k <= ArrayLen; k := k + 1)
-			f := MultiArray[i];
-			s := MultiArray[k];
-			if ( s[SubIndex] < f[SubIndex] )
-				MultiArray[i] := s;
-				MultiArray[k] := f;
+	var width := 1;
+	while ( width < ArrayLen )
+		var i := 1;
+		while ( i <= ArrayLen )
+			var mid := i + width - 1;
+			if ( mid > ArrayLen )
+				mid := ArrayLen;
 			endif
-		endfor
-		//sleepms(2);
-	endfor
+			var high := i + (2 * width) - 1;
+			if ( high > ArrayLen )
+				high := ArrayLen;
+			endif
+			MultiArray := MergeRunsByIndex(MultiArray, i, mid, high, SubIndex);
+			i := i + (2 * width);
+		endwhile
+		width := width * 2;
+	endwhile
 
 	return MultiArray;
 
+endfunction
+
+function MergeRunsByIndex(MultiArray, low, mid, high, SubIndex)
+	if ( mid >= high )
+		return MultiArray;
+	endif
+
+	var left := array;
+	var i;
+	for(i := low; i <= mid; i := i + 1)
+		left.append(MultiArray[i]);
+	endfor
+
+	var right := array;
+	for(i := mid + 1; i <= high; i := i + 1)
+		right.append(MultiArray[i]);
+	endfor
+
+	var li := 1;
+	var ri := 1;
+	var write_idx := low;
+	while ( li <= left.size() && ri <= right.size() )
+		if ( right[ri][SubIndex] < left[li][SubIndex] )
+			MultiArray[write_idx] := right[ri];
+			ri := ri + 1;
+		else
+			MultiArray[write_idx] := left[li];
+			li := li + 1;
+		endif
+		write_idx := write_idx + 1;
+	endwhile
+
+	while ( li <= left.size() )
+		MultiArray[write_idx] := left[li];
+		li := li + 1;
+		write_idx := write_idx + 1;
+	endwhile
+
+	while ( ri <= right.size() )
+		MultiArray[write_idx] := right[ri];
+		ri := ri + 1;
+		write_idx := write_idx + 1;
+	endwhile
+
+	return MultiArray;
 endfunction
 
 
