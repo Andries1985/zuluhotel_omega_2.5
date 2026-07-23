@@ -368,23 +368,94 @@ function OpenAreaPolicyFile(realm, create := DF_CREATE)
 endfunction
 
 
+///////////////////////////////////////////////////////////////////////////////
+// Mask-value cache (per-program + shared global)
+///////////////////////////////////////////////////////////////////////////////
+// Mirrors the parsed-line cache above, but for the mask VALUE itself. Every
+// GetPolicyMask() call was hitting the datafile subsystem (OpenDataFile +
+// FindElement + GetProp) on every single area-policy check - and since
+// GetGlobalBypassMask() calls this 4 more times per resolve for the world
+// catch-all ids, that's up to 5 datafile round trips per check, called every
+// AI tick for every mobile shard-wide. Masks only change via SetPolicyMask
+// (staff .areas edits) or PruneStaleRealmPolicies, so a cache invalidated
+// only on those writes is safe. Cached per-realm as one dictionary (area_id
+// -> mask) so this stays one GlobalProperty per realm, same shape as the
+// parsed-line cache, not one property per area.
+//
+// Uses .Exists() rather than truthiness to check for a cached entry, since a
+// mask of 0 (the common case - most areas have no flags) is a valid cached
+// value and must not be treated as "not cached".
+
+var _policy_mask_cache := dictionary;
+
+const AREA_POLICY_MASK_CACHE_PREFIX := "zh.areapolicy.maskcache.";
+
+function GetCachedRealmMaskDict(realm)
+	var realm_cache := _policy_mask_cache[realm];
+	if(realm_cache)
+		return realm_cache;
+	endif
+
+	var global_cached := GetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm);
+	if(global_cached && TypeOf(global_cached) == "Dictionary")
+		_policy_mask_cache[realm] := global_cached;
+		return global_cached;
+	endif
+
+	var fresh := dictionary;
+	_policy_mask_cache[realm] := fresh;
+	return fresh;
+endfunction
+
+
+function StoreCachedPolicyMask(realm, realm_cache, area_id, mask)
+	realm_cache[area_id] := CInt(mask);
+	_policy_mask_cache[realm] := realm_cache;
+	SetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm, realm_cache);
+	return CInt(mask);
+endfunction
+
+
+function InvalidatePolicyMaskCache(realm, area_id := "")
+	realm := SanitizePolicyRealm(realm);
+	if(area_id)
+		var realm_cache := _policy_mask_cache[realm];
+		if(realm_cache)
+			realm_cache.Erase(CStr(area_id));
+			_policy_mask_cache[realm] := realm_cache;
+			SetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm, realm_cache);
+		endif
+	else
+		_policy_mask_cache.Erase(realm);
+		EraseGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm);
+	endif
+	return 1;
+endfunction
+
+
 function GetPolicyMask(realm, area_id)
+	realm := SanitizePolicyRealm(realm);
+	area_id := CStr(area_id);
+
+	var realm_cache := GetCachedRealmMaskDict(realm);
+	if(realm_cache.Exists(area_id))
+		return realm_cache[area_id];
+	endif
+
+	// Cold path: not cached yet, fall through to the real datafile lookup.
+	var mask := 0;
 	var file_ref := OpenAreaPolicyFile(realm, DF_CREATE);
-	if(file_ref == error)
-		return 0;
+	if(file_ref != error)
+		var elem := DFFindElement(file_ref, area_id, DF_NO_CREATE);
+		if(elem && elem != error)
+			var prop_val := elem.GetProp(AREA_POLICY_MASK_PROP);
+			if(prop_val != error)
+				mask := CInt(prop_val);
+			endif
+		endif
 	endif
 
-	var elem := DFFindElement(file_ref, CStr(area_id), DF_NO_CREATE);
-	if(!elem || elem == error)
-		return 0;
-	endif
-
-	var prop_val := elem.GetProp(AREA_POLICY_MASK_PROP);
-	if(prop_val == error)
-		return 0;
-	endif
-
-	return CInt(prop_val);
+	return StoreCachedPolicyMask(realm, realm_cache, area_id, mask);
 endfunction
 
 
@@ -406,6 +477,7 @@ function SetPolicyMask(realm, area_id, mask, updated_by := "")
 	elem.SetProp("UpdatedAt", ReadGameClock());
 	elem.SetProp("UpdatedBy", CStr(updated_by));
 	Print("[areas.persist] set wrote realm=" + CStr(realm) + " area_id=" + CStr(area_id) + " mask=" + CStr(mask));
+	InvalidatePolicyMaskCache(realm, area_id);
 
 	var meta_elem := DFFindElement(file_ref, AREA_POLICY_META_ELEMENT, DF_CREATE);
 	if(meta_elem != error)
@@ -465,6 +537,10 @@ function PruneStaleRealmPolicies(realm)
 			removed := removed + 1;
 		endif
 	endforeach
+
+	// Bulk removal - simplest correct move is to drop the whole realm's cached
+	// mask dict rather than track exactly which keys were pruned.
+	InvalidatePolicyMaskCache(realm);
 
 	Print("[areas.persist] prune end realm=" + CStr(realm) + " removed=" + CStr(removed));
 	return removed;

@@ -24,7 +24,28 @@ Set_Script_Option(SCRIPTOPT_NO_RUNAWAY, 1);
 //  1. bLTowns - static fallback (original built-in cities)
 //  2. config/regions.cfg City=1 entries - the actual source townstones are created from
 //  3. GetGlobalProperty("townlist") - covers a townstone whose region entry was later removed
+//
+// Cached (per-program + GlobalProperty, same shape as the areas package's caches):
+// regions.cfg is effectively static at runtime, and this used to be recomputed
+// (a full regions.cfg read + parse) on EVERY StripTownSuffix() call, which
+// IsNameTaken() was calling once per character slot per account - with 5000+
+// accounts that was 20000+ full regions.cfg re-parses in a single name check,
+// which is what caused the ~50 second rename-gump hang.
+var _known_town_names_cache := 0;
+
+const NAMECHECKER_TOWN_CACHE_KEY := "zh.namechecker.knowntownnames";
+
 function GetKnownTownNames()
+	if (_known_town_names_cache)
+		return _known_town_names_cache;
+	endif
+
+	var global_cached := GetGlobalProperty(NAMECHECKER_TOWN_CACHE_KEY);
+	if (global_cached && Lower(TypeOf(global_cached)) == "array")
+		_known_town_names_cache := global_cached;
+		return global_cached;
+	endif
+
 	var names := {};
 
 	foreach thing in bLTowns
@@ -62,16 +83,34 @@ function GetKnownTownNames()
 		endforeach
 	endif
 
+	_known_town_names_cache := names;
+	SetGlobalProperty(NAMECHECKER_TOWN_CACHE_KEY, names);
 	return names;
+endfunction
+
+// Call this after creating a new townstone (a new town name entering the
+// world) so the cache picks up the new name instead of serving a stale list
+// until the next server restart.
+function InvalidateKnownTownNamesCache()
+	_known_town_names_cache := 0;
+	EraseGlobalProperty(NAMECHECKER_TOWN_CACHE_KEY);
+	return 1;
 endfunction
 
 // If name ends with " of <town>" for any known town, returns name with that
 // suffix removed. Otherwise returns name unchanged. Used so name-uniqueness
 // comparisons treat "a pig" and "a pig of Trinsic" as the same identity -
 // closes the exploit of holding both the bare and town-suffixed name at once.
-function StripTownSuffix(name)
+//
+// town_names is optional - pass the result of GetKnownTownNames() when calling
+// this in a loop (e.g. IsNameTaken) so it isn't recomputed on every call.
+function StripTownSuffix(name, town_names := 0)
+	if (!town_names)
+		town_names := GetKnownTownNames();
+	endif
+
 	var lname := lower(CStr(name));
-	foreach town in GetKnownTownNames()
+	foreach town in town_names
 		var suffix := " of " + town;
 		var suffix_len := len(suffix);
 		if (len(lname) > suffix_len)
@@ -83,10 +122,32 @@ function StripTownSuffix(name)
 	return name;
 endfunction
 
+// Lowercases, trims leading/trailing spaces, and collapses any run of
+// interior spaces down to one. Applied on top of StripTownSuffix() so a
+// malformed stored name (e.g. a double space left over from a base name
+// that already had a trailing space before " of Town" got appended) still
+// compares equal to the clean version instead of silently evading the
+// duplicate check.
+function NormalizeNameForCompare(name)
+	var result := lower(CStr(name));
+	while (find(result, "  ", 0))
+		result := StrReplace(result, "  ", " ");
+	endwhile
+	if (len(result) && result[1] == " ")
+		result := result[2, len(result)-1];
+	endif
+	if (len(result) && result[len(result)] == " ")
+		result := result[1, len(result)-1];
+	endif
+	return result;
+endfunction
+
 // Returns 1 if any character on any account (other than exclude_serial) already
-// has the same name once town suffixes are stripped and case is ignored.
+// has the same name once town suffixes are stripped, whitespace is normalized,
+// and case is ignored.
 function IsNameTaken(candidate_name, exclude_serial := 0)
-	var target_name := lower(StripTownSuffix(candidate_name));
+	var town_names := GetKnownTownNames();
+	var target_name := NormalizeNameForCompare(StripTownSuffix(candidate_name, town_names));
 	var accounts := ListAccounts();
 
 	foreach account_name in accounts
@@ -95,7 +156,7 @@ function IsNameTaken(candidate_name, exclude_serial := 0)
 		repeat
 			var ch := account.getcharacter(i);
 			if (ch && ch.serial != exclude_serial)
-				if (lower(StripTownSuffix(ch.name)) == target_name)
+				if (NormalizeNameForCompare(StripTownSuffix(ch.name, town_names)) == target_name)
 					return 1;
 				endif
 			endif
@@ -129,6 +190,16 @@ if (len(name) > MAX_LENGTH && !GetObjProperty(who, "town"))
 	return {0, "too long"};
 elseif (len(name) < MIN_LENGTH)
 	return {0, "too short"};
+endif
+
+// Leading/trailing/doubled spaces are technically "legal characters" per the
+// loop below, but they let a base name like "Rahl " silently turn into a
+// double space ("Rahl  of Town") once Citizenship() appends the town suffix -
+// which then evades exact-match duplicate detection. Reject them outright,
+// unconditionally (not gated by force_town_check), so an already-malformed
+// stored name also gets caught and corrected on next login.
+if (name[1] == " " || name[len(name)] == " " || find(name, "  ", 0))
+	return {0, "bad spacing"};
 endif
 
 foreach thing in blacklist

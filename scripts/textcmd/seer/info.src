@@ -19,6 +19,7 @@ include ":gumps:gumps_ex";
 include "include/math";
 include ":staff:include/staff";
 include "include/constants/locations";
+include "include/NameChecker";
 
 const TEXTSTARTLOCY :=  70;
 
@@ -774,6 +775,8 @@ program textcmd_info( character , whom )
 
     if (!newname)
       SendSysMessage(character, "Canceled.");
+    elseif (who.acct && CheckName(newname, who, 1) != 1)
+      SendSysMessage(character, "That name is invalid or already in use.");
     else
       SetName( who , newname );
       SendSysMessage(who, "Your name has been changed.");
