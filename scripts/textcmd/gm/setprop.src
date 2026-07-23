@@ -9,6 +9,7 @@ use uo;
 use os;
 
 include ":staff:include/staff";
+include "include/NameChecker";
 
 program SetProp(who, text)
 
@@ -56,6 +57,17 @@ endcase
 if (targ.get_member(pname).errortext)
 	SendSysMessage(who, targ.get_member(pname).errortext, 3, 39);
 	return 0;
+endif
+
+// Renaming a PC via .setprop must go through the same validation as any
+// other name change - otherwise staff can force a player onto a name that's
+// already taken, blacklisted, or malformed, bypassing every check we have.
+if (Lower(pname) == "name" && targ.isa(POLCLASS_MOBILE) && targ.acct)
+	var name_check := CheckName(pval, targ, 1);
+	if (name_check != 1)
+		SendSysMessage(who, "That name is invalid or already in use - cannot set it on a player character.", 3, 33);
+		return 0;
+	endif
 endif
 
 // First part of the message

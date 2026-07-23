@@ -20,6 +20,7 @@ case (msg)
 "too long": help := "<BASEFONT COLOR=RED>Error: <BASEFONT COLOR=BLACK>The name you chose is too long, please choose another.<br><br>";
 "duplicate": help := "<BASEFONT COLOR=RED>Error: <BASEFONT COLOR=BLACK>The name you chose is taken, please choose another.<br><br>";
 "illegal characters": help := "<BASEFONT COLOR=RED>Error: <BASEFONT COLOR=BLACK>The name you chose contains illegal characters, please choose another.<br><br>";
+"bad spacing": help := "<BASEFONT COLOR=RED>Error: <BASEFONT COLOR=BLACK>The name you chose cannot start/end with a space or contain double spaces, please choose another.<br><br>";
 endcase
 
 if (GetObjProperty(who, "Converted") == 1 && TypeOf(msg) != "String")

@@ -23,7 +23,7 @@ elseif (!what.isa(POLCLASS_ITEM) && !what.isa(POLCLASS_MOBILE))
 	return 0;
 endif
 
-if (CheckName(text) != 1 && what.isa(POLCLASS_MOBILE) && !what.acct)
+if (what.isa(POLCLASS_MOBILE) && what.acct && CheckName(text, what, 1) != 1)
 	SendSysMessage(who, "The name you chose is either in use, or invalid.");
 	return 0;
 endif
