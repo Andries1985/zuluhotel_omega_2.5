@@ -4,12 +4,41 @@ include "include/npcboosts";
 include "ai/main/npcinfo";
 include "include/attributes";
 include "ai/main/lootblockers";
+include "include/areas";
+include ":areas:include/areafunctions";
 
 function Fight( opponent )
 
 	if ((opponent.cmdlevel > 0) or (opponent.serial == me.serial))
         	setwarmode(0);
         	opponent := 0;
+		return;
+	endif
+
+	// No Damage Zone - chokepoint for every scripts/ai/main/mainloop*.inc
+	// variant, so this single check covers all of them rather than patching
+	// each one. Note: tamed pets (scripts/ai/tamed.src) and guards
+	// (scripts/ai/instakillguard.src) each define their own separate Fight()
+	// and never reach this one - tamed.src has the equivalent check added
+	// directly; guards are covered by callguards.src never summoning one
+	// against a No-Damage-Zone target in the first place, plus the
+	// RecalcDmg()/DealDamage() backstop in hitscriptinc.inc blocking the
+	// guard's native weapon damage even if one is already mid-chase when a
+	// target crosses into the zone. An attacker outside the zone attacking a
+	// defender inside gets removed here (it would otherwise just sit
+	// uselessly at the boundary forever); the me.script=="tamed" branch below
+	// is defensive in case anything not actually running tamed.src ever ends
+	// up flagged that way.
+	if (IsInNoDamageZone(opponent))
+		setwarmode(0);
+		opponent := 0;
+		if (me.isa(POLCLASS_NPC) && !IsInNoDamageZone(me))
+			if (me.script == "tamed")
+				ConfiscateTamedPetForNoDamageZone(me);
+			else
+				me.kill();
+			endif
+		endif
 		return;
 	endif
 

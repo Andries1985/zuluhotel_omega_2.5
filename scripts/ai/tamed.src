@@ -16,6 +16,8 @@ include "ai/setup/modsetup";
 include "include/random";
 include "include/attributes";
 include ":housing:utility";
+include "include/areas";
+include ":areas:include/areafunctions";
 
 const HALT_THRESHOLD := 10;
 Const MOVING_EFFECT_FIREBALL	:= 0x36D4;
@@ -144,6 +146,19 @@ function Fight( opponent )
 	following := 0;
 
 	if ( (opponent.serial == me.serial) or (opponent.serial == master.serial) )
+		return;
+	endif
+
+	// No Damage Zone - tamed pets have their own Fight() here, separate from
+	// scripts/ai/combat/fight.inc's shared one, so the check has to be
+	// duplicated. A pet ordered to attack a defender inside the zone gets
+	// confiscated (not killed) rather than just silently blocked.
+	if (IsInNoDamageZone(opponent))
+		SetWarMode( 0 );
+		following := oldfollowing;
+		if (!IsInNoDamageZone(me))
+			ConfiscateTamedPetForNoDamageZone(me);
+		endif
 		return;
 	endif
 
@@ -1116,18 +1131,27 @@ function Follow()
 		if( !Iscowner( master, multi3 ) and !Iscowner( master, multi2 ))
 			if( !IsFriend( master, multi3) and !IsFriend( master, multi2))
 				if (following.multi and !master.multi)
+					following := 0;
 					return;
 				elseif (!following.multi and master.multi)
+					following := 0;
 					return;
 				elseif (me.multi and !master.multi)
+					following := 0;
 					return;
 				elseif (!me.multi and master.multi)
+					following := 0;
 					return;
 				elseif (me.multi and !following.multi)
+					following := 0;
 					return;
 				elseif (!me.multi and following.multi)
+					following := 0;
 					return;
 				elseif(!CheckLineOfSight(me, following))
+					// Transient (e.g. a tower's overhang geometrically
+					// blocking the LOS raycast) - retry instead of
+					// abandoning the follow order like the six cases above.
 					return;
 				endif
 			endif
@@ -1138,18 +1162,27 @@ function Follow()
 		if( !Iscowner( master, multi2 ))
 			if( !IsFriend( master, multi2))
 				if (following.multi and !master.multi)
+					following := 0;
 					return;
 				elseif (!following.multi and master.multi)
+					following := 0;
 					return;
 				elseif (me.multi and !master.multi)
+					following := 0;
 					return;
 				elseif (!me.multi and master.multi)
+					following := 0;
 					return;
 				elseif (me.multi and !following.multi)
+					following := 0;
 					return;
 				elseif (!me.multi and following.multi)
+					following := 0;
 					return;
 				elseif(!CheckLineOfSight(me, following))
+					// Transient (e.g. a tower's overhang geometrically
+					// blocking the LOS raycast) - retry instead of
+					// abandoning the follow order like the six cases above.
 					return;
 				endif
 			endif
@@ -1160,18 +1193,27 @@ function Follow()
 		if( !Iscowner( master, multi3 ))
 			if( !IsFriend( master, multi3))
 				if (following.multi and !master.multi)
+					following := 0;
 					return;
 				elseif (!following.multi and master.multi)
+					following := 0;
 					return;
 				elseif (me.multi and !master.multi)
+					following := 0;
 					return;
 				elseif (!me.multi and master.multi)
+					following := 0;
 					return;
 				elseif (me.multi and !following.multi)
+					following := 0;
 					return;
 				elseif (!me.multi and following.multi)
+					following := 0;
 					return;
 				elseif(!CheckLineOfSight(me, following))
+					// Transient (e.g. a tower's overhang geometrically
+					// blocking the LOS raycast) - retry instead of
+					// abandoning the follow order like the six cases above.
 					return;
 				endif
 			endif

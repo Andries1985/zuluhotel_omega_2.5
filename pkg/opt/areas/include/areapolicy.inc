@@ -22,6 +22,7 @@ const AREA_POLICY_NO_LOOTING := 64;
 const AREA_POLICY_SAFE_AREA := 128;
 const AREA_POLICY_NO_PK := 256;
 const AREA_POLICY_RP_AREA := 512;
+const AREA_POLICY_NO_DAMAGE_ZONE := 1024;
 
 // World-catchall area ids whose masks are OR-merged into every location's
 // policy so that setting a flag on e.g. "feluccawholeworld" makes it apply to
@@ -47,9 +48,22 @@ function ParseAreaLine(area_line, area_index := 0)
 		return error{"errortext":="Missing id= in area definition: " + CStr(area_line)};
 	endif
 
+	// Optional cat=<category> token right after id=, used only to group areas
+	// for display in the .areas admin gump. Absent on any line, it defaults to
+	// "other" and has no effect on policy resolution (file order still wins).
+	var category := "other";
+	var name_start := 6;
+	if(parts.size() >= 6)
+		var cat_token := ParseAreaCatToken(parts[6]);
+		if(cat_token)
+			category := cat_token;
+			name_start := 7;
+		endif
+	endif
+
 	var name := "";
 	var i;
-	for(i := 6; i <= parts.size(); i := i + 1)
+	for(i := name_start; i <= parts.size(); i := i + 1)
 		if(name)
 			name := name + " ";
 		endif
@@ -66,6 +80,7 @@ function ParseAreaLine(area_line, area_index := 0)
 	info.+min_y := CInt(parts[3]);
 	info.+max_y := CInt(parts[4]);
 	info.+area_id := area_id;
+	info.+category := category;
 	info.+name := name;
 	info.+area_index := CInt(area_index);
 	return info;
@@ -83,6 +98,20 @@ function ParseAreaIdToken(token)
 
 	var raw_id := SubStr(raw, 4, Len(raw));
 	return NormalizeAreaId(raw_id);
+endfunction
+
+
+function ParseAreaCatToken(token)
+	var raw := CStr(token);
+	if(Len(raw) < 5)
+		return "";
+	endif
+	if(Lower(SubStr(raw, 1, 4)) != "cat=")
+		return "";
+	endif
+
+	var raw_cat := SubStr(raw, 5, Len(raw));
+	return NormalizeAreaId(raw_cat);
 endfunction
 
 

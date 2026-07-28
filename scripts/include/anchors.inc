@@ -272,6 +272,9 @@ function EnforceTownBounds(from_combat)
         return 1;
 endfunction
 
+// Returns 0 if this NPC was jailed/killed by EnforceTownBounds (caller must
+// stop running: SendToJailAndRespawn does not itself halt the script), 1 if
+// it's still alive and in bounds.
 function WanderWithinTown()
         var me := Self();
         if(ANCHORS_DEBUG)
@@ -282,13 +285,13 @@ function WanderWithinTown()
         endif
 
         if (!EnforceTownBounds(0))
-                return;
+                return 0;
         endif
 
         TryOpenNearbyNpcDoors();
         StepCivilianThroughDoorIfNeeded();
         Wander();
-        EnforceTownBounds(0);
+        return EnforceTownBounds(0);
 endfunction
 
 function IsDoorPushCivilianTemplate(me)

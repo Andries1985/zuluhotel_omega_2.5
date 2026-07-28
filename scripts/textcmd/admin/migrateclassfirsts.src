@@ -1,0 +1,39 @@
+// Synopsis: One-time migration of legacy "first to reach class level" CProps into the classfirsts datafile
+use uo;
+
+include "include/classfirsts";
+include ":staff:include/staff";
+
+program textcmd_migrateclassfirsts( who )
+
+	var codes := { "b", "bs", "c", "m", "ma", "p", "pa", "r", "t", "w" };
+	var migrated := 0;
+	var skipped_existing := 0;
+	var skipped_empty := 0;
+
+	foreach code in codes
+		var level;
+		for( level := 1; level <= 6; level := level + 1 )
+			var key := CStr( level ) + code;
+
+			var legacy_name := GetGlobalProperty( key );
+			if( !legacy_name )
+				skipped_empty := skipped_empty + 1;
+				continue;
+			endif
+
+			if( GetClassFirst( key ) )
+				skipped_existing := skipped_existing + 1;
+				continue;
+			endif
+
+			SetClassFirst( key, legacy_name );
+			migrated := migrated + 1;
+			SendSysMessage( who, "Migrated " + key + ": " + legacy_name );
+		endfor
+	endforeach
+
+	SendSysMessage( who, "Class firsts migration complete. Migrated: " + migrated + ", already in datafile: " + skipped_existing + ", no legacy record: " + skipped_empty );
+	LogCommand( who, GetProcess( GetPid() ).name );
+
+endprogram

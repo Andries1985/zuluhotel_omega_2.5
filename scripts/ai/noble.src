@@ -43,7 +43,10 @@ program noble ()
     set_priority(10);
 
     // Start movement right away so newly spawned nobles do not stand idle.
-    WanderWithinTown();
+    // (hasTownBounds is already guaranteed true here; see the early return above.)
+    if (!WanderWithinTown())
+        return;
+    endif
 
 
     // Keep one blocking wait per loop; avoid a tight event loop that can trigger runaway cycles.
@@ -59,11 +62,15 @@ program noble ()
                endif
             SYSEVENT_ENGAGED:
                 SayRandomFromArray(ENGAGED_SAYINGS);
-                RunFromOpponent( ev.source, HALT_THRESHOLD );
+                if (!RunFromOpponent( ev.source, HALT_THRESHOLD ))
+                    return;
+                endif
             SYSEVENT_DAMAGED:
                 SayRandomFromArray(DAMAGED_SAYINGS);
                 if (ev.source)
-                    RunFromOpponent( ev.source, HALT_THRESHOLD );
+                    if (!RunFromOpponent( ev.source, HALT_THRESHOLD ))
+                        return;
+                    endif
                 else
                     say( "What treachery is this!" );
                 endif
@@ -71,7 +78,9 @@ program noble ()
                 SayRandomFromArray(DISENGAGED_SAYINGS);
         endcase
         if (hasTownBounds and ReadGameClock() >= next_wander)
-            WanderWithinTown();
+            if (!WanderWithinTown())
+                return;
+            endif
             next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
         endif
         Sleepms(1);
