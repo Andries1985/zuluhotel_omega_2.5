@@ -1,10 +1,10 @@
 # Patch Notes - v1.0.8
 **Zuluhotel Omega 2.5 | Live Shard**  
-**Date: July 23, 2026**
+**Date: July 28, 2026**
 
 ---
 
-Welcome to **Patch 1.0.8**. This update focuses on **player-run town administration**, **area-policy fixes**, **name-change exploit closure**, **house placement rules**, **crafting/Omega Cache fixes**, and a set of support-side script, performance, and balance updates.
+Welcome to **Patch 1.0.8**. This update focuses on **player-run town administration**, **area-policy fixes**, **name-change exploit closure**, **house placement rules**, **crafting/Omega Cache fixes**, a new **No Damage Zone** area type, a **shield armor bug fix**, and a set of support-side script, performance, and balance updates.
 
 ---
 
@@ -124,6 +124,54 @@ Welcome to **Patch 1.0.8**. This update focuses on **player-run town administrat
 
 - No direct gameplay change expected for regular players.
 - Staff tools were updated for area policy management, go-location browsing, spawnpoint restarts, town member cleanup, and related command synopsis coverage.
+- The area-policy admin tool was further reorganized (categorized area list, an info popup, and a page-jump control) to make it easier for staff to manage the growing number of areas.
+
+---
+
+## No Damage Zone - New Area Type
+
+### Player Impact
+
+- A new zone type has been added to the area system: **No Damage Zone**. Standing in one blocks combat entirely - you can't target or attack anything (player or NPC) while inside, and nothing can deal damage to you.
+- Unlike Safe Areas, a No Damage Zone also blocks looting and magic, the same way anti-looting and anti-magic areas already do.
+- If you order a tamed pet to attack something inside a No Damage Zone from outside it, the pet is confiscated rather than left standing uselessly at the edge of the zone - donator mounts are safely stored to their mount stone, other pets are ticketed back to their owner the normal confiscation way.
+- You can still walk a pet into a No Damage Zone and release it (for a zoo/exhibit, for example) - a released pet can't attack or be attacked there anyway, so it's left alone unless it's ordered to attack from outside.
+- Guards will not spawn against a criminal or murderer who is standing inside a No Damage Zone.
+- No live areas currently use this new zone type - it's new infrastructure staff can apply to areas going forward.
+
+---
+
+## Combat - Shield Armor Fix
+
+### Player Impact
+
+- Fixed a bug where several shields (including Shield of Alryc, Sunshine Shield, Shield of Wonders, the AR5-AR50 reward shields, Shield of Stygian Darkness, and a handful of others) were granting a small amount of permanent bonus Armor Rating just from being worn, in addition to their intended bonus on a successful parry. That extra always-on AR has been removed - these shields now only help when you successfully parry, as intended.
+- Animation's Shield keeps a flat armor bonus, but it's now applied through the correct body zones instead of the one it was incorrectly using.
+
+---
+
+## Omega Cache - Lockout Fix
+
+### Player Impact
+
+- Fixed a bug where a server restart could leave your Omega Cache permanently stuck showing "You already have the Omega Cache open," even though it wasn't. This could persist for a very long time until it cleared on its own - it's now detected and cleared automatically.
+
+---
+
+## Class Firsts - Behind-the-Scenes Storage Change
+
+### Player Impact
+
+- No direct gameplay change expected. "First to reach level N [Class]" tracking now uses more reliable internal storage. All previously recorded firsts are preserved.
+
+---
+
+## Town NPCs - Script Cleanup After Jail/Death
+
+### Player Impact
+
+- Fixed a bug where town NPCs (minstrels, nobles, townsfolk) that got jailed or killed for leaving their town's bounds (whether wandering or fleeing a fight) could keep executing leftover script logic afterward instead of stopping cleanly.
+- Fixed a bug where a tamed pet that permanently couldn't follow its owner (for example, due to a boat/house ownership mismatch) could get stuck unable to respond to new orders.
 
 ---
 
@@ -133,6 +181,8 @@ Welcome to **Patch 1.0.8**. This update focuses on **player-run town administrat
 
 - No direct gameplay change expected.
 - Support data and scripts were refreshed for the new area and go-location workflow, and the backup script path was updated.
+- A batch of boat and decorative structure data was corrected - several boats and non-house structures were incorrectly tagged internally as houses; this is now fixed so house-only tools (including this patch's house-placement restrictions) no longer misidentify them.
+- A handful of ship-part tiles (mast, spar, tiller, ballista) had their internal placement/equip data corrected.
 
 ---
 
@@ -147,9 +197,15 @@ Welcome to **Patch 1.0.8**. This update focuses on **player-run town administrat
 - Remove Curse now uses a better success formula and valid target filter.
 - Protection effects now last longer.
 - Skill gain handling was retuned for higher-skill edge cases.
-- Town NPCs start wandering immediately after spawning.
+- Town NPCs start wandering immediately after spawning, and no longer keep running after being jailed or killed for leaving town bounds.
 - Two hot commands were made significantly faster.
 - Staff now have a new character/account history tracking tool, and name-rejection messages are clearer.
-- Staff support commands and data generators were refreshed.
+- Staff support commands and data generators were refreshed, and the area-policy admin tool was reorganized for easier management.
+- Added a new No Damage Zone area type that fully blocks combat, looting, and magic, with proper tamed-pet handling.
+- Fixed several shields granting unintended permanent bonus Armor Rating.
+- Fixed a bug that could permanently lock players out of their Omega Cache after a server restart.
+- Migrated "first to reach class level" tracking to more reliable internal storage.
+- Fixed tamed pets getting stuck after a permanent follow failure.
+- Corrected internal boat/structure data and a few ship-part tiles.
 
 Thanks for playing Zuluhotel Omega 2.5.
