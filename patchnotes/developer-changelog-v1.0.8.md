@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.8
-**Range:** `9f8189f` (origin/Patch-1.0.7) -> `7c27772` (HEAD)  
+**Range:** `9f8189f` (origin/Patch-1.0.7) -> `676adfb` (HEAD)  
 **Branch:** Patch-1.0.8  
-**Date:** 2026-06-20 -> 2026-07-23  
-**Commits in range:** 10 (excluding merge commits)  
-**Files changed:** 84 (+12970 / -1689)
+**Date:** 2026-06-20 -> 2026-07-28  
+**Commits in range:** 12 (excluding merge commits)  
+**Files changed:** 104 (+13972 / -2098)
 
 ---
 
@@ -23,8 +23,15 @@
 12. [Gameplay Tuning and Script Fixes](#12-gameplay-tuning-and-script-fixes)
 13. [Support Data and Tooling](#13-support-data-and-tooling)
 14. [Staff Tooling - Character/Account Audit Panel and Name/Death/Poison/Note Tracking](#14-staff-tooling---characteraccount-audit-panel-and-namedeathpoisonnote-tracking)
-15. [Exhaustive File-by-File Change List](#15-exhaustive-file-by-file-change-list)
-16. [Risk and Regression Notes](#16-risk-and-regression-notes)
+15. [No Damage Zone - New Area Policy](#15-no-damage-zone---new-area-policy)
+16. [Areas Admin Gump - Categorized Display, Info Popup, Page Jump](#16-areas-admin-gump---categorized-display-info-popup-page-jump)
+17. [Combat - Shield Zone-Coverage Fix](#17-combat---shield-zone-coverage-fix)
+18. [Omega Cache - Permanent Lockout Fix](#18-omega-cache---permanent-lockout-fix)
+19. [Class Firsts - Datafile Migration](#19-class-firsts---datafile-migration)
+20. [Town NPC AI - Script Halt on Jail/Kill](#20-town-npc-ai---script-halt-on-jailkill)
+21. [Multi/Boat Data Corrections](#21-multiboat-data-corrections)
+22. [Exhaustive File-by-File Change List](#22-exhaustive-file-by-file-change-list)
+23. [Risk and Regression Notes](#23-risk-and-regression-notes)
 
 ---
 
@@ -45,6 +52,14 @@ The second window (`7bdc099` through `b347427`) closed a live-reported name-coll
 
 A third window (`7c27772`) added a full staff-facing character/account audit tool and wired full name-change, death, poisoning, and account-note tracking into every script that touches them — see section 14. Two additional commits landed in this range (`b347427`, `232ee95`); `b347427`'s crafting/performance/potion-category work is already covered above (sections 9-11), and `232ee95` (a townstone treasury-race, election-cleanup, and townlist-bootstrap fix pass) is not detailed in this document.
 
+A fourth window (`535e60d` through `676adfb`) added a new **No Damage Zone** area policy — a stronger sibling to Safe Area that structurally blocks combat, looting, and magic rather than just nullifying damage — with backstops at every layer that could otherwise deal damage, plus proper tamed-pet confiscation/mount-storage handling. Alongside that:
+
+- A real combat balance bug was fixed: 17 shields had an erroneous `Coverage Hands` tag that made the engine treat them as flat zone-based armor contributors instead of routing through the intended parry-only shield formula, silently granting permanent bonus AR whether or not a parry ever succeeded.
+- A live "Omega Cache permanently stuck open" bug was fixed — a server restart could make the anti-double-open guard read as satisfied millions of seconds in the future, wedging the cache shut until real uptime caught up.
+- "First to reach class level" tracking was migrated off ad-hoc global CProps onto a proper keyed datafile.
+- A bug where jailed/killed town NPCs kept executing their script afterward (instead of stopping) was fixed across all four townsfolk AI scripts, and a related tamed-pet `Follow()` desync was fixed.
+- The `.areas` admin gump was reorganized (categorized area list, an info popup, a page-jump control) to stay usable at 200+ entries, and `config/multis.cfg` had a batch of boats and non-house placeable structures that were mislabeled `House` corrected to `Boat`/`Multi` so house-only tooling (including this patch's new footprint-based placement restrictions) doesn't misidentify them.
+
 ---
 
 ## 2. Commit Timeline
@@ -61,6 +76,8 @@ A third window (`7c27772`) added a full staff-facing character/account audit too
 | `b347427` | 2026-07-23 | Patch notes, and fixes for omega cache, as well as optimization for go gomulti and goboat (see sections 9-11) |
 | `232ee95` | 2026-07-23 | Townstone fixes, Minstel and townsfolk fix (not detailed in this document) |
 | `7c27772` | 2026-07-23 | New test panel up along with datafiles (see section 14) |
+| `535e60d` | 2026-07-23 | Patchnotes (v1.0.8 write-up; meta-commit, no functional changes) |
+| `676adfb` | 2026-07-28 | Many updates and fixes to Areas; Fix for Gm shields no more coverage of hands; Omega permanent lockout fix; New area function no damage zone; Class firsts moved to datafile (see sections 15-21) |
 
 ---
 
@@ -408,7 +425,193 @@ Building the audit panel required first finding every place in the codebase wher
 
 ---
 
-## 15. Exhaustive File-by-File Change List
+## 15. No Damage Zone - New Area Policy
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/areas/include/areapolicy.inc` | New `AREA_POLICY_NO_DAMAGE_ZONE := 1024` bitflag |
+| `pkg/opt/areas/include/areafunctions.inc` | New `SetNoDamageZoneProperties()`, `RemoveNoDamageZoneProperties()`, `StoreDonatorMountForNoDamageZone()`, `ConfiscateTamedPetForNoDamageZone()`; new `include ":housing:utility";` |
+| `pkg/opt/areas/EnterAreaDelay.src` | Sets `InNoDamageZone` + sends "This is a NO DAMAGE zone." on entry, checked before the Safe Area block |
+| `pkg/opt/areas/LeaveArea.src` | Clears `InNoDamageZone` on exit |
+| `pkg/opt/areas/callguards.src` | Guards no longer spawn against a criminal/murderer/tamed-attacker who is inside a No Damage Zone |
+| `pkg/systems/combat/include/hitscriptinc.inc` | `RecalcDmg()` and `DealDamage()` bail out (and clear war mode) if the defender is in a No Damage Zone — independent backstop, not skipped for NPC-vs-NPC like the NOPK checks |
+| `pkg/systems/combat/banishonhit.src` | Bails out if either side is in a No Damage Zone |
+| `pkg/systems/combat/banishscript.src` | Bails out if either side is in a No Damage Zone |
+| `pkg/systems/combat/blackrockscript.src` | Bails out if either side is in a No Damage Zone (its summoned/animated branches apply guaranteed-lethal damage unconditionally and had no other guard) |
+| `pkg/packethooks/packethook/packethook.src` | `OnTarget()` and `checkAttack()` reject targeting/attacking anything (PC or NPC) inside a No Damage Zone |
+| `scripts/ai/combat/fight.inc` | Shared `Fight()` chokepoint: drops the opponent and clears war mode if it's in a No Damage Zone; kills or confiscates `me` if `me` is an NPC outside the zone attacking in |
+| `scripts/ai/tamed.src` | Tamed pets have their own separate `Fight()` — duplicated the same check, confiscating (not killing) the pet |
+| `scripts/include/areas.inc` | New `IsInNoDamageZone(who)`; `IsInAntiLootingArea()` and `IsInAntiMagicArea()` now also return true for a No Damage Zone |
+| `scripts/include/skillpoints.inc` | Skill gain is blocked in a No Damage Zone the same way it already was in a Safe Area |
+| `pkg/opt/areas/textcmd/admin/areas.src` | New "No Damage Zone" checkbox column; `RefreshOnlineAreaStatus()` now also syncs `InNoDamageZone` for online characters when config is saved |
+
+### Overview
+
+No Damage Zone is a new, stronger sibling to Safe Area: Safe Area grants invulnerability (damage still "happens" but is nullified), whereas No Damage Zone tries to stop combat from ever starting in the first place, backed up by hard returns at every layer that could otherwise apply damage (packethook targeting, `Fight()`, the three proc scripts, and the core damage-calc functions). GMs (`who.cmdlevel`) are exempt from the flag entirely.
+
+### Notable Functional Changes
+
+- `SetNoDamageZoneProperties(who)` sets `InNoDamageZone := 1` on `who`, but returns `0` immediately for staff (`who.cmdlevel`) without setting anything.
+- A tamed pet ordered to attack into a zone from outside it is confiscated via `ConfiscateTamedPetForNoDamageZone()`, not simply blocked — donator mounts are stored to their mount stone (`StoreDonatorMountForNoDamageZone()`, mirroring `mountstone.src`'s `StoreMount()` but driven off the live mount mobile); everything else gets a confiscation ticket mailed to its master and is removed via `KillConfiscatedPet()`, the same pattern `tamed.src` already uses for NOPK/Guarded/Safe release violations.
+- Explicitly **not** triggered by a pet merely being present, released, or dismounted inside the zone — an owner can walk a pet in and `.release`/`GoWild` it to populate an exhibit; once released it can't target or attack anyone anyway, so it's left alone. Only an explicit outside-in attack order is punished.
+- `RecalcDmg()`/`DealDamage()` checks are deliberately *not* skipped for NPC-vs-NPC combat (unlike the existing NOPK checks) — they're a last-resort backstop in case damage reaches this point some other way (e.g. the flag toggling live mid-fight), since combat is already meant to be blocked upstream.
+- `IsInAntiLootingArea()`/`IsInAntiMagicArea()` folding in the new flag means a No Damage Zone is automatically also a no-loot, no-magic area without needing the flag set twice per area line.
+
+### Expected Impact
+
+New tool for staff to designate zones (event areas, screenshots/roleplay hubs, hub cities, etc.) where PvP/PvE damage cannot occur at all, with tamed-pet handling that doesn't just strand a pet uselessly at the boundary.
+
+---
+
+## 16. Areas Admin Gump - Categorized Display, Info Popup, Page Jump
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/areas/include/areapolicy.inc` | `ParseAreaLine()` now reads an optional `cat=<category>` token; new `ParseAreaCatToken()` |
+| `pkg/opt/areas/areas.cfg` | Every `Area` line across all realms tagged with `cat=world\|city\|dungeon\|poi\|graveyard\|shrine\|entrance` (216 lines); old auto-generated `// Contains: ... Inside: ... Partially overlaps: ...` comment lines removed |
+| `regions/regions.cfg` | `Whole World`, `Zulu Territory`, `Zulu Dungeon Territory`, and the eight `Green Acres N` regions changed from `Type POI` to `Type World`; `Lost Lands` moved later in the file (display-order only, BOM added to file start) |
+| `pkg/opt/areas/textcmd/admin/areas.src` | New `BuildCategoryDisplayOrder()`, `AppendSortedBucket()`, `BuildAreaSortKey()`; gump redrawn taller/wider with a full-width header bar, evenly spaced action buttons, a popup "Area Info / Help" gump (`ShowAreaInfoGump()`) replacing the inline HTML box, a "Go to page" text entry + button, and `AREAS_PER_PAGE` raised from 11 to 15 |
+
+### Overview
+
+With well over 200 area entries, the flat alphabetical-by-file-order list was unwieldy. Areas are now grouped for display into World -> Cities -> Dungeons -> Points of Interest -> Graveyards -> Shrines -> Dungeon Entrances (`CATEGORY_ORDER`), each group internally alphabetical (World gets a fixed lead sequence: Whole World, Zulu Territory, Zulu Dungeon Territory, Green Acres).
+
+### Notable Functional Changes
+
+- `cat=` is a display-only grouping tag read right after `id=` on an `Area` line; it never touches `areas.cfg`'s actual line order, which is what `ResolveAreaKeyAtLocation()`/`ResolveAreaMatchAtLocation()` still walk for real policy resolution (first bounding-box match wins). Reordering the file would change which policy applies at overlapping coordinates server-wide, so the admin gump only reorders a parallel `display_order[]` index array, never `areas[]` itself.
+- Checkbox `retval` encoding changed from `area_index * 10 + column` to `area_index * 100 + column` to leave headroom for the new 11th column (No Damage Zone) without colliding with the next area's column-1 checkbox.
+- `GetAreaName()` updated to skip past an optional `cat=` token (in addition to the existing `id=` skip) when extracting the human-readable area name.
+- Gump height grew from 525 to 595, the header bar grew to accommodate a 3-line Recall To/From label (frees up horizontal room for the new No Damage Zone column), and Prev/Next buttons moved to hug the left/right edges symmetrically.
+
+### Expected Impact
+
+Staff-only tooling change — no player-facing effect. Makes the area-policy editor usable at its current and future scale.
+
+---
+
+## 17. Combat - Shield Zone-Coverage Fix
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `config/itemdesc.cfg` | Removed `Coverage Hands` from `sunshineshield` (0x8254) |
+| `pkg/systems/combat/config/itemdesc.cfg` | Removed `Coverage Hands` from 16 shield definitions (0x8250 Shield of Alryc, 0x604c Shield of Wonders, 0x76d0-0x76d4/0x76d8-0x76dc/0x76df the AR5-AR50 + Stygian Darkness reward shields, 0x9825-0x982a Shieldofdrakon/ryous/darkness/Elven/NavarBloodyBarrier, 0x1bc6 solidchaos); `AnimationShield` (0x76dd) changed from `Coverage Hands` to `Coverage Body` + `Coverage Legs/feet` |
+| `ainotes/armor-zone-damage-calc.md` | New investigation note documenting how `defender.ar` is actually computed and why the shield `Coverage` tag mattered |
+
+### Overview
+
+Per `pkg/items/armor/include/armorZones.inc`'s `CS_GetEffectiveArmor()` (which mirrors the engine core's `refresh_ar()`): an item with **no** `Coverage` entries is treated as a shield and only contributes AR through the parry-based formula (`base_ar * parry * 0.5 * 0.01`, i.e. only matters on a successful parry roll). An item **with** a `Coverage` entry — even a stray `Hands` tag on a shield — instead falls into the zone-based branch and contributes `base_ar * zone_chance/100` to the wearer's flat, always-on effective AR, exactly like a real glove or gauntlet would. The 17 shields listed above had `Coverage Hands` left over (likely copy-pasted from a glove/gauntlet template), so they were silently granting permanent AR under the zone formula in addition to whatever the shield was already granting on parry.
+
+### Notable Functional Changes
+
+- Removing `Coverage` entirely from the 16 combat-shield entries and the 1 root-itemdesc entry routes them back into `CS_GetEffectiveArmor()`'s parry-only branch.
+- `AnimationShield` (0x76dd) was handled differently: instead of removing `Coverage`, it was reassigned to `Body` + `Legs/feet`. It keeps a flat, always-on AR contribution (unlike the other shields, which switch to parry-only), just no longer double-dips through the Hands zone specifically.
+
+### Expected Impact
+
+The 17 corrected shields no longer add a small amount of permanent, un-earned Armor Rating; their AR now only helps on a successful parry, as originally intended for a shield. `AnimationShield` keeps working as a flat-AR item but on more sensible zones.
+
+---
+
+## 18. Omega Cache - Permanent Lockout Fix
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/omegacache/omegacache.inc` | `RunOmegaCacheGump()`'s double-open guard rewritten |
+
+### Overview
+
+The "already have the Omega Cache open" guard stored `ReadGameClock() + 600` (an uptime-based clock) and compared it against the current clock on the next open attempt. `ReadGameClock()` resets to 0 on every server restart, so a value stored shortly before a restart (e.g. `50000`) could be far larger than the new post-restart clock (e.g. `12`) for a long time — reading as "still open" until real uptime climbed back up past the stale value, potentially locking a player out of their own cache for a very long time (up to the old clock's full magnitude) after any restart.
+
+### Notable Functional Changes
+
+- Any guard value more than 600 seconds ahead of "now" (the maximum a legitimately-set guard can ever be) is now recognized as stale left over from before a restart, erased, and the gump is allowed to open normally instead of showing "You already have the Omega Cache open."
+
+### Expected Impact
+
+Fixes a real live bug: players could get permanently (until server uptime caught up, potentially never) locked out of opening their Omega Cache after any server restart that happened while their guard property was still set.
+
+---
+
+## 19. Class Firsts - Datafile Migration
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `scripts/include/classfirsts.inc` | New file — `OpenClassFirstsDataFile()`, `GetClassFirst(key)`, `SetClassFirst(key, name)` |
+| `scripts/textcmd/player/showclasse.src` | All ~60 `GetGlobalProperty("Nx")`/`SetGlobalProperty("Nx", ...)` "first to reach level" calls replaced 1:1 with `GetClassFirst`/`SetClassFirst` |
+| `scripts/textcmd/admin/migrateclassfirsts.src` | New one-time admin migration command |
+| `config/command_synopses.cfg` | Synopsis entry added for `migrateclassfirsts` |
+
+### Overview
+
+"First player to reach class level N" tracking (keys like `"1m"`, `"6w"`) moved off global CProps and into a dedicated `:classfirsts:classfirsts` datafile, keyed by string (`DF_KEYTYPE_STRING`), following this repo's existing open/create/unload datafile pattern.
+
+### Notable Functional Changes
+
+- `migrateclassfirsts` walks all 10 class codes (`b, bs, c, m, ma, p, pa, r, t, w`) x levels 1-6, reads the legacy `GetGlobalProperty(key)`, and calls `SetClassFirst(key, legacy_name)` only if the datafile doesn't already have an entry for that key — safe to re-run, reports migrated/already-present/no-legacy-record counts to the caller.
+- `showclasse.src`'s broadcast/award logic is otherwise unchanged — same messages, same trigger conditions (still gated behind `who.cmdlevel == 0`, so GM testing doesn't award firsts).
+
+### Expected Impact
+
+No direct gameplay change expected. Internal data-storage change only; existing "first to reach" records are preserved via the migration command rather than reset.
+
+---
+
+## 20. Town NPC AI - Script Halt on Jail/Kill
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `scripts/include/anchors.inc` | `WanderWithinTown()` now returns `0` if `EnforceTownBounds()` jailed/killed the NPC, `1` otherwise (previously returned nothing) |
+| `scripts/include/townsfolk.inc` | `RunFromOpponent()` now returns `0`/`1` the same way |
+| `scripts/ai/minstrel.src`, `noble.src`, `person.src`, `townperson.src` | Every call site now checks the return value and `return`s out of the program if it's `0` |
+| `scripts/ai/tamed.src` | `Follow()`: the six permanent follow-abandon branches (multi/boat ownership mismatches) now also clear `following := 0` before returning; the line-of-sight branch is left alone (transient, retries) |
+
+### Overview
+
+`EnforceTownBounds()` jails or kills an NPC that's wandered or been chased out of its town's bounds, but doesn't itself stop the calling script (`SendToJailAndRespawn` doesn't halt execution). Previously, `WanderWithinTown()` and `RunFromOpponent()` swallowed this outcome and returned nothing, so all four townsfolk AI scripts kept running their main loop against an NPC that had just been jailed or destroyed.
+
+### Notable Functional Changes
+
+- Every `WanderWithinTown()`/`RunFromOpponent()` call site in `minstrel.src`, `noble.src`, `person.src`, and `townperson.src` now immediately `return`s (stopping the script) when the call reports the NPC was removed.
+- `tamed.src`'s `Follow()` previously left the stale `following` reference in place after a permanent follow-abandon condition (e.g. pet on a boat that the master isn't on), only clearing it now for the six permanent-mismatch branches — the seventh (blocked line of sight) is transient and intentionally left untouched so it keeps retrying.
+
+### Expected Impact
+
+Removes a class of leftover "zombie script" execution against a townsfolk NPC that was already jailed or killed. Tamed pets that hit a permanent follow-abandon condition no longer get stuck holding a `following` target they can never reach.
+
+---
+
+## 21. Multi/Boat Data Corrections
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `config/multis.cfg` | 19 entries (`0x18`-`0x40`) reclassified from `House` to `Boat`; ~150 entries (`0x64` onward, plus several new `Multi` entries in the `0x1db0`-`0x1dd7` range) reclassified from `House` to the generic `Multi` type |
+| `config/tiles.cfg` | `ballista`, `mast`, `spar`, `tiller`, and `MissingName` ship-part tiles: `Layer` corrected (several to `25`), `AnimID 0` and `Equippable 1` added where missing |
+
+### Overview
+
+A batch of ship hulls and non-house placeable structures (statues, decorative multis, etc.) in `config/multis.cfg` were tagged `House` instead of `Boat`/`Multi`. Anything that walks multi definitions looking specifically for houses — including this patch's new footprint-based house-placement restriction checks (section 7) — would have misidentified these as houses.
+
+### Expected Impact
+
+No direct gameplay change expected for legitimate houses. Corrects the type classification so house-only systems (placement checks, house tools/commands) stop matching against boats and decorative multis that were never meant to be treated as houses.
+
+---
+
+## 22. Exhaustive File-by-File Change List
 
 All files changed in `Patch-1.0.7..HEAD`:
 
@@ -486,10 +689,25 @@ All files changed in `Patch-1.0.7..HEAD`:
 | `scripts/textcmd/seer/info.src` | Rename button now runs through `CheckName`, PC-scoped, shows real rejection reason, and records name changes; `fixnameguild` and NOTES action also record |
 | `scripts/textcmd/test/editcharacter.src` | Name field now records a name change |
 | `config/cmds.cfg` | New `DIR` entry for `.testadminpanel` under the `Test` cmdlevel |
+| `ainotes/armor-zone-damage-calc.md` | New investigation note on shield AR/zone-coverage math |
+| `config/itemdesc.cfg` | Removed stray `Coverage Hands` from `sunshineshield` |
+| `config/multis.cfg` | Reclassified ~170 entries from `House` to `Boat`/`Multi` |
+| `config/tiles.cfg` | Fixed `Layer`/`AnimID`/`Equippable` on ship-part tiles |
+| `pkg/opt/areas/callguards.src` | Guards skip No-Damage-Zone criminals/murderers |
+| `pkg/opt/areas/include/areafunctions.inc` | New No Damage Zone + pet confiscation/mount-storage helpers |
+| `pkg/systems/combat/banishonhit.src` | No Damage Zone guard |
+| `pkg/systems/combat/banishscript.src` | No Damage Zone guard |
+| `pkg/systems/combat/blackrockscript.src` | No Damage Zone guard |
+| `pkg/systems/combat/config/itemdesc.cfg` | Removed stray `Coverage Hands` from 16 shields; recategorized `AnimationShield` |
+| `pkg/systems/combat/include/hitscriptinc.inc` | No Damage Zone backstop in `RecalcDmg()`/`DealDamage()` |
+| `scripts/ai/combat/fight.inc` | Shared `Fight()` No Damage Zone chokepoint |
+| `scripts/ai/tamed.src` | No Damage Zone `Fight()` handling; `Follow()` clears stale `following` on permanent abandon |
+| `scripts/include/classfirsts.inc` | New datafile-backed class-firsts storage |
+| `scripts/textcmd/admin/migrateclassfirsts.src` | New one-time migration command |
 
 ---
 
-## 16. Risk and Regression Notes
+## 23. Risk and Regression Notes
 
 1. `regions/regions.cfg` and `config/golocs_by_id.cfg` are now tightly coupled. Any future region edit should regenerate the go-location index rather than hand-editing the generated file.
 2. The area-policy caches (parsed-line cache and the new mask-value cache) use global properties and, for the parsed-line cache, a line-count fingerprint. If `areas.cfg` changes shape, cache invalidation needs to remain intact or stale policy data can persist. The mask-value cache is invalidated precisely on `SetPolicyMask`/`PruneStaleRealmPolicies` writes, so it should stay correct as long as no other code path writes the `AREA_POLICY_MASK_PROP` datafile property directly.
@@ -503,4 +721,8 @@ All files changed in `Patch-1.0.7..HEAD`:
 10. The audit panel's four history arrays (names, deaths, poisonings, account notes) hard-trim to 100 entries, erasing the oldest first. This is intentional to bound datafile growth, but it means very active characters/accounts will lose their oldest audit history over time rather than growing indefinitely — worth knowing before staff rely on it for long-term investigation.
 11. `GetLatestNoteInfo()`'s attribution is derived by comparing the account's live `Notes` cprop text against the last `notes_history` entry; if a note is ever set through a path that isn't wired to `RecordAccountNote` (or was set before this feature existed), the panel will correctly show blank/"Unknown" attribution rather than a wrong name — by design, but staff should not read a blank attribution as "nobody knows," only as "not recorded through a tracked path."
 12. `.testadminpanel` is read/write-audit-only and gated to the `Test` cmdlevel; it does not change any player-facing behavior. The only behavior changes with any player visibility from this section are the `.setprop`/`.setname`/`.info` rejection-message wording (now shows the real reason instead of a generic one) and the `despawn`/`primespawn`/`forcespawn` null-spawnpoint guard — both staff-tool-only surfaces.
-13. This document's commit range (`9f8189f..7c27772`) includes two commits not detailed here: `b347427` (already covered by sections 9-11) and `232ee95` ("Townstone fixes, Minstel and townsfolk fix" — a townstone treasury-race-condition fix, election/mayor-removal cleanup, a candidate-list pairing bug fix, and a townlist-bootstrap self-heal on login). If player-facing patch notes are needed for `232ee95`, it should get its own review pass rather than being folded in here secondhand.
+13. This document's commit range includes two commits not detailed in the sections above: `b347427` (already covered by sections 9-11) and `232ee95` ("Townstone fixes, Minstel and townsfolk fix" — a townstone treasury-race-condition fix, election/mayor-removal cleanup, a candidate-list pairing bug fix, and a townlist-bootstrap self-heal on login). If player-facing patch notes are needed for `232ee95` specifically, it should get its own review pass rather than being folded in here secondhand.
+14. **No Damage Zone has no `areas.cfg` entries assigned yet.** The flag, all the enforcement backstops, and the admin gump column all exist, but no live area currently has the bit set — this is infrastructure ready for staff to apply, not a zone that goes live automatically with this patch.
+15. The zone-coverage shield fix (section 17) changes real, on-live AR values for 17 existing items retroactively — any player already wearing one of those shields will see their effective AR drop slightly (the un-earned flat contribution) the moment this patch takes effect, with no client-side warning beyond whatever the AR tooltip shows.
+16. `config/multis.cfg`'s House->Boat/Multi reclassification (section 21) is a broad, mechanical change across ~170 entries; if any other system was silently relying on those IDs being typed `House` (bug-compatible behavior), this could surface a regression that wasn't hit during review.
+17. The tamed pet `Follow()` change (section 20) intentionally leaves the line-of-sight branch clearing `following` alone — if a LOS block ever turns out to be effectively permanent in some edge case, the pet could still get stuck retrying it indefinitely, same as before this patch.
