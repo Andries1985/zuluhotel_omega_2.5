@@ -545,7 +545,8 @@ function IsHat( what )
 		0x1719:
 		0x171A:
 		0x171B:
-		0x171C:		return 1;
+		0x171C:
+		0x3172:		return 1;
 
 		default:	return 0;
 	endcase
@@ -571,7 +572,8 @@ function IsHelm( what )
 		0x1451:
 		0x1456:
 		0x1DB9:
-		0x1DBA:		return 1;
+		0x1DBA:
+		0x2645:		return 1;
 				break;
 
 		default:	return 0;

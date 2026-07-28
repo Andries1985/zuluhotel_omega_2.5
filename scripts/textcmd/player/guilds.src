@@ -1366,7 +1366,7 @@ endfunction
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function DisplayGuildMembers(guild)
 
-var members := "<CENTER>Guild Members: "+guild.members.size()+"</CENTER>";
+var members := "<CENTER>Guild Tag: "+guild.getprop("GuildAbv")+"<br>Guild Members: "+guild.members.size()+"</CENTER>";
 var online := "<Basefont COLOR=Darkgreen>Online:<Basefont COLOR=black>";
 var offline := "<BASEFONT COLOR=DARKRED>Offline:<Basefont COLOR=black>";
 //var classname := "";
