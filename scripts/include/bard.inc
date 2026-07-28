@@ -70,7 +70,7 @@ endfunction
 function ValidSongBoost(player, cast_near)
 	if ((cast_near.isa(POLCLASS_NPC)) && (cast_near.master == player))
 		return 1;
-	elseif ((!cast_near.isa(POLCLASS_NPC)) && (cast_near.party == player.party))
+	elseif (!cast_near.isa(POLCLASS_NPC))
 		return 1;
 	endif
 	return 0;

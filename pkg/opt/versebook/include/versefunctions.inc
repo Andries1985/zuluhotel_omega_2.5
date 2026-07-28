@@ -677,7 +677,7 @@ function SmartSongBoost(who, person)
 
 	if ((person.isa(POLCLASS_NPC)) && (person.master == who))
 		return 1;
-	elseif ((!person.isa(POLCLASS_NPC)) && (!who.isa(POLCLASS_NPC)) && (person.party == who.party))
+	elseif ((!person.isa(POLCLASS_NPC)) && (!who.isa(POLCLASS_NPC)) && who.party && (person.party == who.party))
 		var same_CWcolor := 1;
 		var same_faction := GetObjProperty(who, "IsRPer") == GetObjProperty(person, "IsRPer" );	
 		if (GetObjProperty(who, "cwarring"))
