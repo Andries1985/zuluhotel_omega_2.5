@@ -64,7 +64,9 @@ program Minstrel()
     var ev;
     var next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
     while (1)
-        WanderWithinTown();
+        if (!WanderWithinTown())
+            return;
+        endif
         ev := os::wait_for_event( 120 );
         case (ev.type)
             SYSEVENT_SPEECH:
@@ -75,11 +77,15 @@ program Minstrel()
                 endif
             SYSEVENT_ENGAGED:
                 SayRandomFromArray(ENGAGED_SAYINGS);
-                RunFromOpponent( ev.source, HALT_THRESHOLD );
+                if (!RunFromOpponent( ev.source, HALT_THRESHOLD ))
+                    return;
+                endif
             SYSEVENT_DAMAGED:
                 SayRandomFromArray(DAMAGED_SAYINGS);
                 if (ev.source)
-                    RunFromOpponent( ev.source, HALT_THRESHOLD );
+                    if (!RunFromOpponent( ev.source, HALT_THRESHOLD ))
+                        return;
+                    endif
                 else
                     say( "What evil thou art!" );
                 endif
@@ -89,7 +95,9 @@ program Minstrel()
                 say("Fare thee well!");
         endcase
         if (ReadGameClock() >= next_wander)
-            WanderWithinTown();
+            if (!WanderWithinTown())
+                return;
+            endif
             next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
         endif
     endwhile

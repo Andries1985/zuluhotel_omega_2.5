@@ -88,6 +88,8 @@ endfunction
 //  RunFromOpponent - shared flee loop used by civilian NPCs.
 //  Enforces town bounds during the flee; jails/kills if chased out of town.
 //  Responds to "hold" keyword, DISENGAGED, and damage events.
+//  Returns 0 if this NPC was jailed/killed by EnforceTownBounds (caller must
+//  stop running), 1 if the flee ended normally (opponent died/disengaged/held).
 //
 /////////////////////////////////////////////////////////////////////////////
 function RunFromOpponent( opponent, HALT_THRESHOLD )
@@ -95,9 +97,11 @@ function RunFromOpponent( opponent, HALT_THRESHOLD )
         DisableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA );
 
         var waittime;
+        var survived := 1;
   outer:
 	while (opponent and !opponent.dead)
 		if (!EnforceTownBounds(1))
+			survived := 0;
 			break outer;
 		endif
 
@@ -142,6 +146,7 @@ function RunFromOpponent( opponent, HALT_THRESHOLD )
 
         EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
         SetWarMode( 0 );
+        return survived;
 endfunction
 
 /////////////////////////////////////////////////////////////////////////////

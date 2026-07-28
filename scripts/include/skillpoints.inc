@@ -282,7 +282,7 @@ var skill := GetAttributeIdBySkillId(skillid);
 		endif
 	endif
 
-	if (IsInSafeArea(who))
+	if (IsInSafeArea(who) || IsInNoDamageZone(who))
 		if (skill == ATTRIBUTEID_ARCHERY or skill == ATTRIBUTEID_PARRY or skill == ATTRIBUTEID_MACEFIGHTING or skill == ATTRIBUTEID_SWORDSMANSHIP or skill == ATTRIBUTEID_FENCING or skill == ATTRIBUTEID_WRESTLING or skill == ATTRIBUTEID_TACTICS or skill == ATTRIBUTEID_MAGICRESISTANCE)
 			rawpoints := 0;
 		elseif (skill == ATTRIBUTEID_MACEFIGHTING + ATTRIBUTEID_HERDING)

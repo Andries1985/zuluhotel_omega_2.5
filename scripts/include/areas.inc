@@ -291,11 +291,11 @@ function IsInAntiLootingArea( byref who )
 		return 1;
 	endif
 
-	if( !allowed[match.area_index] && HasPolicy(match.mask, AREA_POLICY_NO_LOOTING) )
+	if( !allowed[match.area_index] && (HasPolicy(match.mask, AREA_POLICY_NO_LOOTING) || HasPolicy(match.mask, AREA_POLICY_NO_DAMAGE_ZONE)) )
 		set_priority(old_prio);
 		return 1;
 	endif
-	
+
 	set_priority(old_prio);
 
 	return 0;
@@ -319,13 +319,13 @@ function IsInAntiMagicArea( byref who )
 		set_priority(old_prio);
 		return 0;
 	endif
-	
+
 	var allowed	:= GetObjProperty( who, PROPID_MOBILE_AREAS_ALLOWED_ANTIMAGIC );
 	if( !allowed )
 		allowed := {};
 	endif
-	
-	if( !allowed[match.area_index] && HasPolicy(match.mask, AREA_POLICY_ANTI_MAGIC) )
+
+	if( !allowed[match.area_index] && (HasPolicy(match.mask, AREA_POLICY_ANTI_MAGIC) || HasPolicy(match.mask, AREA_POLICY_NO_DAMAGE_ZONE)) )
 		set_priority(old_prio);
 		return 1;
 	endif
@@ -479,4 +479,8 @@ endfunction
 
 function IsInRPArea(who)
 	return HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_RP_AREA);
+endfunction
+
+function IsInNoDamageZone(who)
+	return HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_NO_DAMAGE_ZONE);
 endfunction
