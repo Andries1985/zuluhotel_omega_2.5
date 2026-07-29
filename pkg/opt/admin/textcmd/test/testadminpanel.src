@@ -2,13 +2,26 @@
 // command .testadminpanel
 use uo;
 use os;
+use cfgfile;
+use polsys;
+use basic;
 
 include ":admin:include/adminpanel";
 include ":accounts:include/accounts";
 include ":gumps:include/gumps";
+include ":housing:utility";
 
 const BTN_BACK             := 9000;
 const BTN_BROWSE_ACCOUNTS  := 1;
+
+// Character-detail action buttons - list houses/boats/corpses tied to the
+// character being viewed (owner/co-owner/friend for houses, ownerserial for
+// boats/corpses). Well clear of BTN_BACK/BTN_BROWSE_ACCOUNTS.
+const BTN_LIST_MULTIS  := 9001;
+const BTN_LIST_BOATS   := 9002;
+const BTN_LIST_CORPSES := 9003;
+
+var house_itemdesc_cfg := ReadConfigFile(":housing:itemdesc");
 
 // Button ids for the per-IP "search other accounts" buttons on the account
 // panel - offset well clear of BTN_BACK and of the character-list buttons
@@ -487,44 +500,675 @@ endfunction
 
 
 function ShowCharacterDetail(who, acctname, mobile)
-	var names := BuildNameHistorySummary(mobile, 10);
-	var deaths := BuildDeathHistorySummary(mobile, 5);
-	var poisons := BuildPoisonHistorySummary(mobile, 5);
+	while(1)
+		var names := BuildNameHistorySummary(mobile, 10);
+		var deaths := BuildDeathHistorySummary(mobile, 5);
+		var poisons := BuildPoisonHistorySummary(mobile, 5);
 
-	if(!deaths.lines.size())
-		deaths.lines.append("(no deaths recorded)");
+		if(!deaths.lines.size())
+			deaths.lines.append("(no deaths recorded)");
+		endif
+		if(!poisons.lines.size())
+			poisons.lines.append("(no poisonings recorded)");
+		endif
+
+		var top_offset := 96;
+		var section_heights := (34 + (names.lines.size() * 22))
+			+ (34 + (deaths.lines.size() * 22))
+			+ (34 + (poisons.lines.size() * 22));
+		var footer_h := 22;
+		var button_h := 35;
+
+		var height := top_offset + section_heights + footer_h + button_h;
+
+		var gump := GFCreateGump(50, 50, 480, height);
+		GFResizePic(gump, 0, 0, 9250, 480, height);
+		GFResizePic(gump, 10, 10, 9350, 460, height - 20);
+		GFTextLine(gump, 20, 20, 43, "Character Information");
+		GFTextLine(gump, 20, 44, 67, acctname);
+
+		GFAddButton(gump, 20, 66, 2117, 2118, GF_CLOSE_BTN, BTN_LIST_MULTIS);
+		GFTextLine(gump, 50, 66, 67, "Multis");
+		GFAddButton(gump, 170, 66, 2117, 2118, GF_CLOSE_BTN, BTN_LIST_BOATS);
+		GFTextLine(gump, 200, 66, 67, "Boats");
+		GFAddButton(gump, 320, 66, 2117, 2118, GF_CLOSE_BTN, BTN_LIST_CORPSES);
+		GFTextLine(gump, 350, 66, 67, "Corpses");
+
+		var y := top_offset;
+		RenderHistorySection(gump, "Names", names.lines, y);
+		RenderHistorySection(gump, "Killed By", deaths.lines, y);
+		RenderHistorySection(gump, "Poisoned By", poisons.lines, y);
+
+		var footer := "More in datafile: "+names.remaining+" name record(s), "+deaths.remaining+" death record(s), "+poisons.remaining+" poison record(s)";
+		GFTextLine(gump, 20, y, 900, footer);
+		y := y + footer_h;
+
+		GFAddButton(gump, 20, y, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
+		GFTextLine(gump, 50, y, 33, "Back to Characters");
+
+		var result := GFSendGump(who, gump);
+		if(!result[0])
+			return 0;
+		endif
+
+		if(result[0] == BTN_LIST_MULTIS)
+			ShowMultisForCharacter(who, mobile);
+			continue;
+		elseif(result[0] == BTN_LIST_BOATS)
+			ShowBoatsForCharacter(who, mobile);
+			continue;
+		elseif(result[0] == BTN_LIST_CORPSES)
+			ShowCorpsesForCharacter(who, mobile);
+			continue;
+		endif
+
+		return result[0];
+	endwhile
+endfunction
+
+
+///////////////////////////////////////////////////////////////////////////
+// Shared helpers - houses/boats/corpses lookups from the character screen
+///////////////////////////////////////////////////////////////////////////
+
+function GetRealmNameFromMapId(mapid)
+	if (mapid == 0)
+		return "britannia";
+	elseif (mapid == 1)
+		return "britannia_alt";
+	elseif (mapid == 2)
+		return "ilshenar";
+	elseif (mapid == 3)
+		return "malas";
+	elseif (mapid == 4)
+		return "tokuno";
+	elseif (mapid == 5)
+		return "termur";
 	endif
-	if(!poisons.lines.size())
-		poisons.lines.append("(no poisonings recorded)");
+
+	return 0;
+endfunction
+
+function ResolveStandableZ(x, y, z, realm)
+	var stand := GetStandingHeight(CInt(x), CInt(y), CInt(z), CStr(realm));
+	if (stand and !stand.errortext)
+		return CInt(stand.z);
 	endif
 
-	var top_offset := 70;
-	var section_heights := (34 + (names.lines.size() * 22))
-		+ (34 + (deaths.lines.size() * 22))
-		+ (34 + (poisons.lines.size() * 22));
-	var footer_h := 22;
-	var button_h := 35;
+	// Retry nearby seed Z values in case stored Z is stale or clipped to multi components.
+	stand := GetStandingHeight(CInt(x), CInt(y), CInt(z + 20), CStr(realm));
+	if (stand and !stand.errortext)
+		return CInt(stand.z);
+	endif
 
-	var height := top_offset + section_heights + footer_h + button_h;
+	stand := GetStandingHeight(CInt(x), CInt(y), CInt(z - 20), CStr(realm));
+	if (stand and !stand.errortext)
+		return CInt(stand.z);
+	endif
 
-	var gump := GFCreateGump(50, 50, 480, height);
-	GFResizePic(gump, 0, 0, 9250, 480, height);
-	GFResizePic(gump, 10, 10, 9350, 460, height - 20);
-	GFTextLine(gump, 20, 20, 43, "Character Information");
-	GFTextLine(gump, 20, 44, 67, acctname);
+	return CInt(z);
+endfunction
 
-	var y := top_offset;
-	RenderHistorySection(gump, "Names", names.lines, y);
-	RenderHistorySection(gump, "Killed By", deaths.lines, y);
-	RenderHistorySection(gump, "Poisoned By", poisons.lines, y);
+function GetHouseTypeDisplayName(objtype)
+	if (!objtype)
+		return "Unknown";
+	endif
 
-	var footer := "More in datafile: "+names.remaining+" name record(s), "+deaths.remaining+" death record(s), "+poisons.remaining+" poison record(s)";
-	GFTextLine(gump, 20, y, 900, footer);
-	y := y + footer_h;
+	if (house_itemdesc_cfg)
+		var house_elem := house_itemdesc_cfg[objtype];
+		if (house_elem and !house_elem.errortext)
+			var house_name := GetConfigString(house_elem, "Name");
+			if (house_name and !house_name.errortext and house_name != "")
+				if (Len(house_name) > 5 && house_name[Len(house_name)-4, Len(house_name)] == "house")
+					house_name := house_name[1, Len(house_name)-5];
+				endif
+				return house_name;
+			endif
+		endif
+	endif
 
-	GFAddButton(gump, 20, y, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
-	GFTextLine(gump, 50, y, 33, "Back to Characters");
+	return CStr(Hex(objtype));
+endfunction
 
-	var result := GFSendGump(who, gump);
-	return result[0];
+function GetBoatTypeDisplayName(objtype)
+	if (!objtype)
+		return "Unknown";
+	endif
+
+	var desc := GetItemDescriptor(CInt(objtype));
+	if (desc and desc.desc)
+		return CStr(desc.desc);
+	endif
+
+	return CStr(Hex(objtype));
+endfunction
+
+
+///////////////////////////////////////////////////////////////////////////
+// Houses (multis) - owner/co-owner/friend lookup
+///////////////////////////////////////////////////////////////////////////
+
+// "Owner"/"Co-Owner"/"Friend" if serial holds that access level on the house
+// multi, "" if they have no relationship to it at all. Mirrors IsCowner()/
+// IsFriend() from :housing:utility in a single pass over Friends.
+function ResolveHouseAccessLevel(multi, serial)
+	if (CInt(GetObjProperty(multi, "ownerserial")) == serial)
+		return "Owner";
+	endif
+
+	var friends := GetObjProperty(multi, "Friends");
+	if (friends)
+		foreach friend in friends
+			if (CInt(friend[1]) == serial)
+				if (friend[CO_OWNER] == 1)
+					return "Co-Owner";
+				endif
+				return "Friend";
+			endif
+		endforeach
+	endif
+
+	return "";
+endfunction
+
+// Every house multi across every realm where `mobile` is owner, co-owner, or
+// friend - full-map scan, same approach as .gotomulti, just filtered to one
+// serial instead of collected for everyone.
+function FindMultisForCharacter(mobile)
+	var serial := CInt(mobile.serial);
+	var results := array;
+	var realmslist := Realms();
+
+	foreach realm in realmslist
+		var realm_name := GetRealmNameFromMapId(CInt(realm.mapid));
+		if (!realm_name)
+			continue;
+		endif
+		var realm_width := CInt(realm.width) - 1;
+		var realm_height := CInt(realm.height) - 1;
+
+		var found := ListMultisInBox(0, 0, -128, realm_width, realm_height, 127, realm_name);
+		if (!found or !found.size())
+			continue;
+		endif
+
+		foreach multi in found
+			if (!multi or !multi.isa(POLCLASS_HOUSE))
+				continue;
+			endif
+
+			var level := ResolveHouseAccessLevel(multi, serial);
+			if (!level)
+				continue;
+			endif
+
+			var sign_serial := CInt(GetObjProperty(multi, "signserial"));
+			var sign := 0;
+			if (sign_serial)
+				sign := SystemFindObjectBySerial(sign_serial);
+			endif
+
+			var loc_x := multi.x;
+			var loc_y := multi.y;
+			var loc_z := multi.z;
+			if (sign)
+				loc_x := sign.x;
+				loc_y := sign.y;
+				loc_z := sign.z;
+			endif
+
+			var region_name := GetRegionNameAtLocation(loc_x, loc_y, realm_name);
+			if (!region_name)
+				region_name := "Unknown";
+			endif
+
+			var row := struct;
+			row.+level := level;
+			row.+house_type := GetHouseTypeDisplayName(multi.objtype);
+			row.+region := region_name;
+			row.+realm := realm_name;
+			row.+coord_text := CStr(loc_x) + "," + CStr(loc_y) + "," + CStr(loc_z);
+			row.+x := loc_x;
+			row.+y := loc_y;
+			row.+z := loc_z;
+			results.append(row);
+			SleepMS(1);
+		endforeach
+	endforeach
+
+	return results;
+endfunction
+
+function ShowMultisForCharacter(who, mobile)
+	var rows := FindMultisForCharacter(mobile);
+	if (!rows.size())
+		SendSysMessage(who, CStr(mobile.name) + " is not an owner, co-owner, or friend of any house.");
+		return;
+	endif
+
+	var selected := ShowMultiGotoListGump(who, mobile, rows);
+	if (!selected)
+		return;
+	endif
+
+	var row := rows[selected];
+	if (!row)
+		return;
+	endif
+
+	var safe_z := ResolveStandableZ(row.x, row.y, row.z, row.realm);
+	MoveObjectToLocation(who, row.x, row.y, safe_z, row.realm, MOVEOBJECT_FORCELOCATION);
+	SendSysMessage(who, "Teleported to " + row.house_type + " (" + row.level + ") at " + row.coord_text + ".");
+endfunction
+
+function ShowMultiGotoListGump(who, mobile, rows)
+	var per_page := 15;
+	var total_pages := CInt((rows.size() + per_page - 1) / per_page);
+	if (total_pages < 1)
+		total_pages := 1;
+	endif
+
+	var current_page := 1;
+	while (1)
+		var gump := GFCreateGump(0, 0, 760, 620);
+		GFDisposable(gump, 0);
+		GFResizePic(gump, 0, 0, 3500, 760, 620);
+		GFTextMid(gump, 15, 20, 730, 1153, CStr(mobile.name) + "'s Multis (Page " + current_page + "/" + total_pages + ")");
+		GFTextLine(gump, 20, 52, 1153, "Level");
+		GFTextLine(gump, 110, 52, 1153, "House Type");
+		GFTextLine(gump, 270, 52, 1153, "Region");
+		GFTextLine(gump, 400, 52, 1153, "Realm");
+		GFTextLine(gump, 495, 52, 1153, "Coords");
+		GFTextLine(gump, 615, 52, 1153, "Goto");
+		GFAddButton(gump, 350, 565, 2119, 2120, GF_CLOSE_BTN, 999999);
+
+		var start_index := ((current_page - 1) * per_page) + 1;
+		var end_index := start_index + per_page - 1;
+		if (end_index > rows.size())
+			end_index := rows.size();
+		endif
+
+		var y_pos := 75;
+		var index := start_index;
+		while (index <= end_index)
+			var row := rows[index];
+			GFTextCrop(gump, 20, y_pos, 85, 18, 0, row.level);
+			GFTextCrop(gump, 110, y_pos, 155, 18, 0, row.house_type);
+			GFTextCrop(gump, 270, y_pos, 125, 18, 0, row.region);
+			GFTextCrop(gump, 400, y_pos, 90, 18, 0, row.realm);
+			GFTextCrop(gump, 495, y_pos, 115, 18, 0, row.coord_text);
+			GFAddButton(gump, 620, y_pos - 1, 2117, 2118, GF_CLOSE_BTN, index);
+			y_pos := y_pos + 32;
+			index := index + 1;
+			SleepMS(2);
+		endwhile
+
+		if (current_page > 1)
+			GFAddButton(gump, 550, 565, 4014, 4015, GF_CLOSE_BTN, 1000001);
+			GFTextLine(gump, 580, 565, 67, "Prev");
+		endif
+		if (current_page < total_pages)
+			GFAddButton(gump, 650, 565, 4005, 4006, GF_CLOSE_BTN, 1000002);
+			GFTextLine(gump, 680, 565, 67, "Next");
+		endif
+
+		var input := GFSendGump(who, gump);
+		if (!input)
+			return 0;
+		endif
+
+		var choice := CInt(input[0]);
+		if (choice == 1000001)
+			if (current_page > 1)
+				current_page := current_page - 1;
+			endif
+			continue;
+		elseif (choice == 1000002)
+			if (current_page < total_pages)
+				current_page := current_page + 1;
+			endif
+			continue;
+		elseif (choice == 999999 || choice < 1 || choice > rows.size())
+			return 0;
+		endif
+
+		return choice;
+	endwhile
+endfunction
+
+
+///////////////////////////////////////////////////////////////////////////
+// Boats
+///////////////////////////////////////////////////////////////////////////
+
+// Every boat across every realm owned by `mobile` (boat.hold's "owner" prop),
+// same full-map scan approach as .gotoboat, filtered to one serial.
+function FindBoatsForCharacter(mobile)
+	var serial := CInt(mobile.serial);
+	var results := array;
+	var realmslist := Realms();
+
+	foreach realm in realmslist
+		var realm_name := GetRealmNameFromMapId(CInt(realm.mapid));
+		if (!realm_name)
+			continue;
+		endif
+		var realm_width := CInt(realm.width) - 1;
+		var realm_height := CInt(realm.height) - 1;
+
+		var found := ListMultisInBox(0, 0, -128, realm_width, realm_height, 127, realm_name);
+		if (!found or !found.size())
+			continue;
+		endif
+
+		foreach multi in found
+			if (!multi or !multi.isa(POLCLASS_BOAT))
+				continue;
+			endif
+
+			var tillerman := multi.tillerman;
+			if (!tillerman)
+				continue;
+			endif
+
+			var owner_serial := CInt(GetObjProperty(multi.hold, "owner"));
+			if (owner_serial != serial)
+				continue;
+			endif
+
+			var region_name := GetRegionNameAtLocation(tillerman.x, tillerman.y, realm_name);
+			if (!region_name)
+				region_name := "Unknown";
+			endif
+
+			var row := struct;
+			row.+boat_type := GetBoatTypeDisplayName(multi.objtype);
+			row.+region := region_name;
+			row.+realm := realm_name;
+			row.+coord_text := CStr(tillerman.x) + "," + CStr(tillerman.y) + "," + CStr(tillerman.z);
+			row.+x := tillerman.x;
+			row.+y := tillerman.y;
+			row.+z := tillerman.z;
+			results.append(row);
+			SleepMS(1);
+		endforeach
+	endforeach
+
+	return results;
+endfunction
+
+function ShowBoatsForCharacter(who, mobile)
+	var rows := FindBoatsForCharacter(mobile);
+	if (!rows.size())
+		SendSysMessage(who, CStr(mobile.name) + " does not own any boats.");
+		return;
+	endif
+
+	var selected := ShowBoatGotoListGump(who, mobile, rows);
+	if (!selected)
+		return;
+	endif
+
+	var row := rows[selected];
+	if (!row)
+		return;
+	endif
+
+	var safe_z := ResolveStandableZ(row.x, row.y, row.z, row.realm);
+	MoveObjectToLocation(who, row.x, row.y, safe_z, row.realm, MOVEOBJECT_FORCELOCATION);
+	SendSysMessage(who, "Teleported to tillerman of " + row.boat_type + " at " + row.coord_text + ".");
+endfunction
+
+function ShowBoatGotoListGump(who, mobile, rows)
+	var per_page := 15;
+	var total_pages := CInt((rows.size() + per_page - 1) / per_page);
+	if (total_pages < 1)
+		total_pages := 1;
+	endif
+
+	var current_page := 1;
+	while (1)
+		var gump := GFCreateGump(0, 0, 760, 620);
+		GFDisposable(gump, 0);
+		GFResizePic(gump, 0, 0, 3500, 760, 620);
+		GFTextMid(gump, 15, 20, 730, 1153, CStr(mobile.name) + "'s Boats (Page " + current_page + "/" + total_pages + ")");
+		GFTextLine(gump, 20, 52, 1153, "Boat Type");
+		GFTextLine(gump, 200, 52, 1153, "Region");
+		GFTextLine(gump, 360, 52, 1153, "Realm");
+		GFTextLine(gump, 460, 52, 1153, "Coords");
+		GFTextLine(gump, 615, 52, 1153, "Goto");
+		GFAddButton(gump, 350, 565, 2119, 2120, GF_CLOSE_BTN, 999999);
+
+		var start_index := ((current_page - 1) * per_page) + 1;
+		var end_index := start_index + per_page - 1;
+		if (end_index > rows.size())
+			end_index := rows.size();
+		endif
+
+		var y_pos := 75;
+		var index := start_index;
+		while (index <= end_index)
+			var row := rows[index];
+			GFTextCrop(gump, 20, y_pos, 175, 18, 0, row.boat_type);
+			GFTextCrop(gump, 200, y_pos, 155, 18, 0, row.region);
+			GFTextCrop(gump, 360, y_pos, 95, 18, 0, row.realm);
+			GFTextCrop(gump, 460, y_pos, 150, 18, 0, row.coord_text);
+			GFAddButton(gump, 620, y_pos - 1, 2117, 2118, GF_CLOSE_BTN, index);
+			y_pos := y_pos + 32;
+			index := index + 1;
+			SleepMS(2);
+		endwhile
+
+		if (current_page > 1)
+			GFAddButton(gump, 550, 565, 4014, 4015, GF_CLOSE_BTN, 1000001);
+			GFTextLine(gump, 580, 565, 67, "Prev");
+		endif
+		if (current_page < total_pages)
+			GFAddButton(gump, 650, 565, 4005, 4006, GF_CLOSE_BTN, 1000002);
+			GFTextLine(gump, 680, 565, 67, "Next");
+		endif
+
+		var input := GFSendGump(who, gump);
+		if (!input)
+			return 0;
+		endif
+
+		var choice := CInt(input[0]);
+		if (choice == 1000001)
+			if (current_page > 1)
+				current_page := current_page - 1;
+			endif
+			continue;
+		elseif (choice == 1000002)
+			if (current_page < total_pages)
+				current_page := current_page + 1;
+			endif
+			continue;
+		elseif (choice == 999999 || choice < 1 || choice > rows.size())
+			return 0;
+		endif
+
+		return choice;
+	endwhile
+endfunction
+
+
+///////////////////////////////////////////////////////////////////////////
+// Corpses
+///////////////////////////////////////////////////////////////////////////
+
+// Best-effort killer name for a corpse - reads the "Killer" cprop chrdeath.src
+// stamps on every player corpse, guarding against both a missing value and an
+// unresolved GetObjProperty() error struct (older corpses predating that
+// guard, or corpses set some other way). Appends "(Suicide)" when the corpse's
+// "KillerSerial" cprop (only set when the killer was online at time of death)
+// matches the corpse's own owner.
+function ResolveCorpseKillerName(corpse, owner_serial)
+	var killer_name := GetObjProperty(corpse, "Killer");
+	if (killer_name == error or !killer_name)
+		killer_name := "Unknown";
+	else
+		killer_name := CStr(killer_name);
+		if (!killer_name or Find(killer_name, "errortext", 1))
+			killer_name := "Unknown";
+		endif
+	endif
+
+	var killer_serial_raw := GetObjProperty(corpse, "KillerSerial");
+	if (killer_serial_raw != error)
+		var killer_serial := CInt(killer_serial_raw);
+		if (killer_serial and killer_serial == owner_serial)
+			killer_name := killer_name + " (Suicide)";
+		endif
+	endif
+
+	return killer_name;
+endfunction
+
+// Every corpse across every realm whose ownerserial (built-in corpse
+// property, not GetObjProperty) matches `mobile` - covers the character's
+// own corpses whether they're a player or a killed NPC-template character.
+function FindCorpsesForCharacter(mobile)
+	var serial := CInt(mobile.serial);
+	var results := array;
+	var realmslist := Realms();
+
+	foreach realm in realmslist
+		var realm_name := GetRealmNameFromMapId(CInt(realm.mapid));
+		if (!realm_name)
+			continue;
+		endif
+		var realm_width := CInt(realm.width) - 1;
+		var realm_height := CInt(realm.height) - 1;
+
+		var found := ListItemsInBoxOfObjType(CORPSE_OBJTYPE, 0, 0, -128, realm_width, realm_height, 127, realm_name);
+		if (!found or !found.size())
+			continue;
+		endif
+
+		foreach corpse in found
+			if (!corpse or !corpse.isa(POLCLASS_CORPSE))
+				continue;
+			endif
+			if (CInt(corpse.ownerserial) != serial)
+				continue;
+			endif
+
+			var region_name := GetRegionNameAtLocation(corpse.x, corpse.y, realm_name);
+			if (!region_name)
+				region_name := "Unknown";
+			endif
+
+			var row := struct;
+			row.+desc := CStr(corpse.name);
+			row.+killer := ResolveCorpseKillerName(corpse, serial);
+			row.+region := region_name;
+			row.+realm := realm_name;
+			row.+coord_text := CStr(corpse.x) + "," + CStr(corpse.y) + "," + CStr(corpse.z);
+			row.+x := corpse.x;
+			row.+y := corpse.y;
+			row.+z := corpse.z;
+			results.append(row);
+			SleepMS(1);
+		endforeach
+	endforeach
+
+	return results;
+endfunction
+
+function ShowCorpsesForCharacter(who, mobile)
+	var rows := FindCorpsesForCharacter(mobile);
+	if (!rows.size())
+		SendSysMessage(who, "No corpses found for " + CStr(mobile.name) + ".");
+		return;
+	endif
+
+	var selected := ShowCorpseGotoListGump(who, mobile, rows);
+	if (!selected)
+		return;
+	endif
+
+	var row := rows[selected];
+	if (!row)
+		return;
+	endif
+
+	var safe_z := ResolveStandableZ(row.x, row.y, row.z, row.realm);
+	MoveObjectToLocation(who, row.x, row.y, safe_z, row.realm, MOVEOBJECT_FORCELOCATION);
+	SendSysMessage(who, "Teleported to " + row.desc + " at " + row.coord_text + ".");
+endfunction
+
+function ShowCorpseGotoListGump(who, mobile, rows)
+	var per_page := 15;
+	var total_pages := CInt((rows.size() + per_page - 1) / per_page);
+	if (total_pages < 1)
+		total_pages := 1;
+	endif
+
+	var current_page := 1;
+	while (1)
+		var gump := GFCreateGump(0, 0, 860, 620);
+		GFDisposable(gump, 0);
+		GFResizePic(gump, 0, 0, 3500, 860, 620);
+		GFTextMid(gump, 15, 20, 830, 1153, CStr(mobile.name) + "'s Corpses (Page " + current_page + "/" + total_pages + ")");
+		GFTextLine(gump, 20, 52, 1153, "Corpse");
+		GFTextLine(gump, 170, 52, 1153, "Killer");
+		GFTextLine(gump, 320, 52, 1153, "Region");
+		GFTextLine(gump, 460, 52, 1153, "Realm");
+		GFTextLine(gump, 550, 52, 1153, "Coords");
+		GFTextLine(gump, 785, 52, 1153, "Goto");
+		GFAddButton(gump, 415, 565, 2119, 2120, GF_CLOSE_BTN, 999999);
+
+		var start_index := ((current_page - 1) * per_page) + 1;
+		var end_index := start_index + per_page - 1;
+		if (end_index > rows.size())
+			end_index := rows.size();
+		endif
+
+		var y_pos := 75;
+		var index := start_index;
+		while (index <= end_index)
+			var row := rows[index];
+			GFTextCrop(gump, 20, y_pos, 145, 18, 0, row.desc);
+			GFTextCrop(gump, 170, y_pos, 145, 18, 0, row.killer);
+			GFTextCrop(gump, 320, y_pos, 135, 18, 0, row.region);
+			GFTextCrop(gump, 460, y_pos, 85, 18, 0, row.realm);
+			GFTextCrop(gump, 550, y_pos, 130, 18, 0, row.coord_text);
+			GFAddButton(gump, 790, y_pos - 1, 2117, 2118, GF_CLOSE_BTN, index);
+			y_pos := y_pos + 32;
+			index := index + 1;
+			SleepMS(2);
+		endwhile
+
+		if (current_page > 1)
+			GFAddButton(gump, 620, 565, 4014, 4015, GF_CLOSE_BTN, 1000001);
+			GFTextLine(gump, 650, 565, 67, "Prev");
+		endif
+		if (current_page < total_pages)
+			GFAddButton(gump, 700, 565, 4005, 4006, GF_CLOSE_BTN, 1000002);
+			GFTextLine(gump, 730, 565, 67, "Next");
+		endif
+
+		var input := GFSendGump(who, gump);
+		if (!input)
+			return 0;
+		endif
+
+		var choice := CInt(input[0]);
+		if (choice == 1000001)
+			if (current_page > 1)
+				current_page := current_page - 1;
+			endif
+			continue;
+		elseif (choice == 1000002)
+			if (current_page < total_pages)
+				current_page := current_page + 1;
+			endif
+			continue;
+		elseif (choice == 999999 || choice < 1 || choice > rows.size())
+			return 0;
+		endif
+
+		return choice;
+	endwhile
 endfunction
