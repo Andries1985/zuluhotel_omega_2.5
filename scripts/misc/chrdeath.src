@@ -34,6 +34,9 @@ program chrdeath(corpse,ghost)
 
 	var plyr := 0;
 	var killer:=getobjproperty(ghost,"KilledBy");
+	if(killer == error)
+		killer := "";
+	endif
 	foreach character in EnumerateOnlineCharacters()
 		if (character.name == killer)
 			plyr := character;
@@ -61,7 +64,11 @@ program chrdeath(corpse,ghost)
 	SetObjProperty( ghost, "deathy", dy);
 	SetObjProperty( ghost, "deathz", dz);
 
-	RecordCharacterDeath( ghost, killer, GetObjProperty(ghost, "KilledBySerial"), dx, dy, dz );
+	var killer_serial := GetObjProperty(ghost, "KilledBySerial");
+	if(killer_serial == error)
+		killer_serial := 0;
+	endif
+	RecordCharacterDeath( ghost, killer, killer_serial, dx, dy, dz );
 
 	if( GetObjProperty( ghost, PROPID_MOBILE_GUARD_KILLED ) )
 		SetObjProperty( ghost, "Killer", "Guards");

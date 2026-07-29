@@ -1,5 +1,6 @@
 use uo;
 use datafile;
+use basic;
 
 include "include/time";
 
@@ -76,7 +77,13 @@ function ResolveAccountNameFromSerial(serial)
 	if(!obj)
 		return "";
 	endif
-	return CStr(obj.acctname);
+	// NPCs (and anything else not attached to an account) return an error
+	// struct here rather than "" - don't let that get CStr()'d into history.
+	var acctname := obj.acctname;
+	if(acctname == error)
+		return "";
+	endif
+	return CStr(acctname);
 endfunction
 
 
@@ -299,7 +306,10 @@ endfunction
 // normalize so callers only ever deal with the full struct shape.
 function NormalizeDeathHistoryEntry(entry)
 	var acct := entry.killed_by_account;
-	if(!acct)
+	// Older records could carry an unresolved GetObjProperty()/obj.acctname
+	// error struct (stringified via CStr) instead of "" - e.g. killed by an
+	// NPC, which isn't attached to an account. Treat those as blank too.
+	if(!acct or Find(CStr(acct), "errortext", 1))
 		acct := "";
 	endif
 	entry.killed_by_account := acct;
@@ -380,11 +390,17 @@ function BuildDeathHistorySummary(mobile, limit := 5)
 
 		var entry := NormalizeDeathHistoryEntry(history[i]);
 		var killed_by := entry.killed_by;
-		if(!killed_by)
+		// Some older records stored an unresolved GetObjProperty() error struct
+		// (stringified via CStr) instead of a name, back when chrdeath.src didn't
+		// guard against a missing KilledBy cprop - display those as Unknown too.
+		if(!killed_by or Find(killed_by, "errortext", 1))
 			killed_by := "Unknown";
 		endif
 
 		var line := "Killed by "+killed_by;
+		if(entry.killed_by_serial and CInt(entry.killed_by_serial) == CInt(mobile.serial))
+			line := line+" (Suicide)";
+		endif
 		if(entry.killed_by_account)
 			line := line+", "+entry.killed_by_account;
 		endif
