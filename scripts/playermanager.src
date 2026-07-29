@@ -10,6 +10,7 @@ include ":karmafame:karmafame";
 include "include/dotempmods";
 include "util/bank";
 include "include/constants/locations";
+include ":admin:include/adminpanel";
 
 program logon( who )
 
@@ -24,6 +25,7 @@ program logon( who )
 	var payback;
 	acc.setprop("Login", NowString());
 	acc.setprop("IP", who.ip);
+	RecordAccountLoginIP(acc, who.ip);
 	SetObjProperty(who, "#logontime", ReadGameClock() );
 	var hunger := GetObjProperty( who, "hunger" );
 	

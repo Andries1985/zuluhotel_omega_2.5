@@ -10,7 +10,14 @@ include ":gumps:include/gumps";
 const BTN_BACK             := 9000;
 const BTN_BROWSE_ACCOUNTS  := 1;
 
+// Button ids for the per-IP "search other accounts" buttons on the account
+// panel - offset well clear of BTN_BACK and of the character-list buttons
+// (which are just 1..characters.size()), so a click can be told apart by id
+// range alone.
+const BTN_IP_SEARCH_BASE := 5000;
+
 const ACCOUNTS_PER_PAGE := 8;
+const IP_RESULTS_PER_PAGE := 15;
 
 var LETTERS := {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
 
@@ -229,7 +236,10 @@ function ShowAccountList(who, letter)
 		var ip := "";
 		var last_login := "";
 		if(account && !account.errortext)
-			ip := CStr(account.GetProp("IP"));
+			var raw_ip := account.GetProp("IP");
+			if(raw_ip != error)
+				ip := CStr(raw_ip);
+			endif
 			last_login := FormatEpochTimestamp(ACCT_GetLastLogin(account));
 		endif
 		if(!ip)
@@ -257,6 +267,29 @@ function ShowAccountList(who, letter)
 endfunction
 
 
+// Builds the {ip, lines} entries the "Unique IPs" section renders: each
+// entry pairs the raw ip (needed by the search button) with its formatted,
+// word-wrapped display lines (needed by the gump layout).
+function BuildIPDisplayEntries(acctname, limit, wrap_pixels)
+	var history := GetStoredIPHistory(acctname);
+	var entries := {};
+
+	var i;
+	for(i := history.size(); i >= 1; i := i - 1)
+		if(entries.size() >= limit)
+			break;
+		endif
+
+		var entry := struct;
+		entry.+ip := CStr(history[i].ip);
+		entry.+lines := GFWordWrap(FormatIPHistoryLine(history[i]), wrap_pixels);
+		entries.append(entry);
+	endfor
+
+	return entries;
+endfunction
+
+
 function ShowCharacterList(who, acctname)
 	var account := FindAccount(acctname);
 	if(!account or account.errortext)
@@ -270,64 +303,171 @@ function ShowCharacterList(who, acctname)
 		return BTN_BACK;
 	endif
 
-	var note_info := GetLatestNoteInfo(account);
-	var latest_note := note_info.note;
-	if(!latest_note)
-		latest_note := "(no notes)";
-	endif
-	var note_lines := GFWordWrap(latest_note, 350);
-	var notes_total := GetStoredNoteHistory(acctname).size();
+	while(1)
+		var note_info := GetLatestNoteInfo(account);
+		var latest_note := note_info.note;
+		if(!latest_note)
+			latest_note := "(no notes)";
+		endif
+		var note_lines := GFWordWrap(latest_note, 350);
+		var notes_total := GetStoredNoteHistory(acctname).size();
 
-	var attribution := "- ";
-	if(note_info.initiator)
-		attribution := attribution + note_info.initiator;
-	else
-		attribution := attribution + "Unknown";
-	endif
-	if(note_info.timestamp)
-		attribution := attribution + ", " + note_info.timestamp;
-	endif
+		var attribution := "- ";
+		if(note_info.initiator)
+			attribution := attribution + note_info.initiator;
+		else
+			attribution := attribution + "Unknown";
+		endif
+		if(note_info.timestamp)
+			attribution := attribution + ", " + note_info.timestamp;
+		endif
 
-	var notes_y0 := 66;
-	var note_line_h := 20;
-	var chars_y0 := notes_y0 + (note_lines.size() * note_line_h) + (note_line_h * 2) + 14;
-	var height := chars_y0 + (characters.size() * 24) + 40;
+		var ip_wrap_pixels := 360;
+		var ip_entries := BuildIPDisplayEntries(acctname, 5, ip_wrap_pixels);
+		var ip_line_count := 0;
+		var j;
+		for(j := 1; j <= ip_entries.size(); j := j + 1)
+			ip_line_count := ip_line_count + ip_entries[j].lines.size();
+		endfor
+		if(!ip_entries.size())
+			ip_line_count := 1;
+		endif
+		var ips_total := GetStoredIPHistory(acctname).size();
 
-	var gump := GFCreateGump(50, 50, 420, height);
-	GFResizePic(gump, 0, 0, 9250, 420, height);
-	GFResizePic(gump, 10, 10, 9350, 400, height - 20);
-	GFTextLine(gump, 20, 20, 43, "Account: "+acctname);
-	GFTextLine(gump, 20, 44, 67, "Notes");
+		var notes_y0 := 66;
+		var note_line_h := 20;
+		var ips_y0 := notes_y0 + (note_lines.size() * note_line_h) + (note_line_h * 2) + 14;
+		var chars_title_y0 := ips_y0 + 24 + (ip_line_count * 22) + 20 + 14;
+		var chars_y0 := chars_title_y0 + 24;
+		var height := chars_y0 + (characters.size() * 24) + 40;
 
-	var y := notes_y0;
-	var i;
-	for(i := 1; i <= note_lines.size(); i := i + 1)
-		GFTextLine(gump, 25, y, 0, note_lines[i]);
+		var gump := GFCreateGump(50, 50, 460, height);
+		GFResizePic(gump, 0, 0, 9250, 460, height);
+		GFResizePic(gump, 10, 10, 9350, 440, height - 20);
+		GFTextLine(gump, 20, 20, 43, "Account: "+acctname);
+		GFTextLine(gump, 20, 44, 67, "Notes");
+
+		var y := notes_y0;
+		var i;
+		for(i := 1; i <= note_lines.size(); i := i + 1)
+			GFTextLine(gump, 25, y, 0, note_lines[i]);
+			y := y + note_line_h;
+		endfor
+		GFTextLine(gump, 25, y, 900, attribution);
 		y := y + note_line_h;
-	endfor
-	GFTextLine(gump, 25, y, 900, attribution);
-	y := y + note_line_h;
-	GFTextLine(gump, 25, y, 900, "("+notes_total+" note record(s) in datafile)");
+		GFTextLine(gump, 25, y, 900, "("+notes_total+" note record(s) in datafile)");
 
-	y := chars_y0;
-	for(i := 1; i <= characters.size(); i := i + 1)
-		GFAddButton(gump, 20, y, 2117, 2118, GF_CLOSE_BTN, i);
-		GFTextLine(gump, 50, y, 0, CStr(characters[i].name));
+		y := ips_y0;
+		GFTextLine(gump, 20, y, 67, "Unique IPs");
 		y := y + 24;
-	endfor
+		if(!ip_entries.size())
+			GFTextLine(gump, 25, y, 0, "(no logins recorded)");
+			y := y + 22;
+		else
+			for(i := 1; i <= ip_entries.size(); i := i + 1)
+				GFAddButton(gump, 20, y, 2117, 2118, GF_CLOSE_BTN, BTN_IP_SEARCH_BASE + i);
+				var ip_lines := ip_entries[i].lines;
+				for(j := 1; j <= ip_lines.size(); j := j + 1)
+					GFTextLine(gump, 50, y, 0, ip_lines[j]);
+					y := y + 22;
+				endfor
+			endfor
+		endif
+		y := y + 10;
+		GFTextLine(gump, 25, y, 900, "("+ips_total+" unique IP(s) recorded)");
 
-	GFAddButton(gump, 20, y + 5, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
-	GFTextLine(gump, 50, y + 5, 33, "Back to Accounts");
+		GFTextLine(gump, 20, chars_title_y0, 67, "Characters");
+		y := chars_y0;
+		for(i := 1; i <= characters.size(); i := i + 1)
+			GFAddButton(gump, 20, y, 2117, 2118, GF_CLOSE_BTN, i);
+			GFTextLine(gump, 50, y, 0, CStr(characters[i].name));
+			y := y + 24;
+		endfor
 
-	var result := GFSendGump(who, gump);
-	if(!result[0])
-		return 0;
+		GFAddButton(gump, 20, y + 5, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
+		GFTextLine(gump, 50, y + 5, 33, "Back to Accounts");
+
+		var result := GFSendGump(who, gump);
+		if(!result[0])
+			return 0;
+		endif
+		if(result[0] == BTN_BACK)
+			return BTN_BACK;
+		endif
+
+		if(result[0] >= BTN_IP_SEARCH_BASE and result[0] < BTN_IP_SEARCH_BASE + 1000)
+			var ip_index := result[0] - BTN_IP_SEARCH_BASE;
+			if(ip_index >= 1 and ip_index <= ip_entries.size())
+				ShowAccountsForIP(who, ip_entries[ip_index].ip, acctname);
+			endif
+			continue;
+		endif
+
+		return characters[result[0]];
+	endwhile
+endfunction
+
+
+// Lists every other account that has ever logged in from `ip` (excluding
+// exclude_acctname, the account the lookup was launched from). Read-only
+// report gump, paginated so a busy IP (NAT/proxy/shared connection) never
+// gets truncated - Back is the only closing action.
+function ShowAccountsForIP(who, ip, exclude_acctname)
+	var matches := FindAccountsByIP(ip);
+	var others := {};
+	foreach name in (matches)
+		if(name != exclude_acctname)
+			others.append(name);
+		endif
+	endforeach
+
+	var total := others.size();
+	var perpage := IP_RESULTS_PER_PAGE;
+	var line_h := 20;
+	var body_y0 := 66;
+	var nav_y := body_y0 + (perpage * line_h) + 10;
+	var back_y := nav_y + 25;
+	var height := back_y + 40;
+
+	var gump := GFCreateGump(50, 50, 380, height);
+	GFResizePic(gump, 0, 0, 9250, 380, height);
+	GFResizePic(gump, 10, 10, 9350, 360, height - 20);
+	GFTextLine(gump, 20, 20, 43, "Accounts using IP: "+ip);
+	GFTextLine(gump, 20, 44, 67, total+" other account(s) found");
+
+	GFAddButton(gump, 20, back_y, 4017, 4019, GF_CLOSE_BTN, BTN_BACK);
+	GFTextLine(gump, 50, back_y, 33, "Back");
+
+	if(!total)
+		GFTextLine(gump, 25, body_y0, 0, "(no other accounts found)");
+	else
+		var total_pages := CInt((total - 1) / perpage) + 1;
+		var i;
+		var page := 0;
+		var y := body_y0;
+		for(i := 1; i <= total; i := i + 1)
+			var slot := (i - 1) % perpage;
+			if(slot == 0)
+				page := page + 1;
+				GFPage(gump, page);
+				y := body_y0;
+
+				if(page > 1)
+					GFAddButton(gump, 20, nav_y, 4014, 4015, GF_PAGE_BTN, page - 1);
+					GFTextLine(gump, 55, nav_y, 67, "Prev Page");
+				endif
+				if(page < total_pages)
+					GFAddButton(gump, 200, nav_y, 4005, 4006, GF_PAGE_BTN, page + 1);
+					GFTextLine(gump, 235, nav_y, 67, "Next Page");
+				endif
+			endif
+
+			GFTextLine(gump, 25, y, 0, others[i]);
+			y := y + line_h;
+		endfor
 	endif
-	if(result[0] == BTN_BACK)
-		return BTN_BACK;
-	endif
 
-	return characters[result[0]];
+	GFSendGump(who, gump);
 endfunction
 
 
