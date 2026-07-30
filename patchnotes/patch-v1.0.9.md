@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.0.9
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: July 30, 2026**
+
+---
+
+Welcome to **Patch 1.0.9**. This is a smaller follow-up patch focused on **NPC skill fixes**, **Rainbow Ostard toughness**, **bard song fixes**, a **power scroll (Alchemy tome) cap bug**, and a couple of small crafting and guild updates.
+
+---
 
 ## What Changed
 
