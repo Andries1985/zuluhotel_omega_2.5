@@ -19,15 +19,6 @@ program blackrockscript(attacker, defender, weapon, armor, basedamage, rawdamage
 			attacker 	:= attacker[1];
 		endif
 
-		// No Damage Zone - the summoned/animated branches below apply a
-		// guaranteed-lethal ApplyTheDamage() unconditionally, bypassing the
-		// InSafeArea checks that only exist in the "else" branch. Bail out
-		// entirely (either side) so this weapon's proc has no effect on
-		// anyone connected to a protected zone.
-		if (GetObjProperty(attacker, "InNoDamageZone") || GetObjProperty(defender, "InNoDamageZone"))
-			return;
-		endif
-
         var targ;
         var cursed := GetObjProperty( weapon , "Cursed" );
         rawdamage := RecalcDmg( attacker , defender , weapon , armor , basedamage );

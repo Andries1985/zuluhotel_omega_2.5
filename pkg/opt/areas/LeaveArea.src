@@ -48,10 +48,5 @@ program LeaveArea(who)
 		RemoveNOPK(who);
 	endif
 
-	// No Damage Zone, remove flag
-	if (GetObjProperty(who, "InNoDamageZone"))
-		RemoveNoDamageZoneProperties(who);
-	endif
-
 endprogram
 

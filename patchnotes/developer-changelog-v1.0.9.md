@@ -23,8 +23,9 @@
 12. [Staff Tools - Test Admin Panel Expansion](#12-staff-tools---test-admin-panel-expansion)
 13. [Staff Tools - Login IP History](#13-staff-tools---login-ip-history)
 14. [NPC Creation Tooling - New HTML Builder](#14-npc-creation-tooling---new-html-builder)
-15. [Exhaustive File-by-File Change List](#15-exhaustive-file-by-file-change-list)
-16. [Risk and Regression Notes](#16-risk-and-regression-notes)
+15. [Areas - No Damage Zone Removed](#15-areas---no-damage-zone-removed)
+16. [Exhaustive File-by-File Change List](#16-exhaustive-file-by-file-change-list)
+17. [Risk and Regression Notes](#17-risk-and-regression-notes)
 
 ---
 
@@ -329,7 +330,45 @@ No player or server-runtime effect. Internal content-authoring workflow only.
 
 ---
 
-## 15. Exhaustive File-by-File Change List
+## 15. Areas - No Damage Zone Removed
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/areas/include/areapolicy.inc` | Removed `AREA_POLICY_NO_DAMAGE_ZONE` bitflag |
+| `pkg/opt/areas/include/areafunctions.inc` | Removed `SetNoDamageZoneProperties()`, `RemoveNoDamageZoneProperties()`, `StoreDonatorMountForNoDamageZone()`, `ConfiscateTamedPetForNoDamageZone()`; removed the now-unused `include ":housing:utility";` |
+| `pkg/opt/areas/EnterAreaDelay.src` | Removed the No Damage Zone entry message/flag-set block |
+| `pkg/opt/areas/LeaveArea.src` | Removed the `InNoDamageZone` clear-on-exit block |
+| `pkg/opt/areas/callguards.src` | Reverted the two `!IsInNoDamageZone(mobile)` guard-spawn conditions |
+| `pkg/systems/combat/include/hitscriptinc.inc` | Removed the No Damage Zone backstop from `RecalcDmg()` and `DealDamage()` |
+| `pkg/systems/combat/banishonhit.src` | Removed the No Damage Zone bail-out check |
+| `pkg/systems/combat/banishscript.src` | Removed the No Damage Zone bail-out check |
+| `pkg/systems/combat/blackrockscript.src` | Removed the No Damage Zone bail-out check |
+| `pkg/packethooks/packethook/packethook.src` | Removed the `InNoDamageZone` rejection blocks from `OnTarget()` and `checkAttack()` |
+| `scripts/ai/combat/fight.inc` | Removed the shared `Fight()` No Damage Zone chokepoint and the two includes (`include/areas`, `:areas:include/areafunctions`) added solely for it |
+| `scripts/ai/tamed.src` | Removed the tamed-pet `Fight()` No Damage Zone check and the now-unused `include ":areas:include/areafunctions";` (kept `include "include/areas";` - `ConfiscatePetForRestrictedRelease()` in this file still needs `IsInNOPKArea()`/`IsInGuardedArea()`/`IsInSafeArea()`, and predates the No Damage Zone commit) |
+| `scripts/include/areas.inc` | Removed `IsInNoDamageZone(who)`; `IsInAntiLootingArea()`/`IsInAntiMagicArea()` no longer also match on the removed flag |
+| `scripts/include/skillpoints.inc` | Reverted skill-gain block back to `IsInSafeArea(who)` only |
+| `pkg/opt/areas/textcmd/admin/areas.src` | Removed the "No Damage Zone" checkbox column, its `nodamagezone` array and all load/save/apply/refresh wiring |
+
+### Overview
+
+The No Damage Zone area policy (added in 1.0.8, see that release's changelog section 15) was reported as not working at all, and per 1.0.8's own risk notes it had never actually been assigned to a live area (`areas.cfg`-backed policy store had no area with the bit set). Rather than debug infrastructure with zero live usage, it was removed outright: the policy bitflag, every enforcement backstop (packethook targeting/attacking, `Fight()` chokepoints, the three proc scripts, `RecalcDmg()`/`DealDamage()`), the tamed-pet confiscation/mount-storage helpers, the admin gump column, and the `IsInNoDamageZone()` lookup are all gone.
+
+### Notable Functional Changes
+
+- No behavior change for any currently-live area, since no area had this flag set.
+- The admin `.areas` gump loses its 11th ("No Damage Zone") checkbox column; the `retval` encoding (`area_index * 100 + column`) was left as-is rather than reverted to `* 10`, since it's harmless headroom and touching it risks unrelated regressions in the column-click math.
+- `pkg/opt/areas/include/areafunctions.inc` had its `include ":housing:utility";` removed - it was added solely to reach `PopulateConfiscatedPetTicket()`/`KillConfiscatedPet()` for the now-deleted `ConfiscateTamedPetForNoDamageZone()`; nothing else in the file used it.
+
+### Expected Impact
+
+No player-facing change - the feature never reached players. Removes dead-but-load-bearing-looking infrastructure (functions and an admin gump column staff might otherwise have assumed were live) that was reported broken.
+
+---
+
+## 16. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -340,6 +379,12 @@ No player or server-runtime effect. Internal content-authoring workflow only.
 | `config/npcdesc.cfg` | 3, 4, 5 | Skill keyword fixes, rainbow ostard HP correction, dead-template/CProp cleanup |
 | `pkg/opt/admin/include/adminpanel.inc` | 10, 12, 13 | Error-struct guards, suicide labeling, login IP history, asset-lookup helpers |
 | `pkg/opt/admin/textcmd/test/testadminpanel.src` | 12, 13 | Multi/boat/corpse lookup + goto gumps, IP cross-reference |
+| `pkg/opt/areas/EnterAreaDelay.src` | 15 | No Damage Zone entry block removed |
+| `pkg/opt/areas/LeaveArea.src` | 15 | No Damage Zone exit block removed |
+| `pkg/opt/areas/callguards.src` | 15 | No Damage Zone guard-spawn exemption removed |
+| `pkg/opt/areas/include/areafunctions.inc` | 15 | No Damage Zone helper functions + `:housing:utility` include removed |
+| `pkg/opt/areas/include/areapolicy.inc` | 15 | `AREA_POLICY_NO_DAMAGE_ZONE` bitflag removed |
+| `pkg/opt/areas/textcmd/admin/areas.src` | 15 | No Damage Zone gump column and all supporting arrays/wiring removed |
 | `pkg/opt/powerscrolls/powerscroll.src` | 11 | Alchemy cap-check index fix |
 | `pkg/opt/spawnpoint/checkpoint.src` | 9 | Despawn-on-destroy default -> 1 |
 | `pkg/opt/spawnpoint/defaultdelay.src` | 9 | Despawn-on-destroy default -> 1 |
@@ -350,9 +395,18 @@ No player or server-runtime effect. Internal content-authoring workflow only.
 | `pkg/opt/spawnpoint/spawnpoint.src` | 9 | Despawn-on-destroy default -> 1 |
 | `pkg/opt/spawnpoint/textcmd/admin/gotospawnpoint.src` | 9 | Despawn-on-destroy default -> 1 |
 | `pkg/opt/versebook/include/versefunctions.inc` | 7 | `SmartSongBoost()` unpartied-match fix |
+| `pkg/packethooks/packethook/packethook.src` | 15 | No Damage Zone target/attack rejection removed |
 | `pkg/std/tailoring/make_cloth_items.src` | 6 | Elven Glasses / Dragon Helm added to Fortify Hat |
+| `pkg/systems/combat/banishonhit.src` | 15 | No Damage Zone bail-out removed |
+| `pkg/systems/combat/banishscript.src` | 15 | No Damage Zone bail-out removed |
+| `pkg/systems/combat/blackrockscript.src` | 15 | No Damage Zone bail-out removed |
+| `pkg/systems/combat/include/hitscriptinc.inc` | 15 | No Damage Zone backstop removed from `RecalcDmg()`/`DealDamage()` |
 | `pythonscripts/npc_creation_builder.xlsx` | 14 | Removed, superseded |
+| `scripts/ai/combat/fight.inc` | 15 | No Damage Zone chokepoint + its two dedicated includes removed |
+| `scripts/ai/tamed.src` | 15 | No Damage Zone `Fight()` check removed; unused `areafunctions` include removed |
+| `scripts/include/areas.inc` | 15 | `IsInNoDamageZone()` removed; anti-looting/anti-magic checks reverted |
 | `scripts/include/bard.inc` | 7 | `ValidSongBoost()` party restriction removed |
+| `scripts/include/skillpoints.inc` | 15 | Skill-gain block reverted to `IsInSafeArea(who)` only |
 | `scripts/misc/chrdeath.src` | 10 | `KilledBy`/`KilledBySerial` error-struct guard |
 | `scripts/playermanager.src` | 13 | Hooks `RecordAccountLoginIP()` into `logon()` |
 | `scripts/textcmd/player/guilds.src` | 8 | Guild tag shown in member list |
@@ -360,9 +414,10 @@ No player or server-runtime effect. Internal content-authoring workflow only.
 
 ---
 
-## 16. Risk and Regression Notes
+## 17. Risk and Regression Notes
 
 - **`config/npcdesc.cfg` line-merge formatting** (section 5): the `kappa` and `packhorse`/`packllama` edits merged two statements onto one physical line in two spots. Confirmed no script reads the removed `kappa`/`pack` CProps, and the file's format elsewhere doesn't appear to be strictly line-oriented, but this wasn't verified against an actual server load in this session - worth a sanity-check load/parse before wide release.
 - **Rainbow ostard HP** (section 4): shipped-then-caught-and-corrected before release; verify the corrected `i300000`/`i700000` values against design intent (3000/7000 HP) if these NPCs are meant to be tuned differently.
 - **Spawnpoint despawn-on-destroy default** (section 9): changes behavior for *newly created or reset* spawnpoints only; does not retroactively touch already-saved spawnpoint settings, but staff should be aware the default flipped.
 - **`ValidSongBoost()` party removal** (section 7): Song of Cloaking now affects any nearby non-NPC, not just party members - confirm this matches intended design (e.g. it will also hide nearby hostile players if they're in range when the song is cast).
+- **No Damage Zone removal** (section 15): confirmed via the 1.0.8 changelog's own risk notes that no live area had `AREA_POLICY_NO_DAMAGE_ZONE` set on its stored policy mask before removing the flag and all its enforcement code, so this should be a pure no-op for any currently-configured area. Not independently re-verified against the live policy datastore in this session - worth a quick `.areas` gump spot-check on a couple of facets before release to confirm no stray mask has bit `1024` set (it would silently stop doing anything, not error).

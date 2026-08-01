@@ -18,12 +18,6 @@ program banishscript(attacker, defender, weapon, armor, basedamage, rawdamage)
 			attacker 	:= attacker[1];
 		endif
 
-		// No Damage Zone - see blackrockscript.src for why this bypasses
-		// the normal combat-blocking checks and needs its own guard.
-		if (GetObjProperty(attacker, "InNoDamageZone") || GetObjProperty(defender, "InNoDamageZone"))
-			return;
-		endif
-
         var summoned := GetObjProperty( defender, "summoned" );
         var animated := GetObjProperty( defender, "animated" );
         var cursed := GetObjProperty( weapon , "Cursed" );

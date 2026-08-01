@@ -63,6 +63,14 @@ Welcome to **Patch 1.0.9**. This is a smaller follow-up patch focused on **NPC s
 
 ---
 
+## Areas - No Damage Zone Removed
+
+### Player Impact
+
+- No direct gameplay change expected. The "No Damage Zone" area type added in 1.0.8 was never assigned to any live area and wasn't working correctly, so it has been fully removed from the area system and admin tools.
+
+---
+
 ## Spawnpoints - Behind-the-Scenes Default Change
 
 ### Player Impact
@@ -91,6 +99,7 @@ Welcome to **Patch 1.0.9**. This is a smaller follow-up patch focused on **NPC s
 - Fixed unpartied players sometimes being mismatched as party members for song boosts.
 - Guild member list now shows your guild's tag.
 - Alchemy power scrolls (tomes) now correctly respect your skill cap.
+- The unused, non-functional "No Damage Zone" area type has been removed.
 - Spawnpoint default behavior changed so new/reset spawnpoints despawn their monsters on destroy.
 - Fixed a death-recording bug and hardened staff tools against old bad data; staff also gained new account/asset lookup tools.
 
