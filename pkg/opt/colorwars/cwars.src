@@ -999,7 +999,7 @@ function RunCWars()
 	foreach mob in mob_list
 		RevokePrivilege( mob, "invul" );
 		Setobjproperty( mob, "guardkill", 1);
-		ApplyRawDamage( mob, GetMaxHP(mob) + 3 );
+		mob.kill();
 	endforeach
 		
 	foreach player in ListMobilesInBox(6040, 1286, 0, 6135, 1405, 100, "britannia")	
@@ -1136,7 +1136,7 @@ function CleanArena()
 		sleepms(5);
 		RevokePrivilege( mob, "invul" );
 		Setobjproperty( mob, "guardkill", 1);
-		ApplyRawDamage( mob, GetMaxHP(mob) + 3 );
+		mob.kill();
 	endforeach
 	//destroy everything, HOPE YOU DIDNT SMUGGLE ANYTHING IN
 	foreach item in ListItemsNearLocation( 6080, 1356, LIST_IGNORE_Z, 75, "britannia" )

@@ -39,10 +39,13 @@ program DestroySpawnPoint(point)
 				spawned_object := SystemFindObjectBySerial(spawned_serial);
 				case( pt_data[1] )
 					"NPC":
-					"Group":	
+					"Custom NPC":
+					"Group":
 						RevokePrivilege(spawned_object,"invul");
 						SetObjProperty(spawned_object, "guardkill", 1);
-						ApplyRawDamage(spawned_object, GetMaxHP(spawned_object)+3);
+						// ApplyRawDamage silently no-ops above USHRT_MAX (65535),
+						// so high-HP spawns would never actually die here.
+						spawned_object.kill();
 					"Container":
 						DestroyItem(spawned_object);
 					"Item":		

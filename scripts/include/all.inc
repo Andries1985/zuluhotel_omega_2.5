@@ -27,11 +27,15 @@ function KillMobile( byref mobile, guard_killed := 0, by_who := 0 )
 	endif
 	
 	RevokePrivilege( mobile, PRIVILEGEID_INVULNERABLE );
+	// ApplyRawDamage/ApplyTheDamage silently no-op above USHRT_MAX (65535), so
+	// high-HP spawns (eg. CustomHitsLevel-scaled superbosses) would otherwise
+	// take no damage at all and never die. mobile.kill() kills unconditionally
+	// regardless of current HP.
 	if( by_who )
-		return ApplyTheDamage( mobile, by_who, GetMaxHP(mobile)+3 );
+		return mobile.kill(by_who);
 	else
 		EraseObjProperty( mobile, PROPID_MOBILE_HITLIST );
-		return ApplyRawDamage( mobile, GetMaxHP(mobile)+3 );
+		return mobile.kill();
 	endif
 	
 endfunction
