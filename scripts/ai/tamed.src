@@ -266,6 +266,24 @@ function Fight( opponent )
 
 endfunction
 
+function OrderedFight( atktarget )
+
+	if( IsInSafeArea(me) || IsInSafeArea(atktarget) || IsInSafeArea(master) ||
+	    IsInNOPKArea(me)  || IsInNOPKArea(atktarget)  || IsInNOPKArea(master) )
+		if( GetObjProperty( me, "DonatorMount") )
+			SendSysmessage( master, "You can't order an attack here. Your mount has been returned to its stone and a charge has been used." );
+			ReturnDonatorMountToStone(1);
+		else
+			SendSysmessage( master, "You can't order an attack here." );
+			ConfiscatePetForRestrictedRelease();
+		endif
+		return;
+	endif
+
+	Fight( atktarget );
+
+endfunction
+
 function CloseDistance( opponent )
 	var sleepdelay := 300 - (CInt(GetDexterity(me)) * 1.5);
 	if (sleepdelay < 0) 
@@ -938,7 +956,7 @@ function MainAILoop()
 					autonomous_defense := 0;
 					ClearAttackQueues();
 					guarding := 0;
-					fight(ev.target);
+					OrderedFight(ev.target);
 				EVID_ALL_FOLLOW_CMD:
 					autonomous_defense := 0;
 					ClearAttackQueues();
@@ -1287,7 +1305,7 @@ function ProcessSpeech(ev)
 			if (evtext["all kill"] or evtext["all attack"] )
 				AllCommand(EVID_ALL_ATTACK_CMD, what);
 			else
-				Fight( what );
+				OrderedFight( what );
 			endif
 		endif
 	elseif( evtext[mename + " stop"] or evtext["all stop"])
@@ -1613,29 +1631,41 @@ endfunction
 
 // endfunction
 
+function ReturnDonatorMountToStone( removecharge := 0 )
+
+	var stone_serial := GetObjProperty(me, "DMountStoneSerial");
+	if (stone_serial)
+		var stone := SystemFindObjectBySerial(stone_serial);
+		if (stone)
+			SetObjProperty(stone, "MountHP", GetHP(me));
+			SetObjProperty(stone, "MountMana", GetMana(me));
+			SetObjProperty(stone, "MountStamina", GetStamina(me));
+			SetObjProperty(stone, "petname", me.name);
+			SetObjProperty(stone, "MountStored", 1);
+			if (removecharge)
+				var charges := Cint(GetObjProperty(stone, "charges"));
+				if (charges > 0)
+					SetObjProperty(stone, "charges", charges-1);
+				endif
+			endif
+		endif
+	endif
+
+	if (master)
+		EraseObjProperty(master, "DonatorMounted");
+	endif
+
+	MoveObjectToLocation(me,5288,1176,0, "britannia",MOVEOBJECT_FORCELOCATION);
+	RevokePrivilege( me, "invul" );
+	SetObjProperty(me,"guardkill",1);
+	me.kill();
+
+endfunction
+
 function GoWild()
 
 	if( GetObjProperty( me, "DonatorMount") )
-		var stone_serial := GetObjProperty(me, "DMountStoneSerial");
-		if (stone_serial)
-			var stone := SystemFindObjectBySerial(stone_serial);
-			if (stone)
-				SetObjProperty(stone, "MountHP", GetHP(me));
-				SetObjProperty(stone, "MountMana", GetMana(me));
-				SetObjProperty(stone, "MountStamina", GetStamina(me));
-				SetObjProperty(stone, "petname", me.name);
-				SetObjProperty(stone, "MountStored", 1);
-			endif
-		endif
-
-		if (master)
-			EraseObjProperty(master, "DonatorMounted");
-		endif
-
-		MoveObjectToLocation(me,5288,1176,0, "britannia",MOVEOBJECT_FORCELOCATION);
-		RevokePrivilege( me, "invul" );
-		SetObjProperty(me,"guardkill",1);
-		me.kill();
+		ReturnDonatorMountToStone();
 		return;
 	endif
 
