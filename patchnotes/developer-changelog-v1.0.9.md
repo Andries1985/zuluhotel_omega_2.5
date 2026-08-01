@@ -1,9 +1,9 @@
 # Developer Changelog - v1.0.9
-**Range:** `ed5a584` (origin/Patch-1.0.8) -> `cc3be3d` (HEAD)  
+**Range:** `ed5a584` (origin/Patch-1.0.8) -> `331e1ee` (HEAD)  
 **Branch:** Patch-1.0.9  
-**Date:** 2026-07-28 -> 2026-07-30  
-**Commits in range:** 4 (excluding merge commits)  
-**Files changed:** 23 (+4491 / -218)
+**Date:** 2026-07-28 -> 2026-07-31  
+**Commits in range:** 8 (excluding merge commits)  
+**Files changed:** 44 (+21451 / -17017)
 
 ---
 
@@ -24,14 +24,16 @@
 13. [Staff Tools - Login IP History](#13-staff-tools---login-ip-history)
 14. [NPC Creation Tooling - New HTML Builder](#14-npc-creation-tooling---new-html-builder)
 15. [Areas - No Damage Zone Removed](#15-areas---no-damage-zone-removed)
-16. [Exhaustive File-by-File Change List](#16-exhaustive-file-by-file-change-list)
-17. [Risk and Regression Notes](#17-risk-and-regression-notes)
+16. [Chests - Powerplayers Can Pick Spawn-Point Chests](#16-chests---powerplayers-can-pick-spawn-point-chests)
+17. [Townstones - Upgrade Store Data Sync](#17-townstones---upgrade-store-data-sync)
+18. [Exhaustive File-by-File Change List](#18-exhaustive-file-by-file-change-list)
+19. [Risk and Regression Notes](#19-risk-and-regression-notes)
 
 ---
 
 ## 1. Scope Summary
 
-Patch 1.0.9 is a small, focused patch on top of 1.0.8. Four substantive commits: a bundle of NPC-template and gameplay fixes (`6a8c143`), a staff test-admin-panel expansion adding login-IP cross-referencing (`57b5466`), a large `npcdesc.cfg` skill-keyword typo sweep plus a new offline NPC-creation HTML tool and a `KilledBy` crash fix (`907367c`), and the power scroll (tome) Alchemy cap-check fix from earlier in this session (`cc3be3d`). The merge commit `05a5314` in this range only pulled in 1.0.8's own patch-notes tail (`patchnotes/developer-changelog-v1.0.8.md`, `patch-v1.0.8.md`, `launchernotes.md`, and a `classfirsts/pkg.cfg` addition) and carries no new 1.0.9 content.
+Patch 1.0.9 is a small, focused patch on top of 1.0.8. Eight substantive commits: a bundle of NPC-template and gameplay fixes (`6a8c143`), a staff test-admin-panel expansion adding login-IP cross-referencing (`57b5466`), a large `npcdesc.cfg` skill-keyword typo sweep plus a new offline NPC-creation HTML tool and a `KilledBy` crash fix (`907367c`), the power scroll (tome) Alchemy cap-check fix (`cc3be3d`), a patch-notes update that also corrected the Rainbow Ostard `CustomHitsLevel` values and the `npcdesc.cfg` line-merge formatting flagged as a risk in section 4/5 (`56fad01`), removal of the non-functional No Damage Zone area policy (`0d2e105`), a lockpicking fix letting Powerplayers pick spawn-point chests (`938b8b4`), and a townstone upgrade-store data sync from the updated `upgrades.xlsx` (`331e1ee`). The merge commit `05a5314` in this range only pulled in 1.0.8's own patch-notes tail (`patchnotes/developer-changelog-v1.0.8.md`, `patch-v1.0.8.md`, `launchernotes.md`, and a `classfirsts/pkg.cfg` addition) and carries no new 1.0.9 content.
 
 ---
 
@@ -44,6 +46,10 @@ Patch 1.0.9 is a small, focused patch on top of 1.0.8. Four substantive commits:
 | `57b5466` | 2026-07-29 | Test Admin Panel Updates |
 | `907367c` | 2026-07-29 | NPC Creation website made / npcdesc fixes with typos / test admin panel updated |
 | `cc3be3d` | 2026-07-30 | Power scroll fix for alchemy |
+| `56fad01` | 2026-07-30 | Patch notes / Fixed some npcdesc formatting issues |
+| `0d2e105` | 2026-07-31 | Removal of the no damage zone |
+| `938b8b4` | 2026-07-31 | Lockpicking fix for powerplayers |
+| `331e1ee` | 2026-07-31 | Player town upgrades.cfg update |
 
 ---
 
@@ -368,7 +374,56 @@ No player-facing change - the feature never reached players. Removes dead-but-lo
 
 ---
 
-## 16. Exhaustive File-by-File Change List
+## 16. Chests - Powerplayers Can Pick Spawn-Point Chests
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/chests/lockpicking.src` | `PickTreasureChest()` class gate |
+
+### Overview
+
+`PickTreasureChest()` (invoked from `pick()` whenever the targeted chest has `PROPID_CHEST_SPAWNPOINT_CHEST` set, i.e. it's one of the tiered spawn-point loot chests created by `pkg/opt/spawnpoint/checkpoint.src`'s `CreateSpawnPointContainer()`) previously hard-gated on `CLASSEID_THIEF` only, rejecting every other class outright before any lockpicking roll happened.
+
+### Notable Functional Changes
+
+- Replaced the single `!GetObjProperty(who, CLASSEID_THIEF)` gate with two checks: reject only if the character is neither a Thief (`CLASSEID_THIEF`) nor a Powerplayer (`CLASSEID_POWERPLAYER`); rejection message updated to `"You are not a thief or powerplayer!"`.
+- Added a second gate: a Powerplayer who is not also a Thief is blocked specifically from chests where `PROPID_CHEST_SPAWN_LEVEL == 7` (the top-tier, 2%-roll chest from `CreateSpawnPointContainer()`'s lootgroup-307 branch), with a new message: `"This lock is too advanced for anyone but a thief to pick."` Levels 1-6 are unaffected by this second gate.
+- No change to the underlying `Checkskill(who, SKILLID_LOCKPICKING, lvl, skillpoints)` roll against `PROPID_CHEST_SPAWNPOINT_LOCK_DIFFICULTY` - Powerplayers face the same lock-difficulty odds as Thieves once past the class gate.
+
+### Expected Impact
+
+Powerplayers can now attempt to lockpick spawn-point loot chests (levels 1-6) using the same skill-check odds as Thieves. Level 7 chests remain exclusively pickable by Thieves.
+
+---
+
+## 17. Townstones - Upgrade Store Data Sync
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/townstones/upgrades.cfg` | Regenerated from `upgrades.xlsx` via `pythonscripts/_sync_townstone_upgrades.py --direction xlsx-to-cfg`, then hand-corrected |
+| `pkg/opt/townstones/upgrades.xlsx` | Regenerated from the corrected `upgrades.cfg` via `--direction cfg-to-xlsx` to keep both files in sync |
+
+### Overview
+
+The user updated `upgrades.xlsx` directly; `_sync_townstone_upgrades.py` was run with `--direction xlsx-to-cfg` to push those edits into `upgrades.cfg` (16,439 `Upgrade` blocks, down from 16,440). The raw git diff on `upgrades.cfg` touches ~32,000 lines because the xlsx column order doesn't match the cfg's original per-block field order, so nearly every block's `Graphic`/`Animation` line order gets rewritten even where the data is unchanged. A structured field-level diff (ignoring order) was run to isolate the real content changes, which surfaced one unintended change - `globeofsosaria` lost its `Animation Yes` field (the xlsx cell was apparently blanked) - that was confirmed with the user as accidental and hand-restored in `upgrades.cfg` before regenerating `upgrades.xlsx` from it, so both files agree.
+
+### Notable Functional Changes
+
+- Removed the `mysteryvendor` upgrade entirely (`Name: mysteryvendor`, `Desc: Shady Merchant`, `Cost: 60000`, `Type: Vendors`).
+- `safearea` and `nopkarea` upgrade `Cost` both raised from `1000000` to `3000000`.
+- `globeofsosaria`'s `Animation Yes` field, dropped by the xlsx edit, was restored by hand so the upgrade-shop preview gump (`tstone.src` `NormalizeUpgradeAnimation()`) still animates it - net no-op versus pre-patch behavior.
+
+### Expected Impact
+
+The townstone upgrade-shop gump no longer offers "Shady Merchant"; Safe Area and No-PK Area now cost 3,000,000 gold instead of 1,000,000. No other live upgrade data changed.
+
+---
+
+## 18. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -376,7 +431,7 @@ No player-facing change - the feature never reached players. Removes dead-but-lo
 | `ainotes/npc_creation_builder.xlsx` | 14 | Moved from `pythonscripts/` |
 | `ainotes/random-npc-generator-design.md` | - | Paused-feature design notes, carried in with this commit |
 | `config/corpses.cfg` | 6 | `corruptangel` now drops `feather 250` |
-| `config/npcdesc.cfg` | 3, 4, 5 | Skill keyword fixes, rainbow ostard HP correction, dead-template/CProp cleanup |
+| `config/npcdesc.cfg` | 3, 4, 5 | Skill keyword fixes, rainbow ostard HP correction, dead-template/CProp cleanup, and (via `56fad01`) the actual `CustomHitsLevel` fix and line-merge cleanup for `kappa`/`packhorse`/`packllama`/`vortexnaga` |
 | `pkg/opt/admin/include/adminpanel.inc` | 10, 12, 13 | Error-struct guards, suicide labeling, login IP history, asset-lookup helpers |
 | `pkg/opt/admin/textcmd/test/testadminpanel.src` | 12, 13 | Multi/boat/corpse lookup + goto gumps, IP cross-reference |
 | `pkg/opt/areas/EnterAreaDelay.src` | 15 | No Damage Zone entry block removed |
@@ -411,13 +466,18 @@ No player-facing change - the feature never reached players. Removes dead-but-lo
 | `scripts/playermanager.src` | 13 | Hooks `RecordAccountLoginIP()` into `logon()` |
 | `scripts/textcmd/player/guilds.src` | 8 | Guild tag shown in member list |
 | `patchnotes/*` (via merge `05a5314`) | - | 1.0.8's own patch-notes tail, no new 1.0.9 content |
+| `pkg/opt/chests/lockpicking.src` | 16 | `PickTreasureChest()` now allows Powerplayers; level-7 chests stay Thief-only |
+| `pkg/opt/townstones/upgrades.cfg` | 17 | `mysteryvendor` removed; `safearea`/`nopkarea` cost -> 3,000,000; `globeofsosaria` animation restored |
+| `pkg/opt/townstones/upgrades.xlsx` | 17 | Regenerated from corrected `upgrades.cfg` to stay in sync |
 
 ---
 
-## 17. Risk and Regression Notes
+## 19. Risk and Regression Notes
 
-- **`config/npcdesc.cfg` line-merge formatting** (section 5): the `kappa` and `packhorse`/`packllama` edits merged two statements onto one physical line in two spots. Confirmed no script reads the removed `kappa`/`pack` CProps, and the file's format elsewhere doesn't appear to be strictly line-oriented, but this wasn't verified against an actual server load in this session - worth a sanity-check load/parse before wide release.
-- **Rainbow ostard HP** (section 4): shipped-then-caught-and-corrected before release; verify the corrected `i300000`/`i700000` values against design intent (3000/7000 HP) if these NPCs are meant to be tuned differently.
+- **`config/npcdesc.cfg` line-merge formatting** (section 5): **Resolved in `56fad01`.** The `kappa`, `packhorse`, `packllama`, and `vortexnaga` blocks that had two statements merged onto one physical line were split back onto separate lines.
+- **Rainbow ostard HP** (section 4): **Resolved in `56fad01`.** `CustomHitsLevel` corrected from `i3000`/`i7000` (30/70 actual HP) to `i300000`/`i700000` (3000/7000 actual HP) before release.
 - **Spawnpoint despawn-on-destroy default** (section 9): changes behavior for *newly created or reset* spawnpoints only; does not retroactively touch already-saved spawnpoint settings, but staff should be aware the default flipped.
 - **`ValidSongBoost()` party removal** (section 7): Song of Cloaking now affects any nearby non-NPC, not just party members - confirm this matches intended design (e.g. it will also hide nearby hostile players if they're in range when the song is cast).
 - **No Damage Zone removal** (section 15): confirmed via the 1.0.8 changelog's own risk notes that no live area had `AREA_POLICY_NO_DAMAGE_ZONE` set on its stored policy mask before removing the flag and all its enforcement code, so this should be a pure no-op for any currently-configured area. Not independently re-verified against the live policy datastore in this session - worth a quick `.areas` gump spot-check on a couple of facets before release to confirm no stray mask has bit `1024` set (it would silently stop doing anything, not error).
+- **Powerplayer chest picking** (section 16): only gated on `CLASSEID_THIEF`/`CLASSEID_POWERPLAYER` and chest level; a character that is both Thief and Powerplayer is treated as a Thief (unaffected by the level-7 block) since `is_thief` is checked first - confirm this dual-class precedence matches intent.
+- **Townstone upgrades sync** (section 17): the raw `upgrades.cfg` diff is ~32,000 lines due to field-order churn from the xlsx round-trip, not content changes; a structured field-level diff confirmed only the three changes listed in section 17. Future xlsx edits should expect the same large-but-mostly-cosmetic diff unless the xlsx column order is made to match the cfg's field order.
