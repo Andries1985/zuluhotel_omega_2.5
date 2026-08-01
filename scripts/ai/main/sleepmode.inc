@@ -29,7 +29,7 @@ function sleepmode()
 	endif
 
 	if (GetObjProperty(me, "killme"))
-		ApplyRawDamage(me, GetMaxHP(me)+1);
+		me.kill();
 	endif
 
 	Eraseobjproperty(me, "#flees");

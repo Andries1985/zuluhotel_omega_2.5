@@ -86,7 +86,7 @@ program cast_summon( parms, spell_id )
 		var count := 0;
 		repeat
 			SleepMS(1000);
-			ApplyRawDamage( thecritter, GetMaxHP(thecritter) + 3 );
+			thecritter.kill();
 			count := count + 1;
 		until(!thecritter || count >= 1000);
 	endif

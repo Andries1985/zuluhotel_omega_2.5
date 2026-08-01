@@ -2,6 +2,7 @@ use npc;
 use os;
 use uo;
 
+
 include "include/eventid";
 include "include/classes";
 include "include/npcbackpacks";
@@ -268,8 +269,12 @@ endfunction
 
 function OrderedFight( atktarget )
 
-	if( IsInSafeArea(me) || IsInSafeArea(atktarget) || IsInSafeArea(master) ||
-	    IsInNOPKArea(me)  || IsInNOPKArea(atktarget)  || IsInNOPKArea(master) )
+	var in_safe_area := IsInSafeArea(me) || IsInSafeArea(atktarget) || IsInSafeArea(master);
+	var in_nopk_area := IsInNOPKArea(me) || IsInNOPKArea(atktarget) || IsInNOPKArea(master);
+	var target_is_npc := atktarget.isa(POLCLASS_NPC);
+
+	// Safe areas take priority and always block ordered attacks, confiscating/returning the pet regardless of target.
+	if( in_safe_area )
 		if( GetObjProperty( me, "DonatorMount") )
 			SendSysmessage( master, "You can't order an attack here. Your mount has been returned to its stone and a charge has been used." );
 			ReturnDonatorMountToStone(1);
@@ -277,6 +282,21 @@ function OrderedFight( atktarget )
 			SendSysmessage( master, "You can't order an attack here." );
 			ConfiscatePetForRestrictedRelease();
 		endif
+		return;
+	endif
+
+	// No PK areas only block orders against PCs - pets must still be able to fight
+	// monsters (NPCs) on command in no-PK dungeons. Just refuse the order, no confiscation.
+	if( in_nopk_area && !target_is_npc )
+		SendSysmessage( master, "You cannot order an attack on that here." );
+		// AcquireTargetWithSpeechLock() just set a short post-targeting speech lockout;
+		// since we're refusing instead of fighting, clear it so the master isn't
+		// briefly ignored if they immediately give a different command.
+		ignorespeechuntil := ReadGameClock();
+		// Explicitly resume following master instead of leaving the pet idle/undirected
+		// after a refused order.
+		SetWarMode( 0 );
+		following := master;
 		return;
 	endif
 
@@ -1297,7 +1317,13 @@ function ProcessSpeech(ev)
 
 	if (evtext[mename + " kill"] or evtext[mename + " attack"] or
 		evtext["all kill"] or evtext["all attack"] )
-		var what := AcquireTargetWithSpeechLock(TGTOPT_HARMFUL + TGTOPT_CHECK_LOS);
+		// Deliberately not TGTOPT_HARMFUL: packethook.src's OnTarget() silently drops
+		// the client's target-selection packet (CORE_IGNORE) whenever a harmful cursor
+		// is used to click a PC in a no-PK/safe area, which leaves this Target() call
+		// hung forever (awaitingtargetselection never clears). Targeting neutrally lets
+		// the packet through so Target() actually returns, and OrderedFight()'s own
+		// no-PK/safe-area checks handle refusing PC targets gracefully instead.
+		var what := AcquireTargetWithSpeechLock(TGTOPT_CHECK_LOS);
 		if (what)
 			autonomous_defense := 0;
 			ClearAttackQueues();
@@ -1540,7 +1566,7 @@ function AllCommand(evtype,what)
 	eve.+target := what;
 	SendEvent( me , eve );
 	foreach mob in mobs
-		if( GetObjProperty( mob , "master" ) == me.master.serial )
+		if( mob.serial != me.serial and GetObjProperty( mob , "master" ) == me.master.serial )
 			SendEvent( mob , eve );
 		endif
 	endforeach

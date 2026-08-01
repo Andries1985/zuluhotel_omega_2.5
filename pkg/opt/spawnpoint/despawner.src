@@ -40,6 +40,7 @@ program DeSpawner( point )
 		spawno := SystemFindObjectBySerial(spawnsr);
 		case( pt_data[1] )
 			"NPC":
+			"Custom NPC":
 			"Group":	KillMobile( spawno, 1 );
 			"Container":	DestroyItem( spawno );
 			"Item":		if( spawno )
