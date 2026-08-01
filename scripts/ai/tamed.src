@@ -17,7 +17,6 @@ include "include/random";
 include "include/attributes";
 include ":housing:utility";
 include "include/areas";
-include ":areas:include/areafunctions";
 
 const HALT_THRESHOLD := 10;
 Const MOVING_EFFECT_FIREBALL	:= 0x36D4;
@@ -146,19 +145,6 @@ function Fight( opponent )
 	following := 0;
 
 	if ( (opponent.serial == me.serial) or (opponent.serial == master.serial) )
-		return;
-	endif
-
-	// No Damage Zone - tamed pets have their own Fight() here, separate from
-	// scripts/ai/combat/fight.inc's shared one, so the check has to be
-	// duplicated. A pet ordered to attack a defender inside the zone gets
-	// confiscated (not killed) rather than just silently blocked.
-	if (IsInNoDamageZone(opponent))
-		SetWarMode( 0 );
-		following := oldfollowing;
-		if (!IsInNoDamageZone(me))
-			ConfiscateTamedPetForNoDamageZone(me);
-		endif
 		return;
 	endif
 

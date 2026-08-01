@@ -31,7 +31,11 @@ program powerscroll(who, scroll)
 
 	var matrix := GetObjProperty(who, "pScrollMatrix");
 	var skill := GetObjProperty(scroll, "skill");
-	if(matrix[skill] > 15)
+	var matrixIndex := skill;
+	if(matrixIndex == 0)
+		matrixIndex := 49;
+	endif
+	if(matrix[matrixIndex] > 15)
 		SendSysMessage(who, "You can't raise this cap any higher.");
 		return;
 	endif

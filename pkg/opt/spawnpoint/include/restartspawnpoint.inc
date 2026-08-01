@@ -16,7 +16,7 @@ function EnsureSpawnPointSettings( byref point )
 		pt_data[6]  := 0;
 		pt_data[7]  := 0;
 		pt_data[8]  := 0;
-		pt_data[9]  := 0;
+		pt_data[9]  := 1;
 		pt_data[10] := 0;
 		pt_data[11] := 0;
 		pt_data[12] := 0;

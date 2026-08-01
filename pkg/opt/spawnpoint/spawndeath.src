@@ -47,7 +47,7 @@ program spawndeath( params )
 		pt_data[6]  := 0;	// Frequency
 		pt_data[7]  := 0;	// Disabled
 		pt_data[8]  := 0;	// Spawn in group.
-		pt_data[9]  := 0;	// Despawn on destroy
+		pt_data[9]  := 1;	// Despawn on destroy
 		pt_data[10] := 0;	// Expire time
 		pt_data[11] := 0;	// Expire number
 		pt_data[12] := 0;	// Start spawning hours

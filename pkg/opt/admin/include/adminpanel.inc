@@ -1,5 +1,6 @@
 use uo;
 use datafile;
+use basic;
 
 include "include/time";
 
@@ -76,7 +77,13 @@ function ResolveAccountNameFromSerial(serial)
 	if(!obj)
 		return "";
 	endif
-	return CStr(obj.acctname);
+	// NPCs (and anything else not attached to an account) return an error
+	// struct here rather than "" - don't let that get CStr()'d into history.
+	var acctname := obj.acctname;
+	if(acctname == error)
+		return "";
+	endif
+	return CStr(acctname);
 endfunction
 
 
@@ -299,7 +306,10 @@ endfunction
 // normalize so callers only ever deal with the full struct shape.
 function NormalizeDeathHistoryEntry(entry)
 	var acct := entry.killed_by_account;
-	if(!acct)
+	// Older records could carry an unresolved GetObjProperty()/obj.acctname
+	// error struct (stringified via CStr) instead of "" - e.g. killed by an
+	// NPC, which isn't attached to an account. Treat those as blank too.
+	if(!acct or Find(CStr(acct), "errortext", 1))
 		acct := "";
 	endif
 	entry.killed_by_account := acct;
@@ -380,11 +390,17 @@ function BuildDeathHistorySummary(mobile, limit := 5)
 
 		var entry := NormalizeDeathHistoryEntry(history[i]);
 		var killed_by := entry.killed_by;
-		if(!killed_by)
+		// Some older records stored an unresolved GetObjProperty() error struct
+		// (stringified via CStr) instead of a name, back when chrdeath.src didn't
+		// guard against a missing KilledBy cprop - display those as Unknown too.
+		if(!killed_by or Find(killed_by, "errortext", 1))
 			killed_by := "Unknown";
 		endif
 
 		var line := "Killed by "+killed_by;
+		if(entry.killed_by_serial and CInt(entry.killed_by_serial) == CInt(mobile.serial))
+			line := line+" (Suicide)";
+		endif
 		if(entry.killed_by_account)
 			line := line+", "+entry.killed_by_account;
 		endif
@@ -603,7 +619,12 @@ endfunction
 // misattributed.
 function GetLatestNoteInfo(account)
 	var info := struct;
-	info.+note := CStr(account.GetProp("Notes"));
+	var raw_note := account.GetProp("Notes");
+	if(raw_note == error)
+		info.+note := "";
+	else
+		info.+note := CStr(raw_note);
+	endif
 	info.+timestamp := "";
 	info.+initiator := "";
 
@@ -628,4 +649,188 @@ function GetLatestNoteInfo(account)
 	endif
 
 	return info;
+endfunction
+
+
+///////////////////////////////////////////////////////////////////////////
+// Login IPs
+///////////////////////////////////////////////////////////////////////////
+// Account-wide, not character-specific - stored on the reserved
+// ADMINPANEL_ACCOUNT_ELEMENT_KEY element like notes_history. Unlike the other
+// histories this one de-duplicates: one entry per unique IP the account has
+// ever logged in from, with a hit count and first/last-seen timestamps,
+// rather than one entry per login.
+
+// A single IP entry: struct{"ip","first_seen","last_seen","count"}.
+function MakeIPHistoryEntry(ip)
+	var entry := struct;
+	entry.+ip := CStr(ip);
+	entry.+first_seen := NowString();
+	entry.+last_seen := NowString();
+	entry.+count := 1;
+	return entry;
+endfunction
+
+// Call this on login (see program logon() in scripts/playermanager.src)
+// with the account and the IP the client connected from.
+function RecordAccountLoginIP(account, ip)
+	if(!account or account.errortext)
+		return;
+	endif
+	ip := CStr(ip);
+	if(!ip)
+		return;
+	endif
+
+	var acctname := CStr(account.name);
+	var df := OpenAdminPanelDataFile(acctname);
+	if(!df)
+		return;
+	endif
+
+	var elem := df.FindElement(ADMINPANEL_ACCOUNT_ELEMENT_KEY);
+	if(!elem)
+		elem := df.CreateElement(ADMINPANEL_ACCOUNT_ELEMENT_KEY);
+	endif
+	if(!elem)
+		UnloadDataFile(AdminPanelFilespec(acctname));
+		return;
+	endif
+
+	var history := elem.GetProp("ip_history");
+	if(!history)
+		history := {};
+	endif
+
+	var i;
+	var found := 0;
+	for(i := 1; i <= history.size(); i := i + 1)
+		if(history[i].ip == ip)
+			history[i].last_seen := NowString();
+			history[i].count := CInt(history[i].count) + 1;
+			found := 1;
+			break;
+		endif
+	endfor
+
+	if(!found)
+		history.append(MakeIPHistoryEntry(ip));
+		history := TrimHistoryToLimit(history, ADMINPANEL_MAX_HISTORY);
+	endif
+
+	elem.SetProp("ip_history", history);
+
+	UnloadDataFile(AdminPanelFilespec(acctname));
+endfunction
+
+// Stored IP-history array (one entry per unique IP, ordered by when it was
+// first seen; each entry a struct{"ip","first_seen","last_seen","count"})
+// for an account. {} if nothing has been recorded yet.
+function GetStoredIPHistory(acctname)
+	var df := OpenDataFile(AdminPanelFilespec(acctname));
+	if(!df)
+		return {};
+	endif
+
+	var elem := df.FindElement(ADMINPANEL_ACCOUNT_ELEMENT_KEY);
+	var history := {};
+	if(elem)
+		history := elem.GetProp("ip_history");
+		if(!history)
+			history := {};
+		endif
+	endif
+
+	UnloadDataFile(AdminPanelFilespec(acctname));
+	return history;
+endfunction
+
+// "X.X.X.X  (seen Nx, first: ..., last: ...)" for a single ip_history entry
+// (struct{"ip","first_seen","last_seen","count"}) - shared by
+// BuildIPHistorySummary and any UI that needs to render entries individually
+// (e.g. one button + line per IP) instead of a flat "lines" array.
+function FormatIPHistoryLine(entry)
+	var line := CStr(entry.ip)+"  (seen "+CStr(entry.count)+"x";
+	if(entry.first_seen)
+		line := line+", first: "+entry.first_seen;
+	endif
+	if(entry.last_seen)
+		line := line+", last: "+entry.last_seen;
+	endif
+	line := line+")";
+	return line;
+endfunction
+
+// struct{"lines","total","remaining"} - one formatted line per unique IP
+// (most recently first-seen IP first), capped to the most recent `limit`
+// unique IPs.
+function BuildIPHistorySummary(acctname, limit := 10)
+	var lines := {};
+	var history := GetStoredIPHistory(acctname);
+
+	var i;
+	for(i := history.size(); i >= 1; i := i - 1)
+		if(lines.size() >= limit)
+			break;
+		endif
+
+		lines.append(FormatIPHistoryLine(history[i]));
+	endfor
+
+	var summary := struct;
+	summary.+lines := lines;
+	summary.+total := history.size();
+	var remaining := history.size() - lines.size();
+	if(remaining < 0)
+		remaining := 0;
+	endif
+	summary.+remaining := remaining;
+
+	return summary;
+endfunction
+
+// Every account name whose live "IP" property or recorded ip_history
+// contains `ip` - i.e. every account that has ever logged in from that
+// address, not just whoever currently holds it. Sorted alphabetically.
+function FindAccountsByIP(ip)
+	ip := CStr(ip);
+	var matches := {};
+	if(!ip)
+		return matches;
+	endif
+
+	foreach acctname in (ListAccounts())
+		var name := CStr(acctname);
+		if(!name)
+			continue;
+		endif
+
+		var is_match := 0;
+
+		var account := FindAccount(name);
+		if(account && !account.errortext)
+			var raw_ip := account.GetProp("IP");
+			if(raw_ip != error && CStr(raw_ip) == ip)
+				is_match := 1;
+			endif
+		endif
+
+		if(!is_match)
+			var history := GetStoredIPHistory(name);
+			var i;
+			for(i := 1; i <= history.size(); i := i + 1)
+				if(history[i].ip == ip)
+					is_match := 1;
+					break;
+				endif
+			endfor
+		endif
+
+		if(is_match)
+			matches.append(name);
+		endif
+	endforeach
+
+	matches.sort();
+	return matches;
 endfunction

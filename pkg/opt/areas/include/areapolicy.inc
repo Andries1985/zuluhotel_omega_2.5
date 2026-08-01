@@ -22,7 +22,6 @@ const AREA_POLICY_NO_LOOTING := 64;
 const AREA_POLICY_SAFE_AREA := 128;
 const AREA_POLICY_NO_PK := 256;
 const AREA_POLICY_RP_AREA := 512;
-const AREA_POLICY_NO_DAMAGE_ZONE := 1024;
 
 // World-catchall area ids whose masks are OR-merged into every location's
 // policy so that setting a flag on e.g. "feluccawholeworld" makes it apply to

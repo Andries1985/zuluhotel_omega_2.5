@@ -62,16 +62,6 @@ function RecalcDmg( attacker, defender, weapon, armor, byref basedamage, piercin
 
 	//Print("In RecalcDmg with basedamage: " + basedamage);
 
-	// No Damage Zone backstop - unlike the NOPK/SafeArea checks below, this
-	// isn't skipped when either side is an NPC. Combat is already blocked
-	// from starting at the packethook/Fight() level; this only matters if
-	// damage reaches here some other way (e.g. flag toggled live mid-fight).
-	if (GetObjProperty(defender, "InNoDamageZone"))
-		attacker.setwarmode(0);
-		defender.setwarmode(0);
-		return;
-	endif
-
 	var noPKatk := GetObjProperty(attacker, "NOPKAREA");
 	var noPKdef := GetObjProperty(defender, "NOPKAREA");
 
@@ -641,14 +631,6 @@ endfunction
 function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 
 	//Print("In DealDamage with basedamage: " + basedamage);
-
-	// No Damage Zone backstop - see RecalcDmg() above for why this is a
-	// separate, non-_any_npc-excluded check.
-	if (GetObjProperty(defender, "InNoDamageZone"))
-		attacker.setwarmode(0);
-		defender.setwarmode(0);
-		return;
-	endif
 
 	var noPKatk := GetObjProperty(attacker, "NOPKAREA");
 	var noPKdef := GetObjProperty(defender, "NOPKAREA");
