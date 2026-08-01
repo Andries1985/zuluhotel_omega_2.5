@@ -56,6 +56,14 @@ Always check Discord announcements for all the patch notes.
 
 ---
 
+## Areas - No Damage Zone Removed
+
+### Player Impact
+
+- No direct gameplay change expected. The "No Damage Zone" area type added in 1.0.8 was never assigned to any live area and wasn't working correctly, so it has been fully removed from the area system and admin tools.
+
+---
+
 ## Spawnpoints - Behind-the-Scenes Default Change
 
 ### Player Impact
@@ -73,6 +81,24 @@ Always check Discord announcements for all the patch notes.
 
 ---
 
+## Chests - Powerplayers Can Now Pick Spawn-Point Chests
+
+### Player Impact
+
+- Powerplayers can now use lockpicking to open locked treasure/spawn-point chests, previously restricted to Thieves only.
+- Level 7 (top-tier) spawn-point chests remain Thief-only - a Powerplayer who isn't also a Thief will be told the lock is too advanced for them.
+
+---
+
+## Townstones - Upgrade Store Changes
+
+### Player Impact
+
+- The "Shady Merchant" vendor upgrade has been removed from the townstone upgrade store.
+- Safe Area and No-PK Area townstone upgrades now cost 3,000,000 gold, up from 1,000,000.
+
+---
+
 ## Summary
 
 - Treasure Hunters, Thieves, Kobold Mercenaries, Jewelers, Mages, and the Listener NPC now have the skills their templates always listed but weren't actually granting.
@@ -84,7 +110,10 @@ Always check Discord announcements for all the patch notes.
 - Fixed unpartied players sometimes being mismatched as party members for song boosts.
 - Guild member list now shows your guild's tag.
 - Alchemy power scrolls (tomes) now correctly respect your skill cap.
+- The unused, non-functional "No Damage Zone" area type has been removed.
 - Spawnpoint default behavior changed so new/reset spawnpoints despawn their monsters on destroy.
 - Fixed a death-recording bug and hardened staff tools against old bad data; staff also gained new account/asset lookup tools.
+- Powerplayers can now pick locked spawn-point chests (level 7 chests remain Thief-only).
+- Removed the "Shady Merchant" townstone vendor upgrade; Safe Area and No-PK Area upgrades now cost 3,000,000 gold.
 
 Thanks for playing Zuluhotel Omega 2.5.

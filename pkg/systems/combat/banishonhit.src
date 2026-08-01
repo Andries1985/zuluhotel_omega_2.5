@@ -15,12 +15,6 @@ program banishonhit( parms )
 	//var basedamage := parms[5];
 	var rawdamage	:= parms[6];
 
-	// No Damage Zone - see blackrockscript.src for why this bypasses the
-	// normal combat-blocking checks and needs its own guard.
-	if (GetObjProperty(attacker, "InNoDamageZone") || GetObjProperty(defender, "InNoDamageZone"))
-		return;
-	endif
-
 	var summoned := GetObjProperty( attacker , "summoned" );
 	var animated := GetObjProperty( attacker , "animated" );
 	var cursed   := GetObjProperty( armor , "Cursed" );

@@ -134,8 +134,16 @@ function PickTreasureChest(who, lockpick, chest)
 
 //PROPID_CHEST_SPAWNPOINT_LOCK_DIFFICULTY
 
-	if( !GetObjProperty(who, CLASSEID_THIEF) )
-		SendSysMessage(who, "You are not a thief!", FONT_NORMAL, 43);
+	var is_thief := GetObjProperty(who, CLASSEID_THIEF);
+	var is_powerplayer := GetObjProperty(who, CLASSEID_POWERPLAYER);
+
+	if( !is_thief && !is_powerplayer )
+		SendSysMessage(who, "You are not a thief or powerplayer!", FONT_NORMAL, 43);
+		return;
+	endif
+
+	if( !is_thief && is_powerplayer && CInt(GetObjProperty(chest, PROPID_CHEST_SPAWN_LEVEL)) == 7 )
+		SendSysMessage(who, "This lock is too advanced for anyone but a thief to pick.", FONT_NORMAL, 43);
 		return;
 	endif
 

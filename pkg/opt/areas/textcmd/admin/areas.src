@@ -35,7 +35,6 @@ var nolooting := {};
 var safearea := {};
 var nopk := {};
 var rparea := {};
-var nodamagezone := {};
 
 const AREAS_PER_PAGE := 15;
 const ROW_HEIGHT := 25;
@@ -355,8 +354,7 @@ function BuildAreasPageGump(page, totalpages)
 	GFResizePic(gump, 35, 125, 9200, 830, 50);
 
 	// Names for all the options. Recall To/From are 3 lines instead of 2 so
-	// the columns can sit closer together - frees up room for No Damage Zone
-	// (placeholder column, not wired to a policy flag yet).
+	// the columns can sit closer together.
 	GFTextLine(gump, 96, 130, 900, "Area");
 	GFTextLine(gump, 95, 145, 900, "Name");
 
@@ -392,15 +390,12 @@ function BuildAreasPageGump(page, totalpages)
 	GFTextLine(gump, 727, 130, 900, "RP");
 	GFTextLine(gump, 727, 145, 900, "Area");
 
-	GFTextLine(gump, 770, 130, 900, "No Damage");
-	GFTextLine(gump, 780, 145, 900, "Zone");
-
 	// Block of text that displays current area info. Paged over display_order
 	// (World -> Cities -> Dungeons -> POI -> Graveyards -> Shrines -> Dungeon
 	// Entrances) rather than areas[] directly, but retval still encodes the
 	// original areas.cfg index so ApplyPageValues() writes the right flags.
-	// retval uses *100 (not *10) so there's headroom for the 11th (and any
-	// future) column without colliding with the next area's field-1 checkbox.
+	// retval uses *100 (not *10) to leave headroom for any future column
+	// without colliding with the next area's field-1 checkbox.
 	var y := 190;
 	var start_idx := ((page - 1) * AREAS_PER_PAGE) + 1;
 	var end_idx := start_idx + AREAS_PER_PAGE - 1;
@@ -425,7 +420,6 @@ function BuildAreasPageGump(page, totalpages)
 		GFCheckBox(gump, 611, y, 9026, 9027, safearea[orig_i], retval + 8);
 		GFCheckBox(gump, 669, y, 9026, 9027, nopk[orig_i], retval + 9);
 		GFCheckBox(gump, 727, y, 9026, 9027, rparea[orig_i], retval + 10);
-		GFCheckBox(gump, 785, y, 9026, 9027, nodamagezone[orig_i], retval + 11);
 		y := y + ROW_HEIGHT;
 	endfor
 
@@ -485,9 +479,6 @@ function EnsureAreaFlagArrays()
 	if (!rparea)
 		rparea := {};
 	endif
-	if (!nodamagezone)
-		nodamagezone := {};
-	endif
 
 	var i;
 	for (i := 1; i <= areas.size(); i := i + 1)
@@ -521,9 +512,6 @@ function EnsureAreaFlagArrays()
 		if (rparea.size() < i)
 			rparea.append(0);
 		endif
-		if (nodamagezone.size() < i)
-			nodamagezone.append(0);
-		endif
 	endfor
 endfunction
 
@@ -543,7 +531,6 @@ function LoadAreaFlagArrays()
 	safearea := {};
 	nopk := {};
 	rparea := {};
-	nodamagezone := {};
 
 	var i;
 	for(i := 1; i <= areas.size(); i := i + 1)
@@ -563,7 +550,6 @@ function LoadAreaFlagArrays()
 		safearea[i] := HasPolicy(mask, AREA_POLICY_SAFE_AREA);
 		nopk[i] := HasPolicy(mask, AREA_POLICY_NO_PK);
 		rparea[i] := HasPolicy(mask, AREA_POLICY_RP_AREA);
-		nodamagezone[i] := HasPolicy(mask, AREA_POLICY_NO_DAMAGE_ZONE);
 	endfor
 endfunction
 
@@ -593,7 +579,6 @@ function ApplyPageValues(data, page)
 		safearea[orig_i] := 0;
 		nopk[orig_i] := 0;
 		rparea[orig_i] := 0;
-		nodamagezone[orig_i] := 0;
 	endfor
 
 	var val;
@@ -612,7 +597,6 @@ function ApplyPageValues(data, page)
 			8: safearea[orig_i] := 1;
 			9: nopk[orig_i] := 1;
 			10: rparea[orig_i] := 1;
-			11: nodamagezone[orig_i] := 1;
 			endcase
 		endfor
 	endforeach
@@ -670,9 +654,6 @@ function SaveAreaFlagArrays(who)
 		if(rparea[i])
 			mask := mask + AREA_POLICY_RP_AREA;
 		endif
-		if(nodamagezone[i])
-			mask := mask + AREA_POLICY_NO_DAMAGE_ZONE;
-		endif
 
 		Print("[areas.save] area=" + CStr(i) + " id=" + CStr(area_info.area_id) + " mask=" + CStr(mask));
 		SetPolicyMask(AREA_POLICY_EDITOR_REALM, area_info.area_id, mask, updated_by);
@@ -714,16 +695,6 @@ function RefreshOnlineAreaStatus()
 			endif
 		elseif (had_nopk)
 			RemoveNOPK(character);
-		endif
-
-		var in_nodamage := IsInNoDamageZone(character);
-		var had_nodamage := GetObjProperty(character, "InNoDamageZone");
-		if (in_nodamage)
-			if (!had_nodamage)
-				SetNoDamageZoneProperties(character);
-			endif
-		elseif (had_nodamage)
-			RemoveNoDamageZoneProperties(character);
 		endif
 	endforeach
 endfunction
