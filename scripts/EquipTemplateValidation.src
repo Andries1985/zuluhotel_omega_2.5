@@ -12,76 +12,48 @@ program ValidateEquipFile()
 		var item_cfg := ReadconfigFile(":*:itemdesc");
 		if( item_cfg )
 			var equip_elem;
-			var item_elem;
-			var objtype;
 			foreach key in GetConfigStringKeys(equip_cfg)
 				equip_elem := FindConfigElem(equip_cfg, key);
-				if( equip_elem )
-					foreach armor_type in GetConfigStringArray(equip_elem, "Armor")
-						objtype := CInt(armor_type);
-						if( !objtype )
-            				objtype := GetObjtypeByName(armor_type);
-            				if( !objtype )
-            					Syslog("Invalid item in EquipTemplate '" + key + "' with Armor '" + armor_type + "'.");
-            				endif
-        				endif
-        
-        				if( objtype )
-        					if( CHECK_ALL_ITEMS || objtype > 0x3FFF )
-        						item_elem := FindConfigElem(item_cfg, objtype);
-        						if( !item_elem )
-	        						Syslog("Invalid item in EquipTemplate '" + key + "' with Armor '" + Hex(armor_type) + "'.");
-								endif
-							endif
-						endif
-					endforeach
-					
-					foreach weapon_type in GetConfigStringArray(equip_elem, "Weapon")
-						objtype := CInt(weapon_type);
-						if( !objtype )
-            				objtype := GetObjtypeByName(weapon_type);
-            				if( !objtype )
-            					Syslog("Invalid item in EquipTemplate '" + key + "' with Weapon '" + weapon_type + "'.");
-            				endif
-        				endif
-        
-        				if( objtype )
-        					if( CHECK_ALL_ITEMS || objtype > 0x3FFF )
-        						item_elem := FindConfigElem(item_cfg, objtype);
-        						if( !item_elem )
-	        						Syslog("Invalid item in EquipTemplate '" + key + "' with Weapon '" + Hex(weapon_type) + "'.");
-								endif
-							endif
-						endif
-					endforeach
-					
-					foreach equip_type in GetConfigStringArray(equip_elem, "Equip")
-						equip_type := SplitWords(equip_type)[1];
-						objtype    := CInt(equip_type);
-						if( !objtype )
-            				objtype := GetObjtypeByName(equip_type);
-            				if( !objtype )
-            					Syslog("Invalid item in EquipTemplate '" + key + "' with Equip '" + equip_type + "'.");
-            				endif
-        				endif
-        
-        				if( objtype )
-        					if( CHECK_ALL_ITEMS || objtype > 0x3FFF )
-        						item_elem := FindConfigElem(item_cfg, objtype);
-        						if( !item_elem )
-	        						Syslog("Invalid item in EquipTemplate '" + key + "' with Equip '" + Hex(equip_type) + "'.");
-								endif
-							endif
-						endif
-					endforeach
-				else
-					Syslog("Error, couldn't find equip elem...");
-				endif
+				ValidateEquipEntries(item_cfg, key, equip_elem, "Armor");
+				ValidateEquipEntries(item_cfg, key, equip_elem, "Weapon");
+				ValidateEquipEntries(item_cfg, key, equip_elem, "Equip");
 			endforeach
-			
+
 			Syslog("Finished EquipTemplate validation.");
 		endif
 	else
 		Syslog("Error, couldn't read equip.cfg");
 	endif
 endprogram
+
+// Validates every entry of one property (Armor/Weapon/Equip) on a single
+// EquipTemplate element against item_cfg, logging any that don't resolve to
+// a known item. "Equip" entries carry a trailing color token that the other
+// two don't, so it's stripped to just the item token before resolving.
+function ValidateEquipEntries(item_cfg, key, equip_elem, prop_name)
+	var item_elem;
+	var objtype;
+	foreach entry in GetConfigStringArray(equip_elem, prop_name)
+		var item_token := entry;
+		if( prop_name == "Equip" )
+			item_token := SplitWords(entry)[1];
+		endif
+
+		objtype := CInt(item_token);
+		if( !objtype )
+			objtype := GetObjtypeByName(item_token);
+			if( !objtype )
+				Syslog("Invalid item in EquipTemplate '" + key + "' with " + prop_name + " '" + item_token + "'.");
+			endif
+		endif
+
+		if( objtype )
+			if( CHECK_ALL_ITEMS || objtype > 0x3FFF )
+				item_elem := FindConfigElem(item_cfg, objtype);
+				if( !item_elem )
+					Syslog("Invalid item in EquipTemplate '" + key + "' with " + prop_name + " '" + Hex(item_token) + "'.");
+				endif
+			endif
+		endif
+	endforeach
+endfunction

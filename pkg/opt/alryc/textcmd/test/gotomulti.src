@@ -1,0 +1,347 @@
+// Synopsis: List all house multis in the world and teleport to the selected sign
+use uo;
+use os;
+use cfgfile;
+use polsys;
+
+include ":gumps:gumps";
+include ":gumps:gumps_ex";
+include "include/time";
+include "include/string";
+
+
+var house_itemdesc_cfg := ReadConfigFile(":housing:itemdesc");
+
+program gotomulti(who)
+	var multis := CollectHouseMultis();
+	if (!multis || !multis.size())
+		SendSysMessage(who, "No house multis were found.");
+		return 0;
+	endif
+
+	var selected := ShowMultiListGump(who, multis);
+	if (!selected)
+		return 0;
+	endif
+
+	var row := multis[selected];
+	if (!row)
+		SendSysMessage(who, "That entry is no longer available.");
+		return 0;
+	endif
+
+	var tx := CInt(row[7]);
+	var ty := CInt(row[8]);
+	var tz := CInt(row[9]);
+	var realm := CStr(row[4]);
+	var safe_z := ResolveStandableZ(tx, ty, tz, realm);
+
+	MoveObjectToLocation(who, tx, ty, safe_z, realm, MOVEOBJECT_FORCELOCATION);
+	SendSysMessage(who, "Teleported to " + row[1] + " at " + row[5] + ".");
+
+endprogram
+
+function CollectHouseMultis()
+	var multis := array;
+	var realmslist := Realms();
+
+	foreach realm in realmslist
+		var realm_name := GetRealmNameFromMapId(CInt(realm.mapid));
+		if (!realm_name)
+			continue;
+		endif
+		var realm_width := CInt(realm.width) - 1;
+		var realm_height := CInt(realm.height) - 1;
+
+		var found := ListMultisInBox(0, 0, -128, realm_width, realm_height, 127, realm_name);
+		if (!found or !found.size())
+			continue;
+		endif
+
+		foreach multi in found
+			if (!multi)
+				continue;
+			endif
+			if (!multi.isa(POLCLASS_HOUSE))
+				continue;
+			endif
+
+			var sign_serial := CInt(GetObjProperty(multi, "signserial"));
+			var sign := 0;
+			if (sign_serial)
+				sign := SystemFindObjectBySerial(sign_serial);
+			endif
+
+			var owner_name := ResolveOwnerName(multi, sign);
+			var owner_acct := ResolveOwnerAccount(multi, sign);
+			var owner_last_login := ResolveOwnerLastLogin(owner_acct);
+			var house_type := GetHouseTypeDisplayName(multi.objtype);
+
+			var loc_x := multi.x;
+			var loc_y := multi.y;
+			var loc_z := multi.z;
+			if (sign)
+				loc_x := sign.x;
+				loc_y := sign.y;
+				loc_z := sign.z;
+			endif
+
+			var region_name := GetRegionNameAtLocation(loc_x, loc_y, realm_name);
+			if (!region_name)
+				region_name := "Unknown";
+			endif
+
+			var coord_text := CStr(loc_x) + "," + CStr(loc_y) + "," + CStr(loc_z);
+			multis.append(array{owner_name, house_type, region_name, realm_name, coord_text, owner_last_login, loc_x, loc_y, loc_z, sign_serial});
+			SleepMS(1);
+		endforeach
+	endforeach
+	return SortHouseMultisByLastLogin(multis);
+endfunction
+
+function GetRealmNameFromMapId(mapid)
+	if (mapid == 0)
+		return "britannia";
+	elseif (mapid == 1)
+		return "britannia_alt";
+	elseif (mapid == 2)
+		return "ilshenar";
+	elseif (mapid == 3)
+		return "malas";
+	elseif (mapid == 4)
+		return "tokuno";
+	elseif (mapid == 5)
+		return "termur";
+	endif
+
+	return 0;
+endfunction
+
+function ShowMultiListGump(who, multis)
+	var per_page := 15;
+	var total_pages := CInt((multis.size() + per_page - 1) / per_page);
+	if (total_pages < 1)
+		total_pages := 1;
+	endif
+
+	var current_page := 1;
+	while (1)
+		var gump := GFCreateGump(0, 0, 860, 620);
+		GFDisposable(gump, 0);
+		GFResizePic(gump, 0, 0, 3500, 860, 620);
+		GFTextMid(gump, 15, 20, 830, 1153, "Alryc Gotomulti (Page " + current_page + "/" + total_pages + ")");
+		GFTextLine(gump, 20, 52, 1153, "Owner");
+		GFTextLine(gump, 145, 52, 1153, "House Type");
+		GFTextLine(gump, 305, 52, 1153, "Region");
+		GFTextLine(gump, 435, 52, 1153, "Realm");
+		GFTextLine(gump, 530, 52, 1153, "Coords");
+		GFTextLine(gump, 645, 52, 1153, "Last Login");
+		GFTextLine(gump, 785, 52, 1153, "Goto");
+		GFAddButton(gump, 415, 565, 2119, 2120, GF_CLOSE_BTN, 999999);
+
+		var start_index := ((current_page - 1) * per_page) + 1;
+		var end_index := start_index + per_page - 1;
+		if (end_index > multis.size())
+			end_index := multis.size();
+		endif
+
+		var y_pos := 75;
+		var index := start_index;
+		while (index <= end_index)
+			var entry := multis[index];
+			GFTextCrop(gump, 20, y_pos, 120, 18, 0, entry[1]);
+			GFTextCrop(gump, 145, y_pos, 150, 18, 0, entry[2]);
+			GFTextCrop(gump, 305, y_pos, 120, 18, 0, entry[3]);
+			GFTextCrop(gump, 435, y_pos, 90, 18, 0, entry[4]);
+			GFTextCrop(gump, 530, y_pos, 110, 18, 0, entry[5]);
+			GFTextCrop(gump, 645, y_pos, 130, 18, 0, FormatLastLoginDate(entry[6]));
+			GFAddButton(gump, 790, y_pos - 1, 2117, 2118, GF_CLOSE_BTN, index);
+			y_pos := y_pos + 32;
+			index := index + 1;
+			SleepMS(2);
+		endwhile
+
+		if (current_page > 1)
+			GFAddButton(gump, 620, 565, 4014, 4015, GF_CLOSE_BTN, 1000001);
+			GFTextLine(gump, 650, 565, 1153, "Prev");
+		endif
+		if (current_page < total_pages)
+			GFAddButton(gump, 700, 565, 4005, 4006, GF_CLOSE_BTN, 1000002);
+			GFTextLine(gump, 730, 565, 1153, "Next");
+		endif
+
+		var input := GFSendGump(who, gump);
+		if (!input)
+			return 0;
+		endif
+
+		var choice := CInt(input[0]);
+		if (choice == 1000001)
+			if (current_page > 1)
+				current_page := current_page - 1;
+			endif
+			continue;
+		elseif (choice == 1000002)
+			if (current_page < total_pages)
+				current_page := current_page + 1;
+			endif
+			continue;
+		elseif (choice == 999999 || choice < 1 || choice > multis.size())
+			return 0;
+		endif
+
+		return choice;
+	endwhile
+endfunction
+
+function SortHouseMultisByLastLogin(multis)
+	if (!multis || multis.size() < 2)
+		return multis;
+	endif
+
+	multis := SortMultiArrayByIndex(multis, 6);
+	if (!multis || multis.size() < 2)
+		return multis;
+	endif
+
+	var left := 1;
+	var right := multis.size();
+	while (left < right)
+		var temp := multis[left];
+		multis[left] := multis[right];
+		multis[right] := temp;
+		left := left + 1;
+		right := right - 1;
+	endwhile
+
+	return multis;
+endfunction
+
+function ResolveOwnerName(multi, sign)
+	var owner_name := GetObjProperty(multi, "lastownername");
+	if (!owner_name)
+		owner_name := GetObjProperty(multi, "owneracct");
+	endif
+	if (!owner_name and sign)
+		owner_name := GetObjProperty(sign, "lastownername");
+	endif
+	if (!owner_name)
+		var owner_serial := CInt(GetObjProperty(multi, "ownerserial"));
+		if (!owner_serial and sign)
+			owner_serial := CInt(GetObjProperty(sign, "ownerserial"));
+		endif
+		if (owner_serial)
+			var owner := SystemFindObjectBySerial(owner_serial);
+			if (!owner)
+				owner := SystemFindObjectBySerial(owner_serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+			endif
+			if (owner)
+				owner_name := owner.name;
+			endif
+		endif
+	endif
+	if (!owner_name)
+		owner_name := "Unknown";
+	endif
+	return owner_name;
+endfunction
+
+function ResolveOwnerAccount(multi, sign)
+	var owner_acct := GetObjProperty(multi, "owneracct");
+	if (!owner_acct and sign)
+		owner_acct := GetObjProperty(sign, "owneracct");
+	endif
+
+	if (!owner_acct)
+		var owner_serial := CInt(GetObjProperty(multi, "ownerserial"));
+		if (!owner_serial and sign)
+			owner_serial := CInt(GetObjProperty(sign, "ownerserial"));
+		endif
+
+		if (owner_serial)
+			var owner := SystemFindObjectBySerial(owner_serial);
+			if (!owner)
+				owner := SystemFindObjectBySerial(owner_serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+			endif
+			if (owner and owner.acctname)
+				owner_acct := owner.acctname;
+			endif
+		endif
+	endif
+
+	if (!owner_acct)
+		return 0;
+	endif
+
+	return Lower(CStr(owner_acct));
+endfunction
+
+function ResolveOwnerLastLogin(owner_acct)
+	if (!owner_acct)
+		return -1;
+	endif
+
+	var account := FindAccount(owner_acct);
+	if (!account)
+		return -1;
+	endif
+
+	var last_login := CInt(account.GetProp("LastLogin"));
+	if (!last_login)
+		return 0;
+	endif
+
+	return last_login;
+endfunction
+
+function FormatLastLoginDate(last_login)
+	if (last_login < 0)
+		return "Unknown";
+	elseif (!last_login)
+		return "Never";
+	endif
+
+	var date_secs := CInt(last_login);
+	return GetDateString(date_secs);
+endfunction
+
+function GetHouseTypeDisplayName(objtype)
+	if (!objtype)
+		return "Unknown";
+	endif
+
+	if (house_itemdesc_cfg)
+		var house_elem := house_itemdesc_cfg[objtype];
+		if (house_elem and !house_elem.errortext)
+			var house_name := GetConfigString(house_elem, "Name");
+			if (house_name and !house_name.errortext and house_name != "")
+				if (Len(house_name) > 5 && house_name[Len(house_name)-4, Len(house_name)] == "house")
+					house_name := house_name[1, Len(house_name)-5];
+				endif
+				return house_name;
+			endif
+		endif
+	endif
+
+	return CStr(Hex(objtype));
+endfunction
+
+function ResolveStandableZ(x, y, z, realm)
+	var stand := GetStandingHeight(CInt(x), CInt(y), CInt(z), CStr(realm));
+	if (stand and !stand.errortext)
+		return CInt(stand.z);
+	endif
+
+	// Retry nearby seed Z values in case stored Z is stale or clipped to multi components.
+	stand := GetStandingHeight(CInt(x), CInt(y), CInt(z + 20), CStr(realm));
+	if (stand and !stand.errortext)
+		return CInt(stand.z);
+	endif
+
+	stand := GetStandingHeight(CInt(x), CInt(y), CInt(z - 20), CStr(realm));
+	if (stand and !stand.errortext)
+		return CInt(stand.z);
+	endif
+
+	return CInt(z);
+endfunction

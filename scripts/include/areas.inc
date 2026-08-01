@@ -4,6 +4,7 @@ use basic;
 use cfgfile;
 
 //include "include/multiutil";
+include ":areas:include/areapolicy";
 include "include/constants/cfgfiles";
 include "include/constants/propids";
 
@@ -24,6 +25,14 @@ const AREAID_SERPENTS_HOLD	:= "Serpent's Hold";
 const AREAID_SKARA_BRAE		:= "Skara Brae";
 const AREAID_TRINSIC		:= "Trinsic";
 const AREAID_YEW		:= "Yew";
+
+function GetAreaPolicyMaskForWho(byref who)
+	return CInt(ResolvePolicyAtLocation(who.x, who.y, who.realm));
+endfunction
+
+function GetAreaPolicyMaskAtLocation(byref x, byref y, byref realm)
+	return CInt(ResolvePolicyAtLocation(x, y, realm));
+endfunction
 
 
 
@@ -95,59 +104,34 @@ function IsForbiddenAreaFor( who, x, y )
 		return 0;
 	endif
 	
-	var old_prio	:= set_priority(100);
-	var disabled	:= GetGlobalProperty( PROPID_GLOBAL_AREAS_FORBIDDEN );
-	if( !disabled )
-		disabled := {};
-	endif
-	
-	var banned := GetObjProperty( who, PROPID_MOBILE_AREAS_BANNED );
-	if( !banned )
-		if( !len(disabled) )
-			set_priority(old_prio);
-			return 0;
-		else
-			banned := {};
-		endif
-	endif
-	
-	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
-	if(!areas)
+	var old_prio := set_priority(100);
+	var match := ResolveAreaMatchAtLocation(x, y, who.realm);
+	if(!match)
 		set_priority(old_prio);
 		return 0;
 	endif
 
-	var allowed := GetObjProperty( who, PROPID_MOBILE_AREAS_ALLOWED_FORBIDDEN );
-	if( !allowed )
+	var banned := GetObjProperty(who, PROPID_MOBILE_AREAS_BANNED);
+	if(!banned)
+		banned := {};
+	endif
+
+	var allowed := GetObjProperty(who, PROPID_MOBILE_AREAS_ALLOWED_FORBIDDEN);
+	if(!allowed)
 		allowed := {};
 	endif
-	
-	var i;
-	var splited;
-	var where := struct;
-	where.+x  := x;
-	where.+y  := y;
-	for( i := 1; i <= areas.size(); i := i + 1 )
-		if( banned[i] )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( where, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 1;
-			endif
-		elseif( disabled[i] )
-			if( !allowed[i] )
-				splited := SplitWords( areas[i] );
-				if( IsInBox( where, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-					set_priority(old_prio);
-					return 1;
-				endif
-			endif
-		endif
-	endfor
-	
-	set_priority(old_prio);
 
+	if(banned[match.area_index])
+		set_priority(old_prio);
+		return 1;
+	endif
+
+	if(!allowed[match.area_index] && HasPolicy(match.mask, AREA_POLICY_FORBIDDEN))
+		set_priority(old_prio);
+		return 1;
+	endif
+
+	set_priority(old_prio);
 	return 0;
 
 endfunction
@@ -168,27 +152,7 @@ endfunction
 
 
 function IsForbiddenAreaToRecallFrom( byref who )
-
-    var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
-	
-    if( !areas )
-		return 0;
-	endif
-    
-    foreach area in areas
-        var splited := SplitWords(area);
-        if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-     			if (GetGlobalProperty(PROPID_GLOBAL_AREAS_NORECALLFROM)[_area_iter]);
-     				return 1;
-     			else
-     				return 0;
-     			endif
-        endif
-    endforeach
-
-    //Is somewhereelse thats not in the areas file
-    return 0;
+	return HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_NO_RECALL_FROM);
 	/*
 	if( who.cmdlevel )
 		return 0;
@@ -226,30 +190,13 @@ function IsForbiddenAreaToRecallTo( byref who, byref x, byref y )
 		endif
 	endif
 */
-	var disabled_recall := GetGlobalProperty( PROPID_GLOBAL_AREAS_NORECALL );
-	if( !disabled_recall )
-		disabled_recall := {};
-	endif
-
-	var forbidden	:= GetGlobalProperty( PROPID_GLOBAL_AREAS_FORBIDDEN );
-	if( !forbidden )
-		forbidden := {};
-	endif
-
 	var banned := GetObjProperty( who, PROPID_MOBILE_AREAS_BANNED );
 	if( !banned )
-		if( !disabled_recall.size() )
-			if( !forbidden.size() )
-				set_priority(old_prio);
-				return 0;
-			endif
-		endif
 		banned := {};
 	endif
-	
-	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
-	if( !areas )
+
+	var match := ResolveAreaMatchAtLocation(x, y, who.realm);
+	if(!match)
 		set_priority(old_prio);
 		return 0;
 	endif
@@ -263,38 +210,21 @@ function IsForbiddenAreaToRecallTo( byref who, byref x, byref y )
 	if( !allowed_forbidden )
 		allowed_forbidden := {};
 	endif
-		
-	var object	:= struct;
-	object.+x	:= x;
-	object.+y	:= y;
-	
-	var i;
-	var splited;
-	for( i := 1; i <= areas.size(); i := i + 1 )
-		if( banned[i] )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( object, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 1;
-			endif
-		elseif( disabled_recall[i] )
-			if( !allowed_recall[i] )
-				splited := SplitWords( areas[i] );
-				if( IsInBox( object, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-					set_priority(old_prio);
-					return 1;
-				endif
-			endif
-		elseif( forbidden[i] )
-			if( !allowed_forbidden[i] )
-				splited := SplitWords( areas[i] );
-				if( IsInBox( object, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-					set_priority(old_prio);
-					return 1;
-				endif
-			endif
-		endif
-	endfor
+
+	if( banned[match.area_index] )
+		set_priority(old_prio);
+		return 1;
+	endif
+
+	if( !allowed_recall[match.area_index] && HasPolicy(match.mask, AREA_POLICY_NO_RECALL_TO) )
+		set_priority(old_prio);
+		return 1;
+	endif
+
+	if( !allowed_forbidden[match.area_index] && HasPolicy(match.mask, AREA_POLICY_FORBIDDEN) )
+		set_priority(old_prio);
+		return 1;
+	endif
 	
 	set_priority(old_prio);
 	return 0;
@@ -339,26 +269,16 @@ function IsInAntiLootingArea( byref who )
 		return 0;
 	endif
 
-	var old_prio	:= set_priority(100);
-	var disabled	:= GetGlobalProperty( PROPID_GLOBAL_AREAS_NOLOOTING );
-	if( !disabled )
-		disabled := {};
+	var old_prio := set_priority(100);
+	var match := ResolveAreaMatchAtLocation(who.x, who.y, who.realm);
+	if(!match)
+		set_priority(old_prio);
+		return 0;
 	endif
 
 	var banned := GetObjProperty( who, PROPID_MOBILE_AREAS_BANNED );
 	if( !banned )
-		if( !len(disabled) )
-			set_priority(old_prio);
-			return 0;
-		endif
-		banned	:= {};
-	endif
-	
-	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
-	if( !areas )
-		set_priority(old_prio);
-		return 0;
+		banned := {};
 	endif
 
 	var allowed := GetObjProperty( who, PROPID_MOBILE_AREAS_ALLOWED_LOOTING );
@@ -366,26 +286,16 @@ function IsInAntiLootingArea( byref who )
 		allowed := {};
 	endif
 	
-	var i;
-	var splited;
-	for( i := 1; i <= areas.size(); i := i + 1 )
-		if( banned[i] )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 1;
-			endif
-		elseif( disabled[i] )
-			if( !allowed[i] )
-				splited := SplitWords( areas[i] );
-				if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-					set_priority(old_prio);
-					return 1;
-				endif
-			endif
-		endif
-	endfor
-	
+	if( banned[match.area_index] )
+		set_priority(old_prio);
+		return 1;
+	endif
+
+	if( !allowed[match.area_index] && (HasPolicy(match.mask, AREA_POLICY_NO_LOOTING) || HasPolicy(match.mask, AREA_POLICY_NO_DAMAGE_ZONE)) )
+		set_priority(old_prio);
+		return 1;
+	endif
+
 	set_priority(old_prio);
 
 	return 0;
@@ -403,38 +313,22 @@ function IsInAntiMagicArea( byref who )
 		return 0;
 	endif
 
-	var old_prio	:= set_priority(100);
-	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
-	if( !areas )
+	var old_prio := set_priority(100);
+	var match := ResolveAreaMatchAtLocation(who.x, who.y, who.realm);
+	if(!match)
 		set_priority(old_prio);
 		return 0;
 	endif
 
-	var disabled	:= GetGlobalProperty( PROPID_GLOBAL_AREAS_ANTIMAGIC );
-	if( !disabled )
-		set_priority(old_prio);
-		return 0;
-	endif
-	
 	var allowed	:= GetObjProperty( who, PROPID_MOBILE_AREAS_ALLOWED_ANTIMAGIC );
 	if( !allowed )
 		allowed := {};
 	endif
-	
-	var i;
-	var splited;
-	for( i := 1; i <= areas.size(); i := i + 1 )
-		if( disabled[i] )
-			if( !allowed[i] )
-				splited := SplitWords( areas[i] );
-				if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-					set_priority(old_prio);
-					return 1;
-				endif
-			endif
-		endif
-	endfor
+
+	if( !allowed[match.area_index] && (HasPolicy(match.mask, AREA_POLICY_ANTI_MAGIC) || HasPolicy(match.mask, AREA_POLICY_NO_DAMAGE_ZONE)) )
+		set_priority(old_prio);
+		return 1;
+	endif
 	
 	set_priority(old_prio);
 
@@ -520,56 +414,34 @@ function IsInForbiddenArea( who )
 		return 0;
 	endif
 	
-	var old_prio	:= set_priority(100);
-	var disabled	:= GetGlobalProperty( PROPID_GLOBAL_AREAS_FORBIDDEN );
-	if( !disabled )
-		disabled := {};
-	endif
-	
-	var banned := GetObjProperty( who, PROPID_MOBILE_AREAS_BANNED );
-	if( !banned )
-		if( !len(disabled) )
-			set_priority(old_prio);
-			return 0;
-		else
-			banned := {};
-		endif
-	endif
-	
-	var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
-	if(!areas)
+	var old_prio := set_priority(100);
+	var match := ResolveAreaMatchAtLocation(who.x, who.y, who.realm);
+	if(!match)
 		set_priority(old_prio);
 		return 0;
 	endif
 
-	var allowed := GetObjProperty( who, PROPID_MOBILE_AREAS_ALLOWED_FORBIDDEN );
-	if( !allowed )
+	var banned := GetObjProperty(who, PROPID_MOBILE_AREAS_BANNED);
+	if(!banned)
+		banned := {};
+	endif
+
+	var allowed := GetObjProperty(who, PROPID_MOBILE_AREAS_ALLOWED_FORBIDDEN);
+	if(!allowed)
 		allowed := {};
 	endif
-	
-	var i;
-	var splited;
-	for( i := 1; i <= areas.size(); i := i + 1 )
-		if( banned[i] )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 1;
-			endif
-		elseif( disabled[i] )
-			if( !allowed[i] )
-				splited := SplitWords( areas[i] );
-				if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-					set_priority(old_prio);
-					return 1;
-				endif
-			endif
-		endif
-	endfor
-	
-	set_priority(old_prio);
 
+	if(banned[match.area_index])
+		set_priority(old_prio);
+		return 1;
+	endif
+
+	if(!allowed[match.area_index] && HasPolicy(match.mask, AREA_POLICY_FORBIDDEN))
+		set_priority(old_prio);
+		return 1;
+	endif
+
+	set_priority(old_prio);
 	return 0;
 
 endfunction
@@ -577,53 +449,10 @@ endfunction
 
 function IsInGuardedArea( byref who )
 
-// Ok wtf, why do we WANT a staff to always be in guarded territory?
-	//if( who.cmdlevel )
-	//	return 1;
-	//<div></div>endif
-	
-	var i;
-	var splited;
-	var old_prio	:= set_priority(100);
-	var areas_cfg	:= ReadConfigfile(CFGFILE_AREAS);
-	
-	// These are ALWAYS unguarded areas - JUST Jhelom arena atm
-	// Get rid of this probably
-	var areas	:= GetConfigStringArray( areas_cfg[2], "Area" );
-	if( areas )
-		for( i := 1; i <= areas.size(); i := i + 1 )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 0;
-			endif
-		endfor
-	endif
-
-	var guarded := GetGlobalProperty(PROPID_GLOBAL_AREAS_GUARDED);
-	if( !guarded )
-		set_priority(old_prio);
-		return 0;
-	endif
-	
-	areas := GetConfigStringArray( areas_cfg[1], "Area" );
-	if( !areas )
-		set_priority(old_prio);
-		return 0;
-	endif
-	
-	for( i := 1; i <= areas.size(); i := i + 1 )
-		if( guarded[i] )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 1;
-			endif
-		endif
-	endfor
-
+	var old_prio := set_priority(100);
+	var guarded := HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_GUARDED);
 	set_priority(old_prio);
-	return 0;
+	return guarded;
 
 endfunction
 
@@ -632,114 +461,26 @@ function IsForbiddenAreaToMark( byref who )
 	if( who.cmdlevel > 2 )
 		return 0;
 	endif
-	
-	var i;
-	var splited;
-	var old_prio	:= set_priority(100);
-	var areas_cfg	:= ReadConfigfile(CFGFILE_AREAS);
-	var areas	:= GetConfigStringArray( areas_cfg[2], "Area" );
-	if( areas )
-		for( i := 1; i <= areas.size(); i := i + 1 )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 0;
-			endif
-		endfor
-	endif
 
-	var guarded := GetGlobalProperty("DisabledMarkingAreas");
-	if( !guarded )
-		set_priority(old_prio);
-		return 0;
-	endif
-	
-	areas := GetConfigStringArray( areas_cfg[1], "Area" );
-	if( !areas )
-		set_priority(old_prio);
-		return 0;
-	endif
-	
-	for( i := 1; i <= areas.size(); i := i + 1 )
-		if( guarded[i] )
-			splited := SplitWords( areas[i] );
-			if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-				set_priority(old_prio);
-				return 1;
-			endif
-		endif
-	endfor
-
+	var old_prio := set_priority(100);
+	var disabled_marking := HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_NO_MARKING);
 	set_priority(old_prio);
-	return 0;
+	return disabled_marking;
 
 endfunction
 
 function IsInSafeArea(who)
-
-   var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
-	
-    if( !areas )
-		return 0;
-	endif
-    
-    foreach area in areas
-        var splited := SplitWords(area);
-        if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-     			if (GetGlobalProperty(PROPID_GLOBAL_AREAS_SAFEAREA)[_area_iter]);
-     				return 1;
-     			else
-     				return 0;
-     			endif
-        endif
-    endforeach
-    //Is somewhere else thats not in the areas file
-    return 0;
+	return HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_SAFE_AREA);
 endfunction
 
 function IsInNOPKArea(who)
-
-   var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
-	
-    if( !areas )
-		return 0;
-	endif
-    
-    foreach area in areas
-        var splited := SplitWords(area);
-        if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-     			if (GetGlobalProperty(PROPID_GLOBAL_AREAS_NOPK)[_area_iter]);
-     				return 1;
-     			else
-     				return 0;
-     			endif
-        endif
-    endforeach
-    //Is somewhere else thats not in the areas file
-    return 0;
+	return HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_NO_PK);
 endfunction
 
 function IsInRPArea(who)
+	return HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_RP_AREA);
+endfunction
 
-   var areas_cfg	:= ReadConfigfile( CFGFILE_AREAS );
-	var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
-	
-    if( !areas )
-		return 0;
-	endif
-    
-    foreach area in areas
-        var splited := SplitWords(area);
-        if( IsInBox( who, Cint(splited[1]), Cint(splited[2]), Cint(splited[3]), Cint(splited[4]) ) )
-     			if (GetGlobalProperty(PROPID_GLOBAL_AREAS_RPAREA)[_area_iter]);
-     				return 1;
-     			else
-     				return 0;
-     			endif
-        endif
-    endforeach
-    //Is somewhere else thats not in the areas file
-    return 0;
+function IsInNoDamageZone(who)
+	return HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_NO_DAMAGE_ZONE);
 endfunction

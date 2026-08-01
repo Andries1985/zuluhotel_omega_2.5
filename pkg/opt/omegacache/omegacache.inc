@@ -1723,11 +1723,22 @@ endfunction
 function RunOmegaCacheGump(who, access)
 	var df := access.df;
 	// Block multiple gump instances
-	if(CInt(GetObjProperty(who, "#omegacache_open")) > ReadGameClock())
-		SendSysMessage(who, "You already have the Omega Cache open.");
-		return;
+	var open_until := CInt(GetObjProperty(who, "#omegacache_open"));
+	var now := ReadGameClock();
+	if(open_until > now)
+		// ReadGameClock() is uptime-based and resets to 0 on server restart, so a
+		// leftover value from before a restart can read as far in the future
+		// relative to the new (small) clock — which would otherwise wedge this
+		// guard open until real uptime caught back up to the stale value. Any
+		// legitimately-set guard is at most 600s ahead of "now"; anything further
+		// out than that can only be stale, so treat it as expired instead.
+		if(open_until <= now + 600)
+			SendSysMessage(who, "You already have the Omega Cache open.");
+			return;
+		endif
+		EraseObjProperty(who, "#omegacache_open");
 	endif
-	SetObjProperty(who, "#omegacache_open", ReadGameClock() + 600);
+	SetObjProperty(who, "#omegacache_open", now + 600);
 
 	var view := "categories";
 	var category_map := dictionary;

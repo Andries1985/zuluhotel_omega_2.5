@@ -11,44 +11,62 @@ use datafile;
 
 include "include/areas";
 include ":areas:include/areafunctions";
+include ":areas:include/areapolicy";
 
 program EnterAreaDelay(who)
 
-set_critical(1);
+// NOTE: previously set_critical(1) here + three separate ResolvePolicyAtLocation
+// calls (IsInSafeArea, IsInNOPKArea, IsInGuardedArea) via areas.inc.
+// That meant every region entry blocked the server for ~100k+ instructions
+// with no chance to yield. We now resolve the mask ONCE and check bits.
 
-var file := OpenDataFile(":areas:EnterArea");
+// var file := OpenDataFile(":areas:EnterArea");
 var regionname := GetRegionName(who);
 
-if (!file)
-	CreateDataFile( ":areas:EnterArea");
-endif
+// if (!file)
+// 	CreateDataFile( ":areas:EnterArea");
+// endif
 
-var region := file.FindElement(regionname);
-UnloadDataFile(":areas:EnterArea");
+// var region := file.FindElement(regionname);
+// UnloadDataFile(":areas:EnterArea");
 
-// No custom message for the region, play default.
-if (!region)
-	SendSysMessage(who, "You have entered "+regionname, 3, 1001);
+// // No custom message for the region, play default.
+// if (!region)
+// 	SendSysMessage(who, "You have entered "+regionname, 3, 1001);
+// endif
+
+// Resolve area policy mask ONCE and reuse the result for all bit checks.
+var mask := CInt(ResolvePolicyAtLocation(who.x, who.y, who.realm));
+
+// No Damage Zone - checked before Safe Area since that block returns early
+// on match, which would otherwise skip this if both were ever set together.
+if (HasPolicy(mask, AREA_POLICY_NO_DAMAGE_ZONE))
+	SendSysMessage(who, "This is a NO DAMAGE zone.", 3, 1001);
+	SetNoDamageZoneProperties(who);
 endif
 
 // Safe area, no more messages atm
-if (IsInSafeArea(who))
+if (HasPolicy(mask, AREA_POLICY_SAFE_AREA))
 	SendSysMessage(who, "This is a SAFE area.", 3, 1001);
 	SetSafeAreaProperties(who);
 	return 1;
 endif
 
-// Safe area, no more messages atm
-if (IsInNOPKArea(who))
+// No PK area, no more messages atm
+if (HasPolicy(mask, AREA_POLICY_NO_PK))
 	SendSysMessage(who, "This is a NO-PK area.", 3, 1001);
 	SetNOPK(who);
 endif
 
 // Yes or no to guards
-if (IsInGuardedArea( who ))
+if (HasPolicy(mask, AREA_POLICY_GUARDED))
 	SendSysMessage(who, "This is a guarded area.", 3, 1001);
 else
 	SendSysMessage(who, "This is NOT a guarded area.", 3, 1001);
+endif
+
+if (IsInForbiddenArea( who ))
+	SendSysMessage(who, "This is a FORBIDDEN area.", 3, 1001);
 endif
 
 endprogram

@@ -54,8 +54,8 @@ function LookAround( who )
 			endif
 							
 			elem := FindConfigElem( npc_cfg, mobile.npctemplate );
-			if( !elem.guardignore && !GetObjProperty(mobile,"guardignore") and !wfh)					
-				if( IsInGuardedArea(mobile) && (mobile.script != "tamed" || crimMaster) )
+			if( !elem.guardignore && !GetObjProperty(mobile,"guardignore") and !wfh)
+				if( IsInGuardedArea(mobile) && !IsInNoDamageZone(mobile) && (mobile.script != "tamed" || crimMaster) )
 					set_critical(1);
 					guard := CreateNpcFromTemplate( "guard", mobile.x, mobile.y, mobile.z, 0, who.realm );
 					if( guard )
@@ -69,7 +69,7 @@ function LookAround( who )
 			endif
 		elseif( !mobile.cmdlevel )
 			if( mobile.criminal || mobile.murderer )
-				if( IsInGuardedArea(mobile))
+				if( IsInGuardedArea(mobile) && !IsInNoDamageZone(mobile) )
 					set_critical(1);
 					guard := CreateNpcFromTemplate( "guard", mobile.x, mobile.y, mobile.z, 0, mobile.realm );
 					if( guard )

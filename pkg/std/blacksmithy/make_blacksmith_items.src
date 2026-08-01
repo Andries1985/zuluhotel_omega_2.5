@@ -65,6 +65,38 @@ program use_hammer( character, hammer )
 		return;
 	endif
 
+	// Handle Omega Cache targeting — no ReserveItem needed (uses leases instead)
+	if(use_on.objtype == OMEGACACHE_OBJTYPE)
+		var resourceRequest := SelectMaterialFromCache(character);
+		if(!resourceRequest)
+			return;
+		endif
+
+		// Determine if the selected material is bone or ingot
+		if(IsBoneObjtype(resourceRequest.objtype))
+			// Bone selected from cache — need ingots too
+			SendSysMessage(character, "What ingots would you like to use?");
+			var ingotRequest := ResolveIngotTarget(character);
+			if(!ingotRequest)
+				return;
+			endif
+			if(!NearAnvil(character))
+				SendSysmessage(character, "You must be near an anvil to smith items!");
+				return;
+			endif
+			MakeBoneItems(character, ingotRequest, resourceRequest);
+		elseif(IsIngotObjtype(resourceRequest.objtype))
+			if(!NearAnvil(character))
+				SendSysmessage(character, "You must be near an anvil to smith items!");
+				return;
+			endif
+			MakeBlacksmithItems(character, resourceRequest);
+		else
+			SendSysMessage(character, "You don't know how to use that.");
+		endif
+		return;
+	endif
+
 	if( !Accessible( character , use_on ) )
 		SendSysMessage( character , "You can't reach that." );
 		return;
@@ -75,189 +107,88 @@ program use_hammer( character, hammer )
 	endif
 
 	if( smith_cfg[use_on.graphic] && use_on.hp && use_on.quality)
-		var near := ListItemsNearLocation( character.x , character.y , character.z , 1 );
- 		foreach thing in near
-	  		if ((thing.objtype == UOBJ_ANVIL1) or (thing.objtype == UOBJ_ANVIL2))
-	   			repair_item( character, use_on, SKILLID_BLACKSMITHY );
-	   			return;
-	  		endif
- 		endforeach
-		SendSysmessage( character , "You must be near an anvil to repair items!" );
+		if(NearAnvil(character))
+			repair_item( character, use_on, SKILLID_BLACKSMITHY );
+		else
+			SendSysmessage( character , "You must be near an anvil to repair items!" );
+		endif
 		return;
-
 	endif
-	
+
 	if( !IsInContainer( character.backpack , use_on ) )
 		SendSysmessage( character, "That item has to be in your backpack." );
 		return;
 	endif
 
- 	if (IsBone(use_on))
+	if (IsBone(use_on))
 		SendSysMessage( character, "What ingots would you like to use?" );
-		var bone := use_on;
-		use_on := Target( character, TGTOPT_CHECK_LOS );
-		
-		if( !use_on )
+		var boneRequest := MakeBackpackRequest(character, use_on);
+		var ingotRequest := ResolveIngotTarget(character);
+		if(!ingotRequest)
 			return;
 		endif
-
-		if( !Accessible( character , use_on ) )
-			SendSysMessage( character , "You can't reach that." );
-			return;
-		endif
-
-		if( !ReserveItem(use_on) )
-			return;
-		endif
-	// Repair path — requires ReserveItem
-	if(use_on.objtype != OMEGACACHE_OBJTYPE)
-		if( !ReserveItem(use_on) )
-			return;
-		endif
-
-		if( smith_cfg[use_on.graphic] && use_on.hp && use_on.quality)
-			var near := ListItemsNearLocation( character.x , character.y , character.z , 1 );
-			foreach thing in near
-				if ((thing.objtype == UOBJ_ANVIL1) or (thing.objtype == UOBJ_ANVIL2))
-					repair_item( character, use_on, SKILLID_BLACKSMITHY );
-					return;
-				endif
-			endforeach
-			SendSysmessage( character , "You must be near an anvil to repair items!" );
-			return;
-		endif
-	endif
-
-	// Handle Omega Cache targeting — no ReserveItem needed (uses leases instead)
-	if(use_on.objtype == OMEGACACHE_OBJTYPE)
-		var resourceRequest := SelectMaterialFromCache(character);
-		if(!resourceRequest)
-			return;
-		endif
-		// Determine if the selected material is bone or ingot
-		if(IsBoneObjtype(resourceRequest.objtype))
-			// Bone selected from cache — need ingots too
-			SendSysMessage(character, "What ingots would you like to use?");
-			var ingot_target := Target(character, TGTOPT_CHECK_LOS);
-			if(!ingot_target)
-				return;
-			endif
-			var ingotRequest;
-			if(ingot_target.objtype == OMEGACACHE_OBJTYPE)
-				ingotRequest := SelectMaterialFromCache(character);
-				if(!ingotRequest)
-					return;
-				endif
-			elseif(IsIngot(ingot_target))
-				if(!IsInContainer(character.backpack, ingot_target))
-					SendSysmessage(character, "That item has to be in your backpack.");
-					return;
-				endif
-				ingotRequest := MakeBackpackRequest(character, ingot_target);
-			else
-				SendSysMessage(character, "You must select ingots!");
-				return;
-			endif
-			var Near_Items := ListItemsNearLocation(character.x, character.y, character.z, 1);
-			foreach item in Near_Items
-				if(item.objtype == UOBJ_ANVIL1 or item.objtype == UOBJ_ANVIL2)
-					MakeBoneItems(character, ingotRequest, resourceRequest);
-					return;
-				endif
-			endforeach
+		if(!NearAnvil(character))
 			SendSysmessage(character, "You must be near an anvil to smith items!");
-		elseif(IsIngotObjtype(resourceRequest.objtype))
-			var Near_Items := ListItemsNearLocation(character.x, character.y, character.z, 1);
-			foreach item in Near_Items
-				if(item.objtype == UOBJ_ANVIL1 or item.objtype == UOBJ_ANVIL2)
-					MakeBlacksmithItems(character, resourceRequest);
-					return;
-				endif
-			endforeach
-			SendSysmessage(character, "You must be near an anvil to smith items!");
-		else
-			SendSysMessage(character, "You don't know how to use that.");
-		endif
-		return;
-	endif
-
-		if( !IsInContainer( character.backpack , use_on ) )
-			SendSysmessage( character, "That item has to be in your backpack." );
 			return;
 		endif
-
-		if ( !IsIngot(use_on) )
-			SendSysMessage( character, "You must select ingots!" );
-			return;
-		endif
-			var Near_Items := ListItemsNearLocation( character.x , character.y , character.z , 1 );
-		foreach item in Near_Items
-			if ((item.objtype == UOBJ_ANVIL1) or (item.objtype == UOBJ_ANVIL2))
-				MakeBoneItems( character , use_on , bone );
-				return;
-			endif
-		endforeach
-
-		SendSysmessage( character , "You must be near an anvil to smith items!" );
-	endif
-	if(IsBone(use_on))
-		SendSysMessage(character, "What ingots would you like to use?");
-		var bone := use_on;
-		var boneRequest := MakeBackpackRequest(character, bone);
-		use_on := Target(character, TGTOPT_CHECK_LOS);
-
-		if(!use_on)
-			return;
-		endif
-
-		var ingotRequest;
-		if(use_on.objtype == OMEGACACHE_OBJTYPE)
-			ingotRequest := SelectMaterialFromCache(character);
-			if(!ingotRequest)
-				return;
-			endif
-		else
-			if(!Accessible(character, use_on))
-				SendSysMessage(character, "You can't reach that.");
-				return;
-			endif
-			if(!ReserveItem(use_on))
-				return;
-			endif
-			if(!IsInContainer(character.backpack, use_on))
-				SendSysmessage(character, "That item has to be in your backpack.");
-				return;
-			endif
-			if(!IsIngot(use_on))
-				SendSysMessage(character, "You must select ingots!");
-				return;
-			endif
-			ingotRequest := MakeBackpackRequest(character, use_on);
-		endif
-
-		var Near_Items := ListItemsNearLocation(character.x, character.y, character.z, 1);
-		foreach item in Near_Items
-			if(item.objtype == UOBJ_ANVIL1 or item.objtype == UOBJ_ANVIL2)
-				MakeBoneItems(character, ingotRequest, boneRequest);
-				return;
-			endif
-		endforeach
-		SendSysmessage(character, "You must be near an anvil to smith items!");
+		MakeBoneItems(character, ingotRequest, boneRequest);
 	elseif(IsIngot(use_on))
 		var ingotRequest := MakeBackpackRequest(character, use_on);
-		var Near_Items := ListItemsNearLocation(character.x, character.y, character.z, 1);
-		foreach item in Near_Items
-			if(item.objtype == UOBJ_ANVIL1 or item.objtype == UOBJ_ANVIL2)
-				MakeBlacksmithItems(character, ingotRequest);
-				return;
-			endif
-		endforeach
-		SendSysmessage(character, "You must be near an anvil to smith items!");
+		if(!NearAnvil(character))
+			SendSysmessage(character, "You must be near an anvil to smith items!");
+			return;
+		endif
+		MakeBlacksmithItems(character, ingotRequest);
 	else
-		SendSysMessage(character, "You don't know how to use that.");
+		SendSysMessage( character, "You don't know how to use that." );
 	endif
 
 endprogram
+
+// True if character is standing next to an anvil.
+function NearAnvil(character)
+	var near := ListItemsNearLocation( character.x , character.y , character.z , 1 );
+	foreach thing in near
+		if ((thing.objtype == UOBJ_ANVIL1) or (thing.objtype == UOBJ_ANVIL2))
+			return 1;
+		endif
+	endforeach
+	return 0;
+endfunction
+
+// Prompts for and resolves the ingot half of a dual-material (bone armor) craft.
+// Accepts either a backpack ingot stack or the Omega Cache. Returns 0 on cancel/failure.
+function ResolveIngotTarget(character)
+	var ingot_target := Target(character, TGTOPT_CHECK_LOS);
+	if(!ingot_target)
+		return 0;
+	endif
+
+	if(ingot_target.objtype == OMEGACACHE_OBJTYPE)
+		return SelectMaterialFromCache(character);
+	endif
+
+	if(!Accessible(character, ingot_target))
+		SendSysMessage(character, "You can't reach that.");
+		return 0;
+	endif
+
+	if(!ReserveItem(ingot_target))
+		return 0;
+	endif
+
+	if(!IsInContainer(character.backpack, ingot_target))
+		SendSysmessage(character, "That item has to be in your backpack.");
+		return 0;
+	endif
+
+	if(!IsIngot(ingot_target))
+		SendSysMessage(character, "You must select ingots!");
+		return 0;
+	endif
+
+	return MakeBackpackRequest(character, ingot_target);
+endfunction
 
 function MakeBlacksmithItems( character, ingotRequest )
 

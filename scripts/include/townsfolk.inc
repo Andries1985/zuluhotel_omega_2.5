@@ -71,16 +71,16 @@ include "include/eventid";
 //  Returns: 1 if distance is already 10, 0 if movement was attempted.
 //
 /////////////////////////////////////////////////////////////////////////////
-function FleeOpenDistance( opponent )
+function FleeOpenDistance( opponent, halt_threshold )
         var me := Self();
-        case (Distance( me, opponent ))
-                10:
-                        return 1;
-                default:
-                        TryOpenNearbyNpcDoors();
-                        RunAwayFrom( opponent );
-                        return 0;
-        endcase
+        if (Distance( me, opponent ) >= halt_threshold)
+                return 1;
+        endif
+
+        TryOpenNearbyNpcDoors();
+        StepCivilianThroughDoorIfNeeded();
+        RunAwayFrom( opponent );
+        return 0;
 endfunction
 
 /////////////////////////////////////////////////////////////////////////////
@@ -88,6 +88,8 @@ endfunction
 //  RunFromOpponent - shared flee loop used by civilian NPCs.
 //  Enforces town bounds during the flee; jails/kills if chased out of town.
 //  Responds to "hold" keyword, DISENGAGED, and damage events.
+//  Returns 0 if this NPC was jailed/killed by EnforceTownBounds (caller must
+//  stop running), 1 if the flee ended normally (opponent died/disengaged/held).
 //
 /////////////////////////////////////////////////////////////////////////////
 function RunFromOpponent( opponent, HALT_THRESHOLD )
@@ -95,13 +97,18 @@ function RunFromOpponent( opponent, HALT_THRESHOLD )
         DisableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA );
 
         var waittime;
+        var survived := 1;
   outer:
 	while (opponent and !opponent.dead)
 		if (!EnforceTownBounds(1))
+			survived := 0;
 			break outer;
 		endif
 
-		waittime := FleeOpenDistance( opponent ) * 15;
+		waittime := FleeOpenDistance( opponent, HALT_THRESHOLD ) * 15;
+		if (!waittime)
+			waittime := 1;
+		endif
 
 		var ev := wait_for_event( waittime );
 		case (ev.type)
@@ -139,6 +146,7 @@ function RunFromOpponent( opponent, HALT_THRESHOLD )
 
         EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
         SetWarMode( 0 );
+        return survived;
 endfunction
 
 /////////////////////////////////////////////////////////////////////////////

@@ -5,6 +5,7 @@ use vitals;
 
 include "include/attributes";
 include ":gumps:include/gumps";
+include ":admin:include/adminpanel";
 
 const BTN_CANCEL := 9000;
 const BTN_APPLY  := 9001;
@@ -82,6 +83,7 @@ program editcharacter( who )
 	var dexterity := ClampInt( CInt( GFExtractData(result, ENTRY_DEX) ), 10, 300 );
 	var intelligence := ClampInt( CInt( GFExtractData(result, ENTRY_INT) ), 10, 300 );
 
+	RecordCharacterNameChange( target_char, name, ADMINPANEL_INITIATOR_STAFF );
 	SetName( target_char, name );
 	target_char.gender := gender;
 	target_char.trueobjtype := graphic;

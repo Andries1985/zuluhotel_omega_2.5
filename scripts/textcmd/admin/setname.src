@@ -3,6 +3,7 @@ use uo;
 use polsys;
 include ":staff:include/staff";
 include "include/NameChecker";
+include ":admin:include/adminpanel";
 
 program setobjectname(who, text)
 
@@ -23,13 +24,17 @@ elseif (!what.isa(POLCLASS_ITEM) && !what.isa(POLCLASS_MOBILE))
 	return 0;
 endif
 
-if (CheckName(text) != 1 && what.isa(POLCLASS_MOBILE) && !what.acct)
-	SendSysMessage(who, "The name you chose is either in use, or invalid.");
-	return 0;
+if (what.isa(POLCLASS_MOBILE) && what.acct)
+	var name_check := CheckName(text, what, 1);
+	if (name_check != 1)
+		SendSysMessage(who, "That name was rejected because "+NameCheckFailureReason(name_check[2])+".");
+		return 0;
+	endif
 endif
 
 LogCommand(who, GetProcess(GetPid()).name, what.name+"/"+what.serial, "Renamed To: "+text);
 SendSysMessage(who, "Old Name: "+what.name, 3, 40);
+RecordCharacterNameChange(what, text, ADMINPANEL_INITIATOR_STAFF);
 SetName(what, text);
 SendSysMessage(who, "New Name: "+what.name, 3, 53);
 IncRevision(what);

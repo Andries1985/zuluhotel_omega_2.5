@@ -1,0 +1,289 @@
+// Synopsis: List all boats, owners, and owner last login, then teleport to the selected tillerman
+use uo;
+use os;
+
+include ":gumps:gumps";
+include ":gumps:gumps_ex";
+include "include/time";
+include "include/string";
+
+program gotoboat(who)
+	var boats := CollectBoats();
+	if (!boats || !boats.size())
+		SendSysMessage(who, "No boats were found.");
+		return 0;
+	endif
+
+	var selected := ShowBoatListGump(who, boats);
+	if (!selected)
+		return 0;
+	endif
+
+	var row := boats[selected];
+	if (!row)
+		SendSysMessage(who, "That entry is no longer available.");
+		return 0;
+	endif
+
+	var tx := CInt(row[7]);
+	var ty := CInt(row[8]);
+	var tz := CInt(row[9]);
+	var realm := CStr(row[5]);
+	var safe_z := ResolveStandableZ(tx, ty, tz, realm);
+
+	MoveObjectToLocation(who, tx, ty, safe_z, realm, MOVEOBJECT_FORCELOCATION);
+	SendSysMessage(who, "Teleported to tillerman of " + row[1] + " at " + row[6] + ".");
+endprogram
+
+function CollectBoats()
+	var boats := array;
+	var realmslist := Realms();
+
+	foreach realm in realmslist
+		var realm_name := GetRealmNameFromMapId(CInt(realm.mapid));
+		if (!realm_name)
+			continue;
+		endif
+		var realm_width := CInt(realm.width) - 1;
+		var realm_height := CInt(realm.height) - 1;
+
+		var found := ListMultisInBox(0, 0, -128, realm_width, realm_height, 127, realm_name);
+		if (!found or !found.size())
+			continue;
+		endif
+
+		foreach multi in found
+			if (!multi)
+				continue;
+			endif
+			if (!multi.isa(POLCLASS_BOAT))
+				continue;
+			endif
+
+			var tillerman := multi.tillerman;
+			if (!tillerman)
+				continue;
+			endif
+
+			var owner_info := ResolveBoatOwner(multi);
+			var owner_name := owner_info[1];
+			var owner_acct := owner_info[2];
+			var owner_last_login := ResolveOwnerLastLogin(owner_acct);
+			var boat_type := GetBoatTypeDisplayName(multi.objtype);
+
+			var loc_x := tillerman.x;
+			var loc_y := tillerman.y;
+			var loc_z := tillerman.z;
+			var region_name := GetRegionNameAtLocation(loc_x, loc_y, realm_name);
+			if (!region_name)
+				region_name := "Unknown";
+			endif
+			var coord_text := CStr(loc_x) + "," + CStr(loc_y) + "," + CStr(loc_z);
+
+			boats.append(array{boat_type, owner_name, region_name, owner_last_login, realm_name, coord_text, loc_x, loc_y, loc_z, multi.serial});
+			SleepMS(1);
+		endforeach
+	endforeach
+
+	return SortBoatsByLastLogin(boats);
+endfunction
+
+function GetRealmNameFromMapId(mapid)
+	if (mapid == 0)
+		return "britannia";
+	elseif (mapid == 1)
+		return "britannia_alt";
+	elseif (mapid == 2)
+		return "ilshenar";
+	elseif (mapid == 3)
+		return "malas";
+	elseif (mapid == 4)
+		return "tokuno";
+	elseif (mapid == 5)
+		return "termur";
+	endif
+
+	return 0;
+endfunction
+
+function ShowBoatListGump(who, boats)
+	var per_page := 15;
+	var total_pages := CInt((boats.size() + per_page - 1) / per_page);
+	if (total_pages < 1)
+		total_pages := 1;
+	endif
+
+	var current_page := 1;
+	while (1)
+		var gump := GFCreateGump(0, 0, 860, 620);
+		GFDisposable(gump, 0);
+		GFResizePic(gump, 0, 0, 3500, 860, 620);
+		GFTextMid(gump, 15, 20, 830, 1153, "Alryc Gotoboat (Page " + current_page + "/" + total_pages + ")");
+		GFTextLine(gump, 20, 52, 1153, "Boat Type");
+		GFTextLine(gump, 165, 52, 1153, "Owner");
+		GFTextLine(gump, 325, 52, 1153, "Region");
+		GFTextLine(gump, 455, 52, 1153, "Realm");
+		GFTextLine(gump, 550, 52, 1153, "Coords");
+		GFTextLine(gump, 665, 52, 1153, "Last Login");
+		GFTextLine(gump, 785, 52, 1153, "Goto");
+		GFAddButton(gump, 415, 565, 2119, 2120, GF_CLOSE_BTN, 999999);
+
+		var start_index := ((current_page - 1) * per_page) + 1;
+		var end_index := start_index + per_page - 1;
+		if (end_index > boats.size())
+			end_index := boats.size();
+		endif
+
+		var y_pos := 75;
+		var index := start_index;
+		while (index <= end_index)
+			var entry := boats[index];
+			GFTextCrop(gump, 20, y_pos, 140, 18, 0, entry[1]);
+			GFTextCrop(gump, 165, y_pos, 155, 18, 0, entry[2]);
+			GFTextCrop(gump, 325, y_pos, 125, 18, 0, entry[3]);
+			GFTextCrop(gump, 455, y_pos, 90, 18, 0, entry[5]);
+			GFTextCrop(gump, 550, y_pos, 110, 18, 0, entry[6]);
+			GFTextCrop(gump, 665, y_pos, 115, 18, 0, FormatLastLoginDate(entry[4]));
+			GFAddButton(gump, 790, y_pos - 1, 2117, 2118, GF_CLOSE_BTN, index);
+			y_pos := y_pos + 32;
+			index := index + 1;
+			SleepMS(2);
+		endwhile
+
+		if (current_page > 1)
+			GFAddButton(gump, 620, 565, 4014, 4015, GF_CLOSE_BTN, 1000001);
+			GFTextLine(gump, 650, 565, 1153, "Prev");
+		endif
+		if (current_page < total_pages)
+			GFAddButton(gump, 700, 565, 4005, 4006, GF_CLOSE_BTN, 1000002);
+			GFTextLine(gump, 730, 565, 1153, "Next");
+		endif
+
+		var input := GFSendGump(who, gump);
+		if (!input)
+			return 0;
+		endif
+
+		var choice := CInt(input[0]);
+		if (choice == 1000001)
+			if (current_page > 1)
+				current_page := current_page - 1;
+			endif
+			continue;
+		elseif (choice == 1000002)
+			if (current_page < total_pages)
+				current_page := current_page + 1;
+			endif
+			continue;
+		elseif (choice == 999999 || choice < 1 || choice > boats.size())
+			return 0;
+		endif
+
+		return choice;
+	endwhile
+endfunction
+
+function SortBoatsByLastLogin(boats)
+	if (!boats || boats.size() < 2)
+		return boats;
+	endif
+
+	boats := SortMultiArrayByIndex(boats, 4);
+	if (!boats || boats.size() < 2)
+		return boats;
+	endif
+
+	var left := 1;
+	var right := boats.size();
+	while (left < right)
+		var temp := boats[left];
+		boats[left] := boats[right];
+		boats[right] := temp;
+		left := left + 1;
+		right := right - 1;
+	endwhile
+
+	return boats;
+endfunction
+
+function ResolveBoatOwner(boat)
+	var owner_name := "Unknown";
+	var owner_acct := 0;
+
+	var owner_serial := CInt(GetObjProperty(boat.hold, "owner"));
+	if (owner_serial)
+		var owner := SystemFindObjectBySerial(owner_serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+		if (!owner)
+			owner := SystemFindObjectBySerial(owner_serial);
+		endif
+		if (owner)
+			owner_name := CStr(owner.name);
+			if (owner.acctname)
+				owner_acct := Lower(CStr(owner.acctname));
+			endif
+		endif
+	endif
+
+	return {owner_name, owner_acct};
+endfunction
+
+function ResolveOwnerLastLogin(owner_acct)
+	if (!owner_acct)
+		return -1;
+	endif
+
+	var account := FindAccount(owner_acct);
+	if (!account)
+		return -1;
+	endif
+
+	var last_login := CInt(account.GetProp("LastLogin"));
+	if (!last_login)
+		return 0;
+	endif
+
+	return last_login;
+endfunction
+
+function FormatLastLoginDate(last_login)
+	if (last_login < 0)
+		return "Unknown";
+	elseif (!last_login)
+		return "Never";
+	endif
+
+	var date_secs := CInt(last_login);
+	return GetDateString(date_secs);
+endfunction
+
+function GetBoatTypeDisplayName(objtype)
+	if (!objtype)
+		return "Unknown";
+	endif
+
+	var desc := GetItemDescriptor(CInt(objtype));
+	if (desc and desc.desc)
+		return CStr(desc.desc);
+	endif
+
+	return CStr(Hex(objtype));
+endfunction
+
+function ResolveStandableZ(x, y, z, realm)
+	var stand := GetStandingHeight(CInt(x), CInt(y), CInt(z), CStr(realm));
+	if (stand and !stand.errortext)
+		return CInt(stand.z);
+	endif
+
+	stand := GetStandingHeight(CInt(x), CInt(y), CInt(z + 20), CStr(realm));
+	if (stand and !stand.errortext)
+		return CInt(stand.z);
+	endif
+
+	stand := GetStandingHeight(CInt(x), CInt(y), CInt(z - 20), CStr(realm));
+	if (stand and !stand.errortext)
+		return CInt(stand.z);
+	endif
+
+	return CInt(z);
+endfunction

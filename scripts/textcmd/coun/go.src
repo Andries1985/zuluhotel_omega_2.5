@@ -1,127 +1,596 @@
 // Synopsis: Teleport to a named map location via location list gump
 // command .go  started June 19, 2000
 // Zulu (zulu@zuluhotel.com)
-// Rewritten to use gumps package
+// last updated June 25, 2000
 
 use os;
 use uo;
 use cfgfile;
 
-include ":staff:include/staff";
 include ":gumps:gumps";
-include "include/math"; // Used for Mod
+include ":gumps:gumps_ex";
+include ":staff:include/staff";
 
-// Gump layout constants
-const HEADER_Y      := 50;  // Y of column headers
-const TEXTSTARTLOCY := 72;  // Y of first location row
-const ROW_HEIGHT    := 18;  // Pixels per row
-const COL1_X        := 72;  // Left column: location name X
-const COL2_X        := 312; // Right column: location name X
-const BTN_GO_OFS    := 160; // Go button X offset from column
-const BTN_SND_OFS   := 200; // Send button X offset from column
-const BTN_Y_OFS     := 5;   // Lower arrow buttons to match text baseline
+const TEXT_COLOR_TITLE := 52;
+const TEXT_COLOR_GATE := 1086;
 
-program textcmd_go( who, text )
+const GO_DEBUG := 0;
+const GO_DEBUG_VERBOSE := 0;
 
-  // Test to see if the user sent a location via command text.
-  // If not, show gump; else attempt travel to that location.
-  if (!text)
+program textcmd_go( who )
 
-    var locs    := readconfigfile("::golocs");
-    var MaxLocs := GetConfigMaxIntKey(locs);
+  var locs;
+  // Test to see if the user sent a location via command text.  if not show gump, else attempt travel to that location
+  //if(!text)
+  //  return;
+  //else
+    var res := GFCreateGump(50, 50, 280, 400);
+  	GFMovable(res, 1);
 
-    var gump := BuildGoGump(locs, MaxLocs);
-    var result := GFSendGump(who, gump);
+    GFResizePic(res, 50, 50, 2620, 280, 400);
+    GFTextLine(res, 175, 100, TEXT_COLOR_TITLE, "Select Your Facet");
+    GFTextLine(res, 125, 125, TEXT_COLOR_GATE, "Felucca");
+    GFAddButton(res, 225, 130, 2360, 2361, GF_CLOSE_BTN, 2);
+    GFTextLine(res, 125, 150, TEXT_COLOR_GATE, "Trammel");
+    GFAddButton(res, 225, 155, 2360, 2361, GF_CLOSE_BTN, 4);
+    GFTextLine(res, 125, 175, TEXT_COLOR_GATE, "Malas");
+    GFAddButton(res, 225, 180, 2360, 2361, GF_CLOSE_BTN, 6);
+    GFTextLine(res, 125, 200, TEXT_COLOR_GATE, "Ilshenar");
+    GFAddButton(res, 225, 205, 2360, 2361, GF_CLOSE_BTN, 8);
+    GFTextLine(res, 125, 225, TEXT_COLOR_GATE, "Tokuno");
+    GFAddButton(res, 225, 230, 2360, 2361, GF_CLOSE_BTN, 10);
+    GFTextLine(res, 125, 250, TEXT_COLOR_GATE, "Termur");
+    GFAddButton(res, 225, 255, 2360, 2361, GF_CLOSE_BTN, 12);
+    
+    var datas := GFSendGump(who, res);
 
-    // If the user cancelled, quit
-    if (result[0] == 0)
+    DebugGo("Facet button: " + CStr(datas[0]));
+    
+    locs := BuildGoLocations(datas[0]);
+    if(!len(locs))
+      SendSysMessage(who, "No .go locations were found for that facet.");
       return;
     endif
+  //endif
 
-    var btn      := result[0];
-    var Dest;
-    var Traveler;
+  // The name of the current user of this command
+  var tname := lower(who.name);
+  var filtered_locs := FilterLocationsForUser(tname, locs);
+  if(!len(filtered_locs))
+    SendSysMessage(who, "No .go locations were found for your access level.");
+    return;
+  endif
 
-    if (btn > MaxLocs) // Send button -- teleport someone else
-      var idx := btn - MaxLocs;
-      Dest := locs[idx];
-      SendSysmessage(who, "Select a MOBILE.");
-      Traveler := Target(who, TGTOPT_NOCHECK_LOS);
-      if (!Traveler)
-        SendSysmessage(who, "Invalid selection.");
+  // Keep selection indexes aligned with what is rendered in the gump.
+  var ordered_locs := ReorderLocationsForDisplay(filtered_locs);
+
+  // Display the destination list and receive selection
+  var result := SelectDestinationGump( who, ordered_locs );
+
+  // If the user canceled, quit
+  if (!result || result[0] == 0)
+    return;
+  endif
+
+  // Open files and set veriables
+  //var locs    := readconfigfile("golocs");
+  var MaxLocs := len(ordered_locs);
+  if(MaxLocs < 1)
+    SendSysMessage(who, "No .go locations are configured.");
+    return;
+  endif
+
+  var DestinationIndex := CInt(result[0]);
+  var Traveler;
+
+  DebugGo("Selection button value: " + CStr(result[0]) + " (maxlocs=" + CStr(MaxLocs) + ")");
+
+  // Determine if we are teleporting ourselves or someone other and set the traveler variable
+  if ( result[0] > MaxLocs ) // teleporting someone else
+      SendSysmessage( who , "Select a MOBILE." );
+      Traveler :=  Target( who , TGTOPT_NOCHECK_LOS );
+      DestinationIndex := result[0] - MaxLocs;
+
+      if(!Traveler)
+        SendSysmessage( who , "Invalid selection." );
         return;
       endif
-    else // Go button -- teleport self
-      Dest     := locs[btn];
-      Traveler := who;
-    endif
-
-    LogCommand(who, GetProcess(GetPid()).name, traveler.name+"/"+traveler.serial, "Sent TO "+dest.x+" "+dest.y+" "+GetMapInfo(Dest.X, Dest.Y).Z);
-
-    var move := MoveObjectToLocation(Traveler, Dest.X, Dest.Y, Dest.Z, Dest.R, MOVEOBJECT_FORCELOCATION);
-    if (!move)
-      SendSysMessage(who, "Unable to go there: " + move.errortext);
-    endif
-
   else
+    // Teleporting ourself
+    Traveler := who;
+  endif
 
-    var params := SplitWords(text);
-    if (len(params) < 3) // didn't pass Z
-      params[3] := GetMapInfo(CInt(params[1]), CInt(params[2]), CInt(params[3]));
-    endif
+  if(DestinationIndex < 1 || DestinationIndex > MaxLocs)
+    SendSysMessage(who, "Invalid destination selected.");
+    return;
+  endif
 
-    var res := MoveObjectToLocation(who, CInt(params[1]), CInt(params[2]), CInt(params[3]), params[4], MOVEOBJECT_FORCELOCATION);
-    if (!res)
-      SendSysMessage(who, "Unable to go there: " + res.errortext);
-    endif
+  var Dest := ordered_locs[DestinationIndex];
+  DebugGo("Resolved destination: " + Dest.Name + " <" + Dest.Id + "> idx=" + CStr(DestinationIndex) + " XYZR=" + CStr(Dest.X) + "," + CStr(Dest.Y) + "," + CStr(Dest.Z) + "," + CStr(Dest.R));
+  LogCommand(who, GetProcess(GetPid()).name, Traveler.name+"/"+Traveler.serial, "Sent TO "+Dest.X+" "+Dest.Y+" "+Dest.Z+" "+Dest.R);
 
+  // Teleport moble
+  var move := MoveObjecttoLocation(Traveler, Dest.X, Dest.Y, Dest.Z, Dest.R ,MOVEOBJECT_FORCELOCATION );
+  if(!move)
+    DebugGo("MoveObjectToLocation failed: " + move.errortext);
+    SendSysMessage( who, "Unable to go there: " + move.errortext );
+  else
+    DebugGo("MoveObjectToLocation succeeded.");
   endif
 
 endprogram
 
-// Builds and returns the go gump using the gumps package API.
-// Go buttons   return values 1..MaxLocs
-// Send buttons return values MaxLocs+1..MaxLocs*2
-function BuildGoGump(byref locs, MaxLocs)
-
-  // Gump height: header area + rows + bottom padding
-  var rows_per_col := MaxLocs > 20 ? 20 : MaxLocs;
-  var gump_height  := TEXTSTARTLOCY + (rows_per_col * ROW_HEIGHT) + 36;
-
-  var gump := GFCreateGump(50, 50, 540, gump_height);
-  GFResizePic(gump, 20, 20, 3500, 540, gump_height);
-  GFMovable(gump, 0);
-  GFDisposable(gump, 0);
-
-  // Column 1 header
-  GFTextLine(gump, COL1_X, HEADER_Y, 300, "Location");
-  GFTextLine(gump, COL1_X + BTN_GO_OFS  + 5, HEADER_Y, 300, "Goto");
-  GFTextLine(gump, COL1_X + BTN_SND_OFS + 5, HEADER_Y, 300, "Send");
-
-  // Column 2 header
-  GFTextLine(gump, COL2_X, HEADER_Y, 300, "Location");
-  GFTextLine(gump, COL2_X + BTN_GO_OFS  + 5, HEADER_Y, 300, "Goto");
-  GFTextLine(gump, COL2_X + BTN_SND_OFS + 5, HEADER_Y, 300, "Send");
-
-  var col_x := COL1_X;
-  var row_y := TEXTSTARTLOCY;
-  var i := 0;
-
-  for (i := 1; i <= MaxLocs; i := i + 1)
-    var loc := locs[i];
-
-    // Switch to right column after 20 entries
-    if (i == 21)
-      col_x := COL2_X;
-      row_y := TEXTSTARTLOCY;
+function FilterLocationsForUser( tname, locs )
+  var filtered := {};
+  var i;
+  for(i := 1 ; i <= len(locs); i := i + 1)
+    var currloc := locs[i];
+    var access_type := currloc.Type;
+    if(currloc.Access)
+      access_type := currloc.Access;
     endif
 
-    GFTextLine(gump, col_x, row_y + 3, 995, loc.Name);
-    GFAddButton(gump, col_x + BTN_GO_OFS,  row_y + BTN_Y_OFS, 2103, 2104, GF_CLOSE_BTN, i);           // Go
-    GFAddButton(gump, col_x + BTN_SND_OFS, row_y + BTN_Y_OFS, 2103, 2104, GF_CLOSE_BTN, MaxLocs + i); // Send
+    if ((access_type == "all") || (access_type == tname))
+      filtered.append(currloc);
+    endif
+  endfor
+  return filtered;
+endfunction
 
-    row_y := row_y + ROW_HEIGHT;
+function SelectDestinationGump( who, locs )
+
+  var gump := GFCreateGump(20, 20, 640, 620);
+  GFDisposable(gump, 0);
+  GFResizePic(gump, 20, 20, 9250, 640, 620);
+  GFResizePic(gump, 34, 56, 9200, 612, 34);
+  GFResizePic(gump, 34, 92, 9200, 612, 492);
+
+  GFResizePic(gump, 300, 35, 9200, 140, 20);
+  GFTextLine(gump, 350, 35, 67, "Go Menu");
+
+  GFTextLine(gump, 50, 68, 900, "Location");
+  GFTextLine(gump, 410, 68, 900, "Type");
+  GFTextLine(gump, 515, 68, 900, "Goto");
+  GFTextLine(gump, 575, 68, 900, "Send");
+
+  var y := 100;
+  var page := 1;
+  var perpage := 23;
+  var maxlocs := len(locs);
+  var i;
+
+  GFTextLine(gump, 305, 592, 1000, "Page 1");
+  GFPage(gump, 1);
+
+  for(i := 1 ; i <= maxlocs ; i := i + 1)
+    if (perpage <= 0)
+      GFAddButton(gump, 540, 589, 4005, 4006, 0, page + 1); // next page
+      GFPage(gump, page + 1);
+      GFAddButton(gump, 80, 589, 4014, 4015, 0, page); // previous page
+      page := page + 1;
+      GFTextLine(gump, 305, 592, 1000, "Page " + page);
+      y := 100;
+      perpage := 23;
+    endif
+
+    GFTextLine(gump, 50, y, 0, locs[i].Name);
+    GFTextLine(gump, 410, y, 0, GetLocationTypeLabel(locs[i]));
+    GFAddButton(gump, 520, y - 3, 5540, 5541, GF_CLOSE_BTN, i);
+    GFAddButton(gump, 580, y - 3, 5540, 5541, GF_CLOSE_BTN, i + maxlocs);
+
+    perpage := perpage - 1;
+    y := y + 20;
   endfor
 
-  return gump;
+  return GFSendGump(who, gump);
 endfunction
+
+// Groups locs by type in priority order (Jail/City/Shrine/Graveyard/Dungeon/
+// POI/None), then appends anything with a custom/unrecognized RegionType
+// label last - same output as before, but a single O(n) pass instead of the
+// old 8-pass approach that re-scanned the growing "ordered" list for every
+// entry (O(n^2)*8). With ~200 go-locations just for Britannia, that old
+// version was heavy enough to occasionally trip the runaway-script watchdog.
+function ReorderLocationsForDisplay( locs )
+  var type_priority := {"Jail", "City", "Shrine", "Graveyard", "Dungeon", "POI", "None"};
+  var known_types := dictionary;
+  foreach wanted_type in type_priority
+    known_types.Insert(wanted_type, 1);
+  endforeach
+
+  // Single pass: dedupe (same Id, or same Name+X+Y+Z+R) and bucket by type.
+  var type_buckets := dictionary;
+  var seen := dictionary;
+
+  foreach entry in locs
+    var dedupe_key := LocationDedupeKey(entry);
+    if (seen.Exists(dedupe_key))
+      continue;
+    endif
+    seen.Insert(dedupe_key, 1);
+
+    var label := GetLocationTypeLabel(entry);
+    var bucket := type_buckets[label];
+    if (!bucket)
+      bucket := {};
+    endif
+    bucket.append(entry);
+    type_buckets[label] := bucket;
+  endforeach
+
+  var ordered := {};
+
+  // Known types first, in priority order, each bucket in original encounter order.
+  foreach wanted_type in type_priority
+    var bucket := type_buckets[wanted_type];
+    if (bucket)
+      foreach entry in bucket
+        ordered.append(entry);
+      endforeach
+    endif
+  endforeach
+
+  // Anything with a custom RegionType label goes last. Re-walk locs (still
+  // O(n)) rather than flatten type_buckets directly, since dictionary key
+  // order isn't guaranteed to match original encounter order.
+  var emitted := dictionary;
+  foreach entry in locs
+    var label := GetLocationTypeLabel(entry);
+    if (!known_types.Exists(label))
+      var dedupe_key := LocationDedupeKey(entry);
+      if (seen.Exists(dedupe_key) && !emitted.Exists(dedupe_key))
+        ordered.append(entry);
+        emitted.Insert(dedupe_key, 1);
+      endif
+    endif
+  endforeach
+
+  return ordered;
+endfunction
+
+function LocationDedupeKey( loc )
+  if (loc.Id)
+    return "id:" + CStr(loc.Id);
+  endif
+  return "xy:" + CStr(loc.Name) + ":" + CStr(loc.X) + ":" + CStr(loc.Y) + ":" + CStr(loc.Z) + ":" + CStr(loc.R);
+endfunction
+
+function GetLocationTypeLabel( loc )
+  if(!loc.RegionType)
+    return "None";
+  endif
+
+  return loc.RegionType;
+endfunction
+
+function BuildGoLocations( facetbutton )
+  var facetinfo := GetFacetInfo(facetbutton);
+  if(!len(facetinfo))
+    return {};
+  endif
+
+  return BuildRegionLocations(facetinfo[1]);
+endfunction
+
+function GetFacetInfo( facetbutton )
+  case( facetbutton )
+    2:
+      return {"britannia"};
+    4:
+      return {"britannia_alt"};
+    6:
+      return {"malas"};
+    8:
+      return {"ilshenar"};
+    10:
+      return {"tokuno"};
+    12:
+      return {"termur"};
+    default:
+      return {};
+  endcase
+endfunction
+
+function BuildRegionLocations( realm )
+  var locations_out := {};
+  var realm_lc := Lower(realm);
+
+  var regions_cfg := ReadConfigfile("golocs_by_id");
+  if(!regions_cfg)
+    return locations_out;
+  endif
+
+  var region_keys := GetConfigStringKeys(regions_cfg);
+  if(!len(region_keys))
+    return locations_out;
+  endif
+
+  var key;
+  var realm_matches := 0;
+  var goloc_used := 0;
+  var goloc_dnp := 0;
+  var range_used := 0;
+  foreach key in region_keys
+    var region := FindConfigElem(regions_cfg, key);
+    if(!region)
+      continue;
+    endif
+
+    var region_realm := Lower(GetConfigString(region, "Realm"));
+    if(region_realm != realm_lc)
+      continue;
+    endif
+
+    realm_matches := realm_matches + 1;
+
+    var x;
+    var y;
+    var z;
+    var range := SplitWords(GetConfigString(region, "Range"));
+    var region_name := GetConfigString(region, "Name");
+    if(!len(region_name))
+      region_name := key;
+    endif
+
+    var region_id := GetConfigString(region, "Id");
+    if(!len(region_id))
+      region_id := region_name;
+    endif
+
+    var goloc_value := Trim(GetConfigString(region, "GoLoc"));
+    var used_explicit_goloc := 0;
+    var needs_range_fallback := 0;
+    if(len(goloc_value))
+      if(Lower(goloc_value) == "dnp")
+        goloc_dnp := goloc_dnp + 1;
+        continue;
+      endif
+
+      var goloc := SplitWords(goloc_value);
+      if(len(goloc) >= 3)
+        x := CInt(goloc[1]);
+        y := CInt(goloc[2]);
+        z := CInt(goloc[3]);
+        used_explicit_goloc := 1;
+
+        // Treat origin GoLoc as an unusable placeholder and derive from Range.
+        if(x == 0 && y == 0 && z == 0)
+          needs_range_fallback := 1;
+        else
+          goloc_used := goloc_used + 1;
+        endif
+      else
+        continue;
+      endif
+    endif
+
+    if(!used_explicit_goloc || needs_range_fallback)
+      // Otherwise derive location from the center of the region range.
+      if(len(range) < 4)
+        continue;
+      endif
+
+      x := CInt((CInt(range[1]) + CInt(range[3])) / 2);
+      y := CInt((CInt(range[2]) + CInt(range[4])) / 2);
+      z := GetMapInfo(x, y, realm).Z;
+      range_used := range_used + 1;
+
+      DebugGoVerbose("Range fallback center for: " + region_name + " <" + region_id + "> XYZR=" + CStr(x) + "," + CStr(y) + "," + CStr(z) + "," + realm);
+
+      if(needs_range_fallback)
+        DebugGoVerbose("GoLoc 0,0,0 replaced with range center for: " + region_name + " <" + region_id + ">");
+      endif
+
+      used_explicit_goloc := 0;
+    endif
+
+    // Skip invalid derived coordinates so regions without usable GoLoc/Range
+    // don't send staff to origin (0,0,0).
+    if(!used_explicit_goloc && x == 0 && y == 0 && z == 0)
+      DebugGoVerbose("Skipping region with invalid derived coordinates: " + region_name + " <" + region_id + "> realm=" + realm);
+      continue;
+    endif
+
+    var loc := struct;
+    loc.Name := region_name;
+    loc.Id := region_id;
+    loc.Access := "all";
+    loc.Type := "all";
+    loc.RegionType := NormalizeRegionType(GetConfigString(region, "Type"));
+    loc.X := x;
+    loc.Y := y;
+    loc.Z := z;
+    loc.R := realm;
+    locations_out.append(loc);
+  endforeach
+
+  return locations_out;
+endfunction
+
+function NormalizeRegionType( region_type )
+  region_type := Trim(region_type);
+  if(!len(region_type))
+    return "None";
+  endif
+
+  case(Lower(region_type))
+    "poi":
+      return "POI";
+    "city":
+      return "City";
+    "shrine":
+      return "Shrine";
+    "dungeon":
+      return "Dungeon";
+    "graveyard":
+      return "Graveyard";
+    "jail":
+      return "Jail";
+    "none":
+      return "None";
+  endcase
+
+  return region_type;
+endfunction
+
+function DebugGo( msg )
+  if(!GO_DEBUG)
+    return;
+  endif
+  Print("[.go debug] " + msg);
+endfunction
+
+function DebugGoVerbose( msg )
+  if(!GO_DEBUG || !GO_DEBUG_VERBOSE)
+    return;
+  endif
+  Print("[.go debug] " + msg);
+endfunction
+
+function PreviewLocations( locs, max_items )
+  var preview := "";
+  var i;
+  for(i := 1 ; i <= len(locs) && i <= max_items; i := i + 1)
+    var loc := locs[i];
+    if(i > 1)
+      preview := preview + " | ";
+    endif
+    preview := preview + loc.Name + " <" + loc.Id + "> [" + GetLocationTypeLabel(loc) + "]";
+  endfor
+
+  if(!len(preview))
+    return "<empty>";
+  endif
+
+  return preview;
+endfunction
+
+
+
+// // Synopsis: Teleport to a named map location via location list gump
+// // command .go  started June 19, 2000
+// // Zulu (zulu@zuluhotel.com)
+// // Rewritten to use gumps package
+
+// use os;
+// use uo;
+// use cfgfile;
+
+// include ":staff:include/staff";
+// include ":gumps:gumps";
+// include "include/math"; // Used for Mod
+
+// // Gump layout constants
+// const HEADER_Y      := 50;  // Y of column headers
+// const TEXTSTARTLOCY := 72;  // Y of first location row
+// const ROW_HEIGHT    := 18;  // Pixels per row
+// const COL1_X        := 72;  // Left column: location name X
+// const COL2_X        := 312; // Right column: location name X
+// const BTN_GO_OFS    := 160; // Go button X offset from column
+// const BTN_SND_OFS   := 200; // Send button X offset from column
+// const BTN_Y_OFS     := 5;   // Lower arrow buttons to match text baseline
+
+// program textcmd_go( who, text )
+
+//   // Test to see if the user sent a location via command text.
+//   // If not, show gump; else attempt travel to that location.
+//   if (!text)
+
+//     var locs    := readconfigfile("::golocs");
+//     var MaxLocs := GetConfigMaxIntKey(locs);
+
+//     var gump := BuildGoGump(locs, MaxLocs);
+//     var result := GFSendGump(who, gump);
+
+//     // If the user cancelled, quit
+//     if (result[0] == 0)
+//       return;
+//     endif
+
+//     var btn      := result[0];
+//     var Dest;
+//     var Traveler;
+
+//     if (btn > MaxLocs) // Send button -- teleport someone else
+//       var idx := btn - MaxLocs;
+//       Dest := locs[idx];
+//       SendSysmessage(who, "Select a MOBILE.");
+//       Traveler := Target(who, TGTOPT_NOCHECK_LOS);
+//       if (!Traveler)
+//         SendSysmessage(who, "Invalid selection.");
+//         return;
+//       endif
+//     else // Go button -- teleport self
+//       Dest     := locs[btn];
+//       Traveler := who;
+//     endif
+
+//     LogCommand(who, GetProcess(GetPid()).name, traveler.name+"/"+traveler.serial, "Sent TO "+dest.x+" "+dest.y+" "+GetMapInfo(Dest.X, Dest.Y).Z);
+
+//     var move := MoveObjectToLocation(Traveler, Dest.X, Dest.Y, Dest.Z, Dest.R, MOVEOBJECT_FORCELOCATION);
+//     if (!move)
+//       SendSysMessage(who, "Unable to go there: " + move.errortext);
+//     endif
+
+//   else
+
+//     var params := SplitWords(text);
+//     if (len(params) < 3) // didn't pass Z
+//       params[3] := GetMapInfo(CInt(params[1]), CInt(params[2]), CInt(params[3]));
+//     endif
+
+//     var res := MoveObjectToLocation(who, CInt(params[1]), CInt(params[2]), CInt(params[3]), params[4], MOVEOBJECT_FORCELOCATION);
+//     if (!res)
+//       SendSysMessage(who, "Unable to go there: " + res.errortext);
+//     endif
+
+//   endif
+
+// endprogram
+
+// // Builds and returns the go gump using the gumps package API.
+// // Go buttons   return values 1..MaxLocs
+// // Send buttons return values MaxLocs+1..MaxLocs*2
+// function BuildGoGump(byref locs, MaxLocs)
+
+//   // Gump height: header area + rows + bottom padding
+//   var rows_per_col := MaxLocs > 20 ? 20 : MaxLocs;
+//   var gump_height  := TEXTSTARTLOCY + (rows_per_col * ROW_HEIGHT) + 36;
+
+//   var gump := GFCreateGump(50, 50, 540, gump_height);
+//   GFResizePic(gump, 20, 20, 3500, 540, gump_height);
+//   GFMovable(gump, 0);
+//   GFDisposable(gump, 0);
+
+//   // Column 1 header
+//   GFTextLine(gump, COL1_X, HEADER_Y, 300, "Location");
+//   GFTextLine(gump, COL1_X + BTN_GO_OFS  + 5, HEADER_Y, 300, "Goto");
+//   GFTextLine(gump, COL1_X + BTN_SND_OFS + 5, HEADER_Y, 300, "Send");
+
+//   // Column 2 header
+//   GFTextLine(gump, COL2_X, HEADER_Y, 300, "Location");
+//   GFTextLine(gump, COL2_X + BTN_GO_OFS  + 5, HEADER_Y, 300, "Goto");
+//   GFTextLine(gump, COL2_X + BTN_SND_OFS + 5, HEADER_Y, 300, "Send");
+
+//   var col_x := COL1_X;
+//   var row_y := TEXTSTARTLOCY;
+//   var i := 0;
+
+//   for (i := 1; i <= MaxLocs; i := i + 1)
+//     var loc := locs[i];
+
+//     // Switch to right column after 20 entries
+//     if (i == 21)
+//       col_x := COL2_X;
+//       row_y := TEXTSTARTLOCY;
+//     endif
+
+//     GFTextLine(gump, col_x, row_y + 3, 995, loc.Name);
+//     GFAddButton(gump, col_x + BTN_GO_OFS,  row_y + BTN_Y_OFS, 2103, 2104, GF_CLOSE_BTN, i);           // Go
+//     GFAddButton(gump, col_x + BTN_SND_OFS, row_y + BTN_Y_OFS, 2103, 2104, GF_CLOSE_BTN, MaxLocs + i); // Send
+
+//     row_y := row_y + ROW_HEIGHT;
+//   endfor
+
+//   return gump;
+// endfunction

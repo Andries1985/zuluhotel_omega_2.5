@@ -39,8 +39,6 @@ program textcmd_gotomobtype( character , text )
 					SleepMs(2);
 				endif
             endif
-		elseif( mobile.IsA())
-			Print("stuff");
         endif
     endforeach
 

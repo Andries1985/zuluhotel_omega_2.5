@@ -3,6 +3,7 @@ use uo;
 use os;
 
 include ":staff:include/staff";
+include ":admin:include/adminpanel";
 
 program textcmd_removerper(who)
 
@@ -13,6 +14,7 @@ program textcmd_removerper(who)
 	if( rper )
 		var getOrgName := GetObjProperty(player, "OrgName");
 		EraseObjProperty(player, "IsRPer");
+		RecordCharacterNameChange(player, getOrgName, ADMINPANEL_INITIATOR_STAFF);
 		player.name := getOrgName;
 		EraseObjProperty(player, "OrgName");
 		SendSysMessage( player, "You have been kicked from the [RPer] faction!", FONT_NORMAL, 2595 );

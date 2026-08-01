@@ -5,6 +5,7 @@ include ":gumps:yesno";
 include ":gumps:gumps_ex";
 //Include "include/gumputil";
 include ":staff:include/staff";
+include ":admin:include/adminpanel";
 
 var layout3 := {
 "page 0",
@@ -80,6 +81,7 @@ EndFor
 
 if(note)
 	acc.setprop("Notes", note);
+	RecordAccountNote(acc, note, ADMINPANEL_INITIATOR_STAFF);
 endif
 LogCommand(character, GetProcess(GetPid()).name, who.name+"/"+who.serial, "Set Note: "+note);
 return;

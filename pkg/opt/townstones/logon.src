@@ -11,6 +11,14 @@ program Logon(who)
 	endif
 
 	var town_list := GetGlobalProperty("townlist");
+	if(!town_list or !town_list.size())
+		// townlist can come up empty if the boot-time bootstrap ran before the
+		// townstone datafile/live stones were ready; self-heal here instead of
+		// silently giving every player zero election/poll notices until an
+		// admin happens to open the treasury gump.
+		Start_Script(":townstone:townlistbootstrap");
+		town_list := GetGlobalProperty("townlist");
+	endif
 	if(!town_list or !town_list[town_id])
 		return 1;
 	endif

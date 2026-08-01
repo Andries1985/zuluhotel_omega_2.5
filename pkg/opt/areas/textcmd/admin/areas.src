@@ -1,4 +1,4 @@
-// Synopsis: View and modify properties of named area zones
+// Synopsis: .areas <facet> [page] - View/modify area policy flags (facet: britannia, britannia_alt, ilshenar, malas, tokuno, termur)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Toadstool
 //
@@ -15,152 +15,524 @@ use cfgfile;
 include ":staff:include/staff";
 include ":gumps:include/gumps";
 include "include/areas";
+include ":areas:include/areapolicy";
 include ":areas:include/areafunctions";
 include "include/constants/cfgfiles";
 include "include/constants/propids";
 
-var areas_cfg	:= ReadConfigfile(CFGFILE_AREAS);
-var areas	:= GetConfigStringArray( areas_cfg[1], "Area" );
+var areas_cfg := 0;
+var areas := {};
+var display_order := {};
+var AREA_POLICY_EDITOR_REALM := "";
 
-// Global properties stored as bits
-var guarded := GetGlobalProperty(PROPID_GLOBAL_AREAS_GUARDED);
-var norecallto := GetGlobalProperty(PROPID_GLOBAL_AREAS_NORECALL);
-var norecallfrom := GetGlobalProperty(PROPID_GLOBAL_AREAS_NORECALLFROM);
-var disabledmarking := GetGlobalProperty(PROPID_GLOBAL_AREAS_NOMARKING);
-var disablemagic := GetGlobalProperty(PROPID_GLOBAL_AREAS_ANTIMAGIC);
-var forbiddenarea := GetGlobalProperty(PROPID_GLOBAL_AREAS_FORBIDDEN);
-var nolooting := GetGlobalProperty(PROPID_GLOBAL_AREAS_NOLOOTING);
-var safearea := GetGlobalProperty(PROPID_GLOBAL_AREAS_SAFEAREA);
-var nopk := GetGlobalProperty(PROPID_GLOBAL_AREAS_NOPK);
-var rparea := GetGlobalProperty(PROPID_GLOBAL_AREAS_RPAREA);
+var guarded := {};
+var norecallto := {};
+var norecallfrom := {};
+var disabledmarking := {};
+var disablemagic := {};
+var forbiddenarea := {};
+var nolooting := {};
+var safearea := {};
+var nopk := {};
+var rparea := {};
+var nodamagezone := {};
+
+const AREAS_PER_PAGE := 15;
+const ROW_HEIGHT := 25;
+const BTN_PREV_PAGE := 90001;
+const BTN_NEXT_PAGE := 90002;
+const BTN_SAVE_CONFIG := 90003;
+const BTN_CANCEL_CONFIG := 90004;
+const BTN_SHOW_INFO := 90005;
+const BTN_GOTO_PAGE := 90006;
+const BTN_CLOSE_INFO := 90007;
+const TXT_ID_PAGE_JUMP := 95000;
+var FACET_REALM_OPTIONS := {"britannia", "britannia_alt", "ilshenar", "malas", "tokuno", "termur"};
+
+// Display-only grouping for the admin gump. This never touches areas.cfg's
+// file order, which is what ResolveAreaKeyAtLocation()/ResolveAreaMatchAtLocation()
+// in areapolicy.inc walk (first bounding-box match wins) - reordering that would
+// change which policy applies at overlapping coordinates server-wide.
+var CATEGORY_ORDER := {"world", "city", "dungeon", "poi", "graveyard", "shrine", "entrance"};
 
 set_script_option(SCRIPTOPT_NO_RUNAWAY,1);
 
-Program areas(who)
+Program areas(who, text)
 	// don't log changes, too big!
 	LogCommand(who, GetProcess(GetPid()).name);
 
-var gump := GFCreateGump(20, 20, 860, 520);
-
-// The main gump screen
-GFResizePic(gump, 20, 20, 9250, 860, 525);
-
-// The area background gumps
-GFResizePic(gump, 35, 220, 9200, 830, 285);
-GFResizePic(gump, 35, 180, 9200, 830, 40);
-
-// Title text
-GFResizePic(gump, 175, 35, 9200, 100, 20);
-GFTextLine(gump, 180, 35, 67, "AREA SET-UP");
-
-// Button info
-GFTextLine(gump, 110, 70, 57, "Edit Area Boundaries");
-GFAddButton(gump, 60, 70, 4005, 4006, 1, 2); 
-GFTextLine(gump, 110, 105, 57, "Add Area");
-GFAddButton(gump, 60, 105, 4005, 4006, 1, 4); 
-GFTextLine(gump, 110, 140, 57, "Delete Area");
-GFAddButton(gump, 60, 140, 4005, 4006, 1, 6); 
-
-// HTML gump
-GFHTMLArea(gump, 405, 35, 390, 140, GetHelpString(), 1, 1);
-
-// Names for all the options
-GFTextLine(gump, 96, 185, 900, "Area");
-GFTextLine(gump, 95, 200, 900, "Name");
-
-GFTextLine(gump, 190, 185, 900, "Guarded");
-GFTextLine(gump, 195, 200, 900, "Area");
-
-GFTextLine(gump, 260, 185, 900, "Disabled");
-GFTextLine(gump, 255, 200, 900, "Recall To");
-
-GFTextLine(gump, 330, 185, 900, "Disabled");
-GFTextLine(gump, 320, 200, 900, "Recall From");
-
-GFTextLine(gump, 400, 185, 900, "Disabled");
-GFTextLine(gump, 400, 200, 900, "Marking");
-
-GFTextLine(gump, 467, 185, 900, "Disabled");
-GFTextLine(gump, 475, 200, 900, "Magic");
-
-GFTextLine(gump, 535, 185, 900, "Forbidden");
-GFTextLine(gump, 545, 200, 900, "Area");
-
-GFTextLine(gump, 610, 185, 900, "Disabled");
-GFTextLine(gump, 612, 200, 900, "Looting");
-
-GFTextLine(gump, 685, 185, 900, "Safe");
-GFTextLine(gump, 685, 200, 900, "Area");
-
-GFTextLine(gump, 760, 185, 900, "No-PK");
-GFTextLine(gump, 760, 200, 900, "Area");
-
-GFTextLine(gump, 830, 185, 900, "RP");
-GFTextLine(gump, 830, 200, 900, "Area");
-
-// Block of text that displays current area info
-var y := 230;
-var perpage := 11;
-var totalpages := CInt(areas.size()/11)+1; // Very lazy, but works unless there are enough elements for EXACTLY a page number, fix later
-var page := 1;
-var retval := 0;
-
-GFPage(gump, 1);
-GFTextLine(gump, 330, 508, 1000, "Page 1 of "+totalpages);
-foreach area in areas
-
-	if (perpage <= 0)
-		GFAddButton(gump, 765, 506, 4005, 4006, 0, page+1); // Next Page button
-		GFPage(gump, page+1);
-		GFAddButton(gump, 35, 506, 4014, 4015, 0, page); // Prev Page button
-		page := page + 1;
-		GFTextLine(gump, 360, 508, 1000, "Page "+page+" of "+totalpages);
-		y := 230;
-		perpage := 11;
+	areas_cfg := ReadConfigfile(CFGFILE_AREAS);
+	if(!areas_cfg)
+		SendSysMessage(who, "Unable to open areas config.");
+		return;
 	endif
 
-	// Seperate each type into a group
-	retval := _area_iter*10;
+	if(!text)
+		SendUsage(who);
+		return;
+	endif
 
-	GFTextLine(gump, 35, y, 0, GetAreaName(area));
-	GFCheckBox(gump, 200, y, 9026, 9027, guarded[_area_iter], retval+1);
-	GFCheckBox(gump, 270, y, 9026, 9027, norecallto[_area_iter], retval+2);
-	GFCheckBox(gump, 340, y, 9026, 9027, norecallfrom[_area_iter], retval+3);
-	GFCheckBox(gump, 410, y, 9026, 9027, disabledmarking[_area_iter], retval+4);
-	GFCheckBox(gump, 480, y, 9026, 9027, disablemagic[_area_iter], retval+5);
-	GFCheckBox(gump, 550, y, 9026, 9027, forbiddenarea[_area_iter], retval+6);
-	GFCheckBox(gump, 620, y, 9026, 9027, nolooting[_area_iter], retval+7);
-	GFCheckBox(gump, 690, y, 9026, 9027, safearea[_area_iter], retval+8);
-	GFCheckBox(gump, 760, y, 9026, 9027, nopk[_area_iter], retval+9);
-	GFCheckBox(gump, 830, y, 9026, 9027, rparea[_area_iter], retval+10);
-	perpage := perpage - 1;
-	y := y + 25;
-endforeach
-// End large block of text
+	var tokens := SplitWords(text);
+	if(!tokens || tokens.size() < 1)
+		SendUsage(who);
+		return;
+	endif
 
+	AREA_POLICY_EDITOR_REALM := Lower(CStr(tokens[1]));
+	var page := 1;
+	if(tokens.size() >= 2)
+		page := CInt(tokens[2]);
+		if(page < 1)
+			page := 1;
+		endif
+	endif
 
-var result := GFSendGump(who, gump);
+	var realm_elem := areas_cfg[AREA_POLICY_EDITOR_REALM];
+	if(!realm_elem)
+		SendSysMessage(who, "Unknown facet '" + AREA_POLICY_EDITOR_REALM + "'.");
+		SendUsage(who);
+		return;
+	endif
 
-if (result[0] > 1 && result < 7)
-	SendSysMessage(who, "These options are not yet supported.");
-endif
+	if(!LoadAreasForRealm(who, AREA_POLICY_EDITOR_REALM))
+		return;
+	endif
 
-SetAllValues(result.keys);
-RefreshOnlineAreaStatus();
+	SendSysMessage(who, "Editing facet: " + AREA_POLICY_EDITOR_REALM);
 
-SendSysMessage(who, "Data saved.");
+	LoadAreaFlagArrays();
+	EnsureAreaFlagArrays();
+	display_order := BuildCategoryDisplayOrder();
+
+	var totalpages := CInt(((areas.size() - 1) / AREAS_PER_PAGE)) + 1;
+	if (totalpages < 1)
+		totalpages := 1;
+	endif
+	if(page > totalpages)
+		page := totalpages;
+	endif
+
+	while(1)
+		var gump := BuildAreasPageGump(page, totalpages);
+		var result := GFSendGump(who, gump);
+
+		if(!result || result[0] <= 1 || result[0] == BTN_CANCEL_CONFIG)
+			SendSysMessage(who, "Cancelled.");
+			return;
+		endif
+
+		if (result and result.keys)
+			ApplyPageValues(result.keys, page);
+		endif
+
+		var btn := CInt(result[0]);
+		if (btn == BTN_SAVE_CONFIG)
+			break;
+		elseif (btn == BTN_CANCEL_CONFIG)
+			SendSysMessage(who, "Cancelled.");
+			return;
+		endif
+		if (btn == BTN_NEXT_PAGE)
+			if (page < totalpages)
+				page := page + 1;
+			endif
+			continue;
+		elseif (btn == BTN_PREV_PAGE)
+			if (page > 1)
+				page := page - 1;
+			endif
+			continue;
+		elseif (btn == BTN_SHOW_INFO)
+			ShowAreaInfoGump(who);
+			continue;
+		elseif (btn == BTN_GOTO_PAGE)
+			var requested := CInt(GFExtractData(result, TXT_ID_PAGE_JUMP));
+			if (requested < 1)
+				requested := 1;
+			elseif (requested > totalpages)
+				requested := totalpages;
+			endif
+			page := requested;
+			continue;
+		elseif (btn > 1 and btn < 7)
+			SendSysMessage(who, "These options are not yet supported.");
+			continue;
+		endif
+
+		break;
+	endwhile
+
+	SaveAreaFlagArrays(who);
+	RefreshOnlineAreaStatus();
+
+	SendSysMessage(who, "Data saved.");
 
 endprogram
 
-////////////////////////////////////////////////////////////////////////////////////
-// Toadstool
-//
-// SetAllValues() - Sets all values, creates global props if don't exist etc
-//
-////////////////////////////////////////////////////////////////////////////////////
-function SetAllValues(data)
 
-	var mine := 0;
+function SendUsage(who)
+	SendSysMessage(who, "Usage: .areas <facet> [page]");
+	SendSysMessage(who, "Facets: " + JoinFacetList());
+endfunction
+
+
+function JoinFacetList()
+	var result_str := "";
+	var realm;
+	foreach realm in FACET_REALM_OPTIONS
+		if(result_str)
+			result_str := result_str + ", ";
+		endif
+		result_str := result_str + CStr(realm);
+	endforeach
+	return result_str;
+endfunction
+
+
+function LoadAreasForRealm(who, realm)
+	var realm_elem := areas_cfg[realm];
+	if(!realm_elem || realm_elem == error)
+		SendSysMessage(who, "Invalid facet: " + CStr(realm));
+		return 0;
+	endif
+
+	areas := GetConfigStringArray(realm_elem, "Area");
+	if(!areas || areas == error || areas.size() < 1)
+		SendSysMessage(who, "No areas found for facet: " + CStr(realm));
+		return 0;
+	endif
+
+	return 1;
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+// BuildCategoryDisplayOrder() - Groups areas[] by their cat= tag for gump
+// display, in CATEGORY_ORDER order. Returns an array of original areas[]
+// indices - areas.cfg itself is never reordered, so policy-resolution
+// precedence (first bounding-box match wins) is unaffected.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function BuildCategoryDisplayOrder()
+	var buckets := dictionary;
+	var i;
+	for(i := 1; i <= areas.size(); i := i + 1)
+		var area_info := ParseAreaLine(areas[i], i);
+		var cat := "other";
+		if(area_info != error && area_info.category)
+			cat := area_info.category;
+		endif
+		if(!buckets.Exists(cat))
+			buckets[cat] := array{};
+		endif
+		buckets[cat].append(i);
+	endfor
+
+	var order := array{};
+	var cat_name;
+	foreach cat_name in CATEGORY_ORDER
+		if(buckets.Exists(cat_name))
+			var cat_bucket := buckets[cat_name];
+			AppendSortedBucket(order, cat_bucket, cat_name);
+		endif
+	endforeach
+
+	// Anything not in CATEGORY_ORDER (shouldn't happen now that every areas.cfg
+	// line is tagged, but stay defensive for future untagged additions) goes
+	// last, alphabetical like everything else.
+	var bucket_keys := buckets.Keys();
+	var leftover_cat;
+	foreach leftover_cat in bucket_keys
+		if(!(leftover_cat in CATEGORY_ORDER))
+			var leftover_bucket := buckets[leftover_cat];
+			AppendSortedBucket(order, leftover_bucket, leftover_cat);
+		endif
+	endforeach
+
+	return order;
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+// AppendSortedBucket() - Sorts one category's original-index bucket and appends
+// it to order[]. World gets the fixed Whole World / Zulu Territory / Zulu
+// Dungeon Territory / Green Acres sequence (regions.cfg's own display order);
+// everything else (and anything left in World after that) sorts alphabetically
+// by area name. Uses the "sortkey|||payload" + .sort() idiom already used in
+// omegacache.inc, since eScript's struct-based sort doesn't work reliably.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function AppendSortedBucket(byref order, bucket, cat_name)
+	var sort_pairs := array{};
+	var idx;
+	foreach idx in bucket
+		var sort_key := BuildAreaSortKey(idx, cat_name);
+		sort_pairs.append(sort_key + "|||" + CStr(idx));
+	endforeach
+	sort_pairs.sort();
+
+	var pair;
+	foreach pair in sort_pairs
+		var sep := Find(pair, "|||", 1);
+		order.append(CInt(pair[sep + 3, Len(pair)]));
+	endforeach
+	return 1;
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+// BuildAreaSortKey() - Sort key for one area within its category display
+// bucket. World gets a manual rank prefix (0-4) so Whole World / Zulu
+// Territory / Zulu Dungeon Territory / Green Acres always lead in that order,
+// then falls back to alphabetical - same as every other category.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function BuildAreaSortKey(idx, cat_name)
+	var area := areas[idx];
+	var name := Lower(GetAreaName(area));
+
+	if(cat_name != "world")
+		return name;
+	endif
+
+	var area_info := ParseAreaLine(area, idx);
+	var area_id := "";
+	if(area_info != error)
+		area_id := CStr(area_info.area_id);
+	endif
+
+	var rank := 4;
+	if(Len(area_id) >= 10 && Lower(SubStr(area_id, Len(area_id) - 9, 10)) == "wholeworld")
+		rank := 0;
+	elseif(area_id == "zuluterritory")
+		rank := 1;
+	elseif(area_id == "zuludungeonterritory")
+		rank := 2;
+	elseif(Len(area_id) >= 10 && Lower(SubStr(area_id, 1, 10)) == "greenacres")
+		rank := 3;
+	endif
+
+	return CStr(rank) + "_" + name;
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+// BuildAreasPageGump() - Draws a single page of the areas gump.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function BuildAreasPageGump(page, totalpages)
+	var gump := GFCreateGump(20, 20, 860, 590);
+
+	// The main gump screen
+	GFResizePic(gump, 20, 20, 9250, 860, 595);
+
+	// Header bar - full width, like the column-header bar below it, instead of
+	// the old narrow title box. Facet on the left, title centered, both green.
+	GFResizePic(gump, 35, 35, 9200, 830, 40);
+	GFTextLine(gump, 50, 48, 67, "Facet: " + CStr(AREA_POLICY_EDITOR_REALM));
+	GFTextMid(gump, 35, 48, 830, 67, "AREA SET-UP");
+
+	// Action buttons - evenly spaced across the header width instead of a
+	// fixed left-hugging row. The explanation box moved to its own popup gump
+	// (Area Info button).
+	var action_labels := {"Save Areas Config", "Cancel", "Area Info / Help"};
+	var action_btns := {BTN_SAVE_CONFIG, BTN_CANCEL_CONFIG, BTN_SHOW_INFO};
+	var action_icon_w := 30;
+	var action_slot_w := CInt(830 / 3);
+	var a;
+	for(a := 1; a <= 3; a := a + 1)
+		var slot_center := 35 + ((a - 1) * action_slot_w) + CInt(action_slot_w / 2);
+		var label_w := GFTextWidth(CStr(action_labels[a]));
+		var cluster_x := slot_center - CInt((action_icon_w + 6 + label_w) / 2);
+		GFAddButton(gump, cluster_x, 85, 4005, 4006, GF_CLOSE_BTN, CInt(action_btns[a]));
+		GFTextLine(gump, cluster_x + action_icon_w + 6, 89, 57, CStr(action_labels[a]));
+	endfor
+
+	// The area background gumps. Header bar is 50 tall (not 40) so the 3rd
+	// line of the Recall To/From columns has room to render fully instead of
+	// spilling into the list panel below it.
+	GFResizePic(gump, 35, 180, 9200, 830, (AREAS_PER_PAGE * ROW_HEIGHT) + 15);
+	GFResizePic(gump, 35, 125, 9200, 830, 50);
+
+	// Names for all the options. Recall To/From are 3 lines instead of 2 so
+	// the columns can sit closer together - frees up room for No Damage Zone
+	// (placeholder column, not wired to a policy flag yet).
+	GFTextLine(gump, 96, 130, 900, "Area");
+	GFTextLine(gump, 95, 145, 900, "Name");
+
+	GFTextLine(gump, 195, 130, 900, "Guarded");
+	GFTextLine(gump, 200, 145, 900, "Area");
+
+	GFTextLine(gump, 253, 128, 900, "Disabled");
+	GFTextLine(gump, 255, 140, 900, "Recall");
+	GFTextLine(gump, 263, 152, 900, "To");
+
+	GFTextLine(gump, 311, 128, 900, "Disabled");
+	GFTextLine(gump, 313, 140, 900, "Recall");
+	GFTextLine(gump, 316, 152, 900, "From");
+
+	GFTextLine(gump, 369, 130, 900, "Disabled");
+	GFTextLine(gump, 369, 145, 900, "Marking");
+
+	GFTextLine(gump, 427, 130, 900, "Disabled");
+	GFTextLine(gump, 432, 145, 900, "Magic");
+
+	GFTextLine(gump, 480, 130, 900, "Forbidden");
+	GFTextLine(gump, 490, 145, 900, "Area");
+
+	GFTextLine(gump, 543, 130, 900, "Disabled");
+	GFTextLine(gump, 545, 145, 900, "Looting");
+
+	GFTextLine(gump, 606, 130, 900, "Safe");
+	GFTextLine(gump, 606, 145, 900, "Area");
+
+	GFTextLine(gump, 669, 130, 900, "No-PK");
+	GFTextLine(gump, 669, 145, 900, "Area");
+
+	GFTextLine(gump, 727, 130, 900, "RP");
+	GFTextLine(gump, 727, 145, 900, "Area");
+
+	GFTextLine(gump, 770, 130, 900, "No Damage");
+	GFTextLine(gump, 780, 145, 900, "Zone");
+
+	// Block of text that displays current area info. Paged over display_order
+	// (World -> Cities -> Dungeons -> POI -> Graveyards -> Shrines -> Dungeon
+	// Entrances) rather than areas[] directly, but retval still encodes the
+	// original areas.cfg index so ApplyPageValues() writes the right flags.
+	// retval uses *100 (not *10) so there's headroom for the 11th (and any
+	// future) column without colliding with the next area's field-1 checkbox.
+	var y := 190;
+	var start_idx := ((page - 1) * AREAS_PER_PAGE) + 1;
+	var end_idx := start_idx + AREAS_PER_PAGE - 1;
+	if (end_idx > display_order.size())
+		end_idx := display_order.size();
+	endif
+
+	var pos;
+	for (pos := start_idx; pos <= end_idx; pos := pos + 1)
+		var orig_i := display_order[pos];
+		var retval := orig_i * 100;
+		var area := areas[orig_i];
+
+		GFTextLine(gump, 35, y, 0, GetAreaName(area));
+		GFCheckBox(gump, 205, y, 9026, 9027, guarded[orig_i], retval + 1);
+		GFCheckBox(gump, 263, y, 9026, 9027, norecallto[orig_i], retval + 2);
+		GFCheckBox(gump, 321, y, 9026, 9027, norecallfrom[orig_i], retval + 3);
+		GFCheckBox(gump, 379, y, 9026, 9027, disabledmarking[orig_i], retval + 4);
+		GFCheckBox(gump, 437, y, 9026, 9027, disablemagic[orig_i], retval + 5);
+		GFCheckBox(gump, 495, y, 9026, 9027, forbiddenarea[orig_i], retval + 6);
+		GFCheckBox(gump, 553, y, 9026, 9027, nolooting[orig_i], retval + 7);
+		GFCheckBox(gump, 611, y, 9026, 9027, safearea[orig_i], retval + 8);
+		GFCheckBox(gump, 669, y, 9026, 9027, nopk[orig_i], retval + 9);
+		GFCheckBox(gump, 727, y, 9026, 9027, rparea[orig_i], retval + 10);
+		GFCheckBox(gump, 785, y, 9026, 9027, nodamagezone[orig_i], retval + 11);
+		y := y + ROW_HEIGHT;
+	endfor
+
+	// Bottom row - Prev flush to the left edge, Next flush to the right edge
+	// (mirroring Prev), page count and the jump-to-page control evenly spaced
+	// in the space between them.
+	if (page > 1)
+		GFAddButton(gump, 35, 576, 4014, 4015, 1, BTN_PREV_PAGE);
+	endif
+	if (page < totalpages)
+		GFAddButton(gump, 835, 576, 4005, 4006, 1, BTN_NEXT_PAGE);
+	endif
+
+	GFTextMid(gump, 222, 578, 200, 1000, "Page " + page + " of " + totalpages);
+
+	GFTextLine(gump, 506, 578, 1000, "Go to:");
+	GFTextEntry(gump, 554, 576, 40, 20, 1000, CStr(page), TXT_ID_PAGE_JUMP, 3);
+	GFAddButton(gump, 602, 576, 4005, 4006, GF_CLOSE_BTN, BTN_GOTO_PAGE);
+	GFTextLine(gump, 628, 578, 57, "Go");
+
+	return gump;
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+// EnsureAreaFlagArrays() - Ensures every flag array exists and is sized to areas.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function EnsureAreaFlagArrays()
+	if (!guarded)
+		guarded := {};
+	endif
+	if (!norecallto)
+		norecallto := {};
+	endif
+	if (!norecallfrom)
+		norecallfrom := {};
+	endif
+	if (!disabledmarking)
+		disabledmarking := {};
+	endif
+	if (!disablemagic)
+		disablemagic := {};
+	endif
+	if (!forbiddenarea)
+		forbiddenarea := {};
+	endif
+	if (!nolooting)
+		nolooting := {};
+	endif
+	if (!safearea)
+		safearea := {};
+	endif
+	if (!nopk)
+		nopk := {};
+	endif
+	if (!rparea)
+		rparea := {};
+	endif
+	if (!nodamagezone)
+		nodamagezone := {};
+	endif
+
+	var i;
+	for (i := 1; i <= areas.size(); i := i + 1)
+		if (guarded.size() < i)
+			guarded.append(0);
+		endif
+		if (norecallto.size() < i)
+			norecallto.append(0);
+		endif
+		if (norecallfrom.size() < i)
+			norecallfrom.append(0);
+		endif
+		if (disabledmarking.size() < i)
+			disabledmarking.append(0);
+		endif
+		if (disablemagic.size() < i)
+			disablemagic.append(0);
+		endif
+		if (forbiddenarea.size() < i)
+			forbiddenarea.append(0);
+		endif
+		if (nolooting.size() < i)
+			nolooting.append(0);
+		endif
+		if (safearea.size() < i)
+			safearea.append(0);
+		endif
+		if (nopk.size() < i)
+			nopk.append(0);
+		endif
+		if (rparea.size() < i)
+			rparea.append(0);
+		endif
+		if (nodamagezone.size() < i)
+			nodamagezone.append(0);
+		endif
+	endfor
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+// LoadAreaFlagArrays() - Loads area flags from datastore policy masks.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function LoadAreaFlagArrays()
 	guarded := {};
 	norecallto := {};
 	norecallfrom := {};
@@ -171,49 +543,144 @@ function SetAllValues(data)
 	safearea := {};
 	nopk := {};
 	rparea := {};
+	nodamagezone := {};
 
-	// areas.cfg is the master file, until we use custom areas in a data file, this is it
-	foreach area in areas
-		guarded.append(0);
-		norecallto.append(0);
-		norecallfrom.append(0);
-		disabledmarking.append(0);
-		disablemagic.append(0);
-		forbiddenarea.append(0);
-		nolooting.append(0);
-		safearea.append(0);
-		nopk.append(0);
-		rparea.append(0);
+	var i;
+	for(i := 1; i <= areas.size(); i := i + 1)
+		var area_info := ParseAreaLine(areas[i], i);
+		var mask := 0;
+		if(area_info != error)
+			mask := GetPolicyMask(AREA_POLICY_EDITOR_REALM, area_info.area_id);
+		endif
 
-		foreach val in data
-			mine := (val-(_area_iter*10));
+		guarded[i] := HasPolicy(mask, AREA_POLICY_GUARDED);
+		norecallto[i] := HasPolicy(mask, AREA_POLICY_NO_RECALL_TO);
+		norecallfrom[i] := HasPolicy(mask, AREA_POLICY_NO_RECALL_FROM);
+		disabledmarking[i] := HasPolicy(mask, AREA_POLICY_NO_MARKING);
+		disablemagic[i] := HasPolicy(mask, AREA_POLICY_ANTI_MAGIC);
+		forbiddenarea[i] := HasPolicy(mask, AREA_POLICY_FORBIDDEN);
+		nolooting[i] := HasPolicy(mask, AREA_POLICY_NO_LOOTING);
+		safearea[i] := HasPolicy(mask, AREA_POLICY_SAFE_AREA);
+		nopk[i] := HasPolicy(mask, AREA_POLICY_NO_PK);
+		rparea[i] := HasPolicy(mask, AREA_POLICY_RP_AREA);
+		nodamagezone[i] := HasPolicy(mask, AREA_POLICY_NO_DAMAGE_ZONE);
+	endfor
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+// ApplyPageValues() - Applies checkbox values for one page only.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function ApplyPageValues(data, page)
+	var start_idx := ((page - 1) * AREAS_PER_PAGE) + 1;
+	var end_idx := start_idx + AREAS_PER_PAGE - 1;
+	if (end_idx > display_order.size())
+		end_idx := display_order.size();
+	endif
+
+	var pos;
+	var orig_i;
+	for (pos := start_idx; pos <= end_idx; pos := pos + 1)
+		orig_i := display_order[pos];
+		guarded[orig_i] := 0;
+		norecallto[orig_i] := 0;
+		norecallfrom[orig_i] := 0;
+		disabledmarking[orig_i] := 0;
+		disablemagic[orig_i] := 0;
+		forbiddenarea[orig_i] := 0;
+		nolooting[orig_i] := 0;
+		safearea[orig_i] := 0;
+		nopk[orig_i] := 0;
+		rparea[orig_i] := 0;
+		nodamagezone[orig_i] := 0;
+	endfor
+
+	var val;
+	foreach val in data
+		for (pos := start_idx; pos <= end_idx; pos := pos + 1)
+			orig_i := display_order[pos];
+			var mine := (val - (orig_i * 100));
 			case(mine)
-			1: guarded[_area_iter] := 1;
-			2: norecallto[_area_iter] := 1;
-			3: norecallfrom[_area_iter] := 1;
-			4: disabledmarking[_area_iter] := 1;
-			5: disablemagic[_area_iter] := 1;
-			6: forbiddenarea[_area_iter] := 1;
-			7: nolooting[_area_iter] := 1;
-			8: safearea[_area_iter] := 1;
-			9: nopk[_area_iter] := 1;
-			10: rparea[_area_iter] := 1;
+			1: guarded[orig_i] := 1;
+			2: norecallto[orig_i] := 1;
+			3: norecallfrom[orig_i] := 1;
+			4: disabledmarking[orig_i] := 1;
+			5: disablemagic[orig_i] := 1;
+			6: forbiddenarea[orig_i] := 1;
+			7: nolooting[orig_i] := 1;
+			8: safearea[orig_i] := 1;
+			9: nopk[orig_i] := 1;
+			10: rparea[orig_i] := 1;
+			11: nodamagezone[orig_i] := 1;
 			endcase
-		endforeach
-
+		endfor
 	endforeach
+endfunction
 
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_GUARDED, guarded);
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_NORECALL, norecallto);
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_NORECALLFROM, norecallfrom);
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_NOMARKING, disabledmarking);
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_ANTIMAGIC, disablemagic);
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_FORBIDDEN, forbiddenarea);
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_NOLOOTING, nolooting);
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_SAFEAREA, safearea);
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_NOPK, nopk);
-	SetGlobalProperty(PROPID_GLOBAL_AREAS_RPAREA, rparea);
+////////////////////////////////////////////////////////////////////////////////////
+//
+// SaveAreaFlagArrays() - Persists all area flags back to global properties.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function SaveAreaFlagArrays(who)
+	var updated_by := "";
+	if(who)
+		updated_by := CStr(who.name);
+	endif
 
+	Print("[areas.save] begin realm=" + CStr(AREA_POLICY_EDITOR_REALM) + " updated_by=" + updated_by + " areas=" + CStr(areas.size()));
+
+	var i;
+	for(i := 1; i <= areas.size(); i := i + 1)
+		var area_info := ParseAreaLine(areas[i], i);
+		if(area_info == error)
+			Print("[areas.save] skip invalid area line index=" + CStr(i));
+			continue;
+		endif
+
+		var mask := 0;
+		if(guarded[i])
+			mask := mask + AREA_POLICY_GUARDED;
+		endif
+		if(norecallto[i])
+			mask := mask + AREA_POLICY_NO_RECALL_TO;
+		endif
+		if(norecallfrom[i])
+			mask := mask + AREA_POLICY_NO_RECALL_FROM;
+		endif
+		if(disabledmarking[i])
+			mask := mask + AREA_POLICY_NO_MARKING;
+		endif
+		if(disablemagic[i])
+			mask := mask + AREA_POLICY_ANTI_MAGIC;
+		endif
+		if(forbiddenarea[i])
+			mask := mask + AREA_POLICY_FORBIDDEN;
+		endif
+		if(nolooting[i])
+			mask := mask + AREA_POLICY_NO_LOOTING;
+		endif
+		if(safearea[i])
+			mask := mask + AREA_POLICY_SAFE_AREA;
+		endif
+		if(nopk[i])
+			mask := mask + AREA_POLICY_NO_PK;
+		endif
+		if(rparea[i])
+			mask := mask + AREA_POLICY_RP_AREA;
+		endif
+		if(nodamagezone[i])
+			mask := mask + AREA_POLICY_NO_DAMAGE_ZONE;
+		endif
+
+		Print("[areas.save] area=" + CStr(i) + " id=" + CStr(area_info.area_id) + " mask=" + CStr(mask));
+		SetPolicyMask(AREA_POLICY_EDITOR_REALM, area_info.area_id, mask, updated_by);
+	endfor
+
+	var pruned := PruneStaleRealmPolicies(AREA_POLICY_EDITOR_REALM);
+	Print("[areas.save] prune realm=" + CStr(AREA_POLICY_EDITOR_REALM) + " removed=" + CStr(pruned));
+	Print("[areas.save] end realm=" + CStr(AREA_POLICY_EDITOR_REALM));
 endfunction
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -248,6 +715,16 @@ function RefreshOnlineAreaStatus()
 		elseif (had_nopk)
 			RemoveNOPK(character);
 		endif
+
+		var in_nodamage := IsInNoDamageZone(character);
+		var had_nodamage := GetObjProperty(character, "InNoDamageZone");
+		if (in_nodamage)
+			if (!had_nodamage)
+				SetNoDamageZoneProperties(character);
+			endif
+		elseif (had_nodamage)
+			RemoveNoDamageZoneProperties(character);
+		endif
 	endforeach
 endfunction
 ////////////////////////////////////////////////////////////////////////////////////
@@ -259,16 +736,48 @@ endfunction
 function GetAreaName(area)
 
 	var areaname := "";
-	area := SplitWords(area);
-	area.reverse();
-	area.shrink(area.size()-4);
-	area.reverse();
-	foreach word in area
-		areaname := areaname+" "+word;
-	endforeach
+	var parts := SplitWords(area);
+	if(!parts)
+		return areaname;
+	endif
+
+	var start_index := 5;
+	if(parts[5] && Lower(SubStr(CStr(parts[5]), 1, 3)) == "id=")
+		start_index := 6;
+	endif
+	if(parts[start_index] && Lower(SubStr(CStr(parts[start_index]), 1, 4)) == "cat=")
+		start_index := start_index + 1;
+	endif
+
+	var i;
+	for(i := start_index; i <= parts.size(); i := i + 1)
+		if(i > start_index)
+			areaname := areaname + " ";
+		endif
+		areaname := areaname + CStr(parts[i]);
+	endfor
 
 	return areaname;
 
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+//
+// ShowAreaInfoGump() - Popup gump holding the explanation text that used to
+// live in an HTML box on the main gump. Blocks until closed, then the caller
+// redisplays the main gump at whatever page/values it had before.
+//
+////////////////////////////////////////////////////////////////////////////////////
+function ShowAreaInfoGump(who)
+	var gump := GFCreateGump(160, 100, 480, 400);
+
+	GFResizePic(gump, 0, 0, 9250, 480, 400);
+	GFHTMLArea(gump, 20, 20, 440, 330, GetHelpString(), 1, 1);
+	GFAddButton(gump, 205, 360, 4005, 4006, GF_CLOSE_BTN, BTN_CLOSE_INFO);
+	GFTextLine(gump, 235, 364, 57, "Close");
+
+	GFSendGump(who, gump);
+	return 1;
 endfunction
 
 ////////////////////////////////////////////////////////////////////////////////////

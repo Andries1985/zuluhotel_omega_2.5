@@ -5,7 +5,7 @@ use os;
 include "include/constants";
 include "include/client";
 
-program forcespawn(who, input)
+program despawn(who, input)
     var spawnpoint;
     if(!input)
         SendSysMessage(who, "Select Spawnpoint");
@@ -13,11 +13,16 @@ program forcespawn(who, input)
 	else
         spawnpoint := SystemFindObjectBySerial(Cint(input));
 		if(spawnpoint.objtype != 0xa300)
-			SendSysMessage( who, "That's not a Spawnpoint .forcespawn ([serial])", FONT_NORMAL, 2595);
+			SendSysMessage( who, "That's not a Spawnpoint .despawn ([serial])", FONT_NORMAL, 2595);
 			return 0;
 		endif
 	endif
-	    
+
+	if(!spawnpoint || spawnpoint.objtype != 0xa300)
+		SendSysMessage( who, "No valid spawnpoint selected.", FONT_NORMAL, 2595);
+		return 0;
+	endif
+
     PrintTextAbovePrivate( spawnpoint, "*despawned*", who, FONT_NORMAL, 2595);
     SendSysMessage(who, "Despawned everything from spawnpoint");
 	Start_Script( ":spawnpoint:despawner", spawnpoint );

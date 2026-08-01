@@ -13,9 +13,17 @@ program BootstrapTownList()
 	endif
 
 	var town_list := BuildTownListFromDatafile();
-	if(!town_list or !town_list.size())
-		town_list := BuildTownListFromLiveStones();
-	endif
+	var live_list := BuildTownListFromLiveStones();
+
+	// Merge rather than choosing one source exclusively, so a town whose datafile
+	// record is missing/corrupt "town_id" (or a stone not yet mirrored to the
+	// datafile) still gets picked up from whichever source actually has it.
+	var merge_idx;
+	for(merge_idx := 1; merge_idx <= live_list.size(); merge_idx := merge_idx + 1)
+		if(live_list[merge_idx] and !town_list[merge_idx])
+			town_list[merge_idx] := live_list[merge_idx];
+		endif
+	endfor
 
 	if(town_list and town_list.size())
 		SetGlobalProperty("townlist", town_list);

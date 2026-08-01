@@ -47,10 +47,13 @@ program TownPerson()
 		me.frozen := 1;
 	endif
 
-    //WanderWithinTown();
-
     SetWarMode( 0 );
     set_priority(10);
+
+    // Start movement right away so newly spawned townsfolk do not stand idle.
+    if (!WanderWithinTown())
+        return;
+    endif
 
     // (Old while loop removed; only the new, shared-saying-based loop remains)
     var ev;
@@ -65,11 +68,15 @@ program TownPerson()
                endif
             SYSEVENT_ENGAGED:
                 SayRandomFromArray(ENGAGED_SAYINGS);
-                RunFromOpponent( ev.source, HALT_THRESHOLD );
+                if (!RunFromOpponent( ev.source, HALT_THRESHOLD ))
+                    return;
+                endif
             SYSEVENT_DAMAGED:
                 SayRandomFromArray(DAMAGED_SAYINGS);
                 if (ev.source)
-                    RunFromOpponent( ev.source, HALT_THRESHOLD );
+                    if (!RunFromOpponent( ev.source, HALT_THRESHOLD ))
+                        return;
+                    endif
                 else
                     say( "What sinister force is this!" );
                 endif
@@ -77,7 +84,9 @@ program TownPerson()
                 SayRandomFromArray(DISENGAGED_SAYINGS);
         endcase
         if (ReadGameClock() >= next_wander)
-            WanderWithinTown();
+            if (!WanderWithinTown())
+                return;
+            endif
             next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
         endif
     endwhile

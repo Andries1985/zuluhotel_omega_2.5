@@ -102,7 +102,7 @@ function ShowPlayerRunTownsGump(who, regions)
 				endif
 				mayorserial := SafeNonNegativeInt(elem.GetProp("mayorserial"));
 				population := SafeNonNegativeInt(elem.GetProp("populacao"));
-				election_running := SafeNonNegativeInt(elem.GetProp("eleicao")) ? 1 : 0;
+				election_running := (SafeNonNegativeInt(elem.GetProp("eleicao")) or elem.GetProp("pleibicito")) ? 1 : 0;
 				upgrades_enabled := ParseEnabled(elem.GetProp("allow_upgrades"));
 				donations_enabled := ParseEnabled(elem.GetProp("allow_donations"));
 			endif
@@ -329,12 +329,14 @@ function GetPlayerTownInfo(cfg_map, region_name)
 		return info;
 	endif
 
+	// A town discovered only via the live datafile (not listed in playertowns.cfg)
+	// still has real runtime purchased/available flags - only the configured
+	// purchase price should fall back to a default here.
 	var cfg_entry := cfg_map[Lower(CStr(region_name))];
-	if(!cfg_entry)
-		return info;
+	if(cfg_entry)
+		info[1] := SafeNonNegativeInt(cfg_entry[1]);
 	endif
 
-	info[1] := SafeNonNegativeInt(cfg_entry[1]);
 	info[2] := GetRuntimePlayerTownPurchasedState(region_name, 0);
 	info[3] := GetRuntimePlayerTownAvailableState(region_name, 1);
 	return info;

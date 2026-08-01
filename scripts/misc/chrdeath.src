@@ -16,6 +16,7 @@ include "include/camouflage";
 include "include/constants/propids";
 include "include/packets";
 include ":areas:include/areafunctions";
+include ":admin:include/adminpanel";
 
 program chrdeath(corpse,ghost)
 
@@ -59,6 +60,8 @@ program chrdeath(corpse,ghost)
 	SetObjProperty( ghost, "deathx", dx);
 	SetObjProperty( ghost, "deathy", dy);
 	SetObjProperty( ghost, "deathz", dz);
+
+	RecordCharacterDeath( ghost, killer, GetObjProperty(ghost, "KilledBySerial"), dx, dy, dz );
 
 	if( GetObjProperty( ghost, PROPID_MOBILE_GUARD_KILLED ) )
 		SetObjProperty( ghost, "Killer", "Guards");

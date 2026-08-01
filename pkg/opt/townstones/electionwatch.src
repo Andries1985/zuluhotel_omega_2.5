@@ -136,7 +136,7 @@ function LoadTownstoneState(item)
 	if(!Pleibicito_Result)
 		Pleibicito_Result := {};
 	endif
-	if(len(pleibicito) < 2 or !pleibicito)
+	if(!pleibicito or Len(CStr(pleibicito)) < 2)
 		pleibicito := 0;
 	endif
 endfunction
