@@ -1034,7 +1034,7 @@ function MainAILoop()
 		firstloop := 0;
 
 		if ( (following) and (master) )
-			waittime := 0;
+			waittime := 1;
 			firstwander := 1;
 			staying := 0;
 			loops := 0;
