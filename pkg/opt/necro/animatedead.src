@@ -180,6 +180,6 @@ program cast_animate_dead( parms )
 	
 	PrintTextAbovePrivate( thecritter , "The spell effect wear off" , caster );
 	thecritter.name := truename;
-	ApplyRawDamage( thecritter, GetMaxHP(thecritter)+3 );
+	thecritter.kill();
 
 endprogram

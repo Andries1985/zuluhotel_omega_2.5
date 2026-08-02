@@ -367,7 +367,7 @@ function SendToJailAndRespawn()
 
         MoveObjectToLocation( me, DEFAULT_LOCATION_JAIL_X, DEFAULT_LOCATION_JAIL_Y, DEFAULT_LOCATION_JAIL_Z,
                               "britannia", MOVEOBJECT_FORCELOCATION );
-        ApplyRawDamage( me, GetMaxHP(me) + 3 );
+        me.kill();
 endfunction
 
 

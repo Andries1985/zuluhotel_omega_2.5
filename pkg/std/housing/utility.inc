@@ -399,5 +399,5 @@ function KillConfiscatedPet(pet)
 
 	MoveObjectToLocation(pet, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
 	SetObjProperty(pet, "guardkill", 1);
-	ApplyRawDamage(pet, GetMaxHP(pet) + 3);
+	pet.kill();
 endfunction

@@ -51,12 +51,12 @@ program summon_creature( parms )
 	RevokePrivilege( thecritter, "invul" );
 	SetObjProperty(thecritter,"guardkill",1);
 	MoveOBJECTToLocation(thecritter,5288,1176,0,"britannia",MOVEOBJECT_FORCELOCATION);
-	ApplyRawDamage(thecritter, GetMaxHP(thecritter)+3);
+	thecritter.kill();
 
 	var count := 0;
 	repeat
 		SleepMS(1000);
-		ApplyRawDamage( thecritter, GetMaxHP(thecritter) + 3 );
+		thecritter.kill();
 		count := count + 1;
 	until(!thecritter || count >= 1000);
 
