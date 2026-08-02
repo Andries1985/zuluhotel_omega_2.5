@@ -1,0 +1,22 @@
+// Synopsis: Remove a targeted player's extra simultaneous login slot
+use uo;
+
+program removeextralogin( who )
+
+	SendSysMessage( who , "Who do you want to remove the extra login from?" );
+	var targ := Target( who );
+	if( !targ )
+		return;
+	endif
+
+	var acc := FindAccount(targ.acctname);
+	var setacc := acc.eraseprop("ExtraClient");
+	if(!setacc)
+		SendSysMessage( who , "Error something went wrong..." );
+		return;
+	endif
+
+	SendSysMessage( who , "You removed "+targ.name+" account's extra login per ip." );
+	SendSysMessage( targ , "Your extra login to your ip has been removed" );
+
+endprogram

@@ -1,0 +1,19 @@
+// Synopsis: Show whether a targeted player's account has an extra login granted
+use uo;
+
+program listextralogin( who )
+
+	SendSysMessage( who , "Check extra login status on which character's account?" );
+	var targ := Target( who );
+	if( !targ )
+		return;
+	endif
+
+	var acc := FindAccount(targ.acctname);
+	if( acc.getprop("ExtraClient") )
+		SendSysMessage( who , targ.name+"'s account HAS an extra login granted." );
+	else
+		SendSysMessage( who , targ.name+"'s account does NOT have an extra login granted." );
+	endif
+
+endprogram
