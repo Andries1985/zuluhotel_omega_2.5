@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.1.0
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: August 2, 2026**
+
+---
+
+Welcome to **Patch 1.1.0**. This is a smaller follow-up patch focused on **tamed pet ordered-attack fixes** and a **fix for high-HP monsters not dying/despawning properly** in several places around the shard.
+
+---
 
 ## What Changed
 
