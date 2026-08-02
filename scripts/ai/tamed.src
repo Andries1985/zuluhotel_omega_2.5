@@ -23,10 +23,9 @@ include "include/areas";
 const HALT_THRESHOLD := 10;
 Const MOVING_EFFECT_FIREBALL	:= 0x36D4;
 
-// If a pet calls Follow() faster than this many times per real second,
-// MainAILoop's wait_for_event() throttle isn't actually delaying it -
-// see the runaway-watch print at the top of Follow().
-const FOLLOW_RUNAWAY_THRESHOLD := 20;
+// Follow()'s own Sleepms(100) floor caps normal calls at ~10/sec; this is set
+// well above that so it only fires if something bypasses that floor entirely.
+const FOLLOW_RUNAWAY_THRESHOLD := 25;
 const FOLLOW_RUNAWAY_WARN_COOLDOWN := 60;
 
 var me := Self();
@@ -1044,7 +1043,7 @@ function MainAILoop()
 		firstloop := 0;
 
 		if ( (following) and (master) )
-			waittime := 1;
+			waittime := 0;
 			firstwander := 1;
 			staying := 0;
 			loops := 0;
@@ -1164,6 +1163,12 @@ function Follow()
 		followwindowstart := followclock;
 	endif
 	followcalls := followcalls + 1;
+
+	// Hard floor on how often Follow() can run, independent of MainAILoop's
+	// waittime (which only has whole-second granularity via wait_for_event).
+	// Applies before any of the branches/early-returns below so none of them
+	// can re-enter Follow() back-to-back with no delay.
+	Sleepms(100);
 
 	//var multi4 := GetStandingHeight( master.x, master.y, master.z ).multi;
 
