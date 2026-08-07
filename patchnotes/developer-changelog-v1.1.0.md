@@ -1,10 +1,9 @@
 # Developer Changelog - v1.1.0
-**Range:** `da73e02` (origin/Patch-1.0.9) -> `e49d805` (HEAD)  
+**Range:** `da73e02` (origin/Patch-1.0.9) -> `d1c5682` (HEAD)  
 **Branch:** Patch-1.1.0  
-**Date:** 2026-07-31 -> 2026-08-02  
-**Commits in range:** 2 (excluding merge commits)  
-**Files changed (committed):** 16 (+106 / -42)  
-**Pending (uncommitted at time of writing):** 3 files (+~150 / -0, new staff commands + regenerated synopses config)
+**Date:** 2026-07-31 -> 2026-08-07  
+**Commits in range:** 8 (excluding merge commits)  
+**Files changed (committed):** 28 (+550 / -205)
 
 ---
 
@@ -17,14 +16,19 @@
 5. [Guaranteed-Kill Calls - HP Cap Bug Fix (Repo-Wide)](#5-guaranteed-kill-calls---hp-cap-bug-fix-repo-wide)
 6. [Spawnpoints - Missing "Custom NPC" Despawn Case](#6-spawnpoints---missing-custom-npc-despawn-case)
 7. [Staff Tools - Extra Login Management Commands](#7-staff-tools---extra-login-management-commands)
-8. [Exhaustive File-by-File Change List](#8-exhaustive-file-by-file-change-list)
-9. [Risk and Regression Notes](#9-risk-and-regression-notes)
+8. [Tamed Pets - Follow() Runaway-Loop Diagnostics and Hard Rate Floor](#8-tamed-pets---follow-runaway-loop-diagnostics-and-hard-rate-floor)
+9. [Boss/SuperBoss/Champion Pet Confiscation - Extended to Boats, Champion Type Added](#9-bosssuperbosschampion-pet-confiscation---extended-to-boats-champion-type-added)
+10. [Champion Relics - Blocked From Activation Inside Cities](#10-champion-relics---blocked-from-activation-inside-cities)
+11. [Pet/Hireling Tooltip - Owner Name Property](#11-pethireling-tooltip---owner-name-property)
+12. [Player Vendors - Duplicate IsInCityRegion() Definition Fix](#12-player-vendors---duplicate-isincityregion-definition-fix)
+13. [Exhaustive File-by-File Change List](#13-exhaustive-file-by-file-change-list)
+14. [Risk and Regression Notes](#14-risk-and-regression-notes)
 
 ---
 
 ## 1. Scope Summary
 
-Patch 1.1.0 is a small, focused patch on top of 1.0.9. Two substantive commits: an initial tamed-pet ordered-attack safe-area fix (`b04437b`) followed by a broader refinement the next day (`e49d805`) that split safe-area and no-PK-area handling, fixed a packethook-driven hang in the pet "kill"/"attack" speech command, corrected a duplicate self-targeting bug in `AllCommand()`, and applied a repo-wide fix for a "guaranteed kill" idiom that silently failed against high-HP mobs. Two merge commits in range (`ceac651`, `e9a72fb`) only fold in already-released 1.0.8/1.0.9 content and carry no new 1.1.0 changes. Also pending at time of writing (not yet committed): two new staff commands for managing the existing "extra login" account flag (`listextralogin`, `removeextralogin`), alongside a regenerated `command_synopses.cfg`.
+Patch 1.1.0 is a small, focused patch on top of 1.0.9. It started with a tamed-pet ordered-attack safe-area fix (`b04437b`) followed by a broader refinement the next day (`e49d805`) that split safe-area and no-PK-area handling, fixed a packethook-driven hang in the pet "kill"/"attack" speech command, corrected a duplicate self-targeting bug in `AllCommand()`, and applied a repo-wide fix for a "guaranteed kill" idiom that silently failed against high-HP mobs; `deb83fc` then committed two new staff commands for the existing "extra login" account flag plus the first round of patch/launcher/dev notes. Three follow-up commits the same day (`39031bf`, `d71c555`, `e418d3b`) chased down and fixed a tamed-pet `Follow()` call-rate issue. Five days later, `4f7b633` bundled several unrelated small fixes/features together (champion relics blocked in cities, boss/superboss/champion pet confiscation extended to boats, an owner-name tooltip property for pets/hirelings, and further `Follow()` rate tuning), which introduced a duplicate-function-definition compile error fixed the next day by `d1c5682`. Two merge commits in range (`ceac651`, `e9a72fb`) only fold in already-released 1.0.8/1.0.9 content and carry no new 1.1.0 changes.
 
 ---
 
@@ -36,7 +40,12 @@ Patch 1.1.0 is a small, focused patch on top of 1.0.9. Two substantive commits: 
 | `e9a72fb` | - | Merge pull request #305 from Andries1985/Patch-1.0.9 (no new content - already released) |
 | `b04437b` | 2026-07-31 | Fix for tamed pets in safe areas |
 | `e49d805` | 2026-08-01 | Updates for tamed, mobile kill and spawnpoint fix |
-| *(pending)* | 2026-08-02 | Extra login list/remove staff commands + synopses regeneration - not yet committed |
+| `deb83fc` | 2026-08-02 | Patch 1.1.0 Notes and extra login fixes |
+| `39031bf` | 2026-08-02 | Tamed AI Runaway script fix |
+| `d71c555` | 2026-08-02 | Tamed Pet AI debug print to console |
+| `e418d3b` | 2026-08-02 | More AI Tamed fix |
+| `4f7b633` | 2026-08-06 | Patch update |
+| `d1c5682` | 2026-08-07 | Definition error |
 
 ---
 
@@ -152,7 +161,7 @@ Destroying or despawning a "Custom NPC"-type spawnpoint now actually kills its c
 
 ## 7. Staff Tools - Extra Login Management Commands
 
-**Not yet committed at time of writing.**
+Committed in `deb83fc`, alongside the first round of this patch's notes files.
 
 ### Files Changed
 
@@ -177,7 +186,127 @@ Staff-facing only, no player-visible change beyond the notification message a ta
 
 ---
 
-## 8. Exhaustive File-by-File Change List
+## 8. Tamed Pets - Follow() Runaway-Loop Diagnostics and Hard Rate Floor
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `scripts/ai/tamed.src` | `Follow()`, `MainAILoop()` - touched across `39031bf`, `d71c555`, `e418d3b`, and the `tamed.src` hunk of `4f7b633` |
+
+### Overview
+
+After the ordered-attack changes in sections 3-4 shipped, a live observation suggested a tamed pet's `Follow()` could be invoked far more often than the AI loop's nominal per-second cadence intends - a "runaway" follow loop. `39031bf` first tried bumping `MainAILoop()`'s `waittime` from `0` to `1` while following, but `e418d3b` reverted that back to `0` once it was clear the loop's whole-second `wait_for_event()` granularity wasn't the real lever, and instead added a hard `Sleepms()` floor directly inside `Follow()` itself so no call path (including any early-return branch) can re-enter `Follow()` with zero delay. `d71c555` added console-only diagnostics (a per-second call counter plus a warn cooldown, printed via `Print()`) to catch any pet whose `Follow()` rate exceeds the floor. `4f7b633` then tuned the floor down from `Sleepms(100)` to `Sleepms(25)` (raising the normal cadence ceiling from ~10/sec to ~40/sec) and raised the runaway-print threshold from 25 to 100 to match, since 25 calls/sec was apparently within normal range at the tighter floor and would have false-positived the diagnostic.
+
+### Notable Functional Changes
+
+- `Follow()`: now opens with a runaway-watch block - computes `followclock := ReadGameClock()`, tracks `followcalls` within a 1-second window (`followwindowstart`), and if the prior window's call count exceeded `FOLLOW_RUNAWAY_THRESHOLD` *and* at least `FOLLOW_RUNAWAY_WARN_COOLDOWN` (60s) has passed since the last warning, prints a console-only diagnostic line (pet name, hex serial, `npctemplate`, master name, calls/sec, position, whether standing on a multi, `guarding` state). This requires a new `use basicio;` import and is never sent to any client.
+- `Follow()`: immediately after the runaway-watch block, unconditionally calls `Sleepms(25)` (`Sleepms(100)` as first introduced in `e418d3b`, tuned down in `4f7b633`) before any of the function's early-return branches, so every call is rate-limited to at most ~40/sec regardless of which branch it takes.
+- `FOLLOW_RUNAWAY_THRESHOLD`: introduced at `20` (`d71c555`), raised to `25` (`e418d3b`, aligned to the then-100ms floor's ~10/sec ceiling), then to `100` (`4f7b633`, aligned to the new 25ms floor's ~40/sec ceiling).
+- `MainAILoop()`: `waittime` while `(following) and (master)` was briefly changed from `0` to `1` (`39031bf`), then reverted to `0` (`e418d3b`) - net no change across the full range; superseded by the `Follow()`-level `Sleepms()` floor as the actual fix.
+
+### Expected Impact
+
+No intended player-visible behavior change under normal play - pets continue to follow at essentially the same cadence. Guards against a pathological case where something calls `Follow()` back-to-back with no delay (e.g. rapid re-entry from a branch not going through the normal per-second AI loop wait), which could otherwise spike CPU usage or cause visibly stuttery/erratic following movement. Diagnostic prints are server-console only, staff-visible, never sent to a player.
+
+---
+
+## 9. Boss/SuperBoss/Champion Pet Confiscation - Extended to Boats, Champion Type Added
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/std/housing/signcontrol.src` | `ConfiscateBossPet()` removed (relocated), Boss/SuperBoss check now also matches `Champion` |
+| `pkg/std/housing/utility.inc` | `ConfiscateBossPet()` added (relocated from `signcontrol.src`), gains `locationnoun` parameter |
+| `pkg/std/boat/boat.src` | New `CheckBoatForBossMobiles()`, called every 10s from `boat_script()`'s main loop |
+
+### Overview
+
+`ConfiscateBossPet()` previously lived only in `signcontrol.src`, firing when a Boss/SuperBoss-tagged tamed NPC entered a house via the sign's listener, with no boat equivalent. `4f7b633` moved it into the shared `pkg/std/housing/utility.inc` (next to the `KillConfiscatedPet()` it already calls), added a `Champion`-tagged check alongside `Boss`/`SuperBoss` at both the existing house call site and the new boat call site, and generalized its player-facing messages to name the location (`"house"` vs `"boat"`) via a new `locationnoun` parameter that defaults to `"house"`, preserving the old message text on the house path.
+
+### Notable Functional Changes
+
+- `ConfiscateBossPet(mobile, locationnoun := "house")` relocated from `signcontrol.src` to `housing/utility.inc` with unchanged core logic (find master online/offline, create a claim ticket in backpack then bank, fall back to killing outright if neither has space, message the master) except both `SendSysMessage()` calls now interpolate `locationnoun` instead of the literal word `"house"`.
+- `signcontrol.src`'s `SignListener()`: the Boss/SuperBoss confiscation check now also matches `GetObjProperty(mobile, "Champion")`.
+- `boat.src`: new `CheckBoatForBossMobiles()` iterates `boat.mobiles`, calling `ConfiscateBossPet(mob, "boat")` for any NPC on board flagged `Boss`, `SuperBoss`, or `Champion`. `boat_script()`'s main loop now runs this check every 10 seconds (`nextbosscheck`), the same cadence pattern as the existing sound/encounter timers. Requires new `use basic;` and `include "util/bank";` / `include ":housing:utility";` in `boat.src`.
+
+### Expected Impact
+
+A tamed Boss, SuperBoss, or (newly) Champion-tagged pet or hireling brought aboard a player boat is now confiscated the same way one brought into a player house already was - killed and replaced with a claim ticket (in the master's backpack or bank) redeemable at an Animal Trainer for a gold fine, checked roughly every 10 seconds while the boat script runs. Previously boats had no such check at all, and houses did not treat Champion-tagged pets as needing confiscation.
+
+---
+
+## 10. Champion Relics - Blocked From Activation Inside Cities
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/ArtifactSystem/championrelic.src` | New city-region check in `program championrelic()` |
+| `scripts/include/areas.inc` | New `IsInCityRegion(who)` |
+
+### Overview
+
+Champion relic activation (`program championrelic`) had no location restriction. `4f7b633` added a check at the top of the activation flow refusing use inside a city region, backed by a new shared `IsInCityRegion(who)` helper added to `areas.inc`.
+
+### Notable Functional Changes
+
+- `championrelic.src`: `program championrelic(who, item)` now calls `IsInCityRegion(who)` immediately after its existing early-return checks; if true, sends `"You cannot activate this relic in a city."` (`RELIC_FONT_COLOR`) to `who` and returns `0` before rolling/consuming the relic.
+- `areas.inc`: new `function IsInCityRegion(who)`, returning `CInt(GetRegionString("regions", who.x, who.y, "City", who.realm)) == 1` - the same region-string check pattern already used elsewhere in this file (e.g. `IsInRPArea()`).
+
+### Expected Impact
+
+Players can no longer activate a champion relic while standing inside a city region; they now get an explicit refusal message instead. No change to relic activation anywhere else.
+
+---
+
+## 11. Pet/Hireling Tooltip - Owner Name Property
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/packethooks/megacliloc/mobiledata.src` | New "Owner" property entry |
+
+### Overview
+
+The mega-cliloc mobile properties packethook (governs the hover/single-click property list for mobiles) had no entry showing a tamed pet or hireling's owner. `4f7b633` added one, keyed off the existing `"master"` obj property.
+
+### Notable Functional Changes
+
+- `mobiledata.src`: within the properties-building loop, now reads `GetObjProperty(xObject, "master")`; if set, resolves it via `SystemFindObjectBySerial(masterserial, SYSFIND_SEARCH_OFFLINE_MOBILES)` (so it still resolves while the master is offline) and, if found, appends a property using cliloc `1070722` ("Owner: ~1_NAME~") with the master's name.
+
+### Expected Impact
+
+Examining/hovering a tamed pet or hireling now shows an "Owner: `<name>`" line in its property tooltip, for any mobile with a `master` obj property set - including pets confiscated per section 9 up until the moment they're removed, since that flow only affects boats/houses, not the tooltip itself.
+
+---
+
+## 12. Player Vendors - Duplicate IsInCityRegion() Definition Fix
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/systems/playervendor/playermerchant.src` | Removed local `IsInCityRegion()`, call site updated |
+
+### Overview
+
+`playermerchant.src` already had its own local, no-argument `IsInCityRegion()` (used by `CalculateDailyWage()` to decide between `MONTHLY_WAGE_GOLD` and `CITY_MONTHLY_WAGE_GOLD`), with a body identical to the one section 10 added globally to `areas.inc` in the same `4f7b633` commit. Two functions of the same name being visible in the same compiled scope produced a duplicate-definition compile error (the same class of collision as [[feedback_no_module_function_name_collision]], but between two script-defined functions rather than against a module builtin). `d1c5682` fixed it by deleting the local copy and switching the call site to the shared one.
+
+### Notable Functional Changes
+
+- `playermerchant.src`: removed `function IsInCityRegion()` (identical body to the one now in `areas.inc`).
+- `CalculateDailyWage()`: `if(IsInCityRegion())` -> `if(IsInCityRegion(me))`, now calling the shared `areas.inc` version with an explicit `who` argument.
+
+### Expected Impact
+
+Compile-fix only - `CalculateDailyWage()` computes the identical result before and after (same region check, `me` passed implicitly before vs. explicitly now), so no gameplay change. Without this fix the package would not compile at all following `4f7b633`.
+
+---
+
+## 13. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -197,15 +326,28 @@ Staff-facing only, no player-visible change beyond the notification message a ta
 | `pkg/std/housing/utility.inc` | 5 | `KillConfiscatedPet()` -> `.kill()` |
 | `pkg/opt/spawnpoint/despawner.src` | 6 | `"Custom NPC"` case added |
 | `pkg/opt/spawnpoint/destroypoint.src` | 5, 6 | `"Custom NPC"` case added; kill logic -> `.kill()` |
-| `scripts/textcmd/test/listextralogin.src` | 7 | New (pending commit) |
-| `scripts/textcmd/test/removeextralogin.src` | 7 | New (pending commit) |
-| `config/command_synopses.cfg` | 7 | Regenerated for the two new commands (pending commit) |
+| `scripts/textcmd/test/listextralogin.src` | 7 | New |
+| `scripts/textcmd/test/removeextralogin.src` | 7 | New |
+| `config/command_synopses.cfg` | 7 | Regenerated for the two new commands |
+| `patchnotes/developer-changelog-v1.1.0.md` | - | This file, first version committed in `deb83fc` |
+| `patchnotes/patch-v1.1.0.md` | - | Player-facing notes, first version committed in `deb83fc` |
+| `patchnotes/launchernotes.md` | - | Replaced with this release's player-facing content in `deb83fc` |
+| `pkg/opt/ArtifactSystem/championrelic.src` | 10 | City-region activation block added |
+| `pkg/packethooks/megacliloc/mobiledata.src` | 11 | "Owner" property added |
+| `pkg/std/boat/boat.src` | 9 | `CheckBoatForBossMobiles()` added, called every 10s |
+| `pkg/std/housing/signcontrol.src` | 9 | `ConfiscateBossPet()` relocated out; `Champion` added to the confiscation check |
+| `pkg/std/housing/utility.inc` | 9 | `ConfiscateBossPet()` relocated in, gains `locationnoun` param |
+| `scripts/include/areas.inc` | 10 | New `IsInCityRegion(who)` |
+| `pkg/systems/playervendor/playermerchant.src` | 12 | Duplicate local `IsInCityRegion()` removed; call site updated |
 
 ---
 
-## 9. Risk and Regression Notes
+## 14. Risk and Regression Notes
 
 - **No-PK ordered-attack gate** (section 3): now allows ordering a pet to attack monsters in no-PK areas, where the prior combined check blocked this too - confirm this matches intended design for no-PK dungeons (pets fighting monsters was presumably always intended to work there; only PC targeting is meant to be restricted).
 - **Packethook hang fix** (section 3): removing `TGTOPT_HARMFUL` from the pet-command target acquisition means `packethook.src`'s own harmful-cursor PC rejection no longer runs for this code path at all - `OrderedFight()`'s explicit area/target checks are now the only gate. If any other harmful-cursor-specific behavior in `packethook.src` (beyond the no-PK/safe-area block) was relied upon for pet-command targeting, it no longer applies here.
 - **`deathvortex.src` left unchanged** (section 5): confirmed intentional - this is genuine partial player damage-over-time, not a guaranteed-kill idiom; revisit only if explicitly asked to make the trap's final blow unconditional.
-- **Extra-login commands pending commit** (section 7): `listextralogin`/`removeextralogin` and the regenerated `config/command_synopses.cfg` were not committed as of this writing - confirm they're committed before this branch is released, and compile the two new `.src` files (not run automatically by this process).
+- **`Follow()` rate floor tuning** (section 8): the effective per-pet following cadence changed twice within this range (100ms -> 25ms floor) without a clearly documented root cause for the original runaway report - if pets still exhibit stuttery/erratic following in live testing, the diagnostic `Print()` added in `d71c555` is the tool to check first (server console, gated by `FOLLOW_RUNAWAY_WARN_COOLDOWN`) before tuning the constants further.
+- **Boat boss-check cadence** (section 9): `CheckBoatForBossMobiles()` runs every 10 seconds while the boat script loop is alive - a Boss/SuperBoss/Champion pet could be aboard for up to ~10s before confiscation fires, unlike the house path which reacts to `SignListener()`'s move-in event immediately.
+- **`IsInCityRegion()` now shared** (sections 10, 12): any other package with its own locally-defined `IsInCityRegion()`-named function (none found in this range beyond `playermerchant.src`) would hit the same duplicate-definition error `d1c5682` fixed - worth a repo-wide grep before merging any future branch that also touches `areas.inc`.
+- **Extra-login commands** (section 7): committed in `deb83fc`; confirm `listextralogin.src`/`removeextralogin.src` have been compiled (not run automatically by this process).
