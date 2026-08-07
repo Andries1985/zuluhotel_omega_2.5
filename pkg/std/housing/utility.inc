@@ -401,3 +401,62 @@ function KillConfiscatedPet(pet)
 	SetObjProperty(pet, "guardkill", 1);
 	pet.kill();
 endfunction
+
+function ConfiscateBossPet(mobile, locationnoun := "house")
+	var master_serial := GetObjProperty(mobile, "master");
+	if(!master_serial or mobile.script != "tamed")
+		// Wild boss — kill outright
+		KillConfiscatedPet(mobile);
+		return;
+	endif
+
+	var pet_name := mobile.name;
+
+	var master := SystemFindObjectBySerial(master_serial);
+	var master_online := 1;
+	if(!master)
+		master := SystemFindObjectBySerial(master_serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+		master_online := 0;
+	endif
+
+	if(!master)
+		KillConfiscatedPet(mobile);
+		return;
+	endif
+
+	var ticket := 0;
+	var ticket_location := "";
+	if(master_online)
+		ticket := CreateItemInBackpack(master, CONFISCATION_TICKET_OBJTYPE);
+		if(ticket)
+			ticket_location := "backpack";
+		endif
+	endif
+
+	if(!ticket)
+		var bankbox := FindBankBox(master);
+		if(bankbox)
+			ticket := CreateItemInContainer(bankbox, CONFISCATION_TICKET_OBJTYPE);
+			if(ticket)
+				ticket_location := "bank";
+			endif
+		endif
+	endif
+
+	if(!ticket)
+		KillConfiscatedPet(mobile);
+		if(master_online)
+			SendSysMessage(master, "Your pet " + pet_name + " was destroyed for entering a " + locationnoun + ". A claim ticket could not be created — your backpack and bank are full.", 3, 43);
+		endif
+		return;
+	endif
+
+	var fine := PopulateConfiscatedPetTicket(ticket, master_serial, mobile);
+
+	KillConfiscatedPet(mobile);
+
+	if(master_online)
+		SendSysMessage(master, "Your pet " + pet_name + " has been confiscated for entering a " + locationnoun + ".");
+		SendSysMessage(master, "A claim ticket has been placed in your " + ticket_location + ". Visit an Animal Trainer and pay " + fine + "gp to reclaim it.", 3, 43);
+	endif
+endfunction

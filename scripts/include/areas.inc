@@ -480,3 +480,7 @@ endfunction
 function IsInRPArea(who)
 	return HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_RP_AREA);
 endfunction
+
+function IsInCityRegion(who)
+	return CInt(GetRegionString("regions", who.x, who.y, "City", who.realm)) == 1;
+endfunction
