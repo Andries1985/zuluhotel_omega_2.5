@@ -115,6 +115,16 @@ program mobiledata(parms)
 				allprops.append(prop);
 			endif
 
+			var masterserial := GetObjProperty(xObject, "master");
+			if (masterserial)
+				var petmaster := SystemFindObjectBySerial(masterserial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+				if (petmaster)
+					prop.clilocid := 1070722;
+					prop.values := array {"Owner: " + petmaster.name};
+					allprops.append(prop);
+				endif
+			endif
+
 			elem_prot := GetObjProperty(xObject, "FireProtection");
 			if(elem_prot)
 				prop.clilocid := 1063492;

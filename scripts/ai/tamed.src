@@ -23,9 +23,9 @@ include "include/areas";
 const HALT_THRESHOLD := 10;
 Const MOVING_EFFECT_FIREBALL	:= 0x36D4;
 
-// Follow()'s own Sleepms(100) floor caps normal calls at ~10/sec; this is set
+// Follow()'s own Sleepms(25) floor caps normal calls at ~40/sec; this is set
 // well above that so it only fires if something bypasses that floor entirely.
-const FOLLOW_RUNAWAY_THRESHOLD := 25;
+const FOLLOW_RUNAWAY_THRESHOLD := 100;
 const FOLLOW_RUNAWAY_WARN_COOLDOWN := 60;
 
 var me := Self();
@@ -1168,7 +1168,7 @@ function Follow()
 	// waittime (which only has whole-second granularity via wait_for_event).
 	// Applies before any of the branches/early-returns below so none of them
 	// can re-enter Follow() back-to-back with no delay.
-	Sleepms(100);
+	Sleepms(25);
 
 	//var multi4 := GetStandingHeight( master.x, master.y, master.z ).multi;
 

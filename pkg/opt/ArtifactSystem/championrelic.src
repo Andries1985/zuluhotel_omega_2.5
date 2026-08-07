@@ -27,6 +27,11 @@ program championrelic(who, item)
 		return 0;
 	endif
 
+	if (IsInCityRegion(who))
+		SendSysMessage(who, "You cannot activate this relic in a city.", FONT_NORMAL, RELIC_FONT_COLOR);
+		return 0;
+	endif
+
 	var level := CInt(GetObjProperty(item, "MagicItemLevel"));
 	var templates;
 
