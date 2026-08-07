@@ -25,7 +25,8 @@ program GetInbox( params )
 	endforeach
 
 	GetProcess( pid ).SendEvent( inbox );
- 
+
+	UnloadDataFile( "Emails" );
         return 1;
 endprogram
 	

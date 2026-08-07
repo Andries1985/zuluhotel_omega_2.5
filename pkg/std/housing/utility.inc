@@ -1,3 +1,5 @@
+use polsys;
+
 include "setup";
 include "include/attributes";
 
@@ -358,6 +360,62 @@ else
 	SetObjProperty(who, "Houses", houses2);
 endif
 
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Per-account house limit. Houses are tracked per-CHARACTER (the "Houses" cprop
+// above), but an account gets a fixed 5 character slots (account.GetCharacter(1..5),
+// including offline ones), so the account-wide total is a live sum across those
+// slots rather than a separately maintained counter.
+/////////////////////////////////////////////////////////////////////////////////////////////
+const MAX_HOUSES_PER_ACCOUNT := 5;
+
+function GetAccountHouseCount(who)
+	if (!who.acctname)
+		return 0;
+	endif
+
+	var account := FindAccount(who.acctname);
+	if (!account)
+		return 0;
+	endif
+
+	var total := 0;
+	var i;
+	for (i := 1; i <= 5; i := i + 1)
+		var chr := account.GetCharacter(i);
+		if (chr)
+			var houses := GetObjProperty(chr, "Houses");
+			var slot_count := 0;
+			if (houses)
+				slot_count := houses.size();
+				total := total + slot_count;
+			endif
+			Print("[houselimit][debug] account '" + CStr(who.acctname) + "' slot " + CStr(i) + " -> character '" + CStr(chr.name) + "' has " + CStr(slot_count) + " house(s)");
+		endif
+		SleepMS(2);
+	endfor
+
+	Print("[houselimit][debug] account '" + CStr(who.acctname) + "' total house count = " + CStr(total));
+	return total;
+endfunction
+
+// Staff (cmdlevel>=4) are exempt, matching Buildhouse()'s existing
+// city/dungeon/shrine/graveyard cmdlevel<4 gate in housedeed.src.
+function IsAccountAtHouseLimit(who)
+	if (who.cmdlevel >= 4)
+		Print("[houselimit][debug] who '" + CStr(who.name) + "' cmdlevel>=4, exempt from house limit");
+		return 0;
+	endif
+
+	var count := GetAccountHouseCount(who);
+	if (count >= MAX_HOUSES_PER_ACCOUNT)
+		Print("[houselimit][debug] who '" + CStr(who.name) + "' at limit (" + CStr(count) + "/" + CStr(MAX_HOUSES_PER_ACCOUNT) + ") - DENY");
+		return 1;
+	endif
+
+	Print("[houselimit][debug] who '" + CStr(who.name) + "' (" + CStr(count) + "/" + CStr(MAX_HOUSES_PER_ACCOUNT) + ") - allow");
+	return 0;
 endfunction
 
 function RegisterHouseType(deed, house)

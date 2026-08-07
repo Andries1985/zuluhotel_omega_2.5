@@ -7,8 +7,6 @@
 use uo;
 use os;
 
- include "include/account";
-
 program textcmd_WhereBoat( mobile )
    
 	SendSysMessage( mobile, "Select a player." );

@@ -481,6 +481,7 @@ function GetPolicyMask(realm, area_id)
 				mask := CInt(prop_val);
 			endif
 		endif
+		UnloadDataFile(GetRealmPolicyDescriptor(realm));
 	endif
 
 	return StoreCachedPolicyMask(realm, realm_cache, area_id, mask);
@@ -498,6 +499,7 @@ function SetPolicyMask(realm, area_id, mask, updated_by := "")
 	var elem := DFFindElement(file_ref, CStr(area_id), DF_CREATE);
 	if(elem == error)
 		Print("[areas.persist] set element failed realm=" + CStr(realm) + " area_id=" + CStr(area_id));
+		UnloadDataFile(GetRealmPolicyDescriptor(realm));
 		return elem;
 	endif
 
@@ -518,6 +520,7 @@ function SetPolicyMask(realm, area_id, mask, updated_by := "")
 	endif
 
 	Print("[areas.persist] set end realm=" + CStr(realm) + " area_id=" + CStr(area_id));
+	UnloadDataFile(GetRealmPolicyDescriptor(realm));
 	return CInt(mask);
 endfunction
 
@@ -533,6 +536,7 @@ function PruneStaleRealmPolicies(realm)
 	var area_lines := GetRealmAreaLines(realm);
 	if(area_lines == error)
 		Print("[areas.persist] prune load areas failed realm=" + CStr(realm));
+		UnloadDataFile(GetRealmPolicyDescriptor(realm));
 		return 0;
 	endif
 
@@ -548,6 +552,7 @@ function PruneStaleRealmPolicies(realm)
 	var keys := file_ref.Keys();
 	if(keys == error)
 		Print("[areas.persist] prune keys failed realm=" + CStr(realm));
+		UnloadDataFile(GetRealmPolicyDescriptor(realm));
 		return 0;
 	endif
 	Print("[areas.persist] prune keys realm=" + CStr(realm) + " count=" + CStr(keys.size()));
@@ -571,5 +576,6 @@ function PruneStaleRealmPolicies(realm)
 	InvalidatePolicyMaskCache(realm);
 
 	Print("[areas.persist] prune end realm=" + CStr(realm) + " removed=" + CStr(removed));
+	UnloadDataFile(GetRealmPolicyDescriptor(realm));
 	return removed;
 endfunction

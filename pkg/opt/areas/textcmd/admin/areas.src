@@ -52,7 +52,7 @@ var FACET_REALM_OPTIONS := {"britannia", "britannia_alt", "ilshenar", "malas", "
 // file order, which is what ResolveAreaKeyAtLocation()/ResolveAreaMatchAtLocation()
 // in areapolicy.inc walk (first bounding-box match wins) - reordering that would
 // change which policy applies at overlapping coordinates server-wide.
-var CATEGORY_ORDER := {"world", "city", "dungeon", "poi", "graveyard", "shrine", "entrance"};
+var CATEGORY_ORDER := {"world", "city", "suburb", "dungeon", "poi", "graveyard", "shrine", "entrance"};
 
 set_script_option(SCRIPTOPT_NO_RUNAWAY,1);
 

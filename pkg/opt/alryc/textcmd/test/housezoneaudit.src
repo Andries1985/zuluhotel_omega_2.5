@@ -1,0 +1,233 @@
+// Synopsis: List all houses whose footprint currently overlaps a City, Dungeon, Shrine, or Graveyard region
+use uo;
+use os;
+use cfgfile;
+use polsys;
+
+include "include/checkcity";
+
+program housezoneaudit(who)
+	RunRegionDiagnostics();
+
+	var violations := CollectZoneViolatingHouses();
+	if (!violations || !violations.size())
+		SendSysMessage(who, "No houses found overlapping city/dungeon/shrine/graveyard regions.");
+		return 0;
+	endif
+
+	SendSysMessage(who, "Found " + CStr(violations.size()) + " house(s) overlapping restricted-zone regions:");
+	Print("[housezoneaudit] " + who.name + " ran audit, found " + CStr(violations.size()) + " violation(s).");
+
+	foreach v in violations
+		var line := v[1] + " -- " + v[2] + " house at " + v[3] + " realm=" + v[5] + " in region '" + v[4] + "' [Type=" + v[6] + "]";
+		SendSysMessage(who, line);
+		Print("[housezoneaudit] " + line);
+	endforeach
+endprogram
+
+function CollectZoneViolatingHouses()
+	var violations := array;
+	var realmslist := Realms();
+
+	foreach realm in realmslist
+		var realm_name := GetRealmNameFromMapId(CInt(realm.mapid));
+		if (!realm_name)
+			continue;
+		endif
+		var realm_width := CInt(realm.width) - 1;
+		var realm_height := CInt(realm.height) - 1;
+
+		var found := ListMultisInBox(0, 0, -128, realm_width, realm_height, 127, realm_name);
+		if (!found or !found.size())
+			continue;
+		endif
+
+		foreach multi in found
+			if (!multi)
+				continue;
+			endif
+			if (!multi.isa(POLCLASS_HOUSE))
+				continue;
+			endif
+
+			var blocked := FindBlockingRegion(multi.objtype, multi.x, multi.y, realm_name);
+			if (!blocked)
+				continue;
+			endif
+
+			var owner_name := ResolveOwnerName(multi);
+			var house_type := CStr(Hex(multi.objtype));
+			var coord_text := CStr(multi.x) + "," + CStr(multi.y) + "," + CStr(multi.z);
+
+			violations.append(array{owner_name, house_type, coord_text, blocked[2], realm_name, blocked[1]});
+			SleepMS(1);
+		endforeach
+	endforeach
+
+	return violations;
+endfunction
+
+function GetRealmNameFromMapId(mapid)
+	if (mapid == 0)
+		return "britannia";
+	elseif (mapid == 1)
+		return "britannia_alt";
+	elseif (mapid == 2)
+		return "ilshenar";
+	elseif (mapid == 3)
+		return "malas";
+	elseif (mapid == 4)
+		return "tokuno";
+	elseif (mapid == 5)
+		return "termur";
+	endif
+
+	return 0;
+endfunction
+
+function ResolveOwnerName(multi)
+	var owner_name := GetObjProperty(multi, "lastownername");
+	if (!owner_name)
+		var owner_serial := CInt(GetObjProperty(multi, "ownerserial"));
+		if (owner_serial)
+			var owner := SystemFindObjectBySerial(owner_serial);
+			if (!owner)
+				owner := SystemFindObjectBySerial(owner_serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+			endif
+			if (owner)
+				owner_name := owner.name;
+			endif
+		endif
+	endif
+	if (!owner_name)
+		owner_name := "Unknown";
+	endif
+	return owner_name;
+endfunction
+
+// One-shot console trace of the regions.cfg lookup chain, to find where it
+// breaks for a known-bad case ("Lost Lands", Type Dungeon, contains at least
+// two currently-placed towers per gotomulti).
+function RunRegionDiagnostics()
+	Print("[housezoneaudit][diag] ---- region config diagnostics ----");
+
+	var regions_cfg := ReadConfigFile("::regions/regions");
+	if (!regions_cfg)
+		Print("[housezoneaudit][diag] ReadConfigFile('::regions/regions') returned FALSY.");
+		return;
+	endif
+	Print("[housezoneaudit][diag] ReadConfigFile OK.");
+
+	var keys := GetConfigStringKeys(regions_cfg);
+	if (!keys)
+		Print("[housezoneaudit][diag] GetConfigStringKeys returned FALSY.");
+		return;
+	endif
+	Print("[housezoneaudit][diag] total keys=" + CStr(keys.size()));
+
+	var dungeon_count := 0;
+	var lost_lands_seen := 0;
+
+	foreach key in keys
+		if (CStr(key) == "Lost Lands")
+			lost_lands_seen := lost_lands_seen + 1;
+		endif
+
+		var region := FindConfigElem(regions_cfg, key);
+		if (!region)
+			continue;
+		endif
+
+		var t := Lower(CStr(GetConfigString(region, "Type")));
+		if (t == "dungeon")
+			dungeon_count := dungeon_count + 1;
+		endif
+	endforeach
+
+	Print("[housezoneaudit][diag] dungeon_count via full key iteration=" + CStr(dungeon_count));
+	Print("[housezoneaudit][diag] 'Lost Lands' occurrences in keys array=" + CStr(lost_lands_seen));
+
+	var direct := FindConfigElem(regions_cfg, "Lost Lands");
+	if (!direct)
+		Print("[housezoneaudit][diag] Direct FindConfigElem(regions_cfg,'Lost Lands') returned FALSY.");
+	else
+		var dt := GetConfigString(direct, "Type");
+		var dr := SplitWords(CStr(GetConfigString(direct, "Range")));
+		if (!dr or dr.size() < 4)
+			Print("[housezoneaudit][diag] Direct 'Lost Lands' Type='" + CStr(dt) + "' Range=NONE/short");
+		else
+			var rx1 := CInt(dr[1]);
+			var ry1 := CInt(dr[2]);
+			var rx2 := CInt(dr[3]);
+			var ry2 := CInt(dr[4]);
+			Print("[housezoneaudit][diag] Direct 'Lost Lands' Type='" + CStr(dt) + "' Range=" + CStr(rx1) + "," + CStr(ry1) + "," + CStr(rx2) + "," + CStr(ry2));
+
+			// Known tower from the gotomulti screenshot: smalltower at 5803,3375.
+			// Pure point-in-box check, independent of GetMultiDimensions/objtype lookup.
+			var px := 5803;
+			var py := 3375;
+			var inside := 0;
+			if ((px >= rx1) and (px <= rx2) and (py >= ry1) and (py <= ry2))
+				inside := 1;
+			endif
+			Print("[housezoneaudit][diag] point 5803,3375 inside Lost Lands Range box=" + CStr(inside));
+		endif
+	endif
+
+	Print("[housezoneaudit][diag] ---- end diagnostics ----");
+endfunction
+
+// Mirrors GetHouseFootprintBounds()/ResolveHouseMultiId() in
+// pkg/std/housing/housedeed.src so the audit matches exactly what
+// placement-time checks. GetMultiDimensions() needs the raw multi ID from
+// pkg/std/housing/itemdesc.cfg's "MultiID" field, not the house objtype.
+function ResolveHouseMultiId(housetype)
+	var house_itemdesc := ReadConfigFile(":housing:itemdesc");
+	if (!house_itemdesc)
+		return housetype;
+	endif
+
+	var elem := house_itemdesc[housetype];
+	if (!elem)
+		elem := FindConfigElem(house_itemdesc, housetype);
+	endif
+	if (!elem)
+		return housetype;
+	endif
+
+	var multiid := GetConfigInt(elem, "MultiID");
+	if (!multiid)
+		return housetype;
+	endif
+
+	return multiid;
+endfunction
+
+function GetHouseFootprintBounds(housetype, x, y)
+	var dims := GetMultiDimensions(ResolveHouseMultiId(housetype));
+	if (!dims)
+		return 0;
+	endif
+
+	return { x + dims.xmin, y + dims.ymin, x + dims.xmax, y + dims.ymax };
+endfunction
+
+// Returns array{region_type, region_name} for the first matching region, or 0.
+// NormalizeRegionType()/IsBoxOverlappingRegionType() live in include/checkcity,
+// shared with CheckCity() and housedeed.src's placement check.
+function FindBlockingRegion(housetype, x, y, realm)
+	var bounds := GetHouseFootprintBounds(housetype, x, y);
+	if (!bounds)
+		return 0;
+	endif
+
+	var blocked_types := array{"city", "dungeon", "shrine", "graveyard"};
+	foreach region_type in blocked_types
+		var blocking_region := IsBoxOverlappingRegionType(bounds[1], bounds[2], bounds[3], bounds[4], realm, region_type);
+		if (blocking_region)
+			return array{region_type, blocking_region.name};
+		endif
+	endforeach
+
+	return 0;
+endfunction

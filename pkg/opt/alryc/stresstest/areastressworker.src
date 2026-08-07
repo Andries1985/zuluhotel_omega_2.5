@@ -1,0 +1,51 @@
+/*
+	Spawn-only worker for shardstress.src - simulates one mobile's AI doing
+	continuous area-policy checks (like Follow()/combat/movement do in real
+	play) for a fixed duration. Each spawned instance gets its own fresh
+	_policy_mask_cache (declared in areapolicy.inc), which is the point -
+	many concurrent instances each independently warming/re-missing their
+	own cache is what actually happened on the live shard, not one script
+	looping serially.
+*/
+use uo;
+use os;
+use basicio;
+
+include ":areas:include/areapolicy";
+include "include/random";
+
+// Invalidates the shared realm cache far more often than any real staff
+// edit would - deliberately worse than production so a clean result here
+// is stronger evidence than matching real traffic would be.
+const AREASTRESSWORKER_INVALIDATE_EVERY := 15;
+const AREASTRESSWORKER_YIELD_EVERY := 20;
+const AREASTRESSWORKER_YIELD_MS := 50;
+
+program areastressworker( params )
+
+	var worker_id := params[1];
+	var duration_seconds := params[2];
+
+	var end_clock := ReadGameClock() + duration_seconds;
+	var calls := 0;
+
+	while( ReadGameClock() < end_clock )
+
+		if( (calls % AREASTRESSWORKER_INVALIDATE_EVERY) == 0 )
+			InvalidatePolicyMaskCache( "britannia" );
+		endif
+
+		var x := Random(6000);
+		var y := Random(4000);
+		ResolvePolicyAtLocation( x, y, "britannia" );
+
+		calls := calls + 1;
+		if( (calls % AREASTRESSWORKER_YIELD_EVERY) == 0 )
+			SleepMS( AREASTRESSWORKER_YIELD_MS );
+		endif
+	endwhile
+
+	SysLog("[shardstress] area-worker="+worker_id+" done calls="+calls);
+	Print("[shardstress] area-worker="+worker_id+" done calls="+calls);
+
+endprogram

@@ -21,6 +21,8 @@ program GetMail( parms )
 	var message := parms[5];
  
  	if( GetProcess( CInt( GetObjProperty( who, "#CmdMSGPid" ))))
+		UnloadDataFile( "Emails" );
+		UnloadDataFile( "BlockLists" );
 		return 0;
 	else
 		SetObjProperty( who, "#CmdMSGPid", GetPid() );
@@ -37,6 +39,8 @@ program GetMail( parms )
                 	SleepMS(5);
                 endwhile
 	endif
- 
+
+        UnloadDataFile( "Emails" );
+        UnloadDataFile( "BlockLists" );
         return 1;
 endprogram

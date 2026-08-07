@@ -868,6 +868,11 @@ function ChangeHouseOwner( who , house )
 	if( oldownerserial == who.serial )
 		return 0;
  	elseif(who.acctname)
+		if( IsAccountAtHouseLimit(who) )
+			Print("[houselimit][debug] sign.ChangeHouseOwner blocked - account at house limit");
+			SendSysmessage( who , "You already own the maximum of " + CStr(MAX_HOUSES_PER_ACCOUNT) + " houses on this account." );
+			return 0;
+		endif
 		SetObjProperty( house , "ownerserial" , who.serial );
 		SetObjProperty( house , "owneracct" , who.acctname );
 		SendSysmessage( who , "House transfer was successful." );

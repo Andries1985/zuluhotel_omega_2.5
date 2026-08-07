@@ -1,0 +1,55 @@
+// Synopsis: Simulate 20k AI movement area-policy checks over ~2 minutes to watch for a handle leak live
+use uo;
+use os;
+use basicio;
+
+include ":areas:include/areapolicy";
+include "include/random";
+
+const AIMOVESIM_TOTAL_CALLS := 20000;
+const AIMOVESIM_BATCH_SIZE := 50;
+const AIMOVESIM_BATCH_SLEEP_MS := 300;   // 20000/50 batches * 300ms ~= 120 seconds
+const AIMOVESIM_INVALIDATE_EVERY := 200; // forces the mask cache cold periodically,
+                                          // same as it would be right after a restart
+const AIMOVESIM_PROGRESS_EVERY := 2000;
+
+program aimovementsim( who )
+
+	SendSysMessage( who, "Simulating "+AIMOVESIM_TOTAL_CALLS+" AI movement area-policy checks over ~2 minutes." );
+	SendSysMessage( who, "Open Task Manager -> Details -> Handles column for pol.exe and watch it DURING the run, not just before/after." );
+	Sleep(5);
+
+	SysLog("[aimovesim] start calls="+AIMOVESIM_TOTAL_CALLS);
+	Print("[aimovesim] start calls="+AIMOVESIM_TOTAL_CALLS);
+
+	var i;
+	for( i := 1; i <= AIMOVESIM_TOTAL_CALLS; i := i + 1 )
+
+		// Periodically blow away the whole realm's cache, forcing the next
+		// several checks back onto the real datafile lookup - this is the
+		// only part of the loop that actually exercises the fix. Without
+		// this the cache would just stay warm the whole run and the test
+		// would prove nothing either way.
+		if( (i % AIMOVESIM_INVALIDATE_EVERY) == 0 )
+			InvalidatePolicyMaskCache( "britannia" );
+		endif
+
+		var x := Random(6000);
+		var y := Random(4000);
+		ResolvePolicyAtLocation( x, y, "britannia" );
+
+		if( (i % AIMOVESIM_BATCH_SIZE) == 0 )
+			SleepMS( AIMOVESIM_BATCH_SLEEP_MS );
+		endif
+		if( (i % AIMOVESIM_PROGRESS_EVERY) == 0 )
+			SysLog("[aimovesim] progress calls="+i);
+			Print("[aimovesim] progress calls="+i);
+		endif
+	endfor
+
+	SysLog("[aimovesim] end calls="+AIMOVESIM_TOTAL_CALLS);
+	Print("[aimovesim] end calls="+AIMOVESIM_TOTAL_CALLS);
+
+	SendSysMessage( who, "Done. Flat/stable Handles the whole way through = fix is holding. Steady climb the whole run = still leaking." );
+
+endprogram
