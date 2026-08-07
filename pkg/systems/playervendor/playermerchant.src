@@ -231,10 +231,6 @@ function RefreshMaster()
 	return master;
 endfunction
 
-function IsInCityRegion()
-	return CInt(GetRegionString("regions", me.x, me.y, "City", me.realm)) == 1;
-endfunction
-
 function CalculateDailyWage()
 	var carry := CInt(GetObjProperty(me, "wagecarry"));
 	if(carry < 0)
@@ -242,7 +238,7 @@ function CalculateDailyWage()
 	endif
 
 	var monthly := MONTHLY_WAGE_GOLD;
-	if(IsInCityRegion())
+	if(IsInCityRegion(me))
 		monthly := CITY_MONTHLY_WAGE_GOLD;
 	endif
 
