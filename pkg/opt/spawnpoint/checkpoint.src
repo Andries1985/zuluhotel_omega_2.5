@@ -688,10 +688,10 @@ function ValidatePointSpawns( byref point, byref pt_data )
 	set_critical(1);
 	
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-	if( !serials )
+	if( !serials or serials == error )
 		serials := {};
 	endif
-	
+
 	if( !serials.size() )
 		SetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS, {} );
 		set_critical(0);
