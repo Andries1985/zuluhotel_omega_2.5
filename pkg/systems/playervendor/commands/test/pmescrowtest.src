@@ -12,82 +12,14 @@ include "include/objtype";
 include "include/random";
 include ":playervendor:include/escrow";
 
-const ESCROW_STORAGE_NAME := "Merchant Escrow";
 const TEST_ID_PREFIX := "PMTEST-";
 const TEST_VENDOR_NAME := "[TEST] Player Merchant";
 const DEBUG_PM_ESCROW_TEST := 0;
-const ENTRY_ID_IDX := 1;
-const ENTRY_OWNERSERIAL_IDX := 2;
-const ENTRY_ESCROWNAME_IDX := 3;
-const ENTRY_VENDORNAME_IDX := 4;
-const ENTRY_VENDORSERIAL_IDX := 5;
-const ENTRY_CREATED_IDX := 6;
-const ENTRY_OWNERNAME_IDX := 7;
 
 function DebugMsg(who, msg)
 	if(DEBUG_PM_ESCROW_TEST)
 		Print("[PMTEST s=" + who.serial + "] " + msg);
 	endif
-endfunction
-
-function EntryId(entry)
-	if(entry.id)
-		return entry.id;
-	endif
-	if(len(entry) >= ENTRY_ID_IDX)
-		return entry[ENTRY_ID_IDX];
-	endif
-	return "";
-endfunction
-
-function EntryOwnerSerial(entry)
-	if(entry.ownerserial)
-		return CInt(entry.ownerserial);
-	endif
-	if(len(entry) >= ENTRY_OWNERSERIAL_IDX)
-		return CInt(entry[ENTRY_OWNERSERIAL_IDX]);
-	endif
-	return 0;
-endfunction
-
-function EntryEscrowName(entry)
-	if(entry.escrowname)
-		return entry.escrowname;
-	endif
-	if(len(entry) >= ENTRY_ESCROWNAME_IDX)
-		return entry[ENTRY_ESCROWNAME_IDX];
-	endif
-	return "";
-endfunction
-
-function EntryVendorName(entry)
-	if(entry.vendorname)
-		return entry.vendorname;
-	endif
-	if(len(entry) >= ENTRY_VENDORNAME_IDX)
-		return entry[ENTRY_VENDORNAME_IDX];
-	endif
-	return TEST_VENDOR_NAME;
-endfunction
-
-function EntryVendorSerial(entry)
-	if(entry.vendorserial)
-		return CInt(entry.vendorserial);
-	endif
-	if(len(entry) >= ENTRY_VENDORSERIAL_IDX)
-		return CInt(entry[ENTRY_VENDORSERIAL_IDX]);
-	endif
-	return 0;
-endfunction
-
-function EntryOwnerName(entry)
-	if(entry.ownername)
-		return entry.ownername;
-	endif
-	if(len(entry) >= ENTRY_OWNERNAME_IDX and entry[ENTRY_OWNERNAME_IDX])
-		return entry[ENTRY_OWNERNAME_IDX];
-	endif
-	return "Unknown Owner";
 endfunction
 
 program textcmd_pmescrowtest(who, text)
@@ -125,14 +57,6 @@ function ParseIntOrDefault(raw, default_val)
 	return parsed;
 endfunction
 
-function OpenEscrowStorage()
-	var area := FindStorageArea(ESCROW_STORAGE_NAME);
-	if(!area)
-		area := CreateStorageArea(ESCROW_STORAGE_NAME);
-	endif
-	return area;
-endfunction
-
 function LoadEscrowEntriesForSerial(who, merchant_serial)
 	var entries := {};
 	var df_name := ResolveEscrowDatafileNameForSerial(who, merchant_serial, 0);
@@ -148,26 +72,7 @@ function LoadEscrowEntriesForSerial(who, merchant_serial)
 	var vendor_key := CStr(merchant_serial);
 	var vendor_elem := file.FindElement(vendor_key);
 	if(vendor_elem)
-		var entries_str := vendor_elem.GetProp("entries");
-		if(entries_str)
-			var parts := SplitWords(entries_str, "^");
-			foreach part in parts
-				if(part)
-					var fields := SplitWords(part, "|");
-					if(len(fields) >= 7)
-						entries.append({
-							fields[1],
-							CInt(fields[2]),
-							fields[3],
-							fields[4],
-							CInt(fields[5]),
-							CInt(fields[6]),
-							fields[7]
-						});
-					endif
-				endif
-			endforeach
-		endif
+		entries := DecodeEscrowEntries(vendor_elem.GetProp("entries"));
 	endif
 
 	UnloadDataFile(df_name);
@@ -199,15 +104,7 @@ function SaveEscrowEntriesForSerial(who, merchant_serial, entries)
 		return 0;
 	endif
 
-	var encoded := "";
-	foreach entry in entries
-		if(encoded)
-			encoded := encoded + "^";
-		endif
-		encoded := encoded + entry[1] + "|" + entry[2] + "|" + entry[3] + "|" + entry[4] + "|" + entry[5] + "|" + entry[6] + "|" + entry[7];
-	endforeach
-
-	vendor_elem.SetProp("entries", encoded);
+	vendor_elem.SetProp("entries", EncodeEscrowEntries(entries));
 	UnloadDataFile(df_name);
 	return 1;
 endfunction

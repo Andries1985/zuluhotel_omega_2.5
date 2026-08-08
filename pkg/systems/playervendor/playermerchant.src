@@ -36,10 +36,9 @@ const CITY_MONTHLY_WAGE_GOLD := 40000;
 const MONTH_LENGTH_DAYS := 30;
 const OWNER_WARN_COOLDOWN := 300;
 const PAYOUT_PACK_OBJTYPE := UOBJ_BACKPACK;
-const PAYOUT_PACK_MAX_ROOT_ITEMS := 100;
-const PAYOUT_PACK_MAX_WEIGHT := 40000;
+const PAYOUT_PACK_MAX_ROOT_ITEMS := 225;
+const PAYOUT_PACK_MAX_WEIGHT := 60000;
 const CHEQUE_MAX_GOLD := 5000000;
-const ESCROW_STORAGE_NAME := "Merchant Escrow";
 const DEBUG_PLAYERMERCHANT := 0;
 
 function PMDebug(msg)
@@ -106,7 +105,7 @@ program merchant()
 					srcserial := ev.source.serial;
 				endif
 				PMDebug("[PLAYERMERCHANT] Force fire event for " + me.serial + " from " + srcserial + ", master=" + master + " force_escrow=" + force_escrow);
-				if(srcserial == master)
+				if(srcserial == master or (ev.source and ev.source.cmdlevel >= 4))
 					HandleMerchantClosure("forced_by_pmfireme_event", force_escrow);
 					break;
 				else
@@ -664,14 +663,6 @@ function QueueGMPageReport(message)
 	SetGlobalProperty("gmpages", gmpages);
 endfunction
 
-function OpenEscrowStorage()
-	var area := FindStorageArea(ESCROW_STORAGE_NAME);
-	if(!area)
-		area := CreateStorageArea(ESCROW_STORAGE_NAME);
-	endif
-	return area;
-endfunction
-
 function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 	var owner_name := "Unknown Owner";
 	var owner_obj := SystemFindObjectBySerial(CInt(ownerserial), SYSFIND_SEARCH_OFFLINE_MOBILES);
@@ -682,26 +673,35 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 	var entry_id := ownerserial + "-" + ReadGameClock() + "-" + Random(100000);
 	PMDebug("[PMESCROWDBG] AppendEscrowIndex owner=" + ownerserial + " escrow_name=" + escrow_name + " vendor=" + vendor_name + " entry_id=" + entry_id);
 
-	// Read master serial from merchant object
-	var master := CInt(GetObjProperty(me, "master"));
-	if(!master)
-		PMDebug("[PMESCROWDBG] AppendEscrowIndex aborted: merchant has no master property");
-		return entry_id;
+	// Note: this used to bail out here if the merchant's own "master" property
+	// was unset (masterless merchant), which meant SavePackToEscrow's already-
+	// created escrow root was left permanently unindexed for exactly the
+	// masterless-cleanup path that HandleMasterlessMerchantCleanup now routes
+	// through CashOut(1) to try to prevent asset loss. Indexing must proceed
+	// regardless -- BuildEscrowDatafileNameForSerial(0) still produces a valid,
+	// shared "merchantescrow_0" datafile (keyed per-merchant by me.serial), so
+	// the entry stays findable/loggable instead of orphaned.
+	if(!CInt(GetObjProperty(me, "master")))
+		PMDebug("[PMESCROWDBG] AppendEscrowIndex: merchant has no master property, indexing under owner=" + ownerserial + " anyway");
+		MerchantEscrowLog("[ORPHANED] AppendEscrowIndex: merchant " + me.serial + " has no master property; indexing entry_id=" + entry_id + " under owner=" + ownerserial + " anyway");
 	endif
-	PMDebug("[PMESCROWDBG] AppendEscrowIndex merchant_serial=" + me.serial + " master=" + master);
 
-	// Get owner object to build per-player datafile name
-	if(!owner_obj)
-		owner_obj := SystemFindObjectBySerial(CInt(ownerserial), SYSFIND_SEARCH_OFFLINE_MOBILES);
-		if(!owner_obj)
-			PMDebug("[PMESCROWDBG] AppendEscrowIndex failed to find owner object for serial " + ownerserial);
-			return entry_id;
-			endif
-		endif
-	// Load or create per-player escrow datafile
-	var df_name := ResolveEscrowDatafileNameForSerial(owner_obj, me.serial, 1);
+	// Build the per-owner datafile name. If the owner object still resolves, go
+	// through the legacy-name resolver/migrator as before; if it doesn't (deleted
+	// or otherwise unresolvable character), fall back to building the canonical
+	// name from the raw serial directly. This must NOT bail out here -- doing so
+	// left the escrow root already created by SavePackToEscrow as an unindexed,
+	// unclaimable orphan (the original bug).
+	var df_name;
+	if(owner_obj)
+		df_name := ResolveEscrowDatafileNameForSerial(owner_obj, me.serial, 1);
+	else
+		df_name := BuildEscrowDatafileNameForSerial(ownerserial);
+		MerchantEscrowLog("[ORPHANED] AppendEscrowIndex: owner serial " + ownerserial + " could not be resolved to a character; filing under " + df_name + " anyway (entry_id=" + entry_id + ", vendor=" + vendor_name + ")");
+	endif
 	if(!df_name)
 		PMDebug("[PMESCROWDBG] Failed to build datafile name for owner " + ownerserial);
+		MerchantEscrowLog("[ERROR] AppendEscrowIndex: failed to build datafile name for owner " + ownerserial + ", entry_id=" + entry_id + " never indexed");
 		return entry_id;
 	endif
 
@@ -712,6 +712,7 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 		df := OpenDataFile(df_name);
 		if(!df)
 			PMDebug("[PMESCROWDBG] Failed to reopen datafile " + df_name);
+			MerchantEscrowLog("[ERROR] AppendEscrowIndex: failed to open/create datafile " + df_name + ", entry_id=" + entry_id + " never indexed");
 			return entry_id;
 		endif
 	endif
@@ -725,38 +726,18 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 	endif
 	if(!vendor_elem)
 		PMDebug("[PMESCROWDBG] Failed to create/find element " + vendor_key);
+		MerchantEscrowLog("[ERROR] AppendEscrowIndex: failed to create/find element " + vendor_key + " in " + df_name + ", entry_id=" + entry_id + " never indexed");
 		UnloadDataFile(df_name);
 		return entry_id;
 	endif
 
-	// Get existing entries (stored as format: id|owner|escrow_name|vendor_name|vendor_serial|created|owner_name)
-	var entries_str := vendor_elem.GetProp("entries");
-	var entries := {};
-	PMDebug("[PMESCROWDBG] Existing entries string length=" + CStr(len(entries_str)));
-	if(entries_str)
-		// Parse format: id|owner|escrow_name|vendor_name|vendor_serial|created|owner_name^...
-		var parts := SplitWords(entries_str, "^");
-		PMDebug("[PMESCROWDBG] Parsed existing entries count=" + CStr(len(parts)));
-		foreach part in parts
-			if(part)
-				var fields := SplitWords(part, "|");
-				if(len(fields) >= 7)
-					entries.append({
-						fields[1],
-						CInt(fields[2]),
-						fields[3],
-						fields[4],
-						CInt(fields[5]),
-						CInt(fields[6]),
-						fields[7]
-					});
-				endif
-			endif
-		endforeach
-	endif
-	PMDebug("[PMESCROWDBG] Entries count after parse=" + CStr(len(entries)));
+	// Read-modify-write the entries string. No sleep/wait_for_event happens
+	// anywhere between OpenDataFile and UnloadDataFile in this function, which
+	// keeps this atomic under POL's cooperative script scheduler -- do not add
+	// one here without re-adding real synchronization.
+	var entries := DecodeEscrowEntries(vendor_elem.GetProp("entries"));
+	PMDebug("[PMESCROWDBG] Entries count before append=" + CStr(len(entries)));
 
-	// Append new entry with merchant serial (me.serial)
 	entries.append({
 		entry_id,
 		CInt(ownerserial),
@@ -767,18 +748,9 @@ function AppendEscrowIndex(ownerserial, escrow_name, vendor_name)
 		owner_name
 	});
 
-	// Encode entries back to string
-	var encoded := "";
-	foreach entry in entries
-		if(encoded)
-			encoded := encoded + "^";
-		endif
-		encoded := encoded + entry[1] + "|" + entry[2] + "|" + entry[3] + "|" + entry[4] + "|" + entry[5] + "|" + entry[6] + "|" + entry[7];
-	endforeach
-	PMDebug("[PMESCROWDBG] Encoded entries length=" + CStr(len(encoded)));
-
-	vendor_elem.SetProp("entries", encoded);
+	vendor_elem.SetProp("entries", EncodeEscrowEntries(entries));
 	PMDebug("[PMESCROWDBG] Saved escrow entries under " + vendor_key + " in " + df_name);
+	MerchantEscrowLog("Indexed entry_id=" + entry_id + " owner=" + ownerserial + " (" + owner_name + ") vendor=" + vendor_name + "(" + me.serial + ") escrow_name=" + escrow_name + " df=" + df_name);
 	UnloadDataFile(df_name);
 
 	return entry_id;
@@ -787,6 +759,7 @@ endfunction
 function SavePackToEscrow(payout_pack, ownerserial, vendor_name)
 	var area := OpenEscrowStorage();
 	if(!area)
+		MerchantEscrowLog("[ERROR] SavePackToEscrow: escrow storage area unavailable, dropping payout pack on ground for vendor=" + vendor_name + "(" + me.serial + ") owner=" + ownerserial);
 		MoveObjectToLocation(payout_pack, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
 		return 0;
 	endif
@@ -794,6 +767,7 @@ function SavePackToEscrow(payout_pack, ownerserial, vendor_name)
 	var escrow_name := "PMEscrow " + ownerserial + " " + ReadGameClock() + " " + Random(99999);
 	var escrow_root := CreateRootItemInStorageArea(area, escrow_name, UOBJ_BACKPACK);
 	if(!escrow_root)
+		MerchantEscrowLog("[ERROR] SavePackToEscrow: failed to create escrow root " + escrow_name + ", dropping payout pack on ground for vendor=" + vendor_name + "(" + me.serial + ") owner=" + ownerserial);
 		MoveObjectToLocation(payout_pack, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
 		return 0;
 	endif
@@ -807,11 +781,13 @@ function SavePackToEscrow(payout_pack, ownerserial, vendor_name)
 	SetObjProperty(escrow_root, "created", ReadGameClock());
 
 	if(!MoveItemToContainer(payout_pack, escrow_root))
+		MerchantEscrowLog("[ERROR] SavePackToEscrow: failed to move payout pack into escrow root " + escrow_name + ", dropping on ground for vendor=" + vendor_name + "(" + me.serial + ") owner=" + ownerserial);
 		DestroyRootItemInStorageArea(area, escrow_name);
 		MoveObjectToLocation(payout_pack, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
 		return 0;
 	endif
 
+	MerchantEscrowLog("Saved payout pack to escrow root " + escrow_name + " for vendor=" + vendor_name + "(" + me.serial + ") owner=" + ownerserial);
 	AppendEscrowIndex(ownerserial, escrow_name, vendor_name);
 	return 1;
 endfunction
@@ -933,6 +909,7 @@ function CashOut(force_escrow := 0)
 	if(!owner)
 		Say("I can't find my employer right now.");
 		QueueGMPageReport("CashOut failed: master not found. Vendor=" + me.name + "(" + me.serial + ") MasterSerial=" + ownerserial + " Loc=" + me.x + "," + me.y + "," + me.z + " Realm=" + me.realm);
+		MerchantEscrowLog("[ORPHANED] CashOut: owner serial " + ownerserial + " not found for vendor=" + me.name + "(" + me.serial + "); assets will be escrowed under that serial and a GM page was queued");
 	endif
 
 	var vendor_name := me.name;
@@ -1097,19 +1074,13 @@ exported function ForceCashOut(byref who, force_escrow := 0)
 endfunction
 
 function HandleMasterlessMerchantCleanup()
-	PerformAction(me, ANIM_CAST_DIR);
-	Say("Kal Ort Por");
-	sleep(2);
-	MoveObjectToLocation(me, 5288, 1176, 0, me.realm, MOVEOBJECT_FORCELOCATION);
-	RevokePrivilege(me, "invul");
-	SetObjProperty(me, "guardkill", 1);
-
-	var count := 0;
-	repeat
-		SleepMS(1000);
-		me.kill();
-		count := count + 1;
-	until(!me || count >= 1000);
+	MerchantEscrowLog("[ORPHANED] HandleMasterlessMerchantCleanup: merchant " + me.serial + " (" + me.name + ") has no master property; forcing cash-out to escrow before cleanup");
+	// Delegate to HandleMerchantClosure rather than duplicating its tail --
+	// it already does CashOut + destroys inv_fs/inv_pb/inv_1c + the kill
+	// sequence. Calling CashOut directly here and skipping straight to kill
+	// (the original shape of this function) left those now-emptied storage
+	// containers behind as permanently orphaned empty backpacks.
+	HandleMerchantClosure("masterless_cleanup", 1);
 endfunction
 
 function GetPay()

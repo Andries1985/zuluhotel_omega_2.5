@@ -1,11 +1,17 @@
 // Synopsis: Destroy the multi (house or boat) at or under your position
 use uo;
 
+include ":housing:utility";
+
 program destroy_multi( who )
 	if(!who.multi)
 		var targ := Targetcoordinates( who ).multi;
+		if (targ)
+			CleanupHouseTeleporters(targ);
+		endif
 		DestroyMulti(targ);
 	else
+		CleanupHouseTeleporters(who.multi);
 		DestroyMulti( who.multi );
 	endif
 endprogram

@@ -1,0 +1,47 @@
+// Synopsis: Stress-test the areas/email datafile open+unload cycle to check for a handle leak
+use uo;
+use os;
+use basicio;
+
+include ":areas:include/areapolicy";
+include ":datafile:datafile";
+
+const DFLEAKTEST_ITERATIONS := 3000;
+const DFLEAKTEST_YIELD_EVERY := 100;
+
+program dfleaktest( who )
+
+	SendSysMessage( who, "Running "+DFLEAKTEST_ITERATIONS+" areas+email datafile open/unload cycles in 5 seconds." );
+	SendSysMessage( who, "Switch to Task Manager -> Details -> Handles column for pol.exe now and note the current number." );
+	Sleep(5);
+
+	SysLog("[dfleaktest] start iterations="+DFLEAKTEST_ITERATIONS);
+	Print("[dfleaktest] start iterations="+DFLEAKTEST_ITERATIONS);
+
+	var i;
+	for( i := 1; i <= DFLEAKTEST_ITERATIONS; i := i + 1 )
+
+		var area_file := OpenAreaPolicyFile( "britannia", DF_CREATE );
+		if( area_file != error )
+			DFFindElement( area_file, "britain", DF_NO_CREATE );
+			UnloadDataFile( GetRealmPolicyDescriptor( "britannia" ) );
+		endif
+
+		var mail_file := DFOpenDataFile( "Emails", DF_CREATE );
+		if( mail_file != error )
+			DFFindElement( mail_file, "0", DF_NO_CREATE );
+			UnloadDataFile( "Emails" );
+		endif
+
+		if( (i % DFLEAKTEST_YIELD_EVERY) == 0 )
+			SleepMS(1);
+		endif
+	endfor
+
+	SysLog("[dfleaktest] end iterations="+DFLEAKTEST_ITERATIONS);
+	Print("[dfleaktest] end iterations="+DFLEAKTEST_ITERATIONS);
+
+	SendSysMessage( who, "Done - "+(DFLEAKTEST_ITERATIONS*2)+" total open/unload calls." );
+	SendSysMessage( who, "Check the Handles count again: back near where it started = fix is working. Jumped by roughly that number and stayed = still leaking." );
+
+endprogram

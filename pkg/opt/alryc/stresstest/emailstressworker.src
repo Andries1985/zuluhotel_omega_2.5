@@ -1,0 +1,37 @@
+/*
+	Spawn-only worker for shardstress.src - simulates one player repeatedly
+	logging in/reconnecting (logon.src/reconnect.src both open the Emails
+	datafile fresh on every single call, no caching), for a fixed duration.
+*/
+use uo;
+use os;
+use basicio;
+
+include ":datafile:datafile";
+
+const EMAILSTRESSWORKER_PAUSE_MS := 100;
+
+program emailstressworker( params )
+
+	var worker_id := params[1];
+	var duration_seconds := params[2];
+
+	var end_clock := ReadGameClock() + duration_seconds;
+	var calls := 0;
+
+	while( ReadGameClock() < end_clock )
+
+		var mail_file := DFOpenDataFile( "Emails", DF_CREATE );
+		if( mail_file != error )
+			DFFindElement( mail_file, Hex(worker_id*100000 + calls), DF_NO_CREATE );
+			UnloadDataFile( "Emails" );
+		endif
+
+		calls := calls + 1;
+		SleepMS( EMAILSTRESSWORKER_PAUSE_MS );
+	endwhile
+
+	SysLog("[shardstress] email-worker="+worker_id+" done calls="+calls);
+	Print("[shardstress] email-worker="+worker_id+" done calls="+calls);
+
+endprogram

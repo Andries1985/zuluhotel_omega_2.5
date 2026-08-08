@@ -1,0 +1,46 @@
+// Synopsis: Spawn many concurrent AI/login workers to simulate sustained multi-day-style shard load
+use uo;
+use os;
+use basicio;
+
+const SHARDSTRESS_AREA_WORKERS := 20;
+const SHARDSTRESS_EMAIL_WORKERS := 10;
+const SHARDSTRESS_DURATION_MINUTES := 15; // bump this for a longer soak - it's just a duration
+                                           // passed to self-terminating workers, safe to set to
+                                           // hours if you want to actually leave it running
+
+program shardstress( who )
+
+	var duration_seconds := SHARDSTRESS_DURATION_MINUTES * 60;
+	var i;
+	var script;
+
+	SendSysMessage( who, "Spawning "+SHARDSTRESS_AREA_WORKERS+" area-check workers and "+SHARDSTRESS_EMAIL_WORKERS+" email-login workers, "+SHARDSTRESS_DURATION_MINUTES+" minutes each." );
+	SendSysMessage( who, "This simulates sustained mixed player/AI load, not a single script's burst. Watch pol.exe's Handles count in Task Manager over the whole run." );
+	Sleep(5);
+
+	SysLog("[shardstress] spawning area="+SHARDSTRESS_AREA_WORKERS+" email="+SHARDSTRESS_EMAIL_WORKERS+" duration_min="+SHARDSTRESS_DURATION_MINUTES);
+	Print("[shardstress] spawning area="+SHARDSTRESS_AREA_WORKERS+" email="+SHARDSTRESS_EMAIL_WORKERS+" duration_min="+SHARDSTRESS_DURATION_MINUTES);
+
+	for( i := 1; i <= SHARDSTRESS_AREA_WORKERS; i := i + 1 )
+		script := start_script( ":alryc:stresstest/areastressworker", {i, duration_seconds} );
+		if( script.errortext )
+			SysLog("[shardstress] area-worker "+i+" failed to start: "+script.errortext);
+		endif
+		SleepMS(50);
+	endfor
+
+	for( i := 1; i <= SHARDSTRESS_EMAIL_WORKERS; i := i + 1 )
+		script := start_script( ":alryc:stresstest/emailstressworker", {i, duration_seconds} );
+		if( script.errortext )
+			SysLog("[shardstress] email-worker "+i+" failed to start: "+script.errortext);
+		endif
+		SleepMS(50);
+	endfor
+
+	SysLog("[shardstress] all "+(SHARDSTRESS_AREA_WORKERS+SHARDSTRESS_EMAIL_WORKERS)+" workers spawned - running for ~"+SHARDSTRESS_DURATION_MINUTES+" minutes");
+	Print("[shardstress] all "+(SHARDSTRESS_AREA_WORKERS+SHARDSTRESS_EMAIL_WORKERS)+" workers spawned - running for ~"+SHARDSTRESS_DURATION_MINUTES+" minutes");
+
+	SendSysMessage( who, "All workers spawned and running independently. Each logs to console+pol.log via SysLog when it finishes. Afterward: grep shardstress log/pol.log" );
+
+endprogram

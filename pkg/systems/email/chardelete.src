@@ -19,6 +19,10 @@ program OnDelete( mobile )
 	email_datafile.DeleteElement( Hex( mobile.serial ));
 	addresses_datafile.DeleteElement( Hex( mobile.serial ));
 	block_list_datafile.DeleteElement( Hex( mobile.serial ));
- 
+
+	UnloadDataFile( "Emails" );
+	UnloadDataFile( "AddressBooks" );
+	UnloadDataFile( "BlockLists" );
+
         return 1;
 endprogram

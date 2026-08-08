@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.1.1
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: August 8, 2026**
+
+---
+
+Welcome to **Patch 1.1.1**. This patch focuses on **shard stability**, a new **house escrow system** for staff-managed house teardowns, more reliable **house teleporters**, a new **per-account house limit**, and corrections to which areas of the world count as "city" for several gameplay systems.
+
+---
 
 ## What Changed
 

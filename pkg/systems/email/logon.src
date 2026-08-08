@@ -30,10 +30,12 @@ program Logon( mobile )
 		var script := start_script( ":email:emailMessage/newEmail", mobile );
 		if( script.errortext )
 			SendSysMessage( mobile, "Error starting script <:email:emailMessage/newEmail> -->"+script.errortext );
+			UnloadDataFile( "Emails" );
 			return 0;
 		endif
         endif
- 
+
+        UnloadDataFile( "Emails" );
         return 1;
 endprogram
 	

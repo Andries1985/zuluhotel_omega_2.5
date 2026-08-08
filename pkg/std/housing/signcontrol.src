@@ -25,13 +25,12 @@ program SignListener( sign )
 
 
 	if(GetObjProperty(sign,"#Z")<>1) addsign(sign); endif
-	/* FIXME: SOMETHING STRANGE... decay is a string!
 	if (DECAY)
-		if (ReadGameClock() > GetObjProperty(sign, "decay"))
+		if (ReadGameClock() > CInt(GetObjProperty(sign, "decay")))
 			Demolish(house, sign);
 			return;
 		endif
-	endif */
+	endif
 
 	CacheData( house );
 	cache := 0;
@@ -298,6 +297,9 @@ function Demolish(house, sign)
 			endif
 		endforeach
 	endif
+
+	CleanupHouseTeleporters(house);
+
 	DestroyMulti( house );
 
 endfunction
