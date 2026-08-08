@@ -1,0 +1,100 @@
+// Synopsis: One-time migration - backfill each house's TeleporterSerials list
+/////////////////////////////////////////////////////////////////////////////
+//
+//  ".backfillteleporterserials" - scans every realm for house teleporter
+//  items (ObjType 0xA3CE) and, for each one whose owning house (via its
+//  "teleportserial" cprop) still exists, adds it to that house's
+//  "TeleporterSerials" cprop if it isn't already tracked there.
+//
+//  This is a one-time migration for teleporters placed before house-side
+//  serial tracking existed. It matches by property value across the whole
+//  world instead of a spatial/proximity search, so it correctly finds both
+//  halves of a pair even if they're nowhere near each other - unlike the
+//  house.items-based checks this shard used to rely on.
+//
+//  Teleporters whose "teleportserial" points at a house that no longer
+//  exists are left untouched and only reported - that's a separate cleanup
+//  pass, not this one. Safe to run more than once.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+use uo;
+use os;
+use polsys;
+
+include ":housing:utility";
+
+function GetRealmNameForMigration(mapid)
+	if (mapid == 0)
+		return "britannia";
+	elseif (mapid == 1)
+		return "britannia_alt";
+	elseif (mapid == 2)
+		return "ilshenar";
+	elseif (mapid == 3)
+		return "malas";
+	elseif (mapid == 4)
+		return "tokuno";
+	endif
+
+	return 0;
+endfunction
+
+program backfillteleporterserials( who )
+
+	SendSysMessage(who, "Scanning all realms for house teleporters, please wait...");
+
+	var housesupdated := {};
+	var teletotal := 0;
+	var orphantotal := 0;
+
+	var realmslist := Realms();
+	foreach realm in (realmslist)
+		var realm_name := GetRealmNameForMigration(CInt(realm.mapid));
+		if (!realm_name)
+			continue;
+		endif
+		var realm_width := CInt(realm.width) - 1;
+		var realm_height := CInt(realm.height) - 1;
+
+		var found := ListItemsInBoxOfObjType(0xA3CE, 0, 0, -128, realm_width, realm_height, 127, realm_name);
+		if (!found or !found.size())
+			continue;
+		endif
+
+		foreach tele in (found)
+			teletotal := teletotal + 1;
+
+			var houseserial := GetObjProperty(tele, "teleportserial");
+			if (!houseserial)
+				continue;
+			endif
+
+			var house := SystemFindObjectBySerial(CInt(houseserial));
+			if (!house)
+				orphantotal := orphantotal + 1;
+				continue;
+			endif
+
+			var teleserials := GetObjProperty(house, "TeleporterSerials");
+			if (!teleserials)
+				teleserials := {};
+			endif
+
+			if (!(CInt(tele.serial) in teleserials))
+				teleserials.append(CInt(tele.serial));
+				SetObjProperty(house, "TeleporterSerials", teleserials);
+				if (!(CInt(house.serial) in housesupdated))
+					housesupdated.append(CInt(house.serial));
+				endif
+			endif
+		endforeach
+	endforeach
+
+	SendSysMessage(who, "Done. "+teletotal+" teleporter item(s) scanned across all realms.");
+	SendSysMessage(who, CStr(housesupdated.size())+" house(s) had their TeleporterSerials list backfilled.");
+	if (orphantotal > 0)
+		SendSysMessage(who, CStr(orphantotal)+" teleporter(s) reference a house that no longer exists - left untouched for a separate cleanup pass.");
+	endif
+
+endprogram

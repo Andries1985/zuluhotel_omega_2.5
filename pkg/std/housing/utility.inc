@@ -1,5 +1,9 @@
+use polsys;
+use cfgfile;
+
 include "setup";
 include "include/attributes";
+include "include/time";
 
 const VIEW_SECURE := 2;
 const ADD_TO_SECURE := 3;
@@ -360,6 +364,117 @@ endif
 
 endfunction
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Returns 1 if world location x,y,z falls inside this specific house's footprint,
+// and 0 if it's outside every house or inside a DIFFERENT house/boat multi. Used to
+// validate teleporter placement instead of the unreliable "is my new item already
+// showing up in house.items" check, which doesn't actually confirm the item landed
+// inside this house.
+/////////////////////////////////////////////////////////////////////////////////////////////
+function IsLocationInThisHouse(house, x, y, z, realm)
+
+	var found := ListMultisInBox(x, y, z, x, y, z, realm);
+
+	foreach m in (found)
+		if (m.serial == house.serial)
+			return 1;
+		endif
+	endforeach
+
+	return 0;
+
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Destroys every teleporter this house has ever placed (tracked via the "TeleporterSerials"
+// cprop) and clears the list. Call this before DestroyMulti() on ANY house teardown path
+// (player demolish, admin .destroymulti, decay) so teleporters can never survive their
+// house being torn down.
+//
+// Also sweeps house.items for teleporters placed before serial-tracking existed (or
+// otherwise untracked) that still happen to sit within this house's own footprint, so
+// upgrading to serial-tracking doesn't strand pre-existing teleporters at demolish time.
+/////////////////////////////////////////////////////////////////////////////////////////////
+function CleanupHouseTeleporters(house)
+
+	var teleserials := GetObjProperty(house, "TeleporterSerials");
+	if (!teleserials)
+		teleserials := {};
+	endif
+
+	foreach item in (house.items)
+		if (item.objtype == 0xA3CE && GetObjProperty(item, "teleportserial") == house.serial && !(item.serial in teleserials))
+			teleserials.append(CInt(item.serial));
+		endif
+	endforeach
+
+	foreach teleserial in (teleserials)
+		var teleitem := SystemFindObjectBySerial(CInt(teleserial));
+		if (teleitem)
+			DestroyItem(teleitem);
+		endif
+	endforeach
+
+	EraseObjProperty(house, "TeleporterSerials");
+
+endfunction
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Per-account house limit. Houses are tracked per-CHARACTER (the "Houses" cprop
+// above), but an account gets a fixed 5 character slots (account.GetCharacter(1..5),
+// including offline ones), so the account-wide total is a live sum across those
+// slots rather than a separately maintained counter.
+/////////////////////////////////////////////////////////////////////////////////////////////
+const MAX_HOUSES_PER_ACCOUNT := 5;
+
+function GetAccountHouseCount(who)
+	if (!who.acctname)
+		return 0;
+	endif
+
+	var account := FindAccount(who.acctname);
+	if (!account)
+		return 0;
+	endif
+
+	var total := 0;
+	var i;
+	for (i := 1; i <= 5; i := i + 1)
+		var chr := account.GetCharacter(i);
+		if (chr)
+			var houses := GetObjProperty(chr, "Houses");
+			var slot_count := 0;
+			if (houses)
+				slot_count := houses.size();
+				total := total + slot_count;
+			endif
+			Print("[houselimit][debug] account '" + CStr(who.acctname) + "' slot " + CStr(i) + " -> character '" + CStr(chr.name) + "' has " + CStr(slot_count) + " house(s)");
+		endif
+		SleepMS(2);
+	endfor
+
+	Print("[houselimit][debug] account '" + CStr(who.acctname) + "' total house count = " + CStr(total));
+	return total;
+endfunction
+
+// Staff (cmdlevel>=4) are exempt, matching Buildhouse()'s existing
+// city/dungeon/shrine/graveyard cmdlevel<4 gate in housedeed.src.
+function IsAccountAtHouseLimit(who)
+	if (who.cmdlevel >= 4)
+		Print("[houselimit][debug] who '" + CStr(who.name) + "' cmdlevel>=4, exempt from house limit");
+		return 0;
+	endif
+
+	var count := GetAccountHouseCount(who);
+	if (count >= MAX_HOUSES_PER_ACCOUNT)
+		Print("[houselimit][debug] who '" + CStr(who.name) + "' at limit (" + CStr(count) + "/" + CStr(MAX_HOUSES_PER_ACCOUNT) + ") - DENY");
+		return 1;
+	endif
+
+	Print("[houselimit][debug] who '" + CStr(who.name) + "' (" + CStr(count) + "/" + CStr(MAX_HOUSES_PER_ACCOUNT) + ") - allow");
+	return 0;
+endfunction
+
 function RegisterHouseType(deed, house)
 
 var name := StrReplace(deed.desc, "a deed to a ", "");
@@ -459,4 +574,75 @@ function ConfiscateBossPet(mobile, locationnoun := "house")
 		SendSysMessage(master, "Your pet " + pet_name + " has been confiscated for entering a " + locationnoun + ".");
 		SendSysMessage(master, "A claim ticket has been placed in your " + ticket_location + ". Visit an Animal Trainer and pay " + fine + "gp to reclaim it.", 3, 43);
 	endif
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////
+// House sign "Info" tab support: owner last-login lookup, "at risk of escrow"
+// determination, and a pretty house-type display name.
+///////////////////////////////////////////////////////////////////////////////////
+const FOUR_YEARS_SECONDS := 4 * 365 * 86400;
+
+function ResolveHouseOwnerLastLogin(owner_acct)
+	if(!owner_acct)
+		return -1;
+	endif
+
+	var account := FindAccount(owner_acct);
+	if(!account)
+		return -1;
+	endif
+
+	var last_login := CInt(account.GetProp("LastLogin"));
+	if(!last_login)
+		return 0;
+	endif
+
+	return last_login;
+endfunction
+
+function FormatHouseOwnerLastLoginDate(last_login)
+	if(last_login < 0)
+		return "Unknown";
+	elseif(!last_login)
+		return "Never";
+	endif
+
+	return GetDateString(CInt(last_login));
+endfunction
+
+// Accounts with no recorded login (unknown or never) are treated as "at risk" --
+// conservative, since there's no evidence of recent activity either way.
+function IsOwnerAccountAtRisk(last_login)
+	if(last_login <= 0)
+		return 1;
+	endif
+
+	return ((POLCore().systime - last_login) > FOUR_YEARS_SECONDS);
+endfunction
+
+var _house_itemdesc_cfg := 0;
+
+function ResolveHouseTypeDisplayName(objtype)
+	if(!objtype)
+		return "Unknown";
+	endif
+
+	if(!_house_itemdesc_cfg)
+		_house_itemdesc_cfg := ReadConfigFile(":housing:itemdesc");
+	endif
+
+	if(_house_itemdesc_cfg)
+		var house_elem := _house_itemdesc_cfg[objtype];
+		if(house_elem and !house_elem.errortext)
+			var house_name := GetConfigString(house_elem, "Name");
+			if(house_name and !house_name.errortext and house_name != "")
+				if(Len(house_name) > 5 && house_name[Len(house_name)-4, Len(house_name)] == "house")
+					house_name := house_name[1, Len(house_name)-5];
+				endif
+				return house_name;
+			endif
+		endif
+	endif
+
+	return CStr(Hex(objtype));
 endfunction

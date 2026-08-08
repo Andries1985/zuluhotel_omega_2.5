@@ -3,9 +3,15 @@ include "include/attributes";
 
 include "include/client";
 
+// Radius (tiles) a PC has to be outside of before this NPC will go dormant,
+// and the radius that wakes it back up again while asleep. Deliberately the
+// same value in both directions - if someone's close enough to prevent
+// sleep, they're close enough to end it.
+const NPC_SLEEP_WAKE_RADIUS := 20;
+
 function sleepmode()
 
-	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, 20 ,me.realm );
+	foreach critter in ListMobilesNearLocation( me.x, me.y, me.z, NPC_SLEEP_WAKE_RADIUS, me.realm );
 		if (!critter.npctemplate)
 			return 0;
 		endif
@@ -39,10 +45,13 @@ function sleepmode()
 		me.frozen := 0;
 	endif
 	if ( (GetEffectiveSkill(me, 21) > 0 ) and (me.script != "merchant") )
+		// Hiding-skill NPCs conceal themselves while dormant, so they keep a
+		// short wake radius on purpose - the point is not noticing someone
+		// until they're genuinely close, same as a real hidden rogue.
 		me.hidden := 1;
 		EnableEvents(SYSEVENT_ENTEREDAREA, 4);
 	else
-		EnableEvents(SYSEVENT_ENTEREDAREA, 18);
+		EnableEvents(SYSEVENT_ENTEREDAREA, NPC_SLEEP_WAKE_RADIUS);
 	endif
 	
 	EnableEvents(SYSEVENT_ENGAGED);

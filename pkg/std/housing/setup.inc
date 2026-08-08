@@ -19,6 +19,10 @@ const MAX_BANNED := 20;
 // if set to 1 the house can decay over time
 const DECAY := 0;
 
+// seconds a house may go un-refreshed before it's eligible to decay (only takes
+// effect once DECAY is set to 1); placeholder value, adjust before enabling DECAY
+const HOUSE_DECAY_PERIOD := 604800;
+
 var tile_list := {
 	0x755d,
 	0x755c

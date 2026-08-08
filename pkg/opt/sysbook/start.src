@@ -56,4 +56,5 @@ endif
 endforeach
 
 UnloadConfigFile("zulubooks");
+UnloadDataFile("staticbooks");
 endprogram

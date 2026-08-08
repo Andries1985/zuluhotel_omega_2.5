@@ -13,6 +13,8 @@
 use uo;
 use os;
 
+include "utility";
+
 program ChangeHouseOwner( who , title )
 
    var houseserial := GetObjProperty( title, "builtserial" );
@@ -33,9 +35,23 @@ program ChangeHouseOwner( who , title )
        SendSysmessage( who , "You are already the owner of that house." );
        return;
    else
+       if( IsAccountAtHouseLimit(who) )
+           Print("[houselimit][debug] changeowner.ChangeHouseOwner blocked - account at house limit");
+           SendSysmessage( who , "You already own the maximum of " + CStr(MAX_HOUSES_PER_ACCOUNT) + " houses on this account." );
+           return;
+       endif
+
        SetObjProperty( house , "ownerserial" , who.serial );
+       SetObjProperty( house , "owneracct" , who.acctname );
        SendSysmessage( who , "You have taken ownership of the house." );
        SendSysmessage( who , "It would be wise to change the locks soon." );
+
+       // Keep the "Houses" cprop in sync - previously this path never updated
+       // it, so the old owner's list went stale and the new owner's never
+       // gained the house (pkg/std/housing/sign.src's ChangeHouseOwner does
+       // this already; this flow just never had it).
+       AddHouseToCharacter(who, house.serial);
+       RemoveHouseFromCharacter(SystemFindObjectBySerial(oldownerserial, SYSFIND_SEARCH_OFFLINE_MOBILES), house.serial);
    endif
 endprogram
 

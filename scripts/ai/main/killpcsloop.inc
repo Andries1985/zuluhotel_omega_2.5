@@ -6,11 +6,17 @@ include "include/areas";
 include "include/attributes";
 include "include/npcboosts";
 
+// wanders counts consecutive main-loop cycles (2s each, see wait_for_event(2)
+// below) with no interrupting event. At NPC_SLEEP_AFTER_WANDERS that's ~5
+// minutes of nothing happening, at which point sleepmode() is tried - it
+// still does its own proximity check before actually going dormant.
+const NPC_SLEEP_AFTER_WANDERS := 150;
+
 //var me := Self();
 
 function main_AI_loop()
 	var ev;
-	var wanders := 60;
+	var wanders := NPC_SLEEP_AFTER_WANDERS;
 	var next_loot := readgameclock() + 20;
 
 	var LOOTSTUFF := imalooter(me.npctemplate);
@@ -66,7 +72,7 @@ function main_AI_loop()
 			wanders := wanders + 1;
 		endif
 
-		if (wanders > 60)
+		if (wanders > NPC_SLEEP_AFTER_WANDERS)
 			wanders :=0;
 			ev := sleepmode();
 		else

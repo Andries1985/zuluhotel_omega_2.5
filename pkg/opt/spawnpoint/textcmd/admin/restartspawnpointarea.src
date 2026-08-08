@@ -258,7 +258,7 @@ endfunction
 // the old 8-pass approach that re-scanned the growing "ordered" list for
 // every entry (O(n^2)*8) -- same fix as go.src's ReorderLocationsForDisplay.
 function ReorderLocationsForDisplay(locs)
-	var type_priority := {"Jail", "City", "Shrine", "Graveyard", "Dungeon", "POI", "None"};
+	var type_priority := {"Jail", "City", "Suburb", "Shrine", "Graveyard", "Dungeon", "POI", "None"};
 	var known_types := dictionary;
 	foreach wanted_type in type_priority
 		known_types.Insert(wanted_type, 1);
@@ -328,6 +328,8 @@ function NormalizeTypeLabel(region_type)
 			return "POI";
 		"city":
 			return "City";
+		"suburb":
+			return "Suburb";
 		"shrine":
 			return "Shrine";
 		"dungeon":

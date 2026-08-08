@@ -189,8 +189,13 @@ program use_sign (who, sign)
 		dataforsale[6] := maxsecures;
 		result := SendDialogGump( who, layoutforsale, dataforsale );
 		case (result[0])
-			1: 		
+			1:
 			if( YesNo( who, "Confirm purchase." ) )
+				if( IsAccountAtHouseLimit(who) )
+					Print("[houselimit][debug] ssign purchase blocked - account at house limit");
+					SendSysMessage( who, "You already own the maximum of " + CStr(MAX_HOUSES_PER_ACCOUNT) + " houses on this account.", FONT_NORMAL, 2595);
+					return;
+				endif
 				if( who.spendgold(Cint(price)) )
 					SetObjProperty( sign, "OrigPrice", price);
 					EraseObjProperty( sign, "Price");
@@ -326,6 +331,11 @@ function ChangeHouseOwner( who , sign )
 	if( oldownerserial == who.serial )
 		return 0;
  	elseif(who.acctname)
+		if( IsAccountAtHouseLimit(who) )
+			Print("[houselimit][debug] ssign.ChangeHouseOwner blocked - account at house limit");
+			Sendsysmessage( who , "You already own the maximum of " + CStr(MAX_HOUSES_PER_ACCOUNT) + " houses on this account.", FONT_NORMAL, 2595 );
+			return 0;
+		endif
 		SetObjProperty( sign , "ownerserial" , who.serial );
 		SetObjProperty( sign , "owneracct" , who.acctname );
 		SetObjProperty( sign , "ownername", who.name );

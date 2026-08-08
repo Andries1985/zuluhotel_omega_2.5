@@ -231,7 +231,7 @@ function GetRegionRange(regions_cfg, region_name)
 		return {};
 	endif
 
-	var coords := GetConfigStringArray(elem, "Range");
+	var coords := SplitWords(CStr(GetConfigString(elem, "Range")));
 	if(!coords or coords.size() < 4)
 		return {};
 	endif

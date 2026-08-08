@@ -69,8 +69,16 @@ function Buildhouse( character, deed )
         return;
     endif
 
+    if (IsAccountAtHouseLimit(character))
+        Print("[houselimit][debug] Buildhouse blocked - account at house limit");
+        PrintTextAbovePrivate( deed, "You already own the maximum of " + CStr(MAX_HOUSES_PER_ACCOUNT) + " houses on this account.", character );
+        return;
+    endif
+
     var where := TargetMultiPlacement( character, housetype );
     if (!where) return; endif
+
+    Print("[housedeed][debug] " + CStr(character.name) + " attempting to place housetype=" + CStr(Hex(housetype)) + " at " + CStr(where.x) + "," + CStr(where.y) + " realm=" + CStr(where.realm) + " cmdlevel=" + CStr(character.cmdlevel));
 
     if (character.cmdlevel < 4)
     if(IsHousePlacementBlockedByRegionType(housetype, where, "city"))
@@ -92,6 +100,8 @@ function Buildhouse( character, deed )
         PrintTextAbovePrivate(deed, "You can't build in graveyards.", character);
         return;
     endif
+
+    Print("[housedeed][debug] city/dungeon/shrine/graveyard checks all passed, continuing placement checks");
 
     var blocked_reason := IsHousePlacementBlockedByNearbySpecialObjects(where);
     if(blocked_reason)
@@ -449,41 +459,14 @@ function CreatehouseKeysAndBuiltDeed( character, housetype, where, deed )
     return result;
 endfunction
 
-function NormalizeRegionType(region_type)
-    case(Lower(CStr(region_type)))
-        "poi":
-            return "poi";
-        "city":
-            return "city";
-        "shrine":
-            return "shrine";
-        "dungeon":
-            return "dungeon";
-        "graveyard":
-            return "graveyard";
-        "jail":
-            return "jail";
-        "none":
-            return "none";
-    endcase
-
-    return Lower(CStr(region_type));
-endfunction
-
+// NormalizeRegionType()/IsBoxOverlappingRegionType() live in include/checkcity
+// now (shared with CheckCity() and housezoneaudit.src's audit tool).
 function IsHousePlacementBlockedByRegionType(housetype, where, region_type)
+    Print("[housedeed][debug] IsHousePlacementBlockedByRegionType ENTER type='" + CStr(region_type) + "' housetype=" + CStr(Hex(housetype)));
+
     var bounds := GetHouseFootprintBounds(housetype, where.x, where.y);
     if(!bounds)
-        return 0;
-    endif
-
-    var regions_cfg := ReadConfigFile("::regions/regions");
-    if(!regions_cfg)
-        return 0;
-    endif
-
-    var wanted_region_type := NormalizeRegionType(region_type);
-    var keys := GetConfigStringKeys(regions_cfg);
-    if(!keys)
+        Print("[housedeed][debug]   GetHouseFootprintBounds FAILED for housetype=" + CStr(Hex(housetype)) + " (GetMultiDimensions returned falsy) - region check skipped entirely");
         return 0;
     endif
 
@@ -492,36 +475,15 @@ function IsHousePlacementBlockedByRegionType(housetype, where, region_type)
     var x2 := bounds[3];
     var y2 := bounds[4];
 
-    foreach key in keys
-        var region := FindConfigElem(regions_cfg, key);
-        if(!region)
-            continue;
-        endif
+    Print("[housedeed][debug] IsHousePlacementBlockedByRegionType type='" + NormalizeRegionType(region_type) + "' footprint=" + CStr(x1) + "," + CStr(y1) + " to " + CStr(x2) + "," + CStr(y2) + " realm=" + CStr(where.realm));
 
-        if(NormalizeRegionType(GetConfigString(region, "Type")) != wanted_region_type)
-            continue;
-        endif
+    var blocking_region := IsBoxOverlappingRegionType(x1, y1, x2, y2, where.realm, region_type);
+    if(blocking_region)
+        Print("[housedeed][debug]   BLOCKED - overlaps region '" + CStr(blocking_region.name) + "' range=" + CStr(blocking_region.range[1]) + "," + CStr(blocking_region.range[2]) + " to " + CStr(blocking_region.range[3]) + "," + CStr(blocking_region.range[4]));
+        return 1;
+    endif
 
-        var region_realm := Lower(CStr(GetConfigString(region, "Realm")));
-        if(region_realm and (region_realm != Lower(CStr(where.realm))))
-            continue;
-        endif
-
-        var range := GetConfigStringArray(region, "Range");
-        if(!range or range.size() < 4)
-            continue;
-        endif
-
-        var rx1 := CInt(range[1]);
-        var ry1 := CInt(range[2]);
-        var rx2 := CInt(range[3]);
-        var ry2 := CInt(range[4]);
-
-        if((x1 <= rx2) and (x2 >= rx1) and (y1 <= ry2) and (y2 >= ry1))
-            return 1;
-        endif
-    endforeach
-
+    Print("[housedeed][debug] not blocked - no overlapping '" + NormalizeRegionType(region_type) + "' region in realm");
     return 0;
 endfunction
 
@@ -539,8 +501,40 @@ function IsHousePlacementBlockedByNearbySpecialObjects(where)
     return "";
 endfunction
 
+// GetMultiDimensions() needs the raw multi ID, not the house's item objtype.
+// pkg/std/housing/itemdesc.cfg maps every "House <objtype>" block to a
+// separate, much smaller "MultiID" - e.g. House 0xA3EF has MultiID 0x3F.
+// CreateMultiAtLocation()/TargetMultiPlacement() take the objtype directly
+// and translate internally; GetMultiDimensions() does not.
+function ResolveHouseMultiId(housetype)
+    var house_itemdesc := ReadConfigFile(":housing:itemdesc");
+    if(!house_itemdesc)
+        Print("[housedeed][debug]   ResolveHouseMultiId: ReadConfigFile(':housing:itemdesc') FAILED, using housetype as-is");
+        return housetype;
+    endif
+
+    var elem := house_itemdesc[housetype];
+    if(!elem)
+        elem := FindConfigElem(house_itemdesc, housetype);
+    endif
+    if(!elem)
+        Print("[housedeed][debug]   ResolveHouseMultiId: no House block found for housetype=" + CStr(Hex(housetype)) + ", using housetype as-is");
+        return housetype;
+    endif
+
+    var multiid := GetConfigInt(elem, "MultiID");
+    if(!multiid)
+        Print("[housedeed][debug]   ResolveHouseMultiId: House block for housetype=" + CStr(Hex(housetype)) + " has no MultiID, using housetype as-is");
+        return housetype;
+    endif
+
+    Print("[housedeed][debug]   ResolveHouseMultiId: housetype=" + CStr(Hex(housetype)) + " -> MultiID=" + CStr(Hex(multiid)));
+    return multiid;
+endfunction
+
 function GetHouseFootprintBounds(housetype, x, y)
-    var dims := GetMultiDimensions(housetype);
+    var multiid := ResolveHouseMultiId(housetype);
+    var dims := GetMultiDimensions(multiid);
     if(!dims)
         return 0;
     endif

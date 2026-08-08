@@ -185,14 +185,15 @@ function SelectDestinationGump( who, locs )
   return GFSendGump(who, gump);
 endfunction
 
-// Groups locs by type in priority order (Jail/City/Shrine/Graveyard/Dungeon/
-// POI/None), then appends anything with a custom/unrecognized RegionType
-// label last - same output as before, but a single O(n) pass instead of the
-// old 8-pass approach that re-scanned the growing "ordered" list for every
-// entry (O(n^2)*8). With ~200 go-locations just for Britannia, that old
-// version was heavy enough to occasionally trip the runaway-script watchdog.
+// Groups locs by type in priority order (Jail/City/Suburb/Shrine/Graveyard/
+// Dungeon/POI/None), then appends anything with a custom/unrecognized
+// RegionType label last - same output as before, but a single O(n) pass
+// instead of the old 8-pass approach that re-scanned the growing "ordered"
+// list for every entry (O(n^2)*8). With ~200 go-locations just for
+// Britannia, that old version was heavy enough to occasionally trip the
+// runaway-script watchdog.
 function ReorderLocationsForDisplay( locs )
-  var type_priority := {"Jail", "City", "Shrine", "Graveyard", "Dungeon", "POI", "None"};
+  var type_priority := {"Jail", "City", "Suburb", "Shrine", "Graveyard", "Dungeon", "POI", "None"};
   var known_types := dictionary;
   foreach wanted_type in type_priority
     known_types.Insert(wanted_type, 1);
@@ -418,6 +419,8 @@ function NormalizeRegionType( region_type )
       return "POI";
     "city":
       return "City";
+    "suburb":
+      return "Suburb";
     "shrine":
       return "Shrine";
     "dungeon":

@@ -121,22 +121,45 @@ endfunction
 * Version 2.0
 * This new gump will actually extend itself based on the length of your prompt text, which means
 *  the text/gump overlap bug is gone.
+*
+* Widened by ZHO to also stretch height, not just width -- the original only
+* grew sideways (fine for a short one-liner) but left a fixed 110-unit-tall
+* box, so anything long enough to wrap past ~3 lines still overflowed the
+* box vertically. Line/char-width estimates below are approximations (POL
+* gumps expose no real font metrics) -- nudge YESNOVAR_* if testing shows
+* text clipping or excess empty space.
 */
 use uo;
 use util;
 
+const YESNOVAR_MAX_WIDTH      := 500; // cap so a very long prompt doesn't run off-screen sideways
+const YESNOVAR_CHARS_PER_LINE_PX := 6;  // rough avg glyph width (px) for the htmlgump font
+const YESNOVAR_LINE_HEIGHT_PX := 18;  // rough line height (px) for the htmlgump font
+
 function YesNoVar(me, prompt, color := "#FFFFFF")
   var lenny := cint(len(prompt) * 2)+160;
   if(lenny < 180) lenny := 180; endif
+  if(lenny > YESNOVAR_MAX_WIDTH) lenny := YESNOVAR_MAX_WIDTH; endif
+
+  var htmlwidth := lenny - 19;
+  var est_chars_per_line := CInt(htmlwidth / YESNOVAR_CHARS_PER_LINE_PX);
+  if(est_chars_per_line < 10) est_chars_per_line := 10; endif
+  var est_lines := CInt((len(prompt) + est_chars_per_line - 1) / est_chars_per_line); // ceil
+
+  var htmlheight := (est_lines * YESNOVAR_LINE_HEIGHT_PX) + 10;
+  if(htmlheight < 59) htmlheight := 59; endif
+
+  var boxheight := htmlheight + 51; // matches the original fixed box's chrome: 45px above the html area, 6px below it, 8px more to the buttons
+
   var layout := array(
      "nodispose",
      "page 0",
-     "resizepic 30 30 5054 "+ lenny +" 110",
-     "gumppictiled 41 41 "+ (lenny - 22) +" 88 2624",
-     "checkertrans 40 40 "+ (lenny - 20) +" 90",
-     "htmlgump 40 45 "+ (lenny - 19) +" 59 0 0 0",
-     "button 50 102 4023 4025 1 0 1",
-     "button "+ (lenny - 20) +" 102 4017 4019 1 0 0"
+     "resizepic 30 30 5054 "+ lenny +" "+ boxheight +"",
+     "gumppictiled 41 41 "+ (lenny - 22) +" "+ (boxheight - 22) +" 2624",
+     "checkertrans 40 40 "+ (lenny - 20) +" "+ (boxheight - 20) +"",
+     "htmlgump 40 45 "+ htmlwidth +" "+ htmlheight +" 0 0 0",
+     "button 50 "+ (boxheight - 8) +" 4023 4025 1 0 1",
+     "button "+ (lenny - 20) +" "+ (boxheight - 8) +" 4017 4019 1 0 0"
   );
   var data := array("<basefont color=\""+ color +"\"><center>"+ prompt +"</center></basefont");
   var res := SendDialogGump( me, layout, data );
