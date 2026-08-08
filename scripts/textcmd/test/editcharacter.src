@@ -78,7 +78,7 @@ program editcharacter( who )
 		graphic := GenderToGraphic( gender );
 	endif
 
-	var color := ClampInt( CInt( GFExtractData(result, ENTRY_COLOR) ), 0, 10000 );
+	var color := ClampInt( CInt( GFExtractData(result, ENTRY_COLOR) ), 0, 65535 );
 	var strength := ClampInt( CInt( GFExtractData(result, ENTRY_STR) ), 10, 300 );
 	var dexterity := ClampInt( CInt( GFExtractData(result, ENTRY_DEX) ), 10, 300 );
 	var intelligence := ClampInt( CInt( GFExtractData(result, ENTRY_INT) ), 10, 300 );

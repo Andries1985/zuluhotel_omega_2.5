@@ -1,7 +1,6 @@
 use npc;
 use os;
 use uo;
-use basicio;
 
 
 include "include/eventid";
@@ -22,11 +21,6 @@ include "include/areas";
 
 const HALT_THRESHOLD := 10;
 Const MOVING_EFFECT_FIREBALL	:= 0x36D4;
-
-// Follow()'s own Sleepms(25) floor caps normal calls at ~40/sec; this is set
-// well above that so it only fires if something bypasses that floor entirely.
-const FOLLOW_RUNAWAY_THRESHOLD := 100;
-const FOLLOW_RUNAWAY_WARN_COOLDOWN := 60;
 
 var me := Self();
 var masterserial := GetObjProperty( me , "master" );
@@ -64,9 +58,6 @@ var lastspeechkey := "";
 var nextspeechallowed := 0;
 var awaitingtargetselection := 0;
 var ignorespeechuntil := 0;
-var followcalls := 0;
-var followwindowstart := 0;
-var lastfollowwarn := 0;
 
 me.setmaster( master );
 
@@ -1151,18 +1142,6 @@ function Guard()
 endfunction
 
 function Follow()
-
-	var followclock := ReadGameClock();
-	if (followclock != followwindowstart)
-		if ((followcalls > FOLLOW_RUNAWAY_THRESHOLD) and ((followclock - lastfollowwarn) >= FOLLOW_RUNAWAY_WARN_COOLDOWN))
-			var onmulti := GetStandingHeight( me.x, me.y, me.z, me.realm ).multi;
-			Print("[TamedAI runaway-watch] " + me.name + " (" + Hex(me.serial) + ", " + me.npctemplate + ") master=" + master.name + " Follow()calls/sec=" + followcalls + " pos=" + me.x + "," + me.y + " onmulti=" + onmulti + " guarding=" + guarding);
-			lastfollowwarn := followclock;
-		endif
-		followcalls := 0;
-		followwindowstart := followclock;
-	endif
-	followcalls := followcalls + 1;
 
 	// Hard floor on how often Follow() can run, independent of MainAILoop's
 	// waittime (which only has whole-second granularity via wait_for_event).
