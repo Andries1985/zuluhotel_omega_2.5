@@ -208,10 +208,8 @@ endfunction
 // synchronization.
 function AppendHouseEscrowIndex(ownerserial, house_serial, escrow_name, house_label, owner_name)
 	var df_name := BuildHouseEscrowDatafileNameForSerial(ownerserial);
-	Print("[houseescrow][debug] AppendHouseEscrowIndex: owner=" + ownerserial + " house=" + house_serial + " -> df_name=" + df_name);
 	if(!df_name)
 		HouseEscrowLog("[ERROR] AppendHouseEscrowIndex: failed to build datafile name for owner=" + ownerserial + " house=" + house_serial);
-		Print("[houseescrow][debug] AppendHouseEscrowIndex: ABORTED -- BuildHouseEscrowDatafileNameForSerial returned empty for owner=" + ownerserial + " (owner serial is likely 0/falsy)");
 		return "";
 	endif
 
@@ -221,7 +219,6 @@ function AppendHouseEscrowIndex(ownerserial, house_serial, escrow_name, house_la
 		df := OpenDataFile(df_name);
 		if(!df)
 			HouseEscrowLog("[ERROR] AppendHouseEscrowIndex: failed to open/create datafile " + df_name);
-			Print("[houseescrow][debug] AppendHouseEscrowIndex: ABORTED -- could not open/create datafile " + df_name);
 			return "";
 		endif
 	endif
@@ -233,7 +230,6 @@ function AppendHouseEscrowIndex(ownerserial, house_serial, escrow_name, house_la
 	endif
 	if(!house_elem)
 		HouseEscrowLog("[ERROR] AppendHouseEscrowIndex: failed to create/find element " + house_key + " in " + df_name);
-		Print("[houseescrow][debug] AppendHouseEscrowIndex: ABORTED -- could not create/find element " + house_key + " in " + df_name);
 		UnloadDataFile(df_name);
 		return "";
 	endif
@@ -254,7 +250,6 @@ function AppendHouseEscrowIndex(ownerserial, house_serial, escrow_name, house_la
 	UnloadDataFile(df_name);
 
 	HouseEscrowLog("Indexed entry_id=" + entry_id + " owner=" + ownerserial + " (" + owner_name + ") house=" + house_serial + " (" + house_label + ") escrow_name=" + escrow_name + " df=" + df_name);
-	Print("[houseescrow][debug] AppendHouseEscrowIndex: SUCCESS entry_id=" + entry_id + " owner=" + ownerserial + " df=" + df_name + " entries_in_element_now=" + len(entries));
 	return entry_id;
 endfunction
 
@@ -307,7 +302,6 @@ function AppendHouseEscrowIndexBatch(ownerserial, house_serial, house_label, own
 	var df_name := BuildHouseEscrowDatafileNameForSerial(ownerserial);
 	if(!df_name)
 		HouseEscrowLog("[ERROR] AppendHouseEscrowIndexBatch: failed to build datafile name for owner=" + ownerserial + " house=" + house_serial);
-		Print("[houseescrow][debug] AppendHouseEscrowIndexBatch: ABORTED -- BuildHouseEscrowDatafileNameForSerial returned empty for owner=" + ownerserial);
 		return;
 	endif
 
@@ -317,7 +311,6 @@ function AppendHouseEscrowIndexBatch(ownerserial, house_serial, house_label, own
 		df := OpenDataFile(df_name);
 		if(!df)
 			HouseEscrowLog("[ERROR] AppendHouseEscrowIndexBatch: failed to open/create datafile " + df_name);
-			Print("[houseescrow][debug] AppendHouseEscrowIndexBatch: ABORTED -- could not open/create datafile " + df_name);
 			return;
 		endif
 	endif
@@ -329,7 +322,6 @@ function AppendHouseEscrowIndexBatch(ownerserial, house_serial, house_label, own
 	endif
 	if(!house_elem)
 		HouseEscrowLog("[ERROR] AppendHouseEscrowIndexBatch: failed to create/find element " + house_key + " in " + df_name);
-		Print("[houseescrow][debug] AppendHouseEscrowIndexBatch: ABORTED -- could not create/find element " + house_key + " in " + df_name);
 		UnloadDataFile(df_name);
 		return;
 	endif
@@ -351,7 +343,6 @@ function AppendHouseEscrowIndexBatch(ownerserial, house_serial, house_label, own
 	UnloadDataFile(df_name);
 
 	HouseEscrowLog("AppendHouseEscrowIndexBatch: owner=" + ownerserial + " (" + owner_name + ") house=" + house_serial + " (" + house_label + ") indexed " + len(escrow_names) + " pack(s), df=" + df_name + ", entries_in_element_now=" + len(entries));
-	Print("[houseescrow][debug] AppendHouseEscrowIndexBatch: SUCCESS owner=" + ownerserial + " df=" + df_name + " indexed=" + len(escrow_names) + " entries_in_element_now=" + len(entries));
 endfunction
 
 ////////////////////////////////////////////////////////////////////////////
@@ -399,7 +390,6 @@ function MoveItemToHouseEscrowPacks(byref packs, byref item, label, realm, sourc
 	// call site handed us the bad reference, since that's the one piece
 	// of information the item itself can no longer tell us.
 	if(!item or item.errortext)
-		Print("[houseescrow][ERROR] MoveItemToHouseEscrowPacks: received an invalid/stale item reference (source=" + source + ") for label=" + label + " -- skipped, nothing to move.");
 		HouseEscrowLog("[ERROR] MoveItemToHouseEscrowPacks: received an invalid/stale item reference (source=" + source + ") for label=" + label + " -- skipped, nothing to move.");
 		return 0;
 	endif
@@ -439,7 +429,6 @@ function MoveItemToHouseEscrowPacks(byref packs, byref item, label, realm, sourc
 	// move (item.movable is already cleared above, so this is something
 	// else -- e.g. a cursed/non-container-safe item, or a genuine engine
 	// container-capacity limit).
-	Print("[houseescrow][ERROR] MoveItemToHouseEscrowPacks: item " + item.serial + " (objtype=" + Hex(item.objtype) + ", name='" + item.name + "', realm=" + item.realm + ", movable=" + item.movable + ") could NOT be moved into escrow pack (realm=" + new_pack.realm + ", label=" + label + ") -- it was left in place, NOT escrowed.");
 	HouseEscrowLog("[ERROR] MoveItemToHouseEscrowPacks: failed to move item " + item.serial + " (objtype=" + Hex(item.objtype) + ", name='" + item.name + "', realm=" + item.realm + ", movable=" + item.movable + ") into a freshly created pack (realm=" + new_pack.realm + ") for label=" + label + " -- item left un-escrowed");
 	DestroyItem(new_pack);
 	return 0;
@@ -515,7 +504,6 @@ function DrainSecureContainerToPacks(secure_item, byref packs, label, realm)
 	endforeach
 	if(bad_at_collection)
 		HouseEscrowLog("[ERROR] DrainSecureContainerToPacks: ListRootItemsInContainer(" + secure_item.serial + ") returned " + bad_at_collection + " already-bad entry(ies) at collection time (before any moves happened) -- likely pre-existing corrupted item data on this house, not something this sweep caused.");
-		Print("[houseescrow][ERROR] DrainSecureContainerToPacks: secure " + secure_item.serial + " -- " + bad_at_collection + " child(ren) were already bad/uninitialized BEFORE any processing (pre-existing data issue, not caused by this sweep).");
 	endif
 
 	var yield_counter := 0;
@@ -731,7 +719,6 @@ function TryBulkRedeedItem(item, byref processed, byref packs, label, realm)
 			endforeach
 			if(member_bad_at_collection)
 				HouseEscrowLog("[ERROR] TryBulkRedeedItem: ListRootItemsInContainer(" + member.serial + ") returned " + member_bad_at_collection + " already-bad entry(ies) at collection time (before any moves happened) -- likely pre-existing corrupted item data on this house, not something this sweep caused.");
-				Print("[houseescrow][ERROR] TryBulkRedeedItem: member " + member.serial + " -- " + member_bad_at_collection + " child(ren) were already bad/uninitialized BEFORE any processing (pre-existing data issue, not caused by this sweep).");
 			endif
 			foreach child in member_children_snapshot
 				MoveItemToHouseEscrowPacks(packs, child, label, realm, "redeed_member_child");
@@ -890,13 +877,11 @@ function DemolishAndEscrowHouse(who, house, sign)
 	// be found -- that's exactly the case this feature exists for.
 	var raw_ownerserial_prop := GetObjProperty(house, "ownerserial");
 	var ownerserial := CInt(raw_ownerserial_prop);
-	Print("[houseescrow][debug] DemolishAndEscrowHouse: house=" + house_serial + " raw ownerserial cprop=" + raw_ownerserial_prop + " -> CInt=" + ownerserial);
 
 	var owner := SystemFindObjectBySerial(ownerserial);
 	if(!owner)
 		owner := SystemFindObjectBySerial(ownerserial, SYSFIND_SEARCH_OFFLINE_MOBILES);
 	endif
-	Print("[houseescrow][debug] DemolishAndEscrowHouse: house=" + house_serial + " owner lookup for serial=" + ownerserial + " -> " + (owner ? (owner.name + "(" + owner.serial + ")") : "NOT FOUND"));
 
 	var owner_name;
 	if(owner)
@@ -922,7 +907,6 @@ function DemolishAndEscrowHouse(who, house, sign)
 	endif
 
 	HouseEscrowLog("DemolishAndEscrowHouse: starting house=" + house_serial + " owner=" + ownerserial + " (" + owner_name + ") resolved=" + result.owner_resolved + " type=" + house_label + " triggered_by=" + who.serial);
-	Print("[houseescrow][debug] DemolishAndEscrowHouse: starting house=" + house_serial + " owner=" + ownerserial + " (" + owner_name + ") resolved=" + result.owner_resolved);
 
 	// Step 2: create the house deed while house.objtype is still valid. Held
 	// aside and escrowed last, as its own separately-labeled pack.
@@ -1017,9 +1001,6 @@ function DemolishAndEscrowHouse(who, house, sign)
 	until(proximity_z >= 60);
 
 	HouseEscrowLog("DemolishAndEscrowHouse: house=" + house_serial + " items_snapshot size=" + len(items_snapshot) + " bad_entries_dropped_at_snapshot=" + snapshot_bad_count);
-	if(snapshot_bad_count)
-		Print("[houseescrow][WARNING] DemolishAndEscrowHouse: house=" + house_serial + " -- house.items/proximity sweep returned " + snapshot_bad_count + " already-bad/error entry(ies) directly, dropped before classification even started. This is pre-existing corrupted item data on this house, not something caused by this sweep.");
-	endif
 
 	// Step 5: single classification pass over the snapshot.
 	var packs := {};
@@ -1075,7 +1056,6 @@ function DemolishAndEscrowHouse(who, house, sign)
 		// "<uninitialized object>" failure deep inside the generic bucket.
 		if(!item or item.errortext)
 			HouseEscrowLog("[ERROR] DemolishAndEscrowHouse: item " + cached_serial + " went stale between snapshot and classification (likely destroyed as a side effect of an earlier redeed group sharing its ItemsCreatedSerials) -- skipped.");
-			Print("[houseescrow][ERROR] DemolishAndEscrowHouse: item " + cached_serial + " went stale between snapshot and classification -- skipped, nothing to move.");
 			continue;
 		endif
 
@@ -1139,9 +1119,6 @@ function DemolishAndEscrowHouse(who, house, sign)
 	endforeach
 
 	HouseEscrowLog("DemolishAndEscrowHouse: house=" + house_serial + " swept secures=" + secures_drained + " omegacaches=" + omegacaches_destroyed + " redeed_groups=" + redeed_groups + " trashcans=" + trashcans_redeeded + " generic_items=" + generic_moved + " skipped_nested=" + items_skipped_nested + " items_left_behind=" + items_left_behind + " packs_so_far=" + len(packs));
-	if(items_left_behind)
-		Print("[houseescrow][WARNING] DemolishAndEscrowHouse: house=" + house_serial + " -- " + items_left_behind + " item(s) could NOT be escrowed and were left un-escrowed (see prior [houseescrow][ERROR] lines for which items and why).");
-	endif
 	result.items_left_behind := items_left_behind;
 
 	// Step 6: drain the Omega Cache DataFile wholesale, then wipe it exactly
