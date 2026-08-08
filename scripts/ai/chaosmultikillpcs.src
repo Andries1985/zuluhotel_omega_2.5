@@ -705,7 +705,7 @@ function MakeLord(me, mergewith)
 	me.hidden := 1;
 	mergewith.hidden :=1;
 	ShowFlame2(mergewith);
-	MoveObjectToLocation( mergewith, 5376, 1081, 0, 0);
+	MoveObjectToLocation( mergewith, 5376, 1081, 0, "britannia", 0);
 	RevokePrivilege( mergewith, "invul" );
 	setobjproperty( mergewith, "guardkill", 1);
 	mergewith.kill();
@@ -751,7 +751,7 @@ function SplitLord(me)
 	twin1.hidden := 1;
 	twin2.hidden := 1;
 	sleep(1);
-	MoveObjectToLocation( me, 5376, 1081, 0, 0);
+	MoveObjectToLocation( me, 5376, 1081, 0, "britannia", 0);
 	MoveObjectToLocation( twin1, newx, newy, newz, newrealm, 0);
 	MoveObjectToLocation( twin2, newx, newy, newz, newrealm, 0);
 	twin1.hidden := 0;

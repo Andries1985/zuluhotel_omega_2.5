@@ -95,9 +95,18 @@ program npcdeath(corpse)
 			resnum := 0;
 		endif
 		resnum := resnum + 1;
-		if (resnum < 4 and GetObjProperty(corpse,"master") != 0) 
+		var mastersrl := GetObjProperty(corpse,"master");
+		if (mastersrl == error)
+			mastersrl := 0;
+		endif
+		var masterobj := 0;
+		if (mastersrl)
+			masterobj := SystemFindObjectBySerial(mastersrl);
+		endif
+
+		if (resnum < 4 and mastersrl != 0)
 			heart := CreateItemAtLocation(corpse.x,corpse.y,corpse.z,0x1CED,1,corpse.realm);
-			heart.newbie := 1;	
+			heart.newbie := 1;
 			heart.color := 1172;
 			heart.usescript := "";
 			heart.name := "The Heart of "+GetObjProperty(corpse,"Name");
@@ -107,17 +116,21 @@ program npcdeath(corpse)
 			SetObjProperty(heart,"Name",GetObjProperty(corpse,"Name"));
 			SetObjProperty(heart,"resnum",resnum);
 			SetObjProperty(heart,"Sex",GetObjProperty(corpse,"Sex"));
-			SetObjProperty(heart,"master",GetObjProperty(corpse,"master"));
-			MoveItemToContainer(heart,SystemFindObjectBySerial(GetObjProperty(corpse,"master")).backpack);
-			SendSysMessage(SystemFindObjectBySerial(GetObjProperty(corpse,"master")), heart.name+" has been placed in your backpack.");
+			SetObjProperty(heart,"master",mastersrl);
+			if (masterobj)
+				MoveItemToContainer(heart, masterobj.backpack);
+				SendSysMessage(masterobj, heart.name+" has been placed in your backpack.");
+			endif
 		else
-			SendSysMessage(SystemFindObjectBySerial(GetObjProperty(corpse,"master")), GetObjProperty(corpse,"Name")+"'s heart has disintegrated and could not be recovered.");
+			if (masterobj)
+				SendSysMessage(masterobj, GetObjProperty(corpse,"Name")+"'s heart has disintegrated and could not be recovered.");
+			endif
 		endif
-		
-		if(IsInSafeArea(corpse))
+
+		if(IsInSafeArea(corpse) and masterobj)
 			foreach item in EnumerateItemsInContainer( corpse )
 				if (item.container.serial == corpse.serial)
-					MoveItemToContainer( item, SystemFindObjectBySerial(GetObjProperty(corpse,"master")).backpack );
+					MoveItemToContainer( item, masterobj.backpack );
 				endif
 			endforeach
 		endif
@@ -209,8 +222,12 @@ endprogram
 
 function RegisterNPC(corpse)
 	var killer;
-	if(GetObjProperty(corpse, "KilledBySerial"))
-		killer := SystemFindObjectBySerial(GetObjProperty(corpse, "KilledBySerial"),SYSFIND_SEARCH_OFFLINE_MOBILES );
+	var killerserial := GetObjProperty(corpse, "KilledBySerial");
+	if (killerserial == error)
+		killerserial := 0;
+	endif
+	if(killerserial)
+		killer := SystemFindObjectBySerial(killerserial,SYSFIND_SEARCH_OFFLINE_MOBILES );
 	endif
 
 	// Only record npcs killed by players

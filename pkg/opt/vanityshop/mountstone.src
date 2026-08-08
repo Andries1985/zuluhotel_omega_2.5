@@ -18,12 +18,17 @@ program MountStone( who, item)
 	ReserveItem(item);
 
 	var owner := GetObjProperty(item, "Owner");
+	if (owner == error)
+		owner := 0;
+	endif
 	if (!owner)
 		SetObjProperty(item,"Owner", who.serial);
 		SendSysMessage(who, "This "+item.name+" is now bound to "+who.name, FONT_NORMAL, MSG_COLOR);
 	elseif (owner != who.serial)
 		var owner_obj := SystemFindObjectBySerial(owner);
-		SendSysMessage(who, "I am already bound to "+owner_obj.name, FONT_NORMAL, MSG_COLOR);
+		if (owner_obj)
+			SendSysMessage(who, "I am already bound to "+owner_obj.name, FONT_NORMAL, MSG_COLOR);
+		endif
 		ReleaseItem(item);
 		return 0;
 	endif
@@ -69,6 +74,9 @@ function CreateMount( who, item )
 
 	if (!GetObjProperty(item, "MountStored"))
 		var mountserial := GetObjProperty( who, "DMountSerial" );
+		if (mountserial == error)
+			mountserial := 0;
+		endif
 		var mount := SystemFindObjectBySerial( mountserial );
 		if(!mount)
 			var charges := GetObjProperty( item, "charges");
@@ -114,12 +122,24 @@ function StoreMount( who, item )
 	endif
 
 	var mountserial := GetObjProperty( who, "DMountSerial" );
+	if (mountserial == error)
+		mountserial := 0;
+	endif
 	var mount := SystemFindObjectBySerial( mountserial );
+	if (!mount)
+		return 0;
+	endif
 	PlayStationaryEffectEX(mount.x, mount.y, mount.z, mount.realm, FX_SMOKE, FX_SPEED, FX_LOOP, mount.color, 4);
 	MoveObjectToLocation(mount, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
 	var original_stone := GetObjProperty( mount, "DMountStoneSerial" );
-	if (item.serial != original_stone) 
+	if (original_stone == error)
+		original_stone := 0;
+	endif
+	if (item.serial != original_stone)
 		item := SystemFindObjectBySerial( original_stone );
+		if (!item)
+			return 0;
+		endif
 	endif
 	SetObjProperty(item, "MountHP", mount.hp);
 	SetObjProperty(item, "MountMana", mount.mana);

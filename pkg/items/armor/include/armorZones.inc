@@ -64,9 +64,12 @@ endfunction
  *
  */
 function CS_GetLayersInArmorZone(zone_name)
-	
+
 	var cfg_elem := zone_cfg[zone_name];
-	
+	if(cfg_elem == error)
+		return {};
+	endif
+
 	return GetConfigStringArray(cfg_elem, "Layer");
 endfunction
 	
@@ -97,15 +100,17 @@ function CS_GetEquipmentInArmorZone(mobile, zone_name)
 	
 	foreach item in ( ListEquippedItems(mobile) )
 		var item_info := itemdesc_cfg[item.objtype];
-		
-		foreach zone in ( GetConfigStringArray(item_info, "Coverage") )
-			if ( Lower(zone) == zone_name )
-				equip_list.Append(item);
-				break;
-			endif
-			SleepMS(2);
-		endforeach
-		
+
+		if (item_info != error)
+			foreach zone in ( GetConfigStringArray(item_info, "Coverage") )
+				if ( Lower(zone) == zone_name )
+					equip_list.Append(item);
+					break;
+				endif
+				SleepMS(2);
+			endforeach
+		endif
+
 		SleepMS(2);
 	endforeach
 	
@@ -120,7 +125,11 @@ endfunction
 // Pass who for shield parry calculation; if omitted, shields return 0.
 function CS_GetEffectiveArmor(item, who := 0, parry_override := 0)
 	var base_ar := item.ar;
-	var coverage := GetConfigStringArray(itemdesc_cfg[item.objtype], "Coverage");
+	var item_info := itemdesc_cfg[item.objtype];
+	var coverage := array{};
+	if (item_info != error)
+		coverage := GetConfigStringArray(item_info, "Coverage");
+	endif
 
 	if(!coverage || coverage.size() == 0)
 		var parry;
