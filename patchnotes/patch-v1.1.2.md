@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.1.2
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: August 10, 2026**
+
+---
+
+Welcome to **Patch 1.1.2**. This is a small maintenance patch: **Magic Resistance is now trainable from vendors again**, plus a batch of quiet bug fixes and staff-side housekeeping.
+
+---
 
 ## What Changed
 
