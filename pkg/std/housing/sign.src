@@ -437,8 +437,6 @@ program textcmd_sign( who , sign )
 						endif
 					endif
 
-					Print("[houseescrow][audit] " + who.name + "(" + who.serial + ") demolished-and-escrowed house " + house.serial + " owned by " + GetObjProperty(house, "owneracct"));
-
 					var escrow_result := DemolishAndEscrowHouse(who, house, sign);
 					if(escrow_result.ok)
 						SendSysMessage(who, "House demolished. " + escrow_result.escrowed_pack_count + " pack(s) placed in escrow for " + escrow_result.owner_name + ". They can claim them with .houseescrow.");

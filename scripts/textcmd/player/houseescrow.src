@@ -23,16 +23,13 @@ endfunction
 function ListHouseEscrowKeys(owner_serial)
 	var keys := {};
 	var df_name := BuildHouseEscrowDatafileNameForSerial(owner_serial);
-	Print("[houseescrow][debug] ListHouseEscrowKeys: owner_serial=" + owner_serial + " -> df_name=" + df_name);
 	if(!df_name)
-		Print("[houseescrow][debug] ListHouseEscrowKeys: ABORTED -- BuildHouseEscrowDatafileNameForSerial returned empty for owner=" + owner_serial);
 		return keys;
 	endif
 
 	var file := OpenDataFile(df_name);
 	if(!file)
 		HouseEscrowLog("ListHouseEscrowKeys: no datafile exists for owner=" + owner_serial + " (df=" + df_name + ") -- nothing has ever been indexed under this serial");
-		Print("[houseescrow][debug] ListHouseEscrowKeys: no datafile " + df_name + " exists at all -- nothing was ever indexed under owner=" + owner_serial);
 		return keys;
 	endif
 
@@ -53,7 +50,6 @@ function ListHouseEscrowKeys(owner_serial)
 
 	UnloadDataFile(df_name);
 	HouseEscrowLog("ListHouseEscrowKeys: owner=" + owner_serial + " (df=" + df_name + ") house_keys_found=" + len(keys));
-	Print("[houseescrow][debug] ListHouseEscrowKeys: owner=" + owner_serial + " (df=" + df_name + ") house_keys_found=" + len(keys));
 	return keys;
 endfunction
 
@@ -92,18 +88,15 @@ function LoadAllHouseEscrowEntries(owner_serial)
 endfunction
 
 program textcmd_houseescrow(who, text)
-	Print("[houseescrow][debug] textcmd_houseescrow: called by " + who.name + "(" + who.serial + ") text='" + text + "' cmdlevel=" + who.cmdlevel);
 	if(text and who.cmdlevel >= 4)
 		var target_serial := CInt(text);
 		if(!target_serial)
 			SendSysMessage(who, "Usage (staff): .houseescrow <owner serial>");
 			return;
 		endif
-		Print("[houseescrow][debug] textcmd_houseescrow: staff override, querying owner_serial=" + target_serial);
 		ShowHouseEscrowGump(who, target_serial, 1, 1);
 		return;
 	endif
-	Print("[houseescrow][debug] textcmd_houseescrow: self-claim, querying owner_serial=" + who.serial + " (" + who.name + ")");
 
 	ShowHouseEscrowGump(who, who.serial, 1, 0);
 endprogram

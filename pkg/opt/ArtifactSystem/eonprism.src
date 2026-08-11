@@ -1,0 +1,45 @@
+use uo;
+
+include "include/client";
+
+const EONPRISM_FONT_COLOR := 43;
+
+program eonprism(character, prism)
+
+if(!ReserveItem(prism)) return 0; endif
+
+if(GetObjProperty(character, "#PPHH") || GetObjProperty(character, "#PPHC") || GetObjProperty(character, "#PPHS"))
+	SendSysMessage(character, "You cannot use the Eon-Prism while a personal powerhour is already active.", FONT_NORMAL, EONPRISM_FONT_COLOR);
+	ReleaseItem(prism);
+	return 0;
+endif
+
+if(GetGlobalProperty("PHH") || GetGlobalProperty("PHC") || GetGlobalProperty("PHS"))
+	SendSysMessage(character, "You cannot use the Eon-Prism while a server-wide powerhour is active.", FONT_NORMAL, EONPRISM_FONT_COLOR);
+	ReleaseItem(prism);
+	return 0;
+endif
+
+var phrases := {
+	"An Ex Por - Undo the passing hour!",
+	"Rel Por Wis... Rel Por Wis... Time shifts to my will!",
+	"Mundain's shadow fades, the gods grant me another hour!",
+	"Ascension awaits! Spirits, restore my fading drive!",
+	"By the Light of the Virtues, grant me the strength to transcend!"
+};
+
+EraseObjProperty(character, "pph_use_time");
+EraseObjProperty(character, "pph_use_weekday");
+EraseObjProperty(character, "#PPHH");
+EraseObjProperty(character, "#PPHC");
+EraseObjProperty(character, "#PPHS");
+EraseObjProperty(character, "#SettingPH");
+
+PrintTextAbove(character, phrases.randomentry());
+PlaySoundEffect(character, SFX_SPELL_RESURRECTION);
+
+ReleaseItem(prism);
+DestroyItem(prism);
+return 1;
+
+endprogram

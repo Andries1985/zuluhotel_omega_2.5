@@ -1,0 +1,31 @@
+// Synopsis: Reset a targeted player's personal powerhour tracking properties
+use os;
+use uo;
+
+include "include/client";
+
+program resetph(who)
+
+	var mobile := target(who);
+
+	if(!mobile)
+		SendSysMessage(who, "Canceled", FONT_NORMAL, 43);
+		return 0;
+	endif
+
+	if(mobile.isa(POLCLASS_NPC))
+		SendSysMessage(who, "You cannot reset Powerhour on NPCs.", FONT_NORMAL, 43);
+		return 0;
+	endif
+
+	EraseObjProperty(mobile, "pph_use_time");
+	EraseObjProperty(mobile, "pph_use_weekday");
+
+	EraseObjProperty(mobile, "#PPHH");
+	EraseObjProperty(mobile, "#PPHC");
+	EraseObjProperty(mobile, "#PPHS");
+	EraseObjProperty(mobile, "#SettingPH");
+
+	SendSysMessage(who, "Reset " + mobile.name + "'s personal powerhour properties.", FONT_NORMAL, 2601);
+
+endprogram

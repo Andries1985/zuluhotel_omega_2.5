@@ -1,0 +1,15 @@
+// Synopsis: Trigger POLCore() internal diagnostic dumps 2 and 5 (script memory usage, etc.)
+use uo;
+use os;
+use basicio;
+
+program memdump( who )
+	SendSysMessage( who, "Triggering POLCore().internal(2) and internal(5)..." );
+	Print("[memdump] " + who.name + " triggered POLCore().internal(2) and internal(5)");
+
+	POLCore().internal(2);
+	POLCore().internal(5);
+
+	SendSysMessage( who, "Done. Check the server directory for the diagnostic log output." );
+	Print("[memdump] dumps complete");
+endprogram
