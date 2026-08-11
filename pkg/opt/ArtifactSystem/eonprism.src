@@ -1,8 +1,12 @@
 use uo;
+use math;
 
 include "include/client";
 
 const EONPRISM_FONT_COLOR := 43;
+
+const PH_DAY := 86400;
+const PH_WEEK := 604800;
 
 program eonprism(character, prism)
 
@@ -16,6 +20,19 @@ endif
 
 if(GetGlobalProperty("PHH") || GetGlobalProperty("PHC") || GetGlobalProperty("PHS"))
 	SendSysMessage(character, "You cannot use the Eon-Prism while a server-wide powerhour is active.", FONT_NORMAL, EONPRISM_FONT_COLOR);
+	ReleaseItem(prism);
+	return 0;
+endif
+
+// Mirrors the eligibility check in textcmd/player/setph.src and textcmd/player/ph.src.
+var time_now := POLCore().systime;
+var use_time := GetObjProperty(character, "pph_use_time");
+var use_weekday := GetObjProperty(character, "pph_use_weekday");
+var weekday_now := cint(Floor(time_now/PH_DAY)+4) % 7;
+var use_time_nextweek := use_time + PH_WEEK;
+
+if((weekday_now < use_weekday) || (time_now > use_time_nextweek))
+	SendSysMessage(character, "You don't need the Eon-Prism right now - you can already start a new personal powerhour with .setph!", FONT_NORMAL, EONPRISM_FONT_COLOR);
 	ReleaseItem(prism);
 	return 0;
 endif
