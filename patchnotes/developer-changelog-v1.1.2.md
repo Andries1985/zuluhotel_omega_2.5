@@ -1,9 +1,9 @@
 # Developer Changelog - v1.1.2
-**Range:** `7107d6d` (HEAD of v1.1.1) -> `bc79410` (HEAD)  
+**Range:** `7107d6d` (HEAD of v1.1.1) -> `8bb55cb` (HEAD)  
 **Branch:** Patch-1.1.2  
-**Date:** 2026-08-08 -> 2026-08-10  
-**Commits in range:** 5 non-boundary commits (`29962db`, `4ce28ea`, `25b0b3b`, `37cf238`, `bc79410`); 2 additional merge commits (`8386eef`, `316c467`) carry no new content  
-**Files changed (committed):** 27 (+1218 / -102), including this release's own 3 `patchnotes/` files
+**Date:** 2026-08-08 -> 2026-08-11  
+**Commits in range:** 6 non-boundary commits (`29962db`, `4ce28ea`, `25b0b3b`, `37cf238`, `bc79410`, `8bb55cb`); 2 additional merge commits (`8386eef`, `316c467`) carry no new content; `9e36189` (this release's own patchnotes commit) is a boundary commit, not counted  
+**Files changed (committed):** 30 (+1514 / -111), including this release's own 3 `patchnotes/` files
 
 ---
 
@@ -16,14 +16,15 @@
 5. [FileAccess - AllowRemote Enabled for Housing/PlayerVendor Escrow Logs](#5-fileaccess---allowremote-enabled-for-housingplayervendor-escrow-logs)
 6. [Command-Level Corrections and Script Housekeeping](#6-command-level-corrections-and-script-housekeeping)
 7. [New Staff Tool - .memdump Command and Standalone Memory-Usage Log Analyzers](#7-new-staff-tool---memdump-command-and-standalone-memory-usage-log-analyzers)
-8. [Exhaustive File-by-File Change List](#8-exhaustive-file-by-file-change-list)
-9. [Risk and Regression Notes](#9-risk-and-regression-notes)
+8. [Command Fix - .ph Now Reports Personal Powerhour Status](#8-command-fix---ph-now-reports-personal-powerhour-status)
+9. [Exhaustive File-by-File Change List](#9-exhaustive-file-by-file-change-list)
+10. [Risk and Regression Notes](#10-risk-and-regression-notes)
 
 ---
 
 ## 1. Scope Summary
 
-Patch 1.1.2 is a small maintenance patch, five commits over two days. `29962db` is nominally "Patchnotes for Patch 1.1.1" but also bundles a genuine fix - `AllowRemote 1` added to the housing/playervendor `.log` FileAccess grants - that postdates 1.1.1's own changelog range and is therefore covered here (section 5). `4ce28ea` ("Minor fixes from the logs") adds defensive nil/error guards across eleven files, all triggered by specific errors observed in the live server logs. `25b0b3b` ("Fixes for commands") corrects two migration commands' staff level, moves them out of the `admin` command folder, and strips leftover debug `Print()` calls from the 1.1.1 house-escrow system. `37cf238` ("Memory Dump Checks") adds a new staff diagnostic command plus two standalone (non-EScript) log-analysis scripts. `bc79410` ("Magic resistence training fix") is the fix requested by a player report: no vendor anywhere on the shard had Magic Resistance in its base skill list, so "vendor train" could never offer it regardless of which vendor type was asked.
+Patch 1.1.2 is a small maintenance patch, five commits over two days. `29962db` is nominally "Patchnotes for Patch 1.1.1" but also bundles a genuine fix - `AllowRemote 1` added to the housing/playervendor `.log` FileAccess grants - that postdates 1.1.1's own changelog range and is therefore covered here (section 5). `4ce28ea` ("Minor fixes from the logs") adds defensive nil/error guards across eleven files, all triggered by specific errors observed in the live server logs. `25b0b3b` ("Fixes for commands") corrects two migration commands' staff level, moves them out of the `admin` command folder, and strips leftover debug `Print()` calls from the 1.1.1 house-escrow system. `37cf238` ("Memory Dump Checks") adds a new staff diagnostic command plus two standalone (non-EScript) log-analysis scripts. `bc79410` ("Magic resistence training fix") is the fix requested by a player report: no vendor anywhere on the shard had Magic Resistance in its base skill list, so "vendor train" could never offer it regardless of which vendor type was asked. `8bb55cb` ("ph command fix"), landing after this release's own patch-notes commit (`9e36189`) and folded back into this document (section 8), ports a `.ph` improvement already shipped on ZH3.0 so the command also reports personal-powerhour status, not just server-wide.
 
 ---
 
@@ -39,6 +40,8 @@ Patch 1.1.2 is a small maintenance patch, five commits over two days. `29962db` 
 | `25b0b3b` | 2026-08-08 | Fixes for commands |
 | `37cf238` | 2026-08-10 | Memory Dump Checks |
 | `bc79410` | 2026-08-10 | Magic resistence training fix |
+| `9e36189` | 2026-08-10 | Patch Notes (boundary - this release's own v1.1.2 docs; superseded by this update) |
+| `8bb55cb` | 2026-08-11 | ph command fix |
 
 ---
 
@@ -187,7 +190,32 @@ Staff/developer-facing only. No player-visible change. Gives the team a repeatab
 
 ---
 
-## 8. Exhaustive File-by-File Change List
+## 8. Command Fix - .ph Now Reports Personal Powerhour Status
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/powerhour/textcmd/player/ph.src` | Rewritten - adds personal-powerhour reporting; server-wide reporting unchanged in substance |
+
+### Overview
+
+`.ph` previously only reported server-wide powerhour status (active type, or countdown to the next chance at one); it had no visibility into a player's own personal powerhour (`.setph`), even though `.setph` itself already reported remaining time when a personal PH was active. Ported from the equivalent fix already shipped on ZH3.0. `checkPH()` now also reads the same `pph_use_time`/`pph_use_weekday`/`#PPHH`/`#PPHC`/`#PPHS` obj-properties `setph.src` uses, and mirrors `setph.src`'s eligibility check (`weekday_now < use_weekday || time_now > use_time_nextweek`) to report either the active personal PH's remaining time or the countdown until the player is next eligible to start one via `.setph`.
+
+### Notable Functional Changes
+
+- Adds `use math;` for `Floor()`, used in the weekday/reset-time math (previously only `use uo;`).
+- New personal-status block, printed before the (retained) server-wide block: if any of `#PPHH`/`#PPHC`/`#PPHS` is set, reports which personal PH is active and its remaining minutes (same `(use_time + hour - time_now) / minute` calculation `setph.src` uses). Otherwise, reports the player has no personal PH active, then either "you can start one now" or a days/hours/minutes countdown to the next eligible day, computed by finding the next weekday-0 (Sunday) boundary on/after `use_time` - the same reset point implied by `setph.src`'s eligibility check.
+- Server-wide messages reworded for clarity now that personal-PH messages exist alongside them ("Hunting powerhour is currently active!" -> "A server-wide Hunting powerhour is currently active!", and adds an explicit "No server-wide powerhour is currently active." message in the else branch instead of only printing the countdown).
+- `POLCORE().systime` is now read once into `time_now` up front and reused for both the personal and server-wide countdown math, instead of being read a second time (as `curTime`) partway through the program.
+
+### Expected Impact
+
+Player-facing: `.ph` now tells you your own personal powerhour's remaining time (if active) or when you're next eligible to start one via `.setph`, in addition to the server-wide status it already reported. No change to `.setph` itself or to how either type of powerhour is granted/expires.
+
+---
+
+## 9. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -197,6 +225,7 @@ Staff/developer-facing only. No player-visible change. Gives the team a repeatab
 | `pkg/items/armor/include/armorZones.inc` | 4 | Nil-guards for zone/item config lookups |
 | `pkg/opt/alryc/textcmd/test/memdump.src` | 7 | New - `.memdump` |
 | `pkg/opt/classfirsts/pkg.cfg` | 6 | Comment path update |
+| `pkg/opt/powerhour/textcmd/player/ph.src` | 8 | Adds personal-powerhour status reporting |
 | `pkg/opt/powerscrolls/textcmd/player/showcaps.src` | 4 | Nil-guard for empty `classe` |
 | `pkg/opt/spawnpoint/checkpoint.src` | 4 | `error`-value guard for spawned-objects property |
 | `pkg/opt/vanityshop/mountstone.src` | 4 | `error`-value/nil guards, owner/mount lookups |
@@ -221,8 +250,9 @@ Staff/developer-facing only. No player-visible change. Gives the team a repeatab
 
 ---
 
-## 9. Risk and Regression Notes
+## 10. Risk and Regression Notes
 
+- **`.ph` personal-powerhour reporting (section 8):** read-only reporting change - it does not touch how personal or server-wide powerhours are granted, tracked, or expired (still entirely owned by `setph.src`/`activateph()`). Worth spot-checking the eligibility-countdown branch against a live `#PPHH`/`#PPHC`/`#PPHS` obj-property state once, since the reset-time math (next Sunday on/after `use_time`) is inferred from `setph.src`'s existing condition rather than a separate stored "next eligible" timestamp.
 - **Magic Resistance vendor training (section 3):** only affects vendors spawned/re-templated after this patch deploys - existing live Mage/Alchemist/Scribe vendors keep their current base skills until they respawn or the server reloads and re-applies `npcdesc.cfg`.
 - **`plankwalk.src` explicit realm arguments (section 4):** previously-implicit realm defaults are now explicit `who.realm`/`plank.realm` - should be behaviorally identical for any plank/player pair that was already on the same realm (the normal case), but worth watching for cross-realm boat/plank edge cases specifically, since that's the scenario this class of fix targets.
 - **House-escrow log de-duplication (section 6):** console `Print()` output for house-escrow operations is gone; `::log/houseescrow.log` and `::log/merchantescrow.log` (via `HouseEscrowLog()`/`MerchantEscrowLog()`) are now the only record, and depend on the `AllowRemote 1` fix in section 5 actually being in effect - confirm those log files are being written to post-deploy before relying on them for any incident investigation.

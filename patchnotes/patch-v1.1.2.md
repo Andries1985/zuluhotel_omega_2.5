@@ -1,6 +1,6 @@
 # Patch Notes - v1.1.2
 **Zuluhotel Omega 2.5 | Live Shard**  
-**Date: August 10, 2026**
+**Date: August 11, 2026**
 
 ---
 
@@ -34,10 +34,19 @@ Welcome to **Patch 1.1.2**. This is a small maintenance patch: **Magic Resistanc
 
 ---
 
+## .ph - Now Reports Your Personal Powerhour Too
+
+### Player Impact
+
+- `.ph` used to only tell you about server-wide powerhours. Now it also tells you about your own personal powerhour (from `.setph`): if one's active, how many minutes are left; if not, either that you can start one right now or a countdown to when you'll next be eligible.
+
+---
+
 ## Summary
 
 - Mage, Alchemist, and Scribe vendors can now train Magic Resistance.
 - Fixed several rare script errors: tamed-pet heart creation, spawnpoint chest traps, boat/plank edge cases, Mount Stones, and Bardic Boulders.
 - Staff-side housekeeping: corrected command permission levels, fixed house-escrow audit logging, and added a new memory-usage diagnostic tool for staff.
+- `.ph` now reports your personal powerhour status alongside the server-wide status.
 
 Thanks for playing Zuluhotel Omega 2.5.
