@@ -169,7 +169,16 @@ program textcmd_sign( who , sign )
 		data[6] := who.name;
 		SetObjProperty( sign , "lastownername" , who.name );
 	else
-		data[6] := GetObjProperty( sign , "lastownername" );
+		// Resolve the owner live (even offline) instead of trusting the cache,
+		// which is only refreshed when the owner personally opens their own sign
+		// and can otherwise go stale (e.g. after a town citizenship name change).
+		var ownerchar := SystemFindObjectBySerial( CInt(oserial), SYSFIND_SEARCH_OFFLINE_MOBILES );
+		if( ownerchar )
+			data[6] := ownerchar.name;
+			SetObjProperty( sign , "lastownername" , ownerchar.name );
+		else
+			data[6] := GetObjProperty( sign , "lastownername" );
+		endif
 	endif
 
 	if( (GetObjProperty( house , "numlockdowns" ) == error) or (GetObjProperty( house , "numsecure" ) == error) )
