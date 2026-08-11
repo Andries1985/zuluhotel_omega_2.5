@@ -30,7 +30,7 @@ Welcome to **Patch 1.1.2**. This is a small maintenance patch: **Magic Resistanc
 
 ### Player Impact
 
-- No direct gameplay change expected. Two staff migration commands were corrected to require the proper staff level and moved to their proper internal folder; a fix was made so the house-escrow system's audit logs actually get written to disk; and a new staff diagnostic tool (`.memdump`) was added to help investigate server memory usage.
+- No direct gameplay change expected. Two staff migration commands were corrected to require the proper staff level and moved to their proper internal folder; a fix was made so the house-escrow system's audit logs actually get written to disk; a new staff diagnostic tool (`.memdump`) was added to help investigate server memory usage; and developer staff can now use `.resetph` to fix a player stuck unable to start a new personal powerhour. A new Artifact System item, the Eon-Prism, was also added - it lets a player clear their own stuck/used-up personal powerhour - but it isn't in the artifact pool or any loot table yet, so you won't see it in-game this patch.
 
 ---
 
@@ -46,7 +46,8 @@ Welcome to **Patch 1.1.2**. This is a small maintenance patch: **Magic Resistanc
 
 - Mage, Alchemist, and Scribe vendors can now train Magic Resistance.
 - Fixed several rare script errors: tamed-pet heart creation, spawnpoint chest traps, boat/plank edge cases, Mount Stones, and Bardic Boulders.
-- Staff-side housekeeping: corrected command permission levels, fixed house-escrow audit logging, and added a new memory-usage diagnostic tool for staff.
+- Staff-side housekeeping: corrected command permission levels, fixed house-escrow audit logging, added a new memory-usage diagnostic tool, and added `.resetph` to unstick players from a broken personal-powerhour state.
 - `.ph` now reports your personal powerhour status alongside the server-wide status.
+- Added the Eon-Prism, a new Artifact System item (not yet in circulation) that lets a player reset their own personal powerhour.
 
 Thanks for playing Zuluhotel Omega 2.5.

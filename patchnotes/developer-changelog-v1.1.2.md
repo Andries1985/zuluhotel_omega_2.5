@@ -17,8 +17,10 @@
 6. [Command-Level Corrections and Script Housekeeping](#6-command-level-corrections-and-script-housekeeping)
 7. [New Staff Tool - .memdump Command and Standalone Memory-Usage Log Analyzers](#7-new-staff-tool---memdump-command-and-standalone-memory-usage-log-analyzers)
 8. [Command Fix - .ph Now Reports Personal Powerhour Status](#8-command-fix---ph-now-reports-personal-powerhour-status)
-9. [Exhaustive File-by-File Change List](#9-exhaustive-file-by-file-change-list)
-10. [Risk and Regression Notes](#10-risk-and-regression-notes)
+9. [New GM Tool - .resetph Command](#9-new-gm-tool---resetph-command)
+10. [New Item - Eon-Prism](#10-new-item---eon-prism)
+11. [Exhaustive File-by-File Change List](#11-exhaustive-file-by-file-change-list)
+12. [Risk and Regression Notes](#12-risk-and-regression-notes)
 
 ---
 
@@ -215,17 +217,71 @@ Player-facing: `.ph` now tells you your own personal powerhour's remaining time 
 
 ---
 
-## 9. Exhaustive File-by-File Change List
+## 9. New Developer Tool - .resetph Command
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/powerhour/textcmd/test/resetph.src` | New - `.resetph` |
+| `config/command_synopses.cfg` | New `resetph` entry (Developer, CmdLevel 5), regenerated via `pythonscripts/_gen_command_synopses_cfg.py` |
+
+### Overview
+
+Investigating the report that prompted section 8 surfaced a related stuck-state bug: `setph.src` sets the obj-property `#SettingPH` to `1` while a personal powerhour gump is open, and only clears it once `activateph()` finishes its full one-hour `Sleep(3600)` and reaches its cleanup at the end of that function (or on the player's next logon/reconnect, both of which already erase it). If that backgrounded script instance dies before then - a server restart while a player's personal PH is active being the most likely case - `#SettingPH` is orphaned at `1` indefinitely, and every subsequent `.setph` hits the "You have the gump window open already!" branch with no way out for the player. `.resetph`, a targeted staff command, was ported from the equivalent tool already shipped on ZH3.0 (`pkg/opt/powerhour/textcmd/test/resetph.src` there) to give staff a way to clear a player out of this state on request.
+
+### Notable Functional Changes
+
+- `.resetph` (Developer, CmdLevel 5): targets a mobile, erases `pph_use_time`, `pph_use_weekday`, `#PPHH`, `#PPHC`, `#PPHS`, and `#SettingPH` from it, and reports the reset to the caller. Refuses to run on NPCs.
+- Placed under `pkg/opt/powerhour/textcmd/test/`, matching the level/folder ZH3.0's own `resetph.src` uses there (Developer-level, `textcmd/test/`).
+- Adapted from the ZH3.0 source rather than copied verbatim: adds the `#SettingPH` erase (not present on ZH3.0, whose `setph.src` doesn't use that property at all - see below), drops `SetObjProperty(mobile, "usedpph", 0)` (a ZH3.0-only property this repo's powerhour system never reads or writes), and uses this repo's `mobile.isa(POLCLASS_NPC)` NPC-check idiom instead of ZH3.0's `mobile == POLCLASS_NPC` object/constant equality comparison.
+
+### Expected Impact
+
+Staff-facing only. Gives Developer-level staff a one-command fix for a player stuck unable to `.setph` after a personal powerhour's backing script is lost (server restart mid-PH being the main trigger), instead of requiring a manual obj-property edit. No change to normal `.setph`/`.ph` behavior.
+
+---
+
+## 10. New Item - Eon-Prism (Artifact System)
+
+### Files Changed
+
+| File | Change |
+|---|---|
+| `pkg/opt/ArtifactSystem/eonprism.src` | New - `eonprism` double-click handler |
+| `pkg/opt/ArtifactSystem/itemdesc.cfg` | New - `item 0x792F` (`eonprism`, graphic `0x2f57` "runed prism") |
+
+### Overview
+
+A player-facing self-service version of `.resetph` (section 9): an item that lets a player clear their own stuck/used-up personal-powerhour properties without needing staff. Built as an Artifact System item (`pkg/opt/ArtifactSystem/` - see `pkg/opt/ArtifactSystem/artifact-system-summary.txt`) rather than a plain consumable, matching `championrelic.src`/`worldgem.src`'s pattern: `CProp Artifact i1` means the item recycles back into the global artifact pool via `maindestroy.src` instead of being permanently deleted when "used up," so it can circulate through `.makeartifact`/`.openartifact`/artifactbox pulls like the system's other rare rewards.
+
+### Notable Functional Changes
+
+- `item 0x792F` ("Eon-Prism", internal name `eonprism`): objtype picked from the documented-unused `0x792F-0x798F` gap in `objtypes.txt`, immediately after the `sysbook` package's `0x7910-0x792E` block - no collisions with any other `itemdesc.cfg` in the repo. Graphic `0x2f57` is the stock UO "runed prism" tile (`config/tiles.cfg`).
+- On use: refuses (with a sysmessage, releasing the item instead of consuming it) if the player has an active personal powerhour (`#PPHH`/`#PPHC`/`#PPHS`) - so the item can't silently cut a live personal powerhour short (the same hazard noted for `.resetph` in section 12's risk notes) - or if a server-wide powerhour is currently active (`GetGlobalProperty("PHH"/"PHC"/"PHS")`), so it can't be used to stack a fresh personal powerhour on top of/immediately after a global one.
+- Otherwise erases `pph_use_time`, `pph_use_weekday`, `#PPHH`, `#PPHC`, `#PPHS`, and `#SettingPH` (same property set `.resetph` clears), then `PrintTextAbove()`s a random line from a 5-entry flavor-text array via `.randomentry()` (public overhead text, like `scripts/textcmd/coun/sayabove.src` - not a sysmessage, so nearby players see it too) and plays `SFX_SPELL_RESURRECTION` (the same sound `Resurrect()`/`highpriest.src` use), then `ReleaseItem()`/`DestroyItem()`s itself - matching `championrelic.src`/`worldgem.src`'s exact release-then-destroy order, needed because `maindestroy.src` intercepts the destroy for `Artifact`-flagged items and reroutes them into the global pool rather than freeing them; skipping the explicit `ReleaseItem()` would leave the recycled item stuck reserved (undoubleclickable) once it lands back in the artifact box.
+- Not yet added to the live artifact pool via `.makeartifact`/`.openartifact`, and not on any loot table/vendor - this patch only adds the item and its objtype; getting copies into circulation is a separate staff step.
+
+### Expected Impact
+
+Player-facing: gives players a way to self-recover from a stuck personal-powerhour state (or reset their weekly eligibility) without staff intervention, once copies exist in the artifact pool. No effect until staff adds it via `.makeartifact`/`.openartifact`.
+
+---
+
+## 11. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
-| `config/command_synopses.cfg` | 6, 7 | Migration commands re-leveled; new `memdump` entry |
+| `config/command_synopses.cfg` | 6, 7, 9 | Migration commands re-leveled; new `memdump` entry; new `resetph` entry |
 | `config/fileaccess.cfg` | 5 | `AllowRemote 1` added for housing/playervendor `.log` |
 | `config/npcdesc.cfg` | 3 | `MagicResistance 100` added to mage/alchemist/scribe |
 | `pkg/items/armor/include/armorZones.inc` | 4 | Nil-guards for zone/item config lookups |
 | `pkg/opt/alryc/textcmd/test/memdump.src` | 7 | New - `.memdump` |
+| `pkg/opt/ArtifactSystem/eonprism.src` | 10 | New - `eonprism` double-click handler |
+| `pkg/opt/ArtifactSystem/itemdesc.cfg` | 10 | New - `item 0x792F` (`eonprism`) |
 | `pkg/opt/classfirsts/pkg.cfg` | 6 | Comment path update |
 | `pkg/opt/powerhour/textcmd/player/ph.src` | 8 | Adds personal-powerhour status reporting |
+| `pkg/opt/powerhour/textcmd/test/resetph.src` | 9 | New - `.resetph` |
 | `pkg/opt/powerscrolls/textcmd/player/showcaps.src` | 4 | Nil-guard for empty `classe` |
 | `pkg/opt/spawnpoint/checkpoint.src` | 4 | `error`-value guard for spawned-objects property |
 | `pkg/opt/vanityshop/mountstone.src` | 4 | `error`-value/nil guards, owner/mount lookups |
@@ -250,8 +306,10 @@ Player-facing: `.ph` now tells you your own personal powerhour's remaining time 
 
 ---
 
-## 10. Risk and Regression Notes
+## 12. Risk and Regression Notes
 
+- **Eon-Prism (section 10):** guarded against use during an active personal powerhour, but otherwise unconditional and irreversible like `.resetph` - a player who uses it while ineligible anyway (e.g. just to reset the weekly countdown) gets no confirmation prompt. As an `Artifact`-flagged item it recycles into the global artifact pool on "destroy" rather than being deleted, so the `ReleaseItem()` call before `DestroyItem()` is load-bearing - worth confirming in-game that a used prism actually turns up recoverable in the artifact box rather than stuck reserved, before relying on it in production. Not yet added to the live pool via `.makeartifact`, so has zero live impact until staff does that.
+- **`.resetph` (section 9):** unconditionally erases the targeted player's `pph_use_time`/`pph_use_weekday`/`#PPHH`/`#PPHC`/`#PPHS`/`#SettingPH` - if used on a player with a legitimately active personal powerhour rather than a stuck one, it ends that powerhour early without the normal "has ended" sysmessage `activateph()` sends. GM-level tool, used on request; no automatic trigger.
 - **`.ph` personal-powerhour reporting (section 8):** read-only reporting change - it does not touch how personal or server-wide powerhours are granted, tracked, or expired (still entirely owned by `setph.src`/`activateph()`). Worth spot-checking the eligibility-countdown branch against a live `#PPHH`/`#PPHC`/`#PPHS` obj-property state once, since the reset-time math (next Sunday on/after `use_time`) is inferred from `setph.src`'s existing condition rather than a separate stored "next eligible" timestamp.
 - **Magic Resistance vendor training (section 3):** only affects vendors spawned/re-templated after this patch deploys - existing live Mage/Alchemist/Scribe vendors keep their current base skills until they respawn or the server reloads and re-applies `npcdesc.cfg`.
 - **`plankwalk.src` explicit realm arguments (section 4):** previously-implicit realm defaults are now explicit `who.realm`/`plank.realm` - should be behaviorally identical for any plank/player pair that was already on the same realm (the normal case), but worth watching for cross-realm boat/plank edge cases specifically, since that's the scenario this class of fix targets.
