@@ -75,7 +75,22 @@ endfunction
 
 function ProcessNpcCorpseDecaying( corpse )
 
-	Sleep( Cint(DECAY_TIME_NPC_CORPSE*60) );
-	DestroyItem(corpse);
+    const CORPSE_CHECK_INTERVAL := 30;    // In seconds.
+
+    var decay_seconds := Cint(DECAY_TIME_NPC_CORPSE * 60);
+    var elapsed := 0;
+
+    while( elapsed < decay_seconds )
+        if( !corpse )
+            return;
+        endif
+
+        Sleep( CORPSE_CHECK_INTERVAL );
+        elapsed := elapsed + CORPSE_CHECK_INTERVAL;
+    endwhile
+
+    if( corpse )
+        DestroyItem(corpse);
+    endif
 
 endfunction
