@@ -1,6 +1,11 @@
+use util;
+
 // include "include/starteqp";
-include ":spawnpoint:customnpc";
+//include ":spawnpoint:customnpc";
 include "ai/setup/modsetup";
+include "include/randname";
+include "ai/setup/dressCustom";
+
 set_critical(0);
 var me := self();
 
