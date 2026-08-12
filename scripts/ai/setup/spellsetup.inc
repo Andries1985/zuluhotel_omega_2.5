@@ -1,9 +1,10 @@
 use npc;
 
 include "include/starteqp";
-include ":spawnpoint:customnpc";
+//include ":spawnpoint:customnpc";
 include "include/random";
 include "include/randname";
+include "ai/setup/dressCustom";
 
 set_critical(0);
 var speech;
