@@ -14,12 +14,17 @@ program corpse_decay( corpse )
 
 	corpse.decayat := 0;
 	Sleep(5);
+
+	if( !SystemFindObjectBySerial(corpse.serial) )
+		return;
+	endif
+
 	if( GetObjProperty( corpse, "npctemplate" ) )
 		ProcessNpcCorpseDecaying(corpse);
 	else
 		ProcessHumanCorpseDecaying(corpse);
 	endif
-	
+
 endprogram
 
 
@@ -75,22 +80,26 @@ endfunction
 
 function ProcessNpcCorpseDecaying( corpse )
 
-    const CORPSE_CHECK_INTERVAL := 30;    // In seconds.
+	const CORPSE_CHECK_INTERVAL := 30; // Seconds between existence checks.
 
-    var decay_seconds := Cint(DECAY_TIME_NPC_CORPSE * 60);
-    var elapsed := 0;
+	var time_left := Cint(DECAY_TIME_NPC_CORPSE*60);
 
-    while( elapsed < decay_seconds )
-        if( !corpse )
-            return;
-        endif
+	while( time_left > 0 )
+		if( !SystemFindObjectBySerial(corpse.serial) )
+			return; // Corpse already gone (e.g. despawned by restartspawnpointarea).
+		endif
 
-        Sleep( CORPSE_CHECK_INTERVAL );
-        elapsed := elapsed + CORPSE_CHECK_INTERVAL;
-    endwhile
+		var this_sleep := CORPSE_CHECK_INTERVAL;
+		if( time_left < this_sleep )
+			this_sleep := time_left;
+		endif
 
-    if( corpse )
-        DestroyItem(corpse);
-    endif
+		Sleep(this_sleep);
+		time_left := time_left - this_sleep;
+	endwhile
+
+	if( SystemFindObjectBySerial(corpse.serial) )
+		DestroyItem(corpse);
+	endif
 
 endfunction
