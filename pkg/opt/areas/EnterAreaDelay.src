@@ -35,8 +35,21 @@ var regionname := GetRegionName(who);
 // 	SendSysMessage(who, "You have entered "+regionname, 3, 1001);
 // endif
 
+// who is scheduled via Start_Script() in EnterArea.src, so by the time this
+// program actually runs, who may have logged out / been destroyed. Accessing
+// members on a stale who returns an error{} value (not a thrown exception);
+// if that error value were passed through into ResolvePolicyAtLocation() as
+// "realm", it gets CStr()'d straight into the area-policy datastore filename
+// and crashes the whole server when the core tries to open that garbage path.
+var who_x := who.x;
+var who_y := who.y;
+var who_realm := who.realm;
+if(who_x == error || who_y == error || who_realm == error)
+	return 0;
+endif
+
 // Resolve area policy mask ONCE and reuse the result for all bit checks.
-var mask := CInt(ResolvePolicyAtLocation(who.x, who.y, who.realm));
+var mask := CInt(ResolvePolicyAtLocation(who_x, who_y, who_realm));
 
 // Safe area, no more messages atm
 if (HasPolicy(mask, AREA_POLICY_SAFE_AREA))
