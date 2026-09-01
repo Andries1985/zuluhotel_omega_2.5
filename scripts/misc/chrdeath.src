@@ -144,7 +144,7 @@ program chrdeath(corpse,ghost)
 		if (oktodestroy)
 			DestroyItem(corpse);
 		else
-			SendSysMessage(ghost,"There are still items left on your corpse - please page staff.");
+			SendSysMessage(ghost,"Your backpack is too full to hold everything - some items are still on your corpse. They won't be lost; loot them now or they'll drop to the ground when the corpse decays.");
 		endif
 		return;
 	endif
@@ -205,7 +205,7 @@ program chrdeath(corpse,ghost)
 		if (oktodestroy)
 			DestroyItem(corpse);
 		else
-			SendSysMessage(ghost,"There are still items left on your corpse - please page staff.");
+			SendSysMessage(ghost,"Your backpack is too full to hold everything - some items are still on your corpse. They won't be lost; loot them now or they'll drop to the ground when the corpse decays.");
 		endif
 		SetSafeAreaProperties(ghost);
 		MoveObjectToLocation( ghost, 5503, 1665, 22, "britannia", MOVEOBJECT_FORCELOCATION );
@@ -297,7 +297,7 @@ program chrdeath(corpse,ghost)
 		if (oktodestroy2)
 			DestroyItem(corpse);
 		else
-			SendSysMessage(ghost,"There are still items left on your corpse - please page staff.");
+			SendSysMessage(ghost,"Your backpack is too full to hold everything - some items are still on your corpse. They won't be lost; loot them now or they'll drop to the ground when the corpse decays.");
 		endif
 		if(len(ghost.reportables)>0)
 			SendReportGump(ghost);

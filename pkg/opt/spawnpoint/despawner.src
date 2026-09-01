@@ -36,7 +36,11 @@ program DeSpawner( point )
 	endif
 	
 	set_critical(1);
-	foreach spawnsr in GetObjProperty(point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS)
+	var spawned := GetObjProperty(point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS);
+	if( !spawned or spawned == error )
+		spawned := {};
+	endif
+	foreach spawnsr in spawned
 		spawno := SystemFindObjectBySerial(spawnsr);
 		case( pt_data[1] )
 			"NPC":

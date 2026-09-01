@@ -165,11 +165,17 @@ endfunction
 
 function killmounts( who, item )
 	var mountserial := GetObjProperty( who, "DMountSerial" );
+	if (mountserial == error)
+		mountserial := 0;
+	endif
 	var mount := SystemFindObjectBySerial( mountserial );
 	var mounted := GetEquipmentByLayer( who, 25 );
 
 	if( mounted)
 		SendSysMessage( who, "You cannot do that while mounted!");
+		return 0;
+	endif
+	if( !mount )
 		return 0;
 	endif
 	ApplyRawDamage( mount, CInt(GetHp(mount)+3) );

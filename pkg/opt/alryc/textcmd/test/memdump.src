@@ -1,0 +1,24 @@
+// Synopsis: Trigger POLCore() internal diagnostic dumps 2, 5, and 6 (killpcs/spellkillpcs/barker/animal AI memory)
+use uo;
+use os;
+use basicio;
+
+const MEMDUMP_KILLPCS_SCRIPT      := "scripts/ai/killpcs.ecl";
+const MEMDUMP_SPELLKILLPCS_SCRIPT := "scripts/ai/spellkillpcs.ecl";
+const MEMDUMP_BARKER_SCRIPT       := "scripts/ai/barker.ecl";
+const MEMDUMP_ANIMAL_SCRIPT       := "scripts/ai/animal.ecl";
+
+program memdump( who )
+	SendSysMessage( who, "Triggering POLCore().internal(2), internal(5), and internal(6) for killpcs/spellkillpcs/barker/animal..." );
+	Print("[memdump] " + who.name + " triggered POLCore().internal(2), internal(5), and internal(6) for killpcs/spellkillpcs/barker/animal");
+
+	POLCore().internal(2);
+	POLCore().internal(5);
+	POLCore().internal(6, MEMDUMP_KILLPCS_SCRIPT);
+	// POLCore().internal(6, MEMDUMP_SPELLKILLPCS_SCRIPT);
+	// POLCore().internal(6, MEMDUMP_BARKER_SCRIPT);
+	// POLCore().internal(6, MEMDUMP_ANIMAL_SCRIPT);
+
+	SendSysMessage( who, "Done. Check the server directory for the diagnostic log output." );
+	Print("[memdump] dumps complete");
+endprogram

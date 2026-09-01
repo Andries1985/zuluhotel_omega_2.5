@@ -3,8 +3,9 @@ use os;
 use npc;
 use cfgfile;
 
-include ":spawnpoint:customnpc";
+//include ":spawnpoint:customnpc";
 include ":staff:include/staff";
+include "ai/setup/dressCustom";
 
 program Use_shrink(who, doll)
 

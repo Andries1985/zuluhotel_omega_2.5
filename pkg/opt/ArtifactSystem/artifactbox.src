@@ -7,6 +7,7 @@ include ":ArtifactSystem:artifact";
 const UOBJ_CHAMPION_RELIC_T1 := 0x7991;
 const UOBJ_CHAMPION_RELIC_T2 := 0x7992;
 const UOBJ_WORLD_GEM := 0x7993;
+const UOBJ_EON_PRISM := 0x792F;
 const RELIC_DECAY_SECONDS := 1209600;
 
 program dblclick_artifactbox( player, box )
@@ -15,7 +16,7 @@ program dblclick_artifactbox( player, box )
 	if (item)
 		MoveItemToContainer(item, player.backpack);
 
-		if (item.objtype == UOBJ_CHAMPION_RELIC_T1 || item.objtype == UOBJ_CHAMPION_RELIC_T2 || item.objtype == UOBJ_WORLD_GEM)
+		if (item.objtype == UOBJ_CHAMPION_RELIC_T1 || item.objtype == UOBJ_CHAMPION_RELIC_T2 || item.objtype == UOBJ_WORLD_GEM || item.objtype == UOBJ_EON_PRISM)
 			var expire_at := ReadGameClock() + RELIC_DECAY_SECONDS;
 			item.decayat := expire_at;
 			SetObjProperty(item, "#ArtifactExpireAt", expire_at);

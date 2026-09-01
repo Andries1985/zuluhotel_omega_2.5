@@ -69,7 +69,10 @@ program skillwindow( who )
 		endif   
 
 
-		var level := GetObjProperty(who, classe);
+		var level := 0;
+		if (classe)
+			level := GetObjProperty(who, classe);
+		endif
 
 		if (level)
 			GFTextLine(gump, 450, 30, 2820, classe +": "+level);

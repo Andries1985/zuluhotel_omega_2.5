@@ -161,6 +161,14 @@ endfunction
 
 
 function SanitizePolicyRealm(realm)
+	// A stale/invalid caller-side object (e.g. a mobile that logged out before
+	// a delayed member access ran) surfaces here as an error{} value rather
+	// than a thrown exception. CStr() on that would stringify it into the
+	// datafile descriptor and crash the core when it tries to open the
+	// resulting garbage filename, so reject it before that happens.
+	if(realm == error)
+		return AREA_POLICY_DEFAULT_REALM;
+	endif
 	realm := Lower(CStr(realm));
 	if(!realm || realm == "<uninitialized object>")
 		return AREA_POLICY_DEFAULT_REALM;
@@ -195,32 +203,22 @@ endfunction
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Parsed-line cache (per-program + shared global)
+// Parsed-line cache (shared global)
 ///////////////////////////////////////////////////////////////////////////////
 // SplitWords/SubStr parsing every area line on every call was the sysload=100
-// hot path. We have two layers:
-//   1) Per-program in-RAM cache (fastest — direct dict lookup).
-//   2) Shared GlobalProperty cache — any program's first-ever cold parse
-//      populates it, and every other program on the shard reads it back
-//      without paying the ~100k-instruction parse cost.
+// hot path. A shared GlobalProperty cache avoids that: any program's
+// first-ever cold parse populates it, and every other program on the shard
+// reads it back without paying the ~100k-instruction parse cost.
 // GlobalProperties persist across saves, so we tag the cache with a "size"
 // fingerprint and invalidate if the config's line count changes.
-
-var _parsed_area_lines_cache := dictionary;
 
 const AREA_POLICY_CACHE_PREFIX := "zh.areapolicy.parsed.";
 
 function GetParsedRealmAreaLines(realm)
 	realm := SanitizePolicyRealm(realm);
 
-	// Layer 1: per-program in-RAM cache.
-	var cached := _parsed_area_lines_cache[realm];
-	if(cached)
-		return cached;
-	endif
-
-	// Layer 2: shared global cache. Must validate fingerprint against
-	// the current config's line count so a config edit invalidates stale data.
+	// Must validate fingerprint against the current config's line count so a
+	// config edit invalidates stale data.
 	var raw_lines := GetRealmAreaLines(realm);
 	if(raw_lines == error)
 		return raw_lines;
@@ -232,12 +230,11 @@ function GetParsedRealmAreaLines(realm)
 	if(global_cached && global_cached != error && TypeOf(global_cached) == "Struct")
 		// Struct: { fingerprint, parsed }
 		if(CInt(global_cached.fingerprint) == raw_count && global_cached.parsed)
-			_parsed_area_lines_cache[realm] := global_cached.parsed;
 			return global_cached.parsed;
 		endif
 	endif
 
-	// Cold path: parse all lines and populate both caches.
+	// Cold path: parse all lines and populate the global cache.
 	var parsed := array{};
 	var i;
 	for(i := 1; i <= raw_count; i := i + 1)
@@ -252,7 +249,6 @@ function GetParsedRealmAreaLines(realm)
 	wrapper.+fingerprint := raw_count;
 	wrapper.+parsed := parsed;
 	SetGlobalProperty(global_key, wrapper);
-	_parsed_area_lines_cache[realm] := parsed;
 	return parsed;
 endfunction
 
@@ -260,10 +256,7 @@ endfunction
 function InvalidateParsedAreaLinesCache(realm := "")
 	if(realm)
 		realm := Lower(CStr(realm));
-		_parsed_area_lines_cache.Erase(realm);
 		EraseGlobalProperty(AREA_POLICY_CACHE_PREFIX + realm);
-	else
-		_parsed_area_lines_cache := dictionary;
 	endif
 	return 1;
 endfunction
@@ -397,7 +390,7 @@ endfunction
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Mask-value cache (per-program + shared global)
+// Mask-value cache (shared global)
 ///////////////////////////////////////////////////////////////////////////////
 // Mirrors the parsed-line cache above, but for the mask VALUE itself. Every
 // GetPolicyMask() call was hitting the datafile subsystem (OpenDataFile +
@@ -407,38 +400,27 @@ endfunction
 // AI tick for every mobile shard-wide. Masks only change via SetPolicyMask
 // (staff .areas edits) or PruneStaleRealmPolicies, so a cache invalidated
 // only on those writes is safe. Cached per-realm as one dictionary (area_id
-// -> mask) so this stays one GlobalProperty per realm, same shape as the
-// parsed-line cache, not one property per area.
+// -> mask) so this stays one GlobalProperty per realm, not one property per
+// area.
 //
 // Uses .Exists() rather than truthiness to check for a cached entry, since a
 // mask of 0 (the common case - most areas have no flags) is a valid cached
 // value and must not be treated as "not cached".
 
-var _policy_mask_cache := dictionary;
-
 const AREA_POLICY_MASK_CACHE_PREFIX := "zh.areapolicy.maskcache.";
 
 function GetCachedRealmMaskDict(realm)
-	var realm_cache := _policy_mask_cache[realm];
-	if(realm_cache)
-		return realm_cache;
-	endif
-
 	var global_cached := GetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm);
 	if(global_cached && TypeOf(global_cached) == "Dictionary")
-		_policy_mask_cache[realm] := global_cached;
 		return global_cached;
 	endif
 
-	var fresh := dictionary;
-	_policy_mask_cache[realm] := fresh;
-	return fresh;
+	return dictionary;
 endfunction
 
 
 function StoreCachedPolicyMask(realm, realm_cache, area_id, mask)
 	realm_cache[area_id] := CInt(mask);
-	_policy_mask_cache[realm] := realm_cache;
 	SetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm, realm_cache);
 	return CInt(mask);
 endfunction
@@ -447,14 +429,12 @@ endfunction
 function InvalidatePolicyMaskCache(realm, area_id := "")
 	realm := SanitizePolicyRealm(realm);
 	if(area_id)
-		var realm_cache := _policy_mask_cache[realm];
-		if(realm_cache)
+		var realm_cache := GetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm);
+		if(realm_cache && TypeOf(realm_cache) == "Dictionary")
 			realm_cache.Erase(CStr(area_id));
-			_policy_mask_cache[realm] := realm_cache;
 			SetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm, realm_cache);
 		endif
 	else
-		_policy_mask_cache.Erase(realm);
 		EraseGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm);
 	endif
 	return 1;

@@ -39,7 +39,10 @@ program open_trapped_item( character , item )
 		var trapstrength	:= GetObjProperty(item,"trap_strength");
 		var trapcrafter	:= GetObjProperty(item,"trapped_by" );
 		//Print("Trap Type: "+traptype+" Trap Strength: "+trapstrength+" Trapped By: "+trapcrafter);
-		if( trapcrafter )
+		// Spawnpoint-placed traps store the string "Spawnpoint" here (see
+		// checkpoint.src PROPID_CHEST_TRAPPED_BY) instead of a crafter serial -
+		// there's no mobile to look up or notify in that case.
+		if( trapcrafter and TypeOf(trapcrafter) == "Integer" )
 			var trapper	:= SystemFindObjectBySerial( trapcrafter );
 			if( !trapper )
 				trapper := SystemFindObjectBySerial( trapcrafter , SYSFIND_SEARCH_OFFLINE_MOBILES );

@@ -1,5 +1,6 @@
 // include "include/starteqp";
-include ":spawnpoint:customnpc";
+//include ":spawnpoint:customnpc";
+include "ai/setup/dressCustom";
 
 	set_critical(0);
 	var me := self();

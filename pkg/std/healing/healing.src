@@ -224,6 +224,7 @@ function TryToCure( character , patient , bandages )
 
 	if( patient.dead )
 		SendSysMessage( character , "Your patient is dead." );
+		return;
 	endif
 
 	if( CheckSkill( character , SKILLID_HEALING , diff , points ) )
@@ -295,6 +296,7 @@ function TryToHeal( character , patient , bandages )
 
 	if( patient.dead )
 		SendSysMessage( character , "Your patient is dead." );
+		return;
 	endif
 
 	var diff 	:= GetMaxHP(patient) - GetHP(patient); //patient.maxhp - patient.hp;

@@ -114,6 +114,8 @@ function TryToCure( who , patient , bandages )
 
 	if( patient.dead )
 		SendSysMessage( who , "The creature is dead." );
+		EraseObjProperty(who,"DoingVet");
+		return;
 	endif
 
 	var plvl 	:= PoisonLevel( patient );
@@ -197,9 +199,8 @@ function TryToHeal( who , patient , bandages )
 	if( patient.dead )
 		if (who != patient)
 			SendSysMessage( who , "The creature is dead." );
-		else
-			return 0;
 		endif
+		return 0;
 	endif
 
 	var diff 	:= cint(GetMaxHP(patient) - GetHP(patient));

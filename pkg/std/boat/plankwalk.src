@@ -72,12 +72,12 @@ program plankwalk( who, plank, lastx, lasty, lastz )
     if (!FindKey( who, plank ))
         var sh := GetStandingHeight( lastx, lasty, lastz );
         if (!sh or !sh.multi or sh.multi.serial != plank.multi.serial)
-            MoveObjectToLocation( who, lastx, lasty, lastz, MOVEOBJECT_FORCELOCATION );
+            MoveObjectToLocation( who, lastx, lasty, lastz, who.realm, MOVEOBJECT_FORCELOCATION );
             return;
         endif
     endif
-    
-    if (ListMobilesNearLocation( plank.x, plank.y, plank.z, 0 ).size() > 1)
+
+    if (ListMobilesNearLocation( plank.x, plank.y, plank.z, 0, plank.realm ).size() > 1)
         MoveObjectToLocation( who, lastx, lasty, lastz, who.realm, MOVEOBJECT_FORCELOCATION );
         return;
     endif

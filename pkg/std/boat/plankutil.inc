@@ -14,6 +14,9 @@ function IsExtended( plank )
 endfunction                           
 
 function IsPlankOccupied( plank )
+  if (!plank or !plank.realm)
+    return 0;
+  endif
   return ListMobilesNearLocation( plank.x, plank.y, plank.z, 0, plank.realm ).size();
 endfunction
 

@@ -33,7 +33,7 @@ program DestroySpawnPoint(point)
 
 	if( pt_data[9] )
 		var spawned := GetObjProperty(point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS);
-		if( spawned )
+		if( spawned and spawned != error )
 			var spawned_object;
 			foreach spawned_serial in spawned
 				spawned_object := SystemFindObjectBySerial(spawned_serial);

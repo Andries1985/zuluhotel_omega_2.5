@@ -116,7 +116,7 @@ program mobiledata(parms)
 			endif
 
 			var masterserial := GetObjProperty(xObject, "master");
-			if (masterserial)
+			if (masterserial and masterserial != error)
 				var petmaster := SystemFindObjectBySerial(masterserial, SYSFIND_SEARCH_OFFLINE_MOBILES);
 				if (petmaster)
 					prop.clilocid := 1070722;
