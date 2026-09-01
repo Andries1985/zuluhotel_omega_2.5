@@ -19,7 +19,7 @@ program spawndeath( params )
 	endif
 	
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-	if( !serials )
+	if( !serials or serials == error )
 		serials := {};
 	endif
 	
