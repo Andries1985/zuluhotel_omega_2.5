@@ -331,7 +331,7 @@ function DryDock(event)
 
     items := ListRootItemsInContainer(boat.hold);
     foreach item in items;
-      MoveObjectToLocation(item, me.x, me.y, me.z, MOVEOBJECT_FORCELOCATION);
+      MoveObjectToLocation(item, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
     endforeach
 	var shiptype := getobjproperty(boat.hold,"shiptype");
 	var newboat := CreateItemInContainer(me.backpack,shiptype,1);

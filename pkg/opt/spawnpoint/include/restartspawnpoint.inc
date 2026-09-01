@@ -34,7 +34,7 @@ endfunction
 function GetSpawnedCount( byref point )
 
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-	if( !serials )
+	if( !serials or serials == error )
 		return 0;
 	endif
 

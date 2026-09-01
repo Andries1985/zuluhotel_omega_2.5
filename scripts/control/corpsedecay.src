@@ -12,15 +12,22 @@ const DECAY_TIME_PLAYER_CORPSE		:= 30;		// In minutes.
 
 program corpse_decay( corpse )
 
+	// Captured once, up front, while corpse is guaranteed fresh -- every later
+	// staleness check below reuses this instead of touching corpse.serial
+	// again, since a raw member access on an already-destroyed item can throw
+	// (see houseescrow.inc's MoveItemToHouseEscrowPacks for the same hazard),
+	// which would defeat the point of an "is this corpse already gone" guard.
+	var corpse_serial := corpse.serial;
+
 	corpse.decayat := 0;
 	Sleep(5);
 
-	if( !SystemFindObjectBySerial(corpse.serial) )
+	if( !SystemFindObjectBySerial(corpse_serial) )
 		return;
 	endif
 
 	if( GetObjProperty( corpse, "npctemplate" ) )
-		ProcessNpcCorpseDecaying(corpse);
+		ProcessNpcCorpseDecaying(corpse, corpse_serial);
 	else
 		ProcessHumanCorpseDecaying(corpse);
 	endif
@@ -78,14 +85,14 @@ function ProcessHumanCorpseDecaying( corpse )
 endfunction
 
 
-function ProcessNpcCorpseDecaying( corpse )
+function ProcessNpcCorpseDecaying( corpse, corpse_serial )
 
 	const CORPSE_CHECK_INTERVAL := 30; // Seconds between existence checks.
 
 	var time_left := Cint(DECAY_TIME_NPC_CORPSE*60);
 
 	while( time_left > 0 )
-		if( !SystemFindObjectBySerial(corpse.serial) )
+		if( !SystemFindObjectBySerial(corpse_serial) )
 			return; // Corpse already gone (e.g. despawned by restartspawnpointarea).
 		endif
 
@@ -98,7 +105,7 @@ function ProcessNpcCorpseDecaying( corpse )
 		time_left := time_left - this_sleep;
 	endwhile
 
-	if( SystemFindObjectBySerial(corpse.serial) )
+	if( SystemFindObjectBySerial(corpse_serial) )
 		DestroyItem(corpse);
 	endif
 

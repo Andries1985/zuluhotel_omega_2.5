@@ -519,6 +519,9 @@ endfunction
 
 function ConfiscateBossPet(mobile, locationnoun := "house")
 	var master_serial := GetObjProperty(mobile, "master");
+	if(master_serial == error)
+		master_serial := 0;
+	endif
 	if(!master_serial or mobile.script != "tamed")
 		// Wild boss — kill outright
 		KillConfiscatedPet(mobile);

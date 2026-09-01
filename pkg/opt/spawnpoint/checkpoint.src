@@ -63,7 +63,7 @@ program CheckPoint( point )
 	endif
 	
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-	if( !serials )
+	if( !serials or serials == error )
 		serials := {};
 	endif
 
@@ -287,7 +287,7 @@ function CreateSpawnPointContainer( byref point, byref pt_data )
 	var realm	:= point.realm;
 	
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-	if( !serials )
+	if( !serials or serials == error )
 		serials := array;
 	endif
 	
@@ -393,7 +393,7 @@ function CreateSpawnPointItem( byref point, byref pt_data )
 	endif
 
 	var serials := GetObjProperty( point , PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-	if( !serials )
+	if( !serials or serials == error )
 		serials := array;
 	endif
 
@@ -408,7 +408,7 @@ endfunction
 
 function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-	if( !serials )
+	if( !serials or serials == error )
 		serials := {};
 	endif
 	
@@ -479,7 +479,7 @@ function CreateSpawnPointNpc( byref point, byref template, byref pt_data )
 				if( MoveObjectToLocation( critter, x, y, point.z , point.realm, MOVEOBJECT_FORCELOCATION ) )
 					RestartScript(critter);
 					serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-					if( !serials )
+					if( !serials or serials == error )
 						serials := {};
 					endif
 					
@@ -523,7 +523,7 @@ endfunction
 
 function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 	var serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-	if( !serials )
+	if( !serials or serials == error )
 		serials := {};
 	endif
 	
@@ -600,7 +600,7 @@ function CreateSpawnPointNpcFromGroup( byref point, byref pt_data )
 				if( MoveObjectToLocation( critter, x, y, z , point.realm, MOVEOBJECT_FORCELOCATION ) )
 					RestartScript(critter);
 					serials := GetObjProperty( point, PROPID_SPAWNPOINT_SPAWNED_OBJECTS );
-					if( !serials )
+					if( !serials or serials == error )
 						serials := {};
 					endif
 					

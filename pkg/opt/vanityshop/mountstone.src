@@ -47,9 +47,12 @@ program MountStone( who, item)
 	if (!has_mount)
 		CreateMount( who, item );
 	else
-		StoreMount( who, item );
-		SendSysMessage( who, "Your mount has been stored!", FONT_NORMAL, MSG_COLOR );
-	endif	
+		if (StoreMount( who, item ))
+			SendSysMessage( who, "Your mount has been stored!", FONT_NORMAL, MSG_COLOR );
+		else
+			SendSysMessage( who, "Your mount could not be found and may already be lost.", FONT_NORMAL, MSG_COLOR );
+		endif
+	endif
 	IncRevision(item);
 	ReleaseItem(item);
 	

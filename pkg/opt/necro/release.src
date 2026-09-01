@@ -32,11 +32,22 @@ program cast_release(caster)
 			return;
 		endif
 	
-		var ownerTaming := GetSkill(GetObjProperty(victim, "master"), SKILLID_TAMING);
-		var ownerMagery := GetSkill(GetObjProperty(victim, "master"), SKILLID_MAGERY);
-		if ((ownerTaming > (casterSkill + 30) or ownerMagery > casterSkill) and GetObjProperty(victim, "master") != caster.serial)
+		var owner_serial := GetObjProperty(victim, "master");
+		if (owner_serial == error)
+			owner_serial := 0;
+		endif
+		var owner := SystemFindObjectBySerial(owner_serial);
+		var ownerTaming := 0;
+		var ownerMagery := 0;
+		if (owner)
+			ownerTaming := GetSkill(owner, SKILLID_TAMING);
+			ownerMagery := GetSkill(owner, SKILLID_MAGERY);
+		endif
+		if ((ownerTaming > (casterSkill + 30) or ownerMagery > casterSkill) and owner_serial != caster.serial)
 	        	SendSysmessage(caster, "The control of the owner over his pet is stronger than your spell!");
-			SendSysmessage(GetObjProperty(victim, "master"), caster.name + " tried to release " + victim.name);		
+			if (owner)
+				SendSysmessage(owner, caster.name + " tried to release " + victim.name);
+			endif
 			return;
 		endif
 

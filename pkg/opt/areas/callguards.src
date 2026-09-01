@@ -44,9 +44,13 @@ function LookAround( who )
 		wfh := GetObjProperty(mobile,"WarriorForHire");
 		if( mobile.IsA(POLCLASS_NPC) )
 			if(mobile.script == "tamed")
-				var character:=SystemFindObjectBySerial(GetObjProperty(mobile, "master"));
+				var master_serial := GetObjProperty(mobile, "master");
+				if(master_serial == error)
+					master_serial := 0;
+				endif
+				var character:=SystemFindObjectBySerial(master_serial);
 				if(!character)
-					character:=SystemFindObjectBySerial(GetObjProperty(mobile, "master"),SYSFIND_SEARCH_OFFLINE_MOBILES);
+					character:=SystemFindObjectBySerial(master_serial,SYSFIND_SEARCH_OFFLINE_MOBILES);
 				endif
 				if( character.criminal || character.murderer )
 					crimMaster := 1;

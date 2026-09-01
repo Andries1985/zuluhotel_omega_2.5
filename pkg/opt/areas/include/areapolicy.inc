@@ -161,6 +161,14 @@ endfunction
 
 
 function SanitizePolicyRealm(realm)
+	// A stale/invalid caller-side object (e.g. a mobile that logged out before
+	// a delayed member access ran) surfaces here as an error{} value rather
+	// than a thrown exception. CStr() on that would stringify it into the
+	// datafile descriptor and crash the core when it tries to open the
+	// resulting garbage filename, so reject it before that happens.
+	if(realm == error)
+		return AREA_POLICY_DEFAULT_REALM;
+	endif
 	realm := Lower(CStr(realm));
 	if(!realm || realm == "<uninitialized object>")
 		return AREA_POLICY_DEFAULT_REALM;
