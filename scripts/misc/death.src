@@ -19,8 +19,12 @@ include ":lootlottery:lootlottery";
 program npcdeath(corpse)
 
 
-	if((GetObjProperty(corpse, "SpawnPoint")))
-		var spawnpoint := SystemFindObjectBySerial(GetObjProperty(corpse, "SpawnPoint"));
+	var spawnpoint_serial := GetObjProperty(corpse, "SpawnPoint");
+	if (spawnpoint_serial == error)
+		spawnpoint_serial := 0;
+	endif
+	if(spawnpoint_serial)
+		var spawnpoint := SystemFindObjectBySerial(spawnpoint_serial);
 		if (GetObjProperty(corpse, "GateOnDeath") || GetObjProperty(spawnpoint, "GateOnDeath"))
 			Start_Script("misc/deathgate", {corpse, spawnpoint});
 		endif

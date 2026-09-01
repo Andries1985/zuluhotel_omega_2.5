@@ -151,6 +151,23 @@ function GuildListGump(who, ginfo := 0, startat := 1)
 endfunction
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// GetGuildMasterName() - Resolves a guild's GuildMaster serial to a display name. Tolerates a
+// missing GuildMaster property (returns error) and a stale serial that no longer resolves to
+// any mobile (e.g. the account was deleted).
+////////////////////////////////////////////////////////////////////////////////////////////////////
+function GetGuildMasterName(guild)
+	var guildmaster_serial := guild.getprop("GuildMaster");
+	if(!guildmaster_serial || guildmaster_serial == error)
+		return "Unknown";
+	endif
+	var guildmaster_obj := SystemFindObjectBySerial(guildmaster_serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+	if(!guildmaster_obj)
+		return "Unknown";
+	endif
+	return guildmaster_obj.name;
+endfunction
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // Toadstool
 //
 // DisplayGuildInfo() - Little function that looks up a guilds info, puts it into a html formatted
@@ -163,7 +180,7 @@ function DisplayGuildInfo(who, guild, startat)
 
 	var guildname := guild.getprop("GuildName");
 	var guildabv := guild.getprop("GuildAbv");
-	var guildmaster := SystemFindObjectBySerial(guild.getprop("GuildMaster"), SYSFIND_SEARCH_OFFLINE_MOBILES).name;
+	var guildmaster := GetGuildMasterName(guild);
 	var guildcolour := guild.getprop("GuildColour");
 
 	if (!guildcolour)
@@ -402,7 +419,7 @@ else
 	GFTextLine(gump, 383, 155, 68, "Guild Master");
 	// guild icon
 	GFGumpPic(gump, 390, 180, 5547, who.guild.getprop("GuildColour"));
-	GFHTMLArea(gump, 355, 245, 130, 40, "<CENTER>"+SystemFindObjectBySerial(who.guild.getprop("GuildMaster"), SYSFIND_SEARCH_OFFLINE_MOBILES).name ,0,0 );
+	GFHTMLArea(gump, 355, 245, 130, 40, "<CENTER>"+GetGuildMasterName(who.guild) ,0,0 );
 
 endif
 
