@@ -492,7 +492,8 @@ function PurchaseUniform(who)
 	var page := 1;
 	GFPage(gump, 1);
 	GFTextLine(gump, 280, 343, 999, "Page "+page);
-	foreach item in CLOTHING
+	var guildClothing := GetGuildClothing();
+	foreach item in guildClothing
 		if (count >= perpage)
 			if (page != 1)
 				// back
@@ -509,7 +510,7 @@ function PurchaseUniform(who)
 			count := 0;
 			
 		// for the last page, as count may not be equal to page length thus no back button
-		elseif (_item_iter == CLOTHING.size())
+		elseif (_item_iter == guildClothing.size())
 			if (page != 1)
 				GFAddButton(gump, 95, 342, 4014, 4015, 0, page-1);
 			endif
@@ -1001,7 +1002,9 @@ var my := 10;
 var i := 0;
 var numname, numcolour;
 
-foreach colour in COLOURS
+var guildColours := GetGuildColours();
+
+foreach colour in guildColours
 	foreach guild in ListGuilds()
 		if (guild.getprop("GuildColour") == colour)
 			numname := guild.getprop("GuildAbv");
@@ -1072,10 +1075,10 @@ foreach colour in COLOURS
 		if (_colour_iter != 1)
 			GFAddButton(gump, 120, 190, 4014, 4015, 1, _colour_iter-1);
 		else
-			GFAddButton(gump, 120, 190, 4014, 4015, 1, COLOURS.size());
+			GFAddButton(gump, 120, 190, 4014, 4015, 1, guildColours.size());
 		endif
 		//next button
-		if (_colour_iter != COLOURS.size())
+		if (_colour_iter != guildColours.size())
 			GFAddButton(gump, 886, 190, 4005, 4006, 1, _colour_iter+1);
 		else
 			GFAddButton(gump, 886, 190, 4005, 4006, 1, 1);

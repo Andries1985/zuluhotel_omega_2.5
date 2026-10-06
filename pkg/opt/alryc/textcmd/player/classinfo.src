@@ -1,0 +1,250 @@
+// Synopsis: Show a breakdown of your class skill points, percentages, and how close you are to gaining or losing a class level
+////////////////////////////////////////////////////////////////////////////
+//
+// scripts/textcmd/player/classinfo.src
+//
+// Read-only report on the class-level math in include/classes.inc
+// (IsFromThatClasse). Does not touch any properties or broadcast anything --
+// safe to spam.
+//
+////////////////////////////////////////////////////////////////////////////
+use uo;
+use polsys;
+
+include "include/classes";
+include ":gumps:gumps";
+
+const CLASSINFO_SKILL_CAP := 150;
+const CLASSINFO_GUMP_ART  := 2620;
+const CLASSINFO_HUE_TITLE := 1152;
+
+program classinfo( who )
+
+	var classeid := GetLiveClasseId( who );
+	if( !classeid )
+		SendSysMessage( who, "You aren't currently qualified for any class." );
+		return;
+	endif
+
+	var forensicsallowed := ClasseAllowsForensics( classeid );
+
+	var level  := IsFromThatClasse( who, GetClasseSkills( classeid ), forensicsallowed );
+	var counts := ClasseCounts( who, classeid, forensicsallowed );
+
+	var classe  := counts.classe;
+	var total   := counts.total;
+	var number  := counts.number;
+	var outside := total - classe;
+
+	var classpct   := 0;
+	var outsidepct := 0;
+	if( total )
+		classpct   := CInt( CDbl(classe) * 100.0 / CDbl(total) );
+		outsidepct := 100 - classpct;
+	endif
+
+	var maxclasse := number * CLASSINFO_SKILL_CAP;
+
+	var nextline;
+	if( level >= 6 )
+		nextline := "<BASEFONT color=#FFCC33>You are at the maximum class level.</BASEFONT>";
+	else
+		var nextpct := RequiredClassePercent( number, level );
+		var needed  := PointsToNextClasseLevel( classe, total, number, level, maxclasse );
+		if( needed < 0 )
+			nextline := "<BASEFONT color=#FF6666>Next level needs " + nextpct + "% of your total in class skills -- unreachable by training class skills alone while your out-of-class points stay this high.</BASEFONT>";
+		else
+			nextline := "<BASEFONT color=#FFCC33>Next level (" + (level+1) + "): " + needed + " more in-class points needed (" + nextpct + "% of total required).</BASEFONT>";
+		endif
+
+		var dropneeded := PointsToDropForNextLevel( classe, total, number, level );
+		if( dropneeded > 0 )
+			nextline := nextline + "<BR><BASEFONT color=#99FF99>Or drop " + dropneeded + " out-of-class points to reach it instead.</BASEFONT>";
+		elseif( dropneeded < 0 )
+			nextline := nextline + "<BR><BASEFONT color=#FF6666>Dropping out-of-class skills alone won't get you there -- you need more in-class points regardless.</BASEFONT>";
+		endif
+	endif
+
+	var slackline := "";
+	if( level > 0 )
+		var maxtotal := (SKILLID__HIGHEST + 1) * CLASSINFO_SKILL_CAP;
+		var slack    := PointsBeforeClasseDrop( classe, total, number, level, maxtotal );
+		var allowed  := outside + slack;
+		slackline := "<BR><BASEFONT color=#99CCFF>Out-of-class points allowed before dropping to level " + (level-1) + ": " + allowed + " points.</BASEFONT>";
+	endif
+
+	var body := "<BASEFONT color=#FFFFFF>In-class points: " + classe + " / " + total + " total (" + classpct + "%)</BASEFONT><BR>"
+			+ "<BASEFONT color=#FFFFFF>Out-of-class points: " + outside + " / " + total + " total (" + outsidepct + "%)</BASEFONT><BR><BR>"
+			+ nextline + slackline;
+
+	var gump := GFCreateGump();
+	GFPage( gump, 0 );
+
+	GFResizePic( gump, 50, 50, CLASSINFO_GUMP_ART, 400, 310 );
+	GFTextLine( gump, 70, 68, CLASSINFO_HUE_TITLE, GetClasseName( classeid ) + " -- Level " + level );
+	GFAddButton( gump, 410, 60, 4017, 4019, GF_CLOSE_BTN, 0 );
+
+	GFHTMLArea( gump, 70, 95, 340, 225, body, 0, 0 );
+
+	GFSendGump( who, gump );
+
+endprogram
+
+
+function GetLiveClasseId( who )
+
+	foreach classeid in GetClasseIds()
+		var level := IsFromThatClasse( who, GetClasseSkills( classeid ), ClasseAllowsForensics( classeid ) );
+		if( level )
+			return classeid;
+		endif
+	endforeach
+
+	return 0;
+
+endfunction
+
+
+// Mirrors the only allowance the class predicates actually pass to
+// IsFromThatClasse: IsRanger excludes forensics from the total, every other
+// class counts every skill toward it.
+function ClasseAllowsForensics( classeid )
+
+	if( classeid == CLASSEID_RANGER )
+		return 1;
+	endif
+
+	return 0;
+
+endfunction
+
+
+function ClasseCounts( who, classeid, forensicsallowed )
+
+	var skills := GetClasseSkills( classeid );
+	var number := Len( skills );
+	var classe := 0;
+	var total  := 0;
+
+	for i := 0 to SKILLID__HIGHEST
+		var amount := GetEffectiveSkill( who, i );
+
+		if( !( forensicsallowed and i == SKILLID_FORENSICS ) )
+			total := total + amount;
+		endif
+
+		if( i in skills )
+			classe := classe + amount;
+		endif
+	endfor
+
+	return struct{ classe := classe, total := total, number := number };
+
+endfunction
+
+
+// Mirrors IsFromThatClasse's level decision purely from (classe,total,number),
+// so it can be replayed against hypothetical point totals below.
+function ClasseLevelFromCounts( classe, total, number )
+
+	var level;
+	var average_t;
+
+	if( classe >= 3675 )
+		level     := 1;
+		average_t := CInt( (AVERAGE_SKILL + AVERAGE_LEVEL_MOD) * number );
+		while( (classe >= average_t) and (level < 6) )
+			level     := level + 1;
+			average_t := CInt( average_t + AVERAGE_LEVEL_MOD * number );
+		endwhile
+		return level;
+	elseif( classe < AVERAGE_SKILL * number )
+		return 0;
+	elseif( classe < CInt( total * number * EACH_MUST_REPRESENT * 0.01 ) )
+		return 0;
+	else
+		level         := 1;
+		var represent := CDbl( EACH_MUST_REPRESENT + REPRESENT_LEVEL_MOD );
+		var percent   := CInt( total * number * represent * 0.01 );
+		average_t     := CInt( (AVERAGE_SKILL + AVERAGE_LEVEL_MOD) * number );
+
+		while( (classe >= average_t) and (classe >= percent) )
+			level     := level + 1;
+			represent := CDbl( represent + REPRESENT_LEVEL_MOD );
+			percent   := CInt( total * number * represent * 0.01 );
+			average_t := CInt( average_t + AVERAGE_LEVEL_MOD * number );
+		endwhile
+		return level;
+	endif
+
+endfunction
+
+
+function RequiredClassePercent( number, level )
+
+	if( level <= 0 )
+		return CInt( number * EACH_MUST_REPRESENT );
+	endif
+
+	return CInt( number * (EACH_MUST_REPRESENT + level * REPRESENT_LEVEL_MOD) );
+
+endfunction
+
+
+// Training in-class skills raises classe and total together (class skills are
+// a subset of total). Returns in-class points still needed to reach level+1,
+// or -1 if that's unreachable through class-skill training alone.
+function PointsToNextClasseLevel( classe, total, number, level, maxclasse )
+
+	var c := classe;
+	var t := total;
+
+	while( (ClasseLevelFromCounts( c, t, number ) <= level) and (c < maxclasse) )
+		c := c + 1;
+		t := t + 1;
+	endwhile
+
+	if( ClasseLevelFromCounts( c, t, number ) > level )
+		return c - classe;
+	endif
+
+	return -1;
+
+endfunction
+
+
+// Training out-of-class skills raises total only. Returns how many more
+// out-of-class points can be trained before the class level drops.
+function PointsBeforeClasseDrop( classe, total, number, level, maxtotal )
+
+	var t := total;
+
+	while( (ClasseLevelFromCounts( classe, t + 1, number ) >= level) and (t < maxtotal) )
+		t := t + 1;
+	endwhile
+
+	return t - total;
+
+endfunction
+
+
+// Dropping (unlocking/lowering) out-of-class skills lowers total only, classe
+// stays put. Returns how many out-of-class points would need to come off to
+// reach level+1 right now, or -1 if even zero out-of-class points (total ==
+// classe) wouldn't be enough -- meaning the average_t floor is what's really
+// blocking you, not your out-of-class ratio, so dropping skills can't help.
+function PointsToDropForNextLevel( classe, total, number, level )
+
+	var t := total;
+
+	while( (t > classe) and (ClasseLevelFromCounts( classe, t, number ) <= level) )
+		t := t - 1;
+	endwhile
+
+	if( ClasseLevelFromCounts( classe, t, number ) > level )
+		return total - t;
+	endif
+
+	return -1;
+
+endfunction

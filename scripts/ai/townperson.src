@@ -29,10 +29,7 @@ const HALT_THRESHOLD := 2; // how close before he barks?
 program TownPerson()
 
     var me := Self();
-    //drop_anchor(me);
-    if (!InitTownBounds())
-        return;
-    endif
+    drop_anchor(me);
 
     DressMe(me);
 
@@ -51,9 +48,9 @@ program TownPerson()
     set_priority(10);
 
     // Start movement right away so newly spawned townsfolk do not stand idle.
-    if (!WanderWithinTown())
-        return;
-    endif
+    TryOpenNearbyNpcDoors();
+    StepCivilianThroughDoorIfNeeded();
+    Wander();
 
     // (Old while loop removed; only the new, shared-saying-based loop remains)
     var ev;
@@ -84,9 +81,9 @@ program TownPerson()
                 SayRandomFromArray(DISENGAGED_SAYINGS);
         endcase
         if (ReadGameClock() >= next_wander)
-            if (!WanderWithinTown())
-                return;
-            endif
+            TryOpenNearbyNpcDoors();
+            StepCivilianThroughDoorIfNeeded();
+            Wander();
             next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
         endif
     endwhile
