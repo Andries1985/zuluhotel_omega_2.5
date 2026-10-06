@@ -45,9 +45,7 @@ if( me.name["<random>"] )
 endif
 
 program Minstrel()
-    if (!InitTownBounds())
-        return;
-    endif
+    drop_anchor(me);
 
     EnableEvents( SYSEVENT_SPEECH + SYSEVENT_ENGAGED + SYSEVENT_DISENGAGED + SYSEVENT_DAMAGED, HALT_THRESHOLD);
     EnableEvents( SYSEVENT_ENTEREDAREA + SYSEVENT_LEFTAREA, HALT_THRESHOLD );
@@ -64,9 +62,9 @@ program Minstrel()
     var ev;
     var next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
     while (1)
-        if (!WanderWithinTown())
-            return;
-        endif
+        TryOpenNearbyNpcDoors();
+        StepCivilianThroughDoorIfNeeded();
+        Wander();
         ev := os::wait_for_event( 120 );
         case (ev.type)
             SYSEVENT_SPEECH:
@@ -95,9 +93,9 @@ program Minstrel()
                 say("Fare thee well!");
         endcase
         if (ReadGameClock() >= next_wander)
-            if (!WanderWithinTown())
-                return;
-            endif
+            TryOpenNearbyNpcDoors();
+            StepCivilianThroughDoorIfNeeded();
+            Wander();
             next_wander := ReadGameClock() + RandomDice( 2, 50, 120 );
         endif
     endwhile

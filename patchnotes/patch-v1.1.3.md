@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.1.3
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: October 6, 2026**
+
+---
+
+Welcome to **Patch 1.1.3**. A new **`.classinfo`** command that shows you the math behind your class level, **townsfolk are no longer killed for leaving their city**, and a quiet shard-performance fix in the guild system.
+
+---
 
 ## What Changed
 
