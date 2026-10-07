@@ -11,6 +11,7 @@ use uo;
 use os;
 
 include ":accounts:accounts";
+include ":alryc:include/speedwalk";
 
 program Logon( who )
 
@@ -33,6 +34,15 @@ var stafflevel := who.cmdlevel;
         endif
         
         VerifyStaffOnline( who );
+
+	// Staff run-speed modifier (.speedwalk) is client state and is lost on every reconnect:
+	// re-send the stored value for Seer+ on login. Ported from ZH3.0 (7a3fb13).
+	var speed_walk := GetObjProperty( who, "SpeedWalk" );
+	if( who.cmdlevel >= 2 )
+		if( !speed_walk.errortext )
+			SendSpeedWalk( who, speed_walk );
+		endif
+	endif
         
 	return 1;
 endprogram

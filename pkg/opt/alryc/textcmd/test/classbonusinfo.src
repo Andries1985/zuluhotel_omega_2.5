@@ -1,0 +1,66 @@
+// Synopsis: Show a targeted character's class levels, primary class, per-skill class bonus and stat gain multipliers
+use uo;
+use os;
+
+include "include/classes";
+include "include/attributes";
+include "include/client";
+
+// Verification tool for the Patch 1.1.4 class changes: the per-skill lookup, the Powerplayer
+// curve, stat affinity and the primary-class rule. Read-only.
+program textcmd_classbonusinfo( who )
+
+	SendSysMessage( who, "Target a character.", FONT_NORMAL, 53 );
+	var targ := Target( who );
+	if( !targ or !targ.isa( POLCLASS_MOBILE ) or targ.isa( POLCLASS_NPC ) )
+		SendSysMessage( who, "Canceled.", FONT_NORMAL, 33 );
+		return 0;
+	endif
+
+	var primary := GetPrimaryClasseId( targ );
+	var held := "";
+	foreach id in GetClasseIds()
+		var level := CInt( GetObjProperty( targ, id ) );
+		if( level )
+			if( held )
+				held := held + ", ";
+			endif
+			held := held + GetClasseName( id ) + " " + level;
+		endif
+	endforeach
+	if( !held )
+		held := "none";
+	endif
+
+	SendSysMessage( who, "== " + targ.name + " ==", FONT_NORMAL, 53 );
+	SendSysMessage( who, "Classes held: " + held, FONT_NORMAL, 53 );
+	if( primary )
+		SendSysMessage( who, "Primary class: " + GetClasseName( primary ) + " level " + GetClasseLevel( targ ), FONT_NORMAL, 53 );
+	else
+		SendSysMessage( who, "Primary class: none", FONT_NORMAL, 53 );
+	endif
+
+	var pplevel := CInt( GetObjProperty( targ, CLASSEID_POWERPLAYER ) );
+	if( pplevel )
+		SendSysMessage( who, "Powerplayer skill-wide gain multiplier: x" + ClasseSmallBonusByLevel( pplevel ) + " (no second roll)", FONT_NORMAL, 53 );
+	endif
+
+	SendSysMessage( who, "Stat gain multipliers: Str x" + GetStatPointsMultiplier( targ, "str" ) + "  Dex x" + GetStatPointsMultiplier( targ, "dex" ) + "  Int x" + GetStatPointsMultiplier( targ, "int" ), FONT_NORMAL, 53 );
+
+	var listed := 0;
+	var i;
+	for( i := 0; i <= SKILLID__HIGHEST; i := i + 1 )
+		var level := IsSpecialisedIn( targ, i );
+		if( level )
+			var classeid := GetClasseIdForSkill( targ, i );
+			SendSysMessage( who, GetAttributeIdBySkillId( i ) + ": " + GetClasseName( classeid ) + " level " + level + ", gain x" + ClasseBonusByLevel( level ) + ", second roll", FONT_NORMAL, 67 );
+			listed := listed + 1;
+		endif
+	endfor
+	if( !listed )
+		SendSysMessage( who, "No skill carries a per-skill class bonus for this character.", FONT_NORMAL, 53 );
+	endif
+
+	return 1;
+
+endprogram

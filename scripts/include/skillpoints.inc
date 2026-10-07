@@ -103,14 +103,13 @@ function AwardSkillPoints( who, skillid, points )
 		points := Cint( points * 1.5 );
 	endif	
 
-	//Powerplayer increased skill gain (classbonus)
-	if (GetObjProperty(who, CLASSEID_POWERPLAYER))
-	var level := GetClasseLevel(who);
-		case(level)
-			3: points := Cint( points * 1.1 );
-			4: points := Cint( points * 1.2 );
-			5: points := Cint( points * 1.3 );
-		endcase
+	// Patch 1.1.4: the Powerplayer's class bonus is the smaller curve on every skill (1.15 at
+	// level 1 up to 1.9 at level 6) instead of the per-skill specialist bonus and second roll,
+	// which the class lookup in classes.inc never grants a Powerplayer. Replaces the old
+	// 1.1 / 1.2 / 1.3 table that only applied at levels 3 to 5.
+	var pplevel := CInt( GetObjProperty( who, CLASSEID_POWERPLAYER ) );
+	if( pplevel )
+		points := Cint( points * ClasseSmallBonusByLevel( pplevel ) );
 	endif
 
 	// Set the skill points
@@ -192,7 +191,7 @@ endfunction
 	if( adv )
 		adv := SplitWords(adv);
 		if( RandomInt(1000) < Cdbl(adv[1])*10 )
-			AwardRawAttributePoints(who, ATTRIBUTEID_STRENGTH, RandomDiceRoll(adv[2]));
+			AwardRawAttributePoints(who, ATTRIBUTEID_STRENGTH, ClassStatGainAmount( who, "str", RandomDiceRoll(adv[2]) ));
 		endif
 	endif
 	
@@ -201,7 +200,7 @@ endfunction
 	if( adv )
 		adv := SplitWords(adv);
 		if( RandomInt(1000) < Cdbl(adv[1])*10 )
-			AwardRawAttributePoints(who, ATTRIBUTEID_DEXTERITY, RandomDiceRoll(adv[2]));
+			AwardRawAttributePoints(who, ATTRIBUTEID_DEXTERITY, ClassStatGainAmount( who, "dex", RandomDiceRoll(adv[2]) ));
 		endif
 	endif
 	
@@ -210,7 +209,7 @@ endfunction
 	if( adv )
 		adv := SplitWords(adv);
 		if( RandomInt(1000) < Cdbl(adv[1])*10 )
-			AwardRawAttributePoints(who, ATTRIBUTEID_INTELLIGENCE, RandomDiceRoll(adv[2]));
+			AwardRawAttributePoints(who, ATTRIBUTEID_INTELLIGENCE, ClassStatGainAmount( who, "int", RandomDiceRoll(adv[2]) ));
 		endif
 	endif
 	
@@ -319,5 +318,27 @@ var skill := GetAttributeIdBySkillId(skillid);
 	endif
 
 	return AwardRawAttributePoints(who, GetAttributeIdBySkillId(skillid), rawpoints);
+
+endfunction
+
+
+// Patch 1.1.4: stat affinity. The dice amount of a stat advancement is multiplied by the class
+// bonus for a class's strong stat and divided by it for its weak stat (tables in classes.inc),
+// rounded half up and never below 1, so a roll that fired always awards something. Because raw
+// stat points are applied against the tenth's cost as a probability, this scales the chance of
+// gaining 0.1 by the same factor at every stat level.
+function ClassStatGainAmount( who, stat, amount )
+
+	var mult := GetStatPointsMultiplier( who, stat );
+	if( mult == 1.0 )
+		return amount;
+	endif
+
+	var scaled := Cint( CDbl( amount ) * mult + 0.5 );
+	if( scaled < 1 )
+		scaled := 1;
+	endif
+
+	return scaled;
 
 endfunction

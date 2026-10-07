@@ -1,0 +1,323 @@
+// Synopsis: Server-wide powerhour admin gump - start one now, change the active one's remaining time, or edit the weekly schedule
+use uo;
+use os;
+use basic;
+
+include ":staff:include/staff";
+include ":gumps:include/gumps";
+include ":gumps:include/gumps_ex";
+include ":powerhour:include/powerhour";
+include "include/client";
+
+const BTN_START         := 1;
+const BTN_APPLY_TIME    := 2;
+const BTN_END_NOW       := 3;
+const BTN_SAVE_SCHEDULE := 4;
+const BTN_REFRESH       := 5;
+const BTN_CLOSE         := 6;
+
+const RADIO_HUNT  := 11;
+const RADIO_RES   := 12;
+const RADIO_SKILL := 13;
+
+const TXT_MINUTES := 21;
+const TXT_WEEKDAY := 22;
+const TXT_HOUR    := 23;
+const TXT_MINUTE  := 24;
+
+const PHADMIN_MAX_MINUTES := 1440;
+
+const GUMP_WIDTH   := 480;
+const PANEL_X      := 15;
+const PANEL_WIDTH  := 450;
+
+const HUE_TITLE  := 67;
+const HUE_HEADER := 900;
+const HUE_TEXT   := 0;
+const HUE_MUTED  := 1000;
+const HUE_LABEL  := 57;
+
+const BTN_ARROW_UP   := 4005;
+const BTN_ARROW_DOWN := 4006;
+const BTN_X_UP       := 4017;
+const BTN_X_DOWN     := 4018;
+const RADIO_UP       := 208;
+const RADIO_DOWN     := 209;
+
+program textcmd_phadmin(who)
+
+	LogCommand(who, GetProcess(GetPid()).name);
+
+	// The scheduler owns every state change; make sure it is alive before handing it requests.
+	if(!PH_FindScheduler())
+		if(PH_EnsureScheduler())
+			SendSysMessage(who, "The powerhour scheduler was not running and has been started.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		else
+			SendSysMessage(who, "The powerhour scheduler is not running and could not be started.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+			return 0;
+		endif
+	endif
+
+	while(1)
+		var result := SendPowerhourGump(who);
+		if(!result)
+			return 0;
+		endif
+
+		var button := CInt(result[0]);
+		if(!button || button == BTN_CLOSE)
+			return 0;
+		endif
+
+		case(button)
+			BTN_START:         HandleStart(who, result);
+			BTN_APPLY_TIME:    HandleApplyTime(who, result);
+			BTN_END_NOW:       HandleEndNow(who);
+			BTN_SAVE_SCHEDULE: HandleSaveSchedule(who, result);
+		endcase
+	endwhile
+
+endprogram
+
+///////////////////////////////////////////////////////////////////////////
+// Gump
+///////////////////////////////////////////////////////////////////////////
+
+function SendPowerhourGump(who)
+
+	var time_now := POLCore().systime;
+	var active   := PH_ActiveType();
+	var pending  := PH_PendingType();
+	var request  := PH_RequestedType();
+	var can_start := (!active && !pending && !request);
+
+	var schedule_weekday, schedule_hour, schedule_minute;
+	PH_GetSchedule(schedule_weekday, schedule_hour, schedule_minute);
+
+	var gump := GFCreateGump(60, 60, GUMP_WIDTH, 0);
+	var y := 0;
+
+	// Background is sized at the end once we know how tall the gump is; remember its slot.
+	GFResizePic(gump, 0, 0, 9250, GUMP_WIDTH, 100);
+	var background_index := gump.layout.size();
+
+	GFTextLine(gump, 20, 12, HUE_TITLE, "Server-wide Powerhour Admin");
+	y := 38;
+
+	// --- Status -----------------------------------------------------------
+	GFResizePic(gump, PANEL_X, y, 9200, PANEL_WIDTH, 92);
+	if(active)
+		GFTextLine(gump, 25, y + 8, HUE_HEADER, "Active: " + PH_TypeName(active) + " powerhour - " + PH_FormatDuration(PH_SecondsRemaining(time_now)) + " remaining");
+	elseif(pending)
+		GFTextLine(gump, 25, y + 8, HUE_HEADER, "Starting shortly: " + PH_TypeName(pending) + " powerhour (2-minute warning running)");
+	elseif(request)
+		GFTextLine(gump, 25, y + 8, HUE_HEADER, "Start requested: " + PH_TypeName(request) + " powerhour - waiting for the scheduler");
+	else
+		GFTextLine(gump, 25, y + 8, HUE_HEADER, "No server-wide powerhour is active.");
+	endif
+	GFTextLine(gump, 25, y + 28, HUE_TEXT, "Next scheduled: " + PH_ScheduleString() + ", in " + PH_FormatDuration(PH_SecondsUntilScheduled(time_now)));
+	GFTextLine(gump, 25, y + 48, HUE_TEXT, "Server clock: " + PH_WeekdayName(PH_WeekdayOf(time_now)) + " " + PH_TwoDigits((time_now % PH_DAY) / PH_HOUR) + ":" + PH_TwoDigits((time_now % PH_HOUR) / PH_MINUTE) + " GMT");
+	if(PH_BonusPending())
+		GFTextLine(gump, 25, y + 68, HUE_TEXT, "A bonus powerhour has been granted and will start shortly.");
+	else
+		GFTextLine(gump, 25, y + 68, HUE_MUTED, "Powerhours last " + PH_FormatDuration(PH_DURATION) + ". The weekly one picks a random type.");
+	endif
+	y := y + 100;
+
+	// --- Start now --------------------------------------------------------
+	GFResizePic(gump, PANEL_X, y, 9200, PANEL_WIDTH, 60);
+	GFTextLine(gump, 25, y + 8, HUE_HEADER, "Start a powerhour now:");
+	if(can_start)
+		GFRadioButton(gump, 25, y + 30, RADIO_UP, RADIO_DOWN, 0, RADIO_HUNT);
+		GFTextLine(gump, 50, y + 32, HUE_TEXT, "Hunting");
+		GFRadioButton(gump, 135, y + 30, RADIO_UP, RADIO_DOWN, 0, RADIO_RES);
+		GFTextLine(gump, 160, y + 32, HUE_TEXT, "Half-resources");
+		GFRadioButton(gump, 275, y + 30, RADIO_UP, RADIO_DOWN, 0, RADIO_SKILL);
+		GFTextLine(gump, 300, y + 32, HUE_TEXT, "Double skillgain");
+		GFTextLine(gump, 395, y + 8, HUE_TEXT, "Start");
+		GFAddButton(gump, 435, y + 6, BTN_ARROW_UP, BTN_ARROW_DOWN, GF_CLOSE_BTN, BTN_START);
+	else
+		GFTextLine(gump, 25, y + 32, HUE_MUTED, "Wait for the current powerhour to finish before starting another.");
+	endif
+	y := y + 68;
+
+	// --- Active powerhour time -------------------------------------------
+	if(active)
+		GFResizePic(gump, PANEL_X, y, 9200, PANEL_WIDTH, 60);
+		GFTextLine(gump, 25, y + 8, HUE_HEADER, "Active powerhour time:");
+		GFTextLine(gump, 25, y + 32, HUE_TEXT, "Minutes remaining:");
+		var minutes_left := CInt((PH_SecondsRemaining(time_now) + PH_MINUTE - 1) / PH_MINUTE);
+		GFTextEntry(gump, 150, y + 30, 50, 20, HUE_HEADER, CStr(minutes_left), TXT_MINUTES, 4);
+		GFTextLine(gump, 215, y + 32, HUE_TEXT, "Apply");
+		GFAddButton(gump, 255, y + 30, BTN_ARROW_UP, BTN_ARROW_DOWN, GF_CLOSE_BTN, BTN_APPLY_TIME);
+		GFTextLine(gump, 330, y + 32, HUE_TEXT, "End now");
+		GFAddButton(gump, 395, y + 30, BTN_X_UP, BTN_X_DOWN, GF_CLOSE_BTN, BTN_END_NOW);
+		y := y + 68;
+	endif
+
+	// --- Weekly schedule --------------------------------------------------
+	GFResizePic(gump, PANEL_X, y, 9200, PANEL_WIDTH, 82);
+	GFTextLine(gump, 25, y + 8, HUE_HEADER, "Weekly schedule (GMT) - weekday 0 = Sunday ... 6 = Saturday");
+	GFTextLine(gump, 25, y + 32, HUE_TEXT, "Weekday:");
+	GFTextEntry(gump, 85, y + 30, 30, 20, HUE_HEADER, CStr(schedule_weekday), TXT_WEEKDAY, 1);
+	GFTextLine(gump, 130, y + 32, HUE_TEXT, "Hour:");
+	GFTextEntry(gump, 170, y + 30, 30, 20, HUE_HEADER, CStr(schedule_hour), TXT_HOUR, 2);
+	GFTextLine(gump, 215, y + 32, HUE_TEXT, "Minute:");
+	GFTextEntry(gump, 270, y + 30, 30, 20, HUE_HEADER, CStr(schedule_minute), TXT_MINUTE, 2);
+	GFTextLine(gump, 330, y + 32, HUE_TEXT, "Save");
+	GFAddButton(gump, 370, y + 30, BTN_ARROW_UP, BTN_ARROW_DOWN, GF_CLOSE_BTN, BTN_SAVE_SCHEDULE);
+	GFTextLine(gump, 25, y + 56, HUE_MUTED, "Currently " + PH_ScheduleString() + ". A 2-minute warning is broadcast first.");
+	y := y + 90;
+
+	// --- Footer -----------------------------------------------------------
+	GFAddButton(gump, 20, y + 4, BTN_ARROW_UP, BTN_ARROW_DOWN, GF_CLOSE_BTN, BTN_REFRESH);
+	GFTextLine(gump, 50, y + 6, HUE_LABEL, "Refresh");
+	GFTextLine(gump, 395, y + 6, HUE_LABEL, "Close");
+	GFAddButton(gump, 435, y + 4, BTN_X_UP, BTN_X_DOWN, GF_CLOSE_BTN, BTN_CLOSE);
+	y := y + 34;
+
+	gump.layout[background_index] := "ResizePic 0 0 9250 " + GUMP_WIDTH + " " + y;
+
+	return GFSendGump(who, gump);
+
+endfunction
+
+///////////////////////////////////////////////////////////////////////////
+// Actions
+///////////////////////////////////////////////////////////////////////////
+
+function HandleStart(who, result)
+
+	var ph_type := PH_TYPE_NONE;
+	if(result[RADIO_HUNT])
+		ph_type := PH_TYPE_HUNT;
+	elseif(result[RADIO_RES])
+		ph_type := PH_TYPE_RES;
+	elseif(result[RADIO_SKILL])
+		ph_type := PH_TYPE_SKILL;
+	endif
+
+	if(!ph_type)
+		SendSysMessage(who, "Pick which powerhour to start first.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+
+	if(PH_ActiveType() || PH_PendingType() || PH_RequestedType())
+		SendSysMessage(who, "A server-wide powerhour is already active or about to start.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+
+	SetGlobalProperty(PH_GPROP_REQUEST, ph_type);
+	if(!PH_NudgeScheduler())
+		EraseGlobalProperty(PH_GPROP_REQUEST);
+		SendSysMessage(who, "The powerhour scheduler is not running - nothing was started.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+
+	LogCommand(who, "phadmin", 0, "start " + PH_TypeName(ph_type) + " powerhour");
+	SendSysMessage(who, PH_TypeName(ph_type) + " powerhour requested. The 2-minute warning is being broadcast now.", FONT_BOLD, PH_MSG_COLOR_GOOD);
+	return 1;
+
+endfunction
+
+function HandleApplyTime(who, result)
+
+	var active := PH_ActiveType();
+	if(!active)
+		SendSysMessage(who, "No server-wide powerhour is active.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+
+	var text := GFExtractData(result, TXT_MINUTES);
+	if(!IsWholeNumber(text))
+		SendSysMessage(who, "Minutes remaining must be a whole number.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+	var minutes := CInt(text);
+	if(minutes < 1 || minutes > PHADMIN_MAX_MINUTES)
+		SendSysMessage(who, "Minutes remaining must be between 1 and " + PHADMIN_MAX_MINUTES + ". Use End now to stop it.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+
+	SetGlobalProperty(PH_GPROP_END_TIME, POLCore().systime + (minutes * PH_MINUTE));
+	PH_NudgeScheduler();
+
+	LogCommand(who, "phadmin", 0, "set " + PH_TypeName(active) + " powerhour remaining time to " + minutes + " minutes");
+	Broadcast("The " + PH_TypeName(active) + " powerhour will now end in " + PH_FormatDuration(minutes * PH_MINUTE) + "!", FONT_BOLD, PH_BROADCAST_COLOR);
+	return 1;
+
+endfunction
+
+function HandleEndNow(who)
+
+	var active := PH_ActiveType();
+	if(!active)
+		SendSysMessage(who, "No server-wide powerhour is active.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+
+	// The scheduler ends it (with the usual broadcast) as soon as it sees the end time has passed.
+	SetGlobalProperty(PH_GPROP_END_TIME, POLCore().systime);
+	if(!PH_NudgeScheduler())
+		SendSysMessage(who, "The powerhour scheduler is not running - it will end on the scheduler's next tick once it is back.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+
+	LogCommand(who, "phadmin", 0, "end " + PH_TypeName(active) + " powerhour now");
+	SendSysMessage(who, "Ending the " + PH_TypeName(active) + " powerhour now.", FONT_BOLD, PH_MSG_COLOR_GOOD);
+	return 1;
+
+endfunction
+
+function HandleSaveSchedule(who, result)
+
+	var weekday_text := GFExtractData(result, TXT_WEEKDAY);
+	var hour_text    := GFExtractData(result, TXT_HOUR);
+	var minute_text  := GFExtractData(result, TXT_MINUTE);
+
+	if(!IsWholeNumber(weekday_text) || !IsWholeNumber(hour_text) || !IsWholeNumber(minute_text))
+		SendSysMessage(who, "Weekday, hour and minute must all be whole numbers.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+
+	var weekday := CInt(weekday_text);
+	var hour    := CInt(hour_text);
+	var minute  := CInt(minute_text);
+
+	var old_schedule := PH_ScheduleString();
+	if(!PH_SetSchedule(weekday, hour, minute))
+		SendSysMessage(who, "Weekday must be 0-6, hour 0-23 and minute 0-59.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return 0;
+	endif
+	// If the new moment is within the warning window the scheduler should react now, not in a minute.
+	PH_NudgeScheduler();
+
+	LogCommand(who, "phadmin", 0, "weekly schedule changed from " + old_schedule + " to " + PH_ScheduleString());
+	SendSysMessage(who, "Weekly powerhour schedule set to " + PH_ScheduleString() + ". Next one in " + PH_FormatDuration(PH_SecondsUntilScheduled(POLCore().systime)) + ".", FONT_BOLD, PH_MSG_COLOR_GOOD);
+	return 1;
+
+endfunction
+
+///////////////////////////////////////////////////////////////////////////
+// Helpers
+///////////////////////////////////////////////////////////////////////////
+
+// "12" -> 1, " 7 " -> 1, "" / "abc" / "1 2" / "-3" -> 0
+function IsWholeNumber(text)
+
+	var words := SplitWords(CStr(text));
+	if(words.size() != 1)
+		return 0;
+	endif
+	text := words[1];
+
+	var i;
+	for(i := 1; i <= Len(text); i := i + 1)
+		var c := text[i];
+		if(c < "0" || c > "9")
+			return 0;
+		endif
+	endfor
+	return 1;
+
+endfunction

@@ -4,6 +4,7 @@ include "include/spelldata";
 include "include/client";
 include "include/attributes";
 include ":housing:utility";
+include "include/housetravel";	// Patch 1.1.4: FindHouseAtSpot / CanTravelIntoHouse / DestroyRefusedRune
 var water := { 0xA8, 0xA9, 0x64, 0xAA, 0xAB };
 
 program cast_teleport( parms, spell_id )
@@ -95,6 +96,15 @@ program cast_teleport( parms, spell_id )
 
 	multi := GetStandingHeight( where.x, where.y, where.z, caster.realm ).multi;
 	if( multi )
+		return;
+	endif
+
+	// Patch 1.1.4: a spot can be inside a house footprint without standing on a house piece (a
+	// castle courtyard, a static house), which the test above cannot see. Same owner /
+	// permission rule as Recall. NPC casts skip the static-house plate scan (they fire often).
+	var spot_house := FindHouseAtSpot( cint(where.x), cint(where.y), cint(where.z), caster.realm, !caster.isa(POLCLASS_NPC) );
+	if( !CanTravelIntoHouse( caster, spot_house, RECALL_TO ) )
+		SendSysMessage( caster, "You cannot teleport there." );
 		return;
 	endif
 	

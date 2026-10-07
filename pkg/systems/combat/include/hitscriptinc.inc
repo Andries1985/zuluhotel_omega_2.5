@@ -628,9 +628,50 @@ function GetShieldAbsorption( attacker, defender, weapon, basedamage )
 endfunction
 
 
+function WFHDamageMultiplier(propname)
+
+	var val := GetGlobalProperty(propname);
+	if (!val)
+		val := 1.0;
+	endif
+	return val;
+
+endfunction
+
+// Warrior for Hire damage moderation (Patch 1.1.4, ported from ZH3.0), isolated here so
+// DealDamage() itself stays free of template-specific branching. Halves damage between a WFH
+// and its own master (sparring), and applies the .setwfhdamage NPC/Boss multipliers otherwise.
+function WFHModifyDamage(attacker, defender, rawdamage)
+
+	if (attacker.npctemplate == "warriorforhire")
+		if (GetObjProperty(attacker,"master") == defender.serial)
+			rawdamage := CInt(rawdamage / 2);
+		elseif (defender.isa(POLCLASS_NPC))
+			if (GetObjProperty(defender,"Boss") or GetObjProperty(defender,"SuperBoss"))
+				rawdamage := CInt(rawdamage * WFHDamageMultiplier("WFHDamageToBosses"));
+			else
+				rawdamage := CInt(rawdamage * WFHDamageMultiplier("WFHDamageToNPCs"));
+			endif
+		endif
+	elseif (defender.npctemplate == "warriorforhire" and attacker.isa(POLCLASS_NPC))
+		if (GetObjProperty(attacker,"Boss") or GetObjProperty(attacker,"SuperBoss"))
+			rawdamage := CInt(rawdamage * WFHDamageMultiplier("WFHDamageFromBosses"));
+		else
+			rawdamage := CInt(rawdamage * WFHDamageMultiplier("WFHDamageFromNPCs"));
+		endif
+	endif
+
+	return rawdamage;
+
+endfunction
+
 function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 
 	//Print("In DealDamage with basedamage: " + basedamage);
+
+	// Warrior for Hire damage moderation - applied before any routing (astral/onhit/normal)
+	// so it covers every downstream path, not just the plain ApplyTheDamage() case.
+	rawdamage := WFHModifyDamage(attacker, defender, rawdamage);
 
 	var noPKatk := GetObjProperty(attacker, "NOPKAREA");
 	var noPKdef := GetObjProperty(defender, "NOPKAREA");

@@ -15,6 +15,7 @@ include "include/managers";
 include ":shilhook:shilcombat";
 include ":champspawns:death";
 include ":lootlottery:lootlottery";
+include "util/bank";	// FindBankBox - Warrior for Hire heart to an offline owner
 
 program npcdeath(corpse)
 
@@ -93,7 +94,10 @@ program npcdeath(corpse)
     MoveBackpackToCorpse( corpse );
 	var heart;
 	var resnum;
-	if (GetObjProperty(corpse,"WarriorForHire") and GetObjProperty(corpse,"npctemplate") == "warriorforhire")
+	// Warrior for Hire heart - Patch 1.1.4 brings this in line with ZH3.0: eleven lives instead of
+	// four, the heart reaches an offline owner's bank box, a WFHBackup snapshot lets the High
+	// Priest rebuild a warrior whose heart is gone, and a warrior its owner gave up drops nothing.
+	if (GetObjProperty(corpse,"WarriorForHire") and GetObjProperty(corpse,"npctemplate") == "warriorforhire" and !GetObjProperty(corpse,"AbandonedByOwner"))
 		resnum := GetObjProperty(corpse,"resnum");
 		if (!resnum)
 			resnum := 0;
@@ -104,11 +108,37 @@ program npcdeath(corpse)
 			mastersrl := 0;
 		endif
 		var masterobj := 0;
+		var masteronline := 0;
 		if (mastersrl)
 			masterobj := SystemFindObjectBySerial(mastersrl);
+			if (masterobj)
+				masteronline := 1;
+			else
+				masterobj := SystemFindObjectBySerial(mastersrl, SYSFIND_SEARCH_OFFLINE_MOBILES);
+			endif
 		endif
 
-		if (resnum < 4 and mastersrl != 0)
+		var wfhskills := GetObjProperty(corpse,"Skills");
+		if (!wfhskills)
+			wfhskills := dictionary;
+		endif
+
+		// Saved on the owner on EVERY death (not only the ones that drop a heart), so the High
+		// Priest's "resurrect warrior" rebuild is always from the latest state, including the
+		// death that disintegrated the heart. The rebuild erases it again.
+		if (masterobj)
+			var backup := dictionary;
+			backup.insert("Str", GetObjProperty(corpse,"Str"));
+			backup.insert("Int", GetObjProperty(corpse,"Int"));
+			backup.insert("Dex", GetObjProperty(corpse,"Dex"));
+			backup.insert("Name", GetObjProperty(corpse,"Name"));
+			backup.insert("Sex", GetObjProperty(corpse,"Sex"));
+			backup.insert("resnum", resnum);
+			backup.insert("Skills", wfhskills);
+			SetObjProperty(masterobj, "WFHBackup", backup);
+		endif
+
+		if (resnum < 11 and mastersrl != 0 and masterobj)
 			heart := CreateItemAtLocation(corpse.x,corpse.y,corpse.z,0x1CED,1,corpse.realm);
 			heart.newbie := 1;
 			heart.color := 1172;
@@ -121,14 +151,21 @@ program npcdeath(corpse)
 			SetObjProperty(heart,"resnum",resnum);
 			SetObjProperty(heart,"Sex",GetObjProperty(corpse,"Sex"));
 			SetObjProperty(heart,"master",mastersrl);
-			if (masterobj)
+			SetObjProperty(heart,"Skills",wfhskills);
+
+			if (masteronline)
 				MoveItemToContainer(heart, masterobj.backpack);
 				SendSysMessage(masterobj, heart.name+" has been placed in your backpack.");
+			else
+				// Not util/bank's FindBankBox(): that one sleeps up to a second and this block runs
+				// inside npcdeath's set_critical section, which would stall every script.
+				var bankbox := FindBankBoxNoSleep(masterobj);
+				if (bankbox)
+					MoveItemToContainer(heart, bankbox);
+				endif
 			endif
-		else
-			if (masterobj)
-				SendSysMessage(masterobj, GetObjProperty(corpse,"Name")+"'s heart has disintegrated and could not be recovered.");
-			endif
+		elseif (masterobj)
+			SendSysMessage(masterobj, GetObjProperty(corpse,"Name")+"'s heart has disintegrated and could not be recovered.");
 		endif
 
 		if(IsInSafeArea(corpse) and masterobj)
@@ -280,5 +317,23 @@ function zapstorageareas(me)
 
 	storage := FindStorageArea( "Tamed Storage" );
 	DestroyRootItemInStorageArea( storage, "Bankbox  " + HEX(myserial));
+
+endfunction
+
+
+// The World Bank box for a character, created if missing, without the random sleep that
+// util/bank's FindBankBox() carries (this file calls it under set_critical).
+function FindBankBoxNoSleep( character )
+
+	var worldbank := OpenWorldBank();
+	if (!worldbank)
+		return 0;
+	endif
+	var bank_obj_name := "Bankbox of " + character.serial;
+	var bankbox := FindRootItemInStorageArea( worldbank, bank_obj_name );
+	if (!bankbox)
+		bankbox := CreateRootItemInStorageArea( worldbank, bank_obj_name, UOBJ_BANKBOX );
+	endif
+	return bankbox;
 
 endfunction

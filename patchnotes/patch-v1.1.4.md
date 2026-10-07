@@ -1,5 +1,12 @@
-# Latest Changes
-Always check Discord announcements for all the patch notes.
+# Patch Notes - v1.1.4
+**Zuluhotel Omega 2.5 | Live Shard**  
+**Date: October 7, 2026**
+
+---
+
+Welcome to **Patch 1.1.4**. Two headline items. **Powerhours**: the server-wide powerhour can no longer get stuck after a restart, its bonus-hour odds finally work the way they were meant to, staff can now run and adjust server-wide powerhours directly, and a handful of personal powerhour annoyances are fixed. And the **Warrior for Hire** catches up with everything ZH3.0 did to it: eleven lives, a High Priest who can bring back a warrior whose heart is gone, lost gear held in safekeeping, a status window, and warriors that learn from you.
+
+---
 
 ## What Changed
 

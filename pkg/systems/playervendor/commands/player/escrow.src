@@ -11,6 +11,10 @@ include "include/myutil";
 include ":playervendor:include/escrow";
 include "util/bank";
 
+// Warrior for Hire payouts (ESCROW_WFH_VENDOR_NAME, shared with wfhescrow.inc through
+// :playervendor:include/escrow) are recovered through the High Priest for a fee. They must
+// never be listed or claimed here.
+
 const DEBUG_MODE := 0;
 
 function EscrowDebugMsg(who, msg)
@@ -82,7 +86,11 @@ function LoadEscrowEntriesForSerial(who, merchant_serial)
 	var vendor_key := CStr(merchant_serial);
 	var vendor_elem := file.FindElement(vendor_key);
 	if(vendor_elem)
-		entries := DecodeEscrowEntries(vendor_elem.GetProp("entries"));
+		foreach entry in (DecodeEscrowEntries(vendor_elem.GetProp("entries")))
+			if(EntryVendorName(entry) != ESCROW_WFH_VENDOR_NAME)
+				entries.append(entry);
+			endif
+		endforeach
 	else
 		EscrowDebugMsg(who, "LoadEscrowEntriesForSerial: no vendor element for key=" + vendor_key);
 	endif
@@ -237,6 +245,11 @@ function DestroyContainerAndContents(byref container)
 endfunction
 
 function ClaimEscrowEntry(who, entry, to_bank)
+	if(EntryVendorName(entry) == ESCROW_WFH_VENDOR_NAME)
+		SendSysMessage(who, "Warrior for Hire packages are recovered through the High Priest.");
+		return;
+	endif
+
 	var area := FindStorageArea(ESCROW_STORAGE_NAME);
 	if(!area)
 		EscrowDebugMsg(who, "ClaimEscrowEntry: escrow storage unavailable for entry_id=" + EntryId(entry));

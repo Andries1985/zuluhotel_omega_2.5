@@ -2,11 +2,12 @@
 use os;
 use uo;
 
+include ":powerhour:include/powerhour";
 include "include/client";
 
 program resetph(who)
 
-	var mobile := target(who);
+	var mobile := Target(who);
 
 	if(!mobile)
 		SendSysMessage(who, "Canceled", FONT_NORMAL, 43);
@@ -18,14 +19,13 @@ program resetph(who)
 		return 0;
 	endif
 
-	EraseObjProperty(mobile, "pph_use_time");
-	EraseObjProperty(mobile, "pph_use_weekday");
+	var active := PPH_ActiveType(mobile);
 
-	EraseObjProperty(mobile, "#PPHH");
-	EraseObjProperty(mobile, "#PPHC");
-	EraseObjProperty(mobile, "#PPHS");
-	EraseObjProperty(mobile, "#SettingPH");
+	PPH_Clear(mobile);
 
-	SendSysMessage(who, "Reset " + mobile.name + "'s personal powerhour properties.", FONT_NORMAL, 2601);
+	SendSysMessage(who, "Reset " + mobile.name + "'s personal powerhour properties.", FONT_NORMAL, PH_MSG_COLOR_GOOD);
+	if(active)
+		SendSysMessage(who, "Their active " + PH_TypeName(active) + " powerhour was ended by the reset.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+	endif
 
 endprogram

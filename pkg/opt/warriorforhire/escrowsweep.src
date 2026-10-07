@@ -1,0 +1,16 @@
+// Expires Warrior for Hire escrow packages older than 90 days. Started once at boot by start.src.
+use uo;
+use os;
+
+include ":warriorforhire:include/wfhescrow";
+
+const ESCROWSWEEP_INTERVAL := 86400; // once a day - plenty for a 90-day window
+
+program escrowsweep()
+
+	while (1)
+		WFH_SweepExpiredEscrow();
+		Sleep(ESCROWSWEEP_INTERVAL);
+	endwhile
+
+endprogram

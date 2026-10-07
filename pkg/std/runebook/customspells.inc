@@ -24,9 +24,14 @@ include "include/areas";
 include "include/client";
 include ":housing:utility";
 include ":statichousing:recallgatehelp";
+include "include/housetravel";	// Patch 1.1.4: FindHouseAtSpot / CanTravelIntoHouse / DestroyRefusedRune
 
 const RECALL_DELAY_MS	:= 5000;
 const GATE_DELAY_MS	:= 8000;
+
+// Patch 1.1.4: CustomRecall / CustomGate return this when the destination is inside a house the
+// caster may not enter; the caller (runebook.src) then removes that entry from the book.
+const TRAVEL_REFUSED_BY_HOUSE := -1;
 
 
 function CustomRecall( caster, x, y, z, from_charge := 0 )
@@ -158,55 +163,32 @@ function CustomRecall( caster, x, y, z, from_charge := 0 )
 	endif
 	
 	
-	var multi := GetStandingHeight( tox, toy, toz ).multi;
-	if( multi )
-
-		if( !Iscowner( caster, multi )  )
-			if( !IsFriend( caster, multi, RECALL_TO ) )
-				SendSysMessage( caster, "You can't recall to this house." );
-				return;
-			endif
+	// Patch 1.1.4: the destination's house is found by footprint, ignoring the rune's z (see
+	// scripts/include/housetravel.inc). The old test, GetStandingHeight at the rune's z, saw no
+	// house when the rune was marked higher than the floor of a house placed there later.
+	var house := FindHouseAtSpot( tox, toy, toz, caster.realm );
+	if( !CanTravelIntoHouse( caster, house, RECALL_TO ) )
+		SendSysMessage( caster, "You can't recall to this house." );
+		if( house.isa( POLCLASS_BOAT ) )
+			return 0;
 		endif
+		return TRAVEL_REFUSED_BY_HOUSE;
 	endif
 
-	var multi2 := GetStandingHeight(sx,sy,sz).multi;
-	if(multi2)
-		if( !Iscowner( caster, multi2 )  )
-			if( !IsFriend( caster, multi2, RECALL_TO ) )
-				SendSysMessage( caster, "You can't recall from this house." );
-				return;
-			endif
-		endif
+	var from_house := FindHouseAtSpot( sx, sy, sz, caster.realm );
+	if( !CanTravelIntoHouse( caster, from_house, RECALL_TO ) )
+		SendSysMessage( caster, "You can't recall from this house." );
+		return 0;
 	endif
-	// Same check as above for static houses
-	var serialstatichouse := StaticHouseSerial( caster );
-	if(serialstatichouse)
-		var sign := SystemFindObjectBySerial(serialstatichouse);
-		if(GetObjProperty( sign, "OwnerAcct") != caster.acctname)
-			if( !Iscowner( caster, sign )  )
-				if( !IsFriend( caster, sign, RECALL_TO) )
-					SendSysMessage( caster, "You can't recall from this house." );
-					return;
-				endif
-			endif
-		endif
-	endif
-	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz );
-	if(serialstatichouse)
-		var sign := SystemFindObjectBySerial(serialstatichouse);
-		if(GetObjProperty( sign, "OwnerAcct") != caster.acctname)
-			if( !Iscowner( caster, sign )  )
-				if( !IsFriend( caster, sign, RECALL_TO) )
-					SendSysMessage( caster, "You can't recall to this house." );
-					return;
-				endif
-			endif
-		endif
-	endif
+
 	PlaySoundEffect( caster, SFX_SPELL_RECALL1 );
 	sleepms(250);
 
-	MoveObjectToLocation( caster, tox, toy, toz );
+	// Patch 1.1.4: the move can fail (something now stands on that spot); it used to fail silently.
+	if( !MoveObjectToLocation( caster, tox, toy, toz ) )
+		SendSysMessage( caster, "Something blocks that location." );
+		return 0;
+	endif
 	PlaySoundEffect( caster, SFX_SPELL_RECALL2 );
 
         return 1;
@@ -319,16 +301,14 @@ function CustomGate( caster, x, y, z )
 		endif
 	endforeach
 	
-	var multi := GetStandingHeight( caster.x, caster.y, caster.z ).multi;
-	if( multi )
-		if( !Iscowner( caster, multi )  )
-			if( !IsFriend( caster, multi, GATE_FROM) )
-				SendSysMessage( caster, "You can't gate from this house." );
-				return;
-			endif
-		endif
+	// Patch 1.1.4: footprint test (include/housetravel.inc). A gate is two-way, so opening one from
+	// inside a house lets everyone at the far end in.
+	var from_house := FindHouseAtSpot( caster.x, caster.y, caster.z, caster.realm );
+	if( !CanTravelIntoHouse( caster, from_house, GATE_FROM ) )
+		SendSysMessage( caster, "You can't gate from this house." );
+		return 0;
 	endif
-	
+
 	var tox := x;
 	var toy := y;
 	var toz := z;
@@ -361,39 +341,14 @@ function CustomGate( caster, x, y, z )
 		endif
 	endforeach
 	
-  multi := GetStandingHeight( tox, toy, toz ).multi;
-	if( multi )
-		if( !Iscowner( caster, multi )  )
-			if( !IsFriend( caster, multi, GATE_TO) )
-				SendSysMessage( caster, "You can't gate to this house." );
-				return;
-			endif
+	// Patch 1.1.4: footprint test, ignoring the rune's z (see CustomRecall).
+	var house := FindHouseAtSpot( tox, toy, toz, caster.realm );
+	if( !CanTravelIntoHouse( caster, house, GATE_TO ) )
+		SendSysMessage( caster, "You can't gate to this house." );
+		if( house.isa( POLCLASS_BOAT ) )
+			return 0;
 		endif
-	endif
-	// Same check as above for static houses
-	var serialstatichouse := StaticHouseSerial( caster );
-	if(serialstatichouse)
-		var sign := SystemFindObjectBySerial(serialstatichouse);
-		if(GetObjProperty( sign, "OwnerAcct") != caster.acctname)
-			if( !Iscowner( caster, sign )  )
-				if( !IsFriend( caster, sign, GATE_FROM) )
-					SendSysMessage( caster, "You can't gate from this house." );
-					return;
-				endif
-			endif
-		endif
-	endif
-	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz );
-	if(serialstatichouse)
-		var sign := SystemFindObjectBySerial(serialstatichouse);
-		if(GetObjProperty( sign, "OwnerAcct") != caster.acctname)
-			if( !Iscowner( caster, sign )  )
-				if( !IsFriend( caster, sign, GATE_FROM) )
-					SendSysMessage( caster, "You can't gate to this house." );
-					return;
-				endif
-			endif
-		endif
+		return TRAVEL_REFUSED_BY_HOUSE;
 	endif
 
 	var gate1 := CreateItemAtLocation( caster.x, caster.y, caster.z, 0x99b1, 1 );

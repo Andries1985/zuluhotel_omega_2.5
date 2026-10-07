@@ -1,64 +1,35 @@
 // Synopsis: Display your current power hour status and remaining time
 use uo;
-use math;
 
-const day := 86400;
-const hour := 3600;
-const minute := 60;
-const week := 604800;
-const startTime := 1543172400; //2018/11/25 19:00 gmt (sunday)
+include ":powerhour:include/powerhour";
 
 program checkPH(who)
-	var time_now := POLCORE().systime;
-	var use_time := GetObjProperty(who, "pph_use_time");
-	var use_weekday := GetObjProperty(who, "pph_use_weekday");
 
-	if(GetObjProperty(who, "#PPHH") || GetObjProperty(who, "#PPHC") || GetObjProperty(who, "#PPHS"))
-		var remaining := CInt((use_time + hour - time_now) / minute);
-		if(GetObjProperty(who, "#PPHH"))
-			SendSysMessage(who, "Your personal Hunting powerhour is currently active!");
-		elseif(GetObjProperty(who, "#PPHC"))
-			SendSysMessage(who, "Your personal Half-resources powerhour is currently active!");
-		elseif(GetObjProperty(who, "#PPHS"))
-			SendSysMessage(who, "Your personal Double skillgain powerhour is currently active!");
-		endif
-		SendSysMessage(who, "Remaining minutes left: "+remaining);
+	var time_now := POLCore().systime;
+
+	var personal := PPH_ActiveType(who);
+	if(personal)
+		SendSysMessage(who, "Your personal " + PH_TypeName(personal) + " powerhour is currently active!");
+		SendSysMessage(who, "Remaining minutes left: " + CInt(PPH_SecondsRemaining(who, time_now) / PH_MINUTE));
 	else
 		SendSysMessage(who, "You have no personal powerhour active.");
-
-		// Mirrors the eligibility check in textcmd/player/setph.src.
-		var weekday_now := cint(Floor(time_now/day)+4) % 7;
-		var use_time_nextweek := use_time + week;
-
-		if ((weekday_now < use_weekday) || (time_now > use_time_nextweek))
+		if(PPH_IsEligible(who, time_now))
 			SendSysMessage(who, "You can start a new personal powerhour right now with .setph!");
 		else
-			// First day (weekday 0) on/after use_time where weekday < use_weekday resets eligibility.
-			var days_since_epoch := Floor(use_time/day);
-			var days_to_reset := (7 - use_weekday) % 7;
-			if(days_to_reset == 0)
-				days_to_reset := 7;
-			endif
-			var reset_time := (days_since_epoch + days_to_reset) * day;
-			var time_left := reset_time - time_now;
-			if(time_left < 0)
-				time_left := 0;
-			endif
-			SendSysMessage(who, "You can start a new personal powerhour in "+ CInt(time_left/day) +" days, "+ CInt((time_left % day)/hour) +" hours and "+ CInt((time_left % hour)/minute) +" minutes.");
+			SendSysMessage(who, "You can start a new personal powerhour in " + PH_FormatDuration(PPH_SecondsUntilEligible(who, time_now)) + ".");
 		endif
 	endif
 
-	if(GetGlobalProperty("PHH"))
-		SendSysMessage(who, "A server-wide Hunting powerhour is currently active!");
-	elseif(GetGlobalProperty("PHC"))
-		SendSysMessage(who, "A server-wide Half-resources powerhour is currently active!");
-	elseif(GetGlobalProperty("PHS"))
-		SendSysMessage(who, "A server-wide Double skillgain powerhour is currently active!");
+	var active := PH_ActiveType();
+	if(active)
+		SendSysMessage(who, "A server-wide " + PH_TypeName(active) + " powerhour is currently active!");
+		SendSysMessage(who, "It ends in " + PH_FormatDuration(PH_SecondsRemaining(time_now)) + ".");
+	elseif(PH_PendingType())
+		SendSysMessage(who, "A server-wide " + PH_TypeName(PH_PendingType()) + " powerhour is about to start!");
 	else
 		SendSysMessage(who, "No server-wide powerhour is currently active.");
 	endif
 
-	var timeOver := (time_now - startTime) % week;
-	var timeLeft := week - timeOver;
-	SendSysMessage(who, "The next chance at a server-wide powerhour is in "+ CInt(timeLeft/day) +" days, "+ CInt((timeLeft % day)/hour) +" hours, "+ CInt((timeLeft % hour)/minute) +" minutes and "+ CInt(timeLeft % minute) +" seconds!");
+	SendSysMessage(who, "The next chance at a server-wide powerhour is in " + PH_FormatDuration(PH_SecondsUntilScheduled(time_now), 1) + "!");
+
 endprogram
