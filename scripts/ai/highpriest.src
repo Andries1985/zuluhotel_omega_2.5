@@ -17,8 +17,17 @@ include "ai/setup/modsetup";
 include "include/attributes";
 include "include/npcboosts";
 include "include/random";
+include ":gumps:yesno";
+include ":warriorforhire:include/wfhcommon";
+include ":warriorforhire:include/wfhvitals";
+include ":warriorforhire:include/wfhescrow";
+include "util/bank";	// FindBankBox for DestroyStaleWfhHearts
 
 const REACT_THRESHOLD := 2;
+// Warrior for Hire prompts close themselves after this many seconds: the priest answers every
+// player from one event loop, so an unanswered YesNo would freeze him for everyone.
+const WFH_PROMPT_TIMEOUT := 30;
+const UOBJ_WFH_HEART := 0x1CED;
 const REMOVE_CURSE := 1;
 const DETECT_CURSE := 2;
 const USE_PURIFY := 3;
@@ -95,12 +104,8 @@ while (1)
 						if(!getlevel)
 							getlevel := 0;
 						endif
-						var repaircost := getlevel*2500;
-						if( repaircost < 1 )
-							Say( "A donation of any amount of gold will let thee begin repairing this relationship." );
-						else
-							Say( "To repair our relationship, thou must donate at least " + repaircost + " gold pieces." );
-						endif
+						var repaircost := PriestForgivenessFine( getlevel );
+						Say( "To repair our relationship, thou must donate at least " + repaircost + " gold pieces." );
 					else
 						Say( "No, I won't listen to thy request.");
 						Sleep( 1 );
@@ -254,6 +259,115 @@ while (1)
 					TurnToward( event.source );
 					SetObjProperty ( player , "PriestDemand" , MAJOR_BLESS );
 					Say( "For a reasonable donation left to thine discretion I can grant thee a major blessing from the Virtues." );
+
+				// Warrior for Hire services (Patch 1.1.4, ported from ZH3.0).
+				elseif (lower(event.text)["resurrect warrior"])
+					var player := event.source;
+					TurnToward(player);
+					var wfhhm := GetObjProperty(player, "henchman");
+					if (wfhhm and SystemFindObjectBySerial(wfhhm))
+						Say("Thou already hast a living companion.");
+					else
+						var wfhbackup := GetObjProperty(player, "WFHBackup");
+						if (!wfhbackup)
+							Say("I have no memory of a fallen companion to call back for thee.");
+						elseif (!YesNo(player, "Resurrect your Warrior for Hire from memory for 10,000 gold?", "Yes", "No", WFH_PROMPT_TIMEOUT))
+							Say("As thou wishest.");
+						elseif (!player.spendgold(10000))
+							Say("Thou dost not have enough gold.");
+						else
+							Say( "By the power of the Virtues, may this soul be brought back to life!" );
+							PerformAction( me , ANIM_CAST_DIR );
+							PlaySoundEffect( me , SFX_SPELL_RESURRECTION);
+
+							var newwfh := CreateNpcFromTemplate("warriorforhire", DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z);
+							if (!newwfh)
+								Say("Something has gone wrong...");
+								CreateItemInBackpack(player, "goldcoin", 10000);
+							else
+								newwfh.hidden := 1;
+								SetObjProperty(newwfh, "master", player.serial);
+								sleep(2);
+								SetObjProperty(newwfh, "master", player.serial);
+								SetBaseStrength(newwfh, Cint(wfhbackup["Str"]));
+								SetBaseIntelligence(newwfh, Cint(wfhbackup["Int"]));
+								SetBaseDexterity(newwfh, Cint(wfhbackup["Dex"]));
+								SetWfhVitalCeilingsAndFill(newwfh);
+								newwfh.name := wfhbackup["Name"];
+								var wfhsex := Cint(wfhbackup["Sex"]);
+								newwfh.gender := (wfhsex-400);
+								newwfh.graphic := wfhsex;
+								newwfh.trueobjtype := wfhsex;
+								foreach wfhitem in ListEquippedItems(newwfh)
+									DestroyItem(wfhitem);
+								endforeach
+								SetObjProperty(newwfh,"resnum", Cint(wfhbackup["resnum"]));
+								var wfhskills := wfhbackup["Skills"];
+								if (wfhskills)
+									foreach wfhskillid in (wfhskills.keys())
+										SetBaseSkillBaseValue(newwfh, wfhskillid, wfhskills[wfhskillid]);
+									endforeach
+								endif
+								SetObjProperty(player, "henchman", newwfh.serial);
+								// The memory is spent: the living warrior writes a fresh one on its next death.
+								// Any heart still around for the old body would be a free extra life, so it goes too.
+								EraseObjProperty(player, "WFHBackup");
+								DestroyStaleWfhHearts(player);
+								RestartScript(newwfh);
+								newwfh.hidden := 0;
+								MoveObjectToLocation( newwfh, player.x, player.y, player.z, "britannia", 0 );
+								Say("Your companion returns to you, though something feels... different.");
+							endif
+						endif
+					endif
+
+				elseif (lower(event.text)["give up warrior"])
+					var player := event.source;
+					TurnToward(player);
+					var giveuphm := GetObjProperty(player, "henchman");
+					var giveupwfh := SystemFindObjectBySerial(giveuphm);
+					if (giveupwfh)
+						if (!YesNo(player, "Your companion still lives - to give them up now means their death, and nothing will remain of them. Art thou certain?", "Yes", "No", WFH_PROMPT_TIMEOUT))
+							Say("As thou wishest.");
+						else
+							AbandonWarrior(giveupwfh);
+							EraseObjProperty(player, "henchman");
+							EraseObjProperty(player, "WFHBackup");
+							Say("It is done. May they find peace.");
+						endif
+					else
+						EraseObjProperty(player, "henchman");
+						EraseObjProperty(player, "WFHBackup");
+						Say("So be it.");
+					endif
+
+				elseif (lower(event.text)["recover belongings"])
+					var player := event.source;
+					TurnToward(player);
+					var wfhentries := WFH_LoadEscrowEntriesForOwner(player);
+					if (!len(wfhentries))
+						Say("I know of no lost belongings awaiting thee.");
+					else
+						var wfhentry := wfhentries[1];
+						if (!YesNo(player, "Thy fallen companion's belongings await, recoverable for 20,000 gold. Wilt thou pay?", "Yes", "No", WFH_PROMPT_TIMEOUT))
+							if (YesNo(player, "Shall I dispose of them instead?", "Yes", "No", WFH_PROMPT_TIMEOUT))
+								WFH_DestroyEscrowEntry(player.serial, wfhentry);
+								Say("It is done.");
+							else
+								Say("They shall remain safe until thou dost return.");
+							endif
+						elseif (!player.spendgold(20000))
+							Say("Thou dost not have enough gold.");
+						else
+							var wfhmoved := WFH_ClaimEscrowEntry(player, wfhentry);
+							if (wfhmoved)
+								Say("Here are thy companion's belongings.");
+							else
+								Say("Something has gone wrong retrieving thy belongings.");
+								CreateItemInBackpack(player, "goldcoin", 20000);
+							endif
+						endif
+					endif
 				endif
 
 			SYSEVENT_ENTEREDAREA:
@@ -298,9 +412,9 @@ while (1)
 				if (GetObjProperty(event.item,"Str") and GetObjProperty(event.item,"Name"))
 					heart := event.item;
 					resnum := GetObjProperty(heart,"resnum");
-					wstr := GetObjProperty(heart,"Str") - (Random(resnum)*5)+1;
-					wint := GetObjProperty(heart,"Int") - (Random(resnum)*5)+1;
-					wdex := GetObjProperty(heart,"Dex") - (Random(resnum)*5)+1;
+					wstr := GetObjProperty(heart,"Str") - (resnum-1)+1;	// was Random(resnum)*5: a flat point per past death, not a dice roll (ZH3.0)
+					wint := GetObjProperty(heart,"Int") - (resnum-1)+1;	// was Random(resnum)*5: a flat point per past death, not a dice roll (ZH3.0)
+					wdex := GetObjProperty(heart,"Dex") - (resnum-1)+1;	// was Random(resnum)*5: a flat point per past death, not a dice roll (ZH3.0)
 					wname := GetObjProperty(heart,"Name");
 					hm := GetObjProperty(event.source,"henchman");
 					hme := SystemFindObjectBySerial(hm);
@@ -320,6 +434,7 @@ while (1)
 					SetBaseStrength(wfh, wstr);;
 					SetBaseIntelligence(wfh, wint);
 					SetBaseDexterity(wfh, wdex);
+					SetWfhVitalCeilingsAndFill(wfh);	// HP = 2 x Str etc., then topped up
 					wfh.name := wname;
 					sex := GetObjProperty(heart,"Sex");
 					wfh.gender := (sex-400);
@@ -329,6 +444,14 @@ while (1)
 						DestroyItem(item);
 					endforeach
 					SetObjProperty(wfh,"resnum",resnum);
+					var heartskills := GetObjProperty(heart,"Skills");
+					if (heartskills)
+						foreach heartskillid in (heartskills.keys())
+							SetBaseSkillBaseValue(wfh, heartskillid, heartskills[heartskillid]);
+						endforeach
+					endif
+					// The deed and the "already have a henchman" checks read this; it was never updated on a heart revival.
+					SetObjProperty(event.source, "henchman", wfh.serial);
 					DestroyItem(heart);
 					RestartScript(wfh);
 					wfh.hidden := 0;
@@ -364,12 +487,10 @@ function CheckWhyHeGave ( player , donation )
 	var demand := GetObjProperty( player , "PriestDemand" );
 	if( !demand )
 		if( GetObjProperty( player , "PriestUpset" ) )
-			if( donation.amount >= getlevel*2500 )
-				if (getlevel < 2500)
-					getlevel := 1000;
-				elseif(getlevel > 60000)
-					getlevel := 60000;
-				endif
+			// The fine used to be compared against the raw level*2500 (0 for a classless player, so one
+			// coin forgave) while the clamp below it clamped the level, not the price. Same floor and
+			// cap as the remove-curse price now (ZH3.0, 2026-09-23).
+			if( donation.amount >= PriestForgivenessFine( getlevel ) )
 				Say( "Thee be blessed for this generous donation." );
 				EraseObjProperty( player , "PriestUpset" );
 			else
@@ -689,4 +810,50 @@ function TargetAnItem( who )
 		return 0;
 	endif
 	
+endfunction
+
+// Gold needed to repair the relationship after upsetting the priest: class level x 2500, never
+// below 1000 and never above 60000 - the same bounds the remove-curse price uses.
+function PriestForgivenessFine( classlevel )
+
+	var fine := Cint( classlevel ) * 2500;
+	if( fine < 2500 )
+		fine := 1000;
+	elseif( fine > 60000 )
+		fine := 60000;
+	endif
+	return fine;
+
+endfunction
+
+
+// Destroys every Warrior for Hire heart that belongs to this player, in their backpack and their
+// bank box. Called when a warrior is rebuilt from memory so the old body's heart cannot also be
+// revived later.
+function DestroyStaleWfhHearts( player )
+
+	var containers := {};
+	if (player.backpack)
+		containers.append(player.backpack);
+	endif
+	var bankbox := FindBankBox(player);
+	if (bankbox)
+		containers.append(bankbox);
+	endif
+
+	var destroyed := 0;
+	foreach cont in containers
+		foreach item in EnumerateItemsInContainer(cont)
+			if (item.objtype == UOBJ_WFH_HEART and GetObjProperty(item, "master") == player.serial)
+				DestroyItem(item);
+				destroyed := destroyed + 1;
+			endif
+		endforeach
+	endforeach
+
+	if (destroyed)
+		SendSysMessage(player, "The old heart crumbles to dust.");
+	endif
+	return destroyed;
+
 endfunction

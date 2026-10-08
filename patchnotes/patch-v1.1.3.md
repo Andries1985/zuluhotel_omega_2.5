@@ -31,25 +31,13 @@ A note for Rangers: Forensic Evaluation is deliberately left out of your point t
 
 ---
 
-## Townsfolk - No Longer Killed For Leaving The City
-
-### Player Impact
-
-- Townspeople, persons, nobles and minstrels are no longer confined to the city they spawned in. Until now, any of them that crossed their city's border was teleported straight to jail and killed on the spot, and any that spawned outside a city region was killed the moment it came to life. Both behaviours are gone.
-- They now go back to wandering their own neighbourhood the way they did before that system went in: they mill around near where they live, open and step through doors, and if you attack them they still run - but being chased past the city gate no longer kills them.
-- You should see fewer townsfolk vanishing for no apparent reason, and civilian NPCs in outlying or newly built settlements that are not flagged as cities will now actually stay alive.
-- Two caveats worth knowing. Townspeople and persons will keep to a tighter patch of ground than they did in 1.1.2 - roughly ten tiles around their spawn - because the old "stay near home" leash came back along with the rest of the old behaviour. And because they can now leave town at all, a civilian that strays far enough can run into something dangerous and die to it, with no guards out there to help.
-- Nothing changes for already-spawned townsfolk until they respawn or the server restarts.
-
----
-
 ## Shard Performance - Guild Lists Built Only When Needed
 
 ### Player Impact
 
 - No gameplay change. The guild system kept two long lookup tables - the list of clothing types a guild uniform can use, and the list of hues a guild can dye itself - in a shared file. Because of how that file was written, both tables were being rebuilt from scratch every time *any* script that touches the guild system started up, and the two biggest offenders were the scripts that run whenever you equip or unequip an item. That meant both tables were being built for every item you put on or took off, and once per item you were already wearing every time the world loaded, even though only the `.guilds` menu ever actually looks at them.
 - They are now built the first time something genuinely needs them, which in practice means only when you open the guild uniform or guild colour screens. Everything else - guild chat, verse books, guild uniforms, equipping and unequipping - does no work for them at all.
-- The uniform and colour options available to you are exactly the same as before. This was already fixed on ZH3.0; this patch brings the same fix to 2.5.
+- The uniform and colour options available to you are exactly the same as before.
 
 ---
 

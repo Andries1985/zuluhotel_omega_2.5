@@ -408,7 +408,11 @@ function RecallWithCharges( who, runebook, byref charges, byref runes_def, index
 		charges	:= new_charges;
 		SetObjProperty( who, "betatest", 1 );
 
-		if( !CustomRecall( who, tox, toy, toz, 1 ) )
+		var result := CustomRecall( who, tox, toy, toz, 1 );
+		if( result == TRAVEL_REFUSED_BY_HOUSE )
+			RemoveRefusedEntry( who, runebook, runes_def, tox, toy, toz );	// Patch 1.1.4
+			return 0;
+		elseif( !result )
 			return 0;
 		endif
 	endif
@@ -435,7 +439,11 @@ function RecallWithoutCharges( who, runebook, byref runes_def, index )
 		return 0;
 	endif
 
-	if( !CustomRecall( who, tox, toy, toz ) )
+	var result := CustomRecall( who, tox, toy, toz );
+	if( result == TRAVEL_REFUSED_BY_HOUSE )
+		RemoveRefusedEntry( who, runebook, runes_def, tox, toy, toz );	// Patch 1.1.4
+		return 0;
+	elseif( !result )
 		return 0;
 	endif
 
@@ -463,13 +471,31 @@ function GateWithoutCharges( who, runebook, byref runes_def, index )
     //A gate is about to be opened from this runebook.
     //sets its opengate prop to 1
     SetObjProperty(runebook, "opengate", 1);
-	if( !CustomGate( who, tox, toy, toz ) )
+	var result := CustomGate( who, tox, toy, toz );
+	if( result == TRAVEL_REFUSED_BY_HOUSE )
+		SetObjProperty(runebook, "opengate", 0);
+		RemoveRefusedEntry( who, runebook, runes_def, tox, toy, toz );	// Patch 1.1.4
+		return 0;
+	elseif( !result )
 		SetObjProperty(runebook, "opengate", 0);
 		return 0;
 	endif
     //The gate is closed already. Sets opengate back to 0.
     SetObjProperty(runebook, "opengate", 0);
 	return 1;
+endfunction
+
+
+// Patch 1.1.4: the entry points inside a house this character may not enter (CustomRecall /
+// CustomGate returned TRAVEL_REFUSED_BY_HOUSE). The entry is removed from the book, the same
+// way a refused loose rune is destroyed; runes_def is refreshed so the caller's save matches.
+function RemoveRefusedEntry( who, runebook, byref runes_def, tox, toy, toz )
+
+	if( RemoveRunebookEntryAt( runebook, tox, toy, toz ) )
+		SendSysMessage( who, "That location has been removed from the book." );
+	endif
+	UpdateRunesDef( runebook, runes_def );
+
 endfunction
 
 

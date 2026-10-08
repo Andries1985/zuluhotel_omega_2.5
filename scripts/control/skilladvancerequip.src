@@ -397,6 +397,12 @@ function DoImmunity( who , item )
 			
 		endforeach
 		
+		// Warriors for Hire are capped one tier below the top (85, not 95) on every planar
+		// protection - see the matching cap in the possibles loop below and in skilladvancerunequip.src.
+		if( who.npctemplate == "warriorforhire" and necro > 85 )
+			necro := 85;
+		endif
+
 		SetObjProperty(who, "NecroProtection", necro);
 	endif
 	
@@ -441,10 +447,15 @@ function DoImmunity( who , item )
 		
 		
 		var level;
+		var elementalprots := { "FireProtection", "WaterProtection", "AirProtection", "EarthProtection", "HolyProtection" };
 
 		foreach prot in possibles
 			level := Cint( GetObjProperty( item, prot ) );
 			if( level )
+				// Warriors for Hire are capped one tier below the top (85, not 95).
+				if( who.npctemplate == "warriorforhire" and level > 85 and prot in elementalprots )
+					level := 85;
+				endif
 				if( Cint(GetObjProperty( who, prot )) < level )
 					SetObjProperty( who, prot, level );
 				endif

@@ -1,63 +1,140 @@
-use uo;
+/////////////////////////////////////////////////////////////////////////////
+//
+// powerhour.src - server-wide powerhour scheduler.
+//
+// Started by start.src at boot (and by .phadmin if it is found dead). Runs
+// forever, ticking once a minute or sooner when nudged with a "ph_wake"
+// event, and owns every change to the server-wide powerhour state:
+//
+//   - starts the weekly scheduled powerhour (random type) at the moment
+//     given by PH_StartTime, after a 2-minute warning broadcast
+//   - starts a powerhour an admin requested through .phadmin (PH_Request)
+//   - starts the "bonus" second powerhour a scheduled one may have earned
+//   - ends the active powerhour once PH_EndTime passes, which .phadmin may
+//     move to extend, shorten or end it immediately
+//
+// All of that state is in global properties (see include/powerhour.inc), so
+// a restart mid-powerhour resumes it instead of leaving the flag stuck.
+//
+/////////////////////////////////////////////////////////////////////////////
 
+use uo;
+use os;
+
+include ":powerhour:include/powerhour";
 include "include/random";
 include "include/client";
 
-var second := 1;
-var minute := 60;
-var hour := 3600;
-var week := 604800;
-var starttime := 1543172400; //2018/11/25 19:00 gmt (sunday)
-
 program powerhour()
-	var started := 0, secChance := 0;
-	while (1)
-		var time := POLCORE().systime;
-		var randomPH := Random(3)+1;
-		if((((time - starttime) % week) > (week - (minute * 2)) && !started) || (!started && secChance)) 
-			Broadcast( "A random powerhour will start in 2 minutes!", FONT_BOLD, 1176 );
-			sleep(minute * 2);
-			started := ReadGameClock();
-			case(randomPH)
-				1:	SetGlobalProperty("PHH", 1);
-					Broadcast( "Hunting powerhour has started!", FONT_BOLD, 1176 );
-				2:	SetGlobalProperty("PHC", 1);
-					Broadcast( "Half-resources powerhour has started!", FONT_BOLD, 1176 );
-				3:	SetGlobalProperty("PHS", 1);
-					Broadcast( "Double skillgain powerhour has started!", FONT_BOLD, 1176 );
-			endcase
-		endif
-		if(started && (started + hour) < ReadGameClock()) 
-			if(GetGlobalProperty("PHH"))
-				Broadcast( "Hunting powerhour has ended!", FONT_BOLD, 1176 );
-			elseif(GetGlobalProperty("PHC"))
-				Broadcast( "Half-resources powerhour has ended!", FONT_BOLD, 1176 );
-			elseif(GetGlobalProperty("PHS"))
-				Broadcast( "Double skillgain powerhour has ended!", FONT_BOLD, 1176 );
+
+	// Only one scheduler may run. start.src and .phadmin can both try to start one.
+	var existing := PH_FindScheduler();
+	if(existing && existing.pid != GetPid())
+		return 0;
+	endif
+	SetGlobalProperty(PH_GPROP_SCHEDULER, GetPid());
+
+	RecoverAfterRestart();
+
+	while(1)
+		var time_now := POLCore().systime;
+		var active := PH_ActiveType();
+
+		if(active)
+			if(time_now >= PH_EndTime())
+				EndPowerhour(active);
 			endif
-			started := 0;
-			EraseGlobalProperty("PHH");
-			EraseGlobalProperty("PHC");
-			EraseGlobalProperty("PHS");
-			if(randomPH == 2)
-				var secondPHChance := Random(2000);
-				if(1000 > secondPHChance && !secChance)
-					Broadcast( "The Omega gods have granted a second random powerhour, that will begin shortly!", FONT_BOLD, 1176 );
-					secChance := 1;
-				elseif(secChance)
-					secChance := 0;
+		else
+			var request := PH_RequestedType();
+			if(request)
+				EraseGlobalProperty(PH_GPROP_REQUEST);
+				if(PH_IsValidType(request))
+					StartPowerhour(request, PH_SOURCE_ADMIN);
 				endif
-			else
-				var secondPHChance := Random(10000);
-				if(1000 > secondPHChance && !secChance)
-					Broadcast( "The Omega gods have granted a second random powerhour, that will begin shortly!", FONT_BOLD, 1176 );
-					secChance := 1;
-				elseif(secChance)
-					secChance := 0;
-				endif
-			endif				
+			elseif(PH_BonusPending())
+				EraseGlobalProperty(PH_GPROP_SECOND);
+				StartPowerhour(Random(3) + 1, PH_SOURCE_BONUS);
+			elseif(PH_InWarningWindow(time_now))
+				StartPowerhour(Random(3) + 1, PH_SOURCE_SCHEDULED);
+			endif
 		endif
-		Sleep(minute);
+
+		WaitForTick();
 	endwhile
 
 endprogram
+
+// Heals state the old in-memory scheduler could leave behind, or that a restart interrupted.
+function RecoverAfterRestart()
+
+	var active := PH_ActiveType();
+
+	// Flag set but no recorded end: either pre-upgrade state (the end timer used to live in a
+	// local variable, so a restart mid-powerhour left the flag on until the next weekly one
+	// cleaned it up) or a crash. Give it a full hour from now rather than guessing.
+	if(active && !PH_EndTime())
+		SetGlobalProperty(PH_GPROP_END_TIME, POLCore().systime + PH_DURATION);
+	endif
+
+	// A restart during the 2-minute warning: players were promised a powerhour, so re-run it.
+	var pending := PH_PendingType();
+	if(pending)
+		EraseGlobalProperty(PH_GPROP_PENDING);
+		if(!active && PH_IsValidType(pending) && !PH_RequestedType())
+			SetGlobalProperty(PH_GPROP_REQUEST, pending);
+		endif
+	endif
+
+endfunction
+
+function StartPowerhour(ph_type, source)
+
+	SetGlobalProperty(PH_GPROP_PENDING, ph_type);
+	if(source == PH_SOURCE_ADMIN)
+		Broadcast("A powerhour will start in 2 minutes!", FONT_BOLD, PH_BROADCAST_COLOR);
+	else
+		Broadcast("A random powerhour will start in 2 minutes!", FONT_BOLD, PH_BROADCAST_COLOR);
+	endif
+	Sleep(PH_WARNING_SECONDS);
+
+	SetGlobalProperty(PH_GlobalProp(ph_type), 1);
+	SetGlobalProperty(PH_GPROP_END_TIME, POLCore().systime + PH_DURATION);
+	SetGlobalProperty(PH_GPROP_SOURCE, source);
+	EraseGlobalProperty(PH_GPROP_PENDING);
+
+	Broadcast(PH_TypeName(ph_type) + " powerhour has started!", FONT_BOLD, PH_BROADCAST_COLOR);
+
+endfunction
+
+function EndPowerhour(ph_type)
+
+	var source := CStr(GetGlobalProperty(PH_GPROP_SOURCE));
+
+	Broadcast(PH_TypeName(ph_type) + " powerhour has ended!", FONT_BOLD, PH_BROADCAST_COLOR);
+	PH_ClearActive();
+
+	// Only the weekly scheduled powerhour can earn a bonus one (so at most one bonus a week,
+	// and admin-started ones never spawn a surprise follow-up). A half-resources week is the
+	// generous one: 50% instead of 10%.
+	if(source == PH_SOURCE_SCHEDULED)
+		var bonus_chance := 10;
+		if(ph_type == PH_TYPE_RES)
+			bonus_chance := 50;
+		endif
+		if(Random(100) < bonus_chance)
+			Broadcast("The Omega gods have granted a second random powerhour, that will begin shortly!", FONT_BOLD, PH_BROADCAST_COLOR);
+			SetGlobalProperty(PH_GPROP_SECOND, 1);
+		endif
+	endif
+
+endfunction
+
+// Sleeps until the next tick, or until .phadmin nudges us. Drains queued nudges.
+function WaitForTick()
+
+	var ev := Wait_For_Event(PH_TICK_SECONDS);
+	while(ev)
+		ev := Wait_For_Event(0);
+	endwhile
+
+endfunction

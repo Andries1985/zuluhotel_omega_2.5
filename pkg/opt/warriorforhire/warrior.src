@@ -1,0 +1,1510 @@
+// Warrior for Hire - a mercenary NPC hired with a deed (pkg/opt/warriorforhire).
+//
+// Patch 1.1.4: moved here from scripts/ai/warrior.src and brought in line with ZH3.0's package.
+// Warriors only ever exist with an owner now (deed, heart or High Priest), so the old
+// wandering/masterless recruitment path is gone. See the developer changelog for the list.
+
+use npc;
+use os;
+use uo;
+use cfgfile;
+
+include "include/myutil";
+include "include/speech";
+include "include/client";
+include "include/eventid";
+include "include/randname";
+include "include/anchors";
+include "include/npcbackpacks";
+include "include/dotempmods";
+include ":gumps:yesno";
+include ":gumps:include/gumps";
+include ":gumps:include/gumps_ex";
+include ":warriorforhire:include/wfhcommon";
+include ":warriorforhire:include/wfhvitals";
+include "include/random";
+include "ai/setup/modsetup";
+include "include/attributes";
+
+const HALT_THRESHOLD := 10;
+
+Const DRINK_SOUND := 0x32;
+Const SOUND_EFFECT_HEAL	:= 0x1f3;
+Const SOUND_EFFECT_CURE	:= 0x1e1;
+Const EFFECT_SPARKLE  := 0x374a;
+
+var speech := 5;
+var me := Self();
+
+var masterserial := 0;
+var master;
+
+var chaseloop := 0;
+var following := 0;
+var guarding := 0;
+var nextwatch := ReadGameClock();
+var laststrengthgain := ReadGameClock();
+var lastskillgain := ReadGameClock();
+var lastmodwipe := ReadGameClock();
+var wasownerOnline := 0;
+
+// Anatomy, Parry, Healing, Tactics, Archery, Swordsmanship, Macefighting, Fencing, Wrestling.
+// (ZH3.0 also tracks Throwing, skill 57, which this shard does not have.)
+var TRACKED_SKILLS := {1, 5, 17, 27, 31, 40, 41, 42, 43};
+const WFH_SKILL_CAP_TENTHS := 1300; // 130.0 displayed - hard ceiling regardless of the master's own skill
+const WFH_MAX_DEATHS := 10;         // the heart disintegrates on the 11th death (death.src)
+
+program Warrior()
+
+	if( me.name["<random>"] )
+		SetMeUp();
+	endif
+
+	if (getobjproperty(me, "frozen"))
+		me.frozen := 1;
+	endif
+
+	FixStuff();
+
+	masterserial := GetObjProperty(me,"master");
+	if ( (!masterserial) or (masterserial == "<error>") )
+		masterserial := 0;
+	else
+		master := SystemFindObjectBySerial(masterserial);
+		if (master)
+			me.setmaster(master);
+			if (distance(me, master) < 10)
+				following := master;
+				guarding := master;
+			endif
+		endif
+	endif
+
+	SetWarMode( 0 );
+	Drop_Anchor(me);
+
+	var ev;
+	var next_wander := ReadGameClock() + 10;
+	var wanders := 9;
+
+	EnableAllEvents();
+	EnableEvents(SYSEVENT_SPEECH,12);
+
+	while (1)
+		SyncStatusMirror();
+		if (me.poisoned)
+			ApplyHealing(me);
+		elseif ( GetHP(me) < GetMaxHP(me) )
+			ApplyHealing(me);
+		endif
+		if (master.poisoned and GetObjProperty(me,"#heal") < ReadGameClock())
+			ApplyHealing(master);
+		elseif (GetHP(master) < (GetMaxHP(master)/3) and GetObjProperty(me,"#heal") < ReadGameClock())
+			ApplyHealing(master);
+		endif
+
+		ev := WarriorMovement(wanders, next_wander);
+		var monline := 0;
+		var mygod := GetObjProperty(me, "master");
+		foreach char in EnumerateOnlineCharacters()
+			if (char.serial == mygod)
+				monline := 1;
+			endif
+		endforeach
+
+		CheckOwnerModWipe(monline);
+
+		if (ev and monline)
+			ProcessMasterEvents(ev, wanders, next_wander);
+		elseif(ev and !monline)
+			sleep(5);
+		endif
+		sleepms(100);
+	endwhile
+
+endprogram
+
+// Mirrors the stats, name, gender and tracked skills into saved CProps. The heart (death.src)
+// and the High Priest's backup read these off the corpse, so they must always be current;
+// only written when something actually changed so the loop isn't rewriting five props a tick.
+function SyncStatusMirror()
+
+	if (GetObjProperty(me,"Str") != GetStrength(me)) SetObjProperty(me,"Str",GetStrength(me)); endif
+	if (GetObjProperty(me,"Int") != GetIntelligence(me)) SetObjProperty(me,"Int",GetIntelligence(me)); endif
+	if (GetObjProperty(me,"Dex") != GetDexterity(me)) SetObjProperty(me,"Dex",GetDexterity(me)); endif
+	if (GetObjProperty(me,"Name") != me.name) SetObjProperty(me,"Name",me.name); endif
+	if (GetObjProperty(me,"Sex") != (400+me.gender)) SetObjProperty(me,"Sex",(400+me.gender)); endif
+
+	var skills := GetObjProperty(me,"Skills");
+	if (!skills) skills := dictionary; endif
+	var changed := 0;
+	foreach skillid in TRACKED_SKILLS
+		var curval := GetBaseSkillBaseValue(me, skillid);
+		if ( (!skills.exists(skillid)) or (skills[skillid] != curval) )
+			skills.insert(skillid, curval);
+			changed := 1;
+		endif
+	endforeach
+	if (changed)
+		SetObjProperty(me,"Skills",skills);
+	endif
+
+endfunction
+
+// Temporary mods (spells, potions) are wiped when the owner logs in or out and every 30-60
+// minutes besides, so a long-lived NPC can't accumulate stale mods it never loses.
+function CheckOwnerModWipe(byref monline)
+
+	if (monline != wasownerOnline)
+		WipeMods(me);
+		wasownerOnline := monline;
+	elseif (lastmodwipe < ReadGameClock())
+		WipeMods(me);
+		lastmodwipe := ReadGameClock() + Random(1800)+1800;
+	endif
+
+endfunction
+
+function CloseDistance( opponent )
+
+	var archerymovement := HasBow();
+	var d := distance(me, opponent);
+
+	if ( d > 15 )
+		return 2;
+	endif
+
+	if (!archerymovement)
+		if ( d > 1 )
+			RunToward( opponent );
+			return 0;
+		else
+			return 1;
+		endif
+	else
+		if (d == 1)
+			ChangeWeapons();
+		elseif ( d < 4 )
+			RunAwayFrom(opponent);
+			return 0;
+		else
+			return 1;
+		endif
+	endif
+
+endfunction
+
+function HasBow()
+
+	var ammotype := 0;
+	var bowarmed := 0;
+	var weapon := me.weapon;
+	if (!weapon.objtype)
+		say("I don't have a weapon!");
+		ChangeWeapons();
+		return 0;
+	endif
+	case (weapon.objtype)
+		0x13B2:
+		0x7600:
+		0x7656:
+		0x762B:
+			bowarmed := 1;
+			ammotype := 0xf3f;//bow and arrows
+		0x0F4F:
+		0x13FD:
+		0x7603:
+		0x762E:
+		0x7659:
+		0x7604:
+		0x762F:
+		0x766A:
+			bowarmed := 1;
+			ammotype := 0x1bfb;//xbow and bolts
+		0x6050:
+		0x7601:
+		0x762C:
+		0x7657:
+			bowarmed := 1;
+			ammotype := 0x6051;//firebow and firearrows
+		0xB201:
+		0x759F:
+		0x762A:
+		0x7655:
+			bowarmed := 1;
+			ammotype := 0xB200;//icebow and icearrows
+		default: return 0;
+	endcase
+	if (!bowarmed) return 0; endif
+
+	var myammo := EnumerateItemsInContainerOfObjtype(me.backpack, ammotype);
+
+	if (!len(myammo))
+		say("No ammo!");
+		ChangeWeapons();
+		return 0;
+	else
+		return 1;
+	endif
+
+endfunction
+
+function ChangeWeapons()
+
+	var weapon := GetEquipmentByLayer(me,LAYER_HAND1);
+	var shield := GetEquipmentByLayer(me,LAYER_HAND2);
+
+	if (weapon)
+		MoveObjectToLocation(weapon, me.x, me.y, me.z, "britannia",MOVEOBJECT_FORCELOCATION);
+	endif
+	if (shield)
+		MoveObjectToLocation(shield, me.x, me.y, me.z, "britannia", MOVEOBJECT_FORCELOCATION);
+	endif
+	foreach item in ListRootItemsInContainer(me.backpack)
+		EquipItem(me,item);
+	endforeach
+	if (weapon)
+		MoveItemToContainer(weapon, me.backpack);
+	endif
+	if (shield)
+		MoveItemToContainer(shield, me.backpack);
+	endif
+
+endfunction
+
+// First run only (the template name still holds "<random>"). A fresh hire is a fixed 75/50/50
+// recruit with modest skills that grow toward its master's (GainSkill), not the 130-skill
+// veteran the template describes.
+function SetMeUp()
+
+	me.gender := Random(2);
+	me.graphic := 400+me.gender;
+	me.title_guild := "Warrior For Hire";
+	me.title_suffix := " the Warrior";
+
+	if (me.name  == "<random> the Warrior")
+		SetName( me , RandomName( me ));
+	endif
+
+	foreach item in ListEquippedItems(me)
+		DestroyItem(item);
+	endforeach
+
+	SetBaseStrength(me, 75 );
+	SetBaseIntelligence(me, 50 );
+	SetBaseDexterity(me, 50 );
+
+	var parms := {};
+	parms[1]:= me;
+	parms[2]:= "weakwarrior";
+	start_script("::/misc/dressme", parms);
+
+	if (!me.backpack)
+		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75,1);
+		if (!EquipItem(me, newbackpack)) DestroyItem(newbackpack); endif
+	endif
+	var i;
+	for (i := 0; i <= 48; i := i + 1)
+		SetBaseSkill(me, i, 0);
+	endfor
+	SetBaseSkill(me, 1, 50);   //Anatomy
+	SetBaseSkill(me, 17, 100); //Healing
+	SetBaseSkill(me, 5, 50);   //Parry
+	SetBaseSkill(me, 43, 50);  //Wrestling
+	SetBaseSkill(me, 27, 50);  //Tactics
+	SetBaseSkill(me, 41, 50);  //Macefighting
+	SetBaseSkill(me, 40, 50);  //Swordsmanship
+	SetBaseSkill(me, 42, 50);  //Fencing
+	SetBaseSkill(me, 31, 50);  //Archery
+
+	SetObjProperty(me,"WarriorForHire",1);
+	SetWfhVitalCeilingsAndFill(me);	// HP = 2 x Str, Mana = Int, Stam = Dex, then topped up
+
+endfunction
+
+function FixStuff()
+
+	me.graphic := 400+me.gender;
+	me.title_suffix := " the Warrior";
+
+endfunction
+
+function fight(opponent)
+
+	var wasfollowing := following;
+	following := 0;
+
+	if (GetDexterityMod(me)>= 5000)
+		SetDexterityMod(me, GetDexterityMod(me) - 5000);
+	endif
+
+	if ((opponent.cmdlevel > 0) or (opponent == me) )
+        	setwarmode(0);
+		following := wasfollowing;
+		return;
+	endif
+
+	if (opponent.npctemplate == "humuc")
+		following := wasfollowing;
+		setwarmode(0);
+		opponent := 0;
+		return;
+	endif
+
+	if ( opponent == master )
+		say("Wanna spar, eh? Just tell me when to stop!");
+	endif
+
+	var oldprio := set_priority(50);
+	SetOpponent( opponent );
+	turntoward( opponent );
+
+	if ( GetObjProperty( me, "keywordbattlecry") )
+		Say ( GetObjProperty( me, "keywordbattlecry") );
+	endif
+
+	var ev;
+
+	chaseloop := 0;
+	var loops := 1;
+	var cd;
+
+	var wasmoving:=1;
+
+    	while ( (opponent) and not
+	    (opponent.dead or opponent.hidden or opponent.concealed) and
+	    (distance(me,opponent) < 20) )
+
+		if (me.poisoned)
+			ApplyHealing(me);
+		elseif (GetHP(me) < (GetMaxHP(me)/2))
+			ApplyHealing(me);
+			Flee(opponent);
+		elseif ( GetHP(me) < GetMaxHP(me) )
+			ApplyHealing(me);
+		elseif (GetHP(me) < 10)
+			Flee(opponent);
+		endif
+
+		GainStat();
+		GainSkill();
+
+		cd := CloseDistance( opponent );
+		case (cd)
+		0:
+			wasmoving := 1;
+			loops := loops + 1;
+			if (loops > 25)
+				if ( HasBow() ) ChangeWeapons(); endif
+				chaseloop := chaseloop + 1;
+				loops := 0;
+				RunRandom(opponent, chaseloop);
+				if (chaseloop > 5)
+					sleep(2);
+					loops := 0;
+					chaseloop := 0;
+					flee(opponent);
+				endif
+			endif
+		1:
+			if (wasmoving) TurnToward(opponent); endif
+			if (!CheckLineOfSight(me,opponent))
+				SetOpponent(0);
+				SetWarMode(0);
+				following := wasfollowing;
+				if ( distance(following,me)>15 )
+					if (following)
+						say("Oh crap. Where is " + following.name + "?");
+						following:=0;
+					endif
+				endif
+				return;
+			endif
+			loops := 0;
+			chaseloop := 0;
+			wasmoving := 0;
+		2:
+			SetOpponent(0);
+			SetWarMode(0);
+			following := wasfollowing;
+			if ( distance(following,me)>15 )
+				if (following)
+					say("Oh crap. Where is " + following.name + "?");
+					following:=0;
+				endif
+			endif
+			return;
+		endcase
+
+		ev := wait_for_event( cd );
+		case (ev.type)
+		SYSEVENT_SPEECH:
+			SetObjProperty(me,"WarriorForHire",1); // retrospective gwhack fix
+			var evtext := lower(ev.text);
+			var mename := lower(me.name);
+			if (ev.source.serial == masterserial)
+				if ( evtext["stop"] )
+					say("Okay");
+					setwarmode(0);
+					opponent := 0;
+					sleep(1);
+					following := wasfollowing;
+					if ( distance(following,me)>15 ) following:=0;endif
+					chaseloop := 0;
+					return;
+				elseif (evtext[mename + " rearm"] )
+					say("Okay");
+					ChangeWeapons();
+					if (HasBow())
+						RunAwayFrom(opponent);
+						RunAwayFrom(opponent);
+						RunAwayFrom(opponent);
+						turntoward( opponent );
+					endif
+				else
+					ObeyCommand(ev);
+					if (following)
+						setwarmode(0);
+						opponent := 0;
+						chaseloop := 0;
+						return;
+					endif
+				endif
+			endif
+		SYSEVENT_DAMAGED:
+		SYSEVENT_ENGAGED:
+			if (ev.source)
+				AddToHitList(ev);
+				if (ev.source != opponent)
+					if ( (Random(6)==1) or
+					     (distance(ev.source,me) < distance(me, opponent)) )
+						opponent := ev.source;
+						SetOpponent( opponent );
+						turntoward( opponent );
+					endif
+				endif
+			endif
+		EVID_PEACEMADE:
+			setwarmode(0);
+			opponent := 0;
+			sleep(1);
+			following := wasfollowing;
+			if ( distance(following,me)>15 ) following:=0;endif
+			chaseloop := 0;
+			return;
+		endcase
+
+		OpenDoors(opponent);
+
+	endwhile
+
+	SetOpponent(0);
+	SetWarMode(0);
+	following := wasfollowing;
+	if ( distance(following,me)>15 )
+		if (following)
+			say("Oh crap. Where is " + following.name + "?");
+			following:=0;
+		endif
+	endif
+
+endfunction
+
+function AddToHitList(ev)
+
+	if ( (ev.type != SYSEVENT_DAMAGED) or (ev.source.npctemplate) ) return; endif
+	var hitlist := GetObjProperty(me,"hitlist");
+	if (!hitlist) hitlist := {}; endif
+	foreach mob in hitlist
+		if (mob == ev.source.serial) return; endif
+	endforeach
+	hitlist.append(ev.source.serial);
+	SetObjProperty(me,"hitlist",hitlist);
+
+endfunction
+
+function flee(opponent)
+
+	EraseObjProperty(me,"killme");
+	if ( (me.frozen) or (me.paralyzed) )
+		sleep(1);
+		return;
+	endif
+	var runs := 0;
+	var ev;
+
+	if (Random(10) == 1)
+		say("Aaaaiiiiiii!!!");
+	endif
+
+	SetStamina(me, GetStamina(me)+50);//me.stamina := me.stamina + 50;
+	if (GetStamina(me) > GetMaxStamina(me))
+		SetStamina(me, GetMaxStamina(me));
+	endif
+
+	while ( (distance(me, opponent) < 7) and (runs < 30) )
+		runawayfrom(opponent);
+		runs := runs +1;
+		ev := wait_for_event(0);
+		if (ev)
+			AddToHitList(ev);
+		endif
+	endwhile
+	me.hidden := 1;
+	sleep(4);
+	me.hidden := 0;
+endfunction
+
+function EnableAllEvents()
+
+	EnableEvents(SYSEVENT_SPEECH,8);
+	EnableEvents(SYSEVENT_ITEM_GIVEN + SYSEVENT_ENGAGED + SYSEVENT_DAMAGED);
+	EnableEvents( SYSEVENT_DOUBLECLICKED );
+	EnableEvents(SYSEVENT_ENTEREDAREA, HALT_THRESHOLD);
+	EnableEvents( EVID_PEACEMADE );
+
+endfunction
+
+function ProcessMasterEvents(byref ev, byref wanders, byref next_wander)
+
+	if ( (!master) and (ev.source.serial == masterserial) )
+		master := ev.source;
+		me.setmaster(master);
+		following := master;
+		guarding := master;
+	endif
+
+	case (ev.type)
+	SYSEVENT_SPEECH:
+		wanders := 0;
+		next_wander := readgameclock()+60;
+		var evtext := lower(ev.text);
+		if (ev.source.serial == masterserial)
+			if (!ObeyCommand(ev))
+				check_speech(ev.text, ev.source);
+			endif
+		else
+			if (!GetObjProperty(me,"squelch"))
+				check_speech(ev.text, ev.source);
+			endif
+		endif
+	SYSEVENT_ENGAGED:
+		wanders := 0;
+		next_wander := readgameclock()+60;
+		if ( (ev.source) and (!ev.source.dead) and (!guarding) )
+			Fight( ev.source );
+		endif
+	SYSEVENT_DAMAGED:
+		AddToHitList(ev);
+		wanders := 0;
+		next_wander := readgameclock()+60;
+		if ( (ev.source) and (!ev.source.dead) )
+			Fight( ev.source );
+		endif
+	SYSEVENT_ENTEREDAREA:
+		return;
+	EVID_ALL_ATTACK_CMD:
+		Fight(ev.target);
+	SYSEVENT_ITEM_GIVEN:
+		wanders := 0;
+		next_wander := readgameclock()+60;
+		if (ev.source.serial == masterserial)
+			say("Thanks, I'll put that in my backpack");
+			var it := ev.item;
+			MoveItemToContainer( it, me.backpack);
+		else
+			TakeItem(ev.source,ev.item);
+		endif
+	SYSEVENT_DOUBLECLICKED:
+		if (random(20)==1) say("hehe"); endif
+		if (ev.source.serial == masterserial) OpenMyPack(); endif
+		OpenPaperdoll( ev.source, me );
+	EVID_ALL_FOLLOW_CMD:
+		following := ev.target;
+	EVID_ALL_GUARD_CMD:
+		guarding := ev.target;
+	endcase
+
+endfunction
+
+function WarriorMovement(byref wanders, byref next_wander)
+
+	// wanders/next_wander are only kept so ProcessMasterEvents' byref updates still have a home.
+	wanders := wanders;
+	next_wander := next_wander;
+
+	if ( (following) and (master) )
+		SetAnchor( me.x, me.y, 20, 0 );
+		Follow();
+		return (wait_for_event(0));
+	elseif ( (guarding) and (master) )
+		SetAnchor( me.x, me.y, 20, 0 );
+		Guard();
+		return (wait_for_event(7));
+	else
+		//I'm not following or guarding, and I'm bored:
+		me.warmode := 0;
+		return (wait_for_event(240));
+	endif
+
+endfunction
+
+function Guard()
+
+	if ( (me.frozen) )
+		sleep(10);
+		return;
+	endif
+
+	if ( nextwatch <= readgameclock() )
+		nextwatch := readgameclock() + 7;
+		if ( random(15)==1 and !GetObjProperty(me,"squelch"))
+			say("I've got your back, " + guarding.name);
+			if ( random(20)==1 ) say("WAY back"); endif
+		endif
+		foreach mob in ListHostiles( guarding, 9, 0 );
+			Fight(mob);
+		endforeach
+	endif
+
+	if ( !GetStrength(guarding) or (guarding.dead) or (distance(me,guarding) > 15) )
+		guarding := 0;
+	endif
+
+endfunction
+
+function Follow()
+
+	if ( (me.frozen) )
+		sleep(10);
+		return;
+	endif
+
+	// Was ".cmd", which is not a member, so the check never fired (ZH3.0 fix, 2026-09-23).
+	if(following.cmdlevel && !master.cmdlevel)
+		following := 0;
+		return;
+	endif
+
+	var d := Distance( me, following );
+	if (d < 3)
+		sleep(1);
+		chaseloop := 0;
+	elseif (( d > 10 ) or ( chaseloop > 50 ))
+		MoveObjectToLocation( me, following.x, following.y, following.z,"britannia",
+				MOVEOBJECT_FORCELOCATION );
+		chaseloop := 0;
+		sleep(1);
+	else
+		// The old +5000 dexterity-mod sprint around RunToward is gone (ZH3.0): it was a mod
+		// write and revert on every step, and it left the mod stuck when the script died mid-run.
+		RunToward(following);
+		chaseloop := chaseloop + 1;
+	endif
+
+	if ( (!GetStrength(following)) or (following.dead) )
+		following := 0;
+	endif
+
+	if (GetDexterityMod(me) >= 5000)
+		SetDexterityMod(me, GetDexterityMod(me)-5000);
+	endif
+
+	if ( (master) and (!guarding) )
+		guarding := master;
+	endif
+
+	if (guarding)
+		Guard();
+	endif
+
+endfunction
+
+function ObeyCommand(ev)
+
+	var mename := lower(me.name);
+	var evtext := lower(ev.text);
+	var you := ev.source;
+
+	if (!master)
+		master := you;
+		me.setmaster(you);
+		following := master;
+		guarding := master;
+		say("You da boss");
+	endif
+
+	if (master != you)
+		say("Funny, I thought you were my master...");
+		return 0;
+	endif
+
+	if (evtext[mename + " kill"] or evtext[mename + " attack"] or
+	    evtext["all kill"] or evtext["all attack"] )
+		var what := Target( you , TGTOPT_HARMFUL + TGTOPT_CHECK_LOS );
+		if (what)
+			if (evtext["all kill"] or evtext["all attack"] )
+				if (what.npctemplate and what.script != "tamed")
+					AllCommand(EVID_ALL_ATTACK_CMD, what);
+        	        		Fight( what );
+				else
+					say ("By the virtues! I refuse to attack that.");
+
+				endif
+			else
+				if (what.npctemplate and what.script != "tamed")
+					Fight( what );
+				else
+					say ("By the virtues! I refuse to attack that.");
+
+				endif
+			endif
+		endif
+	elseif( evtext[mename + " stop"] or evtext["all stop"])
+		guarding := 0;
+		following := 0;
+	elseif( evtext[mename + " heal"] or evtext["heal me"])
+		if ( evtext["heal me"] )
+			TurnToward(you);
+			if (!ApplyHealing(you))
+				say("I can't heal again yet.");
+			endif
+		else
+			var what := Target( you , TGTOPT_HELPFUL + TGTOPT_CHECK_LOS );
+			TurnToward(what);
+			if (what.npctemplate)
+				say("I can't heal that!");
+				return;
+			endif
+			if (!ApplyHealing(what))
+				say("I can't heal again yet.");
+			endif
+		endif
+	elseif ((evtext[mename + " come"]) or (evtext["all come"]))
+		var done := 0;
+		var chaseloop := 0;
+		while( done == 0 )
+			chaseloop := chaseloop +1;
+			done := CloseDistance( you );
+			if (chaseloop > 25)
+				done :=1;
+			endif
+		endwhile
+	elseif (evtext[mename + " follow"])
+		if (evtext["follow me"])
+			say("Okay");
+			following := you;
+		else
+			var what := Target( you , TGTOPT_CHECK_LOS );
+			if(what.cmdlevel && !you.cmdlevel)
+				say("I won't follow superior beings!");
+				following := 0;
+			elseif ( (what) and (GetStrength(what)) )
+				say("I'll follow " + what.name);
+				following := what;
+			endif
+		endif
+	elseif (evtext["all follow"])
+		if (evtext["follow me"])
+			say("Okay");
+			following  := you;
+		else
+			var what := Target( you , TGTOPT_CHECK_LOS );
+			if (what)
+				AllCommand(EVID_ALL_FOLLOW_CMD, what);
+			endif
+		endif
+	elseif (evtext[mename + " transfer"])
+		TurnToward(you);
+		say("I'm afraid I'm not comfortable with mounts, master.");
+	elseif (evtext[mename + " guard"])
+		if (evtext["guard me"])
+			guarding := you;
+			say("Gotcha covered, " + guarding.name);
+		else
+			var what := Target( you , TGTOPT_HELPFUL + TGTOPT_CHECK_LOS );
+			if (GetHP(what))
+				guarding := what;
+				say("Gotcha covered, " + guarding.name);
+			endif
+		endif
+	elseif (evtext["all guard"])
+		if (evtext["guard me"])
+			guarding := you;
+			say("Gotcha covered, " + guarding.name);
+		else
+			var what := Target( you , TGTOPT_HELPFUL + TGTOPT_CHECK_LOS );
+			if (GetHP(what))
+				AllCommand(EVID_ALL_GUARD_CMD, what);
+			endif
+		endif
+	elseif (evtext[mename + " fetch"]  or (evtext[mename + " get"]))
+		Fetch();
+	elseif (evtext[mename + " drop"])
+		TurnToward(you);
+		say("Okay");
+		DropEverything();
+	elseif (evtext[mename + " dismount"])
+		TurnToward(you);
+		say("I'm afraid I'm not comfortable with mounts, master.");
+	elseif ( (evtext[mename + " ride"]) or (evtext[mename + " mount"]) )
+		TurnToward(you);
+		say("I'm afraid I'm not comfortable with mounts, master.");
+	elseif (evtext[mename + " speak"] )
+		EraseObjProperty(me,"squelch");
+		Say("Okay");
+	elseif (evtext[mename + " unsquelch"] )
+		EraseObjProperty(me,"squelch");
+		Say("Okay");
+	elseif (evtext[mename + " stfu"] )
+		SetObjProperty(me,"squelch",1);
+		Say("Okay");
+	elseif (evtext[mename + " squelch"] )
+		SetObjProperty(me,"squelch",1);
+		Say("Okay");
+	elseif (evtext[mename + " rearm"] )
+		Say("Okay");
+		ChangeWeapons();
+	elseif ( evtext[mename + " release"] )
+		TurnToward(you);
+		say("You're firing me?");
+		if (YesNo(you,"Fire them?")) Release(); endif
+	elseif ( evtext[mename + " wear"] )
+		TurnToward(you);
+		say ("Wear what?");
+		var it := target(you);
+		WearItem(it, you);
+	elseif ( evtext == "brb" )
+		say("Okay, I'll be here.");
+		sleep(5);
+	elseif (evtext[mename + " hide"])
+		me.hidden := 1;
+	elseif (evtext[mename + " showpack"])
+		OpenMyPack();
+	elseif (evtext[mename + " status"])
+		ShowStatus(you);
+	elseif (evtext[mename + " warcry "])
+		var bcry := SplitWords( evtext );
+			if (!bcry[3] or bcry[3] =="" or bcry[3] == "none")
+				EraseObjProperty(me, "keywordbattlecry");
+				say("I now have no warcry");
+			else
+				if (!bcry[4])
+					bcry[4] := "";
+				endif
+				if (!bcry[5])
+					bcry[5] := "";
+				endif
+				var warcry := bcry[3]+" "+bcry[4]+" "+bcry[5];
+				SetObjProperty(me,"keywordbattlecry",warcry);
+				say("My warcry is now :");
+				say(warcry);
+		endif
+	elseif (evtext[mename + " go crazy"])
+		SetDexterityMod(me, GetDexterityMod(me)+5000);//me.dexterity_mod := me.dexterity_mod + 5000;
+		GoMad(you);
+		say("Ah.. I'm all better now");
+		if (Random(10) >  7)
+			sleep(4);
+			say ("No, wait... Here it comes again - aargh!");
+			sleep (2);
+			GoMad(you);
+		endif
+		SetDexterityMod(me, GetDexterityMod(me)-5000);
+	elseif ( evtext[mename + " undress"] )
+		say("Okeedokee");
+		sleep(1);
+		Undress();
+	else
+		return 0;
+	endif
+
+	return 1;
+
+endfunction
+
+function AllCommand(evtype,what)
+
+	var mobs := ListMobilesNearLocation( master.x, master.y, master.z, 9 );
+	var eve array;
+	eve.+type := evtype;
+	eve.+source := me;
+	eve.+target := what;
+	SendEvent( me , eve );
+	foreach mob in mobs
+		if( GetObjProperty( mob , "master" ) == me.master.serial )
+			SendEvent( mob , eve );
+		endif
+	endforeach
+
+endfunction
+
+function ApplyHealing(who)
+
+	if (distance(me,who) > 2)
+		var tth := 0;
+		while (distance(me,who) > 1 and tth < 10)
+			RunToward(who);
+			tth := tth + 1;
+		endwhile
+	endif
+	if (distance(me,who) > 3)
+		return;
+	endif
+
+	if(!CheckLineOfSight( me, who ))
+		return;
+	endif
+
+	if (GetHP(me) < (GetMaxHP(me)/3))
+		DrinkHeal();
+	endif
+
+	if (!GetObjProperty(me,"#heal"))
+		SetObjProperty(me,"#heal", ReadGameClock()-15);
+	endif
+
+	if ( GetObjProperty(me,"#heal") > ReadGameClock())
+		return 0;
+	endif
+	if (me.dead)
+		return 0;
+	endif
+	if (who.dead)
+		return 0;
+	endif
+	if (who == me)
+		SetObjProperty(me,"#heal", ReadGameClock()+16);
+	else
+		SetObjProperty(me,"#heal", ReadGameClock()+20);
+	endif
+	if (me.poisoned and Random (10)== 1) say("I'm poisoned!"); endif
+
+	var bandage := FindMyBandage();
+	if (!bandage)
+		say("I don't have any bandages!");
+		sleep(2);
+		return 1;
+	endif
+
+	var parms := {};
+	parms[1] := me;
+	parms[2] := who;
+	parms[3] := bandage;
+
+	start_script(":healing:npchealing",parms);
+
+	return 1;
+
+endfunction
+
+function FindMyBandage()
+
+	foreach item in EnumerateItemsInContainerOfObjType(me.backpack, 0x0e21 )
+		return item;
+	endforeach
+	return 0;
+
+endfunction
+
+function WearItem(it, you)
+	foreach worn in ListEquippedItems (you )
+		if (it.serial == worn.serial)
+			say("I cant wear something you are wearing!");
+			return;
+		endif
+	endforeach
+	var inpack :=0;
+	foreach item in EnumerateItemsInContainer( you.backpack )
+		if (it.serial == item.serial)
+			inpack := 1;
+		endif
+	endforeach
+	if (inpack == 0)
+		say("The item must be in your backpack!");
+		return;
+	endif
+
+	var mygear := {};
+	foreach thing in listequippeditems(me)
+		if ( RemoveIt(thing) ) mygear.append(thing); endif
+	endforeach
+
+	set_critical(1);
+	foreach thing in mygear
+		if ( RemoveIt(thing) )
+			moveitemtocontainer(thing, me.backpack);
+		endif
+	endforeach
+
+	if (!equipitem(me, it))
+		say("I can't wear that. Maybe I'm not strong enough.");
+	endif
+
+	foreach thing in mygear
+     	if (!EquipItem(me, thing))
+			MoveItemToContainer(thing,you.backpack);
+		endif
+	endforeach
+
+	set_critical(0);
+
+endfunction
+
+function DropEverything()
+
+	foreach item in ListRootItemsInContainer(me.backpack)
+		MoveObjectToLocation(item, me.x, me.y, me.z, 0);
+	endforeach
+
+endfunction
+
+function OpenMyPack()
+
+	if (!master)
+		master := SystemFindObjectBySerial( masterserial );
+		me.setmaster( master );
+		following := master;
+		guarding := master;
+	endif
+
+	if (distance(me,master) > 3)
+		say("You'll need to come closer for me to show you my pack.");
+		return;
+	endif
+
+	if (!me.backpack)
+		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75,1);
+		EquipItem(me, newbackpack);
+	endif
+
+	SendOpenSpecialContainer( master, me.backpack );
+
+endfunction
+
+///////////////////////////////////////////////////////////////////////////
+// "<name> status" gump
+///////////////////////////////////////////////////////////////////////////
+
+function LayerName(layer)
+
+	case (layer)
+		LAYER_HAND1:  return "Weapon";
+		LAYER_HAND2:  return "Shield/Off-hand";
+		LAYER_SHOES:  return "Shoes";
+		LAYER_PANTS:  return "Pants";
+		LAYER_SHIRT:  return "Shirt";
+		LAYER_HELM:   return "Helm";
+		LAYER_GLOVES: return "Gloves";
+		LAYER_RING:   return "Ring";
+		LAYER_NECK:   return "Gorget";
+		LAYER_WAIST:  return "Waist";
+		LAYER_CHEST:  return "Chest";
+		LAYER_WRIST:  return "Bracelet";
+		LAYER_TUNIC:  return "Tunic";
+		LAYER_EARS:   return "Earrings";
+		LAYER_ARMS:   return "Arms";
+		LAYER_CAPE:   return "Cloak";
+		LAYER_ROBE:   return "Robe";
+		LAYER_SKIRT:  return "Skirt";
+		LAYER_LEGS:   return "Legs";
+		default: return "Item";
+	endcase
+
+endfunction
+
+function FmtSkill(skillid)
+
+	return CDbl(GetBaseSkillBaseValue(me,skillid)/10.0);
+
+endfunction
+
+function ShowStatus(you)
+
+	var ar := me.ar;
+	var phys := Cint(GetObjProperty(me,"PhysicalProtection"));
+	var fire := Cint(GetObjProperty(me,"FireProtection"));
+	var poison := Cint(GetObjProperty(me,"PermPoisonImmunity"));
+
+	var equipped := {};
+	foreach item in ListEquippedItems(me)
+		if (item.tile_layer == LAYER_PACK or item.tile_layer == LAYER_HAIR or item.tile_layer == LAYER_BEARD)
+			continue;
+		endif
+		equipped.append(item);
+	endforeach
+
+	var resnum := Cint(GetObjProperty(me,"resnum"));
+	var deathsleft := WFH_MAX_DEATHS - resnum;
+	if (deathsleft < 0) deathsleft := 0; endif
+
+	var ysize := 380 + (len(equipped)*22);
+
+	var gump := GFCreateGump( 50, 50, 420, ysize );
+	GFResizePic( gump, 0, 0, 3500, 420, ysize );
+	GFHTMLArea(gump, 20, 15, 380, 25, "<BASEFONT SIZE=20><CENTER><U>"+me.name+"</U>", 0, 0);
+
+	GFTextLine(gump, 20, 50, 0, "Strength: "+GetStrength(me));
+	GFTextLine(gump, 20, 70, 0, "Intelligence: "+GetIntelligence(me));
+	GFTextLine(gump, 20, 90, 0, "Dexterity: "+GetDexterity(me));
+	GFTextLine(gump, 20, 110, 0, "Hits: "+GetHP(me)+" / "+GetMaxHP(me));
+
+	GFTextLine(gump, 220, 50, 0, "Armor: "+ar);
+	GFTextLine(gump, 220, 70, 0, "Physical Prot: "+phys);
+	GFTextLine(gump, 220, 90, 0, "Fire Prot: "+fire);
+	GFTextLine(gump, 220, 110, 0, "Poison Imm: "+poison);
+
+	var y := 140;
+	GFTextLine(gump, 20, y, 0, "Skills:");
+	y := y + 20;
+	GFTextLine(gump, 20, y, 0, "Anatomy: "+FmtSkill(1));
+	y := y + 18;
+	GFTextLine(gump, 20, y, 0, "Parry: "+FmtSkill(5));
+	y := y + 18;
+	GFTextLine(gump, 20, y, 0, "Healing: "+FmtSkill(17));
+	y := y + 18;
+	GFTextLine(gump, 20, y, 0, "Tactics: "+FmtSkill(27));
+	y := y + 18;
+	GFTextLine(gump, 20, y, 0, "Archery: "+FmtSkill(31));
+
+	var y2 := 160;
+	GFTextLine(gump, 220, y2, 0, "Swordsmanship: "+FmtSkill(40));
+	y2 := y2 + 18;
+	GFTextLine(gump, 220, y2, 0, "Macefighting: "+FmtSkill(41));
+	y2 := y2 + 18;
+	GFTextLine(gump, 220, y2, 0, "Fencing: "+FmtSkill(42));
+	y2 := y2 + 18;
+	GFTextLine(gump, 220, y2, 0, "Wrestling: "+FmtSkill(43));
+
+	y := y + 30;
+	GFTextLine(gump, 20, y, 0, "Equipment:");
+	y := y + 20;
+	foreach item in equipped
+		GFTextLine(gump, 20, y, 0, LayerName(item.tile_layer)+": "+item.name);
+		y := y + 22;
+	endforeach
+
+	y := y + 10;
+	GFTextLine(gump, 20, y, 0, "Deaths survived: "+resnum+" / "+WFH_MAX_DEATHS+" ("+deathsleft+" remaining)");
+
+	GFAddButton(gump, 190, ysize-35, 2128, 2129, GF_CLOSE_BTN, 1);
+
+	GFSendGump(you, gump);
+
+endfunction
+
+///////////////////////////////////////////////////////////////////////////
+// Growth
+///////////////////////////////////////////////////////////////////////////
+
+function GetLiveMaster()
+	var mo := GetObjProperty(me, "master");
+	if (!mo)
+		return 0;
+	endif
+	return SystemFindObjectBySerial( mo );
+endfunction
+
+function GainStat()
+	if (!GetLiveMaster())
+		return;
+	endif
+	if ( laststrengthgain > ReadGameClock() )
+		return;
+	else
+		laststrengthgain := ReadGameClock()+3600;
+	endif
+
+	if (!master) return; endif
+
+	var maxstr := GetStrength(master)-GetStrengthMod(master);
+	var maxint := GetIntelligence(master)-GetIntelligenceMod(master);
+	var maxdex := GetDexterity(master)-GetDexterityMod(master);
+
+	var basestr := GetStrength(me)-GetStrengthMod(me);
+	var baseint := GetIntelligence(me)-GetIntelligenceMod(me);
+	var basedex := GetDexterity(me)-GetDexterityMod(me);
+
+	if ( basestr < maxstr )
+		if ( (Random(140)+1 ) > (basestr) )
+			SetBaseStrength(me, (basestr + 1));
+			say("Woohoo! I'm getting stronger!");
+		endif
+	endif
+	if ( baseint < maxint )
+		if ( (Random(140)+1 ) > (baseint) )
+			SetBaseIntelligence(me, (baseint + 1));
+			say("I'm learning a lot from you!");
+		endif
+	endif
+	if ( basedex < maxdex )
+		if ( (Random(140)+1 ) > (basedex) )
+			SetBaseDexterity(me, (basedex + 1));
+			say("Ha! I liked that move!");
+		endif
+	endif
+	SetWfhVitalCeilings(me);	// max HP/Mana/Stam follow the grown stats (HP = 2 x Str)
+	SyncStatusMirror();
+endfunction
+
+// Every 5 minutes of fighting, each tracked skill has a chance to gain 0.1 toward the master's
+// own skill in it, never past 130.0.
+function GainSkill()
+	if (!GetLiveMaster())
+		return;
+	endif
+	if ( lastskillgain > ReadGameClock() )
+		return;
+	else
+		lastskillgain := ReadGameClock()+300;
+	endif
+
+	if (!master) return; endif
+
+	var grew := 0;
+	foreach skillid in TRACKED_SKILLS
+		var mastercap := Min(GetBaseSkillBaseValue(master, skillid), WFH_SKILL_CAP_TENTHS);
+		var curval := GetBaseSkillBaseValue(me, skillid);
+		if ( curval < mastercap )
+			if ( (Random(140)+1) > CInt(curval/10) )
+				SetBaseSkillBaseValue(me, skillid, curval+1);
+				grew := 1;
+			endif
+		endif
+	endforeach
+
+	if (grew)
+		say("I'm getting better at this!");
+	endif
+
+	SyncStatusMirror();
+endfunction
+
+function runrandom(opponent, numruns := 2)
+
+	var stepstotake := (numruns)+4;
+	var tox := me.x;
+	var toy := me.y;
+	var highx := tox - opponent.x;
+	if ( highx < 0 ) highx := 0 - highx; endif
+	var highy := tox - opponent.y;
+	if ( highy < 0 ) highy := 0 - highy; endif
+
+	case ( highy > highx )
+	0:	//run along the x access
+		case ( Random(2) )
+		0:	//to the right
+			toy := (me.y - stepstotake);
+			if (random(2)) tox := opponent.x; endif //to his x
+		1:	//to the left
+			toy := (me.y + stepstotake);
+			if (random(2)) tox := opponent.x; endif //to his x
+		endcase
+	1:
+		//run along the y access
+		case( random(2) )
+		0:	//to the right
+			tox := (me.x - stepstotake);
+			if (random(2)) toy := opponent.y; endif //to his y
+		1:	//to the left
+			tox := (me.x + stepstotake);
+			if (random(2)) toy := opponent.y; endif //to his y
+		endcase
+	endcase
+
+	var runs := 0;
+	var ev;
+	while ( (distance(me, opponent) > 0) and (runs <= stepstotake) )
+		RunTowardLocation( tox, toy );
+		OpenDoors(opponent);
+		runs := runs +1;
+		ev := wait_for_event(0);
+		if (ev)
+			case (ev.type)
+			EVID_PEACEMADE: return 1;
+			SYSEVENT_DAMAGED:
+				AddToHitList(opponent);
+				if (ev.source.serial == opponent.serial)
+					flee(opponent);
+				endif
+			endcase
+		endif
+		if ( (me.x == tox) and (me.y == toy) )
+			return 0;
+		endif
+	endwhile
+
+	return 0;
+
+endfunction
+
+function OpenDoors(opponent)
+
+	//only check once per 5 seconds:
+	var nextbreath := GetObjProperty(me,"#lastbreath");
+	if ( (nextbreath) and (nextbreath > ReadGameClock() ) )
+		return;
+	endif
+
+	if ( distance(me,opponent) < 2 )
+		SetObjProperty(me,"#lastbreath",ReadGameClock() + 20 );
+		return;
+	endif
+
+	var itemdesc := ReadConfigFile( ":doors:itemdesc" );
+	var doorstoopen := 0;
+	var tox, toy;
+	var Doors := ListItemsNearLocation( me.x,me.y,me.z,3 );
+	foreach door in Doors
+			if (itemdesc[door.objtype].doortype)
+				doorstoopen := 1;
+				tox := door.x;
+				toy := door.y;
+				break;
+			endif
+	endforeach
+
+	if ( doorstoopen )
+		start_script("::/misc/npcdoor", me);
+		SetObjProperty(me,"#lastbreath",ReadGameClock() + 20 );
+		sleepms(150);
+		RunTowardLocation(tox, toy);
+		sleepms(150);
+		RunTowardLocation(tox, toy);
+	else
+		SetObjProperty(me,"#lastbreath",ReadGameClock() + 5 );
+	endif
+
+endfunction
+
+// "<name> release": a fired warrior is gone for good, not left wandering. AbandonedByOwner
+// keeps death.src from dropping a heart and corpsedecay.src from escrowing its gear.
+function Release()
+
+	say("See ya");
+	EraseObjProperty(master,"henchman");
+	EraseObjProperty(master,"WFHBackup");
+	AbandonWarrior(me);
+
+endfunction
+
+function Undress()
+
+	say("Wooh!");
+
+	set_critical(1);
+	foreach thing in listequippeditems(me)
+		if (RemoveIt(thing))
+			moveitemtocontainer(thing, me.backpack);
+		endif
+	endforeach
+	set_critical(0);
+
+endfunction
+
+function RemoveIt(it)
+
+	if ( it == GetEquipmentByLayer( me, LAYER_BEARD ) )
+		return 0;
+	elseif ( it == GetEquipmentByLayer( me, LAYER_HAIR ) )
+		return 0;
+	elseif ( it == GetEquipmentByLayer( me, LAYER_MOUNT ) )
+		return 0;
+	elseif ( it.objtype == 0x204E)
+		return 0;
+	elseif ( it == (me.backpack) )
+		return 0;
+	endif
+
+	return 1;
+
+endfunction
+
+function DrinkHeal()
+
+	if ( cint(getobjproperty(me, "#potion")) > ReadGameClock()  )
+        	return 0;
+	endif
+
+	foreach item in EnumerateItemsInContainer(me.backpack)
+		if ( ( item.objtype == 0xDC03 ) or ( item.objtype == 0xDC02 ) )
+			PlaySoundEffect (me, DRINK_SOUND);
+			PerformAction(me, ANIM_EAT);
+			CreateItemInBackpack(me, UOBJ_EMPTY_BOTTLE, 1);
+			var heal_amount;
+			if (item.objtype == 0xDC02)
+				heal_amount := RandomDiceStr("2d12+3");
+			else
+				heal_amount := RandomDiceStr("5d12+3");
+			endif
+			HealDamage(me, heal_amount);
+			DestroyItem(item);
+			PlaySoundEffect( me,  SOUND_EFFECT_HEAL );
+			setobjproperty(me, "#potion", (ReadGameClock() + 20));
+			return 1;
+		endif
+	endforeach
+
+	return 0;
+
+endfunction
+
+function Fetch()
+
+	var tobj := Target(master);
+	if (tobj.container)
+		return;
+	endif
+
+	var times := 0;
+	while ( (distance(me, tobj) > 1) and times < 5 and CheckLineOfSight(me,tobj) )
+		if( !runtoward(tobj))
+			sleep(1);
+			times := times + 1;
+		else
+			times := 0;
+		endif
+	endwhile
+
+	if (Accessible(me,tobj))
+		MoveItemToContainer(tobj, me.backpack);
+	endif
+
+endfunction
+
+function GoMad(you1)
+		var mad := 0;
+		var said := 0;
+		while (mad < 20)
+			mad := mad + 1;
+			RunToward(you1);
+			if (said == 0 )
+				if (Random(10) < 3)
+					say("vtttt! vttt! haddabba da");
+					said := 1;
+				elseif (Random(10)<3)
+					say("waaaaaaaaaaaaaah! I'm a teapot!");
+					said := 1;
+				elseif (Random(10) < 3)
+					say ("asdweqfgds!!! - my old man's a mushroom!");
+					said := 1;
+				elseif (Random(10) < 3)
+					say ("Up in the air, I fly zoom zoom a zoom a zoom zoom");
+					said := 1;
+				endif
+			endif
+		endwhile
+		mad := 0;
+		if (Random(10) < 5)
+			say("zzzzoooooooommmmmmmm!");
+		endif
+		while (mad < 10)
+			RunAwayFrom(you1);
+			mad := mad + 1;
+		endwhile
+		mad := 0;
+		while (mad < 30)
+			mad := mad + 1;
+			RunToward(you1);
+		endwhile
+endfunction

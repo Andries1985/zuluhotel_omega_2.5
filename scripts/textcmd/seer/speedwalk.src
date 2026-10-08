@@ -1,0 +1,38 @@
+// Synopsis: Toggle or set your run speed modifier from 0 to 4.
+use uo;
+use os;
+use polsys;
+
+include ":alryc:include/speedwalk";
+
+program textcmd_speedwalk( mobile, text )
+
+	if( !text )
+		if( GetObjProperty( mobile, "SpeedWalk" ) )
+			text := 0;
+		else
+			text := CInt( 1 );
+		endif
+	else
+		// CInt() never errors (it turns "abc" or "-3" into 0 or -3), so the argument is checked as
+		// text: a single digit 0-4, nothing else.
+		var words := SplitWords( CStr( text ) );
+		if( words.size() != 1 or Len( words[1] ) != 1 or words[1] < "0" or words[1] > "4" )
+			SendSysMessage( mobile, "Invalid value, must be an integer between 0 - 4.", 0x3, 0x22 );
+			return 0;
+		endif
+		text := CInt( words[1] );
+	endif
+
+	SendSpeedWalk( mobile, text );
+	if( text )
+		SendSysMessage( mobile, "Run Speed Mod Toggled to "+text+"!", 0x3, 0x42 );
+		SetObjProperty( mobile, "SpeedWalk", text );
+	else
+		SendSysMessage( mobile, "Run Speed Mod Toggled off!", 0x3, 0x22 );
+		EraseObjProperty( mobile, "SpeedWalk" );
+	endif
+
+	return 1;
+
+endprogram

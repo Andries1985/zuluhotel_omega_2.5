@@ -6,6 +6,7 @@ include "include/areas";
 include "include/client";
 include ":housing:utility";
 include ":statichousing:recallgatehelp";
+include "include/housetravel";	// Patch 1.1.4: FindHouseAtSpot / CanTravelIntoHouse / DestroyRefusedRune
 
 program cast_mark( caster, spell_id )
 
@@ -28,27 +29,15 @@ program cast_mark( caster, spell_id )
 		endif
 	endforeach
 
-	var multi := caster.multi;
-	if( multi )
-		if( !Iscowner( caster, multi ) )
-			if( !IsFriend( caster, multi, GATE_TO ) )
-				SendSysMessage( caster , "You can't mark there!" );
-				return;
-			endif
-		endif
+	// Patch 1.1.4: house test by footprint (include/housetravel.inc) instead of caster.multi, which
+	// only saw a house under a house piece: a visitor standing in a castle courtyard could mark it.
+	// Only someone who may travel into the house may mark inside it.
+	var here_house := FindHouseAtSpot( caster.x, caster.y, caster.z, caster.realm );
+	if( !CanTravelIntoHouse( caster, here_house, GATE_TO ) )
+		SendSysMessage( caster , "You can't mark there!" );
+		return;
 	endif
-	// Same check as above for static houses
-	var serialstatichouse := StaticHouseSerial( caster );
-	if(serialstatichouse)
-		var sign := SystemFindObjectBySerial(serialstatichouse);
-		if( !Iscowner( caster, sign )  )
-			if( !IsFriend( caster, sign, GATE_TO ));
-				SendSysMessage( caster, "You can't mark there!" );
-				return;
-			endif
-		endif
-	endif
-	
+
 	if (TryToCast( caster, spell_id ) != SUCCESS);
 		EraseObjProperty(caster, "#Casting");
 		return 0;

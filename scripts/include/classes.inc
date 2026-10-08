@@ -34,8 +34,9 @@ const CRAFTER_REPAIR_DIFF_BONUS := 2.5; // used in util/repair.inc
 
 function ClasseBonus( who , classeid )
 
+	// Patch 1.1.4: the illegal-equipment sweep that ran here on every call (every hit, every
+	// damaging spell) is gone; it runs where class levels are recomputed (AssignClasse).
 	var level := CInt( GetObjProperty( who , classeid ) );
-	unequipRestrictedItems(who);
 	if( level )
 		return( 1.0 + BONUS_PER_LEVEL * level );
 	else
@@ -66,7 +67,6 @@ endfunction
 
 function ClasseBonusBySkillId( who, skillid )
 
-	unequipRestrictedItems(who);
 	return( ClasseBonusByLevel( IsSpecialisedIn( who , skillid ) ) );
 
 endfunction
@@ -167,15 +167,33 @@ function EnumerateRestrictedItemTypesFromClasse( classeid )
 endfunction
 
 
-function GetClasseIdForSkill( skillid )
+function GetClasseIdForSkill( who, skillid )
+
+	// Patch 1.1.4: look at the classes the CHARACTER holds, not at the first class that lists the
+	// skill. The old lookup took only the skill and returned the first class in GetClasseIds()
+	// order whose list held it, so a Warrior's Swordsmanship resolved to Bladesinger (level 0) and
+	// got no class skill-gain bonus or failed-roll second chance; only Healing and Wrestling
+	// counted. Paladins lost six of eight skills, Powerplayers 48 of 49. Of the classes the
+	// character has a level in, the one with the highest level that lists the skill wins.
+	// A Powerplayer is deliberately left out (returns 0): its bonus is the skill-wide small curve
+	// in skillpoints.inc, with no second roll.
+	var best := 0;
+	var bestlevel := 0;
 
 	foreach id in GetClasseIds()
-		if( skillid in GetClasseSkills( id ) )
-			return id;
+		if( id == CLASSEID_POWERPLAYER )
+			continue;
+		endif
+		var level := CInt( GetObjProperty( who, id ) );
+		if( level > bestlevel )
+			if( skillid in GetClasseSkills( id ) )
+				best := id;
+				bestlevel := level;
+			endif
 		endif
 	endforeach
 
-	return 0;
+	return best;
 
 endfunction
 
@@ -422,19 +440,18 @@ endfunction
 
 function GetStatPointsMultiplier( who , stat )
 
-	var level   := HaveStatAffinity( who , stat );
-	var mult    := 1.0;
+	// Patch 1.1.4: wired into AwardPoints() in skillpoints.inc for every class. A character whose
+	// classes disagree on a stat follows the higher-level one; a tie favours the affinity.
+	var affinity   := HaveStatAffinity( who , stat );
+	var difficulty := HaveStatDifficulty( who , stat );
 
-	if( level )
-		mult  := ClasseBonusByLevel( level );
-	else
-		level := HaveStatDifficulty( who , stat );
-		if( level )
-			mult := CDbl( 1.0 / ClasseBonusByLevel( level ) );
-		endif
+	if( affinity and affinity >= difficulty )
+		return ClasseBonusByLevel( affinity );
+	elseif( difficulty )
+		return CDbl( 1.0 / ClasseBonusByLevel( difficulty ) );
 	endif
 
-	return mult;
+	return 1.0;
 
 endfunction
 
@@ -501,89 +518,72 @@ function HaveRestrictedModEnchantmentForClasse( unused who , unused item , class
 endfunction
 
 
+// The highest level "who" holds in any of classeids, 0 if none. Replaces the first-match walk
+// the two stat tables used, which let GetClasseIds() order decide for a dual-class character.
+function HighestHeldClasseLevel( who, classeids )
+
+	var best := 0;
+	foreach id in classeids
+		var level := CInt( GetObjProperty( who, id ) );
+		if( level > best )
+			best := level;
+		endif
+	endforeach
+
+	return best;
+
+endfunction
+
+
+// Patch 1.1.4: stat affinity (grows faster). Table as decided 2026-10-07: Ranger gains Dexterity,
+// Thief keeps Dexterity, Mystic Archer gains Intelligence as well as Dexterity.
 function HaveStatAffinity( who , stat )
 
 	var classeids;
 
 	case( stat )
-		"str":	classeids := {  
-					CLASSEID_CRAFTER,
-					CLASSEID_WARRIOR };	
-					break;
-
-		"dex":	classeids := {  
-					CLASSEID_BARD,
-					CLASSEID_BLADESINGER,
-					CLASSEID_THIEF,
-					CLASSEID_MYSTIC_ARCHER };	
-					break;
-
-		"int":	classeids := {  
-					CLASSEID_BARD,
-					CLASSEID_MAGE,
-					CLASSEID_PALADIN };	
-					break;
-
+		"str":	classeids := { CLASSEID_CRAFTER, CLASSEID_WARRIOR };
+				break;
+		"dex":	classeids := { CLASSEID_BARD, CLASSEID_BLADESINGER, CLASSEID_THIEF, CLASSEID_MYSTIC_ARCHER, CLASSEID_RANGER };
+				break;
+		"int":	classeids := { CLASSEID_BARD, CLASSEID_MAGE, CLASSEID_PALADIN, CLASSEID_MYSTIC_ARCHER };
+				break;
 		default:	classeids := {};
 	endcase
 
-	foreach id in classeids
-		var level := CInt( GetObjProperty( who , id ) );
-
-		if( level )
-			return level;
-		endif
-	endforeach
-
-	return 0;
+	return HighestHeldClasseLevel( who, classeids );
 
 endfunction
 
 
+// Stat difficulty (grows slower). Ranger and Thief are slow on Strength, Thief also on Intelligence.
 function HaveStatDifficulty( who , stat )
 
-	var classeids, level;
+	var classeids;
 
 	case( stat )
-		"str":
-			classeids := {
-				CLASSEID_BARD,
-				CLASSEID_BLADESINGER,
-				CLASSEID_MAGE,
-				CLASSEID_MYSTIC_ARCHER };
+		"str":	classeids := { CLASSEID_BARD, CLASSEID_BLADESINGER, CLASSEID_MAGE, CLASSEID_MYSTIC_ARCHER, CLASSEID_RANGER, CLASSEID_THIEF };
 				break;
-		"dex":
-			classeids := {
-				CLASSEID_MAGE,
-				CLASSEID_PALADIN };
+		"dex":	classeids := { CLASSEID_MAGE, CLASSEID_PALADIN };
 				break;
-		"int":
-			classeids := {
-				CLASSEID_CRAFTER,
-				CLASSEID_WARRIOR };
+		"int":	classeids := { CLASSEID_CRAFTER, CLASSEID_WARRIOR, CLASSEID_THIEF };
 				break;
-
 		default:	classeids := {};
 	endcase
 
-	foreach id in classeids
-		level := CInt( GetObjProperty( who , id ) );
-		if( level )
-			return level;
-		endif
-	endforeach
-
-	return 0;
+	return HighestHeldClasseLevel( who, classeids );
 
 endfunction
 
 
 function IsSpecialisedIn( who, skillid )
 
-	var classeid := GetClasseIdForSkill( skillid );
+	var classeid := GetClasseIdForSkill( who, skillid );
 	if( classeid )
 		return CInt( GetObjProperty( who, classeid ) );
 	endif
+
+	return 0; // explicit, so "no class for this skill" can never read as a truthy default
 
 endfunction
 
@@ -659,7 +659,6 @@ function IsFromThatClasse( who , classe_skills , forensicsallowed := 0 )
 			level     := level + 1;
 			average_t := CInt( average_t + AVERAGE_LEVEL_MOD * number );
 		endwhile
-		unequipRestrictedItems(who);
 		return level;
 	elseif ( classe < AVERAGE_SKILL * number )	
 		return 0;
@@ -677,7 +676,6 @@ function IsFromThatClasse( who , classe_skills , forensicsallowed := 0 )
 			percent   := CInt( total * number * represent * 0.01 );
 			average_t := CInt( average_t + AVERAGE_LEVEL_MOD * number );
 		endwhile
-		unequipRestrictedItems(who);
 		return level;
 	endif
 
@@ -687,8 +685,11 @@ endfunction
 function IsProhibitedByClasse( who , item )
 
 	var ret := 0;
+	// Patch 1.1.4: the rules of the class the character primarily is (highest level), not of the
+	// first held class in list order.
+	var primary := GetPrimaryClasseId( who );
 
-	if( GetObjProperty( who , CLASSEID_BARD	) )
+	if( primary == CLASSEID_BARD )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_BARD ) )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BARD ) )
@@ -696,7 +697,7 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BARD ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_BLADESINGER	) )
+	elseif( primary == CLASSEID_BLADESINGER )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_BLADESINGER ) )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_BLADESINGER ) )
@@ -706,7 +707,7 @@ function IsProhibitedByClasse( who , item )
 		elseif( GetObjProperty( item , "int" ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_CRAFTER ) )
+	elseif( primary == CLASSEID_CRAFTER )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_CRAFTER ) )
 			ret := 1;
 		//elseif( GetObjProperty( item , "str" ) )
@@ -716,7 +717,7 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_CRAFTER ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_MAGE ) )
+	elseif( primary == CLASSEID_MAGE )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_MAGE ) )
 			ret := 1;
 		elseif( GetObjProperty( item , "str" ) )
@@ -730,7 +731,7 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MAGE ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_MYSTIC_ARCHER ) )
+	elseif( primary == CLASSEID_MYSTIC_ARCHER )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_MYSTIC_ARCHER ) )
 			ret := 1;
 		elseif( GetObjProperty( item , "str" ) )
@@ -742,7 +743,7 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_MYSTIC_ARCHER ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_PALADIN ) )
+	elseif( primary == CLASSEID_PALADIN )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_PALADIN ) )
 			ret := 1;
 		elseif( GetObjProperty( item , "dex" ) )
@@ -752,7 +753,7 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_PALADIN ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_RANGER ) )
+	elseif( primary == CLASSEID_RANGER )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_RANGER ) )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_RANGER ) )
@@ -760,7 +761,7 @@ function IsProhibitedByClasse( who , item )
 		elseif( item.objtype in EnumerateRestrictedItemTypesFromClasse( CLASSEID_RANGER ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_THIEF ) )
+	elseif( primary == CLASSEID_THIEF )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_THIEF ) )
 			ret := 1;
 		elseif( item.graphic in EnumerateRestrictedItemTypesFromClasse( CLASSEID_THIEF ) )
@@ -770,7 +771,7 @@ function IsProhibitedByClasse( who , item )
 		elseif( GetObjProperty( item , "int" ) )
 			ret := 1;
 		endif
-	elseif( GetObjProperty( who , CLASSEID_WARRIOR ) )
+	elseif( primary == CLASSEID_WARRIOR )
 		if( HaveInvalidSkillEnchantmentForClasse( item , CLASSEID_WARRIOR ) )
 			ret := 1;
 		elseif( GetObjProperty( item , "int" ) )
@@ -802,9 +803,13 @@ function AssignClasse( character )
 		endif
 		if( t )
 			SetObjProperty( character , classe , t );
-			unequipRestrictedItems(character);
 		endif
 	endforeach
+
+	// Patch 1.1.4: the one place illegal equipment is swept. Class levels only change here, so a
+	// single pass after every class has been stamped covers it; the bonus functions and the Is*
+	// predicates used to sweep on every call, which cost every hit and spell 100-200 ms.
+	unequipRestrictedItems(character);
 
 endfunction
 
@@ -827,15 +832,32 @@ function ClassWeapons(classString)
 endfunction
 
 
-function GetClass(who)
+// Patch 1.1.4: the class a character "is" for every level-based rule: the held class with the
+// highest level, ties going to GetClasseIds() order (so a single-class character is unchanged).
+// GetClass() used to return the first held class in list order, which judged the one dual-class
+// character on the shard (Ranger 3 / Mystic Archer 1) as a level 1 Mystic Archer everywhere,
+// item rules included. Only sibling classes sharing four skills can be held together.
+function GetPrimaryClasseId( who )
+
+	var best := 0;
+	var bestlevel := 0;
 
 	foreach key in GetClasseIds()
-		if (GetObjProperty(who, key))
-			return key; // returns "Isranger" etc
+		var level := CInt( GetObjProperty( who, key ) );
+		if( level > bestlevel )
+			best := key;
+			bestlevel := level;
 		endif
 	endforeach
 
-	return 0; //no class found
+	return best;
+
+endfunction
+
+
+function GetClass(who)
+
+	return GetPrimaryClasseId( who ); // returns "IsRanger" etc, 0 when no class
 
 endfunction
 
