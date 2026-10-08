@@ -82,15 +82,14 @@ function LookAround( who )
 						SetObjProperty( mobile, "#KillMe", guard.serial );
 						SetObjProperty(  mobile, "GuardCaller", who.name);
 						setObjProperty(mobile,"Killer","Guards"); //added
-						var plyr;
-						foreach character in EnumerateOnlineCharacters()
-							if (character.name == who.name)
-							plyr := character;
-							endif
-						endforeach
-						var acc := plyr.acct;
-						var accname := acc.name;	
-						SetObjProperty ( mobile, "KillerAcct", accname );	
+						// who is the caller and is already in hand; scanning every online
+						// character for a name match picked the wrong player on duplicate
+						// names and left plyr uninitialised if who logged out mid-scan.
+						var accname := who.acct.name;
+						if (accname == error)
+							accname := "";
+						endif
+						SetObjProperty ( mobile, "KillerAcct", accname );
 					endif
 					set_critical(0);
 					found := 1;

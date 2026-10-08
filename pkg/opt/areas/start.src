@@ -1,0 +1,47 @@
+////////////////////////////////////////////////////////////////////////////////
+// areas package start script (POL runs every package's start.ecl on boot)
+//
+// areas.cfg can only change while the server is down, but the parsed-area
+// cache and the mask cache both live in GlobalProperties, which survive a
+// restart. Rebuild both for every realm in areas.cfg on boot so a config edit
+// that keeps the same line count (moved box, renamed id) can never be hidden
+// by a stale cache, and so the mask cache is populated before the first
+// policy check instead of readers falling back to the datafile.
+////////////////////////////////////////////////////////////////////////////////
+use uo;
+use os;
+use cfgfile;
+
+include ":areas:include/areapolicy";
+
+program areas_start()
+	var areas_cfg := ReadConfigfile(CFGFILE_AREAS);
+	if(!areas_cfg)
+		Print("[areas.start] cannot read areas config; caches left as-is");
+		return 0;
+	endif
+
+	var realms := GetConfigStringKeys(areas_cfg);
+	if(!realms || !realms.size())
+		Print("[areas.start] no realms in areas config; caches left as-is");
+		return 0;
+	endif
+
+	foreach realm in realms
+		var parsed := RebuildParsedAreaLinesCache(realm);
+		if(parsed == error)
+			Print("[areas.start] parsed cache rebuild failed realm=" + CStr(realm) + " : " + CStr(parsed.errortext));
+			continue;
+		endif
+
+		var masks := RebuildPolicyMaskCache(realm);
+		if(masks == error)
+			Print("[areas.start] mask cache rebuild failed realm=" + CStr(realm) + " : " + CStr(masks.errortext));
+			continue;
+		endif
+
+		Print("[areas.start] realm=" + CStr(realm) + " areas=" + CStr(parsed) + " masks=" + CStr(masks));
+	endforeach
+
+	return 1;
+endprogram

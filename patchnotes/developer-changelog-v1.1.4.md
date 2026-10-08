@@ -1,9 +1,9 @@
 # Developer Changelog - v1.1.4
 **Range:** `3631ada` (patchnotes commit of v1.1.3) -> working tree  
 **Branch:** Patch-1.1.4  
-**Date:** 2026-10-07  
+**Date:** 2026-10-07 (areas package review added 2026-10-08)  
 **Commits in range:** 0 non-boundary commits. `927916d` (merge of Patch-1.1.3 into master) carries no new content - `git diff 3631ada..HEAD` is empty. The whole release is the uncommitted working tree.  
-**Files changed:** 29 modified code/config files, 2 renamed into a new package and rewritten, 17 new files, plus this release's own 3 `patchnotes/` files
+**Files changed:** 33 modified code/config files, 2 renamed into a new package and rewritten, 18 new files, plus this release's own 3 `patchnotes/` files
 
 > Scope was computed against `3631ada`, not `master`. `master` only caught up with 1.1.3 via `927916d`; anything older than that is already shipped.
 
@@ -28,14 +28,15 @@
 15. [Houses - Travel Checks Use the Footprint, Not the Rune's Height](#15-houses---travel-checks-use-the-footprint-not-the-runes-height)
 16. [Classes - Per-Skill Bonus Lookup, Powerplayer Curve, Stat Affinity, Primary Class, Equipment Sweep](#16-classes---per-skill-bonus-lookup-powerplayer-curve-stat-affinity-primary-class-equipment-sweep)
 17. [Code Review Follow-ups](#17-code-review-follow-ups)
-18. [Exhaustive File-by-File Change List](#18-exhaustive-file-by-file-change-list)
-19. [Risk and Regression Notes](#19-risk-and-regression-notes)
+18. [Areas Package - Code Review, Cache Fixes and Hot-Path Work](#18-areas-package---code-review-cache-fixes-and-hot-path-work)
+19. [Exhaustive File-by-File Change List](#19-exhaustive-file-by-file-change-list)
+20. [Risk and Regression Notes](#20-risk-and-regression-notes)
 
 ---
 
 ## 1. Scope Summary
 
-Patch 1.1.4 has three topics: a code review of `pkg/opt/powerhour` with the two staff features that came out of it (sections 3-8), a port of ZH3.0's Warrior for Hire work onto this shard's systems (sections 9-12), ZH3.0's single-window tracking menu (section 13), the Seer `.speedwalk` command (section 14), ZH3.0's house-travel fix (section 15), and a class-system review that started from ZH3.0's finding about skills shared between classes (section 16).
+Patch 1.1.4 has three topics: a code review of `pkg/opt/powerhour` with the two staff features that came out of it (sections 3-8), a port of ZH3.0's Warrior for Hire work onto this shard's systems (sections 9-12), ZH3.0's single-window tracking menu (section 13), the Seer `.speedwalk` command (section 14), ZH3.0's house-travel fix (section 15), and a class-system review that started from ZH3.0's finding about skills shared between classes (section 16). A fourth topic, added 2026-10-08, is a code review of the areas package: two cache defects that could leave stale or empty area rules in force, a rework of the per-check hot path, a cheaper `.areas` Save and a guard-caller fix (section 18).
 
 The review found two real defects in the server-wide scheduler (`powerhour.src`), both rooted in state that lived in script locals while the type flag lived in a persisted global property. A restart mid-powerhour left the flag on with nothing left to turn it off, so the flag stayed set until the next weekly powerhour's cleanup erased it, up to a week later. And the "second chance" bonus roll compared against a random type re-rolled every minute rather than the type that had actually run, so the rule introduced in `063be4e` ("if sunday bonus PH is resource, more likely to hit the 2nd bonus power hour") never applied. Section 3 rewrites the scheduler around a small set of persisted global properties and a new shared include, `pkg/opt/powerhour/include/powerhour.inc`, which every script in the package (and the Eon-Prism) now reads its constants and helpers from.
 
@@ -469,7 +470,68 @@ A review pass over the whole working tree (2026-10-07) produced ten findings. Se
 
 ---
 
-## 18. Exhaustive File-by-File Change List
+## 18. Areas Package - Code Review, Cache Fixes and Hot-Path Work
+
+A full review of `pkg/opt/areas` (2026-10-08) covered the policy include, the region enter/leave scripts, the guard caller, the `.areas` editor, `areas.cfg` and the shared consumer `scripts/include/areas.inc`. The findings were triaged with Alryc before anything changed. Two were dropped: a "no migration from the old index-keyed global properties" finding (that migration shipped earlier and is not needed), and a "region enter/leave messages were removed" finding, which was wrong - the core prints `EnterText`/`LeaveText` from `regions/regions.cfg`, so the commented-out script copy was a duplicate, not a loss. The rest split into the bugs and performance work below and a cleanup list parked for a later patch (18.7).
+
+### 18.1 Parsed-area cache could never be invalidated
+
+`areapolicy.inc` caches the parsed bounding boxes per realm in the global property `zh.areapolicy.parsed.<realm>`. Global properties are written to `global.txt` and reloaded on every restart, so the cache outlived the config it was built from. Its only staleness check was the realm's `Area` line count, and `InvalidateParsedAreaLinesCache()` had no callers anywhere in the tree. Any edit to `areas.cfg` that kept the line count - a moved box, a renamed `id=`, two lines swapped - was silently ignored forever, restart or not.
+
+Decision: `areas.cfg` can only change while the server is down, so the boot is the invalidation point. A new package start script (18.3) erases and re-parses the cache for every realm on every boot. The per-call fingerprint check is gone from the hot path entirely; it cost a `ReadConfigfile` plus a `GetConfigStringArray` of ~216 strings on every single policy check and could not see the edits that mattered.
+
+### 18.2 Mask cache - single writer, versioned, no failed-read poisoning
+
+Area flags live in the per-realm datafile `:areas:area_policies_<realm>` and are cached as one dictionary per realm in `zh.areapolicy.maskcache.<realm>`. The old `GetPolicyMask()` cold path opened the datafile, read the element, and then stored the result into that dictionary by reading the global property, adding a key and writing the whole thing back. That had two defects:
+
+- **Non-atomic read-modify-write.** POL scripts are cooperative; a reader could yield between `GetGlobalProperty` and `SetGlobalProperty`. If staff pressed Save in `.areas` in that gap, Save's invalidation erased the changed keys and the reader then wrote its pre-Save copy back, resurrecting every old mask until the next Save. Readers hit the cold path constantly after a Save because prune wiped the whole realm dictionary, so the window was far from theoretical.
+- **Failures cached as "no flags".** The cold path started with `mask := 0` and stored it whether or not the open or element read had succeeded. A transient open failure during a world save was remembered as "this area has no flags" - e.g. Britain unguarded - until staff next saved the editor.
+
+New model, documented in the include under "SINGLE-WRITER RULE":
+
+- **Readers never write the cache.** `GetPolicyMask()` reads the dictionary; an id that is not in it goes to `ReadPolicyMaskUncached()`, which opens the datafile, returns the value and stores nothing. A failed open returns 0 for that one call and the next call retries.
+- **One writer function.** `RebuildPolicyMaskCache(realm)` builds the complete dictionary from the datafile in one pass - every parsed area id plus the four world catch-all ids, 0 when absent - and stores it with a single `SetGlobalProperty`. It never merges with the existing value, so there is nothing to race. It is called from the start script on boot and from the end of `PruneStaleRealmPolicies()`, which is the last step of every `.areas` Save. If it cannot read the config or the datafile it erases the realm's cache instead, so readers fall back to datafile reads rather than a dictionary that may be stale.
+- **Version counter.** Every writer bumps `zh.areapolicy.maskver.<realm>` (a small int). Each running script keeps a local copy of the dictionary and compares that one int per resolve; the dictionary is re-fetched only when the counter moves. `InvalidatePolicyMaskCache(realm)` erases the realm and bumps the counter; its per-id form is gone (the only external callers, two `pkg/opt/alryc` test scripts, already used the one-argument form). `SetPolicyMask()` no longer touches the cache at all; callers batch and let prune rebuild once.
+
+### 18.3 Boot rebuild - new `pkg/opt/areas/start.src`
+
+POL runs every package's `start.ecl` at boot (ten other packages here rely on that). The new areas start script reads `areas.cfg`, enumerates the realm elements with `GetConfigStringKeys()`, and for each calls `RebuildParsedAreaLinesCache()` then `RebuildPolicyMaskCache()`, logging one `[areas.start] realm=<r> areas=<n> masks=<m>` line per realm and a clear failure line if either step fails. After it has run, every known id including the catch-alls is in the mask dictionary, so the hot path never misses on a known id.
+
+### 18.4 Hot path
+
+Before this change one `ResolvePolicyAtLocation()` - called per mobile in the guard radius, per region entry, per recall/gate check and per NPC AI tick via `IsInGuardedArea()` and friends - did one `ReadConfigfile`, one `GetConfigStringArray` (fingerprint only), one unpack of the ~216-struct parsed array out of a global property, and five unpacks of the realm mask dictionary (four for the catch-all ids in `GetGlobalBypassMask()`, one for the match). Reading a global property unpacks the whole packed value every time, so each of those was a full deserialisation.
+
+Now:
+
+- The include holds script-local copies: `g_areapolicy_parsed` (the parsed array for the last realm resolved) and `g_areapolicy_masks` (the mask dictionary, tagged with realm and version). `EnsureLocalParsedAreas()` copies the array once per script per realm - `areas.cfg` cannot change at runtime, so the copy is valid for the life of the script. `EnsureLocalRealmMasks()` costs one small-int global read and re-fetches the dictionary only when the version counter moves.
+- `ResolveAreaMatchAtLocation()` holds the only bounding-box walk, indexing the local array in place (no copy). `ResolvePolicyAtLocation()` and `ResolveAreaKeyAtLocation()` are thin wrappers over it, so the three no longer carry three copies of the same loop. `GetGlobalBypassMaskLocal()` / `GetPolicyMaskLocal()` read the local dictionary; the public `GetGlobalBypassMask()` / `GetPolicyMask()` wrap them.
+- `HasPolicy()` tests the bit with `&` instead of integer division and modulo.
+- `EnterAreaDelay.src` resolved twice per region entry: once for the mask and again inside `IsInForbiddenArea()`, which needs the matched area's index for the per-player banned/allowed lists. It now calls `ResolveAreaMatchAtLocation()` once and passes the match to a new `IsInForbiddenAreaForMatch(who, match)` in `scripts/include/areas.inc` (same cmdlevel, banned and allowed rules); `IsInForbiddenArea()` itself now delegates to it.
+
+Net per resolve once a script is warm: zero config reads, zero large unpacks, one small-int global read, one bounding-box walk.
+
+### 18.5 `.areas` Save
+
+- `LoadAreaFlagArrays()` records each area's loaded mask in `loaded_masks[]`; `SaveAreaFlagArrays()` only submits the areas whose recomputed mask differs, and updates `loaded_masks` so a second Save in the same session is a no-op. Previously every area (~216 on britannia) was rewritten with a fresh `UpdatedAt`/`UpdatedBy` on every Save.
+- New `SetPolicyMasks(realm, changes, updated_by)` writes a dictionary of `area_id -> mask` in one datafile session: open once, write each element, stamp `__meta__` once, unload once. `SetPolicyMask()` is now a one-entry wrapper. The old path opened and unloaded the datafile per area, each unload flushing to disk.
+- `PruneStaleRealmPolicies()` takes its valid-id set from the parsed cache instead of re-parsing every line, and tests `valid_ids.Exists(key)` instead of `key in valid_ids.Keys()`, which rebuilt the key array on every iteration (O(n^2)). It unloads the file before rebuilding the cache.
+- The `[areas.persist] set begin / wrote / meta updated / set end` and `[areas.save] area=` prints (five per area, ~1300 lines per Save) are gone. A Save now logs one line, `[areas.save] realm=<r> by=<who> changed=<n> pruned=<m>`, plus error lines if the datafile could not be opened, in which case the staff member is told and nothing is written.
+
+### 18.6 Call guards - `KillerAcct`
+
+`LookAround()` in `callguards.src` found the account to store as `KillerAcct` by scanning `EnumerateOnlineCharacters()` for a character whose name equalled `who.name`, when `who` is the caller and already in hand. Two characters with the same name could record the wrong account; a caller logging out mid-scan left `plyr` uninitialised and stored an error value; and it was O(online players) per criminal found. It now stores `who.acct.name` directly, or an empty string if the account is unavailable.
+
+### 18.7 Reviewed, not changed
+
+Parked for a later patch at Alryc's request (cleanup, not bugs): the committed `include/areapolicy.inc.bak`; the commented-out datafile/message blocks and unused `use datafile` / `regionname` in `EnterAreaDelay.src` and `LeaveArea.src`; `areas.src` parsing every area line four separate times, its weaker `GetAreaName()` re-implementation of `ParseAreaLine()`, and the dead `EnsureAreaFlagArrays()`; and `GetGlobalBypassMask()`'s hardcoded four britannia catch-all ids, two of which (`wholeworld`, `britannia`) do not exist in `areas.cfg`, so world-wide flags on the Ilshenar, Malas, Tokuno and Ter Mur catch-all lines do nothing.
+
+One data error was confirmed and left for a separate change: `areas.cfg` line 139, `Wrong Level 3`, has `min_x 5784 > max_x 5723` (the intended value is 5684), so its box can never match and any flag set on `wronglevel3` is inert.
+
+All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areapolicy` compile at 0 errors; the five touched scripts also compile with `ecompile -w` at 0 warnings.
+
+---
+
+## 19. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -503,7 +565,7 @@ A review pass over the whole working tree (2026-10-07) produced ten findings. Se
 | `pkg/systems/combat/include/hitscriptinc.inc` | 12 | `WFHDamageMultiplier()` / `WFHModifyDamage()` at the top of `DealDamage()` |
 | `scripts/control/skilladvancerequip.src` | 12 | 85 cap on necro/elemental protections for warriors |
 | `scripts/control/skilladvancerunequip.src` | 12 | Same cap on the unequip recomputation |
-| `pkg/opt/areas/callguards.src` | 12 | `crimMaster` reset per scanned mobile |
+| `pkg/opt/areas/callguards.src` | 12, 18 | `crimMaster` reset per scanned mobile; `KillerAcct` taken from `who.acct.name` instead of an online-character name scan |
 | `pkg/opt/warriorforhire/textcmd/test/setwfhdamage.src` | 12 | New - `.setwfhdamage` |
 | `pkg/std/tracking/tracking.src` | 13 | Two classic menus -> one paged gump (ZH3.0 port); single classification pass; "Players" category kept; icon table removed; `unloadconfigfile("::npcdesc")` removed |
 | `pkg/opt/alryc/include/speedwalk.inc` | 14 | New - `SendSpeedWalk()` packet helper (`0xBF`/`0x26`) |
@@ -521,17 +583,22 @@ A review pass over the whole working tree (2026-10-07) produced ten findings. Se
 | `scripts/include/classes.inc` | 16 | Who-aware `GetClasseIdForSkill()`; explicit 0 from `IsSpecialisedIn()`; stat tables rewritten with `HighestHeldClasseLevel()`; `GetStatPointsMultiplier()` conflict rule; `GetPrimaryClasseId()` behind `GetClass()` and `IsProhibitedByClasse()`; sweep removed from `ClasseBonus()`, `ClasseBonusBySkillId()`, `IsFromThatClasse()`; `AssignClasse()` sweeps once |
 | `scripts/include/skillpoints.inc` | 16 | Powerplayer small curve replaces the 1.1/1.2/1.3 table; stat advancements through new `ClassStatGainAmount()` |
 | `pkg/opt/alryc/textcmd/test/classbonusinfo.src` | 16 | New - `.classbonusinfo` verification report |
+| `pkg/opt/areas/include/areapolicy.inc` | 18 | Script-local parsed/mask copies; parsed cache no longer fingerprinted per call; `EnsureLocalParsedAreas()`, `EnsureLocalRealmMasks()`, `RebuildParsedAreaLinesCache()`, `RebuildPolicyMaskCache()`, `ReadPolicyMaskFromFile()`, `ReadPolicyMaskUncached()`, `GetPolicyMaskLocal()`, `GetGlobalBypassMaskLocal()`, `SetPolicyMasks()`, version counter `zh.areapolicy.maskver.<realm>`; readers never write the cache; single bounding-box walk; `HasPolicy()` bitwise; prune via `Exists()`; debug prints removed |
+| `pkg/opt/areas/start.src` | 18 | New - rebuilds the parsed-area and mask caches for every realm at boot |
+| `pkg/opt/areas/EnterAreaDelay.src` | 18 | One `ResolveAreaMatchAtLocation()` per region entry; forbidden check via `IsInForbiddenAreaForMatch()` |
+| `pkg/opt/areas/textcmd/admin/areas.src` | 18 | `loaded_masks[]`; Save writes only changed areas through `SetPolicyMasks()`; one summary log line; open failure reported to staff |
+| `scripts/include/areas.inc` | 18 | New `IsInForbiddenAreaForMatch(who, match)`; `IsInForbiddenArea()` delegates to it |
 | `patchnotes/developer-changelog-v1.1.4.md` | - | This file |
 | `patchnotes/patch-v1.1.4.md` | - | Player-facing notes |
 | `patchnotes/launchernotes.md` | - | Replaced with this release's player-facing content |
 
 Unchanged but relevant: `config/mrcspawn.cfg` (still sells deed `0xa399`, whose objtype did not change), `scripts/ai/combat/warriorcombatevent.inc` (only `helppcs.src` includes it; nothing in the warrior package does), `pkg/opt/powerhour/start.src` (still `start_script("powerhour")`), every `PHH`/`PHC`/`PHS`/`#PPH*` consumer listed in section 3.3, `scripts/misc/logoff.src` (still drops the personal flags on logoff), `scripts/misc/logon.src` / `reconnect.src` (still erase `#SettingPH`), and `pkg/opt/ArtifactSystem/artifactbox.src` (Eon-Prism decay registration from 1.1.2).
 
-Every changed or new script compiles with `ecompile -w` at 0 errors, 0 warnings: the powerhour set, the whole warriorforhire package, the migration shim, every consumer edited in sections 10-12, and two hit scripts that include `hitscriptinc.inc`.
+Every changed or new script compiles with `ecompile -w` at 0 errors, 0 warnings: the powerhour set, the whole warriorforhire package, the migration shim, every consumer edited in sections 10-12, and two hit scripts that include `hitscriptinc.inc`. The areas work (section 18) was compiled across all 54 includers of `areas.inc` / `areapolicy.inc` at 0 errors.
 
 ---
 
-## 19. Risk and Regression Notes
+## 20. Risk and Regression Notes
 
 - **Deploy with a server restart, not a hot reload (section 3).** The old scheduler is a long-lived process running the old `.ecl`. If the new files are compiled onto a live server, the old loop keeps running with its old logic and never writes `PH_SchedulerPID`; the first `.phadmin` would then find no scheduler, start a *second* one from the new code, and the two could each start powerhours. Either restart the server or kill the old `powerhour` process before using `.phadmin`.
 - **A powerhour active at upgrade time gets a full extra hour (section 3.5).** `RecoverAfterRestart()` cannot know when a flag with no `PH_EndTime` was set, so it grants an hour from boot. That is one generous hour, once, and also what finally ends any flag that is currently stuck from the old bug.
@@ -590,3 +657,15 @@ Classes (section 16):
 - **Mid-session illegal gear is caught within ten minutes, not instantly.** `pkg/opt/summoning/checkclasse.src`, started at boot, walks every online character every 600 seconds and reruns `AssignClasse()` for anyone holding a class, which sweeps. Before this patch the sweep also fired on the character's next hit or spell; now the ten-minute loop, login and the class commands are the only sweeps. (The hourly capper only enforces stat and skill caps; it never swept equipment.)
 - **`IsFromThatClasse()` is a pure computation now.** Anything that relied on calling `IsWarrior()` and friends to strip gear as a side effect no longer gets that; `AssignClasse()` is the only sweep.
 - **Not tested in a client here.** Compiles clean across all 138 includers; `.classbonusinfo` exists so the per-skill result can be checked on live characters before and after.
+
+Areas (section 18):
+
+- **Restart required.** The boot script is what rebuilds both caches; until it has run once, the parsed cache persisted from the previous session and whatever mask dictionary is in `global.txt` are used, exactly as today. Long-running scripts compiled against the old include keep the old logic until they are restarted anyway.
+- **A Save now reaches long-running scripts.** NPC AI and other scripts that run for hours hold a local copy of the mask dictionary and pick up an `.areas` Save on their next resolve via the version counter. Before, they re-read the global property every call, so this is a change in mechanism, not in what players see.
+- **One realm per script.** The local parsed copy holds the last realm resolved. A script that alternates between two realms (a gate check with the destination on another facet, say) copies the array again on each switch. That is still cheaper than the old per-call unpack, but it is the one shape that does not benefit.
+- **Datafile misses are now slow-but-correct rather than cached.** An id that is not in the dictionary (only possible before the first boot rebuild, after a rebuild failure, or for an id that is in neither `areas.cfg` nor the catch-all list) costs a datafile open per check. The start script's log line per realm is the thing to check if area checks ever look slow.
+- **Signature change.** `InvalidatePolicyMaskCache()` takes one argument now. The per-id form had no callers outside the include.
+- **Console output on Save drops from ~1300 lines to one** plus any error lines; anything grepping the old `[areas.persist]` lines will find nothing.
+- **New global property** `zh.areapolicy.maskver.<realm>` per realm, alongside the existing `zh.areapolicy.parsed.<realm>` and `zh.areapolicy.maskcache.<realm>`.
+- **`Wrong Level 3` is still inert** (18.7) until its `min_x` is corrected in `areas.cfg`.
+- **Not tested in a client here.** Compiles clean across every includer; the boot log lines and `.areas` Save line are the first things to look at after the restart.

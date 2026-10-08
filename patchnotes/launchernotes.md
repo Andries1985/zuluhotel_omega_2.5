@@ -55,6 +55,17 @@ Always check Discord announcements for all the patch notes.
 
 ---
 
+## Areas - Guards, Safe Zones and Area Rules
+
+### Player Impact
+
+- **Area rules cost the server far less to check.** Every time the game asks whether a spot is guarded, safe, no-PK, anti-magic or recall-blocked - which happens for every monster on every AI tick, every guard call, every region you walk into and every recall or gate - it used to re-read the area list and unpack two large stored tables. It now keeps those in memory and only refreshes when staff actually change something. One of the steadier background loads on the server is gone.
+- **Staff area changes apply reliably.** Two bugs could leave the server enforcing old area rules. A change to an area's boundaries or name in the configuration could be ignored forever, even across restarts. And a brief hiccup reading the area settings during a world save could mark an area as having no rules at all - Britain with no guards, for instance - until staff next saved the area editor. Both are fixed: the area list is rebuilt on every server start, and a failed read is never remembered.
+- **Calling the guards records the right caller.** When guards were called on a criminal, the record of who called them was found by looking the caller up by name among everyone online. Two characters with the same name could get the wrong account recorded, and a caller who logged out at that moment recorded nothing useful. It now records the caller directly.
+- Staff: the `.areas` editor only writes the areas you changed and no longer prints a line for every area to the server console on Save.
+
+---
+
 ## High Priest - Making Amends Costs At Least 1,000 Gold
 
 ### Player Impact
@@ -121,6 +132,7 @@ Always check Discord announcements for all the patch notes.
 - Staff can start, adjust, end and reschedule server-wide powerhours with `.phadmin`; `.resetph` now actually works.
 - Warrior for Hire: eleven lives, the heart reaches your bank box when you're offline, the High Priest can resurrect a warrior from memory (10,000 gold) and return a dead warrior's gear (20,000 gold), a "status" window, skills that grow toward yours, double hit points, no mounts, and a vanity item that resets the death count.
 - Calling the guards no longer also targets innocent pets scanned after a criminal's pet.
+- Area rule checks (guards, safe zones, no-PK, anti-magic, recall blocks) no longer re-read the config on every check; staff area edits apply reliably after a restart; guard calls record the right caller.
 - Repairing your relationship with the High Priest now costs at least 1,000 gold; a classless player could previously do it for one coin.
 - Tracking opens one window with categories and creatures side by side and page buttons, instead of two successive menus. Player tracking is kept; the little icons are gone.
 - Staff: `.speedwalk` (Seer and above) sets a run-speed modifier that is kept across logins.
