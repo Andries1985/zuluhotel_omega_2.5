@@ -78,6 +78,7 @@ Section 16 is the class review. ZH3.0 found that the per-skill class lookup retu
 | *(uncommitted)* | Staff `<name> status`, non-blocking status gump | 9 |
 | *(uncommitted)* | One ten-revival limit for heart and priest, stale-heart stamp, stat-loss fix, priest `return` fix, escrow for released warriors | 10, 11 |
 | *(uncommitted)* | "stop" ends guarding, `HasBow()` from itemdesc, vitals follow buffed stats, Staff of Nagash buffs warriors | 9 |
+| *(uncommitted)* | Powerplayer gain pulled back to 1.1-1.5 (`PowerplayerGainMultiplier()`) | 16 |
 | *(uncommitted)* | Tracking gump menu (ZH3.0 port), player tracking kept, `npcdesc` unload removed | 13 |
 | *(uncommitted)* | `.speedwalk` (Seer), packet include, login restore, synopsis regeneration | 14 |
 | *(uncommitted)* | House travel by footprint: `housetravel.inc`, Recall/Gate/Mark/Teleport/Earth Portal, runebook | 15 |
@@ -440,7 +441,7 @@ The lookup now takes the character, walks the classes they hold and returns the 
 
 ### 16.2 Powerplayer
 
-Decided 2026-10-07: no second roll, and the skill-wide bonus follows the "small" curve already defined in `classes.inc` (1 + 0.15 per level: 1.15 at level 1 to 1.9 at level 6) on every skill, replacing the 1.1 / 1.2 / 1.3 table that only applied at levels 3 to 5. It reads the Powerplayer level directly rather than through `GetClasseLevel()`. A Powerplayer can never hold a second class (16.4), so nothing stacks.
+Decided 2026-10-07: no second roll, and one skill-wide multiplier on every skill. The first cut used the "small" curve already in `classes.inc` (1 + 0.15 per level, 1.15 to 1.9); on 2026-10-09 it was pulled back close to the old table with a new `PowerplayerGainMultiplier()` in `classes.inc`: 1.0 / 1.1 / 1.2 / 1.3 / 1.4 / 1.5 for levels 1 to 6, replacing 1.1 / 1.2 / 1.3 at levels 3 to 5 only. `.classbonusinfo` reports the same function. It reads the Powerplayer level directly rather than through `GetClasseLevel()`. A Powerplayer can never hold a second class (16.4), so nothing stacks.
 
 ### 16.3 Stat affinity
 
@@ -613,8 +614,8 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 | `pkg/opt/earth/earthportal.src` | 15 | Same as Gate; `#Casting` cleared on every early exit; "gate from to" message fixed |
 | `pkg/std/runebook/customspells.inc` | 15 | `CustomRecall()`/`CustomGate()` through the helper; `TRAVEL_REFUSED_BY_HOUSE` (-1); failed move reported |
 | `pkg/std/runebook/runebook.src` | 15 | Three travel callers handle `TRAVEL_REFUSED_BY_HOUSE` via new `RemoveRefusedEntry()` |
-| `scripts/include/classes.inc` | 16 | Who-aware `GetClasseIdForSkill()`; explicit 0 from `IsSpecialisedIn()`; stat tables rewritten with `HighestHeldClasseLevel()`; `GetStatPointsMultiplier()` conflict rule; `GetPrimaryClasseId()` behind `GetClass()` and `IsProhibitedByClasse()`; sweep removed from `ClasseBonus()`, `ClasseBonusBySkillId()`, `IsFromThatClasse()`; `AssignClasse()` sweeps once |
-| `scripts/include/skillpoints.inc` | 16 | Powerplayer small curve replaces the 1.1/1.2/1.3 table; stat advancements through new `ClassStatGainAmount()` |
+| `scripts/include/classes.inc` | 16 | New `PowerplayerGainMultiplier()`; who-aware `GetClasseIdForSkill()`; explicit 0 from `IsSpecialisedIn()`; stat tables rewritten with `HighestHeldClasseLevel()`; `GetStatPointsMultiplier()` conflict rule; `GetPrimaryClasseId()` behind `GetClass()` and `IsProhibitedByClasse()`; sweep removed from `ClasseBonus()`, `ClasseBonusBySkillId()`, `IsFromThatClasse()`; `AssignClasse()` sweeps once |
+| `scripts/include/skillpoints.inc` | 16 | Powerplayer `PowerplayerGainMultiplier()` (1.1 at level 2 to 1.5 at level 6) replaces the 1.1/1.2/1.3 table; stat advancements through new `ClassStatGainAmount()` |
 | `pkg/opt/alryc/textcmd/test/classbonusinfo.src` | 16 | New - `.classbonusinfo` verification report |
 | `pkg/opt/areas/include/areapolicy.inc` | 18 | Script-local parsed/mask copies; parsed cache no longer fingerprinted per call; `EnsureLocalParsedAreas()`, `EnsureLocalRealmMasks()`, `RebuildParsedAreaLinesCache()`, `RebuildPolicyMaskCache()`, `ReadPolicyMaskFromFile()`, `ReadPolicyMaskUncached()`, `GetPolicyMaskLocal()`, `GetGlobalBypassMaskLocal()`, `SetPolicyMasks()`, version counter `zh.areapolicy.maskver.<realm>`; readers never write the cache; single bounding-box walk; `HasPolicy()` bitwise; prune via `Exists()`; debug prints removed |
 | `pkg/opt/areas/start.src` | 18 | New - rebuilds the parsed-area and mask caches for every realm at boot |
@@ -688,7 +689,7 @@ Houses (section 15):
 Classes (section 16):
 
 - **Skill gain speeds up for six classes.** Bladesingers, Mystic Archers and Rangers now gain and succeed as a class on eight skills instead of four; Paladins and Warriors on eight instead of two. That is the intended design finally applied, but it is a real increase in training speed and check reliability on those skills from the moment the patch lands.
-- **Powerplayers change shape.** Levels 1, 2 and 6 gain a bonus they never had (1.15, 1.3, 1.9); levels 3 to 5 go from 1.1 / 1.2 / 1.3 to 1.45 / 1.6 / 1.75. No Powerplayer ever had the second roll, so nothing is taken away.
+- **Powerplayers move up a step.** Each level from 3 to 5 gains 0.1 (1.1 / 1.2 / 1.3 become 1.2 / 1.3 / 1.4); level 2 gets 1.1 and level 6 gets 1.5, which they never had; level 1 stays at no bonus. No Powerplayer ever had the second roll, so nothing is taken away.
 - **Stats now drift by class.** Every classed character gains their affinity stat faster and their difficulty stat slower from today's skill use; nothing retroactive. Mages are the only class slowed on two stats. Stat caps are unchanged.
 - **One live character changes class identity.** The Ranger 3 / Mystic Archer 1 is a Ranger to every rule now, item rules included: Strength gear the Mystic Archer rule stripped is legal for him again.
 - **Mid-session illegal gear is caught within ten minutes, not instantly.** `pkg/opt/summoning/checkclasse.src`, started at boot, walks every online character every 600 seconds and reruns `AssignClasse()` for anyone holding a class, which sweeps. Before this patch the sweep also fired on the character's next hit or spell; now the ten-minute loop, login and the class commands are the only sweeps. (The hourly capper only enforces stat and skill caps; it never swept equipment.)

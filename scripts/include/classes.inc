@@ -58,6 +58,21 @@ function ClasseSmallBonusByLevel( level )
 
 endfunction
 
+// Powerplayer skill-gain multiplier, applied to every skill (skillpoints.inc). Kept close to the
+// pre-1.1.4 table (1.1 / 1.2 / 1.3 at levels 3-5) but one level earlier and one step longer.
+function PowerplayerGainMultiplier( level )
+
+	case( CInt(level) )
+		2: return 1.1;
+		3: return 1.2;
+		4: return 1.3;
+		5: return 1.4;
+		6: return 1.5;
+	endcase
+	return 1.0;
+
+endfunction
+
 function ClasseHalfBonusByLevel( level )
 
 	return CDbl( 1.0 + ( HALF_BONUS_PER_LEVEL * CDbl(level) ) );
