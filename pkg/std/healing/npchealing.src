@@ -85,7 +85,11 @@ function TryToCure( character , patient , bandages )
 	if( character.dead )
 		return;
 	endif
-	
+
+	if( !StillCarrying( character , bandages , BANDAGES_TO_CURE ) )
+		return;
+	endif
+
 	var plvl 	:= PoisonLevel( patient );
 	var diff 	:= cint(plvl * 20 + 15);
 	var points 	:= diff * POINTS_MULTIPLIER;
@@ -133,8 +137,12 @@ function TryToHeal( character , patient , bandages )
 	if( Distance( character , patient ) > 3 )
 		return;
 	endif
-	
+
 	if( character.dead )
+		return;
+	endif
+
+	if( !StillCarrying( character , bandages , BANDAGES_TO_HEAL ) )
 		return;
 	endif
 	
@@ -173,3 +181,24 @@ function TryToHeal( character , patient , bandages )
 	
 endfunction
 
+
+
+// The bandage stack is picked when the healer starts and the heal lands 5-15 seconds later. If the
+// stack has left the healer's backpack by then (taken off it, dropped on the ground, used up), the
+// attempt is wasted instead of healing from wherever the stack ended up.
+function StillCarrying( character , bandages , amount )
+
+	if( !bandages or bandages.amount < amount or !character.backpack )
+		return 0;
+	endif
+
+	var cont := bandages.container;
+	while( cont )
+		if( cont.serial == character.backpack.serial )
+			return 1;
+		endif
+		cont := cont.container;
+	endwhile
+	return 0;
+
+endfunction
