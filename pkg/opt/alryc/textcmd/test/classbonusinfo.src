@@ -42,7 +42,7 @@ program textcmd_classbonusinfo( who )
 
 	var pplevel := CInt( GetObjProperty( targ, CLASSEID_POWERPLAYER ) );
 	if( pplevel )
-		SendSysMessage( who, "Powerplayer skill-wide gain multiplier: x" + ClasseSmallBonusByLevel( pplevel ) + " (no second roll)", FONT_NORMAL, 53 );
+		SendSysMessage( who, "Powerplayer skill-wide gain multiplier: x" + PowerplayerGainMultiplier( pplevel ) + " (no second roll)", FONT_NORMAL, 53 );
 	endif
 
 	SendSysMessage( who, "Stat gain multipliers: Str x" + GetStatPointsMultiplier( targ, "str" ) + "  Dex x" + GetStatPointsMultiplier( targ, "dex" ) + "  Int x" + GetStatPointsMultiplier( targ, "int" ), FONT_NORMAL, 53 );

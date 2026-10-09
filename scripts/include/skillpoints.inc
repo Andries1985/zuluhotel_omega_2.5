@@ -103,13 +103,13 @@ function AwardSkillPoints( who, skillid, points )
 		points := Cint( points * 1.5 );
 	endif	
 
-	// Patch 1.1.4: the Powerplayer's class bonus is the smaller curve on every skill (1.15 at
-	// level 1 up to 1.9 at level 6) instead of the per-skill specialist bonus and second roll,
-	// which the class lookup in classes.inc never grants a Powerplayer. Replaces the old
+	// Patch 1.1.4: the Powerplayer's class bonus is PowerplayerGainMultiplier() on every skill
+	// (1.1 at level 2 up to 1.5 at level 6) instead of the per-skill specialist bonus and second
+	// roll, which the class lookup in classes.inc never grants a Powerplayer. Replaces the old
 	// 1.1 / 1.2 / 1.3 table that only applied at levels 3 to 5.
 	var pplevel := CInt( GetObjProperty( who, CLASSEID_POWERPLAYER ) );
 	if( pplevel )
-		points := Cint( points * ClasseSmallBonusByLevel( pplevel ) );
+		points := Cint( points * PowerplayerGainMultiplier( pplevel ) );
 	endif
 
 	// Set the skill points
