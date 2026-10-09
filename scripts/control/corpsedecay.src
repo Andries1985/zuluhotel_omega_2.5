@@ -115,13 +115,11 @@ endfunction
 
 // A hired Warrior for Hire's leftover gear is parked in escrow (recoverable through the High
 // Priest) instead of vanishing with the corpse. Ported from ZH3.0. The datafile work happens in
-// :warriorforhire:wfhescrowsave so this per-corpse script stays light.
+// :warriorforhire:wfhescrowsave so this per-corpse script stays light. This covers every way a
+// warrior dies, its final death and a release or "give up warrior" included.
 function EscrowWarriorForHireGear( corpse )
 
 	if( GetObjProperty( corpse, "npctemplate" ) != "warriorforhire" )
-		return;
-	endif
-	if( GetObjProperty( corpse, "AbandonedByOwner" ) )
 		return;
 	endif
 	var ownerserial := CInt( GetObjProperty( corpse, "master" ) );

@@ -1,9 +1,9 @@
 # Developer Changelog - v1.1.4
 **Range:** `3631ada` (patchnotes commit of v1.1.3) -> working tree  
 **Branch:** Patch-1.1.4  
-**Date:** 2026-10-07 (areas package review added 2026-10-08)  
+**Date:** 2026-10-07 (areas package review added 2026-10-08, `.maxwfh`, staff status and the revival limit added 2026-10-09)  
 **Commits in range:** 0 non-boundary commits. `927916d` (merge of Patch-1.1.3 into master) carries no new content - `git diff 3631ada..HEAD` is empty. The whole release is the uncommitted working tree.  
-**Files changed:** 33 modified code/config files, 2 renamed into a new package and rewritten, 18 new files, plus this release's own 3 `patchnotes/` files
+**Files changed:** 33 modified code/config files, 2 renamed into a new package and rewritten, 20 new files, plus this release's own 3 `patchnotes/` files
 
 > Scope was computed against `3631ada`, not `master`. `master` only caught up with 1.1.3 via `927916d`; anything older than that is already shipped.
 
@@ -50,7 +50,7 @@ Section 7 covers the Eon-Prism, which already existed from 1.1.2 and is the "art
 
 Section 8 records one finding deliberately left for a design decision: an inverted condition in `scripts/include/starteqp.inc` that controls whether hunting-powerhour loot stacks are doubled.
 
-Sections 9-12 bring over the Warrior for Hire work ZH3.0 did between 2026-09-12 and 2026-09-30: the mercenary moved into its own `pkg/opt/warriorforhire` package, lost its masterless-recruit and mount code, gained persisted stat/skill mirrors, skill growth, a status gump and vital ceilings, and its death became recoverable in three ways instead of one - a heart with eleven lives that reaches an offline owner's bank box, a `WFHBackup` the High Priest can rebuild a warrior from for 10,000 gold, and a 90-day escrow of the corpse's gear the High Priest returns for 20,000. ZH3.0 and 2.5 have drifted apart underneath that code (realms, include paths, the vitals system, the throwing skill, the escrow helpers), so each piece was re-based on 2.5's own mechanisms rather than copied; section 9.5 lists what was deliberately not ported.
+Sections 9-12 bring over the Warrior for Hire work ZH3.0 did between 2026-09-12 and 2026-09-30: the mercenary moved into its own `pkg/opt/warriorforhire` package, lost its masterless-recruit and mount code, gained persisted stat/skill mirrors, skill growth, a status gump and vital ceilings, and its death became recoverable in three ways instead of one - ten revivals in total, each either from a heart that reaches an offline owner's bank box or from a `WFHBackup` the High Priest rebuilds a warrior from for 10,000 gold, after which the warrior is gone for good (section 10.5), and a 90-day escrow of the corpse's gear the High Priest returns for 20,000. ZH3.0 and 2.5 have drifted apart underneath that code (realms, include paths, the vitals system, the throwing skill, the escrow helpers), so each piece was re-based on 2.5's own mechanisms rather than copied; section 9.5 lists what was deliberately not ported.
 
 Section 13 ports ZH3.0's tracking menu: the two classic client menus the skill used here become one paged gump that stays open while the player switches categories. 2.5's player tracking, which ZH3.0 never had, is kept as a category, and the skill no longer throws away the cached NPC definitions file on every use.
 
@@ -74,6 +74,9 @@ Section 16 is the class review. ZH3.0 found that the per-skill class lookup retu
 | *(uncommitted)* | Heart/backup rework, High Priest revival and escrow services, Companion's Second Wind | 10 |
 | *(uncommitted)* | Gear escrow include, sweeper, corpse-decay hand-off, `.escrow` filtering | 11 |
 | *(uncommitted)* | Damage moderation, protection cap, `callguards` reset, `.setwfhdamage`, synopsis regeneration | 12 |
+| *(uncommitted)* | `.maxwfh`, tracked-skill list and skill cap moved into `wfhcommon.inc`, synopsis regeneration | 12 |
+| *(uncommitted)* | Staff `<name> status`, non-blocking status gump | 9 |
+| *(uncommitted)* | One ten-revival limit for heart and priest, stale-heart stamp, stat-loss fix, priest `return` fix, escrow for released warriors | 10, 11 |
 | *(uncommitted)* | Tracking gump menu (ZH3.0 port), player tracking kept, `npcdesc` unload removed | 13 |
 | *(uncommitted)* | `.speedwalk` (Seer), packet include, login restore, synopsis regeneration | 14 |
 | *(uncommitted)* | House travel by footprint: `housetravel.inc`, Recall/Gate/Mark/Teleport/Earth Portal, runebook | 15 |
@@ -273,7 +276,7 @@ endif
 - **`SyncStatusMirror()`** replaces the five unconditional `SetObjProperty()` calls at the top of every loop iteration with write-on-change, and additionally mirrors the nine tracked skills (Anatomy, Parry, Healing, Tactics, Archery, Swordsmanship, Macefighting, Fencing, Wrestling) into a `Skills` dictionary CProp. The heart and the High Priest's backup read these off the corpse (section 10).
 - **`CheckOwnerModWipe()`** calls `WipeMods()` whenever the owner's online state flips and every 30-60 minutes besides.
 - **`GainSkill()`**, called from `fight()` beside `GainStat()`: every 5 minutes of fighting, each tracked skill below the master's own value has a `(Random(140)+1) > skill` chance to gain 0.1, never past 130.0 (`WFH_SKILL_CAP_TENTHS`).
-- **`<name> status`** opens a gump (`:gumps:include/gumps`) with stats, hits, armour and protections, the nine skills, worn equipment by layer (backpack, hair and beard filtered out) and "Deaths survived: n / 10".
+- **`<name> status`** opens a gump (`:gumps:include/gumps`) with stats, hits, armour and protections, the nine skills, worn equipment by layer (backpack, hair and beard filtered out) and "Deaths survived: n / 10". The gump is sent from a separate process, `pkg/opt/warriorforhire/showstatus.src`, started with the built gump; ZH3.0 sends it from the AI itself, where `SendDialogGump()` holds the warrior's whole loop (no healing, following or guarding) until the reader closes the window. Any staff member (`cmdlevel` > 0) who is not the owner also gets the gump on `<name> status`, squelched or not, through a branch in `ProcessMasterEvents()` ahead of `check_speech()`. Like every other spoken command, it is not heard during the fight loop.
 - **`SetMeUp()`** (first run only): a hire is a fixed 75/50/50 recruit with the nine skills at 50 (Healing 100), always dressed by `::/misc/dressme weakwarrior`, with its vitals stamped (9.4). Before, it rolled 20-60 per stat and set every listed skill to 130; and because the deed sets `master` only after the template script has already run `SetMeUp()`, a deed-bought warrior always took the "masterless" 130-skill branch anyway.
 - **`Follow()`:** `following.cmd`/`master.cmd` became `.cmdlevel` (`.cmd` is not a member, so the staff-follow guard never fired); the `+5000`/`-5000` dexterity-mod sprint around `RunToward()` is gone.
 - **`OpenMyPack()`** works from 3 tiles instead of 1 and says so when the owner is too far.
@@ -294,17 +297,17 @@ ZH3.0's `wfhvitals.inc` sets HP = 2 x base Str, Mana = base Int, Stam = base Dex
 
 ## 10. Warrior for Hire - Heart, Backup and High Priest Revival
 
-**Files:** `scripts/misc/death.src`, `scripts/ai/highpriest.src`, `pkg/opt/warriorforhire/resetwfhdeaths.src` (new), `pkg/opt/warriorforhire/itemdesc.cfg`
+**Files:** `scripts/misc/death.src`, `scripts/ai/highpriest.src`, `pkg/opt/warriorforhire/include/wfhcommon.inc`, `pkg/opt/warriorforhire/resetwfhdeaths.src` (new), `pkg/opt/warriorforhire/itemdesc.cfg`
 
 ### 10.1 `death.src`
 
 The heart block now:
 
-- skips a corpse flagged `AbandonedByOwner` entirely (no heart, no backup; the gear stays on the corpse);
-- allows ten revivals instead of three (`resnum < 11`, was `< 4`);
+- skips a corpse flagged `AbandonedByOwner` (no heart, no backup; its gear is still escrowed on decay, section 11);
+- allows ten revivals instead of three (`resnum <= WFH_MAX_DEATHS`, was `< 4`), shared between the heart and the priest (section 10.5);
 - resolves the owner with `SYSFIND_SEARCH_OFFLINE_MOBILES` when they are not online and puts the heart in their bank box (`FindBankBox()` from `util/bank`) instead of creating a heart nobody receives;
 - copies the `Skills` mirror onto the heart;
-- writes a `WFHBackup` dictionary (Str, Int, Dex, Name, Sex, resnum, Skills) onto the owner on every death, which is what lets the High Priest rebuild a warrior whose heart has disintegrated.
+- writes a `WFHBackup` dictionary (Str, Int, Dex, Name, Sex, resnum, Skills, `WFHDeathId`) onto the owner on every revivable death, which is what lets the High Priest rebuild a warrior whose heart was lost; the final death erases it instead.
 
 2.5's own `mastersrl == error` guard and heart colour 1172 are kept (ZH3.0 uses 2750).
 
@@ -316,11 +319,24 @@ Three new speech commands, matched case-insensitively and inserted after `boost`
 - **"give up warrior"** - confirm, then `AbandonWarrior()` on a living one; either way clears `henchman` and `WFHBackup`.
 - **"recover belongings"** - offers the oldest Warrior for Hire escrow package (section 11) for 20,000 gold via `WFH_ClaimEscrowEntry()`, or disposes of it on request via `WFH_DestroyEscrowEntry()`; refunds if nothing could be moved.
 
-The existing heart-revival path (`SYSEVENT_ITEM_GIVEN`) changed in four places: the stat loss is a flat `resnum-1` instead of `Random(resnum)*5` (0 to 5 points per past death, rolled separately per stat); the restored warrior gets `SetWfhVitalCeilingsAndFill()`; its tracked skills are restored from the heart's `Skills`; and the owner's `henchman` CProp is set to the new serial. That last one fixes a 2.5 bug: a heart revival never updated `henchman`, so the deed's "You already have a henchman" check and the High Priest's own check kept looking at the dead warrior's serial.
+The existing heart-revival path (`SYSEVENT_ITEM_GIVEN`) changed in four places: the stat loss is a flat `resnum` points per stat, floored at 10, instead of `Random(resnum)*5` (0 to 5 points per past death, rolled separately per stat; ZH3.0's `- (resnum-1)+1`, ported first, actually *added* a point on the first revival and nothing on the second); the restored warrior gets `SetWfhVitalCeilingsAndFill()`; its tracked skills are restored from the heart's `Skills`; and the owner's `henchman` CProp is set to the new serial. That last one fixes a 2.5 bug: a heart revival never updated `henchman`, so the deed's "You already have a henchman" check and the High Priest's own check kept looking at the dead warrior's serial.
 
 ### 10.3 Companion's Second Wind
 
 `resetwfhdeaths.src` + `Item 0x7930` (`wfhdeathreset`, graphic 0x2256, hue 1153, `VanityCost 10`): sets the user's living warrior's `resnum` to 0 and mirrors that into `WFHBackup`. `pkg/opt/vanityshop/vanityshop.src` reads `:*:itemdesc` for `VanityCost`, so it appears in the vanity shop without further registration. ZH3.0 uses objtype `0x4000BC`; this shard has no other objtype above `0x1FFFF`, so the item took the next free slot after the Eon-Prism (`0x792F`) in the gap the 1.1.2 changelog documents as unused.
+
+### 10.5 One ten-revival limit for heart and priest (2026-10-09)
+
+As first ported, the two revival paths did not share a limit. Hearts stopped at the 11th death, but "resurrect warrior" only checked for a living henchman and a `WFHBackup`, and the rebuilt warrior kept its `resnum`, so after the tenth heart every later death bought another life for 10,000 gold, without end. The intended rule is ten revivals in total, by either path, after which the warrior is gone and the owner hires a new one.
+
+- **`WFH_MAX_DEATHS`** (10) moved from `warrior.src` into `wfhcommon.inc`; `death.src` now includes it. Deaths 1-10 are revivable. On death 11 `death.src` creates no heart, erases the owner's `WFHBackup` and tells the owner "<name> has fallen for the last time. Neither heart nor priest can bring them back." The old "heart has disintegrated" message is gone with the case it described.
+- **"resurrect warrior"** also refuses a backup whose `resnum` is past the limit, erases it and says the soul has passed beyond his reach. `death.src` no longer writes such a backup; this catches any written before the change.
+- **Both revivals spend the same death.** The heart path now erases `WFHBackup` as the priest path already did, and the priest path already destroyed the hearts in backpack and bank. Neither changes `resnum`; only a death does.
+- **Stale hearts.** `DestroyStaleWfhHearts()` only reaches the backpack and bank box, so a heart from death *n* kept in a house chest could be handed in after death *n+3* and restore the warrior with `resnum` *n*, rolling the count back. Each death now stamps the heart and the backup with the corpse serial (`WFHDeathId`), and `IsCurrentWfhHeart()` accepts a heart only when its stamp matches the owner's current backup. Since either revival erases the backup, a heart is good for exactly one revival, of the most recent death, by the owner whose death wrote it. A stale heart is destroyed with "This heart belongs to a life already spent." Hearts and backups from before the stamp carry none and are accepted only while no stamped backup has replaced them, so a heart waiting in someone's bank at deploy time still works.
+- **Stat loss.** `- (resnum-1)+1` is `- resnum + 2`: +1 to each stat on the first revival, nothing on the second, loss only from the third. It is now `- resnum`, floored at 10 (the lowest `.maxwfh` accepts; ten heart revivals cost 55 points of each stat cumulatively, so a 50-Intelligence recruit bottoms out at 10). The priest's rebuild still applies no stat loss.
+- **Priest AI no longer ends on a refused heart.** The heart handler sits in the priest's top-level `while` loop, not a function, so its `return` on "You already have a henchman" ended the priest's AI script: he stopped answering everyone until restarted, and the heart stayed in his pack. The handler is now an `if`/`elseif`/`else` with no `return`; that case hands the heart back to the giver's backpack.
+
+Companion's Second Wind (10.3) is unchanged. It still resets a living warrior's count to 0, so each one used grants a fresh ten revivals.
 
 ### 10.4 Forgiveness price clamp (not a warrior change, same file)
 
@@ -332,7 +348,7 @@ The existing heart-revival path (`SYSEVENT_ITEM_GIVEN`) changed in four places: 
 
 **Files:** `pkg/opt/warriorforhire/include/wfhescrow.inc` (new, 343 lines), `pkg/opt/warriorforhire/wfhescrowsave.src` (new), `pkg/opt/warriorforhire/escrowsweep.src` (new), `pkg/opt/warriorforhire/start.src` (new), `scripts/control/corpsedecay.src`, `pkg/systems/playervendor/commands/player/escrow.src`
 
-**Flow.** When `ProcessNpcCorpseDecaying()` reaches a `warriorforhire` corpse that is not `AbandonedByOwner`, has a `master` and still holds root items, it bundles those items into a backpack created at the corpse and starts `:warriorforhire:wfhescrowsave` with `{payout, ownerserial, corpse.serial}` before destroying the corpse. That script calls `WFH_SaveToEscrow()`, which creates a root backpack in the player-vendor "Merchant Escrow" storage area, moves the payout into it, registers the entry in a package-wide registry datafile (`:warriorforhire:wfhescrowregistry`: entry id -> owner serial, escrow name, created time) and indexes it in the owner's escrow datafile under vendor name "Warrior for Hire" and vendor key = corpse serial. `escrowsweep.src` (started by `start.src`) runs `WFH_SweepExpiredEscrow()` once a day, destroying everything older than 90 wall-clock days straight off the registry. The High Priest claims or disposes of entries (section 10.2). `.escrow` filters "Warrior for Hire" entries out of its listing (`LoadEscrowEntriesForSerial()`) and refuses to claim one (`ClaimEscrowEntry()` guard), so they only come back through the priest and his fee.
+**Flow.** When `ProcessNpcCorpseDecaying()` reaches a `warriorforhire` corpse that has a `master` and still holds root items, it bundles those items into a backpack created at the corpse and starts `:warriorforhire:wfhescrowsave` with `{payout, ownerserial, corpse.serial}` before destroying the corpse. That script calls `WFH_SaveToEscrow()`, which creates a root backpack in the player-vendor "Merchant Escrow" storage area, moves the payout into it, registers the entry in a package-wide registry datafile (`:warriorforhire:wfhescrowregistry`: entry id -> owner serial, escrow name, created time) and indexes it in the owner's escrow datafile under vendor name "Warrior for Hire" and vendor key = corpse serial. `escrowsweep.src` (started by `start.src`) runs `WFH_SweepExpiredEscrow()` once a day, destroying everything older than 90 wall-clock days straight off the registry. The High Priest claims or disposes of entries (section 10.2). `.escrow` filters "Warrior for Hire" entries out of its listing (`LoadEscrowEntriesForSerial()`) and refuses to claim one (`ClaimEscrowEntry()` guard), so they only come back through the priest and his fee.
 
 **Adapted to 2.5's escrow include.** ZH3.0's include hand-builds the `|`/`^`-delimited index strings; 2.5's `pkg/systems/playervendor/include/escrow.inc` already has `EncodeEscrowEntries()`/`DecodeEscrowEntries()` with field escaping, the `Entry*()` accessors and `BuildEscrowDatafileNameForSerial()`, so the 2.5 include is written on those. Three consequences: the per-owner index is written even when the owner cannot be resolved (serial-keyed filespec, which ZH3.0's `BuildEscrowDatafileName(owner_obj)` could not do); the registry filespec is package-scoped (`:warriorforhire:...`) per the warning on `BuildEscrowDatafileNameForSerial`; and every filing, claim, destroy and expiry is logged to `merchantescrow.log` through `MerchantEscrowLog()`.
 
@@ -342,10 +358,12 @@ The existing heart-revival path (`SYSEVENT_ITEM_GIVEN`) changed in four places: 
 
 ## 12. Warrior for Hire - Combat, Protection Cap, Guards and GM Tools
 
-**Files:** `pkg/systems/combat/include/hitscriptinc.inc`, `scripts/control/skilladvancerequip.src`, `scripts/control/skilladvancerunequip.src`, `pkg/opt/areas/callguards.src`, `pkg/opt/warriorforhire/textcmd/test/setwfhdamage.src` (new), `config/cmds.cfg`, `config/command_synopses.cfg`
+**Files:** `pkg/systems/combat/include/hitscriptinc.inc`, `scripts/control/skilladvancerequip.src`, `scripts/control/skilladvancerunequip.src`, `pkg/opt/areas/callguards.src`, `pkg/opt/warriorforhire/textcmd/test/setwfhdamage.src` (new), `pkg/opt/warriorforhire/textcmd/test/maxwfh.src` (new), `pkg/opt/warriorforhire/include/wfhcommon.inc`, `pkg/opt/warriorforhire/warrior.src`, `config/cmds.cfg`, `config/command_synopses.cfg`
 
 - **Damage moderation.** `WFHModifyDamage()` runs first thing in `DealDamage()`, so it covers the astral, on-hit and plain paths alike: a warrior hitting its own master does half damage (sparring); a warrior hitting an NPC is scaled by `WFHDamageToNPCs`, or `WFHDamageToBosses` for a `Boss`/`SuperBoss`; an NPC hitting a warrior by `WFHDamageFromNPCs`/`WFHDamageFromBosses`. All four are global properties defaulting to 1.0 (`WFHDamageMultiplier()`), so nothing changes until staff set them. Only the two WFH functions and the one call were taken from ZH3.0's `hitscriptinc.inc`; its class-damage rework in the same commit was not.
 - **`.setwfhdamage`** (Developer, `CmdLevel 5`): a four-field gump for those multipliers, built on `:gumps:include/gumps`/`gumps_ex` (ZH3.0's `:mdgumps:` package is empty here, as 1.1.3 section 3.1 found) and logged with `LogCommand()`. `config/cmds.cfg` gained `DIR pkg/opt/warriorforhire/textcmd/test` under `CmdLevel Test`, and `command_synopses.cfg` was regenerated (343 entries; this release adds `phadmin`, `setwfhdamage` and `speedwalk`).
+- **`.maxwfh`** (Developer, `CmdLevel 5`, same `textcmd/test` directory, so no `cmds.cfg` change). Targets a mobile with an `npctemplate` and the `WarriorForHire` CProp; anything else is refused. It sets the nine tracked combat skills to `WFH_SKILL_CAP_TENTHS` (130.0) with `SetBaseSkillBaseValue()`, leaving the other 40 skills alone (unlike `.setallskills`, which would also give the warrior 130 Magery and the rest). With no arguments it raises each base stat to the master's base stat (`GetStrength() - GetStrengthMod()`, the same ceiling `GainStat()` grows toward), never lowering one that is already higher; the master is looked up with `SYSFIND_SEARCH_OFFLINE_MOBILES`, and if none is found the stats are left alone with a message. `.maxwfh <str> <int> <dex>` sets the three base stats exactly; each must be 10-300 or nothing changes, and the arguments are checked before the target cursor appears. It then calls `SetWfhVitalCeilingsAndFill()`, so the static `Custom*Level` ceilings follow the new Strength immediately instead of on the warrior's next hourly `GainStat()` tick, and logs through `LogCommand()`. The heart's `Str`/`Int`/`Dex`/`Skills` mirror is not written by the command: the warrior's own AI loop calls `SyncStatusMirror()` every tick. `.editcharacter` was not an option because it refuses NPCs outright, and `.info`'s stat edit leaves the vital ceilings stale.
+- **Shared tracked-skill list.** To keep `.maxwfh` and the AI from drifting apart, the tracked-skill list and `WFH_SKILL_CAP_TENTHS` moved from `warrior.src` into `wfhcommon.inc`, the list as `WfhTrackedSkills()` (eScript has no array constants). `warrior.src` keeps its `TRACKED_SKILLS` global, now initialised from that function, so its behaviour is unchanged. `highpriest.src`, the only other includer, compiles clean with the new constant.
 - **Protection cap.** `DoImmunity()` and `UndoImmunity()` cap a warrior's `NecroProtection` and the five elemental/holy protections at 85 instead of 95 on both equip and unequip (the unequip side so a lower-but-still-above-85 remaining item cannot recompute back over the cap).
 - **`callguards.src`.** `crimMaster` was declared once per call and never reset inside the mobile loop, so every tamed creature scanned after a criminal owner's pet also got a guard. Reset at the top of the loop. Not warrior-specific, but it sits in the same loop as the `WarriorForHire` guard-ignore check and the fix was in ZH3.0's warrior commit.
 
@@ -451,7 +469,7 @@ A review pass over the whole working tree (2026-10-07) produced ten findings. Se
 **Fixed:**
 
 - **Sleep inside a critical section** (`scripts/misc/death.src`). The offline-owner heart path called `util/bank`'s `FindBankBox()`, which sleeps up to a second, from inside `npcdeath`'s `set_critical(1)` block, which would have stalled every script on the shard for that long on each such death. A local `FindBankBoxNoSleep()` does the same World Bank lookup without the sleep.
-- **Unbounded memory rebuilds** (`death.src`, `scripts/ai/highpriest.src`). The `WFHBackup` snapshot was written only on deaths that dropped a heart and never consumed, so after the heart disintegrated the same stale memory could be rebuilt for 10,000 gold indefinitely, and a heart in the bank could be revived on top of a memory-rebuilt body. Now the backup is written on every death, including the disintegrating one, the rebuild erases it (the living warrior writes a fresh one on its next death), and the rebuild destroys any heart for that warrior in the player's backpack and bank box ("The old heart crumbles to dust."). Net rule: ten free heart revivals, then each further life costs 10,000 gold at the priest, one per death.
+- **Unbounded memory rebuilds** (`death.src`, `scripts/ai/highpriest.src`). The `WFHBackup` snapshot was written only on deaths that dropped a heart and never consumed, so after the heart disintegrated the same stale memory could be rebuilt for 10,000 gold indefinitely, and a heart in the bank could be revived on top of a memory-rebuilt body. Now the backup is written on every death, including the disintegrating one, the rebuild erases it (the living warrior writes a fresh one on its next death), and the rebuild destroys any heart for that warrior in the player's backpack and bank box ("The old heart crumbles to dust."). Section 10.5 later replaced the resulting rule (ten free heart revivals, then unlimited paid ones) with a single ten-revival limit.
 - **High Priest frozen on an unanswered prompt** (`highpriest.src`). The four new `YesNo()` dialogues ran with no timeout inside the priest's single event loop, so one player walking away from the gump would stop him serving anyone else. They now pass `WFH_PROMPT_TIMEOUT` (30 s); an ignored gump closes as "no".
 - **Courtyard tiles were still uncovered** (`scripts/include/housetravel.inc`). `ListMultisInBox` is documented (`core-changes.txt`) as listing multis that have a piece inside the box, so the single-tile box the port used could not see a castle courtyard, which is exactly what the fix claimed to cover. The helper now scans a house-sized box (34 tiles) around the spot and tests each house's `.footprint` rectangle, the core member that gives the world-coordinate extent. A core without that member falls through to the old tests.
 - **Account rule reached placed houses** (`housetravel.inc`). Placed houses carry `owneracct` too (`housedeed.src`, `changeowner.src`), so the same-account allowance would have let any alt recall, gate and mark inside a placed house without being a friend. It now applies only when the house object is a static sign, not a multi, which is what was decided.
@@ -543,30 +561,32 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 | `pkg/opt/powerhour/textcmd/test/resetph.src` | 6 | Onto `PPH_Clear()`; reports when the reset ended a running personal powerhour |
 | `pkg/opt/ArtifactSystem/eonprism.src` | 7 | Onto the shared helpers; private constants and `use math` removed |
 | `config/cmds.cfg` | 4, 6, 12 | `DIR pkg/opt/powerhour/textcmd/admin` under `CmdLevel Admin`; `DIR pkg/opt/powerhour/textcmd/test` and `DIR pkg/opt/warriorforhire/textcmd/test` under `CmdLevel Test` |
-| `config/command_synopses.cfg` | 4, 5, 12, 14, 16 | Regenerated (344 entries): adds `Command phadmin` (`Administrator`, `CmdLevel 4`), `Command setwfhdamage` and `Command classbonusinfo` (`Developer`, `CmdLevel 5`) and `Command speedwalk` (`Seer`, `CmdLevel 2`); `setph` synopsis reworded |
-| `pkg/opt/warriorforhire/warrior.src` | 9 | Moved from `scripts/ai/warrior.src` and ported: masterless/mount code removed; status mirror, mod wipe, skill growth, status gump, vitals, abandon-on-release |
+| `config/command_synopses.cfg` | 4, 5, 12, 14, 16 | Regenerated (345 entries): adds `Command phadmin` (`Administrator`, `CmdLevel 4`), `Command setwfhdamage`, `Command maxwfh` and `Command classbonusinfo` (`Developer`, `CmdLevel 5`) and `Command speedwalk` (`Seer`, `CmdLevel 2`); `setph` synopsis reworded |
+| `pkg/opt/warriorforhire/warrior.src` | 9, 12 | Moved from `scripts/ai/warrior.src` and ported: masterless/mount code removed; status mirror, mod wipe, skill growth, status gump (non-blocking, staff may open it), vitals, abandon-on-release; tracked-skill list and skill cap now come from `wfhcommon.inc` |
 | `pkg/opt/warriorforhire/warriorforhire.src` | 9 | Moved from `scripts/items/warriorforhire.src` (deed) |
 | `pkg/opt/warriorforhire/pkg.cfg` | 9 | New package |
 | `pkg/opt/warriorforhire/itemdesc.cfg` | 9, 10 | New - deed `0xa399` (moved here) and `0x7930` Companion's Second Wind |
-| `pkg/opt/warriorforhire/include/wfhcommon.inc` | 9 | New - `AbandonWarrior()` |
+| `pkg/opt/warriorforhire/include/wfhcommon.inc` | 9, 10, 12 | New - `AbandonWarrior()`, `WfhTrackedSkills()`, `WFH_SKILL_CAP_TENTHS`, `WFH_MAX_DEATHS` (moved from `warrior.src`), `IsCurrentWfhHeart()` |
 | `pkg/opt/warriorforhire/include/wfhvitals.inc` | 9 | New - vital ceilings via `Custom*Level` CProps + `RecalcVitals()` |
 | `scripts/ai/warrior.src` | 9 | New - migration shim for NPCs saved with `script warrior` |
 | `config/npcdesc.cfg` | 9 | `warriorforhire` template script -> `:warriorforhire:warrior` |
 | `config/itemdesc.cfg` | 9 | Deed `0xa399` removed (pointer comment left) |
-| `scripts/misc/death.src` | 10, 17 | Heart: 11 lives, offline owner -> bank box (non-sleeping lookup), `Skills` on heart, `WFHBackup` on every death, `AbandonedByOwner` skip |
-| `scripts/ai/highpriest.src` | 10 | "resurrect warrior" / "give up warrior" / "recover belongings"; heart revival restores skills and vitals, flat stat loss, sets `henchman`; forgiveness price clamped to 1000-60000 via new `PriestForgivenessFine()` (also used by the "relationship" reply) |
+| `scripts/misc/death.src` | 10, 17 | Heart: ten revivals shared with the priest, final death erases `WFHBackup`, offline owner -> bank box (non-sleeping lookup), `Skills` and `WFHDeathId` on heart and backup, `AbandonedByOwner` skip |
+| `scripts/ai/highpriest.src` | 10 | "resurrect warrior" / "give up warrior" / "recover belongings"; heart revival restores skills and vitals, `resnum`-point stat loss floored at 10, sets `henchman`, erases `WFHBackup`, rejects stale hearts (`IsCurrentWfhHeart()`), no longer `return`s out of the AI loop; "resurrect warrior" refuses a memory past the limit; forgiveness price clamped to 1000-60000 via new `PriestForgivenessFine()` (also used by the "relationship" reply) |
 | `pkg/opt/warriorforhire/resetwfhdeaths.src` | 10 | New - Companion's Second Wind use script |
 | `pkg/opt/warriorforhire/include/wfhescrow.inc` | 11 | New - escrow filing, registry, sweep, claim, destroy |
 | `pkg/opt/warriorforhire/wfhescrowsave.src` | 11 | New - files a decayed corpse's bundled gear |
 | `pkg/opt/warriorforhire/escrowsweep.src` | 11 | New - daily 90-day expiry |
 | `pkg/opt/warriorforhire/start.src` | 11 | New - starts the escrow sweeper |
-| `scripts/control/corpsedecay.src` | 11 | Bundles a warrior corpse's gear and hands off to `wfhescrowsave` |
+| `scripts/control/corpsedecay.src` | 11 | Bundles a warrior corpse's gear and hands off to `wfhescrowsave`, released and given-up warriors included |
 | `pkg/systems/playervendor/commands/player/escrow.src` | 11 | Hides and refuses "Warrior for Hire" entries |
 | `pkg/systems/combat/include/hitscriptinc.inc` | 12 | `WFHDamageMultiplier()` / `WFHModifyDamage()` at the top of `DealDamage()` |
 | `scripts/control/skilladvancerequip.src` | 12 | 85 cap on necro/elemental protections for warriors |
 | `scripts/control/skilladvancerunequip.src` | 12 | Same cap on the unequip recomputation |
 | `pkg/opt/areas/callguards.src` | 12, 18 | `crimMaster` reset per scanned mobile; `KillerAcct` taken from `who.acct.name` instead of an online-character name scan |
 | `pkg/opt/warriorforhire/textcmd/test/setwfhdamage.src` | 12 | New - `.setwfhdamage` |
+| `pkg/opt/warriorforhire/textcmd/test/maxwfh.src` | 12 | New - `.maxwfh` |
+| `pkg/opt/warriorforhire/showstatus.src` | 9 | New - sends the `<name> status` gump outside the warrior's AI process |
 | `pkg/std/tracking/tracking.src` | 13 | Two classic menus -> one paged gump (ZH3.0 port); single classification pass; "Players" category kept; icon table removed; `unloadconfigfile("::npcdesc")` removed |
 | `pkg/opt/alryc/include/speedwalk.inc` | 14 | New - `SendSpeedWalk()` packet helper (`0xBF`/`0x26`) |
 | `scripts/textcmd/seer/speedwalk.src` | 14 | New - `.speedwalk` (Seer): toggle or set run-speed modifier 0-4, stored as `SpeedWalk` |
@@ -622,6 +642,9 @@ Warrior for Hire (sections 9-12):
 - **Escrow shares the Merchant Escrow storage area and datafiles.** `.escrow` hides the entries, but any staff tool that enumerates that area will see "Warrior for Hire Escrow" roots. The daily sweeper only exists once `start.src` has run, i.e. after the restart.
 - **Warriors now carry `CustomHitsLevel`.** `modsetup.inc` tops an NPC with that CProp up to full HP at AI start (harmless here). `pkg/std/housing/utility.inc`'s pet-fine code reads the same CProp in display units rather than hundredths; it only ever runs on confiscated pets, but the unit mismatch is worth knowing about if that CProp is set on anything else.
 - **Damage multipliers default to 1.0.** No combat change until `.setwfhdamage` is used; the half-damage-to-own-master rule is always on.
+- **`.maxwfh` can push a warrior past its owner.** The explicit-stats form sets whatever staff type (up to 300), and the skills always go to 130.0 even if the owner is lower. Normal growth never lowers anything, so the warrior simply stops growing until its owner catches up; the High Priest's flat stat loss on a heart revival applies as usual. Every use is in the command log.
+- **The revival limit is real now (10.5).** An owner who has already used ten revivals will find the eleventh death final; under the code as first written the priest would have kept selling lives. Warriors that died before the deploy carry no `WFHDeathId`; their hearts still work until a new death writes a stamped backup.
+- **Released and given-up warriors' gear is now escrowed (section 11).** It used to be left on the corpse to decay. Owners can still loot the corpse first; whatever is left at decay goes to the priest for 90 days.
 - **Objtype `0x7930`, not ZH3.0's `0x4000BC`.** Any cross-shard tooling keyed on the Companion's Second Wind objtype must map it.
 - **Gump layouts were compiled, not opened** (status gump, `.setwfhdamage`): same caveat as `.phadmin`.
 - **High Priest forgiveness now costs classless players 1000 gold (10.4).** Previously a single coin repaired the relationship for anyone without a class, and the "relationship" command said as much. Players with a class level pay exactly what they did before.

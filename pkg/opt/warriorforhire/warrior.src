@@ -48,11 +48,7 @@ var lastskillgain := ReadGameClock();
 var lastmodwipe := ReadGameClock();
 var wasownerOnline := 0;
 
-// Anatomy, Parry, Healing, Tactics, Archery, Swordsmanship, Macefighting, Fencing, Wrestling.
-// (ZH3.0 also tracks Throwing, skill 57, which this shard does not have.)
-var TRACKED_SKILLS := {1, 5, 17, 27, 31, 40, 41, 42, 43};
-const WFH_SKILL_CAP_TENTHS := 1300; // 130.0 displayed - hard ceiling regardless of the master's own skill
-const WFH_MAX_DEATHS := 10;         // the heart disintegrates on the 11th death (death.src)
+var TRACKED_SKILLS := WfhTrackedSkills();
 
 program Warrior()
 
@@ -583,6 +579,8 @@ function ProcessMasterEvents(byref ev, byref wanders, byref next_wander)
 			if (!ObeyCommand(ev))
 				check_speech(ev.text, ev.source);
 			endif
+		elseif (ev.source.cmdlevel and evtext[lower(me.name) + " status"])
+			ShowStatus(ev.source);	// staff can inspect any warrior, squelched or not
 		else
 			if (!GetObjProperty(me,"squelch"))
 				check_speech(ev.text, ev.source);
@@ -1189,7 +1187,7 @@ function ShowStatus(you)
 
 	GFAddButton(gump, 190, ysize-35, 2128, 2129, GF_CLOSE_BTN, 1);
 
-	GFSendGump(you, gump);
+	start_script(":warriorforhire:showstatus", {you, gump});
 
 endfunction
 
@@ -1378,7 +1376,7 @@ function OpenDoors(opponent)
 endfunction
 
 // "<name> release": a fired warrior is gone for good, not left wandering. AbandonedByOwner
-// keeps death.src from dropping a heart and corpsedecay.src from escrowing its gear.
+// keeps death.src from dropping a heart; its gear is escrowed like any other warrior's.
 function Release()
 
 	say("See ya");
