@@ -271,6 +271,10 @@ while (1)
 						var wfhbackup := GetObjProperty(player, "WFHBackup");
 						if (!wfhbackup)
 							Say("I have no memory of a fallen companion to call back for thee.");
+						elseif (Cint(wfhbackup["resnum"]) > WFH_MAX_DEATHS)
+							// death.src no longer writes one for a final death; this catches any older memory.
+							EraseObjProperty(player, "WFHBackup");
+							Say("That soul has passed beyond my reach. Thou must find a new companion.");
 						elseif (!YesNo(player, "Resurrect your Warrior for Hire from memory for 10,000 gold?", "Yes", "No", WFH_PROMPT_TIMEOUT))
 							Say("As thou wishest.");
 						elseif (!player.spendgold(10000))
@@ -411,57 +415,66 @@ while (1)
 				
 				if (GetObjProperty(event.item,"Str") and GetObjProperty(event.item,"Name"))
 					heart := event.item;
-					resnum := GetObjProperty(heart,"resnum");
-					wstr := GetObjProperty(heart,"Str") - (resnum-1)+1;	// was Random(resnum)*5: a flat point per past death, not a dice roll (ZH3.0)
-					wint := GetObjProperty(heart,"Int") - (resnum-1)+1;	// was Random(resnum)*5: a flat point per past death, not a dice roll (ZH3.0)
-					wdex := GetObjProperty(heart,"Dex") - (resnum-1)+1;	// was Random(resnum)*5: a flat point per past death, not a dice roll (ZH3.0)
+					resnum := Cint(GetObjProperty(heart,"resnum"));
+					// One point of each stat per death so far (ZH3.0's "- (resnum-1)+1" gained a point on the
+					// first revival). Floored at 10, the lowest stat .maxwfh accepts.
+					wstr := Max(Cint(GetObjProperty(heart,"Str")) - resnum, 10);
+					wint := Max(Cint(GetObjProperty(heart,"Int")) - resnum, 10);
+					wdex := Max(Cint(GetObjProperty(heart,"Dex")) - resnum, 10);
 					wname := GetObjProperty(heart,"Name");
 					hm := GetObjProperty(event.source,"henchman");
 					hme := SystemFindObjectBySerial(hm);
 					var hhme := GetObjProperty(heart,"master");
 					if (hme and (hhme != hme))
 						SendSysMessage(event.source,"You already have a henchman");
-						return;
-					endif
-					Say( "By the power of the Virtues, may this soul be brought back to life!" );
-					PerformAction( me , ANIM_CAST_DIR );
-					PlaySoundEffect( me , SFX_SPELL_RESURRECTION);
-					wfh := CreateNpcFromTemplate("warriorforhire", DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z);
-					wfh.hidden := 1;
-					SetObjProperty(wfh,"master",event.source.serial);
-					sleep(2);
-					SetObjProperty(wfh,"master",event.source.serial);
-					SetBaseStrength(wfh, wstr);;
-					SetBaseIntelligence(wfh, wint);
-					SetBaseDexterity(wfh, wdex);
-					SetWfhVitalCeilingsAndFill(wfh);	// HP = 2 x Str etc., then topped up
-					wfh.name := wname;
-					sex := GetObjProperty(heart,"Sex");
-					wfh.gender := (sex-400);
-					wfh.graphic := sex;
-					wfh.trueobjtype := sex;
-					foreach item in ListEquippedItems(wfh)
-						DestroyItem(item);
-					endforeach
-					SetObjProperty(wfh,"resnum",resnum);
-					var heartskills := GetObjProperty(heart,"Skills");
-					if (heartskills)
-						foreach heartskillid in (heartskills.keys())
-							SetBaseSkillBaseValue(wfh, heartskillid, heartskills[heartskillid]);
+						MoveItemToContainer(heart, event.source.backpack);
+					elseif (resnum > WFH_MAX_DEATHS or !IsCurrentWfhHeart(heart, event.source))
+						// A heart from an earlier death, or one whose life the priest already restored.
+						DestroyItem(heart);
+						Say("This heart belongs to a life already spent. It crumbles to dust.");
+					else
+						Say( "By the power of the Virtues, may this soul be brought back to life!" );
+						PerformAction( me , ANIM_CAST_DIR );
+						PlaySoundEffect( me , SFX_SPELL_RESURRECTION);
+						wfh := CreateNpcFromTemplate("warriorforhire", DEFAULT_LOCATION_NPC_RELOCATION_X, DEFAULT_LOCATION_NPC_RELOCATION_Y, DEFAULT_LOCATION_NPC_RELOCATION_Z);
+						wfh.hidden := 1;
+						SetObjProperty(wfh,"master",event.source.serial);
+						sleep(2);
+						SetObjProperty(wfh,"master",event.source.serial);
+						SetBaseStrength(wfh, wstr);;
+						SetBaseIntelligence(wfh, wint);
+						SetBaseDexterity(wfh, wdex);
+						SetWfhVitalCeilingsAndFill(wfh);	// HP = 2 x Str etc., then topped up
+						wfh.name := wname;
+						sex := GetObjProperty(heart,"Sex");
+						wfh.gender := (sex-400);
+						wfh.graphic := sex;
+						wfh.trueobjtype := sex;
+						foreach item in ListEquippedItems(wfh)
+							DestroyItem(item);
 						endforeach
+						SetObjProperty(wfh,"resnum",resnum);
+						var heartskills := GetObjProperty(heart,"Skills");
+						if (heartskills)
+							foreach heartskillid in (heartskills.keys())
+								SetBaseSkillBaseValue(wfh, heartskillid, heartskills[heartskillid]);
+							endforeach
+						endif
+						// The deed and the "already have a henchman" checks read this; it was never updated on a heart revival.
+						SetObjProperty(event.source, "henchman", wfh.serial);
+						// This death is revived: the memory of it is spent too, so it cannot buy a second life.
+						EraseObjProperty(event.source, "WFHBackup");
+						DestroyItem(heart);
+						RestartScript(wfh);
+						wfh.hidden := 0;
+						MoveObjectToLocation(wfh,event.source.x,event.source.y,event.source.z,"britannia",0);
+						sleep(3);
+						case (Random(3)+1)
+							1: PrintTextAbove(wfh,"w00t!");
+							2: PrintTextAbove(wfh,"phew!");
+							3: PrintTextAbove(wfh,"yay!");
+						endcase
 					endif
-					// The deed and the "already have a henchman" checks read this; it was never updated on a heart revival.
-					SetObjProperty(event.source, "henchman", wfh.serial);
-					DestroyItem(heart);
-					RestartScript(wfh);
-					wfh.hidden := 0;
-					MoveObjectToLocation(wfh,event.source.x,event.source.y,event.source.z,"britannia",0);
-					sleep(3);
-					case (Random(3)+1)
-						1: PrintTextAbove(wfh,"w00t!");
-						2: PrintTextAbove(wfh,"phew!");
-						3: PrintTextAbove(wfh,"yay!");
-					endcase
 				else
 					Say( "Thou art most kind of wanting to give away such a thing, " );
 					MoveItemToContainer( event.item , event.source.backpack );

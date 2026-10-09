@@ -16,6 +16,7 @@ include ":shilhook:shilcombat";
 include ":champspawns:death";
 include ":lootlottery:lootlottery";
 include "util/bank";	// FindBankBox - Warrior for Hire heart to an offline owner
+include ":warriorforhire:include/wfhcommon";	// WFH_MAX_DEATHS
 
 program npcdeath(corpse)
 
@@ -94,9 +95,9 @@ program npcdeath(corpse)
     MoveBackpackToCorpse( corpse );
 	var heart;
 	var resnum;
-	// Warrior for Hire heart - Patch 1.1.4 brings this in line with ZH3.0: eleven lives instead of
-	// four, the heart reaches an offline owner's bank box, a WFHBackup snapshot lets the High
-	// Priest rebuild a warrior whose heart is gone, and a warrior its owner gave up drops nothing.
+	// Warrior for Hire heart - Patch 1.1.4: ten revivals instead of three, by heart or by the High
+	// Priest's WFHBackup memory (each spends one of the ten), the heart reaches an offline owner's
+	// bank box, and a warrior its owner gave up drops neither.
 	if (GetObjProperty(corpse,"WarriorForHire") and GetObjProperty(corpse,"npctemplate") == "warriorforhire" and !GetObjProperty(corpse,"AbandonedByOwner"))
 		resnum := GetObjProperty(corpse,"resnum");
 		if (!resnum)
@@ -123,10 +124,15 @@ program npcdeath(corpse)
 			wfhskills := dictionary;
 		endif
 
-		// Saved on the owner on EVERY death (not only the ones that drop a heart), so the High
-		// Priest's "resurrect warrior" rebuild is always from the latest state, including the
-		// death that disintegrated the heart. The rebuild erases it again.
-		if (masterobj)
+		// Deaths 1-10 can be revived once, by the heart or by the High Priest's memory of this
+		// death; both are stamped with the corpse serial so only this death's heart matches the
+		// memory (IsCurrentWfhHeart) and either revival spends both. The eleventh death is final.
+		if (resnum > WFH_MAX_DEATHS)
+			if (masterobj)
+				EraseObjProperty(masterobj, "WFHBackup");
+				SendSysMessage(masterobj, GetObjProperty(corpse,"Name")+" has fallen for the last time. Neither heart nor priest can bring them back.");
+			endif
+		elseif (masterobj)
 			var backup := dictionary;
 			backup.insert("Str", GetObjProperty(corpse,"Str"));
 			backup.insert("Int", GetObjProperty(corpse,"Int"));
@@ -135,10 +141,9 @@ program npcdeath(corpse)
 			backup.insert("Sex", GetObjProperty(corpse,"Sex"));
 			backup.insert("resnum", resnum);
 			backup.insert("Skills", wfhskills);
+			backup.insert("WFHDeathId", corpse.serial);
 			SetObjProperty(masterobj, "WFHBackup", backup);
-		endif
 
-		if (resnum < 11 and mastersrl != 0 and masterobj)
 			heart := CreateItemAtLocation(corpse.x,corpse.y,corpse.z,0x1CED,1,corpse.realm);
 			heart.newbie := 1;
 			heart.color := 1172;
@@ -152,6 +157,7 @@ program npcdeath(corpse)
 			SetObjProperty(heart,"Sex",GetObjProperty(corpse,"Sex"));
 			SetObjProperty(heart,"master",mastersrl);
 			SetObjProperty(heart,"Skills",wfhskills);
+			SetObjProperty(heart,"WFHDeathId",corpse.serial);
 
 			if (masteronline)
 				MoveItemToContainer(heart, masterobj.backpack);
@@ -164,8 +170,6 @@ program npcdeath(corpse)
 					MoveItemToContainer(heart, bankbox);
 				endif
 			endif
-		elseif (masterobj)
-			SendSysMessage(masterobj, GetObjProperty(corpse,"Name")+"'s heart has disintegrated and could not be recovered.");
 		endif
 
 		if(IsInSafeArea(corpse) and masterobj)

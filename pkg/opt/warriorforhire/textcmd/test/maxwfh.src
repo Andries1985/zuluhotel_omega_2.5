@@ -1,0 +1,80 @@
+// Synopsis: Max a Warrior for Hire's combat skills and raise its stats to its master's or given values
+// Usage: .maxwfh               - skills to 130.0, stats raised to the master's base stats (never lowered)
+//        .maxwfh <str> <int> <dex> - skills to 130.0, stats set to exactly these values
+use uo;
+use os;
+
+include "include/attributes";
+include ":staff:include/staff";
+include ":warriorforhire:include/wfhcommon";
+include ":warriorforhire:include/wfhvitals";
+
+const STAT_MIN := 10;
+const STAT_MAX := 300;
+
+program textcmd_maxwfh(who, text)
+
+	// Parse the optional stats before targeting so a typo doesn't waste a target cursor.
+	var stats := 0;
+	var words := SplitWords(CStr(text));
+	if( words.size() )
+		if( words.size() != 3 )
+			SendSysMessage(who, "Usage: .maxwfh  or  .maxwfh <str> <int> <dex>");
+			return 0;
+		endif
+		stats := { CInt(words[1]), CInt(words[2]), CInt(words[3]) };
+		foreach value in stats
+			if( value < STAT_MIN or value > STAT_MAX )
+				SendSysMessage(who, "Stats must be whole numbers from " + STAT_MIN + " to " + STAT_MAX + ". Nothing changed.");
+				return 0;
+			endif
+		endforeach
+	endif
+
+	SendSysMessage(who, "Target the Warrior for Hire to max.");
+	var wfh := Target(who, TGTOPT_NOCHECK_LOS);
+	if( !wfh )
+		SendSysMessage(who, "Cancelled.");
+		return 0;
+	endif
+	if( !wfh.npctemplate or !GetObjProperty(wfh, "WarriorForHire") )
+		SendSysMessage(who, "That is not a Warrior for Hire.");
+		return 0;
+	endif
+
+	foreach skillid in WfhTrackedSkills()
+		SetBaseSkillBaseValue(wfh, skillid, WFH_SKILL_CAP_TENTHS);
+	endforeach
+
+	var basestr := GetStrength(wfh) - GetStrengthMod(wfh);
+	var baseint := GetIntelligence(wfh) - GetIntelligenceMod(wfh);
+	var basedex := GetDexterity(wfh) - GetDexterityMod(wfh);
+
+	if( stats )
+		basestr := stats[1];
+		baseint := stats[2];
+		basedex := stats[3];
+	else
+		// Same ceiling the warrior grows toward on its own (GainStat in warrior.src).
+		var master := SystemFindObjectBySerial(GetObjProperty(wfh, "master"), SYSFIND_SEARCH_OFFLINE_MOBILES);
+		if( master )
+			basestr := Max(basestr, GetStrength(master) - GetStrengthMod(master));
+			baseint := Max(baseint, GetIntelligence(master) - GetIntelligenceMod(master));
+			basedex := Max(basedex, GetDexterity(master) - GetDexterityMod(master));
+		else
+			SendSysMessage(who, "No master found, so stats were left alone. Use .maxwfh <str> <int> <dex> to set them.");
+		endif
+	endif
+
+	SetBaseStrength(wfh, basestr);
+	SetBaseIntelligence(wfh, baseint);
+	SetBaseDexterity(wfh, basedex);
+
+	// The vital ceilings are static CProps, so restamp them now rather than waiting for the
+	// warrior's next hourly stat-growth tick. The AI loop refreshes the heart's mirror CProps.
+	SetWfhVitalCeilingsAndFill(wfh);
+
+	SendSysMessage(who, wfh.name + ": combat skills 130.0, Str " + basestr + " Int " + baseint + " Dex " + basedex + ", HP " + GetMaxHP(wfh) + ".");
+	LogCommand(who, GetProcess(GetPid()).name, wfh.name + "/" + wfh.serial, "Str " + basestr + " Int " + baseint + " Dex " + basedex);
+
+endprogram
