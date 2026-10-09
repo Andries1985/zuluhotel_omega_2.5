@@ -640,7 +640,8 @@ endfunction
 
 // Warrior for Hire damage moderation (Patch 1.1.4, ported from ZH3.0), isolated here so
 // DealDamage() itself stays free of template-specific branching. Halves damage between a WFH
-// and its own master (sparring), and applies the .setwfhdamage NPC/Boss multipliers otherwise.
+// and its own master in both directions (sparring), and applies the .setwfhdamage NPC/Boss
+// multipliers otherwise.
 function WFHModifyDamage(attacker, defender, rawdamage)
 
 	if (attacker.npctemplate == "warriorforhire")
@@ -653,6 +654,8 @@ function WFHModifyDamage(attacker, defender, rawdamage)
 				rawdamage := CInt(rawdamage * WFHDamageMultiplier("WFHDamageToNPCs"));
 			endif
 		endif
+	elseif (defender.npctemplate == "warriorforhire" and GetObjProperty(defender,"master") == attacker.serial)
+		rawdamage := CInt(rawdamage / 2);
 	elseif (defender.npctemplate == "warriorforhire" and attacker.isa(POLCLASS_NPC))
 		if (GetObjProperty(attacker,"Boss") or GetObjProperty(attacker,"SuperBoss"))
 			rawdamage := CInt(rawdamage * WFHDamageMultiplier("WFHDamageFromBosses"));
