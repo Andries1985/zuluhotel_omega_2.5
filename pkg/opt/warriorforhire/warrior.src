@@ -32,8 +32,6 @@ Const DRINK_SOUND := 0x32;
 Const SOUND_EFFECT_HEAL	:= 0x1f3;
 Const SOUND_EFFECT_CURE	:= 0x1e1;
 Const EFFECT_SPARKLE  := 0x374a;
-const UOBJ_WFH_HEAL_POTION := 0xDC02;
-const UOBJ_WFH_GREATER_HEAL_POTION := 0xDC03;
 const UOBJ_TAMLA_POTION := 0xff86;		// plain; 0xff87-0xff8b are the true mage's Level 1-5, two doses each
 const UOBJ_TAMLA_POTION_LAST := 0xff8b;
 
@@ -1428,9 +1426,12 @@ function RemoveIt(it)
 
 endfunction
 
-// Drinks the cheapest heal potion in the pack, one potion from the stack: a Heal, then a Greater
-// Heal, then a Tamla (a full heal). It used to know only Heal and Greater Heal, and destroyed the
-// whole stack for a single drink.
+// Drinks the weakest heal potion in the pack, one potion from the stack: Light Heal, Heal and
+// Greater Heal potions of every true-mage level first, weakest first, then a Tamla (a full heal).
+// Poisoned potions are left alone. A heal potion heals what it heals a player (yellowpotion.src):
+// 12d(power+1), power being the potion's Strength plus its ByTrueMage level. This used to know
+// only the plain 0xDC02/0xDC03 at fixed 2d12+3 / 5d12+3, ignore Light Heal, every true-mage level
+// (each is its own objtype) and every Tamla, and destroy the whole stack for a single drink.
 function DrinkHeal()
 
 	if ( cint(getobjproperty(me, "#potion")) > ReadGameClock()  )
@@ -1444,7 +1445,7 @@ function DrinkHeal()
 
 	PlaySoundEffect (me, DRINK_SOUND);
 	PerformAction(me, ANIM_EAT);
-	if (potion.objtype >= UOBJ_TAMLA_POTION and potion.objtype <= UOBJ_TAMLA_POTION_LAST)
+	if (IsTamlaPotion(potion))
 		SetHP(me, GetMaxHP(me));
 		// A true mage's Tamla holds two doses: drinking it leaves a plain Tamla behind, as for a
 		// player (newpotions.src DoFullHeal).
@@ -1454,11 +1455,12 @@ function DrinkHeal()
 			CreateItemInBackpack(me, UOBJ_EMPTY_BOTTLE, 1);
 		endif
 	else
-		if (potion.objtype == UOBJ_WFH_HEAL_POTION)
-			HealDamage(me, RandomDiceStr("2d12+3"));
-		else
-			HealDamage(me, RandomDiceStr("5d12+3"));
+		var healed := RandomDiceStr("12d" + CStr(HealPotionPower(potion) + 1));
+		var bonus := GetObjProperty(me, "HealingIncrease");
+		if (bonus)
+			healed := healed + CInt(healed * bonus * 0.1);
 		endif
+		HealDamage(me, healed);
 		CreateItemInBackpack(me, UOBJ_EMPTY_BOTTLE, 1);
 	endif
 	SubtractAmount(potion, 1);
@@ -1468,29 +1470,46 @@ function DrinkHeal()
 
 endfunction
 
-// Cheapest heal first: Heal (rank 1), Greater Heal (2), any Tamla (3).
+// The weakest drinkable heal in the pack: heal potions by power, any Tamla after all of them.
 function FindHealPotion()
 
 	var best := 0;
 	var bestrank := 0;
 	foreach item in EnumerateItemsInContainer(me.backpack)
 		var rank := 0;
-		if (item.objtype == UOBJ_WFH_HEAL_POTION)
-			rank := 1;
-		elseif (item.objtype == UOBJ_WFH_GREATER_HEAL_POTION)
-			rank := 2;
-		elseif (item.objtype >= UOBJ_TAMLA_POTION and item.objtype <= UOBJ_TAMLA_POTION_LAST)
-			rank := 3;
+		var power := HealPotionPower(item);
+		if (power)
+			if (!GetObjProperty(item, "Poisoned"))
+				rank := power;
+			endif
+		elseif (IsTamlaPotion(item))
+			rank := 1000;
 		endif
 		if (rank and (!bestrank or rank < bestrank))
 			best := item;
 			bestrank := rank;
-			if (rank == 1)
-				break;
-			endif
 		endif
 	endforeach
 	return best;
+
+endfunction
+
+// 0 unless the item is a heal potion, i.e. an :alchemy:itemdesc entry drunk by yellowpotion
+// (Light Heal, Heal, Greater Heal and their true-mage levels). Otherwise its power, as
+// drinkpotion.inc's GetPotionStrength works it out: itemdesc Strength + ByTrueMage.
+function HealPotionPower(potion)
+
+	var elem := FindConfigElem(ReadConfigFile(":alchemy:itemdesc"), potion.objtype);
+	if (!elem or lower(GetConfigString(elem, "Script")) != "yellowpotion")
+		return 0;
+	endif
+	return GetConfigInt(elem, "Strength") + CInt(GetObjProperty(potion, "ByTrueMage"));
+
+endfunction
+
+function IsTamlaPotion(item)
+
+	return (item.objtype >= UOBJ_TAMLA_POTION and item.objtype <= UOBJ_TAMLA_POTION_LAST);
 
 endfunction
 
