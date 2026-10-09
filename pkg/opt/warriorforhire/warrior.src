@@ -128,11 +128,16 @@ endprogram
 // Mirrors the stats, name, gender and tracked skills into saved CProps. The heart (death.src)
 // and the High Priest's backup read these off the corpse, so they must always be current;
 // only written when something actually changed so the loop isn't rewriting five props a tick.
+// Stats are mirrored without their mods: a revival sets them as the new warrior's base stats, so a
+// warrior that died blessed used to come back with the Bless baked in permanently.
 function SyncStatusMirror()
 
-	if (GetObjProperty(me,"Str") != GetStrength(me)) SetObjProperty(me,"Str",GetStrength(me)); endif
-	if (GetObjProperty(me,"Int") != GetIntelligence(me)) SetObjProperty(me,"Int",GetIntelligence(me)); endif
-	if (GetObjProperty(me,"Dex") != GetDexterity(me)) SetObjProperty(me,"Dex",GetDexterity(me)); endif
+	var basestr := GetStrength(me) - GetStrengthMod(me);
+	var baseint := GetIntelligence(me) - GetIntelligenceMod(me);
+	var basedex := GetDexterity(me) - GetDexterityMod(me);
+	if (GetObjProperty(me,"Str") != basestr) SetObjProperty(me,"Str",basestr); endif
+	if (GetObjProperty(me,"Int") != baseint) SetObjProperty(me,"Int",baseint); endif
+	if (GetObjProperty(me,"Dex") != basedex) SetObjProperty(me,"Dex",basedex); endif
 	if (GetObjProperty(me,"Name") != me.name) SetObjProperty(me,"Name",me.name); endif
 	if (GetObjProperty(me,"Sex") != (400+me.gender)) SetObjProperty(me,"Sex",(400+me.gender)); endif
 
