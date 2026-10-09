@@ -1,41 +1,33 @@
-// wfhvitals.inc - Warrior for Hire vital ceilings (Zuluhotel Omega 2.5 version).
+// wfhvitals.inc - Warrior for Hire vitals (Zuluhotel Omega 2.5 version).
 //
-// Ported from ZH3.0's 2026-09-30 change. There the ceilings go through the attributes package's
-// SetNpcVitalOverride(); this shard has no such package, but pkg/opt/shilhook/regen.src already
-// lets an NPC override its maximums through the CustomHitsLevel / CustomManaLevel /
-// CustomStaminaLevel CProps (stored in hundredths, the unit the vital maximum functions return),
-// so the same rule is stamped through those instead.
+// A warrior's vitals work like a player's: max HP is its Strength, max Mana its Intelligence and
+// max Stamina its Dexterity, buffs included, so a Bless or the Staff of Nagash raises them and
+// they drop back when the buff ends. That is pkg/opt/shilhook/regen.src's default for an NPC
+// with no CustomHitsLevel / CustomManaLevel / CustomStaminaLevel CProp.
 //
-// Rule: HP = 2 x base Str; Mana = base Int; Stam = base Dex (temporary mods excluded). The CProps
-// are static, so this is re-stamped on hire, on hourly stat growth and on every High Priest
-// restore. Before this a warrior's max HP simply equalled its Strength.
+// The first 1.1.4 port of ZH3.0's vital ceilings stamped those CProps instead (HP = 2 x base Str,
+// mods excluded). They were static, so buffs never moved max HP, and the doubling made the
+// warrior far tankier than a player of the same Strength. Any warrior still carrying them has
+// them erased here, from the AI at startup and from every restore path.
 
 use uo;
 use vitals;
 
-include "include/attributes";
+function ResetWfhVitals( wfh )
 
-const WFH_HITS_PER_STR := 2;
-
-function SetWfhVitalCeilings( wfh )
-
-	var basestr := GetStrength( wfh ) - GetStrengthMod( wfh );
-	var baseint := GetIntelligence( wfh ) - GetIntelligenceMod( wfh );
-	var basedex := GetDexterity( wfh ) - GetDexterityMod( wfh );
-
-	SetObjProperty( wfh, "CustomHitsLevel", basestr * WFH_HITS_PER_STR * 100 );
-	SetObjProperty( wfh, "CustomManaLevel", baseint * 100 );
-	SetObjProperty( wfh, "CustomStaminaLevel", basedex * 100 );
+	EraseObjProperty( wfh, "CustomHitsLevel" );
+	EraseObjProperty( wfh, "CustomManaLevel" );
+	EraseObjProperty( wfh, "CustomStaminaLevel" );
 
 	// The maximum functions in regen.src only run when the engine recalculates, so force it now.
 	RecalcVitals( wfh );
 
 endfunction
 
-// Ceilings plus a full top-up: used where the warrior is (re)built from scratch.
-function SetWfhVitalCeilingsAndFill( wfh )
+// Plus a full top-up: used where the warrior is (re)built from scratch.
+function ResetWfhVitalsAndFill( wfh )
 
-	SetWfhVitalCeilings( wfh );
+	ResetWfhVitals( wfh );
 	SetHp( wfh, GetMaxHp( wfh ) );
 	SetMana( wfh, GetMaxMana( wfh ) );
 	SetStamina( wfh, GetMaxStamina( wfh ) );
