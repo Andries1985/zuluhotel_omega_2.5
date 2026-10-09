@@ -3,7 +3,7 @@
 **Branch:** Patch-1.1.4  
 **Date:** 2026-10-07 (areas package review added 2026-10-08, `.maxwfh`, staff status and the revival limit added 2026-10-09)  
 **Commits in range:** 0 non-boundary commits. `927916d` (merge of Patch-1.1.3 into master) carries no new content - `git diff 3631ada..HEAD` is empty. The whole release is the uncommitted working tree.  
-**Files changed:** 34 modified code/config files, 2 renamed into a new package and rewritten, 20 new files, plus this release's own 3 `patchnotes/` files
+**Files changed:** 35 modified code/config files, 2 renamed into a new package and rewritten, 20 new files, plus this release's own 3 `patchnotes/` files
 
 > Scope was computed against `3631ada`, not `master`. `master` only caught up with 1.1.3 via `927916d`; anything older than that is already shipped.
 
@@ -301,11 +301,13 @@ The first port stamped those three CProps from the base stats (HP = 2 x base Str
 
 ### 9.6 Follow-ups after first play (2026-10-09)
 
-**Files:** `pkg/opt/warriorforhire/warrior.src`, `pkg/opt/warriorforhire/include/wfhvitals.inc`, `pkg/opt/GMItems/staffofnagash_usescript.src`, `scripts/ai/highpriest.src`, `pkg/opt/warriorforhire/textcmd/test/maxwfh.src`
+**Files:** `pkg/opt/warriorforhire/warrior.src`, `pkg/opt/warriorforhire/include/wfhvitals.inc`, `pkg/opt/GMItems/staffofnagash_usescript.src`, `pkg/std/healing/npchealing.src`, `scripts/ai/highpriest.src`, `pkg/opt/warriorforhire/textcmd/test/maxwfh.src`
 
 - **"stop".** In the fight loop, "stop" restored the pre-fight `following` and never touched `guarding`, so a warrior guarding its master went straight back into the fight on the next `Guard()` sweep. Out of a fight, "<name> stop" / "all stop" cleared both `guarding` and `following`, so it stopped following. Both now call `StopGuarding()`: `guarding := 0`, `following := master`, and a new `passive` flag. `Follow()` used to set `guarding := master` whenever guarding was empty, which would have undone the stop at once. It now does so only while not passive. Any guard command sets `guarding` again, which clears `passive` on the next `Follow()`, and "kill"/"attack" clear it directly. A passive warrior still fights back when engaged or damaged (`ProcessMasterEvents()`), as a stopped tamed pet does in self-defence mode. The flag lives in the AI and is not saved, so a restart puts the warrior back to following and guarding its master.
 - **Ranged weapons.** `HasBow()` was a hand-kept `case` of 20 objtypes with their ammo. The shard has 54 archery weapons, and the other 34 counted as melee, so the warrior closed to melee with them (reported with the Dreams Bow, `0x7cef`). It now reads the equipped weapon's entry from `:*:itemdesc` and treats it as ranged when `Projectile` is set and `ProjectileType` names the ammo, the same two fields `pkg/opt/shilhook/omegaattack.inc` spends ammunition by. The rest of the archery behaviour is unchanged: it keeps 4+ tiles away, swaps to melee when a monster reaches it, and goes back to the bow on "<name> rearm".
+- **Potions.** `DrinkHeal()` (below a third of max HP, at most every 20 s) knew only Heal `0xDC02` and Greater Heal `0xDC03`, and called `DestroyItem()` on the potion, so a stack of 20 went for one heal. A new `FindHealPotion()` picks the cheapest heal in the pack - Heal, then Greater Heal, then any Tamla (`0xff86` plain, `0xff87`-`0xff8b` the true mage's Level 1-5) - and the drink takes one with `SubtractAmount()`. A Tamla sets HP to max; one carrying `ByTrueMage` leaves a plain `0xff86` behind instead of an empty bottle, as `newpotions.src`'s `DoFullHeal()` does for players.
 - **Vitals** follow the buffed stats again; see 9.4.
+- **Bandaging at high Strength** (`pkg/std/healing/npchealing.src`, used only by the warrior). The heal was scaled by `count / (20 - Str/10)`: x1 at 100 Strength, x10 at 190, then a zero divisor at 200 (the heal became an error and nothing happened) and a negative heal above it. Strength includes mods, so a 182-Strength warrior on the live save stopped healing whenever it was blessed, and `.maxwfh` copying a staff owner's stats did the same permanently. The same curve is now keyed on the healer's effective Healing skill, capped at 150: `count / (20.0 - Healing/10.0)`, x1 at 100 Healing, x1.43 at 130 (the warrior's skill cap, reached through `GainSkill()`), x2 at the 150 cap, so the divisor never goes below 5. A new hire (Healing 100) heals as a 100-Strength warrior did; the 182-Strength one on the live save drops from x5 to whatever its Healing gives.
 - **Staff of Nagash.** The area buff skipped every NPC that was not `tamed`. Warriors for Hire (`WarriorForHire` CProp) are now included, so they get the same Bless, Strength, Agility, Cunning and Protection mods as the players and pets around the wielder.
 
 ## 10. Warrior for Hire - Heart, Backup and High Priest Revival
@@ -575,7 +577,7 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 | `pkg/opt/ArtifactSystem/eonprism.src` | 7 | Onto the shared helpers; private constants and `use math` removed |
 | `config/cmds.cfg` | 4, 6, 12 | `DIR pkg/opt/powerhour/textcmd/admin` under `CmdLevel Admin`; `DIR pkg/opt/powerhour/textcmd/test` and `DIR pkg/opt/warriorforhire/textcmd/test` under `CmdLevel Test` |
 | `config/command_synopses.cfg` | 4, 5, 12, 14, 16 | Regenerated (345 entries): adds `Command phadmin` (`Administrator`, `CmdLevel 4`), `Command setwfhdamage`, `Command maxwfh` and `Command classbonusinfo` (`Developer`, `CmdLevel 5`) and `Command speedwalk` (`Seer`, `CmdLevel 2`); `setph` synopsis reworded |
-| `pkg/opt/warriorforhire/warrior.src` | 9, 12 | Moved from `scripts/ai/warrior.src` and ported: masterless/mount code removed; status mirror, mod wipe, skill growth, status gump (non-blocking, staff may open it), vitals, abandon-on-release; tracked-skill list and skill cap now come from `wfhcommon.inc`; `HasBow()` reads the weapon's itemdesc; "stop" ends guarding (`passive`, `StopGuarding()`); legacy vital CProps erased in `FixStuff()` |
+| `pkg/opt/warriorforhire/warrior.src` | 9, 12 | Moved from `scripts/ai/warrior.src` and ported: masterless/mount code removed; status mirror, mod wipe, skill growth, status gump (non-blocking, staff may open it), vitals, abandon-on-release; tracked-skill list and skill cap now come from `wfhcommon.inc`; `HasBow()` reads the weapon's itemdesc; `DrinkHeal()` drinks Tamlas and one potion at a time; "stop" ends guarding (`passive`, `StopGuarding()`); legacy vital CProps erased in `FixStuff()` |
 | `pkg/opt/warriorforhire/warriorforhire.src` | 9 | Moved from `scripts/items/warriorforhire.src` (deed) |
 | `pkg/opt/warriorforhire/pkg.cfg` | 9 | New package |
 | `pkg/opt/warriorforhire/itemdesc.cfg` | 9, 10 | New - deed `0xa399` (moved here) and `0x7930` Companion's Second Wind |
@@ -601,6 +603,7 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 | `pkg/opt/warriorforhire/textcmd/test/maxwfh.src` | 12 | New - `.maxwfh` |
 | `pkg/opt/warriorforhire/showstatus.src` | 9 | New - sends the `<name> status` gump outside the warrior's AI process |
 | `pkg/opt/GMItems/staffofnagash_usescript.src` | 9.6 | Buff reaches Warriors for Hire as well as tamed pets |
+| `pkg/std/healing/npchealing.src` | 9.6 | Heal multiplier keyed on Healing (capped at 150) instead of Strength, which broke at 200+ Strength |
 | `pkg/std/tracking/tracking.src` | 13 | Two classic menus -> one paged gump (ZH3.0 port); single classification pass; "Players" category kept; icon table removed; `unloadconfigfile("::npcdesc")` removed |
 | `pkg/opt/alryc/include/speedwalk.inc` | 14 | New - `SendSpeedWalk()` packet helper (`0xBF`/`0x26`) |
 | `scripts/textcmd/seer/speedwalk.src` | 14 | New - `.speedwalk` (Seer): toggle or set run-speed modifier 0-4, stored as `SpeedWalk` |

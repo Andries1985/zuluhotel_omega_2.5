@@ -32,6 +32,10 @@ Const DRINK_SOUND := 0x32;
 Const SOUND_EFFECT_HEAL	:= 0x1f3;
 Const SOUND_EFFECT_CURE	:= 0x1e1;
 Const EFFECT_SPARKLE  := 0x374a;
+const UOBJ_WFH_HEAL_POTION := 0xDC02;
+const UOBJ_WFH_GREATER_HEAL_POTION := 0xDC03;
+const UOBJ_TAMLA_POTION := 0xff86;		// plain; 0xff87-0xff8b are the true mage's Level 1-5, two doses each
+const UOBJ_TAMLA_POTION_LAST := 0xff8b;
 
 var speech := 5;
 var me := Self();
@@ -1419,32 +1423,69 @@ function RemoveIt(it)
 
 endfunction
 
+// Drinks the cheapest heal potion in the pack, one potion from the stack: a Heal, then a Greater
+// Heal, then a Tamla (a full heal). It used to know only Heal and Greater Heal, and destroyed the
+// whole stack for a single drink.
 function DrinkHeal()
 
 	if ( cint(getobjproperty(me, "#potion")) > ReadGameClock()  )
         	return 0;
 	endif
 
-	foreach item in EnumerateItemsInContainer(me.backpack)
-		if ( ( item.objtype == 0xDC03 ) or ( item.objtype == 0xDC02 ) )
-			PlaySoundEffect (me, DRINK_SOUND);
-			PerformAction(me, ANIM_EAT);
+	var potion := FindHealPotion();
+	if (!potion)
+		return 0;
+	endif
+
+	PlaySoundEffect (me, DRINK_SOUND);
+	PerformAction(me, ANIM_EAT);
+	if (potion.objtype >= UOBJ_TAMLA_POTION and potion.objtype <= UOBJ_TAMLA_POTION_LAST)
+		SetHP(me, GetMaxHP(me));
+		// A true mage's Tamla holds two doses: drinking it leaves a plain Tamla behind, as for a
+		// player (newpotions.src DoFullHeal).
+		if (GetObjProperty(potion, "ByTrueMage"))
+			CreateItemInBackpack(me, UOBJ_TAMLA_POTION, 1);
+		else
 			CreateItemInBackpack(me, UOBJ_EMPTY_BOTTLE, 1);
-			var heal_amount;
-			if (item.objtype == 0xDC02)
-				heal_amount := RandomDiceStr("2d12+3");
-			else
-				heal_amount := RandomDiceStr("5d12+3");
+		endif
+	else
+		if (potion.objtype == UOBJ_WFH_HEAL_POTION)
+			HealDamage(me, RandomDiceStr("2d12+3"));
+		else
+			HealDamage(me, RandomDiceStr("5d12+3"));
+		endif
+		CreateItemInBackpack(me, UOBJ_EMPTY_BOTTLE, 1);
+	endif
+	SubtractAmount(potion, 1);
+	PlaySoundEffect( me,  SOUND_EFFECT_HEAL );
+	setobjproperty(me, "#potion", (ReadGameClock() + 20));
+	return 1;
+
+endfunction
+
+// Cheapest heal first: Heal (rank 1), Greater Heal (2), any Tamla (3).
+function FindHealPotion()
+
+	var best := 0;
+	var bestrank := 0;
+	foreach item in EnumerateItemsInContainer(me.backpack)
+		var rank := 0;
+		if (item.objtype == UOBJ_WFH_HEAL_POTION)
+			rank := 1;
+		elseif (item.objtype == UOBJ_WFH_GREATER_HEAL_POTION)
+			rank := 2;
+		elseif (item.objtype >= UOBJ_TAMLA_POTION and item.objtype <= UOBJ_TAMLA_POTION_LAST)
+			rank := 3;
+		endif
+		if (rank and (!bestrank or rank < bestrank))
+			best := item;
+			bestrank := rank;
+			if (rank == 1)
+				break;
 			endif
-			HealDamage(me, heal_amount);
-			DestroyItem(item);
-			PlaySoundEffect( me,  SOUND_EFFECT_HEAL );
-			setobjproperty(me, "#potion", (ReadGameClock() + 20));
-			return 1;
 		endif
 	endforeach
-
-	return 0;
+	return best;
 
 endfunction
 

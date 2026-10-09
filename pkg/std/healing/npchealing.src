@@ -150,7 +150,16 @@ function TryToHeal( character , patient , bandages )
 		count := 1;
 	endif
 	
-	healed := Cint( healed * count / (20 - (GetStrength(character)/10)) );
+	// The heal grows with the healer's own Healing skill: x1 at 100, x1.43 at 130 (a Warrior for
+	// Hire's cap), x2 at 150. It used to divide by (20 - Strength/10) instead, which hit zero at
+	// 200 Strength (no heal at all) and went negative above it - and Strength counts buffs, so a
+	// blessed warrior stopped healing entirely. The skill is capped at 150 so the divisor never
+	// gets near zero, whatever item bonuses add.
+	var heal_skill := GetEffectiveSkill( character , SKILLID_HEALING );
+	if( heal_skill > 150 )
+		heal_skill := 150;
+	endif
+	healed := Cint( healed * count / ( 20.0 - heal_skill / 10.0 ) );
 	
 	if( CheckSkill( character , SKILLID_HEALING , diff , points ) )
 		HealDamage( patient , healed );
