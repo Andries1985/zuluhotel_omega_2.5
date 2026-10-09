@@ -296,7 +296,7 @@ while (1)
 								SetBaseStrength(newwfh, Cint(wfhbackup["Str"]));
 								SetBaseIntelligence(newwfh, Cint(wfhbackup["Int"]));
 								SetBaseDexterity(newwfh, Cint(wfhbackup["Dex"]));
-								SetWfhVitalCeilingsAndFill(newwfh);
+								ResetWfhVitalsAndFill(newwfh);
 								newwfh.name := wfhbackup["Name"];
 								var wfhsex := Cint(wfhbackup["Sex"]);
 								newwfh.gender := (wfhsex-400);
@@ -444,7 +444,7 @@ while (1)
 						SetBaseStrength(wfh, wstr);;
 						SetBaseIntelligence(wfh, wint);
 						SetBaseDexterity(wfh, wdex);
-						SetWfhVitalCeilingsAndFill(wfh);	// HP = 2 x Str etc., then topped up
+						ResetWfhVitalsAndFill(wfh);	// HP = Str etc., then topped up
 						wfh.name := wname;
 						sex := GetObjProperty(heart,"Sex");
 						wfh.gender := (sex-400);

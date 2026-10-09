@@ -70,9 +70,9 @@ program textcmd_maxwfh(who, text)
 	SetBaseIntelligence(wfh, baseint);
 	SetBaseDexterity(wfh, basedex);
 
-	// The vital ceilings are static CProps, so restamp them now rather than waiting for the
-	// warrior's next hourly stat-growth tick. The AI loop refreshes the heart's mirror CProps.
-	SetWfhVitalCeilingsAndFill(wfh);
+	// Max HP/Mana/Stam follow the new stats on their own; top them up. The AI loop refreshes the
+	// heart's mirror CProps.
+	ResetWfhVitalsAndFill(wfh);
 
 	SendSysMessage(who, wfh.name + ": combat skills 130.0, Str " + basestr + " Int " + baseint + " Dex " + basedex + ", HP " + GetMaxHP(wfh) + ".");
 	LogCommand(who, GetProcess(GetPid()).name, wfh.name + "/" + wfh.serial, "Str " + basestr + " Int " + baseint + " Dex " + basedex);

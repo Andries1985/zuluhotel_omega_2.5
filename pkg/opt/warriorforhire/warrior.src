@@ -42,6 +42,7 @@ var master;
 var chaseloop := 0;
 var following := 0;
 var guarding := 0;
+var passive := 0;	// after "stop": follows the master and guards no one until told to guard or attack
 var nextwatch := ReadGameClock();
 var laststrengthgain := ReadGameClock();
 var lastskillgain := ReadGameClock();
@@ -190,48 +191,27 @@ function CloseDistance( opponent )
 
 endfunction
 
+// A ranged weapon is any weapon whose itemdesc entry fires projectiles, with the ammo that entry
+// names (ProjectileType), the same fields the attack hook spends ammo by (omegaattack.inc). It
+// used to be a hand-kept list of 20 objtypes, so 34 of the shard's 54 bows and crossbows (Dreams
+// Bow, composite bows, yumis, repeating and thunder crossbows, the boss bows) counted as melee.
 function HasBow()
 
-	var ammotype := 0;
-	var bowarmed := 0;
 	var weapon := me.weapon;
 	if (!weapon.objtype)
 		say("I don't have a weapon!");
 		ChangeWeapons();
 		return 0;
 	endif
-	case (weapon.objtype)
-		0x13B2:
-		0x7600:
-		0x7656:
-		0x762B:
-			bowarmed := 1;
-			ammotype := 0xf3f;//bow and arrows
-		0x0F4F:
-		0x13FD:
-		0x7603:
-		0x762E:
-		0x7659:
-		0x7604:
-		0x762F:
-		0x766A:
-			bowarmed := 1;
-			ammotype := 0x1bfb;//xbow and bolts
-		0x6050:
-		0x7601:
-		0x762C:
-		0x7657:
-			bowarmed := 1;
-			ammotype := 0x6051;//firebow and firearrows
-		0xB201:
-		0x759F:
-		0x762A:
-		0x7655:
-			bowarmed := 1;
-			ammotype := 0xB200;//icebow and icearrows
-		default: return 0;
-	endcase
-	if (!bowarmed) return 0; endif
+
+	var elem := FindConfigElem(ReadConfigFile(":*:itemdesc"), weapon.objtype);
+	if (!elem or !GetConfigInt(elem, "Projectile"))
+		return 0;
+	endif
+	var ammotype := GetConfigInt(elem, "ProjectileType");
+	if (!ammotype)
+		return 0;
+	endif
 
 	var myammo := EnumerateItemsInContainerOfObjtype(me.backpack, ammotype);
 
@@ -314,11 +294,16 @@ function SetMeUp()
 	SetBaseSkill(me, 31, 50);  //Archery
 
 	SetObjProperty(me,"WarriorForHire",1);
-	SetWfhVitalCeilingsAndFill(me);	// HP = 2 x Str, Mana = Int, Stam = Dex, then topped up
+	ResetWfhVitalsAndFill(me);	// HP = Str, Mana = Int, Stam = Dex (buffs included), then topped up
 
 endfunction
 
 function FixStuff()
+
+	// Drop the static 2 x Str ceilings an earlier 1.1.4 build stamped (wfhvitals.inc).
+	if (GetObjProperty(me, "CustomHitsLevel"))
+		ResetWfhVitals(me);
+	endif
 
 	me.graphic := 400+me.gender;
 	me.title_suffix := " the Warrior";
@@ -443,9 +428,7 @@ function fight(opponent)
 					say("Okay");
 					setwarmode(0);
 					opponent := 0;
-					sleep(1);
-					following := wasfollowing;
-					if ( distance(following,me)>15 ) following:=0;endif
+					StopGuarding();
 					chaseloop := 0;
 					return;
 				elseif (evtext[mename + " rearm"] )
@@ -708,12 +691,29 @@ function Follow()
 		SetDexterityMod(me, GetDexterityMod(me)-5000);
 	endif
 
-	if ( (master) and (!guarding) )
+	// Following the master means guarding them too, unless "stop" made the warrior passive. Any
+	// guard command sets guarding again, which ends the passive state.
+	if (guarding)
+		passive := 0;
+	elseif ( (master) and (!passive) )
 		guarding := master;
 	endif
 
 	if (guarding)
 		Guard();
+	endif
+
+endfunction
+
+// "<name> stop" / "all stop": like a tamed pet's stop, the warrior drops whatever it was guarding
+// and attacks nothing on its own, but it keeps following its master (a pet just stays put). It
+// still fights back if attacked (ProcessMasterEvents), and "guard" or "kill" end the passive state.
+function StopGuarding()
+
+	passive := 1;
+	guarding := 0;
+	if (master)
+		following := master;
 	endif
 
 endfunction
@@ -739,6 +739,7 @@ function ObeyCommand(ev)
 
 	if (evtext[mename + " kill"] or evtext[mename + " attack"] or
 	    evtext["all kill"] or evtext["all attack"] )
+		passive := 0;
 		var what := Target( you , TGTOPT_HARMFUL + TGTOPT_CHECK_LOS );
 		if (what)
 			if (evtext["all kill"] or evtext["all attack"] )
@@ -759,8 +760,9 @@ function ObeyCommand(ev)
 			endif
 		endif
 	elseif( evtext[mename + " stop"] or evtext["all stop"])
-		guarding := 0;
-		following := 0;
+		say("Okay");
+		SetWarMode(0);
+		StopGuarding();
 	elseif( evtext[mename + " heal"] or evtext["heal me"])
 		if ( evtext["heal me"] )
 			TurnToward(you);
@@ -1241,7 +1243,6 @@ function GainStat()
 			say("Ha! I liked that move!");
 		endif
 	endif
-	SetWfhVitalCeilings(me);	// max HP/Mana/Stam follow the grown stats (HP = 2 x Str)
 	SyncStatusMirror();
 endfunction
 
