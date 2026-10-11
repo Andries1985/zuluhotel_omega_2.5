@@ -9,8 +9,8 @@ include ":Events:bag";
 // Patch 1.1.4: it used to try every tile of the 21 x 21 square, but tested each with
 // GetMapInfo( i, j ) - the offsets, not map coordinates - so only the 121 tiles south-east of the
 // body got gold, and a pile could land inside a wall, under a static, on a roof or across water.
-const GOLD_RAIN_TOTAL := 180000;	// average gold per champion (what the old rain paid)
-const GOLD_RAIN_PILES := 50;
+const GOLD_RAIN_TOTAL := 250000;	// average gold per champion (the old rain paid about 180,000)
+const GOLD_RAIN_PILES := 20;
 const GOLD_RAIN_RANGE := 10;
 const GOLD_RAIN_MAX_RISE := 10;		// a pile's floor may be at most this far above or below the body's
 const CHAMP_ALTAR_HUE := 1157;		// the altar pieces (champspawns scripts/oncreate.src); no gold on them

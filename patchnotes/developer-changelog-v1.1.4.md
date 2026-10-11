@@ -79,7 +79,7 @@ Section 16 is the class review. ZH3.0 found that the per-skill class lookup retu
 | `0780aaf` | PH admin menu fixed (2026-10-10): `.phadmin` title and footer aligned to the frame | 4 |
 | `103b8cc` | patch notes update: `pkg/systems/accounts/config/uoclient.cfg` untracked (it was already in `.gitignore`) | - |
 | `2151172` | patch notes | - |
-| *(next commit)* | Out-of-fight "stop" stops following again; released, given-up and guard-killed warriors' gear escrowed in `death.src`; champion gold rain as 50 piles on reachable tiles; patch notes | 9.6, 11, 19 |
+| *(next commit)* | Out-of-fight "stop" stops following again; released, given-up and guard-killed warriors' gear escrowed in `death.src`; champion gold rain as 20 piles on reachable tiles, 250,000 total; patch notes | 9.6, 11, 19 |
 
 ---
 
@@ -573,14 +573,14 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 
 **First port (2026-10-11).** ZH3.0's fix: real coordinates, all 441 tiles, piles shrunk to 137-685 to hold the total. Replaced the same day, because 441 small piles still included the unreachable tiles.
 
-**Now.** The rain drops `GOLD_RAIN_PILES` (50) piles on random qualifying tiles within `GOLD_RAIN_RANGE` (10) of the body. `FindGoldRainSpots()` shuffles the 441 offsets (Fisher-Yates) and keeps tiles until it has 50; `GoldRainSpotZ()` accepts a tile only when:
+**Now.** The rain drops `GOLD_RAIN_PILES` (20) piles on random qualifying tiles within `GOLD_RAIN_RANGE` (10) of the body. `FindGoldRainSpots()` shuffles the 441 offsets (Fisher-Yates) and keeps tiles until it has 20; `GoldRainSpotZ()` accepts a tile only when:
 
 - it is on the map and has no altar piece on it (hue 1157, `pkg/opt/champspawns/scripts/oncreate.src`; the old code dropped gold on top of the altar at corpse z + 6 instead);
 - `GetStandingHeight()` finds a floor there at the body's z, or failing that from 10 below (a slope), within 10 of the body's z, and not on a multi (no house or boat interiors);
 - `CheckLosBetween()` sees it from the body; and
 - `FindPath()` finds a walking path to it from the body, ignoring mobiles and doors (`FP_IGNORE_MOBILES + FP_IGNORE_DOORS`; this core's eighth parameter is flags, and 0 would have let players crowding the body block it).
 
-The cheap tests run first and the search stops at 50, so pathfinding runs only on candidates that already passed. Each pile is `GOLD_RAIN_TOTAL / spots` (3,600 for 50) +/- 50%, so the average total stays at `GOLD_RAIN_TOTAL` (180,000), and if fewer than 50 tiles qualify the piles grow to match. With none at all, everything lands on the body's tile. The piles fall 100 ms apart, about 5 seconds for 50. Decided 2026-10-11: same total, fewer piles, only on reachable tiles. All three numbers are constants at the top of the include.
+The cheap tests run first and the search stops at 20, so pathfinding runs only on candidates that already passed. Each pile is `GOLD_RAIN_TOTAL / spots` (12,500 for 20) +/- 50%, so the average total is `GOLD_RAIN_TOTAL` (250,000, up from the old rain's ~181,000), and if fewer than 20 tiles qualify the piles grow to match. With none at all, everything lands on the body's tile. The piles fall 100 ms apart, about 2 seconds for 20. Decided 2026-10-11: 20 piles, only on reachable tiles, and the total raised to 250,000. All three numbers are constants at the top of the include.
 
 Not taken from ZH3.0's version: the realm arguments (single realm here; calls pass `corpse.realm` where the core takes one) and its altar hue 2732. The only includer is `scripts/misc/death.src` (via `include/death.inc`), which compiles clean.
 
@@ -647,7 +647,7 @@ Not taken from ZH3.0's version: the realm arguments (single realm here; calls pa
 | `pkg/opt/areas/EnterAreaDelay.src` | 18 | One `ResolveAreaMatchAtLocation()` per region entry; forbidden check via `IsInForbiddenAreaForMatch()` |
 | `pkg/opt/areas/textcmd/admin/areas.src` | 18 | `loaded_masks[]`; Save writes only changed areas through `SetPolicyMasks()`; one summary log line; open failure reported to staff |
 | `scripts/include/areas.inc` | 18 | New `IsInForbiddenAreaForMatch(who, match)`; `IsInForbiddenArea()` delegates to it |
-| `pkg/opt/champspawns/include/rewards.inc` | 19 | Gold rain rewritten: 50 piles on random reachable tiles (`FindGoldRainSpots()`, `GoldRainSpotZ()`), total held at 180,000; the `GetMapInfo` offset bug is gone with the old loop |
+| `pkg/opt/champspawns/include/rewards.inc` | 19 | Gold rain rewritten: 20 piles on random reachable tiles (`FindGoldRainSpots()`, `GoldRainSpotZ()`), total 250,000 (was ~181,000); the `GetMapInfo` offset bug is gone with the old loop |
 | `patchnotes/developer-changelog-v1.1.4.md` | - | This file |
 | `patchnotes/patch-v1.1.4.md` | - | Player-facing notes |
 | `patchnotes/launchernotes.md` | - | Replaced with this release's player-facing content |
@@ -725,9 +725,9 @@ Classes (section 16):
 
 Champions (section 19):
 
-- **Fewer, bigger piles in new places.** About 50 piles of 1,800-5,400 instead of about 121 of 500-2,499, scattered over the whole area rather than the south-east corner. The average total per champion is unchanged.
-- **Nothing on the altar, nothing out of reach.** A champion that dies in a cramped spot (a corridor, a small room) can have fewer than 50 qualifying tiles; the piles then get bigger, and with no qualifying tile at all the gold lands on the body.
-- **Up to a few hundred standing-height checks and at most a few dozen short pathfinds per champion death.** They run in the death script after its critical section, so nothing waits on them.
+- **Fewer, bigger piles in new places, and more gold.** About 20 piles of 6,250-18,750 instead of about 121 of 500-2,499, scattered over the whole area rather than the south-east corner. The average total per champion rises about 38%, from ~181,000 to 250,000.
+- **Nothing on the altar, nothing out of reach.** A champion that dies in a cramped spot (a corridor, a small room) can have fewer than 20 qualifying tiles; the piles then get bigger, and with no qualifying tile at all the gold lands on the body.
+- **Up to a few hundred standing-height checks and a few dozen short pathfinds at most per champion death.** They run in the death script after its critical section, so nothing waits on them.
 - **Not tested in a client here.**
 
 Areas (section 18):
