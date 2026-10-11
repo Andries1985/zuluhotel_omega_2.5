@@ -1,8 +1,8 @@
 # Developer Changelog - v1.1.4
-**Range:** `3631ada` (patchnotes commit of v1.1.3) -> `0780aaf`  
+**Range:** `3631ada` (patchnotes commit of v1.1.3) -> `2151172` + working tree  
 **Branch:** Patch-1.1.4  
 **Date:** 2026-10-07 to 2026-10-10 (areas package review 2026-10-08; Warrior for Hire follow-ups and the Powerplayer table 2026-10-09; `.phadmin` layout 2026-10-10)  
-**Commits in range:** 11 after `927916d` (the merge of Patch-1.1.3 into master, which carries no new content); see section 2.  
+**Commits in range:** 13 after `927916d` (the merge of Patch-1.1.3 into master, which carries no new content); see section 2.  
 **Files changed:** 35 modified code/config files, 2 renamed into a new package and rewritten, 20 new files, plus this release's own 3 `patchnotes/` files
 
 > Scope was computed against `3631ada`, not `master`. `master` only caught up with 1.1.3 via `927916d`; anything older than that is already shipped.
@@ -76,7 +76,9 @@ Section 16 is the class review. ZH3.0 found that the per-skill class lookup retu
 | `8ee5200` | More WFH healing fixes: every true-mage level of Heal / Greater Heal drunk at the player's 12d(power+1); bandages must still be carried when the heal lands | 9.6 |
 | `0a4a66b` | More WFH healing fixes: heal potions recognised from itemdesc, Light Heal included | 9.6 |
 | `0780aaf` | PH admin menu fixed (2026-10-10): `.phadmin` title and footer aligned to the frame | 4 |
-| *(this commit)* | `pkg/systems/accounts/config/uoclient.cfg` untracked (it was already in `.gitignore`); patch notes | - |
+| `103b8cc` | patch notes update: `pkg/systems/accounts/config/uoclient.cfg` untracked (it was already in `.gitignore`) | - |
+| `2151172` | patch notes | - |
+| *(next commit)* | Out-of-fight "stop" stops following again; released, given-up and guard-killed warriors' gear escrowed in `death.src`; patch notes | 9.6, 11 |
 
 ---
 
@@ -298,7 +300,7 @@ The first port stamped those three CProps from the base stats (HP = 2 x base Str
 
 **Files:** `pkg/opt/warriorforhire/warrior.src`, `pkg/opt/warriorforhire/include/wfhvitals.inc`, `pkg/opt/GMItems/staffofnagash_usescript.src`, `pkg/std/healing/npchealing.src`, `scripts/ai/highpriest.src`, `pkg/opt/warriorforhire/textcmd/test/maxwfh.src`
 
-- **"stop".** In the fight loop, "stop" restored the pre-fight `following` and never touched `guarding`, so a warrior guarding its master went straight back into the fight on the next `Guard()` sweep. Out of a fight, "<name> stop" / "all stop" cleared both `guarding` and `following`, so it stopped following. Both now call `StopGuarding()`: `guarding := 0`, `following := master`, and a new `passive` flag. `Follow()` used to set `guarding := master` whenever guarding was empty, which would have undone the stop at once. It now does so only while not passive. Any guard command sets `guarding` again, which clears `passive` on the next `Follow()`, and "kill"/"attack" clear it directly. A passive warrior still fights back when engaged or damaged (`ProcessMasterEvents()`), as a stopped tamed pet does in self-defence mode. The flag lives in the AI and is not saved, so a restart puts the warrior back to following and guarding its master.
+- **"stop".** In the fight loop, "stop" restored the pre-fight `following` and never touched `guarding`, so a warrior guarding its master went straight back into the fight on the next `Guard()` sweep. Out of a fight, "<name> stop" / "all stop" cleared both `guarding` and `following`, so it stayed put. Both now call `StopGuarding(keep_following)`: `guarding := 0` and a new `passive` flag, plus `following := master` from the fight loop (the warrior walks away with its master instead of standing among the monsters) or `following := 0` out of a fight (it stays put, as before and as on ZH3.0; decided 2026-10-10 after a first cut kept it following in both cases). "follow me" makes a stopped warrior follow again but leaves it passive. `Follow()` used to set `guarding := master` whenever guarding was empty, which would have undone the stop at once. It now does so only while not passive. Any guard command sets `guarding` again, which clears `passive` on the next `Follow()`, and "kill"/"attack" clear it directly. A passive warrior still fights back when engaged or damaged (`ProcessMasterEvents()`), as a stopped tamed pet does in self-defence mode. The flag lives in the AI and is not saved, so a restart puts the warrior back to following and guarding its master.
 - **Ranged weapons.** `HasBow()` was a hand-kept `case` of 20 objtypes with their ammo. The shard has 54 archery weapons, and the other 34 counted as melee, so the warrior closed to melee with them (reported with the Dreams Bow, `0x7cef`). It now reads the equipped weapon's entry from `:*:itemdesc` and treats it as ranged when `Projectile` is set and `ProjectileType` names the ammo, the same two fields `pkg/opt/shilhook/omegaattack.inc` spends ammunition by. The rest of the archery behaviour is unchanged: it keeps 4+ tiles away, swaps to melee when a monster reaches it, and goes back to the bow on "<name> rearm".
 - **Potions.** `DrinkHeal()` (below a third of max HP, at most every 20 s) knew only the plain Heal `0xDC02` and Greater Heal `0xDC03`, healed a fixed 2d12+3 / 5d12+3, and called `DestroyItem()` on the potion, so a stack of 20 went for one heal. Every true-mage level of a potion is its own objtype (`GetLeveledVariantsForBasic()` in `alchemyplus.src`: Heal `0xff19`-`0xff1b`, Greater Heal `0xff1c`-`0xff20`), so a true mage's potions were never drunk at all. A new `FindHealPotion()` picks the weakest unpoisoned heal in the pack, ranked by power. A heal potion is any `:alchemy:itemdesc` entry whose `Script` is `yellowpotion` (Light Heal `0xDC01`, Heal, Greater Heal and all their levels), read the same way `HasBow()` reads weapons, so no list to keep; with any Tamla (`0xff86` plain, `0xff87`-`0xff8b` the true mage's Level 1-5) after all of them. Heals use the player formula from `yellowpotion.src`, 12d(power+1) with power = `:alchemy:itemdesc` Strength + `ByTrueMage` (`HealPotionPower()`), plus `HealingIncrease`; a Level 5 Greater Heal is 12d12. The drink takes one with `SubtractAmount()`. A Tamla sets HP to max; one carrying `ByTrueMage` leaves a plain `0xff86` behind instead of an empty bottle, as `newpotions.src`'s `DoFullHeal()` does for players.
 - **Buffs baked in on revival.** `SyncStatusMirror()` wrote `GetStrength()`/`GetIntelligence()`/`GetDexterity()`, which include mods, into the `Str`/`Int`/`Dex` CProps that `death.src` copies onto the heart and the `WFHBackup`, and both revival paths feed them to `SetBaseStrength()` and friends. A warrior that died blessed came back with the Bless as permanent base stats and could be blessed again on top. The mirror now stores base stats (effective minus mod). The pre-1.1.4 AI had the same line (`SetObjProperty(me,"Str",GetStrength(me))`), so this is old; hearts and backups written before the fix keep their recorded values.
@@ -314,7 +316,7 @@ The first port stamped those three CProps from the base stats (HP = 2 x base Str
 
 The heart block now:
 
-- skips a corpse flagged `AbandonedByOwner` (no heart, no backup; its gear is still escrowed on decay, section 11);
+- skips a corpse flagged `AbandonedByOwner` (no heart, no backup; its gear is escrowed on the spot, section 11);
 - allows ten revivals instead of three (`resnum <= WFH_MAX_DEATHS`, was `< 4`), shared between the heart and the priest (section 10.5);
 - resolves the owner with `SYSFIND_SEARCH_OFFLINE_MOBILES` when they are not online and puts the heart in their bank box (`FindBankBox()` from `util/bank`) instead of creating a heart nobody receives;
 - copies the `Skills` mirror onto the heart;
@@ -358,6 +360,8 @@ Companion's Second Wind (10.3) is unchanged. It still resets a living warrior's 
 ## 11. Warrior for Hire - Gear Escrow
 
 **Files:** `pkg/opt/warriorforhire/include/wfhescrow.inc` (new, 343 lines), `pkg/opt/warriorforhire/wfhescrowsave.src` (new), `pkg/opt/warriorforhire/escrowsweep.src` (new), `pkg/opt/warriorforhire/start.src` (new), `scripts/control/corpsedecay.src`, `pkg/systems/playervendor/commands/player/escrow.src`
+
+**Released, given-up and guard-killed warriors (2026-10-10).** `AbandonWarrior()` sets `guardkill` before killing, and `death.src` destroys a `guardkill` corpse immediately, so those corpses never decayed and their gear was lost; the same held for a warrior the guards killed (`guardhitscript.src` also sets `guardkill`). The first follow-up only removed `corpsedecay.src`'s `AbandonedByOwner` skip, which that path never reached. `EscrowWarriorForHireGear()` moved from `corpsedecay.src` into `wfhcommon.inc` (with `use os` and its own `WFH_PAYOUT_PACK` constant, since several includes define `UOBJ_BACKPACK`), and `death.src` calls it in the `guardkill || summoned` branch before destroying the corpse. The function returns at once for anything that is not a `warriorforhire` with a `master`, so other guardkilled NPCs are unaffected. The gear goes to escrow at the moment of death rather than 30 minutes later, and nobody can loot the body in between.
 
 **Flow.** When `ProcessNpcCorpseDecaying()` reaches a `warriorforhire` corpse that has a `master` and still holds root items, it bundles those items into a backpack created at the corpse and starts `:warriorforhire:wfhescrowsave` with `{payout, ownerserial, corpse.serial}` before destroying the corpse. That script calls `WFH_SaveToEscrow()`, which creates a root backpack in the player-vendor "Merchant Escrow" storage area, moves the payout into it, registers the entry in a package-wide registry datafile (`:warriorforhire:wfhescrowregistry`: entry id -> owner serial, escrow name, created time) and indexes it in the owner's escrow datafile under vendor name "Warrior for Hire" and vendor key = corpse serial. `escrowsweep.src` (started by `start.src`) runs `WFH_SweepExpiredEscrow()` once a day, destroying everything older than 90 wall-clock days straight off the registry. The High Priest claims or disposes of entries (section 10.2). `.escrow` filters "Warrior for Hire" entries out of its listing (`LoadEscrowEntriesForSerial()`) and refuses to claim one (`ClaimEscrowEntry()` guard), so they only come back through the priest and his fee.
 
@@ -577,19 +581,19 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 | `pkg/opt/warriorforhire/warriorforhire.src` | 9 | Moved from `scripts/items/warriorforhire.src` (deed) |
 | `pkg/opt/warriorforhire/pkg.cfg` | 9 | New package |
 | `pkg/opt/warriorforhire/itemdesc.cfg` | 9, 10 | New - deed `0xa399` (moved here) and `0x7930` Companion's Second Wind |
-| `pkg/opt/warriorforhire/include/wfhcommon.inc` | 9, 10, 12 | New - `AbandonWarrior()`, `WfhTrackedSkills()`, `WFH_SKILL_CAP_TENTHS`, `WFH_MAX_DEATHS` (moved from `warrior.src`), `IsCurrentWfhHeart()` |
+| `pkg/opt/warriorforhire/include/wfhcommon.inc` | 9, 10, 12 | New - `AbandonWarrior()`, `WfhTrackedSkills()`, `WFH_SKILL_CAP_TENTHS`, `WFH_MAX_DEATHS` (moved from `warrior.src`), `IsCurrentWfhHeart()`, `EscrowWarriorForHireGear()` (moved from `corpsedecay.src`) |
 | `pkg/opt/warriorforhire/include/wfhvitals.inc` | 9 | New - `ResetWfhVitals()` / `ResetWfhVitalsAndFill()`: erase any `Custom*Level` CProps and `RecalcVitals()`, so vitals follow the buffed stats (9.4) |
 | `scripts/ai/warrior.src` | 9 | New - migration shim for NPCs saved with `script warrior` |
 | `config/npcdesc.cfg` | 9 | `warriorforhire` template script -> `:warriorforhire:warrior` |
 | `config/itemdesc.cfg` | 9 | Deed `0xa399` removed (pointer comment left) |
-| `scripts/misc/death.src` | 10, 17 | Heart: ten revivals shared with the priest, final death erases `WFHBackup`, offline owner -> bank box (non-sleeping lookup), `Skills` and `WFHDeathId` on heart and backup, `AbandonedByOwner` skip |
+| `scripts/misc/death.src` | 10, 17 | Heart: ten revivals shared with the priest, final death erases `WFHBackup`, offline owner -> bank box (non-sleeping lookup), `Skills` and `WFHDeathId` on heart and backup, `AbandonedByOwner` skip; a guardkilled warrior's gear escrowed before the corpse is destroyed |
 | `scripts/ai/highpriest.src` | 10 | "resurrect warrior" / "give up warrior" / "recover belongings"; heart revival restores skills and vitals, `resnum`-point stat loss floored at 10, sets `henchman`, erases `WFHBackup`, rejects stale hearts (`IsCurrentWfhHeart()`), no longer `return`s out of the AI loop; "resurrect warrior" refuses a memory past the limit; forgiveness price clamped to 1000-60000 via new `PriestForgivenessFine()` (also used by the "relationship" reply) |
 | `pkg/opt/warriorforhire/resetwfhdeaths.src` | 10 | New - Companion's Second Wind use script |
 | `pkg/opt/warriorforhire/include/wfhescrow.inc` | 11 | New - escrow filing, registry, sweep, claim, destroy |
 | `pkg/opt/warriorforhire/wfhescrowsave.src` | 11 | New - files a decayed corpse's bundled gear |
 | `pkg/opt/warriorforhire/escrowsweep.src` | 11 | New - daily 90-day expiry |
 | `pkg/opt/warriorforhire/start.src` | 11 | New - starts the escrow sweeper |
-| `scripts/control/corpsedecay.src` | 11 | Bundles a warrior corpse's gear and hands off to `wfhescrowsave`, released and given-up warriors included |
+| `scripts/control/corpsedecay.src` | 11 | Hands a decaying warrior corpse's gear to `EscrowWarriorForHireGear()` (now in `wfhcommon.inc`) |
 | `pkg/systems/playervendor/commands/player/escrow.src` | 11 | Hides and refuses "Warrior for Hire" entries |
 | `pkg/systems/combat/include/hitscriptinc.inc` | 12 | `WFHDamageMultiplier()` / `WFHModifyDamage()` at the top of `DealDamage()` |
 | `scripts/control/skilladvancerequip.src` | 12 | 85 cap on necro/elemental protections for warriors |
@@ -659,7 +663,7 @@ Warrior for Hire (sections 9-12):
 - **Damage multipliers default to 1.0.** No combat change until `.setwfhdamage` is used; the half-damage rule between a warrior and its own master is always on, in both directions.
 - **`.maxwfh` can push a warrior past its owner.** The explicit-stats form sets whatever staff type (up to 300), and the skills always go to 130.0 even if the owner is lower. Normal growth never lowers anything, so the warrior simply stops growing until its owner catches up; the High Priest's flat stat loss on a heart revival applies as usual. Every use is in the command log.
 - **The revival limit is real now (10.5).** An owner who has already used ten revivals will find the eleventh death final; under the code as first written the priest would have kept selling lives. Warriors that died before the deploy carry no `WFHDeathId`; their hearts still work until a new death writes a stamped backup.
-- **Released and given-up warriors' gear is now escrowed (section 11).** It used to be left on the corpse to decay. Owners can still loot the corpse first; whatever is left at decay goes to the priest for 90 days.
+- **Released, given-up and guard-killed warriors' gear is now escrowed (section 11).** It used to vanish with the corpse, which is destroyed on the spot. It now goes to the priest for 90 days at the moment of death; there is no corpse to loot first.
 - **Objtype `0x7930`, not ZH3.0's `0x4000BC`.** Any cross-shard tooling keyed on the Companion's Second Wind objtype must map it.
 - **Gump layouts were compiled, not opened** (status gump, `.setwfhdamage`): same caveat as `.phadmin`.
 - **High Priest forgiveness now costs classless players 1000 gold (10.4).** Previously a single coin repaired the relationship for anyone without a class, and the "relationship" command said as much. Players with a class level pay exactly what they did before.

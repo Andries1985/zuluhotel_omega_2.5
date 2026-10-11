@@ -44,7 +44,7 @@ var master;
 var chaseloop := 0;
 var following := 0;
 var guarding := 0;
-var passive := 0;	// after "stop": follows the master and guards no one until told to guard or attack
+var passive := 0;	// after "stop": guards no one until told to guard or attack
 var nextwatch := ReadGameClock();
 var laststrengthgain := ReadGameClock();
 var lastskillgain := ReadGameClock();
@@ -435,7 +435,7 @@ function fight(opponent)
 					say("Okay");
 					setwarmode(0);
 					opponent := 0;
-					StopGuarding();
+					StopGuarding(1);	// mid-fight: end the fight, keep following
 					chaseloop := 0;
 					return;
 				elseif (evtext[mename + " rearm"] )
@@ -713,14 +713,18 @@ function Follow()
 endfunction
 
 // "<name> stop" / "all stop": like a tamed pet's stop, the warrior drops whatever it was guarding
-// and attacks nothing on its own, but it keeps following its master (a pet just stays put). It
-// still fights back if attacked (ProcessMasterEvents), and "guard" or "kill" end the passive state.
-function StopGuarding()
+// and attacks nothing on its own. Out of a fight it also stops following and stays put, as a pet
+// does; in the middle of a fight it ends the fight and keeps following its master, so it walks
+// away with you instead of standing among the monsters. It still fights back if attacked
+// (ProcessMasterEvents), and "guard" or "kill" end the passive state.
+function StopGuarding(keep_following)
 
 	passive := 1;
 	guarding := 0;
-	if (master)
+	if (keep_following and master)
 		following := master;
+	else
+		following := 0;
 	endif
 
 endfunction
@@ -769,7 +773,7 @@ function ObeyCommand(ev)
 	elseif( evtext[mename + " stop"] or evtext["all stop"])
 		say("Okay");
 		SetWarMode(0);
-		StopGuarding();
+		StopGuarding(0);	// out of a fight: stay put
 	elseif( evtext[mename + " heal"] or evtext["heal me"])
 		if ( evtext["heal me"] )
 			TurnToward(you);

@@ -16,7 +16,7 @@ include ":shilhook:shilcombat";
 include ":champspawns:death";
 include ":lootlottery:lootlottery";
 include "util/bank";	// FindBankBox - Warrior for Hire heart to an offline owner
-include ":warriorforhire:include/wfhcommon";	// WFH_MAX_DEATHS
+include ":warriorforhire:include/wfhcommon";	// WFH_MAX_DEATHS, EscrowWarriorForHireGear
 
 program npcdeath(corpse)
 
@@ -211,6 +211,10 @@ program npcdeath(corpse)
 	endif
 	
 	if ( guardkill || summoned )
+		// A Warrior for Hire released or given up by its owner (AbandonWarrior) or killed by the
+		// guards is guardkilled, so its corpse never reaches corpsedecay.src's escrow: file the
+		// gear now, before the corpse goes.
+		EscrowWarriorForHireGear(corpse);
 		zapstorageareas(corpse);
 		return DestroyItem(corpse);
 	endif
