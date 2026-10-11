@@ -79,6 +79,14 @@ Welcome to **Patch 1.1.4**. Two headline items, plus a server-load fix to how ar
 
 ---
 
+## Champions - Gold You Can Actually Pick Up
+
+### Player Impact
+
+- **Gold now lands where you can reach it.** A champion's gold rain used to drop a pile on nearly every tile in one corner of the area around its body - a bug skipped everything to the north and west - and many of those piles landed inside walls, under objects, on roofs or across water where nobody could pick them up. Now the gold falls as about 50 bigger piles scattered over the whole area around the body, and only on spots you can walk to from the body and stand on. The total a champion drops is the same as before, around 180,000 gold. No gold lands on the altar itself.
+
+---
+
 ## High Priest - Making Amends Costs At Least 1,000 Gold
 
 ### Player Impact
@@ -147,6 +155,7 @@ Welcome to **Patch 1.1.4**. Two headline items, plus a server-load fix to how ar
 - Warrior for Hire: ten revivals in total, by heart or by the High Priest's memory (10,000 gold), then gone for good; the heart reaches your bank box when you're offline; the priest returns a dead or released warrior's gear (20,000 gold); a "status" window, skills that grow toward yours, hit points that rise with Strength buffs, "stop" that ends guarding, every bow recognised, no mounts, and a vanity item that resets the death count.
 - Calling the guards no longer also targets innocent pets scanned after a criminal's pet.
 - Area rule checks (guards, safe zones, no-PK, anti-magic, recall blocks) no longer re-read the config on every check; staff area edits apply reliably after a restart; guard calls record the right caller.
+- A champion's gold rain now falls as about 50 piles over the whole area around the body, only where you can walk to and pick it up; the total gold is the same.
 - Repairing your relationship with the High Priest now costs at least 1,000 gold; a classless player could previously do it for one coin.
 - Tracking opens one window with categories and creatures side by side and page buttons, instead of two successive menus. Player tracking is kept; the little icons are gone.
 - Staff: `.speedwalk` (Seer and above) sets a run-speed modifier that is kept across logins.

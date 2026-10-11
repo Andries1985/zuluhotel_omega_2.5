@@ -1,9 +1,9 @@
 # Developer Changelog - v1.1.4
 **Range:** `3631ada` (patchnotes commit of v1.1.3) -> `2151172` + working tree  
 **Branch:** Patch-1.1.4  
-**Date:** 2026-10-07 to 2026-10-10 (areas package review 2026-10-08; Warrior for Hire follow-ups and the Powerplayer table 2026-10-09; `.phadmin` layout 2026-10-10)  
+**Date:** 2026-10-07 to 2026-10-11 (areas package review 2026-10-08; Warrior for Hire follow-ups and the Powerplayer table 2026-10-09; `.phadmin` layout 2026-10-10; champion gold rain 2026-10-11)  
 **Commits in range:** 13 after `927916d` (the merge of Patch-1.1.3 into master, which carries no new content); see section 2.  
-**Files changed:** 35 modified code/config files, 2 renamed into a new package and rewritten, 20 new files, plus this release's own 3 `patchnotes/` files
+**Files changed:** 36 modified code/config files, 2 renamed into a new package and rewritten, 20 new files, plus this release's own 3 `patchnotes/` files
 
 > Scope was computed against `3631ada`, not `master`. `master` only caught up with 1.1.3 via `927916d`; anything older than that is already shipped.
 
@@ -29,8 +29,9 @@
 16. [Classes - Per-Skill Bonus Lookup, Powerplayer Curve, Stat Affinity, Primary Class, Equipment Sweep](#16-classes---per-skill-bonus-lookup-powerplayer-curve-stat-affinity-primary-class-equipment-sweep)
 17. [Code Review Follow-ups](#17-code-review-follow-ups)
 18. [Areas Package - Code Review, Cache Fixes and Hot-Path Work](#18-areas-package---code-review-cache-fixes-and-hot-path-work)
-19. [Exhaustive File-by-File Change List](#19-exhaustive-file-by-file-change-list)
-20. [Risk and Regression Notes](#20-risk-and-regression-notes)
+19. [Champion Gold Rain - Fewer Piles, Only Where They Can Be Picked Up](#19-champion-gold-rain---fewer-piles-only-where-they-can-be-picked-up)
+20. [Exhaustive File-by-File Change List](#20-exhaustive-file-by-file-change-list)
+21. [Risk and Regression Notes](#21-risk-and-regression-notes)
 
 ---
 
@@ -78,7 +79,7 @@ Section 16 is the class review. ZH3.0 found that the per-skill class lookup retu
 | `0780aaf` | PH admin menu fixed (2026-10-10): `.phadmin` title and footer aligned to the frame | 4 |
 | `103b8cc` | patch notes update: `pkg/systems/accounts/config/uoclient.cfg` untracked (it was already in `.gitignore`) | - |
 | `2151172` | patch notes | - |
-| *(next commit)* | Out-of-fight "stop" stops following again; released, given-up and guard-killed warriors' gear escrowed in `death.src`; patch notes | 9.6, 11 |
+| *(next commit)* | Out-of-fight "stop" stops following again; released, given-up and guard-killed warriors' gear escrowed in `death.src`; champion gold rain as 50 piles on reachable tiles; patch notes | 9.6, 11, 19 |
 
 ---
 
@@ -564,7 +565,28 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 
 ---
 
-## 19. Exhaustive File-by-File Change List
+## 19. Champion Gold Rain - Fewer Piles, Only Where They Can Be Picked Up
+
+**File:** `pkg/opt/champspawns/include/rewards.inc`
+
+**The bug (ZH3.0 found and fixed the same code on 2026-09-23).** `RainDownMoney()` walked a 21 x 21 square around a champion's corpse (offsets -10 to +10) and dropped a 500-2499 pile on each tile that passed `GetMapInfo( i, j )`. That call got the offsets themselves as map coordinates, so any negative offset was off the map and the tile was skipped: only the 121 tiles with both offsets >= 0, the south-east quarter, ever got gold, about 181,000 a champion on average. The tiles that did get gold were not checked for reachability: a tile failing line of sight dropped its pile on the corpse, but a pile could still land inside a wall, under a static, on a roof or across water.
+
+**First port (2026-10-11).** ZH3.0's fix: real coordinates, all 441 tiles, piles shrunk to 137-685 to hold the total. Replaced the same day, because 441 small piles still included the unreachable tiles.
+
+**Now.** The rain drops `GOLD_RAIN_PILES` (50) piles on random qualifying tiles within `GOLD_RAIN_RANGE` (10) of the body. `FindGoldRainSpots()` shuffles the 441 offsets (Fisher-Yates) and keeps tiles until it has 50; `GoldRainSpotZ()` accepts a tile only when:
+
+- it is on the map and has no altar piece on it (hue 1157, `pkg/opt/champspawns/scripts/oncreate.src`; the old code dropped gold on top of the altar at corpse z + 6 instead);
+- `GetStandingHeight()` finds a floor there at the body's z, or failing that from 10 below (a slope), within 10 of the body's z, and not on a multi (no house or boat interiors);
+- `CheckLosBetween()` sees it from the body; and
+- `FindPath()` finds a walking path to it from the body, ignoring mobiles and doors (`FP_IGNORE_MOBILES + FP_IGNORE_DOORS`; this core's eighth parameter is flags, and 0 would have let players crowding the body block it).
+
+The cheap tests run first and the search stops at 50, so pathfinding runs only on candidates that already passed. Each pile is `GOLD_RAIN_TOTAL / spots` (3,600 for 50) +/- 50%, so the average total stays at `GOLD_RAIN_TOTAL` (180,000), and if fewer than 50 tiles qualify the piles grow to match. With none at all, everything lands on the body's tile. The piles fall 100 ms apart, about 5 seconds for 50. Decided 2026-10-11: same total, fewer piles, only on reachable tiles. All three numbers are constants at the top of the include.
+
+Not taken from ZH3.0's version: the realm arguments (single realm here; calls pass `corpse.realm` where the core takes one) and its altar hue 2732. The only includer is `scripts/misc/death.src` (via `include/death.inc`), which compiles clean.
+
+---
+
+## 20. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -625,6 +647,7 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 | `pkg/opt/areas/EnterAreaDelay.src` | 18 | One `ResolveAreaMatchAtLocation()` per region entry; forbidden check via `IsInForbiddenAreaForMatch()` |
 | `pkg/opt/areas/textcmd/admin/areas.src` | 18 | `loaded_masks[]`; Save writes only changed areas through `SetPolicyMasks()`; one summary log line; open failure reported to staff |
 | `scripts/include/areas.inc` | 18 | New `IsInForbiddenAreaForMatch(who, match)`; `IsInForbiddenArea()` delegates to it |
+| `pkg/opt/champspawns/include/rewards.inc` | 19 | Gold rain rewritten: 50 piles on random reachable tiles (`FindGoldRainSpots()`, `GoldRainSpotZ()`), total held at 180,000; the `GetMapInfo` offset bug is gone with the old loop |
 | `patchnotes/developer-changelog-v1.1.4.md` | - | This file |
 | `patchnotes/patch-v1.1.4.md` | - | Player-facing notes |
 | `patchnotes/launchernotes.md` | - | Replaced with this release's player-facing content |
@@ -635,7 +658,7 @@ Every changed or new script compiles with `ecompile -w` at 0 errors, 0 warnings:
 
 ---
 
-## 20. Risk and Regression Notes
+## 21. Risk and Regression Notes
 
 - **`uoclient.cfg` leaves the repository.** `pkg/systems/accounts/config/uoclient.cfg` holds the client listener port, 2598 on the test server and 2593 on live, so each server keeps its own copy. It has been in `.gitignore` all along but was tracked from the initial commit, so `c3ffa40` carried the test machine's port change (2598 -> 2593) like any other edit. It is now untracked. **Pulling this commit onto a server deletes that server's copy**, as git removes a file the incoming commit stops tracking: back the file up before pulling and put it back afterwards, then check its `Port` before starting the server.
 - **Deploy with a server restart, not a hot reload (section 3).** The old scheduler is a long-lived process running the old `.ecl`. If the new files are compiled onto a live server, the old loop keeps running with its old logic and never writes `PH_SchedulerPID`; the first `.phadmin` would then find no scheduler, start a *second* one from the new code, and the two could each start powerhours. Either restart the server or kill the old `powerhour` process before using `.phadmin`.
@@ -699,6 +722,13 @@ Classes (section 16):
 - **Mid-session illegal gear is caught within ten minutes, not instantly.** `pkg/opt/summoning/checkclasse.src`, started at boot, walks every online character every 600 seconds and reruns `AssignClasse()` for anyone holding a class, which sweeps. Before this patch the sweep also fired on the character's next hit or spell; now the ten-minute loop, login and the class commands are the only sweeps. (The hourly capper only enforces stat and skill caps; it never swept equipment.)
 - **`IsFromThatClasse()` is a pure computation now.** Anything that relied on calling `IsWarrior()` and friends to strip gear as a side effect no longer gets that; `AssignClasse()` is the only sweep.
 - **Not tested in a client here.** Compiles clean across all 138 includers; `.classbonusinfo` exists so the per-skill result can be checked on live characters before and after.
+
+Champions (section 19):
+
+- **Fewer, bigger piles in new places.** About 50 piles of 1,800-5,400 instead of about 121 of 500-2,499, scattered over the whole area rather than the south-east corner. The average total per champion is unchanged.
+- **Nothing on the altar, nothing out of reach.** A champion that dies in a cramped spot (a corridor, a small room) can have fewer than 50 qualifying tiles; the piles then get bigger, and with no qualifying tile at all the gold lands on the body.
+- **Up to a few hundred standing-height checks and at most a few dozen short pathfinds per champion death.** They run in the death script after its critical section, so nothing waits on them.
+- **Not tested in a client here.**
 
 Areas (section 18):
 
