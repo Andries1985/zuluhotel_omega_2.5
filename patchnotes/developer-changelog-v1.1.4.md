@@ -1,8 +1,8 @@
 # Developer Changelog - v1.1.4
-**Range:** `3631ada` (patchnotes commit of v1.1.3) -> working tree  
+**Range:** `3631ada` (patchnotes commit of v1.1.3) -> `0780aaf`  
 **Branch:** Patch-1.1.4  
-**Date:** 2026-10-07 (areas package review added 2026-10-08, `.maxwfh`, staff status and the revival limit added 2026-10-09)  
-**Commits in range:** 0 non-boundary commits. `927916d` (merge of Patch-1.1.3 into master) carries no new content - `git diff 3631ada..HEAD` is empty. The whole release is the uncommitted working tree.  
+**Date:** 2026-10-07 to 2026-10-10 (areas package review 2026-10-08; Warrior for Hire follow-ups and the Powerplayer table 2026-10-09; `.phadmin` layout 2026-10-10)  
+**Commits in range:** 11 after `927916d` (the merge of Patch-1.1.3 into master, which carries no new content); see section 2.  
 **Files changed:** 35 modified code/config files, 2 renamed into a new package and rewritten, 20 new files, plus this release's own 3 `patchnotes/` files
 
 > Scope was computed against `3631ada`, not `master`. `master` only caught up with 1.1.3 via `927916d`; anything older than that is already shipped.
@@ -65,24 +65,18 @@ Section 16 is the class review. ZH3.0 found that the per-skill class lookup retu
 | Commit | Subject | Sections |
 |---|---|---|
 | `927916d` | Merge pull request #332 from Andries1985/Patch-1.1.3 | - (no new content) |
-| *(uncommitted)* | Powerhour shared include + scheduler rewrite | 3 |
-| *(uncommitted)* | `.phadmin` admin gump, `cmds.cfg` Admin entry, synopsis regeneration | 4 |
-| *(uncommitted)* | `.setph` / `.ph` fixes | 5 |
-| *(uncommitted)* | `.resetph` directory registered under `CmdLevel Test` | 6 |
-| *(uncommitted)* | `eonprism.src` onto shared helpers | 7 |
-| *(uncommitted)* | Warrior for Hire package move, AI port, migration shim | 9 |
-| *(uncommitted)* | Heart/backup rework, High Priest revival and escrow services, Companion's Second Wind | 10 |
-| *(uncommitted)* | Gear escrow include, sweeper, corpse-decay hand-off, `.escrow` filtering | 11 |
-| *(uncommitted)* | Damage moderation, protection cap, `callguards` reset, `.setwfhdamage`, synopsis regeneration | 12 |
-| *(uncommitted)* | `.maxwfh`, tracked-skill list and skill cap moved into `wfhcommon.inc`, synopsis regeneration | 12 |
-| *(uncommitted)* | Staff `<name> status`, non-blocking status gump | 9 |
-| *(uncommitted)* | One ten-revival limit for heart and priest, stale-heart stamp, stat-loss fix, priest `return` fix, escrow for released warriors | 10, 11 |
-| *(uncommitted)* | "stop" ends guarding, `HasBow()` from itemdesc, vitals follow buffed stats, Staff of Nagash buffs warriors | 9 |
-| *(uncommitted)* | Powerplayer gain pulled back to 1.1-1.5 (`PowerplayerGainMultiplier()`) | 16 |
-| *(uncommitted)* | Tracking gump menu (ZH3.0 port), player tracking kept, `npcdesc` unload removed | 13 |
-| *(uncommitted)* | `.speedwalk` (Seer), packet include, login restore, synopsis regeneration | 14 |
-| *(uncommitted)* | House travel by footprint: `housetravel.inc`, Recall/Gate/Mark/Teleport/Earth Portal, runebook | 15 |
-| *(uncommitted)* | Class lookup, Powerplayer curve, stat affinity, primary class, sweep removal, `.classbonusinfo` | 16 |
+| `e9bb06e` | Patch 1.1.4 fixes (2026-10-07): powerhour include and scheduler rewrite, `.phadmin`, `.setph`/`.ph` fixes, `.resetph` registration, Eon-Prism onto the helpers; Warrior for Hire package move, AI port, migration shim, heart/backup rework, High Priest revival and escrow services, Companion's Second Wind, gear escrow, damage moderation, protection cap, `.setwfhdamage`; tracking gump; `.speedwalk`; house travel by footprint; class lookup, Powerplayer curve, stat affinity, primary class, sweep removal, `.classbonusinfo`; code review follow-ups | 3-17 |
+| `c3ffa40` | Patch 1.1.4 (2026-10-08): areas package cache fixes, boot rebuild, hot path, `.areas` Save, `KillerAcct` | 18 |
+| `d1c317f` | WFH bug fix (2026-10-09): `.maxwfh`, shared tracked-skill list, staff `<name> status` and non-blocking status gump, one ten-revival limit for heart and priest, stale-heart stamp, stat-loss fix, priest `return` fix, escrow for released warriors | 9, 10, 11, 12 |
+| `1a628a8` | More WFH patches: "stop" ends guarding, `HasBow()` from itemdesc, vitals follow buffed stats, Staff of Nagash buffs warriors | 9.4, 9.6 |
+| `c92a74d` | Powerplayer points fix: gain pulled back to 1.1-1.5 (`PowerplayerGainMultiplier()`) | 16.2 |
+| `22a2b85` | WFH damage taken from master is halved | 12 |
+| `44a36b3` | More WFH healing fixes: bandage heal keyed on Healing instead of Strength; potions one at a time, Tamlas | 9.6 |
+| `7dca056` | Warrior Bless dead fix: stat mirror stores base stats | 9.6 |
+| `8ee5200` | More WFH healing fixes: every true-mage level of Heal / Greater Heal drunk at the player's 12d(power+1); bandages must still be carried when the heal lands | 9.6 |
+| `0a4a66b` | More WFH healing fixes: heal potions recognised from itemdesc, Light Heal included | 9.6 |
+| `0780aaf` | PH admin menu fixed (2026-10-10): `.phadmin` title and footer aligned to the frame | 4 |
+| *(this commit)* | `pkg/systems/accounts/config/uoclient.cfg` untracked (it was already in `.gitignore`); patch notes | - |
 
 ---
 
@@ -182,6 +176,7 @@ The gump:
 - **Active powerhour time.** Shown only while one is active. A 4-character text entry (id 21) prefilled with the minutes remaining (rounded up), an Apply button (id 2) and an End now button (id 3). `HandleApplyTime()` accepts whole numbers 1-1440 (`PHADMIN_MAX_MINUTES`), sets `PH_EndTime := systime + minutes*60`, nudges, logs, and broadcasts "The <Type> powerhour will now end in <duration>!" so players are not surprised by the `.ph` countdown jumping. `HandleEndNow()` sets `PH_EndTime := systime` and nudges; the scheduler then ends it through the normal path with the normal "has ended" broadcast, which is why the command does not clear the flags itself.
 - **Weekly schedule (GMT).** Three text entries (ids 22/23/24; weekday 0-6 with 0 = Sunday, hour 0-23, minute 0-59) prefilled from `PH_GetSchedule()`, and a Save button (id 4). `HandleSaveSchedule()` requires all three to be whole numbers (`IsWholeNumber()` - tolerates surrounding whitespace, rejects signs, blanks and multiple words), delegates range checking to `PH_SetSchedule()`, nudges the scheduler (a new moment inside the next 2 minutes fires right away), logs old -> new, and reports the new schedule and countdown.
 - **Footer.** Refresh (id 5) redraws; Close (id 6) exits.
+- **Layout (2026-10-10, after a first look in-game).** The title was drawn at y 12, inside the 9250 background's stone frame, and the footer buttons sat 8 pixels from the bottom edge, overlapping the frame. `FRAME_BORDER` (16), `TEXT_X` (25) and `BTN_WIDTH` (30) now place the title and the footer centred in the dark bands above the first panel and below the last one, with Refresh on the panel-text column and Close flush with the panels' right edge.
 
 Text-entry values come back from `SendDialogGump()` as `"<id>: <text>"` and are read through `GFExtractData()`; a missing entry extracts to `error`, which `IsWholeNumber()` rejects, so an action button can never read a stale or absent field as 0.
 
@@ -638,12 +633,13 @@ Every changed or new script compiles with `ecompile -w` at 0 errors, 0 warnings:
 
 ## 20. Risk and Regression Notes
 
+- **`uoclient.cfg` leaves the repository.** `pkg/systems/accounts/config/uoclient.cfg` holds the client listener port, 2598 on the test server and 2593 on live, so each server keeps its own copy. It has been in `.gitignore` all along but was tracked from the initial commit, so `c3ffa40` carried the test machine's port change (2598 -> 2593) like any other edit. It is now untracked. **Pulling this commit onto a server deletes that server's copy**, as git removes a file the incoming commit stops tracking: back the file up before pulling and put it back afterwards, then check its `Port` before starting the server.
 - **Deploy with a server restart, not a hot reload (section 3).** The old scheduler is a long-lived process running the old `.ecl`. If the new files are compiled onto a live server, the old loop keeps running with its old logic and never writes `PH_SchedulerPID`; the first `.phadmin` would then find no scheduler, start a *second* one from the new code, and the two could each start powerhours. Either restart the server or kill the old `powerhour` process before using `.phadmin`.
 - **A powerhour active at upgrade time gets a full extra hour (section 3.5).** `RecoverAfterRestart()` cannot know when a flag with no `PH_EndTime` was set, so it grants an hour from boot. That is one generous hour, once, and also what finally ends any flag that is currently stuck from the old bug.
 - **Bonus odds now actually depend on the type (section 3.2).** Half-resources weeks move from an effective 23% to 50%; hunting and skill weeks from 23% to 10%. The long-run average is unchanged. Admin-started and bonus powerhours never roll.
 - **The schedule is now data.** Once an admin saves a schedule, `PH_StartTime` is set and the compiled default is no longer consulted. There is no "reset to default" button; typing `0` / `19` / `0` restores the original Sunday 19:00 GMT. Changing the schedule to a moment that has just passed means the next powerhour is a week away, which the gump's countdown shows immediately.
 - **`.phadmin`'s Apply broadcasts (section 4).** Changing the remaining time announces the new end to the whole shard. End now goes through the normal "has ended" broadcast. Starting one always broadcasts the 2-minute warning; there is no silent or instant start.
-- **Gump layout was compiled, not eyeballed.** No client was run for this change. Coordinates follow the areas editor's conventions and the panels are sized to their content, but hues and positions may need a nudge after a first look in-game. Text entries use hue 900 on the 9200 panels.
+- **`.phadmin` was checked in a client once.** The first look found the title and footer misaligned with the frame; they were moved (section 4). The new positions assume a 16-pixel frame and have not been seen in a client yet; `FRAME_BORDER` is the one value to adjust. Text entries use hue 900 on the 9200 panels.
 - **Message changes players may notice (section 5).** `.setph`'s "Half-Resources"/"Double-Skillgain" became "Half-resources"/"Double skillgain"; `.ph` gained two lines and drops zero components from its countdown; the Eon-Prism and `.ph` now agree exactly on eligibility, including the Sunday case.
 - **`.setph` no longer uses `#SettingPH` as a lock for the whole hour.** It is set only while the gump is open. The active-powerhour check at the top of the command is what prevents a second start during the hour, as it always effectively was; `logon.src`/`reconnect.src` erasing the property on login remains harmless.
 - **Cross-package include (section 7).** `artifactsystem` now compiles against `:powerhour:include/powerhour`. Disabling the `powerhour` package would break `eonprism.src`'s compile; neither package has ever been disabled.
