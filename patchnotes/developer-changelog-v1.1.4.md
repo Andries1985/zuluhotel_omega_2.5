@@ -1,9 +1,9 @@
 # Developer Changelog - v1.1.4
-**Range:** `3631ada` (patchnotes commit of v1.1.3) -> working tree  
+**Range:** `3631ada` (patchnotes commit of v1.1.3) -> `2151172` + working tree  
 **Branch:** Patch-1.1.4  
-**Date:** 2026-10-07 (areas package review added 2026-10-08, `.maxwfh`, staff status and the revival limit added 2026-10-09)  
-**Commits in range:** 0 non-boundary commits. `927916d` (merge of Patch-1.1.3 into master) carries no new content - `git diff 3631ada..HEAD` is empty. The whole release is the uncommitted working tree.  
-**Files changed:** 35 modified code/config files, 2 renamed into a new package and rewritten, 20 new files, plus this release's own 3 `patchnotes/` files
+**Date:** 2026-10-07 to 2026-10-11 (areas package review 2026-10-08; Warrior for Hire follow-ups and the Powerplayer table 2026-10-09; `.phadmin` layout 2026-10-10; champion gold rain 2026-10-11)  
+**Commits in range:** 13 after `927916d` (the merge of Patch-1.1.3 into master, which carries no new content); see section 2.  
+**Files changed:** 36 modified code/config files, 2 renamed into a new package and rewritten, 20 new files, plus this release's own 3 `patchnotes/` files
 
 > Scope was computed against `3631ada`, not `master`. `master` only caught up with 1.1.3 via `927916d`; anything older than that is already shipped.
 
@@ -29,8 +29,9 @@
 16. [Classes - Per-Skill Bonus Lookup, Powerplayer Curve, Stat Affinity, Primary Class, Equipment Sweep](#16-classes---per-skill-bonus-lookup-powerplayer-curve-stat-affinity-primary-class-equipment-sweep)
 17. [Code Review Follow-ups](#17-code-review-follow-ups)
 18. [Areas Package - Code Review, Cache Fixes and Hot-Path Work](#18-areas-package---code-review-cache-fixes-and-hot-path-work)
-19. [Exhaustive File-by-File Change List](#19-exhaustive-file-by-file-change-list)
-20. [Risk and Regression Notes](#20-risk-and-regression-notes)
+19. [Champion Gold Rain - Fewer Piles, Only Where They Can Be Picked Up](#19-champion-gold-rain---fewer-piles-only-where-they-can-be-picked-up)
+20. [Exhaustive File-by-File Change List](#20-exhaustive-file-by-file-change-list)
+21. [Risk and Regression Notes](#21-risk-and-regression-notes)
 
 ---
 
@@ -65,24 +66,20 @@ Section 16 is the class review. ZH3.0 found that the per-skill class lookup retu
 | Commit | Subject | Sections |
 |---|---|---|
 | `927916d` | Merge pull request #332 from Andries1985/Patch-1.1.3 | - (no new content) |
-| *(uncommitted)* | Powerhour shared include + scheduler rewrite | 3 |
-| *(uncommitted)* | `.phadmin` admin gump, `cmds.cfg` Admin entry, synopsis regeneration | 4 |
-| *(uncommitted)* | `.setph` / `.ph` fixes | 5 |
-| *(uncommitted)* | `.resetph` directory registered under `CmdLevel Test` | 6 |
-| *(uncommitted)* | `eonprism.src` onto shared helpers | 7 |
-| *(uncommitted)* | Warrior for Hire package move, AI port, migration shim | 9 |
-| *(uncommitted)* | Heart/backup rework, High Priest revival and escrow services, Companion's Second Wind | 10 |
-| *(uncommitted)* | Gear escrow include, sweeper, corpse-decay hand-off, `.escrow` filtering | 11 |
-| *(uncommitted)* | Damage moderation, protection cap, `callguards` reset, `.setwfhdamage`, synopsis regeneration | 12 |
-| *(uncommitted)* | `.maxwfh`, tracked-skill list and skill cap moved into `wfhcommon.inc`, synopsis regeneration | 12 |
-| *(uncommitted)* | Staff `<name> status`, non-blocking status gump | 9 |
-| *(uncommitted)* | One ten-revival limit for heart and priest, stale-heart stamp, stat-loss fix, priest `return` fix, escrow for released warriors | 10, 11 |
-| *(uncommitted)* | "stop" ends guarding, `HasBow()` from itemdesc, vitals follow buffed stats, Staff of Nagash buffs warriors | 9 |
-| *(uncommitted)* | Powerplayer gain pulled back to 1.1-1.5 (`PowerplayerGainMultiplier()`) | 16 |
-| *(uncommitted)* | Tracking gump menu (ZH3.0 port), player tracking kept, `npcdesc` unload removed | 13 |
-| *(uncommitted)* | `.speedwalk` (Seer), packet include, login restore, synopsis regeneration | 14 |
-| *(uncommitted)* | House travel by footprint: `housetravel.inc`, Recall/Gate/Mark/Teleport/Earth Portal, runebook | 15 |
-| *(uncommitted)* | Class lookup, Powerplayer curve, stat affinity, primary class, sweep removal, `.classbonusinfo` | 16 |
+| `e9bb06e` | Patch 1.1.4 fixes (2026-10-07): powerhour include and scheduler rewrite, `.phadmin`, `.setph`/`.ph` fixes, `.resetph` registration, Eon-Prism onto the helpers; Warrior for Hire package move, AI port, migration shim, heart/backup rework, High Priest revival and escrow services, Companion's Second Wind, gear escrow, damage moderation, protection cap, `.setwfhdamage`; tracking gump; `.speedwalk`; house travel by footprint; class lookup, Powerplayer curve, stat affinity, primary class, sweep removal, `.classbonusinfo`; code review follow-ups | 3-17 |
+| `c3ffa40` | Patch 1.1.4 (2026-10-08): areas package cache fixes, boot rebuild, hot path, `.areas` Save, `KillerAcct` | 18 |
+| `d1c317f` | WFH bug fix (2026-10-09): `.maxwfh`, shared tracked-skill list, staff `<name> status` and non-blocking status gump, one ten-revival limit for heart and priest, stale-heart stamp, stat-loss fix, priest `return` fix, escrow for released warriors | 9, 10, 11, 12 |
+| `1a628a8` | More WFH patches: "stop" ends guarding, `HasBow()` from itemdesc, vitals follow buffed stats, Staff of Nagash buffs warriors | 9.4, 9.6 |
+| `c92a74d` | Powerplayer points fix: gain pulled back to 1.1-1.5 (`PowerplayerGainMultiplier()`) | 16.2 |
+| `22a2b85` | WFH damage taken from master is halved | 12 |
+| `44a36b3` | More WFH healing fixes: bandage heal keyed on Healing instead of Strength; potions one at a time, Tamlas | 9.6 |
+| `7dca056` | Warrior Bless dead fix: stat mirror stores base stats | 9.6 |
+| `8ee5200` | More WFH healing fixes: every true-mage level of Heal / Greater Heal drunk at the player's 12d(power+1); bandages must still be carried when the heal lands | 9.6 |
+| `0a4a66b` | More WFH healing fixes: heal potions recognised from itemdesc, Light Heal included | 9.6 |
+| `0780aaf` | PH admin menu fixed (2026-10-10): `.phadmin` title and footer aligned to the frame | 4 |
+| `103b8cc` | patch notes update: `pkg/systems/accounts/config/uoclient.cfg` untracked (it was already in `.gitignore`) | - |
+| `2151172` | patch notes | - |
+| *(next commit)* | Out-of-fight "stop" stops following again; released, given-up and guard-killed warriors' gear escrowed in `death.src`; champion gold rain as 20 piles on reachable tiles, 250,000 total; patch notes | 9.6, 11, 19 |
 
 ---
 
@@ -182,6 +179,7 @@ The gump:
 - **Active powerhour time.** Shown only while one is active. A 4-character text entry (id 21) prefilled with the minutes remaining (rounded up), an Apply button (id 2) and an End now button (id 3). `HandleApplyTime()` accepts whole numbers 1-1440 (`PHADMIN_MAX_MINUTES`), sets `PH_EndTime := systime + minutes*60`, nudges, logs, and broadcasts "The <Type> powerhour will now end in <duration>!" so players are not surprised by the `.ph` countdown jumping. `HandleEndNow()` sets `PH_EndTime := systime` and nudges; the scheduler then ends it through the normal path with the normal "has ended" broadcast, which is why the command does not clear the flags itself.
 - **Weekly schedule (GMT).** Three text entries (ids 22/23/24; weekday 0-6 with 0 = Sunday, hour 0-23, minute 0-59) prefilled from `PH_GetSchedule()`, and a Save button (id 4). `HandleSaveSchedule()` requires all three to be whole numbers (`IsWholeNumber()` - tolerates surrounding whitespace, rejects signs, blanks and multiple words), delegates range checking to `PH_SetSchedule()`, nudges the scheduler (a new moment inside the next 2 minutes fires right away), logs old -> new, and reports the new schedule and countdown.
 - **Footer.** Refresh (id 5) redraws; Close (id 6) exits.
+- **Layout (2026-10-10, after a first look in-game).** The title was drawn at y 12, inside the 9250 background's stone frame, and the footer buttons sat 8 pixels from the bottom edge, overlapping the frame. `FRAME_BORDER` (16), `TEXT_X` (25) and `BTN_WIDTH` (30) now place the title and the footer centred in the dark bands above the first panel and below the last one, with Refresh on the panel-text column and Close flush with the panels' right edge.
 
 Text-entry values come back from `SendDialogGump()` as `"<id>: <text>"` and are read through `GFExtractData()`; a missing entry extracts to `error`, which `IsWholeNumber()` rejects, so an action button can never read a stale or absent field as 0.
 
@@ -303,7 +301,7 @@ The first port stamped those three CProps from the base stats (HP = 2 x base Str
 
 **Files:** `pkg/opt/warriorforhire/warrior.src`, `pkg/opt/warriorforhire/include/wfhvitals.inc`, `pkg/opt/GMItems/staffofnagash_usescript.src`, `pkg/std/healing/npchealing.src`, `scripts/ai/highpriest.src`, `pkg/opt/warriorforhire/textcmd/test/maxwfh.src`
 
-- **"stop".** In the fight loop, "stop" restored the pre-fight `following` and never touched `guarding`, so a warrior guarding its master went straight back into the fight on the next `Guard()` sweep. Out of a fight, "<name> stop" / "all stop" cleared both `guarding` and `following`, so it stopped following. Both now call `StopGuarding()`: `guarding := 0`, `following := master`, and a new `passive` flag. `Follow()` used to set `guarding := master` whenever guarding was empty, which would have undone the stop at once. It now does so only while not passive. Any guard command sets `guarding` again, which clears `passive` on the next `Follow()`, and "kill"/"attack" clear it directly. A passive warrior still fights back when engaged or damaged (`ProcessMasterEvents()`), as a stopped tamed pet does in self-defence mode. The flag lives in the AI and is not saved, so a restart puts the warrior back to following and guarding its master.
+- **"stop".** In the fight loop, "stop" restored the pre-fight `following` and never touched `guarding`, so a warrior guarding its master went straight back into the fight on the next `Guard()` sweep. Out of a fight, "<name> stop" / "all stop" cleared both `guarding` and `following`, so it stayed put. Both now call `StopGuarding(keep_following)`: `guarding := 0` and a new `passive` flag, plus `following := master` from the fight loop (the warrior walks away with its master instead of standing among the monsters) or `following := 0` out of a fight (it stays put, as before and as on ZH3.0; decided 2026-10-10 after a first cut kept it following in both cases). "follow me" makes a stopped warrior follow again but leaves it passive. `Follow()` used to set `guarding := master` whenever guarding was empty, which would have undone the stop at once. It now does so only while not passive. Any guard command sets `guarding` again, which clears `passive` on the next `Follow()`, and "kill"/"attack" clear it directly. A passive warrior still fights back when engaged or damaged (`ProcessMasterEvents()`), as a stopped tamed pet does in self-defence mode. The flag lives in the AI and is not saved, so a restart puts the warrior back to following and guarding its master.
 - **Ranged weapons.** `HasBow()` was a hand-kept `case` of 20 objtypes with their ammo. The shard has 54 archery weapons, and the other 34 counted as melee, so the warrior closed to melee with them (reported with the Dreams Bow, `0x7cef`). It now reads the equipped weapon's entry from `:*:itemdesc` and treats it as ranged when `Projectile` is set and `ProjectileType` names the ammo, the same two fields `pkg/opt/shilhook/omegaattack.inc` spends ammunition by. The rest of the archery behaviour is unchanged: it keeps 4+ tiles away, swaps to melee when a monster reaches it, and goes back to the bow on "<name> rearm".
 - **Potions.** `DrinkHeal()` (below a third of max HP, at most every 20 s) knew only the plain Heal `0xDC02` and Greater Heal `0xDC03`, healed a fixed 2d12+3 / 5d12+3, and called `DestroyItem()` on the potion, so a stack of 20 went for one heal. Every true-mage level of a potion is its own objtype (`GetLeveledVariantsForBasic()` in `alchemyplus.src`: Heal `0xff19`-`0xff1b`, Greater Heal `0xff1c`-`0xff20`), so a true mage's potions were never drunk at all. A new `FindHealPotion()` picks the weakest unpoisoned heal in the pack, ranked by power. A heal potion is any `:alchemy:itemdesc` entry whose `Script` is `yellowpotion` (Light Heal `0xDC01`, Heal, Greater Heal and all their levels), read the same way `HasBow()` reads weapons, so no list to keep; with any Tamla (`0xff86` plain, `0xff87`-`0xff8b` the true mage's Level 1-5) after all of them. Heals use the player formula from `yellowpotion.src`, 12d(power+1) with power = `:alchemy:itemdesc` Strength + `ByTrueMage` (`HealPotionPower()`), plus `HealingIncrease`; a Level 5 Greater Heal is 12d12. The drink takes one with `SubtractAmount()`. A Tamla sets HP to max; one carrying `ByTrueMage` leaves a plain `0xff86` behind instead of an empty bottle, as `newpotions.src`'s `DoFullHeal()` does for players.
 - **Buffs baked in on revival.** `SyncStatusMirror()` wrote `GetStrength()`/`GetIntelligence()`/`GetDexterity()`, which include mods, into the `Str`/`Int`/`Dex` CProps that `death.src` copies onto the heart and the `WFHBackup`, and both revival paths feed them to `SetBaseStrength()` and friends. A warrior that died blessed came back with the Bless as permanent base stats and could be blessed again on top. The mirror now stores base stats (effective minus mod). The pre-1.1.4 AI had the same line (`SetObjProperty(me,"Str",GetStrength(me))`), so this is old; hearts and backups written before the fix keep their recorded values.
@@ -319,7 +317,7 @@ The first port stamped those three CProps from the base stats (HP = 2 x base Str
 
 The heart block now:
 
-- skips a corpse flagged `AbandonedByOwner` (no heart, no backup; its gear is still escrowed on decay, section 11);
+- skips a corpse flagged `AbandonedByOwner` (no heart, no backup; its gear is escrowed on the spot, section 11);
 - allows ten revivals instead of three (`resnum <= WFH_MAX_DEATHS`, was `< 4`), shared between the heart and the priest (section 10.5);
 - resolves the owner with `SYSFIND_SEARCH_OFFLINE_MOBILES` when they are not online and puts the heart in their bank box (`FindBankBox()` from `util/bank`) instead of creating a heart nobody receives;
 - copies the `Skills` mirror onto the heart;
@@ -363,6 +361,8 @@ Companion's Second Wind (10.3) is unchanged. It still resets a living warrior's 
 ## 11. Warrior for Hire - Gear Escrow
 
 **Files:** `pkg/opt/warriorforhire/include/wfhescrow.inc` (new, 343 lines), `pkg/opt/warriorforhire/wfhescrowsave.src` (new), `pkg/opt/warriorforhire/escrowsweep.src` (new), `pkg/opt/warriorforhire/start.src` (new), `scripts/control/corpsedecay.src`, `pkg/systems/playervendor/commands/player/escrow.src`
+
+**Released, given-up and guard-killed warriors (2026-10-10).** `AbandonWarrior()` sets `guardkill` before killing, and `death.src` destroys a `guardkill` corpse immediately, so those corpses never decayed and their gear was lost; the same held for a warrior the guards killed (`guardhitscript.src` also sets `guardkill`). The first follow-up only removed `corpsedecay.src`'s `AbandonedByOwner` skip, which that path never reached. `EscrowWarriorForHireGear()` moved from `corpsedecay.src` into `wfhcommon.inc` (with `use os` and its own `WFH_PAYOUT_PACK` constant, since several includes define `UOBJ_BACKPACK`), and `death.src` calls it in the `guardkill || summoned` branch before destroying the corpse. The function returns at once for anything that is not a `warriorforhire` with a `master`, so other guardkilled NPCs are unaffected. The gear goes to escrow at the moment of death rather than 30 minutes later, and nobody can loot the body in between.
 
 **Flow.** When `ProcessNpcCorpseDecaying()` reaches a `warriorforhire` corpse that has a `master` and still holds root items, it bundles those items into a backpack created at the corpse and starts `:warriorforhire:wfhescrowsave` with `{payout, ownerserial, corpse.serial}` before destroying the corpse. That script calls `WFH_SaveToEscrow()`, which creates a root backpack in the player-vendor "Merchant Escrow" storage area, moves the payout into it, registers the entry in a package-wide registry datafile (`:warriorforhire:wfhescrowregistry`: entry id -> owner serial, escrow name, created time) and indexes it in the owner's escrow datafile under vendor name "Warrior for Hire" and vendor key = corpse serial. `escrowsweep.src` (started by `start.src`) runs `WFH_SweepExpiredEscrow()` once a day, destroying everything older than 90 wall-clock days straight off the registry. The High Priest claims or disposes of entries (section 10.2). `.escrow` filters "Warrior for Hire" entries out of its listing (`LoadEscrowEntriesForSerial()`) and refuses to claim one (`ClaimEscrowEntry()` guard), so they only come back through the priest and his fee.
 
@@ -565,7 +565,28 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 
 ---
 
-## 19. Exhaustive File-by-File Change List
+## 19. Champion Gold Rain - Fewer Piles, Only Where They Can Be Picked Up
+
+**File:** `pkg/opt/champspawns/include/rewards.inc`
+
+**The bug (ZH3.0 found and fixed the same code on 2026-09-23).** `RainDownMoney()` walked a 21 x 21 square around a champion's corpse (offsets -10 to +10) and dropped a 500-2499 pile on each tile that passed `GetMapInfo( i, j )`. That call got the offsets themselves as map coordinates, so any negative offset was off the map and the tile was skipped: only the 121 tiles with both offsets >= 0, the south-east quarter, ever got gold, about 181,000 a champion on average. The tiles that did get gold were not checked for reachability: a tile failing line of sight dropped its pile on the corpse, but a pile could still land inside a wall, under a static, on a roof or across water.
+
+**First port (2026-10-11).** ZH3.0's fix: real coordinates, all 441 tiles, piles shrunk to 137-685 to hold the total. Replaced the same day, because 441 small piles still included the unreachable tiles.
+
+**Now.** The rain drops `GOLD_RAIN_PILES` (20) piles on random qualifying tiles within `GOLD_RAIN_RANGE` (10) of the body. `FindGoldRainSpots()` shuffles the 441 offsets (Fisher-Yates) and keeps tiles until it has 20; `GoldRainSpotZ()` accepts a tile only when:
+
+- it is on the map and has no altar piece on it (hue 1157, `pkg/opt/champspawns/scripts/oncreate.src`; the old code dropped gold on top of the altar at corpse z + 6 instead);
+- `GetStandingHeight()` finds a floor there at the body's z, or failing that from 10 below (a slope), within 10 of the body's z, and not on a multi (no house or boat interiors);
+- `CheckLosBetween()` sees it from the body; and
+- `FindPath()` finds a walking path to it from the body, ignoring mobiles and doors (`FP_IGNORE_MOBILES + FP_IGNORE_DOORS`; this core's eighth parameter is flags, and 0 would have let players crowding the body block it).
+
+The cheap tests run first and the search stops at 20, so pathfinding runs only on candidates that already passed. Each pile is `GOLD_RAIN_TOTAL / spots` (12,500 for 20) +/- 50%, so the average total is `GOLD_RAIN_TOTAL` (250,000, up from the old rain's ~181,000), and if fewer than 20 tiles qualify the piles grow to match. With none at all, everything lands on the body's tile. The piles fall 100 ms apart, about 2 seconds for 20. Decided 2026-10-11: 20 piles, only on reachable tiles, and the total raised to 250,000. All three numbers are constants at the top of the include.
+
+Not taken from ZH3.0's version: the realm arguments (single realm here; calls pass `corpse.realm` where the core takes one) and its altar hue 2732. The only includer is `scripts/misc/death.src` (via `include/death.inc`), which compiles clean.
+
+---
+
+## 20. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -582,19 +603,19 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 | `pkg/opt/warriorforhire/warriorforhire.src` | 9 | Moved from `scripts/items/warriorforhire.src` (deed) |
 | `pkg/opt/warriorforhire/pkg.cfg` | 9 | New package |
 | `pkg/opt/warriorforhire/itemdesc.cfg` | 9, 10 | New - deed `0xa399` (moved here) and `0x7930` Companion's Second Wind |
-| `pkg/opt/warriorforhire/include/wfhcommon.inc` | 9, 10, 12 | New - `AbandonWarrior()`, `WfhTrackedSkills()`, `WFH_SKILL_CAP_TENTHS`, `WFH_MAX_DEATHS` (moved from `warrior.src`), `IsCurrentWfhHeart()` |
+| `pkg/opt/warriorforhire/include/wfhcommon.inc` | 9, 10, 12 | New - `AbandonWarrior()`, `WfhTrackedSkills()`, `WFH_SKILL_CAP_TENTHS`, `WFH_MAX_DEATHS` (moved from `warrior.src`), `IsCurrentWfhHeart()`, `EscrowWarriorForHireGear()` (moved from `corpsedecay.src`) |
 | `pkg/opt/warriorforhire/include/wfhvitals.inc` | 9 | New - `ResetWfhVitals()` / `ResetWfhVitalsAndFill()`: erase any `Custom*Level` CProps and `RecalcVitals()`, so vitals follow the buffed stats (9.4) |
 | `scripts/ai/warrior.src` | 9 | New - migration shim for NPCs saved with `script warrior` |
 | `config/npcdesc.cfg` | 9 | `warriorforhire` template script -> `:warriorforhire:warrior` |
 | `config/itemdesc.cfg` | 9 | Deed `0xa399` removed (pointer comment left) |
-| `scripts/misc/death.src` | 10, 17 | Heart: ten revivals shared with the priest, final death erases `WFHBackup`, offline owner -> bank box (non-sleeping lookup), `Skills` and `WFHDeathId` on heart and backup, `AbandonedByOwner` skip |
+| `scripts/misc/death.src` | 10, 17 | Heart: ten revivals shared with the priest, final death erases `WFHBackup`, offline owner -> bank box (non-sleeping lookup), `Skills` and `WFHDeathId` on heart and backup, `AbandonedByOwner` skip; a guardkilled warrior's gear escrowed before the corpse is destroyed |
 | `scripts/ai/highpriest.src` | 10 | "resurrect warrior" / "give up warrior" / "recover belongings"; heart revival restores skills and vitals, `resnum`-point stat loss floored at 10, sets `henchman`, erases `WFHBackup`, rejects stale hearts (`IsCurrentWfhHeart()`), no longer `return`s out of the AI loop; "resurrect warrior" refuses a memory past the limit; forgiveness price clamped to 1000-60000 via new `PriestForgivenessFine()` (also used by the "relationship" reply) |
 | `pkg/opt/warriorforhire/resetwfhdeaths.src` | 10 | New - Companion's Second Wind use script |
 | `pkg/opt/warriorforhire/include/wfhescrow.inc` | 11 | New - escrow filing, registry, sweep, claim, destroy |
 | `pkg/opt/warriorforhire/wfhescrowsave.src` | 11 | New - files a decayed corpse's bundled gear |
 | `pkg/opt/warriorforhire/escrowsweep.src` | 11 | New - daily 90-day expiry |
 | `pkg/opt/warriorforhire/start.src` | 11 | New - starts the escrow sweeper |
-| `scripts/control/corpsedecay.src` | 11 | Bundles a warrior corpse's gear and hands off to `wfhescrowsave`, released and given-up warriors included |
+| `scripts/control/corpsedecay.src` | 11 | Hands a decaying warrior corpse's gear to `EscrowWarriorForHireGear()` (now in `wfhcommon.inc`) |
 | `pkg/systems/playervendor/commands/player/escrow.src` | 11 | Hides and refuses "Warrior for Hire" entries |
 | `pkg/systems/combat/include/hitscriptinc.inc` | 12 | `WFHDamageMultiplier()` / `WFHModifyDamage()` at the top of `DealDamage()` |
 | `scripts/control/skilladvancerequip.src` | 12 | 85 cap on necro/elemental protections for warriors |
@@ -626,6 +647,7 @@ All 54 scripts that include `scripts/include/areas.inc` or `:areas:include/areap
 | `pkg/opt/areas/EnterAreaDelay.src` | 18 | One `ResolveAreaMatchAtLocation()` per region entry; forbidden check via `IsInForbiddenAreaForMatch()` |
 | `pkg/opt/areas/textcmd/admin/areas.src` | 18 | `loaded_masks[]`; Save writes only changed areas through `SetPolicyMasks()`; one summary log line; open failure reported to staff |
 | `scripts/include/areas.inc` | 18 | New `IsInForbiddenAreaForMatch(who, match)`; `IsInForbiddenArea()` delegates to it |
+| `pkg/opt/champspawns/include/rewards.inc` | 19 | Gold rain rewritten: 20 piles on random reachable tiles (`FindGoldRainSpots()`, `GoldRainSpotZ()`), total 250,000 (was ~181,000); the `GetMapInfo` offset bug is gone with the old loop |
 | `patchnotes/developer-changelog-v1.1.4.md` | - | This file |
 | `patchnotes/patch-v1.1.4.md` | - | Player-facing notes |
 | `patchnotes/launchernotes.md` | - | Replaced with this release's player-facing content |
@@ -636,14 +658,15 @@ Every changed or new script compiles with `ecompile -w` at 0 errors, 0 warnings:
 
 ---
 
-## 20. Risk and Regression Notes
+## 21. Risk and Regression Notes
 
+- **`uoclient.cfg` leaves the repository.** `pkg/systems/accounts/config/uoclient.cfg` holds the client listener port, 2598 on the test server and 2593 on live, so each server keeps its own copy. It has been in `.gitignore` all along but was tracked from the initial commit, so `c3ffa40` carried the test machine's port change (2598 -> 2593) like any other edit. It is now untracked. **Pulling this commit onto a server deletes that server's copy**, as git removes a file the incoming commit stops tracking: back the file up before pulling and put it back afterwards, then check its `Port` before starting the server.
 - **Deploy with a server restart, not a hot reload (section 3).** The old scheduler is a long-lived process running the old `.ecl`. If the new files are compiled onto a live server, the old loop keeps running with its old logic and never writes `PH_SchedulerPID`; the first `.phadmin` would then find no scheduler, start a *second* one from the new code, and the two could each start powerhours. Either restart the server or kill the old `powerhour` process before using `.phadmin`.
 - **A powerhour active at upgrade time gets a full extra hour (section 3.5).** `RecoverAfterRestart()` cannot know when a flag with no `PH_EndTime` was set, so it grants an hour from boot. That is one generous hour, once, and also what finally ends any flag that is currently stuck from the old bug.
 - **Bonus odds now actually depend on the type (section 3.2).** Half-resources weeks move from an effective 23% to 50%; hunting and skill weeks from 23% to 10%. The long-run average is unchanged. Admin-started and bonus powerhours never roll.
 - **The schedule is now data.** Once an admin saves a schedule, `PH_StartTime` is set and the compiled default is no longer consulted. There is no "reset to default" button; typing `0` / `19` / `0` restores the original Sunday 19:00 GMT. Changing the schedule to a moment that has just passed means the next powerhour is a week away, which the gump's countdown shows immediately.
 - **`.phadmin`'s Apply broadcasts (section 4).** Changing the remaining time announces the new end to the whole shard. End now goes through the normal "has ended" broadcast. Starting one always broadcasts the 2-minute warning; there is no silent or instant start.
-- **Gump layout was compiled, not eyeballed.** No client was run for this change. Coordinates follow the areas editor's conventions and the panels are sized to their content, but hues and positions may need a nudge after a first look in-game. Text entries use hue 900 on the 9200 panels.
+- **`.phadmin` was checked in a client once.** The first look found the title and footer misaligned with the frame; they were moved (section 4). The new positions assume a 16-pixel frame and have not been seen in a client yet; `FRAME_BORDER` is the one value to adjust. Text entries use hue 900 on the 9200 panels.
 - **Message changes players may notice (section 5).** `.setph`'s "Half-Resources"/"Double-Skillgain" became "Half-resources"/"Double skillgain"; `.ph` gained two lines and drops zero components from its countdown; the Eon-Prism and `.ph` now agree exactly on eligibility, including the Sunday case.
 - **`.setph` no longer uses `#SettingPH` as a lock for the whole hour.** It is set only while the gump is open. The active-powerhour check at the top of the command is what prevents a second start during the hour, as it always effectively was; `logon.src`/`reconnect.src` erasing the property on login remains harmless.
 - **Cross-package include (section 7).** `artifactsystem` now compiles against `:powerhour:include/powerhour`. Disabling the `powerhour` package would break `eonprism.src`'s compile; neither package has ever been disabled.
@@ -663,7 +686,7 @@ Warrior for Hire (sections 9-12):
 - **Damage multipliers default to 1.0.** No combat change until `.setwfhdamage` is used; the half-damage rule between a warrior and its own master is always on, in both directions.
 - **`.maxwfh` can push a warrior past its owner.** The explicit-stats form sets whatever staff type (up to 300), and the skills always go to 130.0 even if the owner is lower. Normal growth never lowers anything, so the warrior simply stops growing until its owner catches up; the High Priest's flat stat loss on a heart revival applies as usual. Every use is in the command log.
 - **The revival limit is real now (10.5).** An owner who has already used ten revivals will find the eleventh death final; under the code as first written the priest would have kept selling lives. Warriors that died before the deploy carry no `WFHDeathId`; their hearts still work until a new death writes a stamped backup.
-- **Released and given-up warriors' gear is now escrowed (section 11).** It used to be left on the corpse to decay. Owners can still loot the corpse first; whatever is left at decay goes to the priest for 90 days.
+- **Released, given-up and guard-killed warriors' gear is now escrowed (section 11).** It used to vanish with the corpse, which is destroyed on the spot. It now goes to the priest for 90 days at the moment of death; there is no corpse to loot first.
 - **Objtype `0x7930`, not ZH3.0's `0x4000BC`.** Any cross-shard tooling keyed on the Companion's Second Wind objtype must map it.
 - **Gump layouts were compiled, not opened** (status gump, `.setwfhdamage`): same caveat as `.phadmin`.
 - **High Priest forgiveness now costs classless players 1000 gold (10.4).** Previously a single coin repaired the relationship for anyone without a class, and the "relationship" command said as much. Players with a class level pay exactly what they did before.
@@ -699,6 +722,13 @@ Classes (section 16):
 - **Mid-session illegal gear is caught within ten minutes, not instantly.** `pkg/opt/summoning/checkclasse.src`, started at boot, walks every online character every 600 seconds and reruns `AssignClasse()` for anyone holding a class, which sweeps. Before this patch the sweep also fired on the character's next hit or spell; now the ten-minute loop, login and the class commands are the only sweeps. (The hourly capper only enforces stat and skill caps; it never swept equipment.)
 - **`IsFromThatClasse()` is a pure computation now.** Anything that relied on calling `IsWarrior()` and friends to strip gear as a side effect no longer gets that; `AssignClasse()` is the only sweep.
 - **Not tested in a client here.** Compiles clean across all 138 includers; `.classbonusinfo` exists so the per-skill result can be checked on live characters before and after.
+
+Champions (section 19):
+
+- **Fewer, bigger piles in new places, and more gold.** About 20 piles of 6,250-18,750 instead of about 121 of 500-2,499, scattered over the whole area rather than the south-east corner. The average total per champion rises about 38%, from ~181,000 to 250,000.
+- **Nothing on the altar, nothing out of reach.** A champion that dies in a cramped spot (a corridor, a small room) can have fewer than 20 qualifying tiles; the piles then get bigger, and with no qualifying tile at all the gold lands on the body.
+- **Up to a few hundred standing-height checks and a few dozen short pathfinds at most per champion death.** They run in the death script after its critical section, so nothing waits on them.
+- **Not tested in a client here.**
 
 Areas (section 18):
 

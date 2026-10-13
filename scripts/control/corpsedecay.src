@@ -6,6 +6,7 @@ use cfgfile;
 
 include "include/constants/propids";
 include "include/objtype";
+include ":warriorforhire:include/wfhcommon";	// EscrowWarriorForHireGear
 
 const DECAY_TIME_NPC_CORPSE		:= 30;		// In minutes.
 const DECAY_TIME_PLAYER_CORPSE		:= 30;		// In minutes.
@@ -110,35 +111,5 @@ function ProcessNpcCorpseDecaying( corpse, corpse_serial )
 		EscrowWarriorForHireGear( corpse );
 		DestroyItem(corpse);
 	endif
-
-endfunction
-
-// A hired Warrior for Hire's leftover gear is parked in escrow (recoverable through the High
-// Priest) instead of vanishing with the corpse. Ported from ZH3.0. The datafile work happens in
-// :warriorforhire:wfhescrowsave so this per-corpse script stays light. This covers every way a
-// warrior dies, its final death and a release or "give up warrior" included.
-function EscrowWarriorForHireGear( corpse )
-
-	if( GetObjProperty( corpse, "npctemplate" ) != "warriorforhire" )
-		return;
-	endif
-	var ownerserial := CInt( GetObjProperty( corpse, "master" ) );
-	if( !ownerserial )
-		return;
-	endif
-	var rootitems := EnumerateItemsInContainer( corpse, ENUMERATE_ROOT_ONLY );
-	if( !len( rootitems ) )
-		return;
-	endif
-
-	var payout := CreateItemAtLocation( corpse.x, corpse.y, corpse.z, UOBJ_BACKPACK, 1, corpse.realm );
-	if( !payout )
-		return;
-	endif
-	foreach item in rootitems
-		MoveItemToContainer( item, payout );
-	endforeach
-
-	Start_Script( ":warriorforhire:wfhescrowsave", { payout, ownerserial, corpse.serial } );
 
 endfunction

@@ -30,6 +30,9 @@ const PHADMIN_MAX_MINUTES := 1440;
 const GUMP_WIDTH   := 480;
 const PANEL_X      := 15;
 const PANEL_WIDTH  := 450;
+const FRAME_BORDER := 16;		// thickness of the 9250 background's stone frame
+const TEXT_X       := 25;		// left edge of the text inside the panels; the title and footer line up with it
+const BTN_WIDTH    := 30;		// the 4005 / 4017 buttons
 
 const HUE_TITLE  := 67;
 const HUE_HEADER := 900;
@@ -101,8 +104,9 @@ function SendPowerhourGump(who)
 	GFResizePic(gump, 0, 0, 9250, GUMP_WIDTH, 100);
 	var background_index := gump.layout.size();
 
-	GFTextLine(gump, 20, 12, HUE_TITLE, "Server-wide Powerhour Admin");
-	y := 38;
+	// The title sits centred in the dark band between the frame and the first panel.
+	GFTextLine(gump, TEXT_X, FRAME_BORDER + 5, HUE_TITLE, "Server-wide Powerhour Admin");
+	y := FRAME_BORDER + 28;
 
 	// --- Status -----------------------------------------------------------
 	GFResizePic(gump, PANEL_X, y, 9200, PANEL_WIDTH, 92);
@@ -167,14 +171,17 @@ function SendPowerhourGump(who)
 	GFTextLine(gump, 330, y + 32, HUE_TEXT, "Save");
 	GFAddButton(gump, 370, y + 30, BTN_ARROW_UP, BTN_ARROW_DOWN, GF_CLOSE_BTN, BTN_SAVE_SCHEDULE);
 	GFTextLine(gump, 25, y + 56, HUE_MUTED, "Currently " + PH_ScheduleString() + ". A 2-minute warning is broadcast first.");
-	y := y + 90;
+	y := y + 82;
 
 	// --- Footer -----------------------------------------------------------
-	GFAddButton(gump, 20, y + 4, BTN_ARROW_UP, BTN_ARROW_DOWN, GF_CLOSE_BTN, BTN_REFRESH);
-	GFTextLine(gump, 50, y + 6, HUE_LABEL, "Refresh");
-	GFTextLine(gump, 395, y + 6, HUE_LABEL, "Close");
-	GFAddButton(gump, 435, y + 4, BTN_X_UP, BTN_X_DOWN, GF_CLOSE_BTN, BTN_CLOSE);
-	y := y + 34;
+	// Centred in the dark band between the last panel and the frame, with the same 5-pixel
+	// margins as the title; Refresh on the text column, Close flush with the panels' right edge.
+	var close_x := PANEL_X + PANEL_WIDTH - BTN_WIDTH;
+	GFAddButton(gump, TEXT_X, y + 6, BTN_ARROW_UP, BTN_ARROW_DOWN, GF_CLOSE_BTN, BTN_REFRESH);
+	GFTextLine(gump, TEXT_X + BTN_WIDTH + 5, y + 8, HUE_LABEL, "Refresh");
+	GFTextLine(gump, close_x - 45, y + 8, HUE_LABEL, "Close");
+	GFAddButton(gump, close_x, y + 6, BTN_X_UP, BTN_X_DOWN, GF_CLOSE_BTN, BTN_CLOSE);
+	y := y + 6 + 22 + 6 + FRAME_BORDER;
 
 	gump.layout[background_index] := "ResizePic 0 0 9250 " + GUMP_WIDTH + " " + y;
 
