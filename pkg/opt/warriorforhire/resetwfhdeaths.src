@@ -1,0 +1,33 @@
+// Companion's Second Wind: resets the user's living Warrior for Hire death count to 0.
+use os;
+use uo;
+
+program resetwfhdeaths( who, item )
+
+	if (!ReserveItem(item))
+		return 0;
+	endif
+
+	var hm := GetObjProperty(who, "henchman");
+	var wfh := SystemFindObjectBySerial(hm);
+	if (!wfh)
+		SendSysMessage(who, "You don't have a Warrior for Hire to reset.");
+		ReleaseItem(item);
+		return 0;
+	endif
+
+	SetObjProperty(wfh, "resnum", 0);
+
+	var backup := GetObjProperty(who, "WFHBackup");
+	if (backup)
+		backup.insert("resnum", 0);
+		SetObjProperty(who, "WFHBackup", backup);
+	endif
+
+	SendSysMessage(who, wfh.name + "'s death count has been reset.");
+
+	ReleaseItem(item);
+	DestroyItem(item);
+	return 1;
+
+endprogram

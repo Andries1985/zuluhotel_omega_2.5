@@ -33,6 +33,23 @@ const AREA_POLICY_GLOBAL_ID_BRITANNIA := "britannia";
 const AREA_POLICY_GLOBAL_ID_TRAMMEL_WHOLEWORLD := "trammelwholeworld";
 
 ///////////////////////////////////////////////////////////////////////////////
+// Script-local caches
+///////////////////////////////////////////////////////////////////////////////
+// Reading a GlobalProperty unpacks the whole stored value every time, and the
+// parsed-area array is ~200 structs. Long-running scripts (NPC AI) resolve
+// policy every tick, so each running script keeps its own copy of the last
+// realm it resolved and walks that directly - no per-call unpack, no per-call
+// copy. areas.cfg cannot change while the server runs, so the parsed copy is
+// valid for the life of the script. Masks can change on an .areas Save, so
+// the mask copy is tagged with the realm's version counter (one small int
+// GlobalProperty) and refreshed only when that counter moves.
+var g_areapolicy_parsed_realm := "";
+var g_areapolicy_parsed := array{};
+var g_areapolicy_masks_realm := "";
+var g_areapolicy_masks_version := -1;
+var g_areapolicy_masks := dictionary;
+
+///////////////////////////////////////////////////////////////////////////////
 // Area line parsing
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -206,38 +223,40 @@ endfunction
 // Parsed-line cache (shared global)
 ///////////////////////////////////////////////////////////////////////////////
 // SplitWords/SubStr parsing every area line on every call was the sysload=100
-// hot path. A shared GlobalProperty cache avoids that: any program's
-// first-ever cold parse populates it, and every other program on the shard
-// reads it back without paying the ~100k-instruction parse cost.
-// GlobalProperties persist across saves, so we tag the cache with a "size"
-// fingerprint and invalidate if the config's line count changes.
+// hot path. A shared GlobalProperty cache avoids that: the package start
+// script parses areas.cfg once on boot and every program reads the result.
+// GlobalProperties persist across saves AND server restarts, while areas.cfg
+// can only change between restarts, so the boot rebuild
+// (RebuildParsedAreaLinesCache) is the authoritative invalidation. Nothing on
+// the hot path re-reads areas.cfg.
 
 const AREA_POLICY_CACHE_PREFIX := "zh.areapolicy.parsed.";
 
+// Returns a copy of the realm's parsed area array (shared cache, or a cold
+// parse of areas.cfg that also populates the shared cache). Hot-path code
+// should use EnsureLocalParsedAreas() and walk g_areapolicy_parsed instead,
+// which avoids copying the array on every call.
 function GetParsedRealmAreaLines(realm)
 	realm := SanitizePolicyRealm(realm);
-
-	// Must validate fingerprint against the current config's line count so a
-	// config edit invalidates stale data.
-	var raw_lines := GetRealmAreaLines(realm);
-	if(raw_lines == error)
-		return raw_lines;
-	endif
-	var raw_count := raw_lines.size();
 
 	var global_key := AREA_POLICY_CACHE_PREFIX + realm;
 	var global_cached := GetGlobalProperty(global_key);
 	if(global_cached && global_cached != error && TypeOf(global_cached) == "Struct")
-		// Struct: { fingerprint, parsed }
-		if(CInt(global_cached.fingerprint) == raw_count && global_cached.parsed)
+		if(global_cached.parsed)
 			return global_cached.parsed;
 		endif
 	endif
 
-	// Cold path: parse all lines and populate the global cache.
+	// Cold path (start script, or cache missing): parse all lines and
+	// populate the shared cache.
+	var raw_lines := GetRealmAreaLines(realm);
+	if(raw_lines == error)
+		return raw_lines;
+	endif
+
 	var parsed := array{};
 	var i;
-	for(i := 1; i <= raw_count; i := i + 1)
+	for(i := 1; i <= raw_lines.size(); i := i + 1)
 		var area_info := ParseAreaLine(raw_lines[i], i);
 		if(area_info == error)
 			continue;
@@ -246,10 +265,28 @@ function GetParsedRealmAreaLines(realm)
 	endfor
 
 	var wrapper := struct;
-	wrapper.+fingerprint := raw_count;
+	wrapper.+line_count := raw_lines.size();
 	wrapper.+parsed := parsed;
 	SetGlobalProperty(global_key, wrapper);
 	return parsed;
+endfunction
+
+
+// Makes sure g_areapolicy_parsed holds the given realm. Returns 1, or error
+// if the realm has no areas. Only copies when the realm changes.
+function EnsureLocalParsedAreas(realm)
+	if(realm == g_areapolicy_parsed_realm && g_areapolicy_parsed.size())
+		return 1;
+	endif
+
+	var parsed := GetParsedRealmAreaLines(realm);
+	if(parsed == error)
+		return parsed;
+	endif
+
+	g_areapolicy_parsed := parsed;
+	g_areapolicy_parsed_realm := realm;
+	return 1;
 endfunction
 
 
@@ -257,60 +294,59 @@ function InvalidateParsedAreaLinesCache(realm := "")
 	if(realm)
 		realm := Lower(CStr(realm));
 		EraseGlobalProperty(AREA_POLICY_CACHE_PREFIX + realm);
+		if(realm == g_areapolicy_parsed_realm)
+			g_areapolicy_parsed_realm := "";
+			g_areapolicy_parsed := array{};
+		endif
 	endif
 	return 1;
+endfunction
+
+
+// Drops and re-parses the realm's area lines from the current areas.cfg.
+// Called by the package start script on boot. Returns the number of parsed
+// areas, or error if the config could not be read.
+function RebuildParsedAreaLinesCache(realm)
+	realm := SanitizePolicyRealm(realm);
+	InvalidateParsedAreaLinesCache(realm);
+	var parsed := GetParsedRealmAreaLines(realm);
+	if(parsed == error)
+		return parsed;
+	endif
+	return parsed.size();
 endfunction
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Policy resolution (hot path - keep minimal)
 ///////////////////////////////////////////////////////////////////////////////
-
-function ResolveAreaKeyAtLocation(x, y, realm)
-	var parsed := GetParsedRealmAreaLines(realm);
-	if(parsed == error)
-		return 0;
-	endif
-
-	var px := CInt(x);
-	var py := CInt(y);
-
-	var i;
-	var area_info;
-	for(i := 1; i <= parsed.size(); i := i + 1)
-		area_info := parsed[i];
-		if(px >= area_info.min_x && px <= area_info.max_x && py >= area_info.min_y && py <= area_info.max_y)
-			return area_info.area_id;
-		endif
-	endfor
-
-	return 0;
-endfunction
-
+// One resolve = one version-counter read, zero config reads, zero large
+// GlobalProperty unpacks once a script has warmed its local copies. The
+// bounding-box walk lives in ResolveAreaMatchAtLocation only; the other two
+// entry points are thin wrappers over it.
 
 function ResolveAreaMatchAtLocation(x, y, realm)
 	realm := SanitizePolicyRealm(realm);
 
-	var parsed := GetParsedRealmAreaLines(realm);
-	if(parsed == error)
+	if(EnsureLocalParsedAreas(realm) == error)
 		return 0;
 	endif
+	EnsureLocalRealmMasks(realm);
 
 	var px := CInt(x);
 	var py := CInt(y);
-	var global_mask := GetGlobalBypassMask(realm);
+	var global_mask := GetGlobalBypassMaskLocal(realm);
 
 	var i;
-	var area_info;
-	for(i := 1; i <= parsed.size(); i := i + 1)
-		area_info := parsed[i];
-		if(px >= area_info.min_x && px <= area_info.max_x && py >= area_info.min_y && py <= area_info.max_y)
+	var count := g_areapolicy_parsed.size();
+	for(i := 1; i <= count; i := i + 1)
+		if(px >= g_areapolicy_parsed[i].min_x && px <= g_areapolicy_parsed[i].max_x && py >= g_areapolicy_parsed[i].min_y && py <= g_areapolicy_parsed[i].max_y)
 			var match := struct;
 			match.+realm := realm;
-			match.+area_index := area_info.area_index;
-			match.+area_id := area_info.area_id;
-			match.+name := area_info.name;
-			match.+mask := CInt(CInt(GetPolicyMask(realm, area_info.area_id)) | global_mask);
+			match.+area_index := g_areapolicy_parsed[i].area_index;
+			match.+area_id := g_areapolicy_parsed[i].area_id;
+			match.+name := g_areapolicy_parsed[i].name;
+			match.+mask := CInt(CInt(GetPolicyMaskLocal(realm, match.area_id)) | global_mask);
 			return match;
 		endif
 	endfor
@@ -332,15 +368,21 @@ endfunction
 
 
 function ResolvePolicyAtLocation(x, y, realm)
-	realm := SanitizePolicyRealm(realm);
-
-	var global_mask := GetGlobalBypassMask(realm);
-	var area_key := ResolveAreaKeyAtLocation(x, y, realm);
-	if(!area_key)
-		return CInt(global_mask);
+	var match := ResolveAreaMatchAtLocation(x, y, realm);
+	if(!match)
+		return 0;
 	endif
+	return CInt(match.mask);
+endfunction
 
-	return CInt(CInt(GetPolicyMask(realm, area_key)) | global_mask);
+
+// Id of the first explicit area containing the point, or 0 if none.
+function ResolveAreaKeyAtLocation(x, y, realm)
+	var match := ResolveAreaMatchAtLocation(x, y, realm);
+	if(!match || !match.area_id)
+		return 0;
+	endif
+	return match.area_id;
 endfunction
 
 
@@ -348,18 +390,25 @@ endfunction
 // Global (world-catchall) bypass mask
 ///////////////////////////////////////////////////////////////////////////////
 // Reads the masks assigned to the well-known catch-all area ids and OR-merges
-// them so any flag set on them applies world-wide. Masks are stored in the
-// per-realm policy datafile which POL keeps in-memory once opened, so these
-// 4 extra reads per resolve are cheap.
+// them so any flag set on them applies world-wide. These ids are always
+// present in the realm mask cache (RebuildPolicyMaskCache seeds them), so the
+// 4 extra lookups per resolve are local dictionary hits.
+
+// Assumes EnsureLocalRealmMasks(realm) has run.
+function GetGlobalBypassMaskLocal(realm)
+	var mask := 0;
+	mask := mask | CInt(GetPolicyMaskLocal(realm, AREA_POLICY_GLOBAL_ID_WHOLEWORLD));
+	mask := mask | CInt(GetPolicyMaskLocal(realm, AREA_POLICY_GLOBAL_ID_WHOLEWORLD_LEGACY));
+	mask := mask | CInt(GetPolicyMaskLocal(realm, AREA_POLICY_GLOBAL_ID_BRITANNIA));
+	mask := mask | CInt(GetPolicyMaskLocal(realm, AREA_POLICY_GLOBAL_ID_TRAMMEL_WHOLEWORLD));
+	return CInt(mask);
+endfunction
+
 
 function GetGlobalBypassMask(realm)
 	realm := SanitizePolicyRealm(realm);
-	var mask := 0;
-	mask := mask | CInt(GetPolicyMask(realm, AREA_POLICY_GLOBAL_ID_WHOLEWORLD));
-	mask := mask | CInt(GetPolicyMask(realm, AREA_POLICY_GLOBAL_ID_WHOLEWORLD_LEGACY));
-	mask := mask | CInt(GetPolicyMask(realm, AREA_POLICY_GLOBAL_ID_BRITANNIA));
-	mask := mask | CInt(GetPolicyMask(realm, AREA_POLICY_GLOBAL_ID_TRAMMEL_WHOLEWORLD));
-	return CInt(mask);
+	EnsureLocalRealmMasks(realm);
+	return GetGlobalBypassMaskLocal(realm);
 endfunction
 
 
@@ -370,7 +419,10 @@ function HasPolicy(mask, policy_bit)
 		return 0;
 	endif
 
-	return CInt(CInt(mask / policy_bit) % 2);
+	if(mask & policy_bit)
+		return 1;
+	endif
+	return 0;
 endfunction
 
 
@@ -393,21 +445,34 @@ endfunction
 // Mask-value cache (shared global)
 ///////////////////////////////////////////////////////////////////////////////
 // Mirrors the parsed-line cache above, but for the mask VALUE itself. Every
-// GetPolicyMask() call was hitting the datafile subsystem (OpenDataFile +
+// GetPolicyMask() call used to hit the datafile subsystem (OpenDataFile +
 // FindElement + GetProp) on every single area-policy check - and since
 // GetGlobalBypassMask() calls this 4 more times per resolve for the world
 // catch-all ids, that's up to 5 datafile round trips per check, called every
-// AI tick for every mobile shard-wide. Masks only change via SetPolicyMask
-// (staff .areas edits) or PruneStaleRealmPolicies, so a cache invalidated
-// only on those writes is safe. Cached per-realm as one dictionary (area_id
-// -> mask) so this stays one GlobalProperty per realm, not one property per
-// area.
+// AI tick for every mobile shard-wide. Cached per-realm as one dictionary
+// (area_id -> mask) so this stays one GlobalProperty per realm.
+//
+// SINGLE-WRITER RULE: readers (GetPolicyMask) never write this property.
+// The only writers are RebuildPolicyMaskCache(), called from the package
+// start script on boot and from PruneStaleRealmPolicies() at the end of an
+// .areas Save, and InvalidatePolicyMaskCache(), which erases a whole realm.
+// The old read-miss write-back was removed because it was a non-atomic
+// read-modify-write of a shared property: a reader preempted between
+// GetGlobalProperty and SetGlobalProperty would write its stale copy back
+// over a fresh Save and resurrect every old mask. The rebuild always
+// produces a complete dictionary from the datafile in one SetGlobalProperty,
+// so it never merges with the existing value.
+//
+// Every writer also bumps a per-realm version counter. Readers compare that
+// one small int against their script-local copy and only re-fetch the whole
+// dictionary when it has moved.
 //
 // Uses .Exists() rather than truthiness to check for a cached entry, since a
 // mask of 0 (the common case - most areas have no flags) is a valid cached
 // value and must not be treated as "not cached".
 
 const AREA_POLICY_MASK_CACHE_PREFIX := "zh.areapolicy.maskcache.";
+const AREA_POLICY_MASK_VERSION_PREFIX := "zh.areapolicy.maskver.";
 
 function GetCachedRealmMaskDict(realm)
 	var global_cached := GetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm);
@@ -419,115 +484,242 @@ function GetCachedRealmMaskDict(realm)
 endfunction
 
 
-function StoreCachedPolicyMask(realm, realm_cache, area_id, mask)
-	realm_cache[area_id] := CInt(mask);
+function GetPolicyMaskVersion(realm)
+	var version := GetGlobalProperty(AREA_POLICY_MASK_VERSION_PREFIX + realm);
+	if(version == error)
+		return 0;
+	endif
+	return CInt(version);
+endfunction
+
+
+function BumpPolicyMaskVersion(realm)
+	var version := GetPolicyMaskVersion(realm) + 1;
+	SetGlobalProperty(AREA_POLICY_MASK_VERSION_PREFIX + realm, version);
+	return version;
+endfunction
+
+
+// Makes sure g_areapolicy_masks holds the realm's current mask dictionary.
+// Costs one small GlobalProperty read per call; the dictionary itself is
+// only re-fetched when the realm or its version counter changes.
+function EnsureLocalRealmMasks(realm)
+	var version := GetPolicyMaskVersion(realm);
+	if(realm == g_areapolicy_masks_realm && version == g_areapolicy_masks_version)
+		return 1;
+	endif
+
+	g_areapolicy_masks := GetCachedRealmMaskDict(realm);
+	g_areapolicy_masks_realm := realm;
+	g_areapolicy_masks_version := version;
+	return 1;
+endfunction
+
+
+function InvalidatePolicyMaskCache(realm)
+	realm := SanitizePolicyRealm(realm);
+	EraseGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm);
+	BumpPolicyMaskVersion(realm);
+	return 1;
+endfunction
+
+
+// Reads one area's mask straight from an already-open policy datafile.
+// Returns error if the element or prop is unavailable so callers can tell
+// "no flags" (0) apart from "could not read".
+function ReadPolicyMaskFromFile(byref file_ref, area_id)
+	var elem := DFFindElement(file_ref, CStr(area_id), DF_NO_CREATE);
+	if(!elem || elem == error)
+		return error{"errortext":="No policy element for area id: " + CStr(area_id)};
+	endif
+
+	var prop_val := elem.GetProp(AREA_POLICY_MASK_PROP);
+	if(prop_val == error)
+		return prop_val;
+	endif
+
+	return CInt(prop_val);
+endfunction
+
+
+// Rebuilds the whole realm mask dictionary from the datafile in one pass and
+// stores it with a single SetGlobalProperty. Every parsed area id plus the
+// world catch-all ids get an entry (0 when absent) so the hot path never
+// misses on a known id. If the config or datafile cannot be read the realm
+// cache is erased instead, so readers fall back to the datafile rather than
+// serving a dictionary that may be stale. Returns the entry count, or error.
+function RebuildPolicyMaskCache(realm)
+	realm := SanitizePolicyRealm(realm);
+
+	var parsed := GetParsedRealmAreaLines(realm);
+	if(parsed == error)
+		InvalidatePolicyMaskCache(realm);
+		return parsed;
+	endif
+
+	var file_ref := OpenAreaPolicyFile(realm, DF_CREATE);
+	if(file_ref == error)
+		InvalidatePolicyMaskCache(realm);
+		return file_ref;
+	endif
+
+	var realm_cache := dictionary;
+	var i;
+	for(i := 1; i <= parsed.size(); i := i + 1)
+		var area_id := CStr(parsed[i].area_id);
+		var mask := ReadPolicyMaskFromFile(file_ref, area_id);
+		if(mask == error)
+			mask := 0;
+		endif
+		realm_cache[area_id] := CInt(mask);
+	endfor
+
+	var global_ids := array{
+		AREA_POLICY_GLOBAL_ID_WHOLEWORLD,
+		AREA_POLICY_GLOBAL_ID_WHOLEWORLD_LEGACY,
+		AREA_POLICY_GLOBAL_ID_BRITANNIA,
+		AREA_POLICY_GLOBAL_ID_TRAMMEL_WHOLEWORLD
+	};
+	foreach global_id in global_ids
+		if(!realm_cache.Exists(global_id))
+			var global_mask := ReadPolicyMaskFromFile(file_ref, global_id);
+			if(global_mask == error)
+				global_mask := 0;
+			endif
+			realm_cache[global_id] := CInt(global_mask);
+		endif
+	endforeach
+	UnloadDataFile(GetRealmPolicyDescriptor(realm));
+
 	SetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm, realm_cache);
+	BumpPolicyMaskVersion(realm);
+	return realm_cache.size();
+endfunction
+
+
+// Uncached datafile read for an id that is not in the mask cache (cache not
+// built yet, or unknown id). Never stores the result: readers never write
+// the shared cache (see SINGLE-WRITER RULE above), and a failed open/read
+// must not be remembered as "mask 0" or a transient hiccup during a world
+// save would leave e.g. Britain unguarded until the next staff Save.
+function ReadPolicyMaskUncached(realm, area_id)
+	var mask := 0;
+	var file_ref := OpenAreaPolicyFile(realm, DF_CREATE);
+	if(file_ref != error)
+		var file_mask := ReadPolicyMaskFromFile(file_ref, area_id);
+		if(file_mask != error)
+			mask := CInt(file_mask);
+		endif
+		UnloadDataFile(GetRealmPolicyDescriptor(realm));
+	endif
 	return CInt(mask);
 endfunction
 
 
-function InvalidatePolicyMaskCache(realm, area_id := "")
-	realm := SanitizePolicyRealm(realm);
-	if(area_id)
-		var realm_cache := GetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm);
-		if(realm_cache && TypeOf(realm_cache) == "Dictionary")
-			realm_cache.Erase(CStr(area_id));
-			SetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm, realm_cache);
-		endif
-	else
-		EraseGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm);
+// Assumes EnsureLocalRealmMasks(realm) has run and area_id is a string.
+function GetPolicyMaskLocal(realm, area_id)
+	if(g_areapolicy_masks.Exists(area_id))
+		return CInt(g_areapolicy_masks[area_id]);
 	endif
-	return 1;
+	return ReadPolicyMaskUncached(realm, area_id);
 endfunction
 
 
 function GetPolicyMask(realm, area_id)
 	realm := SanitizePolicyRealm(realm);
 	area_id := CStr(area_id);
-
-	var realm_cache := GetCachedRealmMaskDict(realm);
-	if(realm_cache.Exists(area_id))
-		return realm_cache[area_id];
-	endif
-
-	// Cold path: not cached yet, fall through to the real datafile lookup.
-	var mask := 0;
-	var file_ref := OpenAreaPolicyFile(realm, DF_CREATE);
-	if(file_ref != error)
-		var elem := DFFindElement(file_ref, area_id, DF_NO_CREATE);
-		if(elem && elem != error)
-			var prop_val := elem.GetProp(AREA_POLICY_MASK_PROP);
-			if(prop_val != error)
-				mask := CInt(prop_val);
-			endif
-		endif
-		UnloadDataFile(GetRealmPolicyDescriptor(realm));
-	endif
-
-	return StoreCachedPolicyMask(realm, realm_cache, area_id, mask);
+	EnsureLocalRealmMasks(realm);
+	return GetPolicyMaskLocal(realm, area_id);
 endfunction
 
 
-function SetPolicyMask(realm, area_id, mask, updated_by := "")
-	Print("[areas.persist] set begin realm=" + CStr(realm) + " area_id=" + CStr(area_id) + " mask=" + CStr(mask) + " updated_by=" + CStr(updated_by));
+// Writes several areas' masks in ONE datafile session: open once, write
+// each element, stamp the meta element once, unload once. changes is a
+// dictionary of area_id -> mask. Does NOT touch the mask cache: callers
+// finish with PruneStaleRealmPolicies() (or RebuildPolicyMaskCache()) which
+// rebuilds the whole realm cache once. Returns the number written, or error
+// if the datafile could not be opened.
+function SetPolicyMasks(realm, byref changes, updated_by := "")
+	realm := SanitizePolicyRealm(realm);
+	if(!changes || !changes.size())
+		return 0;
+	endif
+
 	var file_ref := OpenAreaPolicyFile(realm, DF_CREATE);
 	if(file_ref == error)
-		Print("[areas.persist] set open failed realm=" + CStr(realm) + " area_id=" + CStr(area_id));
+		Print("[areas.persist] set open failed realm=" + CStr(realm));
 		return file_ref;
 	endif
 
-	var elem := DFFindElement(file_ref, CStr(area_id), DF_CREATE);
-	if(elem == error)
-		Print("[areas.persist] set element failed realm=" + CStr(realm) + " area_id=" + CStr(area_id));
-		UnloadDataFile(GetRealmPolicyDescriptor(realm));
-		return elem;
+	var now := ReadGameClock();
+	var written := 0;
+	foreach area_id in (changes.Keys())
+		var elem := DFFindElement(file_ref, CStr(area_id), DF_CREATE);
+		if(elem == error)
+			Print("[areas.persist] set element failed realm=" + CStr(realm) + " area_id=" + CStr(area_id));
+			continue;
+		endif
+		elem.SetProp(AREA_POLICY_MASK_PROP, CInt(changes[area_id]));
+		elem.SetProp("UpdatedAt", now);
+		elem.SetProp("UpdatedBy", CStr(updated_by));
+		written := written + 1;
+	endforeach
+
+	if(written)
+		var meta_elem := DFFindElement(file_ref, AREA_POLICY_META_ELEMENT, DF_CREATE);
+		if(meta_elem != error)
+			meta_elem.SetProp("SchemaVersion", AREA_POLICY_SCHEMA_VERSION);
+			meta_elem.SetProp("UpdatedAt", now);
+			meta_elem.SetProp("UpdatedBy", CStr(updated_by));
+		else
+			Print("[areas.persist] set meta missing realm=" + CStr(realm));
+		endif
 	endif
 
-	elem.SetProp(AREA_POLICY_MASK_PROP, CInt(mask));
-	elem.SetProp("UpdatedAt", ReadGameClock());
-	elem.SetProp("UpdatedBy", CStr(updated_by));
-	Print("[areas.persist] set wrote realm=" + CStr(realm) + " area_id=" + CStr(area_id) + " mask=" + CStr(mask));
-	InvalidatePolicyMaskCache(realm, area_id);
-
-	var meta_elem := DFFindElement(file_ref, AREA_POLICY_META_ELEMENT, DF_CREATE);
-	if(meta_elem != error)
-		meta_elem.SetProp("SchemaVersion", AREA_POLICY_SCHEMA_VERSION);
-		meta_elem.SetProp("UpdatedAt", ReadGameClock());
-		meta_elem.SetProp("UpdatedBy", CStr(updated_by));
-		Print("[areas.persist] set meta updated realm=" + CStr(realm));
-	else
-		Print("[areas.persist] set meta missing realm=" + CStr(realm));
-	endif
-
-	Print("[areas.persist] set end realm=" + CStr(realm) + " area_id=" + CStr(area_id));
 	UnloadDataFile(GetRealmPolicyDescriptor(realm));
+	return written;
+endfunction
+
+
+// Single-area convenience wrapper over SetPolicyMasks(). Same cache rule.
+function SetPolicyMask(realm, area_id, mask, updated_by := "")
+	var changes := dictionary;
+	changes[CStr(area_id)] := CInt(mask);
+	var written := SetPolicyMasks(realm, changes, updated_by);
+	if(written == error)
+		return written;
+	endif
+	if(!written)
+		return error{"errortext":="Could not write policy mask for area id: " + CStr(area_id)};
+	endif
 	return CInt(mask);
 endfunction
 
 
+// Deletes datafile elements whose id no longer exists in areas.cfg, then
+// rebuilds the realm mask cache. Runs last in an .areas Save, so this is the
+// single point where the cache is rebuilt from the freshly written datafile.
+// Returns the number of elements removed (0 on failure).
 function PruneStaleRealmPolicies(realm)
-	Print("[areas.persist] prune begin realm=" + CStr(realm));
-	var file_ref := OpenAreaPolicyFile(realm, DF_CREATE);
-	if(file_ref == error)
-		Print("[areas.persist] prune open failed realm=" + CStr(realm));
-		return 0;
-	endif
+	realm := SanitizePolicyRealm(realm);
 
-	var area_lines := GetRealmAreaLines(realm);
-	if(area_lines == error)
+	var parsed := GetParsedRealmAreaLines(realm);
+	if(parsed == error)
 		Print("[areas.persist] prune load areas failed realm=" + CStr(realm));
-		UnloadDataFile(GetRealmPolicyDescriptor(realm));
 		return 0;
 	endif
 
 	var valid_ids := dictionary;
 	var i;
-	for(i := 1; i <= area_lines.size(); i := i + 1)
-		var area_info := ParseAreaLine(area_lines[i], i);
-		if(area_info != error)
-			valid_ids.Insert(CStr(area_info.area_id), 1);
-		endif
+	for(i := 1; i <= parsed.size(); i := i + 1)
+		valid_ids.Insert(CStr(parsed[i].area_id), 1);
 	endfor
+
+	var file_ref := OpenAreaPolicyFile(realm, DF_CREATE);
+	if(file_ref == error)
+		Print("[areas.persist] prune open failed realm=" + CStr(realm));
+		return 0;
+	endif
 
 	var keys := file_ref.Keys();
 	if(keys == error)
@@ -535,27 +727,21 @@ function PruneStaleRealmPolicies(realm)
 		UnloadDataFile(GetRealmPolicyDescriptor(realm));
 		return 0;
 	endif
-	Print("[areas.persist] prune keys realm=" + CStr(realm) + " count=" + CStr(keys.size()));
 
 	var removed := 0;
-	var key;
 	foreach key in keys
 		var key_str := CStr(key);
 		if(key_str == AREA_POLICY_META_ELEMENT)
 			continue;
 		endif
-		if(!(key_str in valid_ids.Keys()))
-			Print("[areas.persist] prune delete realm=" + CStr(realm) + " area_id=" + key_str);
+		if(!valid_ids.Exists(key_str))
 			file_ref.DeleteElement(key_str);
 			removed := removed + 1;
 		endif
 	endforeach
 
-	// Bulk removal - simplest correct move is to drop the whole realm's cached
-	// mask dict rather than track exactly which keys were pruned.
-	InvalidatePolicyMaskCache(realm);
-
-	Print("[areas.persist] prune end realm=" + CStr(realm) + " removed=" + CStr(removed));
 	UnloadDataFile(GetRealmPolicyDescriptor(realm));
+
+	RebuildPolicyMaskCache(realm);
 	return removed;
 endfunction

@@ -1,0 +1,40 @@
+// Files a decayed Warrior for Hire corpse's bundled gear into escrow.
+//
+// Started by scripts/control/corpsedecay.src with { payout_pack, owner_serial, corpse_serial }.
+// The decay script only bundles the corpse's root items into a backpack and hands off here, so
+// the per-corpse decay processes never carry the escrow/datafile includes themselves.
+use uo;
+use os;
+
+include ":warriorforhire:include/wfhescrow";
+include "util/bank";	// FindBankBox for the filing-failure fallback
+
+program wfhescrowsave(parms)
+
+	var payout := parms[1];
+	var ownerserial := CInt(parms[2]);
+	var sourceserial := CInt(parms[3]);
+
+	if (!payout)
+		return 0;
+	endif
+
+	if (!WFH_SaveToEscrow(payout, ownerserial, sourceserial))
+		// Could not file it. The gear goes to the owner's bank box rather than being destroyed
+		// or left on the ground for anyone to loot; only if even that fails does it stay put.
+		var owner := SystemFindObjectBySerial(ownerserial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+		var bankbox := 0;
+		if (owner)
+			bankbox := FindBankBox(owner);
+		endif
+		if (bankbox and MoveItemToContainer(payout, bankbox))
+			MerchantEscrowLog("[ERROR] WFH escrow: could not file payout for owner=" + ownerserial + " corpse=" + sourceserial + "; pack moved to the owner's bank box instead");
+		else
+			MerchantEscrowLog("[ERROR] WFH escrow: could not file payout for owner=" + ownerserial + " corpse=" + sourceserial + "; pack left at " + payout.x + "," + payout.y + "," + payout.z);
+		endif
+		return 0;
+	endif
+
+	return 1;
+
+endprogram

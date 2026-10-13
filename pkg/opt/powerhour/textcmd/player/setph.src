@@ -1,144 +1,134 @@
-// Synopsis: Activate your hunting power hour bonus
+// Synopsis: Start your weekly personal powerhour (hunting, half-resources or double skillgain)
 use uo;
 use os;
-use math;
 
+include ":powerhour:include/powerhour";
 include "include/client";
 
-const minute := 60;
-const hour := 3600;
-const week := 604800;
-const starttime := 1543172400; //2018/11/25 19:00 gmt (sunday)
+const SETPH_RADIO_HUNT  := 100;
+const SETPH_RADIO_RES   := 200;
+const SETPH_RADIO_SKILL := 300;
+const SETPH_BTN_OKAY    := 1;
 
 program textcmd_setPH(who)
 
 	var time_now := POLCore().systime;
-	var use_time := GetObjProperty(who, "pph_use_time");
-	var use_time_nextweek := use_time + week;
-	var weekday_now := cint(Floor(time_now/86400)+4) % 7;
-	var use_weekday := GetObjProperty(who, "pph_use_weekday");
 
-	if(GetObjProperty(who, "#PPHH") || GetObjProperty(who, "#PPHC") || GetObjProperty(who, "#PPHS"))
-		var remaining := (use_time + hour - time_now)/60;
-		if(GetObjProperty(who, "#PPHH"))
-			SendSysMessage( who, "You are already under the influence of the Hunting Powerhour!", FONT_BOLD, 2595 );
-		elseif(GetObjProperty(who,"#PPHC"))
-			SendSysMessage( who, "You are already under the influence of the Half-Resources Powerhour!", FONT_BOLD, 2595 );
-		elseif(GetObjProperty(who, "#PPHS"))
-			SendSysMessage( who, "You are already under the influence of the Double-Skillgain Powerhour!", FONT_BOLD, 2595 );
-		endif
-		SendSysMessage( who, "Remaining minutes left: "+remaining, FONT_BOLD, 2601 );
+	var active := PPH_ActiveType(who);
+	if(active)
+		SendSysMessage(who, "You are already under the influence of the " + PH_TypeName(active) + " Powerhour!", FONT_BOLD, PH_MSG_COLOR_BAD);
+		SendSysMessage(who, "Remaining minutes left: " + CInt(PPH_SecondsRemaining(who, time_now) / PH_MINUTE), FONT_BOLD, PH_MSG_COLOR_GOOD);
 		return;
 	endif
 
-	if( GetObjProperty(who, "#SettingPH") == 1)
-		SendSysMessage( who, "You have the gump window open already!", FONT_NORMAL, 2595 );
-		return 0;
+	if(GetObjProperty(who, PPH_PROP_SETTING) == 1)
+		SendSysMessage(who, "You have the gump window open already!", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return;
 	endif
 
-	if ((weekday_now < use_weekday) || (time_now > use_time_nextweek) )
-
-		SetObjProperty(who, "#SettingPH", 1);
-		
-		var gump := {
-			"nodispose",
-			"page 0",
-			"gumppic 564 322 30500",
-			"gumppic 686 516 1802",
-			"gumppic 694 516 1803",
-			"gumppic 910 516 1804",
-			"gumppic 686 556 1802",
-			"gumppic 694 556 1803",
-			"gumppic 910 556 1804",
-			"gumppic 686 596 1802",
-			"gumppic 694 596 1803",
-			"gumppic 910 596 1804",
-			"text 710 360 2595 0",
-			"page 1",
-
-			"text 620 420 2578 1",
-
-			"text 710 514 2614 2",
-			"text 710 554 2614 3",
-			"text 710 594 2614 4",
-
-			"radio 663 513 208 209 0 100",								// Hunting PH button
-			"radio 663 553 208 209 0 200",								// Half-Resources PH button
-			"radio 663 593 208 209 0 300",								// Double-Skillgain PH button
-			
-			"button 700 710 243 241 1 0 0",                             // Cancel button
-			"button 840 710 249 248 1 0 1"								// Okay button
-		};
-		
-		var data := {
-			"<[ PERSONAL POWERHOUR ]>",
-			"WARNING: Logging out will make you lose your Powerhour.",
-			"Hunting Powerhour",
-			"Half-resources Powerhour",
-			"Double-skillgain Powerhour"
-		};
-
-		var gumpdata := SendDialogGump(who, gump, data);
-		if(!gumpdata)
-			SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
-			EraseObjProperty(who, "#SettingPH");
-			return;
-		endif
-		
-		// Okay button wasn't pressed
-		if(gumpdata[0] != 1)
-			SendSysMessage( who, "Canceled.", FONT_NORMAL, 2595 );
-			EraseObjProperty(who, "#SettingPH");
-			return 0;
-		endif
-		
-		var playerchoice;
-
-		foreach key in (gumpdata.keys)
-			playerchoice := key;
-		endforeach
-
-		case(playerchoice)
-			100:	activateph(who, "#PPHH");
-			200:	activateph(who, "#PPHC");
-			300:	activateph(who, "#PPHS");
-		endcase
-	else
-		SendSysMessage( who, "You have already started a Personal Powerhour this week. Try again next week!", FONT_NORMAL, 2595 );
+	if(!PPH_IsEligible(who, time_now))
+		SendSysMessage(who, "You have already started a Personal Powerhour this week. Try again next week!", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return;
 	endif
+
+	var gump := {
+		"nodispose",
+		"page 0",
+		"gumppic 564 322 30500",
+		"gumppic 686 516 1802",
+		"gumppic 694 516 1803",
+		"gumppic 910 516 1804",
+		"gumppic 686 556 1802",
+		"gumppic 694 556 1803",
+		"gumppic 910 556 1804",
+		"gumppic 686 596 1802",
+		"gumppic 694 596 1803",
+		"gumppic 910 596 1804",
+		"text 710 360 2595 0",
+		"page 1",
+
+		"text 620 420 2578 1",
+
+		"text 710 514 2614 2",
+		"text 710 554 2614 3",
+		"text 710 594 2614 4",
+
+		"radio 663 513 208 209 0 " + SETPH_RADIO_HUNT,			// Hunting PH button
+		"radio 663 553 208 209 0 " + SETPH_RADIO_RES,			// Half-Resources PH button
+		"radio 663 593 208 209 0 " + SETPH_RADIO_SKILL,			// Double-Skillgain PH button
+
+		"button 700 710 243 241 1 0 0",							// Cancel button
+		"button 840 710 249 248 1 0 " + SETPH_BTN_OKAY			// Okay button
+	};
+
+	var data := {
+		"<[ PERSONAL POWERHOUR ]>",
+		"WARNING: Logging out will make you lose your Powerhour.",
+		"Hunting Powerhour",
+		"Half-resources Powerhour",
+		"Double-skillgain Powerhour"
+	};
+
+	SetObjProperty(who, PPH_PROP_SETTING, 1);
+	var gumpdata := SendDialogGump(who, gump, data);
+	// The window is closed from here on, whatever was (or wasn't) chosen.
+	EraseObjProperty(who, PPH_PROP_SETTING);
+
+	if(!gumpdata || gumpdata[0] != SETPH_BTN_OKAY)
+		SendSysMessage(who, "Canceled.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return;
+	endif
+
+	var choice := PH_TYPE_NONE;
+	if(gumpdata[SETPH_RADIO_HUNT])
+		choice := PH_TYPE_HUNT;
+	elseif(gumpdata[SETPH_RADIO_RES])
+		choice := PH_TYPE_RES;
+	elseif(gumpdata[SETPH_RADIO_SKILL])
+		choice := PH_TYPE_SKILL;
+	endif
+
+	if(!choice)
+		SendSysMessage(who, "You need to pick a powerhour first. Use .setph again and select one.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return;
+	endif
+
+	// The gump may have sat open for a while - make sure nothing changed underneath it.
+	if(PPH_ActiveType(who) || !PPH_IsEligible(who, POLCore().systime))
+		SendSysMessage(who, "You can no longer start a personal powerhour right now.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return;
+	endif
+
+	activateph(who, choice);
 
 endprogram
 
 
-function activateph(who, choice)
+function activateph(who, ph_type)
 
 	var use_time := POLCore().systime;
-	
-	var setph := SetObjProperty(who, choice, 1);
-	var use_weekday :=  cint(Floor(use_time/86400)+4) % 7;
-	
-	SetObjProperty(who, "pph_use_time", use_time);
-	SetObjProperty(who, "pph_use_weekday", use_weekday);
 
-	if(GetObjProperty(who, "#PPHH"))
-		SendSysMessage( who, "Your Hunting Powerhour has started!", FONT_BOLD, 2601 );
-	elseif(GetObjProperty(who,"#PPHC"))
-		SendSysMessage( who, "Your Half-Resources Powerhour has started!", FONT_BOLD, 2601 );
-	elseif(GetObjProperty(who, "#PPHS"))
-		SendSysMessage( who, "Your Double-Skillgain Powerhour has started!", FONT_BOLD, 2601 );
+	SetObjProperty(who, PPH_Prop(ph_type), 1);
+	SetObjProperty(who, PPH_PROP_USE_TIME, use_time);
+	SetObjProperty(who, PPH_PROP_WEEKDAY, PH_WeekdayOf(use_time));
+
+	SendSysMessage(who, "Your " + PH_TypeName(ph_type) + " Powerhour has started!", FONT_BOLD, PH_MSG_COLOR_GOOD);
+
+	Sleep(PH_DURATION);
+
+	// If this powerhour was reset while we slept (.resetph / Eon-Prism) the player may already
+	// be running a fresh one - that one is not ours to end.
+	if(PPH_UseTime(who) != use_time)
+		return;
 	endif
 
-	Sleep(3600);
-
-	if(GetObjProperty(who, "#PPHH"))
-		SendSysMessage( who, "Your Hunting Powerhour has ended!", FONT_BOLD, 2595 );
-	elseif(GetObjProperty(who,"#PPHC"))
-		SendSysMessage( who, "Your Half-Resources Powerhour has ended!", FONT_BOLD, 2595 );
-	elseif(GetObjProperty(who, "#PPHS"))
-		SendSysMessage( who, "Your Double-Skillgain Powerhour has ended!", FONT_BOLD, 2595 );
+	// Logging off clears the flag silently; only announce the end if it is still running.
+	if(PPH_ActiveType(who) == ph_type)
+		SendSysMessage(who, "Your " + PH_TypeName(ph_type) + " Powerhour has ended!", FONT_BOLD, PH_MSG_COLOR_BAD);
 	endif
-	EraseObjProperty(who, "#PPHH");
-	EraseObjProperty(who, "#PPHC");
-	EraseObjProperty(who, "#PPHS");	
-	EraseObjProperty(who, "#SettingPH");
+
+	EraseObjProperty(who, PPH_PROP_HUNT);
+	EraseObjProperty(who, PPH_PROP_RES);
+	EraseObjProperty(who, PPH_PROP_SKILL);
+
 endfunction

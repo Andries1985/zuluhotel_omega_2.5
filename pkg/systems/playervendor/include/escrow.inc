@@ -9,6 +9,9 @@ use file;
 
 const PLAYERVENDOR_ESCROW_DF_PREFIX := "merchantescrow_";
 const ESCROW_STORAGE_NAME := "Merchant Escrow";
+// Vendor name under which Warrior for Hire payouts are indexed (written by
+// pkg/opt/warriorforhire/include/wfhescrow.inc, hidden by escrow.src): one definition for both.
+const ESCROW_WFH_VENDOR_NAME := "Warrior for Hire";
 const MERCHANT_ESCROW_LOG_FILE := "::log/merchantescrow.log";
 
 const ENTRY_ID_IDX := 1;

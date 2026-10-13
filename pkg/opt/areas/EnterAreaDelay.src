@@ -48,8 +48,13 @@ if(who_x == error || who_y == error || who_realm == error)
 	return 0;
 endif
 
-// Resolve area policy mask ONCE and reuse the result for all bit checks.
-var mask := CInt(ResolvePolicyAtLocation(who_x, who_y, who_realm));
+// Resolve the area match ONCE and reuse it for every check below, including
+// the forbidden-area test which needs the matched area's index.
+var match := ResolveAreaMatchAtLocation(who_x, who_y, who_realm);
+var mask := 0;
+if(match)
+	mask := CInt(match.mask);
+endif
 
 // Safe area, no more messages atm
 if (HasPolicy(mask, AREA_POLICY_SAFE_AREA))
@@ -71,7 +76,7 @@ else
 	SendSysMessage(who, "This is NOT a guarded area.", 3, 1001);
 endif
 
-if (IsInForbiddenArea( who ))
+if (IsInForbiddenAreaForMatch( who, match ))
 	SendSysMessage(who, "This is a FORBIDDEN area.", 3, 1001);
 endif
 

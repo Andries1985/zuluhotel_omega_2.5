@@ -7,6 +7,7 @@ include "include/client";
 include "include/recalling";
 include ":housing:utility";
 include ":statichousing:recallgatehelp";
+include "include/housetravel";	// Patch 1.1.4: FindHouseAtSpot / CanTravelIntoHouse / DestroyRefusedRune
 
 program cast_recall( caster, spell_id )
 
@@ -26,26 +27,14 @@ program cast_recall( caster, spell_id )
 		return 0;
 	endif
 
-	var multi2 := GetStandingHeight( caster.x, caster.y, caster.z ).multi;
-	if( multi2 )
-		if( !Iscowner( caster, multi2 )  )
-			if( !IsFriend( caster, multi2, RECALL_TO) )
-				SendSysMessage( caster, "You can't recall from this house." );
-				return;
-			endif
-		endif
+	// Patch 1.1.4: house test by footprint (include/housetravel.inc) instead of the engine's
+	// supporting-multi test, so a courtyard and a static house count as "in a house" too.
+	var from_house := FindHouseAtSpot( caster.x, caster.y, caster.z, caster.realm );
+	if( !CanTravelIntoHouse( caster, from_house, RECALL_TO ) )
+		SendSysMessage( caster, "You can't recall from this house." );
+		return;
 	endif
-	// Same check as above for static houses
-	var serialstatichouse := StaticHouseSerial( caster );
-	if(serialstatichouse)
-		var sign := SystemFindObjectBySerial(serialstatichouse);
-		if( !Iscowner( caster, sign )  )
-			if( !IsFriend( caster, sign, RECALL_TO) )
-				SendSysMessage( caster, "You can't recall from this house." );
-				return;
-			endif
-		endif
-	endif
+
 	if (TryToCast( caster, spell_id ) != SUCCESS);
 		EraseObjProperty(caster, "#Casting");
 		return 0;
@@ -86,14 +75,15 @@ program cast_recall( caster, spell_id )
 
 	endif
 
-	var multi := GetStandingHeight( tox, toy, toz ).multi;
-	if( multi )
-		if( !Iscowner( caster, multi )  )
-			if( !IsFriend( caster, multi, RECALL_TO) )
-				SendSysMessage( caster, "You can't recall to this house." );
-				return;
-			endif
-		endif
+	// Patch 1.1.4: the destination's house is found by footprint, ignoring the rune's z. The old
+	// test (GetStandingHeight at the rune's z) saw no house when the rune was marked higher than
+	// the floor of a house placed there later, and the move then dropped the caster inside.
+	// A refused rune is destroyed (a runebook loses that entry), as forbidden areas already do.
+	var house := FindHouseAtSpot( tox, toy, toz, caster.realm );
+	if( !CanTravelIntoHouse( caster, house, RECALL_TO ) )
+		SendSysMessage( caster, "You can't recall to this house." );
+		DestroyRefusedRune( caster, cast_on, house, tox, toy, toz );
+		return;
 	endif
 	var owner;
 	var lamp;
@@ -110,21 +100,13 @@ program cast_recall( caster, spell_id )
 			return;
 		endif
 	endif
-	//Same check as above but for static houses
-	serialstatichouse := StaticHouseSerialAtLocation( tox, toy, toz );
-	if(serialstatichouse)
-		var sign := SystemFindObjectBySerial(serialstatichouse);
-		if( !Iscowner( caster, sign )  )
-			if( !IsFriend( caster, sign, RECALL_TO) )
-				SendSysMessage( caster, "You can't recall to this house." );
-				return;
-			endif
-		endif
-	endif
-
 	PlaySoundEffect( caster, SFX_SPELL_RECALL1 );
 	sleepms(250);
-	MoveObjectToLocation( caster, tox, toy, toz );
+	// Patch 1.1.4: the move can fail (something now stands on that spot); it used to fail silently.
+	if( !MoveObjectToLocation( caster, tox, toy, toz ) )
+		SendSysMessage( caster, "Something blocks that location." );
+		return;
+	endif
 	PlaySoundEffect( caster, SFX_SPELL_RECALL2 );
 
 endprogram

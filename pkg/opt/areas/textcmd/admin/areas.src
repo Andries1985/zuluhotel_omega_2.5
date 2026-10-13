@@ -35,6 +35,9 @@ var nolooting := {};
 var safearea := {};
 var nopk := {};
 var rparea := {};
+// Mask per area index as loaded from the datafile, so Save only writes the
+// areas whose mask actually changed.
+var loaded_masks := {};
 
 const AREAS_PER_PAGE := 15;
 const ROW_HEIGHT := 25;
@@ -531,6 +534,7 @@ function LoadAreaFlagArrays()
 	safearea := {};
 	nopk := {};
 	rparea := {};
+	loaded_masks := {};
 
 	var i;
 	for(i := 1; i <= areas.size(); i := i + 1)
@@ -539,6 +543,7 @@ function LoadAreaFlagArrays()
 		if(area_info != error)
 			mask := GetPolicyMask(AREA_POLICY_EDITOR_REALM, area_info.area_id);
 		endif
+		loaded_masks[i] := CInt(mask);
 
 		guarded[i] := HasPolicy(mask, AREA_POLICY_GUARDED);
 		norecallto[i] := HasPolicy(mask, AREA_POLICY_NO_RECALL_TO);
@@ -604,7 +609,9 @@ endfunction
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
-// SaveAreaFlagArrays() - Persists all area flags back to global properties.
+// SaveAreaFlagArrays() - Persists changed area flags to the realm policy
+// datafile in one batch, prunes ids no longer in areas.cfg and rebuilds the
+// shared mask cache. Areas whose mask did not change are not rewritten.
 //
 ////////////////////////////////////////////////////////////////////////////////////
 function SaveAreaFlagArrays(who)
@@ -613,8 +620,7 @@ function SaveAreaFlagArrays(who)
 		updated_by := CStr(who.name);
 	endif
 
-	Print("[areas.save] begin realm=" + CStr(AREA_POLICY_EDITOR_REALM) + " updated_by=" + updated_by + " areas=" + CStr(areas.size()));
-
+	var changes := dictionary;
 	var i;
 	for(i := 1; i <= areas.size(); i := i + 1)
 		var area_info := ParseAreaLine(areas[i], i);
@@ -655,13 +661,21 @@ function SaveAreaFlagArrays(who)
 			mask := mask + AREA_POLICY_RP_AREA;
 		endif
 
-		Print("[areas.save] area=" + CStr(i) + " id=" + CStr(area_info.area_id) + " mask=" + CStr(mask));
-		SetPolicyMask(AREA_POLICY_EDITOR_REALM, area_info.area_id, mask, updated_by);
+		if(CInt(mask) != CInt(loaded_masks[i]))
+			changes[CStr(area_info.area_id)] := CInt(mask);
+			loaded_masks[i] := CInt(mask);
+		endif
 	endfor
 
+	var written := SetPolicyMasks(AREA_POLICY_EDITOR_REALM, changes, updated_by);
+	if(written == error)
+		SendSysMessage(who, "Could not open the area policy file for " + CStr(AREA_POLICY_EDITOR_REALM) + "; nothing saved.");
+		Print("[areas.save] realm=" + CStr(AREA_POLICY_EDITOR_REALM) + " by=" + updated_by + " FAILED: " + CStr(written.errortext));
+		return;
+	endif
+
 	var pruned := PruneStaleRealmPolicies(AREA_POLICY_EDITOR_REALM);
-	Print("[areas.save] prune realm=" + CStr(AREA_POLICY_EDITOR_REALM) + " removed=" + CStr(pruned));
-	Print("[areas.save] end realm=" + CStr(AREA_POLICY_EDITOR_REALM));
+	Print("[areas.save] realm=" + CStr(AREA_POLICY_EDITOR_REALM) + " by=" + updated_by + " changed=" + CStr(written) + " pruned=" + CStr(pruned));
 endfunction
 
 ////////////////////////////////////////////////////////////////////////////////////

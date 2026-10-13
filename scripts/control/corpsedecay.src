@@ -5,6 +5,8 @@ use basic;
 use cfgfile;
 
 include "include/constants/propids";
+include "include/objtype";
+include ":warriorforhire:include/wfhcommon";	// EscrowWarriorForHireGear
 
 const DECAY_TIME_NPC_CORPSE		:= 30;		// In minutes.
 const DECAY_TIME_PLAYER_CORPSE		:= 30;		// In minutes.
@@ -106,6 +108,7 @@ function ProcessNpcCorpseDecaying( corpse, corpse_serial )
 	endwhile
 
 	if( SystemFindObjectBySerial(corpse_serial) )
+		EscrowWarriorForHireGear( corpse );
 		DestroyItem(corpse);
 	endif
 

@@ -413,11 +413,25 @@ function IsInForbiddenArea( who )
 	if( who.cmdlevel )
 		return 0;
 	endif
-	
+
 	var old_prio := set_priority(100);
 	var match := ResolveAreaMatchAtLocation(who.x, who.y, who.realm);
+	var forbidden := IsInForbiddenAreaForMatch(who, match);
+	set_priority(old_prio);
+	return forbidden;
+
+endfunction
+
+
+// Same test as IsInForbiddenArea() but for a match the caller has already
+// resolved, so callers that need several checks at one location resolve once.
+function IsInForbiddenAreaForMatch( who, byref match )
+
+	if( who.cmdlevel )
+		return 0;
+	endif
+
 	if(!match)
-		set_priority(old_prio);
 		return 0;
 	endif
 
@@ -432,16 +446,13 @@ function IsInForbiddenArea( who )
 	endif
 
 	if(banned[match.area_index])
-		set_priority(old_prio);
 		return 1;
 	endif
 
 	if(!allowed[match.area_index] && HasPolicy(match.mask, AREA_POLICY_FORBIDDEN))
-		set_priority(old_prio);
 		return 1;
 	endif
 
-	set_priority(old_prio);
 	return 0;
 
 endfunction

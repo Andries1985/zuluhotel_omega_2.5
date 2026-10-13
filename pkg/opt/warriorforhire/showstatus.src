@@ -1,0 +1,13 @@
+// Sends a warrior's "<name> status" gump from its own process. SendDialogGump waits for the reader
+// to close the window, and the warrior's AI must not stop healing and following while it does.
+use uo;
+
+include ":gumps:include/gumps";
+
+program wfh_showstatus(params)
+
+	var you := params[1];
+	var gump := params[2];
+	GFSendGump(you, gump);
+
+endprogram
