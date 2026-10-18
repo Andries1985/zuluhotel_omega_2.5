@@ -5,6 +5,7 @@ use cfgfile;
 
 include "/include/math";
 include ":gumps:gumps";
+include ":gumps:yesno";
 include "tstone";
 include "include/NameChecker";
 
@@ -1010,6 +1011,8 @@ function BuildTownStoneGump(who)
 			GFAddButton(gump, 60, 250 + yshift, 2474, 2473, GF_CLOSE_BTN, 2100);
 			GFTextLine(gump, 95, 252 + yshift, 1153, "Purchase upgrades");
 		endif
+		GFAddButton(gump, 260, 250 + yshift, 2474, 2473, GF_CLOSE_BTN, 3001);
+		GFTextLine(gump, 295, 252 + yshift, 1153, "Resign and leave town");
 		if(eleicoes)
 			GFTextLine(gump, 28, 125 + yshift, 1153, "Running election: " + votepercent + "% have voted.");
 			GFAddButton(gump, 260, 220 + yshift, 2474, 2473, GF_CLOSE_BTN, 5001);
@@ -1245,7 +1248,9 @@ case (res[0])
 
 	2002: ConvocarEleicoes(who, item); 
 
-	3000: CanselCityzenship(who, item); 
+	3000: CanselCityzenship(who, item);
+
+	3001: ResignMayorship(who, item);
 
 	4000: candidato(who, item);
 
@@ -1264,6 +1269,41 @@ TouchTownstoneRegionEntry(item, city);
 
 endprogram
 
+
+
+function ResignMayorship(who, item)
+
+if(CInt(GetObjProperty(item, "mayorserial")) != who.serial)
+	SendSysMessage(who, "You are not the mayor of " + city + ".");
+	return;
+endif
+
+if(!YesNo(who, "Resign as Mayor of " + city + " and give up your citizenship?", "Resign", "Cancel"))
+	SendSysMessage(who, "Cancelled.");
+	return;
+endif
+
+// Re-check after the confirmation gump in case an election finished meanwhile.
+if(CInt(GetObjProperty(item, "mayorserial")) != who.serial)
+	SendSysMessage(who, "You are no longer the mayor of " + city + ".");
+	return;
+endif
+
+var former_mayor := CStr(GetObjProperty(item, "mayor"));
+
+// Any running election or poll keeps going; an election will seat the next mayor.
+EraseObjProperty(item, "mayor");
+EraseObjProperty(item, "mayorserial");
+SetObjProperty(item, "nextcitizenelection", 0);
+mayor := "No mayor";
+mayorserial := 0;
+nextcitizenelection := 0;
+
+CanselCityzenship(who, item);
+
+BroadcastSystemLine(former_mayor + " has resigned as Mayor of " + city + ".");
+
+endfunction
 
 
 function CanselCityzenship(who, item)
