@@ -20,20 +20,20 @@ endfunction
 // A heart revives only the death the owner's WFHBackup was written for. death.src stamps both with
 // the corpse serial (WFHDeathId) and either revival erases the backup, so a heart held back from an
 // earlier death cannot be used later to roll the death count back. Hearts written before the stamp
-// existed carry none and are honoured only while no stamped backup has replaced them.
+// existed are refused outright (ZH3.0 3.1.4): they used to pass whenever the owner had no backup,
+// which every revival now erases, so one kept in a chest was a free extra life.
 function IsCurrentWfhHeart(heart, owner)
 
-	var heartid := GetObjProperty(heart, "WFHDeathId");
-	var backupid := 0;
-	var backup := GetObjProperty(owner, "WFHBackup");
-	if (backup)
-		backupid := backup["WFHDeathId"];
+	var heartid := CInt(GetObjProperty(heart, "WFHDeathId"));
+	if (!heartid)
+		return 0;
 	endif
 
-	if (!heartid and !backupid)
-		return 1;
+	var backup := GetObjProperty(owner, "WFHBackup");
+	if (!backup)
+		return 0;
 	endif
-	return (heartid and heartid == backupid);
+	return (heartid == CInt(backup["WFHDeathId"]));
 
 endfunction
 

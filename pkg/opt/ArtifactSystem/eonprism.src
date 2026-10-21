@@ -1,6 +1,7 @@
 use uo;
 
 include "include/client";
+include "include/itemutil";
 include ":powerhour:include/powerhour";
 
 const EONPRISM_FONT_COLOR := 43;
@@ -8,6 +9,13 @@ const EONPRISM_FONT_COLOR := 43;
 program eonprism(character, prism)
 
 if(!ReserveItem(prism)) return 0; endif
+
+// Anyone in reach could use a prism lying on the floor or in an open chest (ZH3.0 3.1.4).
+if(!IsOnPlayer(character.backpack, prism))
+	SendSysMessage(character, "The Eon-Prism must be in your backpack to use it.", FONT_NORMAL, EONPRISM_FONT_COLOR);
+	ReleaseItem(prism);
+	return 0;
+endif
 
 if(PPH_ActiveType(character))
 	SendSysMessage(character, "You cannot use the Eon-Prism while a personal powerhour is already active.", FONT_NORMAL, EONPRISM_FONT_COLOR);
