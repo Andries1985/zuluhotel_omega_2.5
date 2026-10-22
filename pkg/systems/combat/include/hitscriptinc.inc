@@ -536,7 +536,7 @@ endfunction
 
 function ModByProt( defender, basedamage )
 
-	var physicalprot := GetObjProperty( defender , "PhysicalProtection" );
+	var physicalprot := GetPhysicalProtection( defender );
 	if( !physicalprot )
 		return basedamage;
 	else
@@ -764,6 +764,8 @@ function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 		//Check if reactive armor spell is on
 		if( reactive )
 			EraseObjProperty( defender , "ReactiveArmor" );
+			EraseObjProperty( defender , "#ReactiveArmorPid" );
+			BuffOff( defender , "reactivearmor" );
 			start_script( ":combat:reactivearmoronhit" , { attacker, defender, basedamage, rawdamage, reactive} );
 		endif
 

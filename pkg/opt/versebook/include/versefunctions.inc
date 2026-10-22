@@ -6,6 +6,7 @@ include "include/attributes";
 include "include/areas";
 include "verseconstants";
 include "include/spelldata";
+include "include/spellprots";
 
 var cfgfile := ReadConfigFile(":versebook:verses");
 
@@ -251,6 +252,19 @@ function InterruptedPlaying(who, x, y, Stamina, hp)
 	endif
 
 	return 0;
+
+endfunction
+
+//////////////////////////////////////////////////////////////////////////////////////
+//
+// EndVerse() - Clears the playing flag set by SucceedPlayingVerse. For verse exits that
+//		don't go through InterruptedPlaying (fumbles, one-shot verses).
+//
+/////////////////////////////////////////////////////////////////////////////////////
+
+function EndVerse(who)
+
+	EraseObjProperty(who, "#Casting");
 
 endfunction
 
@@ -589,7 +603,7 @@ function AdjustForPhysicalDamage(person, damage)
 		damage *= ClasseSmallBonusByLevel( IsMage(person) );
 	endif
 
-	var phys_prot := GetObjProperty(person, "PhysicalProtection");
+	var phys_prot := GetPhysicalProtection(person);
 
 	if (phys_prot)
 		damage *= 1 - phys_prot * 0.05;

@@ -1,9 +1,9 @@
 # Developer Changelog - v1.1.5
 **Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `ea4722a` + working tree (this release's own `patchnotes/` files)  
 **Branch:** Patch-1.1.5  
-**Date:** 2026-10-18 to 2026-10-20 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20)  
+**Date:** 2026-10-18 to 2026-10-22 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20; spell protections, Reactive Armor and Beastal Bond 2026-10-21/22)  
 **Commits in range:** 2 with content (`d11f181`, `ea4722a`) plus merge commits that carry only 1.1.4 work (`git diff 4abd02c 469834b` is empty); see section 2.  
-**Files changed:** 11 code files modified, no new files, plus this release's 3 `patchnotes/` files. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
+**Files changed:** 25 code files modified (11 in the first round, 15 in the spell round, `hitscriptinc.inc` in both) and 2 new includes (`scripts/include/spellprots.inc`, `pkg/opt/versebook/include/beastalbond.inc`), plus this release's 3 `patchnotes/` files. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
 
 > Scope was computed against `4abd02c`, the last commit that edited the 1.1.4 notes, not `master`.
 
@@ -20,23 +20,30 @@
 7. [Eon-Prism - Backpack Only](#7-eon-prism---backpack-only)
 8. [Merchants - Empty Keyrings Sell for 1 Gold](#8-merchants---empty-keyrings-sell-for-1-gold)
 9. [Area Policy Test Tools Restore the Mask Cache](#9-area-policy-test-tools-restore-the-mask-cache)
-10. [ZH3.0 3.1.4 - Reviewed, Not Ported](#10-zh30-314---reviewed-not-ported)
-11. [Exhaustive File-by-File Change List](#11-exhaustive-file-by-file-change-list)
-12. [Risk and Regression Notes](#12-risk-and-regression-notes)
+10. [Timed Spell Protections - Sanctuary, Antidote, Dragon Skin](#10-timed-spell-protections---sanctuary-antidote-dragon-skin)
+11. [WipeMods - Dispel Removes the Timed Buffs](#11-wipemods---dispel-removes-the-timed-buffs)
+12. [Login - Clear Old Protection Values](#12-login---clear-old-protection-values)
+13. [Reactive Armor - Dispellable, Buff Icon](#13-reactive-armor---dispellable-buff-icon)
+14. [Beastal Bond - Fumbles, Logoff and Return Position](#14-beastal-bond---fumbles-logoff-and-return-position)
+15. [ZH3.0 3.1.4 - Reviewed, Not Ported](#15-zh30-314---reviewed-not-ported)
+16. [Exhaustive File-by-File Change List](#16-exhaustive-file-by-file-change-list)
+17. [Risk and Regression Notes](#17-risk-and-regression-notes)
 
 ---
 
 ## 1. Scope Summary
 
-Patch 1.1.5 is a small follow-up to 1.1.4 with four topics.
+Patch 1.1.5 is a small follow-up to 1.1.4 with five topics.
 
 Section 3 gives the mayor a way out of a town. The townstone gump's "give up your citizenship" button (3000) was only drawn on the citizen screen, and the mayor branch is tested before the citizen branch, so a mayor had no in-game way to leave short of losing an election or a staff `.removetownmember`. ZH3.0 ported this commit to its own 3.1.4 as theme 11.
 
-Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 10.
+Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 15.
 
 Section 8 makes keyrings sellable. They already had `VendorBuysFor 1`, but they are `newbie 1` and the merchant AI refuses newbied items. They stay newbie, and the merchant's own sell paths accept empty ones.
 
 Section 9 fixes two developer test tools that erased the shared area-policy mask cache and never rebuilt it.
+
+Sections 10-14 rework the timed spell protections. It started from a player report: Sanctuary's poison immunity, when it ran out, also switched off poison immunity jewelry put on during the spell. Sanctuary, Antidote and Dragon Skin wrote straight into the CProps that equipment maintains. That caused the jewelry bug, immunity and Dragon Skin protection stuck on after restarts, and Dragon Skin stacking without limit. The spells now keep their own temporary levels, and the higher of gear and spell counts. Dragon Skin becomes a timed buff with new numbers. Dispel removes all of them plus Reactive Armor. Beastal Bond gets ZH3.0's fixes plus a saved start position.
 
 ## 2. Commit Timeline
 
@@ -45,7 +52,7 @@ Section 9 fixes two developer test tools that erased the shared area-policy mask
 | `01bb007` ... `f93dfbb`, `469834b` | 2026-10-06 to 2026-10-12 | Merge pull requests #331, #333, #335-#342 (Patch-1.1.3, Patch-1.1.4, Test-Shard) | - (no new content; tree at `469834b` equals `4abd02c`) |
 | `d11f181` | 2026-10-18 | Mayor can leave town | 3 |
 | `ea4722a` | 2026-10-20 | Fixes: ZH3.0 3.1.4 review fixes (powerhour lock, warrior hearts, priest, damage compare, AI caching, Eon-Prism), keyrings, test tools restore the area mask cache | 4-9 |
-| *(next commit)* | - | Patch notes for 1.1.5 | - |
+| *(next commit)* | - | Spell protections, Dragon Skin rework, Reactive Armor, Beastal Bond, and patch notes for 1.1.5 | 10-14 |
 
 ---
 
@@ -187,7 +194,124 @@ Considered and rejected: rebuilding a missing cache from the read path. It would
 
 ---
 
-## 10. ZH3.0 3.1.4 - Reviewed, Not Ported
+## 10. Timed Spell Protections - Sanctuary, Antidote, Dragon Skin
+
+**Files:** `scripts/include/spellprots.inc` (new, 102 lines), `scripts/include/dotempmods.inc` (+53 / -4), `pkg/opt/holybook/sanctuary.src` (+20 / -21), `pkg/opt/earth/antidote.src` (+11 / -11), `pkg/opt/versebook/Dragon_Skin.src` (rewrite, +47 / -107), `pkg/systems/combat/include/hitscriptinc.inc` (`ModByProt`), `pkg/opt/versebook/include/versefunctions.inc` (`AdjustForPhysicalDamage`, include), `scripts/control/skilladvancerequip.src` (+2 / -3), `scripts/textcmd/player/prots.src` (+3 / -2), `pkg/packethooks/megacliloc/mobiledata.src` (+5 / -4)
+
+### 10.1 The defects
+
+All three spells wrote straight into the permanent CProps that equipment maintains, then slept and undid the write:
+
+- **Sanctuary / Antidote** set `PermPoisonImmunity` (only if the caster had none), slept `magery * 2` seconds and erased it. Jewelry equipped during the spell set the same CProp through `skilladvancerequip.src` and was wiped by the erase until re-equipped. A restart killed the sleeping script and left the immunity on until an immunity item was equipped or unequipped.
+- **Dragon Skin** added the bard level to `PhysicalProtection` and subtracted it when the song ended. Its fumble path (`PlayBardicMusic` failing every 7 s) did `return 0` before the cleanup loop, so everyone protected kept the bonus permanently. The temporary `#DragonSkin` marker was lost on restart while the bonus persisted, so the next song added it again on top: unbounded stacking. Because `DragonSkin()` returned 0 for anyone already marked, the per-pulse `protected` list only held newcomers, so the range / death / hidden check stopped applying after the first pulse. Equip and unequip both rewrote `PhysicalProtection` to the best equipped item, dropping the bonus, and the song end then subtracted it from the equipment value.
+- **Antidote** cured `cast_on` but gave the immunity to `caster`. Sanctuary's script was copied from Antidote (its program is still named `cast_antidote`), and "caster" is only right for the self-only Sanctuary.
+
+### 10.2 Design: spell levels live beside the permanent CProps
+
+The fix had to cover NPCs as well as players. `config/npcdesc.cfg` gives templates `PermPoisonImmunity` and `PhysicalProtection` CProps, and Antidote and Dragon Skin can target pets. So "recalculate from equipment when the spell ends" was not safe: it would wipe a pet's template protection.
+
+`spellprots.inc` keeps each spell's level in its own temporary CProp and never touches the permanent ones:
+
+- `SPELLPROT_POISON := "#SpellPoisonImmunity"` (Sanctuary, Antidote) and `SPELLPROT_DRAGONSKIN := "#DragonSkin"`, each holding `{ level, owner pid }`.
+- `SetSpellProt()` writes `{ level, GetPid() }` and calls `IncRevision()`. `EndSpellProt()` erases it only if the stored pid is the calling script's, so a cast that was dispelled or replaced by a recast does nothing when its timer ends.
+- `GetPoisonImmunityLevel()` / `GetPhysicalProtection()` return the higher of the permanent CProp and the spell level, except that a negative (cursed) permanent value always wins. The spells don't lift curses.
+- Readers switched to them: `PoisonProtected()` in `dotempmods.inc`, `ModByProt()` (weapon hits), `AdjustForPhysicalDamage()` (physical verse damage), `.prots`, and both protection blocks in the megacliloc mobile tooltip.
+- Being `#` CProps, the spell levels cannot survive a restart.
+
+`skilladvancerequip.src` no longer recalculates Physical Protection when `#DragonSkin` is set, and its `dskin` variable is gone.
+
+### 10.3 Sanctuary and Antidote
+
+Power and duration formulas are unchanged. The cast is applied when `power >= GetPoisonImmunityLevel(target)`: a target with higher immunity from jewelry or a stronger cast is skipped, and an equal one is refreshed. The scripts `SetSpellProt()`, `BuffOn("poisonimmunity")`, `Detach()`, sleep, then `EndSpellProt()` / `BuffOff()`. Antidote now applies to `cast_on`, including NPC targets (no buff icon for NPCs; `BuffOn` returns 0 for them).
+
+### 10.4 Dragon Skin
+
+The channelled loop is gone. After `CanPlay()` and `SucceedPlayingVerse()`:
+
+- Level `IsBard(who)` (1-6) picks the protection from `{ 1, 2, 3, 5, 7, 9 }` and the duration `(15 + 3 * (level - 1)) * 60` seconds.
+- Targets are `ListMobilesInLineOfSight(who, range) + who` that pass `SmartSongBoost()` (party, guild rules, pets) and `CheckLineOfSight()`, with range from `GetVerseRange()` as before.
+- A target whose current Dragon Skin level is higher is skipped; otherwise it is replaced. Each target costs 20 stamina via `ConsumeBardStamina(who, stamina, 20)`; the loop stops with a message when the bard has less than 20.
+- `EndVerse()` clears `#Casting` straight away, so the bard is free. The script then `Detach()`es, sleeps the duration, and ends each skin it still owns.
+- The `Stamina 5` / `Difficulty 90` entry in `verses.cfg` is unchanged; `CanPlay()` still requires that much stamina to start.
+
+### 10.5 Buff icons
+
+`BuffOn()` / `BuffOff()` gained two entries on icons nothing else in 2.5 uses:
+
+| Buff | Icon | Title cliloc | Text cliloc |
+|---|---|---|---|
+| `poisonimmunity` | 1020 (client's Gift of Renewal icon) | 1061161 "Poison Resistance" | 1063505 "Poison Immunity: ~1_VAL~" |
+| `dragonskin` | 1021 (client's Attune Weapon icon) | 1061158 "Physical Resistance" | 1063504 "Physical Protection: ~1_VAL~" |
+
+The clilocs were read from the `D:/UO` client's `Cliloc.enu`. `SendBuffPacket()` passes the amount as the text argument. No existing buff uses a text cliloc with a value placeholder, so whether the level shows is untested.
+
+---
+
+## 11. WipeMods - Dispel Removes the Timed Buffs
+
+**File:** `scripts/include/dotempmods.inc`
+
+`WipeMods()` only undid the `#mods` / `mods` arrays. It now also, before leaving its critical section:
+
+- erases `#SpellPoisonImmunity` and `#DragonSkin` and turns their icons off;
+- erases `ReactiveArmor` and `#ReactiveArmorPid` and turns the Reactive Armor icon off;
+- restores the name from `realname` (Incognito) and turns its icon off.
+
+Each one sets `had_mods`. The casting scripts are still asleep and find on waking that they no longer own the buff.
+
+Callers that now remove these buffs: login (`playermanager.src`), Dispel, Mass Dispel, Song of Dismissal, Blackrock, the `newpotions.src` caller, Color Wars, `help.src` and the Warrior for Hire AI's periodic wipe. Dispel was the goal; the others come with it.
+
+**Incognito is disabled.** `pkg/std/spells/incognito.src` returns "Disabled." before casting, so its script was not changed. The `realname` restore is only a safety net.
+
+---
+
+## 12. Login - Clear Old Protection Values
+
+**File:** `scripts/playermanager.src` (+12)
+
+After `WipeMods()` / `CurePoison()`, for players with `cmdlevel` 0, `ResyncEquippedProt(who, "PermPoisonImmunity")` and `ResyncEquippedProt(who, "PhysicalProtection")` reset both CProps to the best value on equipped items (or erase them). This uses the same rule as the equip scripts: highest positive item level. It clears values left by the old spell code, including Dragon Skin stacks already on live. Staff are skipped so hand-set values survive. NPCs (pets with stacked Dragon Skin from before this patch) are not cleaned.
+
+---
+
+## 13. Reactive Armor - Dispellable, Buff Icon
+
+**Files:** `pkg/std/spells/reactivearmor.src` (+9 / -2), `pkg/systems/combat/include/hitscriptinc.inc`
+
+- The cast stores `#ReactiveArmorPid := GetPid()` with `ReactiveArmor` and shows the existing `reactivearmor` buff icon. When it wakes, it only erases the buff if the pid still matches, so a dispelled or recast buff isn't ended early.
+- `include/dotempmods` added for `BuffOn` / `BuffOff`.
+- When the armor triggers in combat (`hitscriptinc.inc`), `#ReactiveArmorPid` is erased and the icon turned off as well.
+- Removed by `WipeMods()` (section 11). A restart can no longer leave it on: login runs `WipeMods()`.
+
+---
+
+## 14. Beastal Bond - Fumbles, Logoff and Return Position
+
+**Files:** `pkg/opt/versebook/Beastal_Bond.src` (+15 / -13), `pkg/opt/versebook/Beast_Bond_View.src` (+6), `pkg/opt/versebook/include/beastalbond.inc` (new, 55 lines), `pkg/opt/versebook/include/versefunctions.inc` (`EndVerse()`), `scripts/misc/logoff.src`, `scripts/misc/reconnect.src`, `scripts/playermanager.src`
+
+### 14.1 The defects
+
+While viewing the bonded creature, `Beast_Bond_View.src` freezes and conceals the bard and moves them to the creature every second. When the bard fumbled (`PlayBardicMusic` failing), `Beastal_Bond.src` did `return 0` and skipped `BringBackToPosition()`. The view loop kept dragging the bard along until the creature died or the bond timed out, "Leave Mind" did nothing (only the dead main loop read `#StopPlaying`), and when the view loop ended it did not unfreeze or unconceal. The bard was left frozen and invisible at the creature until logoff. Logoff only cleared the view state, so the bard came back at the creature's location. `BringBackToPosition()` also used `&&` and skipped the move when the creature shared the bard's original x or y.
+
+### 14.2 Ported from ZH3.0 (2026-09-22)
+
+- `Beast_Bond_View.src` always unfreezes, unconceals and clears `#ViewingBeast` when its loop ends.
+- `BringBackToPosition()` moves the bard when x, y or realm differs, using the saved realm.
+- `EndVerse(who)` (new in `versefunctions.inc`) clears `#Casting` at the end of the verse.
+- `ListMobilesNearLocation()` is given `who.realm`.
+- The `Start_Script(":versebook:Beastal_Bond_Reporting")` call is removed; that script never existed, and the wisp AI does the reporting.
+- Logoff and reconnect end the bond (ZH3.0 behaviour): clear `BeastalBond`, `BeastalBondTimer`, `#StopPlaying`, `#ViewingBeast`, unfreeze, unconceal. The wisp AI exits on its own once `BeastalBond` is gone.
+
+ZH3.0's wisp spawn location (`DEFAULT_LOCATION_NPC_RELOCATION_*`) was not ported; 2.5 keeps its coordinates.
+
+### 14.3 Beyond ZH3.0
+
+- **A fumble now ends the loop** (`breakplease := 1; break;`) instead of returning, so `BringBackToPosition()` and `EndVerse()` always run.
+- **The loop stops if the bard goes offline** (`!who.connected`). Otherwise it would restart the view on a logged-off character after logoff cleared it.
+- **The start position is saved persistently.** `beastalbond.inc` stores `BeastalBondOrigin := { x, y, z, realm }` after a successful play. `ReturnToBeastalBondOrigin()` moves the bard back and erases it. `EndBeastalBond()` (logoff, reconnect and, for restarts, login) clears the bond state and returns the bard. It only acts when some bond state is present, so concealed staff are left alone.
+
+---
+
+## 15. ZH3.0 3.1.4 - Reviewed, Not Ported
 
 ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
@@ -200,7 +324,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 11. Exhaustive File-by-File Change List
+## 16. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -208,12 +332,28 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `pkg/opt/powerhour/include/powerhour.inc` | 4 | New `PPH_ResetTime()`; `PPH_IsEligible()` and `PPH_SecondsUntilEligible()` both use it; weekday from the use time |
 | `pkg/opt/warriorforhire/include/wfhcommon.inc` | 5.1 | `IsCurrentWfhHeart()` refuses unstamped hearts and hearts with no backup |
 | `scripts/ai/highpriest.src` | 5.2, 5.3 | Heart from anyone but its master is destroyed; memory revival applies `resnum` stat loss, floor 10 |
-| `pkg/systems/combat/include/hitscriptinc.inc` | 6.1 | `WFHModifyDamage()` reads each master once as `CInt` and compares only when set |
+| `pkg/systems/combat/include/hitscriptinc.inc` | 6.1, 10, 13 | `WFHModifyDamage()` reads each master once as `CInt` and compares only when set; `ModByProt()` uses `GetPhysicalProtection()`; Reactive Armor trigger clears `#ReactiveArmorPid` and its icon |
 | `pkg/opt/warriorforhire/warrior.src` | 6.2 | `gWeaponAmmoTypes` / `gHealPotionPowers` caches; new `WeaponAmmoType()`, `LoadHealPotionPowers()`; `HasBow()` and `HealPotionPower()` use them |
 | `pkg/opt/ArtifactSystem/eonprism.src` | 7 | `include/itemutil`; refused unless in the user's backpack |
 | `scripts/ai/merchant.src` | 8 | `MERCHANT_KEYRING_OBJTYPE`; new `CanMerchantBuy()`; `SellAll()` and `SellBag()` buy empty, unowned keyrings |
 | `pkg/opt/alryc/textcmd/test/aimovementsim.src` | 9 | `RebuildPolicyMaskCache("britannia")` after the run |
 | `pkg/opt/alryc/stresstest/areastressworker.src` | 9 | `RebuildPolicyMaskCache("britannia")` as each worker exits |
+| `scripts/include/spellprots.inc` | 10 | New: `#SpellPoisonImmunity` / `#DragonSkin` `{ level, pid }` helpers, `GetPoisonImmunityLevel()`, `GetPhysicalProtection()`, `ResyncEquippedProt()` |
+| `scripts/include/dotempmods.inc` | 10, 11 | Includes `spellprots`; `PoisonProtected()` uses `GetPoisonImmunityLevel()`; `WipeMods()` clears spell poison immunity, Dragon Skin, Reactive Armor, Incognito name; `poisonimmunity` / `dragonskin` buff icons |
+| `pkg/opt/holybook/sanctuary.src` | 10.3 | Spell level via `SetSpellProt()`, applied when not weaker than current immunity; buff icon; ends only its own cast |
+| `pkg/opt/earth/antidote.src` | 10.3 | Same as Sanctuary; immunity goes to the target instead of the caster |
+| `pkg/opt/versebook/Dragon_Skin.src` | 10.4 | Rewritten as a one-play timed buff: 1/2/3/5/7/9 by level, 15-30 min, 20 stamina per target, buff icon |
+| `pkg/opt/versebook/include/versefunctions.inc` | 10, 14 | Includes `spellprots`; `AdjustForPhysicalDamage()` uses `GetPhysicalProtection()`; new `EndVerse()` |
+| `scripts/control/skilladvancerequip.src` | 10.2 | Physical Protection recalculated only for items that carry it; Dragon Skin special case removed |
+| `scripts/textcmd/player/prots.src` | 10.2 | `.prots` shows the higher of gear and spell for Physical Protection and poison immunity |
+| `pkg/packethooks/megacliloc/mobiledata.src` | 10.2 | Mobile tooltip protection values include active spells; includes `spellprots` |
+| `pkg/std/spells/reactivearmor.src` | 13 | `#ReactiveArmorPid` ownership, buff icon, `include/dotempmods` |
+| `scripts/playermanager.src` | 12, 14 | Login resyncs players' `PermPoisonImmunity` / `PhysicalProtection` from equipment; `EndBeastalBond()` |
+| `pkg/opt/versebook/Beastal_Bond.src` | 14 | Fumble leaves the loop; offline stops it; saved start position; realm-aware search; dead Reporting call removed; `EndVerse()` |
+| `pkg/opt/versebook/Beast_Bond_View.src` | 14.2 | Always unfreezes, unconceals, clears `#ViewingBeast` when it ends |
+| `pkg/opt/versebook/include/beastalbond.inc` | 14.3 | New: `SaveBeastalBondOrigin()`, `ReturnToBeastalBondOrigin()`, `EndBeastalBond()` |
+| `scripts/misc/logoff.src` | 14 | `EndBeastalBond()` replaces the view-only cleanup |
+| `scripts/misc/reconnect.src` | 14 | `EndBeastalBond()` replaces the view-only cleanup |
 | `patchnotes/patch-v1.1.4.md` | - | (`d11f181`) 1.1.4 date set to October 12, 2026; "Warrior for Hire - Brought In Line With ZH3.0" heading shortened |
 | `patchnotes/developer-changelog-v1.1.5.md` | - | New - this file |
 | `patchnotes/patch-v1.1.5.md` | - | New - player patch notes |
@@ -221,7 +361,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 12. Risk and Regression Notes
+## 17. Risk and Regression Notes
 
 - **Old warrior hearts stop working (section 5.1).** The 1.1.4 notes promised that pre-1.1.4 hearts "still work until a new death writes a stamped backup". That promise is withdrawn: every unstamped heart now crumbles at the priest. Owners of those warriors can still use "resurrect warrior" if they have a backup. If they have neither, the warrior is gone. Worth a line in the Discord announcement.
 - **Hearts must be handed in by the master character (section 5.2).** A heart handed in by an alt on the same account, or by a friend, is destroyed, not returned. Stamped hearts handed in by anyone else already crumbled, so in practice only the message changes for them. The player notes say it plainly.
@@ -233,4 +373,10 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
   - Selling is 1 gold against 5 ingots and Tinkering 95 to make one, and merchants sell them at 20, so there is no gold loop.
   - The empty-keyring test reads the Tamed Storage box. A keyring whose keys were dumped (`Use_KeyRing` on itself) has an empty box and sells.
 - **Test tools (section 9).** Running `.aimovementsim` or `.shardstress` on live still forces uncached area checks *during* the run, as designed. Only the after-effect is fixed.
-- **Compiled, not run.** The whole tree was compiled with `ecompile -A -w` on 2026-10-19 (0 errors, no new warnings in the touched files), and `merchant.src` and the two test tools on 2026-10-20 (0 errors, 0 warnings). None of it was exercised in a client.
+- **Dragon Skin is weaker with good gear (section 10.4).** It used to add to equipment with no cap. Level 6 gear and a level 6 bard went from 12 (60% weapon damage reduction) to 9 (45%). Players without Physical Protection gear get more than before at levels 4-6 (5/7/9 instead of 4/5/6).
+- **Login resets Physical Protection and poison immunity to gear values (section 12).** Players carrying leaked Dragon Skin stacks lose them at their first login after the patch. That is the intent, but expect questions. A GM hand-set value on a player (not staff) is also reset.
+- **Dispel reach (section 11).** Everything that calls `WipeMods()` now strips Sanctuary, Antidote, Dragon Skin and Reactive Armor, including Blackrock and the Warrior for Hire AI's periodic wipe (which only affects the warrior itself).
+- **Relog ends these buffs (section 11).** Login runs `WipeMods()`, as it already did for Bless and Protection.
+- **Buff icon text (section 10.5)** is unverified in a client.
+- **Other verses still leave `#Casting` set on a fumble.** Only Beastal Bond and Dragon Skin call `EndVerse()`.
+- **Compiled, not run.** The whole tree was compiled with `ecompile -A -w` on 2026-10-19 (0 errors, no new warnings in the touched files), and `merchant.src` and the two test tools on 2026-10-20 (0 errors, 0 warnings). The spell round (sections 10-14) was compiled with `ecompile -A -w` on 2026-10-22: 1161 scripts, 0 errors, no new warnings in the touched files. None of it was exercised in a client.

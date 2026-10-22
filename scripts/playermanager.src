@@ -11,6 +11,7 @@ include "include/dotempmods";
 include "util/bank";
 include "include/constants/locations";
 include ":admin:include/adminpanel";
+include ":versebook:include/beastalbond";
 
 program logon( who )
 
@@ -37,6 +38,17 @@ program logon( who )
 	WipeMods(who);
 	CurePoison(who);
 	set_critical(0);
+
+	// The old Sanctuary / Antidote / Dragon Skin code wrote straight into these cprops and a
+	// restart could leave them raised (Dragon Skin even stacked). Players only get them from
+	// equipment, so resync; staff are skipped in case of hand-set values.
+	if( !who.cmdlevel )
+		ResyncEquippedProt( who, "PermPoisonImmunity" );
+		ResyncEquippedProt( who, "PhysicalProtection" );
+	endif
+
+	// A restart can kill Beastal Bond mid-view before logoff ever ran
+	EndBeastalBond(who);
 	
 	var macrowhen := GetMacroString();
 	var description := GetGlobalProperty("QuestDescription");

@@ -1,10 +1,10 @@
 # Patch Notes - v1.1.5
 **Zuluhotel Omega 2.5 | Live Shard**  
-**Date: October 20, 2026**
+**Date: October 22, 2026**
 
 ---
 
-Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step down. Empty keyrings can be sold. The personal powerhour no longer locks you out for part of the day a week after you used it. And a few Warrior for Hire heart and High Priest loopholes are closed. **If you are holding a warrior heart from before Patch 1.1.4, read the Warrior for Hire section.**
+Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step down. Empty keyrings can be sold. The personal powerhour no longer locks you out for part of the day a week after you used it. A few Warrior for Hire heart and High Priest loopholes are closed. And Sanctuary, Antidote and Dragon Skin are reworked so their protection can no longer get stuck or stack, and Dispel now removes them. **If you are holding a warrior heart from before Patch 1.1.4, read the Warrior for Hire section.**
 
 ---
 
@@ -55,6 +55,63 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 
 ---
 
+## Sanctuary and Antidote - Poison Immunity
+
+### Player Impact
+
+- **Your poison immunity jewelry no longer stops working when the spell runs out.** If you put on poison immunity jewelry while Sanctuary or Antidote was active, the spell ending took away all of your poison immunity, and you had to take the jewelry off and put it back on. The spell now ends cleanly and your jewelry keeps working.
+- **Antidote now protects the person you cast it on.** Before, it cured your target but gave the poison immunity to you, the caster.
+- **The spell and your jewelry don't add together.** You get whichever is higher. If you already have equal or better immunity from jewelry, casting it again does nothing; a weaker or equal spell immunity is replaced and its timer starts over.
+- **Dispel and Mass Dispel now remove it**, like Bless or Protection. Logging out also ends it.
+- **New buff icon** showing the spell's poison immunity and how long it has left. `.prots` and tooltips include it while it is active.
+- **No more permanent immunity after a server restart.** A restart while the spell was active used to leave the immunity on for good.
+
+---
+
+## Dragon Skin - Reworked
+
+### Player Impact
+
+- **Dragon Skin is now a timed buff, not a song you keep playing.** Play it once and every party member and pet in range and in line of sight gets its protection. You are free to move straight away. It costs **20 stamina for each person protected**, and stops protecting more people when you run out.
+- **Protection and duration depend on your bard level:**
+
+| Bard level | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| Physical Protection | 1 | 2 | 3 | 5 | 7 | 9 |
+| Duration (minutes) | 15 | 18 | 21 | 24 | 27 | 30 |
+
+- **It no longer adds to your equipment.** You get whichever is higher, your best Physical Protection item or Dragon Skin. For example, level 6 gear with a level 6 bard used to give 12; it now gives 9.
+- **Someone already protected by a stronger Dragon Skin keeps theirs.** An equal or weaker one is replaced and its timer starts over.
+- **Dispel and Mass Dispel remove it.** Logging out also ends it.
+- **New buff icon** showing your Dragon Skin protection and how long it has left.
+- **Bugs fixed:**
+  - When the bard fumbled the song, everyone kept the protection permanently, and it could build up after server restarts.
+  - People who walked out of range, died or hid kept the protection while the song played.
+  - Changing equipment during the song could leave you with less protection than your gear gives.
+- **Leftover protection is cleared.** When you log in, your Physical Protection and poison immunity are reset to what your equipment gives, which removes anything the old spells left behind.
+
+---
+
+## Reactive Armor
+
+### Player Impact
+
+- **Dispel and Mass Dispel now remove Reactive Armor.**
+- **New buff icon** for Reactive Armor. It disappears when the armor triggers or wears off.
+- A server restart no longer leaves Reactive Armor on until your next logout.
+
+---
+
+## Beastal Bond - No More Getting Stuck
+
+### Player Impact
+
+- **Fumbling while viewing your bonded creature no longer traps you.** You used to stay frozen and invisible at the creature's location, and "Leave Mind" did nothing. The song now ends and you are put back where you started playing.
+- **Logging out or reconnecting ends the bond** and puts you back where you started playing. Before, you came back at the creature's location.
+- Fixed a case where you were not moved back at all if the creature stood on the same row or column you started from.
+
+---
+
 ## Summary
 
 - Mayors can resign from the townstone with "Resign and leave town"; the town can call a new election straight away.
@@ -62,5 +119,9 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 - Warrior hearts from before Patch 1.1.4 no longer revive; only a warrior's owner can hand in its heart; a High Priest memory revival costs one point of each stat per death, like a heart.
 - The Eon-Prism works only from your backpack.
 - Empty keyrings sell for 1 gold through "sell all" or "sell bag"; keyrings with keys on them are refused.
+- Sanctuary and Antidote no longer switch off your poison immunity jewelry when they end; Antidote protects its target; Dispel removes them.
+- Dragon Skin is a timed buff (1/2/3/5/7/9 protection, 15-30 minutes, 20 stamina per person); it uses the higher of your gear and the song instead of adding; Dispel removes it; the stuck and stacking bugs are fixed.
+- Reactive Armor can be dispelled and has a buff icon.
+- Beastal Bond no longer leaves you frozen and invisible after a fumble; logging out ends the bond and puts you back where you started.
 
 Thanks for playing Zuluhotel Omega 2.5.

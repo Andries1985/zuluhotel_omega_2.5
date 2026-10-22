@@ -11,6 +11,7 @@ use polsys;
 include "include/math";
 include "include/attributes";
 include "include/classes";
+include "include/spellprots";
 
 
 /*todo
@@ -161,13 +162,13 @@ program mobiledata(parms)
 				prop.values := array {elem_prot};
 				allprops.append(prop);
 			endif
-			elem_prot := GetObjProperty(xObject, "PhysicalProtection");
+			elem_prot := GetPhysicalProtection(xObject);
 			if(elem_prot)
 				prop.clilocid := 1063504;
 				prop.values := array {elem_prot};
 				allprops.append(prop);
 			endif
-			elem_prot := GetObjProperty(xObject, "PermPoisonImmunity");
+			elem_prot := GetPoisonImmunityLevel(xObject);
 			if(elem_prot)
 				prop.clilocid := 1063505;
 				prop.values := array {elem_prot};
@@ -333,13 +334,13 @@ program mobiledata(parms)
 			endif
 		endif
 		if(xObject == who)
-			elem_prot := GetObjProperty(xObject, "PhysicalProtection");
+			elem_prot := GetPhysicalProtection(xObject);
 			if(elem_prot)
 				prop.clilocid := 1063504; // Physical Protection: ~1_PERCENT~%
 				prop.values := array {elem_prot};
 				allprops.append(prop);
 			endif
-			elem_prot := GetObjProperty(xObject, "PermPoisonImmunity");
+			elem_prot := GetPoisonImmunityLevel(xObject);
 			if(elem_prot)
 				prop.clilocid := 1063505; //Poison Immunity:
 				prop.values := array {elem_prot};

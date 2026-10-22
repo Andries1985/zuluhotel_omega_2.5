@@ -53,25 +53,28 @@ program cast_antidote( parms )
 	endif
 
 	EraseObjProperty( caster , "#Casting" );
-	var prevprot := GetObjProperty( caster , "PermPoisonImmunity" );
-	if( !prevprot )
-		var magery := GetAttribute( caster , ATTRIBUTEID_MAGERY );
-		var duration := ModifyWithMagicEfficiency( caster , magery * 2 );
-		var power := 0;
-		if (GetObjProperty(caster, "IsMage"))
-			power := GetObjProperty(caster, "IsMage");
-		elseif (GetObjProperty(caster, "IsPaladin"))
-			power := GetObjProperty(caster, "IsPaladin");
-		endif
-		if (!power)
-			power := 0;	
-		endif;
-		power := power + 1;
-		if( duration and power )
-			SetObjProperty( caster, "PermPoisonImmunity" , power );
-			SendSysmessage( caster , "You are now protected from poisonous effects." );	
-			Sleep( duration );
-			EraseObjProperty( caster, "PermPoisonImmunity" );
+	var magery := GetAttribute( caster , ATTRIBUTEID_MAGERY );
+	var duration := ModifyWithMagicEfficiency( caster , magery * 2 );
+	var power := 0;
+	if (GetObjProperty(caster, "IsMage"))
+		power := GetObjProperty(caster, "IsMage");
+	elseif (GetObjProperty(caster, "IsPaladin"))
+		power := GetObjProperty(caster, "IsPaladin");
+	endif
+	if (!power)
+		power := 0;
+	endif;
+	power := power + 1;
+
+	// Skip if equipment or a stronger cast already gives as much; an equal one is refreshed.
+	if( duration and power and power >= GetPoisonImmunityLevel( caster ) )
+		SetSpellProt( caster , SPELLPROT_POISON , power );
+		BuffOn( caster , "poisonimmunity" , power , duration );
+		SendSysmessage( caster , "You are now protected from poisonous effects." );
+		Detach();
+		Sleep( duration );
+		if( EndSpellProt( caster , SPELLPROT_POISON ) )
+			BuffOff( caster , "poisonimmunity" );
 		endif
 	endif
 endprogram
