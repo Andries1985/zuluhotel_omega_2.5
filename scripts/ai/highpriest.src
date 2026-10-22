@@ -293,9 +293,11 @@ while (1)
 								SetObjProperty(newwfh, "master", player.serial);
 								sleep(2);
 								SetObjProperty(newwfh, "master", player.serial);
-								SetBaseStrength(newwfh, Cint(wfhbackup["Str"]));
-								SetBaseIntelligence(newwfh, Cint(wfhbackup["Int"]));
-								SetBaseDexterity(newwfh, Cint(wfhbackup["Dex"]));
+								// The same stat loss as a heart revival (ZH3.0 3.1.4); it used to restore full stats.
+								var wfhresnum := Cint(wfhbackup["resnum"]);
+								SetBaseStrength(newwfh, Max(Cint(wfhbackup["Str"]) - wfhresnum, 10));
+								SetBaseIntelligence(newwfh, Max(Cint(wfhbackup["Int"]) - wfhresnum, 10));
+								SetBaseDexterity(newwfh, Max(Cint(wfhbackup["Dex"]) - wfhresnum, 10));
 								ResetWfhVitalsAndFill(newwfh);
 								newwfh.name := wfhbackup["Name"];
 								var wfhsex := Cint(wfhbackup["Sex"]);
@@ -425,7 +427,12 @@ while (1)
 					hm := GetObjProperty(event.source,"henchman");
 					hme := SystemFindObjectBySerial(hm);
 					var hhme := GetObjProperty(heart,"master");
-					if (hme and (hhme != hme))
+					if (CInt(hhme) != event.source.serial)
+						// Only the warrior's own master may bring a heart; one handed in by anyone
+						// else is destroyed (ZH3.0 3.1.4; it used to be judged against the giver).
+						DestroyItem(heart);
+						Say("This heart is bound to another soul. It crumbles to dust.");
+					elseif (hme and (hhme != hme))
 						SendSysMessage(event.source,"You already have a henchman");
 						MoveItemToContainer(heart, event.source.backpack);
 					elseif (resnum > WFH_MAX_DEATHS or !IsCurrentWfhHeart(heart, event.source))

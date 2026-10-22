@@ -53,6 +53,12 @@ var wasownerOnline := 0;
 
 var TRACKED_SKILLS := WfhTrackedSkills();
 
+// Per-script caches for the fight loop (ZH3.0 3.1.4). Weapon objtype -> ammo objtype (0 = not a
+// bow), and heal potion objtype -> Strength, built from :alchemy:itemdesc on the first drink.
+var gWeaponAmmoTypes := dictionary;
+var gHealPotionPowers := dictionary;
+var gHealPotionsLoaded := 0;
+
 program Warrior()
 
 	if( me.name["<random>"] )
@@ -211,11 +217,7 @@ function HasBow()
 		return 0;
 	endif
 
-	var elem := FindConfigElem(ReadConfigFile(":*:itemdesc"), weapon.objtype);
-	if (!elem or !GetConfigInt(elem, "Projectile"))
-		return 0;
-	endif
-	var ammotype := GetConfigInt(elem, "ProjectileType");
+	var ammotype := WeaponAmmoType(weapon.objtype);
 	if (!ammotype)
 		return 0;
 	endif
@@ -1501,13 +1503,50 @@ endfunction
 // 0 unless the item is a heal potion, i.e. an :alchemy:itemdesc entry drunk by yellowpotion
 // (Light Heal, Heal, Greater Heal and their true-mage levels). Otherwise its power, as
 // drinkpotion.inc's GetPotionStrength works it out: itemdesc Strength + ByTrueMage.
+// Reads a table built once per script instead of one cfg lookup per pack item.
 function HealPotionPower(potion)
 
-	var elem := FindConfigElem(ReadConfigFile(":alchemy:itemdesc"), potion.objtype);
-	if (!elem or lower(GetConfigString(elem, "Script")) != "yellowpotion")
+	if (!gHealPotionsLoaded)
+		LoadHealPotionPowers();
+	endif
+	if (!gHealPotionPowers.exists(potion.objtype))
 		return 0;
 	endif
-	return GetConfigInt(elem, "Strength") + CInt(GetObjProperty(potion, "ByTrueMage"));
+	return gHealPotionPowers[potion.objtype] + CInt(GetObjProperty(potion, "ByTrueMage"));
+
+endfunction
+
+function LoadHealPotionPowers()
+
+	gHealPotionsLoaded := 1;
+	var cfg := ReadConfigFile(":alchemy:itemdesc");
+	if (!cfg)
+		return;
+	endif
+	foreach key in GetConfigIntKeys(cfg)
+		var elem := FindConfigElem(cfg, key);
+		if (elem and lower(GetConfigString(elem, "Script")) == "yellowpotion")
+			gHealPotionPowers[key] := GetConfigInt(elem, "Strength");
+		endif
+	endforeach
+
+endfunction
+
+// A weapon's ammo objtype from its itemdesc (0 when it fires nothing), looked up once per
+// weapon objtype; HasBow used to read the merged :*:itemdesc on every fight-loop call.
+function WeaponAmmoType(objtype)
+
+	if (gWeaponAmmoTypes.exists(objtype))
+		return gWeaponAmmoTypes[objtype];
+	endif
+
+	var ammotype := 0;
+	var elem := FindConfigElem(ReadConfigFile(":*:itemdesc"), objtype);
+	if (elem and GetConfigInt(elem, "Projectile"))
+		ammotype := CInt(GetConfigInt(elem, "ProjectileType"));
+	endif
+	gWeaponAmmoTypes[objtype] := ammotype;
+	return ammotype;
 
 endfunction
 

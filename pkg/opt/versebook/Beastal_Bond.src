@@ -5,6 +5,7 @@ include "include/attributes";
 include "include/classes";
 include ":versebook:include/versefunctions";
 include ":versebook:include/verseconstants";
+include ":versebook:include/beastalbond";
 
 var stamina, diff, skills, element, instrument, musicianship, name, time;
 
@@ -16,7 +17,6 @@ const GFX_COLOUR := 67;
 const SOUND_EFFECT := 0x1F3;
 const BASE_TIME := 15; // 15 mins
 var COUNTER := 0;
-var origx, origy, origz;
 var breakplease := 0; // to end the script
 
 program Beastal_Bond(parms)
@@ -54,6 +54,9 @@ program Beastal_Bond(parms)
 		return 0;
 	endif
 
+	// Saved persistently so logoff / reconnect / logon can also put the bard back
+	SaveBeastalBondOrigin(who);
+
 	// Calculate the range, damage, and specify the loop var, as well as hit var
 	var range := GetVerseRange(who, musicianship);
 	time := CalculateBardicDamage(who, skills, diff, BASE_TIME);
@@ -67,17 +70,16 @@ program Beastal_Bond(parms)
 		has_bond := 0;
 	endif
 
-	origx := who.x;
-	origy := who.y;
-	origz := who.z;
-
 	// ------------- The looping main effect of the song ------------ \\
 	repeat
 
 		// Only play the sound effect every 7 seconds, as the song is 6.2 secs long. This is skipped the first time
 		if (ReadGameClock() >= last_played)
+			// A fumble ends the verse, but still through BringBackToPosition below - returning
+			// here used to leave a viewing bard frozen and concealed at the beast.
 			if (!PlayBardicMusic(who, diff, instrument))
-				return 0;
+				breakplease := 1;
+				break;
 			endif
 			last_played := ReadGameClock()+7;
 		endif
@@ -89,10 +91,11 @@ program Beastal_Bond(parms)
 
 			// no animal bound
 			if (!has_bond && !who.concealed)
-				foreach animal in ListMobilesNearLocation( who.x, who.y, who.z, range )
+				foreach animal in ListMobilesNearLocation( who.x, who.y, who.z, range, who.realm )
 					if (BondToAnimal(who, animal, range))
 						SendSysMessage(who, "You have established a magical bond between a creature.", 3, 67);
-						Start_Script(":versebook:Beastal_Bond_Reporting", {who, animal});
+						// No Beastal_Bond_Reporting script is started here any more - it never existed;
+						// the wisp AI (ai_beastal_bond.src) does the reporting.
 						breakplease := 1; // stop playing
 						break;
 					// failed, use half stamina
@@ -158,10 +161,12 @@ program Beastal_Bond(parms)
 		i := i + 1;
 		sleep(1);
 
-	until ( InterruptedPlaying(who, x, y, stamina, hp) || breakplease);
+	// Also stop if the bard went offline - logoff has already ended the bond and put them back
+	until ( InterruptedPlaying(who, x, y, stamina, hp) || breakplease || !who.connected );
 
 	// send bard back to position, shouldn't be noticable?
 	BringBackToPosition(who);
+	EndVerse(who);
 
 endprogram
 
@@ -241,9 +246,6 @@ function BringBackToPosition(who)
 
 	EraseObjProperty(who, "#ViewingBeast");
 
-	// only move if not alreayd there
-	if (who.x != origx && who.y != origy)
-		MoveObjectToLocation(who, origx, origy, origz, who.realm, MOVEOBJECT_FORCELOCATION);
-	endif
+	ReturnToBeastalBondOrigin(who);
 
 endfunction

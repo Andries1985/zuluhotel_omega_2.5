@@ -75,15 +75,19 @@ program cast_antidote( parms )
 	endif
 
 	EraseObjProperty( caster , "#Casting" );
-	var prevprot := GetObjProperty( caster , "PermPoisonImmunity" );
-	if( !prevprot )
-		var magery := GetEffectiveSkill( caster , SKILLID_MAGERY );
-		var duration := ModifyWithMagicEfficiency( caster , magery * 2 );
-		var power := ModifyWithMagicEfficiency( caster , magery / 25 );
-		if( duration and power )
-			SetObjProperty( caster, "PermPoisonImmunity" , power );
-			Sleep( duration );
-			EraseObjProperty( caster, "PermPoisonImmunity" );
+
+	// The immunity goes to the target (it used to land on the caster).
+	// Skip if equipment or a stronger cast already gives as much; an equal one is refreshed.
+	var magery := GetEffectiveSkill( caster , SKILLID_MAGERY );
+	var duration := ModifyWithMagicEfficiency( caster , magery * 2 );
+	var power := ModifyWithMagicEfficiency( caster , magery / 25 );
+	if( duration and power and power >= GetPoisonImmunityLevel( cast_on ) )
+		SetSpellProt( cast_on , SPELLPROT_POISON , power );
+		BuffOn( cast_on , "poisonimmunity" , power , duration );
+		Detach();
+		Sleep( duration );
+		if( EndSpellProt( cast_on , SPELLPROT_POISON ) )
+			BuffOff( cast_on , "poisonimmunity" );
 		endif
 	endif
 		

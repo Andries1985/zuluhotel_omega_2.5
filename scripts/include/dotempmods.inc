@@ -10,6 +10,7 @@ include "include/spelldata";
 include "include/classes";
 include "include/random";
 include ":admin:include/adminpanel";
+include "include/spellprots";
 
 
 function AddToPersistedMods( byref allmods , byref mmod )
@@ -342,10 +343,7 @@ function PoisonProtected( cast_on , plvl, thiefPoison := 0 )
 
 	//var prot := "PoisonImmunity";
 	var protserial := GetObjProperty( cast_on , "PoisonImmunity" );
-	var protlvl := GetObjProperty( cast_on , "PermPoisonImmunity" );
-	if( !protlvl )
-		protlvl := 0;
-	endif
+	var protlvl := GetPoisonImmunityLevel( cast_on );
 	
 	var cmi := 0 - protlvl;
 	var item;
@@ -602,7 +600,36 @@ function WipeMods( who )
 	else
 		EraseObjProperty( who , "mods" );
 	endif
-	
+
+	// Timed buffs that don't go through the mods arrays. Their casting scripts are still asleep;
+	// they check ownership on waking (see spellprots.inc / #...Pid) and find nothing to undo.
+	if( GetObjProperty( who , SPELLPROT_POISON ) )
+		EraseObjProperty( who , SPELLPROT_POISON );
+		BuffOff( who , "poisonimmunity" );
+		had_mods := 1;
+	endif
+
+	if( GetObjProperty( who , SPELLPROT_DRAGONSKIN ) )
+		EraseObjProperty( who , SPELLPROT_DRAGONSKIN );
+		BuffOff( who , "dragonskin" );
+		had_mods := 1;
+	endif
+
+	if( GetObjProperty( who , "ReactiveArmor" ) )
+		EraseObjProperty( who , "ReactiveArmor" );
+		EraseObjProperty( who , "#ReactiveArmorPid" );
+		BuffOff( who , "reactivearmor" );
+		had_mods := 1;
+	endif
+
+	var realname := GetObjProperty( who , "realname" );
+	if( realname )
+		SetName( who , realname );
+		EraseObjProperty( who , "realname" );
+		BuffOff( who , "incognito" );
+		had_mods := 1;
+	endif
+
 	Set_Critical(0);
 	
 	return had_mods;
@@ -695,6 +722,14 @@ function BuffOn(who, buff, amount, duration)
 	  icon := 1013;
 	  cliloc1 := 1044106;
       cliloc2 := 1079410;
+	"poisonimmunity":
+		icon := 1020;		// Gift of Renewal icon; nothing else here uses it
+		cliloc1 := 1061161;	// Poison Resistance
+		cliloc2 := 1063505;	// Poison Immunity: ~1_VAL~
+	"dragonskin":
+		icon := 1021;		// Attune Weapon icon; nothing else here uses it
+		cliloc1 := 1061158;	// Physical Resistance
+		cliloc2 := 1063504;	// Physical Protection: ~1_VAL~
    default:
       return error{"errortext" := "Spell not found"};
    endcase
@@ -818,6 +853,14 @@ function BuffOff(who, buff)
 	  icon := 1013;
 	  cliloc1 := 1044106;
       cliloc2 := 1079410;
+	"poisonimmunity":
+		icon := 1020;		// Gift of Renewal icon; nothing else here uses it
+		cliloc1 := 1061161;	// Poison Resistance
+		cliloc2 := 1063505;	// Poison Immunity: ~1_VAL~
+	"dragonskin":
+		icon := 1021;		// Attune Weapon icon; nothing else here uses it
+		cliloc1 := 1061158;	// Physical Resistance
+		cliloc2 := 1063504;	// Physical Protection: ~1_VAL~
    default:
       return error{"errortext" := "Spell not found"};     
    endcase

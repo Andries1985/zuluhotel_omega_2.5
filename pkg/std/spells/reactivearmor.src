@@ -4,6 +4,7 @@ use os;
 include "include/spelldata";
 include "include/client";
 include "include/attributes";
+include "include/dotempmods";
 
 program reactivearmor( caster, spell_id )
 
@@ -44,10 +45,18 @@ program reactivearmor( caster, spell_id )
 		duration := Cint( (duration * CLASSE_BONUS) * 2 );
 	endif
 
+	// #ReactiveArmorPid marks which cast owns the buff, so a dispelled or recast one isn't ended
+	// early by this script waking up.
 	SetObjProperty( cast_on , "ReactiveArmor" , power );
+	SetObjProperty( cast_on , "#ReactiveArmorPid" , GetPid() );
+	BuffOn( cast_on , "reactivearmor" , power , duration );
 	SendBoostMessage( caster, cast_on, "reactive armor", power, duration, 0 );
 	Detach();
 	Sleep( duration );
-	EraseObjProperty( cast_on , "ReactiveArmor" );
+	if( GetObjProperty( cast_on , "#ReactiveArmorPid" ) == GetPid() )
+		EraseObjProperty( cast_on , "ReactiveArmor" );
+		EraseObjProperty( cast_on , "#ReactiveArmorPid" );
+		BuffOff( cast_on , "reactivearmor" );
+	endif
 
 endprogram

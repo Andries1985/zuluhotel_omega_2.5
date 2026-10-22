@@ -4,6 +4,7 @@ use os;
 include "include/client";
 include "include/camouflage";
 include "include/dotempmods";
+include ":versebook:include/beastalbond";
 
 
 program logoff(who)
@@ -47,12 +48,9 @@ program logoff(who)
 		EraseObjProperty(who,"#Paging");
 	endif
 	
-	temp := GetObjProperty(who, "#ViewingBeast");
-	if (temp)
-		who.frozen := 0;
-		who.concealed := 0;
-		EraseObjProperty(who, "#ViewingBeast");
-	endif
+	// Beastal Bond: the bond ends when the bard leaves, and a bard viewing the beast is put
+	// back where they started playing (see beastalbond.inc)
+	EndBeastalBond(who);
 
 	//Erase #Casting just to be sure!
 	EraseObjProperty(who, "#Casting");
