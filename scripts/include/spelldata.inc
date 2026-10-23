@@ -25,6 +25,7 @@ include "include/attributes";
 include "include/difficulty";
 //include ":lootlottery:storedamage";
 include "include/math";
+include "include/buffs";
 
 
 ////////////////////////////////
@@ -938,6 +939,7 @@ function Reflected( caster, cast_on, circle )
 
 	elseif( Cint(GetObjProperty( targ, "mr" )) >= circle )
 		EraseObjProperty(targ, "mr");
+		BuffOff( targ , "magicreflection" );
 		source := cast_on;
 		targ := caster;
 		Reflect( source, targ );

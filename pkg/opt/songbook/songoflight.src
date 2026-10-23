@@ -104,6 +104,7 @@ program cast_songoflight( player )
 				EraseObjProperty( cast_near , "#Blinded" );
 			endif
 			cast_near.setlightlevel( 0 , duration );
+			BuffOn( cast_near , "nightsight" , 0 , duration );
 			PlayObjectCenteredEffect( cast_near, FX_SPELL_OWL_SIGHT , SPEED_SPELL_OWL_SIGHT , LOOP_SPELL_OWL_SIGHT );
 		endforeach
 	endif

@@ -24,6 +24,7 @@ program use_darkcloak(who, cloak)
 			PlaySoundEffect(mobile, SFX_SPELL_NIGHT_SIGHT);
         		PlayObjectCenteredEffect(mobile, FX_BLESS_EFFECT, 10,10);
 	        	mobile.setlightlevel(30, 60);
+	        	BuffOff( mobile , "nightsight" );	// blinded: any night sight is overridden
 		endif
 	endforeach
 
