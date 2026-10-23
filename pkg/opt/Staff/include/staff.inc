@@ -15,6 +15,11 @@ function LogCommand(who, command, targ := 0, other := 0)
 var timeanddate := SplitWords(NowString());
 var date := timeanddate[1];
 var time := timeanddate[2];
+// NPCs have no account; CStr() of that error would create a datafile POL can't save
+if (!who.acctname)
+	return 0;
+endif
+
 var filename := CStr(who.acctname);
 var file := OpenDataFile(":staff:"+filename);
 if (!file)
@@ -67,6 +72,11 @@ function LogAction(who, action)
 var timeanddate := SplitWords(NowString());
 var date := timeanddate[1];
 var time := timeanddate[2];
+// NPCs have no account; CStr() of that error would create a datafile POL can't save
+if (!who.acctname)
+	return 0;
+endif
+
 var filename := CStr(who.acctname);
 var file := OpenDataFile(":staff:"+filename);
 if (!file)

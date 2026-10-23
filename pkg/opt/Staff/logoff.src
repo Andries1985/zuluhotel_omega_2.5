@@ -12,7 +12,7 @@ include "include/time";
 
 program Logoff(who)
 
-if (!who.cmdlevel)
+if (!who.cmdlevel || !who.acctname)
 	return 0;
 endif
 
