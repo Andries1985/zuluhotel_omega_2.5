@@ -906,6 +906,11 @@ endfunction
 
 function unequipRestrictedItems(who)
 
+	// NPCs have no class to enforce, and LogCommand() needs an account
+	if( who.isA(POLCLASS_NPC) )
+		return;
+	endif
+
 	var IsRPer := GetObjProperty( who, "IsRPer" );
 
 	if(!who.cmdlevel)

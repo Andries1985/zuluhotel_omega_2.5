@@ -53,6 +53,11 @@ function logspeech(who, speech)
 
 speech := CStr(speech);
 
+// NPCs have no account; CStr() of that error would create a datafile POL can't save
+if (!who.acctname)
+   return;
+endif
+
 var timeanddate := SplitWords(NowString());
 var date := timeanddate[1];
 var time := timeanddate[2];
