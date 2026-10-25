@@ -11,6 +11,35 @@ use os;
 const SPELLPROT_POISON		:= "#SpellPoisonImmunity";	// Sanctuary, Antidote
 const SPELLPROT_DRAGONSKIN	:= "#DragonSkin";		// Dragon Skin verse
 
+// Sanctuary, Antidote and Dragon Skin all last 2 minutes at the caster's class level 1, rising
+// evenly to 10 minutes at level 6.
+const SPELLPROT_MIN_SECONDS	:= 120;
+const SPELLPROT_MAX_SECONDS	:= 600;
+
+
+// The caster's class level as 1-6. Unclassed casters, staff and NPCs count as level 1.
+function SpellProtCasterLevel( level )
+
+	level := CInt( level );
+	if( level < 1 )
+		return 1;
+	elseif( level > 6 )
+		return 6;
+	endif
+
+	return level;
+
+endfunction
+
+
+// Duration in seconds for a caster of the given class level: 120, 216, 312, 408, 504, 600.
+function SpellProtDuration( level )
+
+	level := SpellProtCasterLevel( level );
+	return SPELLPROT_MIN_SECONDS + ( SPELLPROT_MAX_SECONDS - SPELLPROT_MIN_SECONDS ) * ( level - 1 ) / 5;
+
+endfunction
+
 
 function GetSpellProtLevel( who , prop )
 

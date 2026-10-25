@@ -108,7 +108,10 @@ program TamedAI()
 
 	var npccfg := readconfigfile("npcdesc");
 	var poison_skill := GetConfigInt( npccfg[me.npctemplate], "Poisoning" );
-	spells := GetConfigStringArray( npccfg[me.npctemplate], "spell" );
+	spells := GetObjProperty( me, "CustomSpells" );
+	if (spells == error)
+		spells := GetConfigStringArray( npccfg[me.npctemplate], "spell" );
+	endif
 	if (Len(spells))
 		caster := 1;
 		saywords := npccfg[me.npctemplate].saywords;

@@ -74,7 +74,8 @@ program use_bandages( character , bandages )
 	var withheal := { "Giantkin"	,
 			    "Orc"	,
 			    "Troll"	,
-			    "Human"	};
+			    "Human"	,
+			    "Townsfolk"	};
 
 	var withvet := { "Animal"	,
 			   "Dragonkin"	,

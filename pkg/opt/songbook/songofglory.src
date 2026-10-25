@@ -14,11 +14,13 @@ const SPELL_EFFECT_ID		:= FX_SPELL_HOLY_BLESS;
 const SPELL_EFFECT_SPEED	:= SPEED_SPELL_HOLY_BLESS;
 const SPELL_EFFECT_LOOP		:= LOOP_SPELL_HOLY_BLESS;
 
-program cast_songofglory( player )
+program cast_songofglory( parms )
+	var npc_cast := IsNpcSong( parms );
+	var player := GetSongSinger( parms );
 	SetObjProperty( player , "#Casting", 1 );
 	var singinghp := GetHp( player );
 	var circle := GetCircle( SPELLID_SONG_OF_GLORY  );
-	var instrument := findinstrument( player );
+	var instrument := GetSongInstrument( player, npc_cast );
 	var sfx_success;
 	var sfx_failure;
 
@@ -66,7 +68,11 @@ program cast_songofglory( player )
 	//PrintTextAbove(player,"Difficulty:"+difficulty);
 	PerformAction( player, 0X021 );
 
-	if (difficulty > peace or difficulty > mus or !spec)
+	// Npcs skip the instrument, class and skill checks; their level comes from Musicianship
+	if (npc_cast)
+		spec := GetNpcBardLevel( mus );
+	endif
+	if ((!npc_cast and (difficulty > peace or difficulty > mus)) or !spec)
 		PlaySoundEffect( player , sfx_failure );
 		EraseObjProperty( player , "#Casting" );
 		PrintTextAbove(player,"*"+player.name+" plays a song poorly*");
@@ -74,9 +80,11 @@ program cast_songofglory( player )
 		if (ps < 0 )
 			ps := 0;
 		endif
-		SetStamina( player, ps );
+		if (!npc_cast)
+			SetStamina( player, ps );
+		endif
 		return;
-	elseif ((GetStamina( player ) -drain) <  0)
+	elseif (!npc_cast and (GetStamina( player ) - drain) < 0)
 		PrintTextAbove(player,"*"+player.name+" plays a song poorly*");
 		PrintTextAbovePrivate( player, "Out of Stamina!",player );
 		PlaySoundEffect( player , sfx_failure );
@@ -85,7 +93,9 @@ program cast_songofglory( player )
 		if (ps < 0 )
 			ps := 0;
 		endif
-		SetStamina( player, ps );
+		if (!npc_cast)
+			SetStamina( player, ps );
+		endif
 //		sleep(1);
 //		if (GetHp( player ) < singinghp)
 //			PrintTextAbove(player,"*"+player.name+" plays a song poorly*");
@@ -111,7 +121,7 @@ program cast_songofglory( player )
 		duration := 3600;
 		affected := ListMobilesInLineOfSight( player , cint( (spec+1) * 2 )) + player;
 
-		affected := SmartBoost(player, affected);
+		affected := SmartBoost( player, affected );
 
 		foreach cast_near in affected
 			if(!ValidSongBoost(player, cast_near))

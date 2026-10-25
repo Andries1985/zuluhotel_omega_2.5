@@ -1,10 +1,10 @@
 # Patch Notes - v1.1.5
 **Zuluhotel Omega 2.5 | Live Shard**  
-**Date: October 22, 2026**
+**Date: October 25, 2026**
 
 ---
 
-Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step down. Empty keyrings can be sold. The personal powerhour no longer locks you out for part of the day a week after you used it. A few Warrior for Hire heart and High Priest loopholes are closed. And Sanctuary, Antidote and Dragon Skin are reworked so their protection can no longer get stuck or stack, and Dispel now removes them. **If you are holding a warrior heart from before Patch 1.1.4, read the Warrior for Hire section.**
+Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step down. Empty keyrings can be sold. The personal powerhour no longer locks you out for part of the day a week after you used it. A few Warrior for Hire heart and High Priest loopholes are closed. And Sanctuary, Antidote and Dragon Skin are reworked: their protection can no longer get stuck or stack, it now depends only on the caster's class level, and Dispel removes it. Spellcasting monsters stop healing and blessing the players they fight, and every area spell a monster or pet casts now picks its targets the same way. Town NPCs become their own Townsfolk creature type. **If you are holding a warrior heart from before Patch 1.1.4, read the Warrior for Hire section.**
 
 ---
 
@@ -61,6 +61,15 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 
 - **Your poison immunity jewelry no longer stops working when the spell runs out.** If you put on poison immunity jewelry while Sanctuary or Antidote was active, the spell ending took away all of your poison immunity, and you had to take the jewelry off and put it back on. The spell now ends cleanly and your jewelry keeps working.
 - **Antidote now protects the person you cast it on.** Before, it cured your target but gave the poison immunity to you, the caster.
+- **Immunity and duration now depend only on the caster's class level.** Before, they also depended on Magery, armor and Intelligence gear: durations ranged from about 3 to 16 minutes, Antidote could show levels like 20 (anything above 6 does nothing extra), and Sanctuary gave Powerplayers only level 1. Now every caster gets the same numbers for their class level, and unclassed casters count as level 1:
+
+| Caster class level | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| Poison immunity | 1 | 2 | 3 | 4 | 5 | 6 |
+| Duration (minutes:seconds) | 2:00 | 3:36 | 5:12 | 6:48 | 8:24 | 10:00 |
+
+- **Level 6 blocks every poison in the game except a thief's**, the same as the best poison immunity jewelry.
+- **Curing works as before.** Sanctuary always cures you; Antidote's cure still needs a successful skill check.
 - **The spell and your jewelry don't add together.** You get whichever is higher. If you already have equal or better immunity from jewelry, casting it again does nothing; a weaker or equal spell immunity is replaced and its timer starts over.
 - **Dispel and Mass Dispel now remove it**, like Bless or Protection. Logging out also ends it.
 - **New buff icon** showing the spell's poison immunity and how long it has left. `.prots` and tooltips include it while it is active.
@@ -73,14 +82,14 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 ### Player Impact
 
 - **Dragon Skin is now a timed buff, not a song you keep playing.** Play it once and every party member and pet in range and in line of sight gets its protection. You are free to move straight away. It costs **20 stamina for each person protected**, and stops protecting more people when you run out.
-- **Protection and duration depend on your bard level:**
+- **Protection and duration depend on your bard level.** The duration is the same as Sanctuary and Antidote:
 
 | Bard level | 1 | 2 | 3 | 4 | 5 | 6 |
 |---|---|---|---|---|---|---|
-| Physical Protection | 1 | 2 | 3 | 5 | 7 | 9 |
-| Duration (minutes) | 15 | 18 | 21 | 24 | 27 | 30 |
+| Physical Protection | 1 | 2 | 3 | 4 | 5 | 6 |
+| Duration (minutes:seconds) | 2:00 | 3:36 | 5:12 | 6:48 | 8:24 | 10:00 |
 
-- **It no longer adds to your equipment.** You get whichever is higher, your best Physical Protection item or Dragon Skin. For example, level 6 gear with a level 6 bard used to give 12; it now gives 9.
+- **It no longer adds to your equipment.** You get whichever is higher, your best Physical Protection item or Dragon Skin. For example, level 6 gear with a level 6 bard used to give 12; it now gives 6.
 - **Someone already protected by a stronger Dragon Skin keeps theirs.** An equal or weaker one is replaced and its timer starts over.
 - **Dispel and Mass Dispel remove it.** Logging out also ends it.
 - **New buff icon** showing your Dragon Skin protection and how long it has left.
@@ -112,6 +121,49 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 
 ---
 
+## Buff Icons - Night Sight, Poison and Magic Reflection
+
+### Player Impact
+
+- **Night sight now shows a buff icon** with the time it has left, from Night Sight, Light of Day, Owl Sight, Song of Light and the night sight potion. Being blinded removes it, since blindness overrides night sight.
+- **Poison now shows a "Poisoned" icon** with the time it has left. It disappears when you are cured or the poison wears off.
+- **Magic Reflection now shows an icon** until it reflects a spell. It has no countdown, because the reflection lasts until it is used, and it comes back when you log in if your reflection is still up.
+
+---
+
+## Monsters, Pets and Area Spells
+
+### Player Impact
+
+- **Monsters no longer heal and bless you.** A spellcasting monster aimed every spell at the player it was fighting, so one that knew Heal, Cure, Bless, Protection, Reflect, Night Sight or another helpful spell cast it on you. It now casts helpful spells on itself.
+- **Spellcasting monsters waste fewer casts.** A bug made part of every caster's attempts do nothing: half of them for a monster with one spell, a fifth for a monster with four. Every attempt now casts a spell, so casters hit a little more often.
+- **A monster's area spells hit players and pets, not other monsters.** This covers Meteor Swarm, Chain Lightning, Earthquake and every other area spell or song a monster casts. Its area buffs, such as Arch Protection and Arch Cure, now only help other monsters. Before, a monster's area attack could hurt the monsters next to it, and its area buffs could land on you.
+- **Boss mass attacks now hit pets too.** The special mass attacks that some bosses and champions use, such as the gusts, the mass ice strikes and the champion's elemental blast, used to hit only players. Pets in range now take them as well.
+- **A pet's area spells follow your rules.** They never hit you, your party or your party's pets, and they follow the same faction, no-PK area and clan war rules as your own spells. A pet's area buffs help you, your party, players of your faction and other pets.
+- **Town NPCs are left out.** Townsfolk, guards, merchants, healers, shrines and player vendors are never hit or buffed by a monster's or a pet's area spells. Before, a pet's area spell in town could hurt them, and a monster's buffs could help the guards fighting it. Friendly creatures such as pixies, wisps and unicorns count as town NPCs here too, so your pet's area spells won't hit them.
+- **Monsters can sing.** Staff can now give monsters bard songs. A singing monster needs no instrument, and its song strength comes from its Musicianship. Song of Beckon stays players-only.
+
+---
+
+## Bards - Song of Sirens
+
+### Player Impact
+
+- **Running out of stamina now stops the song.** You got the "Out of Stamina!" message, but everyone in range was still paralyzed and you paid no stamina. Now the song fails.
+
+---
+
+## Town NPCs - New "Townsfolk" Creature Type
+
+### Player Impact
+
+- **Merchants, guards, townsfolk, nobles, healers, bankers, quest givers and Warriors for Hire are now the Townsfolk creature type** instead of Human.
+- **Tracking has a new Townsfolk category**, so town NPCs no longer fill up the Human list.
+- **Human slayer weapons and Human protection no longer count against them.** Both still work against human monsters such as brigands, and against players.
+- **Bandages still heal them with Healing**, as before.
+
+---
+
 ## Summary
 
 - Mayors can resign from the townstone with "Resign and leave town"; the town can call a new election straight away.
@@ -119,9 +171,16 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 - Warrior hearts from before Patch 1.1.4 no longer revive; only a warrior's owner can hand in its heart; a High Priest memory revival costs one point of each stat per death, like a heart.
 - The Eon-Prism works only from your backpack.
 - Empty keyrings sell for 1 gold through "sell all" or "sell bag"; keyrings with keys on them are refused.
-- Sanctuary and Antidote no longer switch off your poison immunity jewelry when they end; Antidote protects its target; Dispel removes them.
-- Dragon Skin is a timed buff (1/2/3/5/7/9 protection, 15-30 minutes, 20 stamina per person); it uses the higher of your gear and the song instead of adding; Dispel removes it; the stuck and stacking bugs are fixed.
+- Sanctuary and Antidote no longer switch off your poison immunity jewelry when they end; Antidote protects its target; immunity (1-6) and duration (2-10 minutes) follow the caster's class level only; Dispel removes them.
+- Dragon Skin is a timed buff (protection 1-6 and 2-10 minutes by bard level, 20 stamina per person); it uses the higher of your gear and the song instead of adding; Dispel removes it; the stuck and stacking bugs are fixed.
 - Reactive Armor can be dispelled and has a buff icon.
 - Beastal Bond no longer leaves you frozen and invisible after a fumble; logging out ends the bond and puts you back where you started.
+- Night sight, poison and Magic Reflection show buff icons.
+- Monsters cast helpful spells on themselves instead of on you, and no longer waste part of their casts.
+- A monster's area spells hit players and pets but not other monsters, and its buffs only help monsters; boss mass attacks now hit pets too.
+- A pet's area spells follow your party, faction and no-PK rules; town NPCs and friendly creatures are never hit or buffed by an NPC's area spells.
+- Staff can give monsters bard songs; Song of Beckon stays players-only.
+- Song of Sirens fails when you run out of stamina instead of paralyzing everyone anyway.
+- Town NPCs are the new Townsfolk creature type: their own Tracking category, and Human slayers and Human protection no longer count against them.
 
 Thanks for playing Zuluhotel Omega 2.5.

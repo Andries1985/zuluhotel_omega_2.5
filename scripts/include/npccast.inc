@@ -18,6 +18,7 @@ include "include/smarttamedaoe";
 // var spells := GetConfigStringArray( npccfg[me.npctemplate], "spell" );
 // var saywords := npccfg[me.npctemplate].saywords;
 
+// New spell names here or in GetSpellID() also go in include/npcspellnames.inc (newmobedit's spell list)
 function castspell( caster, cast_on, spellname )
 
 	case (spellname)
@@ -534,7 +535,7 @@ Function GetSpellID(spellname)
 	"songofair"     : spellid := 192;
 	"songoffire"    : spellid := 193;
 	"songofwater"   : spellid := 194;
-	"songofbeckon"  : spellid := 195;
+	// songofbeckon (195) is players only - an npc's fairies were uncapped and spawned in britannia
 	"songoffright"  : spellid := 196;
 	"songofsalvation" : spellid := 197;
 	endcase
@@ -587,16 +588,53 @@ endfunction
 
 function cast_offensive_spell(caster, cast_on)
 
-	var npccfg := readconfigfile("npcdesc");
-	var spells := GetConfigStringArray( npccfg[caster.npctemplate], "spell" );
+	// Per npc spell list set with newmobedit replaces the template's spell lines (an empty one means no spells)
+	var spells := GetObjProperty( caster, "CustomSpells" );
+	if( spells == error )
+		var npccfg := readconfigfile("npcdesc");
+		spells := GetConfigStringArray( npccfg[caster.npctemplate], "spell" );
+	endif
 
-	var thespell := spells[Random( len(spells) +1 )];
+	if( !len(spells) )
+		return 0;
+	endif
 
-	if( thespell == "gheal" )
+	// Random(n) is 0..n-1, so +1 for the 1-based array (Random(len+1) could pick the empty spells[0])
+	var thespell := spells[Random( len(spells) ) + 1];
+
+	if( IsNpcSelfSpell( thespell ) )
 		CastSpell(caster, caster, thespell);
 	else
 		CastSpell(caster, cast_on, thespell);
 	endif
+
+endfunction
+
+// Helpful spells land on whoever they're cast at, so a mob casts these on itself instead of its opponent
+function IsNpcSelfSpell( spellname )
+
+	case( spellname )
+		"heal":
+		"gheal":
+		"cure":
+		"archcure":
+		"agility":
+		"cunning":
+		"strength":
+		"bless":
+		"protection":
+		"archprot":
+		"nightsight":
+		"reflect":
+		"invisibility":
+		"owlsight":
+		"earthblessing":
+		"naturestouch":
+		"antidote":
+			return 1;
+	endcase
+
+	return 0;
 
 endfunction
 
