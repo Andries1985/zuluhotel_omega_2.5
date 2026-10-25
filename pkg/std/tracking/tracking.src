@@ -137,7 +137,7 @@ program track(who)
 		return;
 	endif
 
-	// Display order -- the 21 possible categories (19 Type values, the
+	// Display order -- the 22 possible categories (20 Type values, the
 	// boss-tier "Champion" bucket and "Players") in a fixed, consistent order.
 	// Only the ones that actually turned up something nearby get listed.
 	var all_categories := array;
@@ -160,6 +160,7 @@ program track(who)
 	all_categories.append("Ratkin");
 	all_categories.append("Slime");
 	all_categories.append("Terathan");
+	all_categories.append("Townsfolk");
 	all_categories.append("Troll");
 	all_categories.append("Undead");
 
@@ -370,6 +371,7 @@ function NormalizeTrackingType(value)
 		"ratkin":			return "Ratkin";
 		"slime":			return "Slime";
 		"terathan":			return "Terathan";
+		"townsfolk":		return "Townsfolk";
 		"troll":			return "Troll";
 		"undead":			return "Undead";
 		default:			return value;

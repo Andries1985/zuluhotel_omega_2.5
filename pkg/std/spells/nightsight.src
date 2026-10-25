@@ -46,6 +46,7 @@ program cast_nightsight( parms, spell_id )
 							
 		if( !GetObjProperty( cast_near , "#Blinded" ) )
 			cast_near.setlightlevel( 0 , duration );
+			BuffOn( cast_near , "nightsight" , 0 , duration );
 			PlayObjectCenteredEffect( cast_near, FX_SPELL_NIGHT_SIGHT , SPEED_SPELL_NIGHT_SIGHT , LOOP_SPELL_NIGHT_SIGHT );
 			SendSysMessage(cast_near, "You are now able to see in the darkness for "+duration/60+" minutes.");
 		endif

@@ -17,6 +17,9 @@ program textcmd_class(who, lvl)
 	var targ := Target( who );
 	if( !targ )
 		return;
+	elseif( !targ.acctname )
+		SendSysMessage(who, "You must target a player.");
+		return;
 	endif
 
 	var gump := GFCreateGump(15, 15, 200, 400);

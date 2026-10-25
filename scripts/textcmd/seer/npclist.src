@@ -1,195 +1,214 @@
-// Synopsis: Display a list of all NPCs currently on the server
+// Synopsis: Browse every NPC template in npcdesc.cfg grouped by slayer type
 ////////////////////////////////////////////////////////////////////////
-// Toadstool
+// npclist() - Lists the npcdesc.cfg templates grouped by their Type
+// CProp (slayer type). Templates without a Type go under Missing Type.
+// Picking a type lists each template with its script, lootgroup,
+// magic item chance and magic item level.
 //
-// npclist() - List all npcs
-//
+// Original by Toadstool, rewritten by Developer Alryc Oct 2026
 ////////////////////////////////////////////////////////////////////////
 use uo;
 use cfgfile;
-include ":staff:include/staff";
+
 include ":gumps:include/gumps";
 
-var cfgfile := ReadConfigfile("::npcdesc");
-var npcs := GetConfigStringKeys( cfgfile);
+const NO_TYPE_GROUP := "Missing Type";
+const ROWS_PER_PAGE := 20;
+const BTN_BACK := 1;
 
-Program npclist( who)
-var merchants := "";
-var monsters := {};
-var misc := "";
+program textcmd_npclist(who)
 
-var npcname;
+	var npcdesc := ReadConfigFile("::npcdesc");
+	if (!npcdesc)
+		SendSysMessage(who, "Unable to read npcdesc.cfg: "+npcdesc.errortext);
+		return 0;
+	endif
 
-foreach npc in npcs
-	npcname := npc;
-	npc := FindConfigElem( cfgfile, npc );
-	
-	case (npc.script)
-	"merchant":
-	"animaltrainer":
-	"highpriest":
-	"minstrel":
-	"noble":
-	"banker":
-	"titlemaster1":
-	"crier":
-	"cstguard":
-	"daves_healer":
-	"hairstylist":
-	"townperson":
-	"smartcrier":
-	"mennoguard":
-	"performer": 	merchants := merchants+"<br>"+npcname;
+	var groups := BuildSlayGroups(npcdesc);
 
-	"archerkillpcs":
-	"assassinkillpcs":
-	"bardkillpcs":
-	"chaosexplosionkillpcs":
-	"chaosfirebreather":
-	"chaoskillpcs":
-	"doppel":
-	"doppelganger":
-	"dumbkillpcs":
-	"explosionkillpcs":
-	"firebreather":
-	"formationskillpcs":
-	"formationleader":
-	"chaosmultikillpcs":
-	"chaosspellkillpcs":
-	"killany":
-	"killpcs":
-	"poisonkillpcs":
-	"rockthrower":
-	"slime":
-	"spellkillpcs":
-	"spiders":
-	"stormkillpcs": 
-	monsters.append(npcname);
+	// Slayer types alphabetically, the untyped bucket last
+	var type_names := array;
+	foreach type_name in (groups.keys())
+		if (type_name != NO_TYPE_GROUP)
+			type_names.append(type_name);
+		endif
+	endforeach
+	if (groups.exists(NO_TYPE_GROUP))
+		type_names.append(NO_TYPE_GROUP);
+	endif
 
-	default:
-			misc := misc+"<br>"+npcname;
-	endcase
-endforeach
-	
+	while (1)
+		var choice := SlayTypeMenu(who, type_names, groups);
+		if (!choice)
+			return 1;
+		endif
 
+		// Back returns to the slayer type menu, closing ends the command
+		if (!NpcMenu(who, npcdesc, type_names[choice], groups[type_names[choice]]))
+			return 1;
+		endif
+	endwhile
 
-
-var gump := GFCreateGump(20, 20, 410, 450);
-
-// The main gump screen
-GFResizePic(gump, 20, 20, 9250, 410, 450);
-
-GFTextLine(gump, 200, 32, 67, "NPC List");
-
-GFTextLine(gump, 100, 45, 53, "Towns Folk");
-GFHTMLArea(gump, 40, 65, 180, 350, merchants, 1, 1);
-GFTextLine(gump, 280, 45, 53, "Animals/Misc");
-GFHTMLArea(gump, 230, 65, 180, 350, misc, 1, 1);
-
-GFTextLine(gump, 80, 430, 53, "Monsters Menu");
-GFAddButton(gump, 50, 430, 4005, 4006, 1, 5); 
-
-var result := GFSendGump(who, gump);
-
-if (result[0] == 5)
-	MonstersMenu(who, monsters, 0);
-endif
-
-return;
 endprogram
 
+// Returns a dictionary of slayer type -> alphabetical array of template names
+function BuildSlayGroups(npcdesc)
 
-function MonstersMenu(who, monsters, page)
+	var sorted := dictionary;
+	foreach template in (GetConfigStringKeys(npcdesc))
+		var type_name := GetSlayType(npcdesc[template]);
+		if (!sorted.exists(type_name))
+			sorted[type_name] := dictionary;
+		endif
+		sorted[type_name][Lower(template)] := template;
+	endforeach
 
-var newpagemonsters := monsters;
+	var groups := dictionary;
+	foreach type_name in (sorted.keys())
+		var templates := array;
+		foreach key in (sorted[type_name].keys())
+			templates.append(sorted[type_name][key]);
+		endforeach
+		groups[type_name] := templates;
+	endforeach
 
-var monstersperpage := 200;
-var maxpage := CInt(Len(monsters)/monstersperpage);
-if(page < 0)
-	page := 0;
-elseif(page > maxpage)
-	page := maxpage;
-endif
+	return groups;
 
-var alphlist := "";
-var npcname;
-var none := "";
-var one := "";
-var two := "";
-var three := "";
-var four := "";
-var five := "";
-var six := "";
-var seven := "";
-var eight := "";
-var nine := "";
-var ten := "";
-var higher := "";
+endfunction
 
-var count := 0;
-foreach npc in monsters
-	var mincount := page * monstersperpage;
-	var maxcount := (page+1) * monstersperpage;
-	if(count >= mincount && count < maxcount)  
-		npcname := npc;
-		npc := FindConfigElem( cfgfile, npc );
-		alphlist := alphlist+"<br>"+npcname;
+// Reads "CProp Type s<Name>" from the template, capitalised so sundead/sUndead group together
+function GetSlayType(elem)
 
-		case (CInt(npc.MagicItemLevel))
-			0:	none := none+"<br>"+CInt(npc.MagicItemLevel)+" "+CInt(npc.MagicItemChance)+"   "+npcname;
-			1:	one := one+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			2:	two := two+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			3:	three := three+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			4:	four := four+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			5:	five := five+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			6:	six := six+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			7:	seven := seven+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			8:	eight := eight+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			9:	nine := nine+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			10:	ten := ten+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-			default:	higher := higher+"<br>"+npc.MagicItemLevel+" "+npc.MagicItemChance+"   "+npcname;
-		endcase
+	foreach cprop in (GetConfigStringArray(elem, "CProp"))
+		var words := array;
+		foreach word in (SplitWords(StrReplace(cprop, CChr(9), " ")))
+			if (word)
+				words.append(word);
+			endif
+		endforeach
+
+		if (Lower(words[1]) == "type" && Len(words[2]) > 1)
+			var value := words[2];
+			value := value[2, Len(value) - 1];	// strip the packed type prefix
+			return Upper(value[1]) + Lower(value[2, Len(value) - 1]);
+		endif
+	endforeach
+
+	return NO_TYPE_GROUP;
+
+endfunction
+
+// Shows every slayer type with its template count; returns the picked index or 0
+function SlayTypeMenu(who, type_names, groups)
+
+	var rows := CInt((type_names.size() + 1) / 2);
+	var height := 110 + (rows * 25);
+
+	var gump := GFCreateGump(20, 20, 470, height);
+	GFResizePic(gump, 20, 20, 9250, 470, height);
+	GFResizePic(gump, 38, 70, 9200, 434, height - 70);
+
+	GFTextLine(gump, 200, 35, 67, "NPC List - Slayer Types");
+
+	var i;
+	for (i := 1; i <= type_names.size(); i := i + 1)
+		var col := (i - 1) % 2;
+		var row := CInt((i - 1) / 2);
+		var x := 50 + (col * 215);
+		var y := 80 + (row * 25);
+		GFAddButton(gump, x, y, 4005, 4006, GF_CLOSE_BTN, i);
+		GFTextLine(gump, x + 35, y + 2, 0, type_names[i]+" ("+groups[type_names[i]].size()+")");
+	endfor
+
+	var result := GFSendGump(who, gump);
+	var choice := CInt(result[0]);
+	if (choice < 1 || choice > type_names.size())
+		return 0;
 	endif
-	count := count+1;
-endforeach
-	
-var gump := GFCreateGump(20, 20, 500, 470);
 
-// The main gump screen
-GFResizePic(gump, 20, 20, 9250, 500, 470);
+	return choice;
 
-GFTextLine(gump, 230, 30, 67, "Monster List");
+endfunction
 
-GFTextLine(gump, 80, 45, 53, "Alphabetical List");
-GFHTMLArea(gump, 40, 65, 180, 370, alphlist, 1, 1);
+// Lists one slayer type's templates; returns 1 for Back, 0 when closed
+function NpcMenu(who, npcdesc, type_name, templates)
 
-GFTextLine(gump, 255, 45, 53, "L");
-GFTextLine(gump, 270, 45, 53, "C");
-GFTextLine(gump, 330, 45, 53, "Sort by Loot");
-GFHTMLArea(gump, 250, 65, 240, 370, none+"<BR>"+one+"<br>"+two+"<br>"+three+"<br>"+four+"<br>"+five+"<br>"+six+"<br>"+seven+"<br>"+eight+"<br>"+nine+"<br>"+ten+"<br>"+higher, 1, 1);
- 
-GFTextLine(gump, 90, 450, 53, "L = Loot Group Level");
-GFTextLine(gump, 300, 450, 53, "C = Magic Item Chance");
+	var pages := CInt((templates.size() + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE);
+	if (pages < 1)
+		pages := 1;
+	endif
 
-if(page > 0)
-	GFTextLine(gump, 80, 430, 53, "Previous Page");
-	GFAddButton(gump, 50, 430, 4015, 4016, 1, 5); 
-endif
+	var gump := GFCreateGump(20, 20, 640, 600);
+	GFResizePic(gump, 20, 20, 9250, 640, 600);
+	GFResizePic(gump, 38, 70, 9200, 604, 40);
+	GFResizePic(gump, 38, 110, 9200, 604, 450);
 
-if(page < maxpage)
-	GFTextLine(gump, 260, 430, 53, "Next Page");
-	GFAddButton(gump, 230, 430, 4005, 4006, 1, 10); 
-endif
+	GFTextLine(gump, 50, 35, 67, type_name+" - "+templates.size()+" NPCs");
 
-var result := GFSendGump(who, gump);
+	GFTextLine(gump, 50, 80, 900, "Template");
+	GFTextLine(gump, 250, 80, 900, "Script");
+	GFTextLine(gump, 420, 80, 900, "Lootgroup");
+	GFTextLine(gump, 510, 80, 900, "Chance");
+	GFTextLine(gump, 580, 80, 900, "Level");
 
-var newpage;
-if (result[0] == 5)
-	newpage := page-1;
-	MonstersMenu(who, newpagemonsters, newpage);
-elseif (result[0] == 10)
-	newpage := page+1;
-	MonstersMenu(who, newpagemonsters, newpage);
-endif
+	GFAddButton(gump, 50, 570, 4014, 4015, GF_CLOSE_BTN, BTN_BACK);
+	GFTextLine(gump, 85, 572, 0, "Back to Slayer Types");
+
+	var page := 1;
+	var y := 120;
+	var i;
+	GFPage(gump, page);
+	GFTextLine(gump, 330, 572, 1000, "Page 1 of "+pages);
+	for (i := 1; i <= templates.size(); i := i + 1)
+		if (i > 1 && ((i - 1) % ROWS_PER_PAGE) == 0)
+			GFAddButton(gump, 600, 570, 4005, 4006, GF_PAGE_BTN, page + 1);
+			page := page + 1;
+			GFPage(gump, page);
+			GFAddButton(gump, 560, 570, 4014, 4015, GF_PAGE_BTN, page - 1);
+			GFTextLine(gump, 330, 572, 1000, "Page "+page+" of "+pages);
+			y := 120;
+		endif
+
+		var elem := npcdesc[templates[i]];
+		GFTextCrop(gump, 50, y, 195, 20, 0, templates[i]);
+		GFTextCrop(gump, 250, y, 165, 20, 0, CfgValue(elem.script));
+		GFTextCrop(gump, 420, y, 85, 20, 0, GetLootGroups(elem));
+		GFTextLine(gump, 510, y, 0, CfgValue(elem.MagicItemChance));
+		GFTextLine(gump, 580, y, 0, CfgValue(elem.MagicItemLevel));
+		y := y + 22;
+	endfor
+
+	var result := GFSendGump(who, gump);
+	return (result[0] == BTN_BACK);
+
+endfunction
+
+// Some templates list more than one lootgroup
+function GetLootGroups(elem)
+
+	var groups := GetConfigStringArray(elem, "lootgroup");
+	if (!groups.size())
+		return "-";
+	endif
+
+	var text := "";
+	foreach group in groups
+		if (text)
+			text := text+"/";
+		endif
+		text := text+group;
+	endforeach
+
+	return text;
+
+endfunction
+
+function CfgValue(value)
+
+	if (value == error)
+		return "-";
+	endif
+
+	return CStr(value);
 
 endfunction

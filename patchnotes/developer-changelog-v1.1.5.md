@@ -1,11 +1,12 @@
 # Developer Changelog - v1.1.5
-**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `ea4722a` + working tree (this release's own `patchnotes/` files)  
+**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `fd57000` + working tree (section 10.6 balance pass, sections 18-25 and this release's own `patchnotes/` files)  
 **Branch:** Patch-1.1.5  
-**Date:** 2026-10-18 to 2026-10-22 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20; spell protections, Reactive Armor and Beastal Bond 2026-10-21/22)  
-**Commits in range:** 2 with content (`d11f181`, `ea4722a`) plus merge commits that carry only 1.1.4 work (`git diff 4abd02c 469834b` is empty); see section 2.  
-**Files changed:** 25 code files modified (11 in the first round, 15 in the spell round, `hitscriptinc.inc` in both) and 2 new includes (`scripts/include/spellprots.inc`, `pkg/opt/versebook/include/beastalbond.inc`), plus this release's 3 `patchnotes/` files. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
+**Date:** 2026-10-18 to 2026-10-25 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20; spell protections, Reactive Armor and Beastal Bond 2026-10-21/22; buff icons, `.newmobedit` and the NPC world-save fix 2026-10-23; class-level balance pass, NPC songs and spell lists, NPC area targeting, `.newmobedit` NPC pages, the Townsfolk type, `.npclist`, `.newiteminfo` and the use-script config 2026-10-25, working tree)  
+**Commits in range:** 5 with content (`d11f181`, `ea4722a`, `2587db3`, `07e7bc6`, `ccc8d27`), the merge `fd57000` of #345, plus merge commits that carry only 1.1.4 work (`git diff 4abd02c 469834b` is empty); see section 2.  
+**Files changed:** 43 code files modified, 1 renamed (`newmobedit.src`, admin -> gm) and 3 new includes (`scripts/include/spellprots.inc`, `scripts/include/buffs.inc`, `pkg/opt/versebook/include/beastalbond.inc`) in `4abd02c..fd57000`. In the working tree: 4 files for section 10.6 (`sanctuary.src`, `antidote.src`, `Dragon_Skin.src`, `spellprots.inc`), 32 files and 1 new include (`scripts/include/npcspellnames.inc`) for sections 18-25, plus this release's 3 `patchnotes/` files. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
 
 > Scope was computed against `4abd02c`, the last commit that edited the 1.1.4 notes, not `master`.
+> `archcure.src`, `archprot.src`, `nightsight.src`, `owlsight.src` and `angelicaura.src` show as modified in `git status` but differ from HEAD only in line endings: their per-file NPC branches were folded into `SmartBoost()` (section 20.4).
 
 ---
 
@@ -25,25 +26,42 @@
 12. [Login - Clear Old Protection Values](#12-login---clear-old-protection-values)
 13. [Reactive Armor - Dispellable, Buff Icon](#13-reactive-armor---dispellable-buff-icon)
 14. [Beastal Bond - Fumbles, Logoff and Return Position](#14-beastal-bond---fumbles-logoff-and-return-position)
-15. [ZH3.0 3.1.4 - Reviewed, Not Ported](#15-zh30-314---reviewed-not-ported)
-16. [Exhaustive File-by-File Change List](#16-exhaustive-file-by-file-change-list)
-17. [Risk and Regression Notes](#17-risk-and-regression-notes)
+15. [More Buff Icons - Night Sight, Poison, Magic Reflection](#15-more-buff-icons---night-sight-poison-magic-reflection)
+16. [`.newmobedit` Moves to GM](#16-newmobedit-moves-to-gm)
+17. [NPC Class Fix - NPCs No Longer Break World Saves](#17-npc-class-fix---npcs-no-longer-break-world-saves)
+18. [NPCs Sing Bard Songs](#18-npcs-sing-bard-songs)
+19. [NPC Spell Lists - Custom Spells, Self Buffs, the Random Index](#19-npc-spell-lists---custom-spells-self-buffs-the-random-index)
+20. [NPC Area Targeting - One Rule Set in SmartAoE / SmartBoost](#20-npc-area-targeting---one-rule-set-in-smartaoe--smartboost)
+21. [`.newmobedit` - NPC Pages, Staged Edits, Tame and Provoke](#21-newmobedit---npc-pages-staged-edits-tame-and-provoke)
+22. [Townsfolk Creature Type](#22-townsfolk-creature-type)
+23. [`.npclist` Rewrite](#23-npclist-rewrite)
+24. [`.newiteminfo` Fixes](#24-newiteminfo-fixes)
+25. [Use-Script Config and the Life Stream Recipe](#25-use-script-config-and-the-life-stream-recipe)
+26. [ZH3.0 3.1.4 - Reviewed, Not Ported](#26-zh30-314---reviewed-not-ported)
+27. [Exhaustive File-by-File Change List](#27-exhaustive-file-by-file-change-list)
+28. [Risk and Regression Notes](#28-risk-and-regression-notes)
 
 ---
 
 ## 1. Scope Summary
 
-Patch 1.1.5 is a small follow-up to 1.1.4 with five topics.
+Patch 1.1.5 is a follow-up to 1.1.4.
 
 Section 3 gives the mayor a way out of a town. The townstone gump's "give up your citizenship" button (3000) was only drawn on the citizen screen, and the mayor branch is tested before the citizen branch, so a mayor had no in-game way to leave short of losing an election or a staff `.removetownmember`. ZH3.0 ported this commit to its own 3.1.4 as theme 11.
 
-Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 15.
+Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 26.
 
 Section 8 makes keyrings sellable. They already had `VendorBuysFor 1`, but they are `newbie 1` and the merchant AI refuses newbied items. They stay newbie, and the merchant's own sell paths accept empty ones.
 
 Section 9 fixes two developer test tools that erased the shared area-policy mask cache and never rebuilt it.
 
-Sections 10-14 rework the timed spell protections. It started from a player report: Sanctuary's poison immunity, when it ran out, also switched off poison immunity jewelry put on during the spell. Sanctuary, Antidote and Dragon Skin wrote straight into the CProps that equipment maintains. That caused the jewelry bug, immunity and Dragon Skin protection stuck on after restarts, and Dragon Skin stacking without limit. The spells now keep their own temporary levels, and the higher of gear and spell counts. Dragon Skin becomes a timed buff with new numbers. Dispel removes all of them plus Reactive Armor. Beastal Bond gets ZH3.0's fixes plus a saved start position.
+Sections 10-14 rework the timed spell protections. It started from a player report: Sanctuary's poison immunity, when it ran out, also switched off poison immunity jewelry put on during the spell. Sanctuary, Antidote and Dragon Skin wrote straight into the CProps that equipment maintains. That caused the jewelry bug, immunity and Dragon Skin protection stuck on after restarts, and Dragon Skin stacking without limit. The spells now keep their own temporary levels, and the higher of gear and spell counts. Dragon Skin becomes a timed buff. After test-shard feedback (section 10.6), all three take their level and a 2-10 minute duration from the caster's class level alone. Dispel removes all of them plus Reactive Armor. Beastal Bond gets ZH3.0's fixes plus a saved start position.
+
+Sections 15-17 are smaller follow-ups: three more buff icons, `.newmobedit` opened to GMs, and a fix for `.setclass` on an NPC breaking every world save.
+
+Sections 18-21 are an NPC casting round. The 16 songbook songs could not run for an NPC at all: `castspell()` already started them with `{ "#MOB", caster, target }`, but each song took that array as its singer. They now accept an NPC singer (Song of Beckon stays players-only). NPCs can carry their own spell list (`CustomSpells`), cast helpful spells on themselves, and no longer lose part of their casts to an off-by-one `Random()` index. Every area spell or song an NPC casts now goes through one set of target rules inside `SmartAoE()` / `SmartBoost()`, shared with the boss mass specials. `.newmobedit` gains NPC pages to set all of this per NPC. A `/code-review` of the round found the fixes folded into sections 18-21 (Song of Sirens' stamina fall-through, the spells NPCs can't cast, Tame Diff 0 not stopping Spell Bind, newmobedit edits surviving Cancel, the duplicated targeting rules).
+
+Sections 22-25 are smaller: town NPCs become the `Townsfolk` creature type, `.npclist` is rewritten, `.newiteminfo` gets a full bug pass, and the use-script config and the Life Stream engraving recipe are cleaned up.
 
 ## 2. Commit Timeline
 
@@ -52,7 +70,11 @@ Sections 10-14 rework the timed spell protections. It started from a player repo
 | `01bb007` ... `f93dfbb`, `469834b` | 2026-10-06 to 2026-10-12 | Merge pull requests #331, #333, #335-#342 (Patch-1.1.3, Patch-1.1.4, Test-Shard) | - (no new content; tree at `469834b` equals `4abd02c`) |
 | `d11f181` | 2026-10-18 | Mayor can leave town | 3 |
 | `ea4722a` | 2026-10-20 | Fixes: ZH3.0 3.1.4 review fixes (powerhour lock, warrior hearts, priest, damage compare, AI caching, Eon-Prism), keyrings, test tools restore the area mask cache | 4-9 |
-| *(next commit)* | - | Spell protections, Dragon Skin rework, Reactive Armor, Beastal Bond, and patch notes for 1.1.5 | 10-14 |
+| `2587db3` | 2026-10-22 | Bard fixes, antidote fixes: spell protections, Dragon Skin rework, Reactive Armor, Beastal Bond, patch notes | 10.1-10.5, 11-14 |
+| `07e7bc6` | 2026-10-23 | Buff fixes for poison and other things.. newmobedit fix | 15, 16 |
+| `ccc8d27` | 2026-10-23 | NPC class fixes: stop NPCs from breaking world saves | 17 |
+| `fd57000` | 2026-10-23 | Merge pull request #345 (NPC-Class-Fixes) | - |
+| *(next commit)* | - | Class-level balance pass for Sanctuary, Antidote and Dragon Skin; NPC songs, spell lists and area targeting; `.newmobedit` NPC pages; Townsfolk type; `.npclist`; `.newiteminfo`; use-script config; patch notes | 10.6, 18-25 |
 
 ---
 
@@ -222,13 +244,13 @@ The fix had to cover NPCs as well as players. `config/npcdesc.cfg` gives templat
 
 ### 10.3 Sanctuary and Antidote
 
-Power and duration formulas are unchanged. The cast is applied when `power >= GetPoisonImmunityLevel(target)`: a target with higher immunity from jewelry or a stronger cast is skipped, and an equal one is refreshed. The scripts `SetSpellProt()`, `BuffOn("poisonimmunity")`, `Detach()`, sleep, then `EndSpellProt()` / `BuffOff()`. Antidote now applies to `cast_on`, including NPC targets (no buff icon for NPCs; `BuffOn` returns 0 for them).
+Power and duration formulas were left unchanged in `2587db3` (replaced in section 10.6). The cast is applied when `power >= GetPoisonImmunityLevel(target)`: a target with higher immunity from jewelry or a stronger cast is skipped, and an equal one is refreshed. The scripts `SetSpellProt()`, `BuffOn("poisonimmunity")`, `Detach()`, sleep, then `EndSpellProt()` / `BuffOff()`. Antidote now applies to `cast_on`, including NPC targets (no buff icon for NPCs; `BuffOn` returns 0 for them).
 
 ### 10.4 Dragon Skin
 
 The channelled loop is gone. After `CanPlay()` and `SucceedPlayingVerse()`:
 
-- Level `IsBard(who)` (1-6) picks the protection from `{ 1, 2, 3, 5, 7, 9 }` and the duration `(15 + 3 * (level - 1)) * 60` seconds.
+- In `2587db3`, level `IsBard(who)` (1-6) picked the protection from `{ 1, 2, 3, 5, 7, 9 }` and the duration `(15 + 3 * (level - 1)) * 60` seconds. Section 10.6 replaces both.
 - Targets are `ListMobilesInLineOfSight(who, range) + who` that pass `SmartSongBoost()` (party, guild rules, pets) and `CheckLineOfSight()`, with range from `GetVerseRange()` as before.
 - A target whose current Dragon Skin level is higher is skipped; otherwise it is replaced. Each target costs 20 stamina via `ConsumeBardStamina(who, stamina, 20)`; the loop stops with a message when the bard has less than 20.
 - `EndVerse()` clears `#Casting` straight away, so the bard is free. The script then `Detach()`es, sleeps the duration, and ends each skin it still owns.
@@ -244,6 +266,27 @@ The channelled loop is gone. After `CanPlay()` and `SucceedPlayingVerse()`:
 | `dragonskin` | 1021 (client's Attune Weapon icon) | 1061158 "Physical Resistance" | 1063504 "Physical Protection: ~1_VAL~" |
 
 The clilocs were read from the `D:/UO` client's `Cliloc.enu`. `SendBuffPacket()` passes the amount as the text argument. No existing buff uses a text cliloc with a value placeholder, so whether the level shows is untested.
+
+### 10.6 Balance pass: everything from the caster's class level
+
+Test-shard feedback after `2587db3`: Sanctuary and Antidote durations were "all over the place" (about 3 minutes for a Paladin in plate, 6 for a Powerplayer, 15 for a Mage), Sanctuary gave a level 6 Powerplayer level 1, and a Mage's Antidote showed level 20. The causes, at Magery 150:
+
+- Antidote's level was `ModifyWithMagicEfficiency(magery / 25)`: 6 x the Mage / Mystic Archer class multiplier (x1.25 to x2.5), so 7-15, and more with Intelligence gear. For a mage, `GetMagicEfficiencyPenalty()` subtracts equipped Int / 10 from the armor penalty with no floor, so it turns into an uncapped bonus.
+- Sanctuary's level was Mage or Paladin level + 1, else 1 (Powerplayers included).
+- Both durations were `ModifyWithMagicEfficiency(magery * 2)` seconds: class multiplier, armor penalty and the mage Int bonus all applied.
+- Levels above 6 did nothing: `processpoisonmod.src` caps every poison at 6 before `PoisonProtected()`, so immunity 6 already blocks everything except thief poison (which ignores immunity).
+
+New in `spellprots.inc`:
+
+- `SpellProtCasterLevel(level)` clamps to 1-6; 0 (unclassed, staff, NPC casters) becomes 1.
+- `SpellProtDuration(level)` returns `120 + 480 * (level - 1) / 5` seconds: 120, 216, 312, 408, 504, 600 (2:00 to 10:00). Constants `SPELLPROT_MIN_SECONDS` / `SPELLPROT_MAX_SECONDS`.
+
+Uses:
+
+- **Sanctuary / Antidote:** `power := SpellProtCasterLevel(GetClasseLevel(caster))`, `duration := SpellProtDuration(power)`. Magery, magic efficiency, armor and Int gear no longer matter. Antidote still uses the caster's level for the target's immunity. The cures are unchanged: Sanctuary always cures, Antidote's cure keeps its Magery check.
+- **Dragon Skin:** `level := SpellProtCasterLevel(IsBard(who))`; protection = level (1-6, was 1/2/3/5/7/9) and duration `SpellProtDuration(level)` (was 15-30 minutes). The `DRAGONSKIN_PROT` table and minute constants are gone.
+
+Everything else from 10.2-10.4 stands: higher of gear and spell, skip-if-weaker / refresh-if-equal, ownership by pid, dispellable through `WipeMods()`.
 
 ---
 
@@ -311,7 +354,212 @@ ZH3.0's wisp spawn location (`DEFAULT_LOCATION_NPC_RELOCATION_*`) was not ported
 
 ---
 
-## 15. ZH3.0 3.1.4 - Reviewed, Not Ported
+## 15. More Buff Icons - Night Sight, Poison, Magic Reflection
+
+**Commit:** `07e7bc6`. **Files:** `scripts/include/buffs.inc` (new), `scripts/include/dotempmods.inc`, `scripts/include/spelldata.inc`, `pkg/std/spells/nightsight.src`, `pkg/opt/holybook/lightofday.src`, `pkg/opt/earth/owlsight.src`, `pkg/opt/songbook/songoflight.src`, `pkg/std/alchemy/blackpotion.src`, `pkg/opt/necro/darkcloak.src`, `pkg/systems/combat/blindingonhit.src`, `pkg/systems/combat/blindingscript.src`, `pkg/opt/summoning/processpoisonmod.src`, `pkg/std/spells/reflect.src`, `scripts/playermanager.src`
+
+### 15.1 `buffs.inc`
+
+`BuffOn()`, `SendBuffPacket()` and `BuffOff()` moved unchanged from `dotempmods.inc` into the new `scripts/include/buffs.inc`, which both `dotempmods.inc` and `spelldata.inc` now include. Spell scripts that only include `spelldata.inc` can show icons without pulling in `dotempmods.inc` (Reactive Armor had to add that include in section 13).
+
+The `nightsight`, `poison` and `magicreflection` entries already existed in the icon list but nothing called them.
+
+### 15.2 Night sight
+
+`BuffOn(target, "nightsight", 0, duration)` right after each `setlightlevel(0, duration)` in Night Sight, Light of Day, Owl Sight, Song of Light and the night sight (black) potion. The light level ends on its own, and the client ends the icon with its countdown. Dark Cloak and both blinding on-hit scripts call `BuffOff(target, "nightsight")` when they blind, since blindness overrides night sight.
+
+### 15.3 Poison
+
+`processpoisonmod.src` calls `BuffOn(who, "poison", newPsnDmg, duration)` on a fresh poisoning (`!current`), with the real duration (30 s, or 30 + 5 x thief level). `CurePoison()` calls `BuffOff(who, "poison")`. Expiry, cure spells and potions, Sanctuary, death and logout all end there. A re-poison while poisoned doesn't extend the poison, so the icon isn't re-sent.
+
+The `poison` entry's text cliloc was changed from 0x1069B1 ("~1_DMG~ poison damage every ~2_SEC~ seconds.") to the blank 1062495 used by the other icons. `SendBuffPacket()` sends a single argument, so the second placeholder would have shown raw. The icon reads "Poisoned".
+
+### 15.4 Magic Reflection
+
+`reflect.src` calls `BuffOn(caster, "magicreflection", amount, 0)` (no countdown: the `mr` CProp lasts until used). `Reflected()` in `spelldata.inc` calls `BuffOff(targ, "magicreflection")` where it erases `mr`. `mr` is a persistent CProp, but the client forgets buff icons on logout, so `playermanager.src` re-sends the icon at login when `mr` is set. Dispel doesn't remove `mr`, so the icon stays too, as before.
+
+---
+
+## 16. `.newmobedit` Moves to GM
+
+**Commit:** `07e7bc6`. **Files:** `pkg/opt/spawnpoint/textcmd/admin/newmobedit.src` -> `pkg/opt/spawnpoint/textcmd/gm/newmobedit.src` (`git mv`, no content change), `config/cmds.cfg`, `config/command_synopses.cfg`
+
+- `DIR pkg/opt/spawnpoint/textcmd/gm` added under `CmdLevel GM`. Package `textcmd/<level>` folders are only found through `cmds.cfg`.
+- `command_synopses.cfg` regenerated: `newmobedit` is Game Master, CmdLevel 3 (was Administrator, 4). No other entry changed.
+- The old compiled files in the admin folder were deleted, so a stale `.ecl` can't keep answering at admin level. Deploys should delete `pkg/opt/spawnpoint/textcmd/admin/newmobedit.ecl` too.
+- GMs can now edit a mobile's stats, skills and protections, including `PermPoisonImmunity`, `PhysicalProtection` and the other prot CProps.
+
+---
+
+## 17. NPC Class Fix - NPCs No Longer Break World Saves
+
+**Commit:** `ccc8d27` (merged as `fd57000`, #345). **Files:** `scripts/include/classes.inc`, `scripts/textcmd/admin/setclass.src`, `pkg/opt/Staff/include/staff.inc`, `pkg/opt/Staff/logon.src`, `pkg/opt/Staff/logoff.src`, `pkg/packethooks/speech/receivespeechhook.src`
+
+`.setclass` on an NPC ran `AssignClasse()` -> `unequipRestrictedItems()`, which logged the NPC through `LogCommand()`. NPCs have no account, so the `:staff:` datafile was named after `CStr()` of the `acctname` error (`error{ errortext = "Not attached to an account" }`). Windows can't create that file, so every world save failed until a restart.
+
+- `unequipRestrictedItems()` returns straight away for NPCs.
+- `.setclass` refuses a target without an account ("You must target a player.").
+- `LogCommand()`, `LogAction()`, the staff logon / logoff loggers and the speech logger skip anything without an account.
+
+---
+
+## 18. NPCs Sing Bard Songs
+
+**Files:** `scripts/include/bard.inc` (+43), the 16 `pkg/opt/songbook/songof*.src` songs (about +17 / -7 each)
+
+### 18.1 The gap
+
+`GetSpellID()` in `npccast.inc` already mapped the song names to spell ids 182-197, so an NPC with a song in its spell list started the song script with `{ "#MOB", caster, target }`. Every song's program took one argument and treated it as the singer, so the array went into `GetHp()`, `findinstrument()` and the rest, and the song did nothing.
+
+### 18.2 The change
+
+New in `bard.inc`:
+
+- `IsNpcSong(parms)` / `GetSongSinger(parms)`: an NPC call is recognised by `parms[1] == "#MOB"` and the singer is `parms[2]`; a songbook call passes the player as before.
+- `GetSongInstrument(singer, npc_cast)`: an NPC without an instrument gets a struct with `graphic := UOBJ_HARP`, which only picks the success and failure sounds.
+- `GetNpcBardLevel(musicianship)`: the class-level scale from `classes.inc` (`AVERAGE_SKILL` 75 = level 1, +15 per level, capped at 6). Below 75 it returns 0 and the song fails.
+- `ValidSongBoost()` returns 1 for an NPC singer. Every caller runs `SmartBoost()` first, and that has already narrowed an NPC's list to its own side (section 20).
+
+Each song now takes `parms`. For an NPC singer `spec := GetNpcBardLevel(mus)`, and the difficulty roll, the stamina cost and the "You were interrupted!" HP check are skipped. Ranges, effects and durations use `spec` and the NPC's skills as they would for a player.
+
+### 18.3 Song of Fright and Song of Sirens
+
+- **Fright** runs its target list through `NpcSmartAoE()` only for an NPC singer; a player's Fright still affects every NPC in range as before. It still uses the template's `provoke` (section 21.4).
+- **Sirens** had its paralyze loop after the if / elseif / else, so the "Out of Stamina!" branch fell through and paralyzed everyone with no stamina paid. That branch now clears `#Casting` and returns. This affects players.
+
+### 18.4 Song of Beckon stays players-only
+
+An NPC Beckon went through `:summoning:npcsummoning`, which has no per-caster cap (the player path stops at 2 magic pets), sets the fairy's lifetime to the singer's Magery x 2 seconds (0 Magery killed it at once), and creates it without a realm, so in Britannia whatever realm the NPC was in. Beckon was taken out instead: `"songofbeckon"` is commented out of `GetSpellID()`, it is not in `npcspellnames.inc`, and the song returns at once on a `"#MOB"` call. The rest of `songofbeckon.src` is the committed player version. The `npcsummoning` issues apply to every NPC summon spell and are not fixed here.
+
+---
+
+## 19. NPC Spell Lists - Custom Spells, Self Buffs, the Random Index
+
+**Files:** `scripts/include/npccast.inc` (+43 / -5), `scripts/ai/tamed.src` (+4 / -1), `scripts/include/npcspellnames.inc` (new, 36 lines)
+
+- **Per-NPC spell list.** `cast_offensive_spell()` reads the `CustomSpells` CProp first and falls back to the template's `spell` lines only when the CProp is missing (`== error`). An empty array means no spells; the function then returns 0. `tamed.src` reads the same CProp, so a tamed NPC keeps its custom list.
+- **Helpful spells go on the caster.** New `IsNpcSelfSpell()`: heal, gheal, cure, archcure, agility, cunning, strength, bless, protection, archprot, nightsight, reflect, invisibility, owlsight, earthblessing, naturestouch and antidote are cast on the caster. Before, only gheal was, and the rest landed on the player being fought.
+- **The `Random()` index.** `spells[Random( len(spells) + 1 )]` picked 0..len, and `spells[0]` is an error, so `GetSpellID()` returned 0 and the attempt did nothing: 1 in n+1 casts (half for a one-spell NPC). Now `spells[Random( len(spells) ) + 1]`. This affects every spellcasting NPC on the shard, not only edited ones.
+- **`npcspellnames.inc`:** `GetNpcSpellNames()` returns every name `castspell()` accepts, for `.newmobedit`'s spell picker. Left out: the aliases `meteorswarm` and `gustoair`; `reactivearmor`, `earthportal` and `shapeshift`, whose scripts have no `"#MOB"` branch (an audit of every `GetSpellID()` script against the package `spells.cfg` files found only these three); and `songofbeckon` (section 18.4). A comment in `castspell()` points at the file.
+
+---
+
+## 20. NPC Area Targeting - One Rule Set in SmartAoE / SmartBoost
+
+**Files:** `scripts/include/spelldata.inc` (+126), `scripts/include/smarttamedaoe.inc` (+4 / -66), `scripts/include/bard.inc`, the songbook songs
+
+### 20.1 Before
+
+`SmartAoE()` and `SmartBoost()` were written for player casters. For an NPC caster `SmartAoE()` only removed the caster's own pets and party, so a monster's area spell hit other monsters; `SmartBoost()` removed nothing, so a monster's Arch Protection buffed the players around it. The boss mass specials in `npccast.inc` used a separate filter, `SmartFilterTamedTargets()`: players only for a wild NPC, and the master's rules for a tamed one. A first pass in this round added `NpcSmartAoE()` / `NpcSmartBoost()` with a third rule (monster side vs player side) and called them through an `if caster.isa(POLCLASS_NPC)` branch pasted into 19 spell and song files. Meteor Swarm, Chain Lightning, Earthquake, Explosion, Mass Curse and others kept the old behaviour.
+
+### 20.2 One rule set
+
+`SmartAoE()` and `SmartBoost()` now hand any NPC caster to `NpcSmartAoE()` / `NpcSmartBoost()` on their first line, so every caller is covered. `SmartFilterTamedTargets()` is now a one-line wrapper for `NpcSmartAoE()`, kept so the mass-spell callers need no change.
+
+- `IsBystanderNpc(mobile)`: a masterless NPC that is `invul`, or whose template in `::npcdesc` has `alignment good`. That covers townsfolk, guards, merchants, healers, shrines and player vendors, and also good creatures such as pixies, wisps, unicorns and the Beckon fairy. Package templates (`:pkg:name`) are never bystanders.
+- `IsMonsterSide(mobile)`: a masterless NPC that is not a bystander.
+- `NpcPetCanHitPlayer(master, victim)`: the player half of `SmartAoE()` with the master as reference: not the master's party; staff masters hit anyone; otherwise not across a no-PK area, a faction (`IsRPer`) difference or the same clan war colour.
+
+`NpcSmartAoE(caster, victims)` drops the caster and every bystander, then:
+
+- **Wild caster:** keeps players and pets; drops other monsters.
+- **Tamed caster:** keeps monsters and other players' pets, but not the master's or the master's party's pets; keeps players that pass `NpcPetCanHitPlayer()` and are not the master.
+
+`NpcSmartBoost(caster, affected)`:
+
+- **Wild caster:** itself and other monsters.
+- **Tamed caster:** itself and any pet; the master, the master's party, everyone if the master is staff, and players with the master's faction and (in clan war) colour, the same rule as `SmartBoost()`.
+
+### 20.3 Behaviour changes
+
+- **Boss mass specials hit pets.** Massgust, Massvatten, Masswyvern, Masskill, Masscalllightning, Massicestrike, Massshiftingearth, MassHolyBolt, Masseld and ChampFire went from players only to players and pets for a wild caster. A tamed caster's specials now also spare bystanders.
+- **A monster's area spells spare other monsters** and its area buffs only reach monsters, for every spell and song.
+- **NPC area spells never touch bystanders.** Player casters are unchanged.
+
+### 20.4 Per-file branches removed
+
+The pasted branches are back to a plain `SmartAoE()` / `SmartBoost()` call in the 14 songs that had them, `archcure.src`, `archprot.src`, `nightsight.src`, `owlsight.src` and `angelicaura.src`. The five spell files are identical to HEAD apart from line endings. `songoffright.src` keeps its NPC-only `NpcSmartAoE()` call (section 18.3). `ValidSongBoost()`'s own copy of the side rule became `return 1` (section 18.2).
+
+---
+
+## 21. `.newmobedit` - NPC Pages, Staged Edits, Tame and Provoke
+
+**Files:** `pkg/opt/spawnpoint/textcmd/gm/newmobedit.src` (+704 / -141), `pkg/std/provocation/provocation.src` (+10 / -1), `pkg/std/peacemaking/peacemaking.src` (+8 / -1), `pkg/opt/shilhook/regen.src` (unchanged, reads `CustomHitsLevel`)
+
+### 21.1 New NPC pages
+
+Stats 77-92 exist only for NPCs and are read by `LoadNpcSettings()` (CProps first, then the template) and written by `ApplyNpcSettings()` on Apply:
+
+- **AI / Loot (page 9):** Script (restarts the AI; blank refused), title prefix and suffix, lootgroup, Magic Item Level and Magic Item Chance (written as `CustomLoot { chance, level, lootgroup }`, the customnpc spawnpoint format; admin+ only; one lootgroup kept), "worn items drop" and "backpack items drop" (set or erase `noloot` on the items; hair, beard, mount and pack skipped).
+- **Flags (page 10):** LesserBoss, Boss, SuperBoss (a forced move resends the mobile so the name colour updates), Champion, Tame, Snoop (`snoopme`) and Steal (`stealme`) difficulty, and Provoke/Peace difficulty.
+
+### 21.2 Custom Hits Level and Spells are staged
+
+- **Custom Hits Level** (button 500, 1-100000, 0 removes): `ApplyStagedNpcEdits()` writes `CustomHitsLevel` x 100 on Apply, runs `RecalcVitals()` and sets HP to the new maximum. It runs before the HP field, so an HP typed into the gump still lands on top.
+- **Spells** (button 501): a checkbox gump of `GetNpcSpellNames()` plus whatever the NPC already casts, three columns of 15 per page, with Save, Cancel and "Template". A list that matches the template's (as sets) erases `CustomSpells` instead of writing it. It warns when the AI script is not in `CASTER_SCRIPTS`, since other AI scripts ignore spell lists.
+- Both used to write to the NPC as soon as their own gump closed, so Cancel on the main gump didn't undo them. Now they set `custom_hits` / `npc_spells` plus `hits_changed` / `spells_changed`, and only Apply writes them. "No change detected" accounts for both. The save-to-cfg button writes the mob's applied `CustomHitsLevel`, not a staged one.
+
+### 21.3 Tame difficulty
+
+A value above 0 writes `tamableAt` and erases `notame` and `untamable`. 0 erases `tamableAt` and writes `untamable`, the same prop `.untamable` sets. Taming checks both `untamable` and `notame`, but Spell Bind, Control Undead, Beastal Bond and herding check only `untamable`. With `notame` (the first pass of this round), those four still took control.
+
+### 21.4 Provoke / peace difficulty
+
+`ApplyNpcSettings()` writes a `provoke` CProp, kept even at 0. `provocation.src` and `peacemaking.src` read it before the template: 0 refuses ("You cannot provoke that!", or the NPC is skipped by peacemaking), anything else is the difficulty. Song of Fright, Taunt, the Grark Shepherd GM item and the megacliloc tooltip keep reading the template's `provoke` by design: the setting covers provoke and peace only.
+
+### 21.5 Other fixes
+
+- A right-click close returns 0, which fell into the "Warrior level 0" skill button; it now cancels.
+- Text fields go through `GetGumpText()`.
+- Dead fields 22, 25, 26, 27 (`magicefficiency`, `tempmagicimmunity`, `tempmagicreflection`, `temppoisonimmunity`) are removed; nothing read them.
+
+---
+
+## 22. Townsfolk Creature Type
+
+**Files:** `config/npcdesc.cfg` (+65 / -64), `pkg/std/tracking/tracking.src` (+3 / -1), `pkg/std/healing/healing.src` (+2 / -1)
+
+- Every template under the Townsfolk header in `npcdesc.cfg` went from `CProp Type sHuman` to `sTownsfolk`: 64 templates, including merchants, guards (`townguard`, `guard`, `CastleGuard`, `CastleGuard2`), `Banker`, `healer`, `HighPriest`, nobles, `questie` / `quest_target`, `playervendor` and `warriorforhire`. A comment line in the slayer-type header lists the new type.
+- `tracking.src` gains the Townsfolk category (22 categories now) and its `NormalizeTrackingType()` case.
+- `healing.src` adds Townsfolk to the `withheal` list, so bandages still use Healing on them.
+- Side effect: the Human slayer (`slayerscript`, `SlayType Human`) and Human protection (`raceresistonhit`) compare the `Type` CProp, so they no longer match these NPCs. Both still match human monsters and, through their `!npctemplate` branch, players.
+
+---
+
+## 23. `.npclist` Rewrite
+
+**Files:** `scripts/textcmd/seer/npclist.src` (+203 / -184), `config/command_synopses.cfg` (+1 / -1)
+
+The old command split every template into merchants, monsters and misc text blocks. The rewrite builds groups from each template's `Type` CProp (templates without one go under "Missing Type", listed last), shows a menu of slayer types alphabetically, and for the chosen type lists each template with its script, lootgroup, magic item chance and magic item level, 20 rows per page, with a Back button. Synopsis: "Browse every NPC template in npcdesc.cfg grouped by slayer type". Still Seer.
+
+---
+
+## 24. `.newiteminfo` Fixes
+
+**File:** `scripts/textcmd/gm/newiteminfo.src` (+174 / -216). Not ported from ZH3.0: ZH3.0 replaced this tool with a rebuilt `.iteminfo` that depends on its 200-1200 regen port, which 2.5 doesn't have.
+
+- **Set Spell Hitscript:** `SetSpellFromList()` had its `return` commented out, so the button never switched the hitscript or asked for chance and circle. It is now a pure picker that returns the spell id. New `SetSpellHitscriptProps()` writes `HitWithSpell` and the matching `HitscriptNumber` / `OnHitscriptNumber` row from `hitscriptdesc` / `onhitscriptdesc` (as `ApplySpellHitscript()` in `starteqp.inc` does), so the item gets its name on ID. "Change Casted Spell" uses it too.
+- **Effect / Greater / Special:** new shared `ApplyHitscriptRow()`. It clears the old props first (the old order would have erased the new value), sets the (on)hitscript and its row number, and writes the cfg's `CProp` under its own name. The old effect picker wrote `PoisonLvl`, but every reader uses `Poisonlvl`, so poison weapons made with the tool never poisoned. The Effect and Greater pickers also returned nothing, so cleanup and logging never ran.
+- **Set a Special Hitscript:** neither cfg defines `NbSpecial`, so the list was always empty. It now says so.
+- **Reset Hitscript** erases both row numbers and resets a weapon to its itemdesc `Hitscript` (`:combat:mainhit` if none).
+- **Use scripts:** the picker's button id never incremented (always the first entry) and it read `.Script` off a string key; it now sets `usecfg[key].Script`. The spell-casting use script's spell goes to `SpellId` without leaving a stray `HitWithSpell`. The gump showed nothing because it read `:magic:usescriptdesc`, which doesn't exist; it reads `:shilitems:usescriptdesc`, matches on the `Script` line and shows `Desc`.
+- **X / Y / Z edits** passed `MOVEOBJECT_FORCELOCATION` as the realm; `item.realm` added.
+- **The gump stays open.** A redisplay loop restores `layout` / `data` from a copy each pass (eScript copies arrays on assignment), so stale rows don't linger. Destroy logs before `DestroyItem()` and ends the loop; Create Stack and Set Owner no longer end the command on cancel.
+- **Regen page is view-only** ("Regen Mods (inactive)"): `DoRegenMods()` is commented out in `skilladvancerequip.src`, so regen props do nothing on 2.5.
+- Smaller: an armor row with no CProp no longer shows an edit button; `layout[39] := 0` is `""`; the four-line "mark un-IDed" block, repeated 8 times, is `FlagForRenameOnID()`. Edited items are still renamed on ID rather than at once.
+
+---
+
+## 25. Use-Script Config and the Life Stream Recipe
+
+**Files:** `pkg/opt/shilitems/usescriptdesc.cfg` (+9 / -16), `pkg/std/inscription/inscription.cfg` (+11 / -9)
+
+- `usescriptdesc.cfg`: the `saferecall` entry was a copy of `regeneration`; it is now "Safe Recall", `:shilitems:saferecall`. The blank `Name` lines are removed; nothing reads them now.
+- `:shilitems:lifestream` doesn't exist. `heaventouch.src` holds a program named `item_lifestream`, but it is the mass Bless the "of Heaven Touch" recipe already uses. The "of LifeStream" engraving recipe (`Inscription 0x1828`, skill 130, 50 diamonds) and the `lifestream` use-script entry are commented out with a dated note. Engraving itself is already off (`EnchantItem()` is commented out in `inscription.src`), so no player can reach it today. A missing recipe is handled: `EnchantItem()` answers "You must target an alchemical symbol." and `RechargeEngravedItem()` returns.
+
+---
+
+## 26. ZH3.0 3.1.4 - Reviewed, Not Ported
 
 ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
@@ -324,7 +572,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 16. Exhaustive File-by-File Change List
+## 27. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -338,22 +586,52 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `scripts/ai/merchant.src` | 8 | `MERCHANT_KEYRING_OBJTYPE`; new `CanMerchantBuy()`; `SellAll()` and `SellBag()` buy empty, unowned keyrings |
 | `pkg/opt/alryc/textcmd/test/aimovementsim.src` | 9 | `RebuildPolicyMaskCache("britannia")` after the run |
 | `pkg/opt/alryc/stresstest/areastressworker.src` | 9 | `RebuildPolicyMaskCache("britannia")` as each worker exits |
-| `scripts/include/spellprots.inc` | 10 | New: `#SpellPoisonImmunity` / `#DragonSkin` `{ level, pid }` helpers, `GetPoisonImmunityLevel()`, `GetPhysicalProtection()`, `ResyncEquippedProt()` |
-| `scripts/include/dotempmods.inc` | 10, 11 | Includes `spellprots`; `PoisonProtected()` uses `GetPoisonImmunityLevel()`; `WipeMods()` clears spell poison immunity, Dragon Skin, Reactive Armor, Incognito name; `poisonimmunity` / `dragonskin` buff icons |
-| `pkg/opt/holybook/sanctuary.src` | 10.3 | Spell level via `SetSpellProt()`, applied when not weaker than current immunity; buff icon; ends only its own cast |
-| `pkg/opt/earth/antidote.src` | 10.3 | Same as Sanctuary; immunity goes to the target instead of the caster |
-| `pkg/opt/versebook/Dragon_Skin.src` | 10.4 | Rewritten as a one-play timed buff: 1/2/3/5/7/9 by level, 15-30 min, 20 stamina per target, buff icon |
+| `scripts/include/spellprots.inc` | 10, 10.6 | New: `#SpellPoisonImmunity` / `#DragonSkin` `{ level, pid }` helpers, `GetPoisonImmunityLevel()`, `GetPhysicalProtection()`, `ResyncEquippedProt()`; `SpellProtCasterLevel()`, `SpellProtDuration()` (10.6) |
+| `scripts/include/dotempmods.inc` | 10, 11, 15 | Includes `spellprots` and `buffs`; `PoisonProtected()` uses `GetPoisonImmunityLevel()`; `WipeMods()` clears spell poison immunity, Dragon Skin, Reactive Armor, Incognito name; `poisonimmunity` / `dragonskin` buff icons (now in `buffs.inc`); `CurePoison()` turns the poison icon off; buff functions moved out |
+| `pkg/opt/holybook/sanctuary.src` | 10.3, 10.6 | Spell level via `SetSpellProt()`, applied when not weaker than current immunity; buff icon; ends only its own cast; level and duration from caster class level (10.6) |
+| `pkg/opt/earth/antidote.src` | 10.3, 10.6 | Same as Sanctuary; immunity goes to the target instead of the caster; level and duration from caster class level (10.6) |
+| `pkg/opt/versebook/Dragon_Skin.src` | 10.4, 10.6 | Rewritten as a one-play timed buff: 20 stamina per target, buff icon; protection = bard level 1-6 and 2-10 min (10.6) |
 | `pkg/opt/versebook/include/versefunctions.inc` | 10, 14 | Includes `spellprots`; `AdjustForPhysicalDamage()` uses `GetPhysicalProtection()`; new `EndVerse()` |
 | `scripts/control/skilladvancerequip.src` | 10.2 | Physical Protection recalculated only for items that carry it; Dragon Skin special case removed |
 | `scripts/textcmd/player/prots.src` | 10.2 | `.prots` shows the higher of gear and spell for Physical Protection and poison immunity |
 | `pkg/packethooks/megacliloc/mobiledata.src` | 10.2 | Mobile tooltip protection values include active spells; includes `spellprots` |
 | `pkg/std/spells/reactivearmor.src` | 13 | `#ReactiveArmorPid` ownership, buff icon, `include/dotempmods` |
-| `scripts/playermanager.src` | 12, 14 | Login resyncs players' `PermPoisonImmunity` / `PhysicalProtection` from equipment; `EndBeastalBond()` |
+| `scripts/playermanager.src` | 12, 14, 15.4 | Login resyncs players' `PermPoisonImmunity` / `PhysicalProtection` from equipment; `EndBeastalBond()`; re-sends the Magic Reflection icon |
 | `pkg/opt/versebook/Beastal_Bond.src` | 14 | Fumble leaves the loop; offline stops it; saved start position; realm-aware search; dead Reporting call removed; `EndVerse()` |
 | `pkg/opt/versebook/Beast_Bond_View.src` | 14.2 | Always unfreezes, unconceals, clears `#ViewingBeast` when it ends |
 | `pkg/opt/versebook/include/beastalbond.inc` | 14.3 | New: `SaveBeastalBondOrigin()`, `ReturnToBeastalBondOrigin()`, `EndBeastalBond()` |
 | `scripts/misc/logoff.src` | 14 | `EndBeastalBond()` replaces the view-only cleanup |
 | `scripts/misc/reconnect.src` | 14 | `EndBeastalBond()` replaces the view-only cleanup |
+| `scripts/include/buffs.inc` | 15.1 | New: `BuffOn()`, `SendBuffPacket()`, `BuffOff()` moved from `dotempmods.inc`; `poison` text cliloc blanked |
+| `scripts/include/spelldata.inc` | 15.1, 15.4, 20.2 | Includes `buffs`; `Reflected()` turns the Magic Reflection icon off; `SmartAoE()` / `SmartBoost()` hand NPC casters on; new `IsBystanderNpc()`, `IsMonsterSide()`, `NpcPetCanHitPlayer()`, `NpcSmartAoE()`, `NpcSmartBoost()` |
+| `pkg/std/spells/nightsight.src`, `pkg/opt/holybook/lightofday.src`, `pkg/opt/earth/owlsight.src`, `pkg/opt/songbook/songoflight.src`, `pkg/std/alchemy/blackpotion.src` | 15.2 | Night sight buff icon |
+| `pkg/opt/necro/darkcloak.src`, `pkg/systems/combat/blindingonhit.src`, `pkg/systems/combat/blindingscript.src` | 15.2 | Blinding turns the night sight icon off |
+| `pkg/opt/summoning/processpoisonmod.src` | 15.3 | Poison buff icon on a fresh poisoning |
+| `pkg/std/spells/reflect.src` | 15.4 | Magic Reflection buff icon |
+| `pkg/opt/spawnpoint/textcmd/gm/newmobedit.src` | 16 | Moved from `textcmd/admin` (renamed path only) |
+| `config/cmds.cfg` | 16 | `pkg/opt/spawnpoint/textcmd/gm` registered under GM |
+| `scripts/include/classes.inc` | 17 | `unequipRestrictedItems()` skips NPCs |
+| `scripts/textcmd/admin/setclass.src` | 17 | Refuses targets without an account |
+| `pkg/opt/Staff/include/staff.inc`, `pkg/opt/Staff/logon.src`, `pkg/opt/Staff/logoff.src`, `pkg/packethooks/speech/receivespeechhook.src` | 17 | Staff and speech loggers skip anything without an account |
+| `scripts/include/bard.inc` | 18.2, 20.4 | New `IsNpcSong()`, `GetSongSinger()`, `GetSongInstrument()`, `GetNpcBardLevel()`; `ValidSongBoost()` returns 1 for NPC singers |
+| `pkg/opt/songbook/songofair.src`, `songofcloaking`, `songofdefense`, `songofdismissal`, `songofearth`, `songoffire`, `songofglory`, `songofhaste`, `songoflife`, `songoflight`, `songofremedy`, `songofsalvation`, `songofwater` | 18.2, 20.4 | Accept an NPC singer (level from Musicianship, no roll, stamina or interrupt check); plain `SmartAoE()` / `SmartBoost()` |
+| `pkg/opt/songbook/songofsirens.src` | 18.2, 18.3, 20.4 | NPC singer; out-of-stamina branch returns instead of falling through to the paralyze |
+| `pkg/opt/songbook/songoffright.src` | 18.2, 18.3 | NPC singer; NPC target list through `NpcSmartAoE()` |
+| `pkg/opt/songbook/songofbeckon.src` | 18.4 | Takes `parms` and returns at once on a `"#MOB"` call; otherwise the committed player version |
+| `scripts/include/npccast.inc` | 18.4, 19 | `CustomSpells` overrides the template list; `IsNpcSelfSpell()`; `Random()` index fixed; `songofbeckon` commented out of `GetSpellID()` |
+| `scripts/ai/tamed.src` | 19 | Reads `CustomSpells` before the template spells |
+| `scripts/include/npcspellnames.inc` | 19 | New: `GetNpcSpellNames()` for `.newmobedit` |
+| `scripts/include/smarttamedaoe.inc` | 20.2 | `SmartFilterTamedTargets()` is a wrapper for `NpcSmartAoE()` |
+| `pkg/opt/spawnpoint/textcmd/gm/newmobedit.src` | 21 | AI / Loot and Flags pages; staged Custom Hits Level and Spells; tame 0 writes `untamable`; provoke CProp; right-click close; dead fields removed |
+| `pkg/std/provocation/provocation.src`, `pkg/std/peacemaking/peacemaking.src` | 21.4 | A `provoke` CProp overrides the template; 0 = immune |
+| `config/npcdesc.cfg` | 22 | 64 Townsfolk-header templates `Type sHuman` -> `sTownsfolk`; header comment |
+| `pkg/std/tracking/tracking.src` | 22 | Townsfolk category |
+| `pkg/std/healing/healing.src` | 22 | Townsfolk in the Healing (`withheal`) list |
+| `scripts/textcmd/seer/npclist.src` | 23 | Rewritten: templates grouped by slayer type with script, loot and magic item columns |
+| `config/command_synopses.cfg` | 16, 23 | `newmobedit` -> Game Master; new `npclist` synopsis |
+| `scripts/textcmd/gm/newiteminfo.src` | 24 | Spell / effect / greater / special hitscript fixes, use-script picker and display, realm on X/Y/Z, redisplay loop, view-only regen page |
+| `pkg/opt/shilitems/usescriptdesc.cfg` | 24, 25 | `saferecall` entry fixed; blank `Name` lines removed; `lifestream` commented out |
+| `pkg/std/inscription/inscription.cfg` | 25 | `Inscription 0x1828` (of LifeStream) commented out |
 | `patchnotes/patch-v1.1.4.md` | - | (`d11f181`) 1.1.4 date set to October 12, 2026; "Warrior for Hire - Brought In Line With ZH3.0" heading shortened |
 | `patchnotes/developer-changelog-v1.1.5.md` | - | New - this file |
 | `patchnotes/patch-v1.1.5.md` | - | New - player patch notes |
@@ -361,7 +639,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 17. Risk and Regression Notes
+## 28. Risk and Regression Notes
 
 - **Old warrior hearts stop working (section 5.1).** The 1.1.4 notes promised that pre-1.1.4 hearts "still work until a new death writes a stamped backup". That promise is withdrawn: every unstamped heart now crumbles at the priest. Owners of those warriors can still use "resurrect warrior" if they have a backup. If they have neither, the warrior is gone. Worth a line in the Discord announcement.
 - **Hearts must be handed in by the master character (section 5.2).** A heart handed in by an alt on the same account, or by a friend, is destroyed, not returned. Stamped hearts handed in by anyone else already crumbled, so in practice only the message changes for them. The player notes say it plainly.
@@ -373,10 +651,24 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
   - Selling is 1 gold against 5 ingots and Tinkering 95 to make one, and merchants sell them at 20, so there is no gold loop.
   - The empty-keyring test reads the Tamed Storage box. A keyring whose keys were dumped (`Use_KeyRing` on itself) has an empty box and sells.
 - **Test tools (section 9).** Running `.aimovementsim` or `.shardstress` on live still forces uncached area checks *during* the run, as designed. Only the after-effect is fixed.
-- **Dragon Skin is weaker with good gear (section 10.4).** It used to add to equipment with no cap. Level 6 gear and a level 6 bard went from 12 (60% weapon damage reduction) to 9 (45%). Players without Physical Protection gear get more than before at levels 4-6 (5/7/9 instead of 4/5/6).
+- **Dragon Skin is weaker (sections 10.4, 10.6).** It used to add to equipment with no cap and last as long as the bard played. Level 6 gear and a level 6 bard went from 12 (60% weapon damage reduction) to 6 (30%). Without gear, a bard now gives exactly their level, as the old song did, but for 2-10 minutes per play.
+- **Sanctuary and Antidote change for every class (section 10.6).** Mages lose the long, Intelligence-boosted durations (up to about 16 minutes) and drop to 2-10 minutes. Powerplayers gain: Sanctuary goes from level 1 to their class level. Antidote's level drops from 7-15+ to 1-6, but 6 already blocked every non-thief poison, so only low class levels lose real protection.
 - **Login resets Physical Protection and poison immunity to gear values (section 12).** Players carrying leaked Dragon Skin stacks lose them at their first login after the patch. That is the intent, but expect questions. A GM hand-set value on a player (not staff) is also reset.
 - **Dispel reach (section 11).** Everything that calls `WipeMods()` now strips Sanctuary, Antidote, Dragon Skin and Reactive Armor, including Blackrock and the Warrior for Hire AI's periodic wipe (which only affects the warrior itself).
 - **Relog ends these buffs (section 11).** Login runs `WipeMods()`, as it already did for Bless and Protection.
-- **Buff icon text (section 10.5)** is unverified in a client.
+- **Buff icon text (sections 10.5, 15)** is unverified in a client.
+- **`.newmobedit` is GM level (section 16).** GMs can change any mobile's stats and protections.
+- **Deploy: delete the stale `pkg/opt/spawnpoint/textcmd/admin/newmobedit.ecl` (section 16)** on servers that compiled it there.
 - **Other verses still leave `#Casting` set on a fumble.** Only Beastal Bond and Dragon Skin call `EndVerse()`.
-- **Compiled, not run.** The whole tree was compiled with `ecompile -A -w` on 2026-10-19 (0 errors, no new warnings in the touched files), and `merchant.src` and the two test tools on 2026-10-20 (0 errors, 0 warnings). The spell round (sections 10-14) was compiled with `ecompile -A -w` on 2026-10-22: 1161 scripts, 0 errors, no new warnings in the touched files. None of it was exercised in a client.
+- **Spellcasting monsters are stronger everywhere (section 19).** The `Random()` fix removes the 1-in-(n+1) dead casts from every caster NPC, and helpful spells now buff the monster instead of the player. Boss and champion fights with casters will feel harder.
+- **Boss mass specials now hit pets (section 20.3).** Pets that tanked casters' mass specials without taking them now do. If this is too much, restore players-only for wild casters in `NpcSmartAoE()`'s `!master` branch (or in `SmartFilterTamedTargets()` alone).
+- **Bystanders are decided by template alignment (section 20.2).** Any masterless `alignment good` NPC is never hit by an NPC area spell, including good creatures players fight (pixies, wisps, unicorns, the forest lord). A player's own area spells still hit them. An `alignment good` NPC that should be a target needs its alignment changed.
+- **`IsBystanderNpc()` reads `::npcdesc`.** Package templates (`:pkg:name`) are never bystanders; none of the town NPCs use one.
+- **Existing town NPCs keep `Type Human` (section 22).** The template CProp is applied when an NPC is created, so live townsfolk, guards and Warriors for Hire stay Human until they respawn or are recreated. Respawn town NPCs after the deploy if Tracking and the slayer change should apply at once.
+- **Human slayers lose town NPCs (section 22).** A Human slayer weapon or Human protection item no longer counts against guards, merchants or Warriors for Hire. Mostly relevant to anyone fighting a Warrior for Hire or a guard.
+- **NPC songs (section 18) have no template users yet.** No `npcdesc.cfg` template lists a song; they only appear through `.newmobedit`'s Spells page. Song of Beckon is refused for NPCs.
+- **`npcsummoning` (section 18.4) still has no cap, a Magery-based lifetime and no realm** for every NPC summon spell (`NpcSummonCreature()`). Not changed in this patch.
+- **Provoke difficulty 0 is provoke and peace only (section 21.4).** Song of Fright, Taunt, the Grark Shepherd and the mouse-over tooltip still use the template value, so the tooltip can show a number for an NPC that can't be provoked.
+- **Old Life Stream items (section 25).** Any item engraved with Life Stream before engraving was turned off still carries `:shilitems:lifestream` and does nothing when used.
+- **Sections 18-25 were not compiled.** Written and reviewed (`/code-review`, 2026-10-25) but neither compiled nor run. `ecompile -A -w` on the whole tree is owed before the deploy, since `spelldata.inc` and `npccast.inc` are included widely.
+- **Compiled, not run.** The whole tree was compiled with `ecompile -A -w` on 2026-10-19 (0 errors, no new warnings in the touched files), and `merchant.src` and the two test tools on 2026-10-20 (0 errors, 0 warnings). The spell round (sections 10-14) was compiled with `ecompile -A -w` on 2026-10-22: 1161 scripts, 0 errors, no new warnings in the touched files, and the buff icon round (section 15) on 2026-10-23 with the same result. The section 10.6 balance pass has **not been compiled**. Sections 10-15 were partly exercised on the test shard (jewelry interaction confirmed by a tester); the rest was not run in a client.

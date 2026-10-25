@@ -139,6 +139,7 @@ program processtempmods( parms )
 	if( !current )
 		who.SetPoisoned();
 		IncRevision(who);
+		BuffOn( who , "poison" , newPsnDmg , duration );
 		if( msg )
 			PrintTextAbovePrivate( who , msg , who );
 		endif	

@@ -77,11 +77,12 @@ program cast_antidote( parms )
 	EraseObjProperty( caster , "#Casting" );
 
 	// The immunity goes to the target (it used to land on the caster).
+	// Immunity level is the caster's class level (1-6); duration 2-10 minutes by that level.
+	// Magery, magic efficiency and equipment no longer change either.
 	// Skip if equipment or a stronger cast already gives as much; an equal one is refreshed.
-	var magery := GetEffectiveSkill( caster , SKILLID_MAGERY );
-	var duration := ModifyWithMagicEfficiency( caster , magery * 2 );
-	var power := ModifyWithMagicEfficiency( caster , magery / 25 );
-	if( duration and power and power >= GetPoisonImmunityLevel( cast_on ) )
+	var power := SpellProtCasterLevel( GetClasseLevel( caster ) );
+	var duration := SpellProtDuration( power );
+	if( power >= GetPoisonImmunityLevel( cast_on ) )
 		SetSpellProt( cast_on , SPELLPROT_POISON , power );
 		BuffOn( cast_on , "poisonimmunity" , power , duration );
 		Detach();

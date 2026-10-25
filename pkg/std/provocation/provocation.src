@@ -47,8 +47,17 @@ program bard_provoke( character )
 	var theobj	 := thetarg.npctemplate;
 	var elem	 := FindConfigElem( configfile, theobj );
 	var difficulty;
+	// Per npc provoke CProp (set with newmobedit) overrides the template; 0 means it can't be provoked
+	var custom_provoke := GetObjProperty( thetarg, "provoke" );
 
-	if( elem and !(elem.Privs == "invul") )
+	if( custom_provoke != error )
+		difficulty := Cint( custom_provoke );
+		if( !difficulty )
+			SendSysMessage( character, "You cannot provoke that!" );
+			return;
+		endif
+
+	elseif( elem and !(elem.Privs == "invul") )
 		difficulty := Cint( elem.provoke );
 		
 	elseif( !thetarg.npctemplate and !thetarg.cmdlevel )

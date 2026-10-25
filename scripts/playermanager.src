@@ -49,6 +49,11 @@ program logon( who )
 
 	// A restart can kill Beastal Bond mid-view before logoff ever ran
 	EndBeastalBond(who);
+
+	// Magic Reflection survives logout but the client forgets its buff icon
+	if( GetObjProperty( who, "mr" ) )
+		BuffOn( who, "magicreflection", CInt(GetObjProperty( who, "mr" )), 0 );
+	endif
 	
 	var macrowhen := GetMacroString();
 	var description := GetGlobalProperty("QuestDescription");

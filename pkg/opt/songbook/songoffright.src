@@ -14,7 +14,9 @@ const SPELL_EFFECT_ID		:= FX_SPELL_PARALYZE;
 const SPELL_EFFECT_SPEED	:= SPEED_SPELL_PARALYZE;
 const SPELL_EFFECT_LOOP		:= LOOP_SPELL_PARALYZE;
 
-program cast_songoffright( player )
+program cast_songoffright( parms )
+	var npc_cast := IsNpcSong( parms );
+	var player := GetSongSinger( parms );
 	// Disabled until frightai is fixed Error is below:
 	// Script Error in 'pkg/opt/songbook/frightai.ecl' PC=34: Call to function SystemFindObjectBySerial
 	/*
@@ -26,7 +28,7 @@ program cast_songoffright( player )
 	var singinghp := GetHp( player );
 	var configfile := ReadConfigFile("::npcdesc");
 	var circle := GetCircle( SPELLID_SONG_OF_FRIGHT  );
-	var instrument := findinstrument( player );
+	var instrument := GetSongInstrument( player, npc_cast );
 	var sfx_success;
 	var sfx_failure;
 	
@@ -71,17 +73,23 @@ program cast_songoffright( player )
 
 	//PrintTextAbove(player,"Difficulty:"+difficulty);
 	PerformAction( player, 0X021 );
-	if (difficulty > peace or difficulty > mus or !spec)
+	// Npcs skip the instrument, class and skill checks; their level comes from Musicianship
+	if (npc_cast)
+		spec := GetNpcBardLevel( mus );
+	endif
+	if ((!npc_cast and (difficulty > peace or difficulty > mus)) or !spec)
 		PlaySoundEffect( player , sfx_failure );
 		PrintTextAbove(player,"*"+player.name+" plays a song poorly*");
 		ps := GetStamina( player ) -(drain/2);
 		if (ps < 0 )
 			ps := 0;
 		endif
-		SetStamina( player, ps );
+		if (!npc_cast)
+			SetStamina( player, ps );
+		endif
 		EraseObjProperty( player , "#Casting" );
 		return;
-	elseif ((GetStamina( player ) -drain) <  0)
+	elseif (!npc_cast and (GetStamina( player ) - drain) < 0)
 		PrintTextAbove(player,"*"+player.name+" plays a song poorly*");
 		PrintTextAbovePrivate( player, "Out of Stamina!",player );
 		PlaySoundEffect( player , sfx_failure );
@@ -92,9 +100,11 @@ program cast_songoffright( player )
 		if (ps < 0 )
 			ps := 0;
 		endif
-		SetStamina( player, ps );
+		if (!npc_cast)
+			SetStamina( player, ps );
+		endif
 		sleep(1);
-		if (GetHp( player ) < singinghp)
+		if (!npc_cast and GetHp( player ) < singinghp)
 			PrintTextAbove(player,"*"+player.name+" plays a song poorly*");
 			PrintTextAbovePrivate( player, "You were interrupted!",player );
 			PlaySoundEffect( player , sfx_failure );
@@ -109,6 +119,10 @@ program cast_songoffright( player )
 			EraseObjProperty( player , "#Casting" );
 			
 			var affected := ListMobilesInLineOfSight( player , cint( (spec+1) * 2 ));
+			// An npc's song only frightens the other side (players' pets, or monsters for a pet)
+			if (npc_cast)
+				affected := NpcSmartAoE( player, affected );
+			endif
 			foreach cast_near in affected
 				if(!ValidSongTarget(player, cast_near))
 					continue;

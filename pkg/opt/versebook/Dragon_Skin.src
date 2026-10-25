@@ -13,12 +13,8 @@ var stamina, diff, skills, element, instrument, musicianship, name;
 // Physical protection becomes the higher of their own and the verse's - it never stacks
 // (see spellprots.inc). WipeMods (dispel, logon) removes it early.
 
-// Physical protection given, by bard level 1-6
-var DRAGONSKIN_PROT := { 1, 2, 3, 5, 7, 9 };
-
-// Duration in minutes: 15 at level 1, +3 per level, 30 at level 6
-const DRAGONSKIN_BASE_MINUTES	:= 15;
-const DRAGONSKIN_MINUTES_PER_LEVEL	:= 3;
+// Physical protection equals the bard level (1-6). Duration (2-10 minutes by bard level) is
+// shared with Sanctuary and Antidote: SpellProtDuration() in spellprots.inc.
 
 // Stamina the bard pays for each person protected
 const DRAGONSKIN_STAMINA_EACH := 20;
@@ -55,9 +51,9 @@ program Dragon_Skin(parms)
 		return 0;
 	endif
 
-	var level := IsBard(who);
-	var protamt := DRAGONSKIN_PROT[level];
-	var duration := (DRAGONSKIN_BASE_MINUTES + DRAGONSKIN_MINUTES_PER_LEVEL * (level - 1)) * 60;
+	var level := SpellProtCasterLevel(IsBard(who));
+	var protamt := level;
+	var duration := SpellProtDuration(level);
 	var range := GetVerseRange(who, musicianship);
 	var protected := {};
 

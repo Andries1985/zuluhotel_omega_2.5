@@ -12,11 +12,13 @@ const SPELL_EFFECT_TYPE_MOVING 	:= MOVING_SPELL_ICE_STRIKE;
 const SPELL_EFFECT_ID		:= FX_SPELL_ICE_STRIKE;
 const SPELL_EFFECT_SPEED	:= SPEED_SPELL_ICE_STRIKE;
 const SPELL_EFFECT_LOOP		:= LOOP_SPELL_ICE_STRIKE;
-program cast_songofwater( player )
+program cast_songofwater( parms )
+	var npc_cast := IsNpcSong( parms );
+	var player := GetSongSinger( parms );
 	SetObjProperty( player , "#Casting", 1 );
 	var singinghp := GetHp( player );
 	var circle := GetCircle( SPELLID_SONG_OF_WATER  );
-	var instrument := findinstrument( player );
+	var instrument := GetSongInstrument( player, npc_cast );
 	var sfx_success;
 	var sfx_failure;
 	case( instrument.graphic )
@@ -59,7 +61,11 @@ program cast_songofwater( player )
 	var difficulty := (circle*10)+(Random(25)-(spec*8));
 	//PrintTextAbove(player,"Difficulty:"+difficulty);
 	PerformAction( player, 0X021 );
-	if (difficulty > peace or difficulty > mus or !spec)
+	// Npcs skip the instrument, class and skill checks; their level comes from Musicianship
+	if (npc_cast)
+		spec := GetNpcBardLevel( mus );
+	endif
+	if ((!npc_cast and (difficulty > peace or difficulty > mus)) or !spec)
 		PlaySoundEffect( player , sfx_failure );
 		EraseObjProperty( player , "#Casting" );
 		PrintTextAbove(player,"*"+player.name+" plays a song poorly*");
@@ -67,9 +73,11 @@ program cast_songofwater( player )
 		if (ps < 0 )
 			ps := 0;
 		endif
-		SetStamina( player, ps );
+		if (!npc_cast)
+			SetStamina( player, ps );
+		endif
 		return;
-	elseif ((GetStamina( player ) -drain) <  0)
+	elseif (!npc_cast and (GetStamina( player ) - drain) < 0)
 		PrintTextAbove(player,"*"+player.name+" plays a song poorly*");
 		PrintTextAbovePrivate( player, "Out of Stamina!",player );
 		PlaySoundEffect( player , sfx_failure );
@@ -78,9 +86,11 @@ program cast_songofwater( player )
 		if (ps < 0 )
 			ps := 0;
 		endif
-		SetStamina( player, ps );
+		if (!npc_cast)
+			SetStamina( player, ps );
+		endif
 		sleep(1);
-		if (GetHp( player ) < singinghp)
+		if (!npc_cast and GetHp( player ) < singinghp)
 			PrintTextAbove(player,"*"+player.name+" plays a song poorly*");
 			PrintTextAbovePrivate( player, "You were interrupted!",player );
 			PlaySoundEffect( player , sfx_failure );
@@ -95,7 +105,7 @@ program cast_songofwater( player )
 		dmod := (peace/6) + spec*12;
 		var victims := ListMobilesInLineOfSight( player , cint( (spec+1) * 2 ));
 
-		victims := SmartAoE(player, victims);
+		victims := SmartAoE( player, victims );
 
 		foreach cast_near in victims
 			if(!ValidSongTarget(player, cast_near))
