@@ -4,7 +4,7 @@
 
 ---
 
-Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step down. Empty keyrings can be sold. The personal powerhour no longer locks you out for part of the day a week after you used it. A few Warrior for Hire heart and High Priest loopholes are closed. And Sanctuary, Antidote and Dragon Skin are reworked: their protection can no longer get stuck or stack, it now depends only on the caster's class level, and Dispel removes it. Spellcasting monsters stop healing and blessing the players they fight, and every area spell a monster or pet casts now picks its targets the same way. Town NPCs become their own Townsfolk creature type. **If you are holding a warrior heart from before Patch 1.1.4, read the Warrior for Hire section.**
+Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step down. Empty keyrings can be sold. The personal powerhour no longer locks you out for part of the day a week after you used it. A few Warrior for Hire heart and High Priest loopholes are closed. And Sanctuary, Antidote and Dragon Skin are reworked: their protection can no longer get stuck or stack, it now depends only on the caster's class level, and Dispel removes it. Spellcasting monsters stop healing and blessing the players they fight, and every area spell a monster or pet casts now picks its targets the same way. Town NPCs become their own Townsfolk creature type. Warriors for Hire now fight the warrior you point them at, a new `.arrows` command counts your ammunition, and player vendors in cities finally pay the city wage. **If you are holding a warrior heart from before Patch 1.1.4, read the Warrior for Hire section.**
 
 ---
 
@@ -164,6 +164,41 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 
 ---
 
+## Warrior for Hire - Attacking Another Warrior
+
+### Player Impact
+
+- **Your warrior now fights the warrior you tell it to attack.** If you told your warrior to attack another player's Warrior for Hire, it soon switched to that warrior's owner and chased them until you said stop. The other warrior did the same to you. Now the two warriors fight each other.
+- **Your warrior no longer turns on you mid-fight** when one of your own area spells hits it.
+
+---
+
+## New Command - .arrows
+
+### Player Impact
+
+- **`.arrows` shows the ammunition you are carrying**, the way `.pagans` shows reagents. It counts arrows, fire arrows, ice arrows, bolts and thunder bolts in your backpack and the bags inside it.
+
+---
+
+## Player Vendors - City Wages
+
+### Player Impact
+
+- **Vendors in a city now pay the city wage.** Vendors were meant to cost more in a city, but a bug charged every vendor 10,000 gold a month. A vendor in a city now costs **50,000 gold a month** (about 1,666 a day). Everywhere else, including the Vendor Markets, it stays 10,000 (about 333 a day).
+- **Wages come out of the gold your vendor holds**, from sales and from gold you hand it. If it runs short, the unpaid wages build up as debt, and after two months in debt the vendor leaves. Make sure your city vendors have enough gold.
+- **Champion relics can no longer be used in a city.** The relic always said so, but the check never worked.
+
+---
+
+## Vortex Beast
+
+### Player Impact
+
+- **The Vortex Beast is now a Beholder.** Beholder slayer weapons do double damage to it, and Giantkin slayers no longer do. Its Vortex Minions are still Giantkin.
+
+---
+
 ## Summary
 
 - Mayors can resign from the townstone with "Resign and leave town"; the town can call a new election straight away.
@@ -182,5 +217,9 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 - Staff can give monsters bard songs; Song of Beckon stays players-only.
 - Song of Sirens fails when you run out of stamina instead of paralyzing everyone anyway.
 - Town NPCs are the new Townsfolk creature type: their own Tracking category, and Human slayers and Human protection no longer count against them.
+- Warriors for Hire told to attack another warrior fight that warrior instead of its owner.
+- New `.arrows` command counts your arrows and bolts.
+- Player vendors in a city now pay the city wage, 50,000 gold a month; elsewhere it stays 10,000. Champion relics can't be used in a city.
+- The Vortex Beast is a Beholder for slayer weapons.
 
 Thanks for playing Zuluhotel Omega 2.5.
