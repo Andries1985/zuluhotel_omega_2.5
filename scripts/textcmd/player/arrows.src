@@ -1,0 +1,55 @@
+// Synopsis: Count arrows and bolts in your backpack by type
+use uo;
+
+// objtype, graphic, hue, label
+function AmmoTypes()
+	return {
+		{0x0f3f, 0x0f3f, 0,      "Arrows"},
+		{0x6051, 0x0f42, 0x0494, "Fire Arrows"},
+		{0xb200, 0x0f42, 0x0492, "Ice Arrows"},
+		{0x1bfb, 0x1bfb, 0,      "Bolts"},
+		{0x824e, 0x1bfe, 0x0502, "Thunder Bolts"}
+	};
+endfunction
+
+program textcmd_arrows(who)
+
+	var types := AmmoTypes();
+	var counts := dictionary;
+	foreach ammo in types
+		counts[ammo[1]] := 0;
+	endforeach
+
+	var found := 0;
+	foreach item in EnumerateItemsInContainer(who.backpack)
+		if (counts.exists(item.objtype))
+			counts[item.objtype] := counts[item.objtype] + item.amount;
+			found := 1;
+		endif
+	endforeach
+
+	if (!found)
+		SendSysMessage(who, "You have no arrows or bolts!");
+		return;
+	endif
+
+	var layout := {
+		"page 0",
+		"resizepic 0 0 5054 220 " + (60 + len(types) * 30),
+		"text 50 15 20 0"
+	};
+	var data := {"Ammunition Counter"};
+
+	var y := 50;
+	foreach ammo in types
+		layout.append("tilepichue 15 " + y + " " + ammo[2] + " " + ammo[3]);
+		layout.append("text 60 " + y + " 100 " + len(data));
+		data.append(ammo[4]);
+		layout.append("text 170 " + y + " 100 " + len(data));
+		data.append(CStr(counts[ammo[1]]));
+		y := y + 30;
+	endforeach
+
+	SendDialogGump(who, layout, data);
+
+endprogram

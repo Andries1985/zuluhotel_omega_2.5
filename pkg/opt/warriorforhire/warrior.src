@@ -463,10 +463,11 @@ function fight(opponent)
 		SYSEVENT_ENGAGED:
 			if (ev.source)
 				AddToHitList(ev);
-				if (ev.source != opponent)
+				var attacker := ResolveAttacker(ev.source);
+				if ( (attacker != opponent) and (attacker.serial != masterserial) )
 					if ( (Random(6)==1) or
-					     (distance(ev.source,me) < distance(me, opponent)) )
-						opponent := ev.source;
+					     (distance(attacker,me) < distance(me, opponent)) )
+						opponent := attacker;
 						SetOpponent( opponent );
 						turntoward( opponent );
 					endif
@@ -508,6 +509,23 @@ function AddToHitList(ev)
 	endforeach
 	hitlist.append(ev.source.serial);
 	SetObjProperty(me,"hitlist",hitlist);
+
+endfunction
+
+// Damage dealt by a pet or another warrior is credited to its owner (ApplyTheDamage swaps in the
+// master), so DAMAGED/ENGAGED events name the owner instead of the mobile actually hitting us.
+// Without this, attacking another player's warrior made both warriors turn on the owners. If an
+// NPC owned by the source is fighting us, answer that NPC instead.
+function ResolveAttacker(source)
+
+	if ( (!source) or (source.npctemplate) ) return source; endif
+	foreach mob in ListMobilesNearLocation(me.x, me.y, me.z, 15, me.realm)
+		if ( (mob.npctemplate) and (mob.opponent.serial == me.serial) and
+		     (CInt(GetObjProperty(mob, "master")) == source.serial) )
+			return mob;
+		endif
+	endforeach
+	return source;
 
 endfunction
 
@@ -582,14 +600,14 @@ function ProcessMasterEvents(byref ev, byref wanders, byref next_wander)
 		wanders := 0;
 		next_wander := readgameclock()+60;
 		if ( (ev.source) and (!ev.source.dead) and (!guarding) )
-			Fight( ev.source );
+			Fight( ResolveAttacker(ev.source) );
 		endif
 	SYSEVENT_DAMAGED:
 		AddToHitList(ev);
 		wanders := 0;
 		next_wander := readgameclock()+60;
 		if ( (ev.source) and (!ev.source.dead) )
-			Fight( ev.source );
+			Fight( ResolveAttacker(ev.source) );
 		endif
 	SYSEVENT_ENTEREDAREA:
 		return;

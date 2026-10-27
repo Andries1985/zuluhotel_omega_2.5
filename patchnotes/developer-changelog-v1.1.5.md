@@ -1,9 +1,9 @@
 # Developer Changelog - v1.1.5
-**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `fd57000` + working tree (section 10.6 balance pass, sections 18-25 and this release's own `patchnotes/` files)  
+**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `a5c79d1` + working tree (sections 26-29, 2026-10-27)  
 **Branch:** Patch-1.1.5  
 **Date:** 2026-10-18 to 2026-10-25 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20; spell protections, Reactive Armor and Beastal Bond 2026-10-21/22; buff icons, `.newmobedit` and the NPC world-save fix 2026-10-23; class-level balance pass, NPC songs and spell lists, NPC area targeting, `.newmobedit` NPC pages, the Townsfolk type, `.npclist`, `.newiteminfo` and the use-script config 2026-10-25, working tree)  
-**Commits in range:** 5 with content (`d11f181`, `ea4722a`, `2587db3`, `07e7bc6`, `ccc8d27`), the merge `fd57000` of #345, plus merge commits that carry only 1.1.4 work (`git diff 4abd02c 469834b` is empty); see section 2.  
-**Files changed:** 43 code files modified, 1 renamed (`newmobedit.src`, admin -> gm) and 3 new includes (`scripts/include/spellprots.inc`, `scripts/include/buffs.inc`, `pkg/opt/versebook/include/beastalbond.inc`) in `4abd02c..fd57000`. In the working tree: 4 files for section 10.6 (`sanctuary.src`, `antidote.src`, `Dragon_Skin.src`, `spellprots.inc`), 32 files and 1 new include (`scripts/include/npcspellnames.inc`) for sections 18-25, plus this release's 3 `patchnotes/` files. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
+**Commits in range:** 6 with content (`d11f181`, `ea4722a`, `2587db3`, `07e7bc6`, `ccc8d27`, `a5c79d1`), the merge `fd57000` of #345, plus merge commits that carry only 1.1.4 work (`git diff 4abd02c 469834b` is empty); see section 2.  
+**Files changed:** 43 code files modified, 1 renamed (`newmobedit.src`, admin -> gm) and 3 new includes (`scripts/include/spellprots.inc`, `scripts/include/buffs.inc`, `pkg/opt/versebook/include/beastalbond.inc`) in `4abd02c..fd57000`. In the working tree: 4 files for section 10.6 (`sanctuary.src`, `antidote.src`, `Dragon_Skin.src`, `spellprots.inc`), 32 files and 1 new include (`scripts/include/npcspellnames.inc`) for sections 18-25, plus this release's 3 `patchnotes/` files; those all landed in `a5c79d1`. In the working tree after `a5c79d1`: 5 files modified (`warrior.src`, `areas.inc`, `playermerchant.src`, `npcdesc.cfg`, `command_synopses.cfg`) and 1 new command (`scripts/textcmd/player/arrows.src`) for sections 26-29, plus the 3 `patchnotes/` files. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
 
 > Scope was computed against `4abd02c`, the last commit that edited the 1.1.4 notes, not `master`.
 > `archcure.src`, `archprot.src`, `nightsight.src`, `owlsight.src` and `angelicaura.src` show as modified in `git status` but differ from HEAD only in line endings: their per-file NPC branches were folded into `SmartBoost()` (section 20.4).
@@ -37,9 +37,13 @@
 23. [`.npclist` Rewrite](#23-npclist-rewrite)
 24. [`.newiteminfo` Fixes](#24-newiteminfo-fixes)
 25. [Use-Script Config and the Life Stream Recipe](#25-use-script-config-and-the-life-stream-recipe)
-26. [ZH3.0 3.1.4 - Reviewed, Not Ported](#26-zh30-314---reviewed-not-ported)
-27. [Exhaustive File-by-File Change List](#27-exhaustive-file-by-file-change-list)
-28. [Risk and Regression Notes](#28-risk-and-regression-notes)
+26. [Warrior for Hire - Fights the Warrior, Not Its Owner](#26-warrior-for-hire---fights-the-warrior-not-its-owner)
+27. [`.arrows` Ammunition Counter](#27-arrows-ammunition-counter)
+28. [Player Vendors - The City Wage Tier Now Applies](#28-player-vendors---the-city-wage-tier-now-applies)
+29. [Vortex Beast Is a Beholder](#29-vortex-beast-is-a-beholder)
+30. [ZH3.0 3.1.4 - Reviewed, Not Ported](#30-zh30-314---reviewed-not-ported)
+31. [Exhaustive File-by-File Change List](#31-exhaustive-file-by-file-change-list)
+32. [Risk and Regression Notes](#32-risk-and-regression-notes)
 
 ---
 
@@ -49,7 +53,7 @@ Patch 1.1.5 is a follow-up to 1.1.4.
 
 Section 3 gives the mayor a way out of a town. The townstone gump's "give up your citizenship" button (3000) was only drawn on the citizen screen, and the mayor branch is tested before the citizen branch, so a mayor had no in-game way to leave short of losing an election or a staff `.removetownmember`. ZH3.0 ported this commit to its own 3.1.4 as theme 11.
 
-Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 26.
+Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 30.
 
 Section 8 makes keyrings sellable. They already had `VendorBuysFor 1`, but they are `newbie 1` and the merchant AI refuses newbied items. They stay newbie, and the merchant's own sell paths accept empty ones.
 
@@ -63,6 +67,8 @@ Sections 18-21 are an NPC casting round. The 16 songbook songs could not run for
 
 Sections 22-25 are smaller: town NPCs become the `Townsfolk` creature type, `.npclist` is rewritten, `.newiteminfo` gets a full bug pass, and the use-script config and the Life Stream engraving recipe are cleaned up.
 
+Sections 26-29 come from player reports and suggestions (2026-10-27). A Warrior for Hire told to attack another player's warrior turned on that warrior's owner, because pet damage is credited to the master. A new `.arrows` command counts ammunition the way `.pagans` counts reagents. `IsInCityRegion()` read a `City` key that no region has, so the player vendor city wage tier never applied; it now reads `Type City`, and the city tier is 50,000 gold a month. The Vortex Beast becomes a Beholder-slayer target.
+
 ## 2. Commit Timeline
 
 | Commit | Date | Subject | Sections |
@@ -74,7 +80,8 @@ Sections 22-25 are smaller: town NPCs become the `Townsfolk` creature type, `.np
 | `07e7bc6` | 2026-10-23 | Buff fixes for poison and other things.. newmobedit fix | 15, 16 |
 | `ccc8d27` | 2026-10-23 | NPC class fixes: stop NPCs from breaking world saves | 17 |
 | `fd57000` | 2026-10-23 | Merge pull request #345 (NPC-Class-Fixes) | - |
-| *(next commit)* | - | Class-level balance pass for Sanctuary, Antidote and Dragon Skin; NPC songs, spell lists and area targeting; `.newmobedit` NPC pages; Townsfolk type; `.npclist`; `.newiteminfo`; use-script config; patch notes | 10.6, 18-25 |
+| `a5c79d1` | 2026-10-25 | Npc fixes, iteminfo fix, townsfolk type fix, npc bard groundwork, npc area of effect fixes sanc, antidote, and dragonskin patch | 10.6, 18-25 |
+| *(next commit)* | 2026-10-27 | Warrior for Hire attack target fix, `.arrows`, player vendor city wage, Vortex Beast slayer type, patch notes | 26-29 |
 
 ---
 
@@ -559,7 +566,71 @@ The old command split every template into merchants, monsters and misc text bloc
 
 ---
 
-## 26. ZH3.0 3.1.4 - Reviewed, Not Ported
+## 26. Warrior for Hire - Fights the Warrior, Not Its Owner
+
+**File:** `pkg/opt/warriorforhire/warrior.src` (+23 / -5)
+
+### 26.1 The defect
+
+Reported while a player trained their warrior against another warrior: "attack" on another Warrior for Hire made the warrior chase that warrior's owner indefinitely.
+
+- `ApplyTheDamage()` (`scripts/include/damages.inc`) swaps an NPC attacker for its master (`FindMaster()`, the `master` CProp) and calls `SetScriptController(master)` before `ApplyRawDamage()`. The hitlist, loot credit and criminal flags depend on that, so it stays. The side effect: the mobile that was hit gets `SYSEVENT_DAMAGED` / `SYSEVENT_ENGAGED` with the **owner** as `ev.source`, not the warrior that hit it.
+- In `fight()`, a `DAMAGED` / `ENGAGED` event from anyone other than the current opponent switches targets on `Random(6)==1` or when the source is closer. The other warrior's hits all name its owner, so within a few hits the warrior switched to the owner. The owner never deals damage, so nothing switched it back. If both warriors belong to the same player, it attacked its own master.
+- The reverse happened too: the target warrior was told the first warrior's owner hit it, and went after that player through `ProcessMasterEvents()`.
+
+### 26.2 The fix
+
+- New `ResolveAttacker(source)`. If `source` is a player, it looks for an NPC within 15 tiles whose `master` CProp is that player and whose `.opponent` is this warrior, and returns that NPC. Otherwise it returns `source` unchanged.
+- `fight()`'s retarget uses the resolved attacker, and never retargets onto the warrior's own master from a damage event (for example the master's own area spell). Sparring on purpose still works, because a direct attack goes through `fight()`'s `opponent == master` path.
+- `ProcessMasterEvents()`' `SYSEVENT_ENGAGED` and `SYSEVENT_DAMAGED` handlers call `Fight(ResolveAttacker(ev.source))`.
+- `AddToHitList()` is unchanged: it still records the player, who is the one responsible.
+- Kept to the warrior AI on purpose. Other pet AIs have the same retarget pattern but were not changed.
+
+---
+
+## 27. `.arrows` Ammunition Counter
+
+**Files:** `scripts/textcmd/player/arrows.src` (new, 55 lines), `config/command_synopses.cfg` (+7)
+
+A player suggestion: a command like `.pagans` that shows your ammunition. `.arrows` totals every stack in the backpack, including nested containers (`EnumerateItemsInContainer()`), and shows a small gump with an icon (`tilepichue`, matching the itemdesc graphic and hue) and the count per type:
+
+| Type | Objtype | Graphic / hue |
+|---|---|---|
+| Arrows | `0x0F3F` | `0x0F3F` |
+| Fire Arrows | `0x6051` | `0x0F42` / `0x0494` |
+| Ice Arrows | `0xB200` | `0x0F42` / `0x0492` |
+| Bolts | `0x1BFB` | `0x1BFB` |
+| Thunder Bolts | `0x824E` | `0x1BFE` / `0x0502` |
+
+- With none of them it answers "You have no arrows or bolts!".
+- Silver arrows (`0x5001`, `pkg/opt/sunshine`) are left out; nothing on the shard uses them.
+- `scripts/textcmd/player` is already a Player `DIR` in `config/cmds.cfg`, so nothing needed registering. `command_synopses.cfg` was regenerated with `pythonscripts/_gen_command_synopses_cfg.py`: "Count arrows and bolts in your backpack by type".
+
+---
+
+## 28. Player Vendors - The City Wage Tier Now Applies
+
+**Files:** `scripts/include/areas.inc` (+2 / -1), `pkg/systems/playervendor/playermerchant.src` (+1 / -1)
+
+- The question was whether player vendors really lose gold every day. They do: every 24 hours of game clock (`ReadGameClock()`, which doesn't advance while the server is down) `GetPay()` adds `monthly / 30` to `wagedebt`, with the remainder carried in `wagecarry`, and takes it from the vendor's gold pool (`g`: deposits plus sales). Unpaid wages stay as debt, and after two months of debt the vendor closes (`out_of_gold`).
+- **The defect:** `CalculateDailyWage()` charges the city tier when `IsInCityRegion(me)`, but `IsInCityRegion()` read `CInt(GetRegionString("regions", ..., "City", ...)) == 1`. No region in `regions/regions.cfg` has a `City` key; towns are marked `Type City` (32 regions). So every vendor paid the rural 10,000 a month.
+- **The fix:** `IsInCityRegion()` compares `lower(GetRegionString("regions", x, y, "Type", realm)) == "city"`.
+- **New city tier:** `CITY_MONTHLY_WAGE_GOLD` 40,000 -> **50,000** (1,666 gold a day). Outside cities it stays `MONTHLY_WAGE_GOLD` 10,000 (333 a day). Vendor Market 1 and 2 are `Type POI`, so they stay on the 10,000 tier.
+- **Also fixed by the same function:** the champion relic (`pkg/opt/ArtifactSystem/championrelic.src`) refuses to activate "in a city". That check has never worked for the same reason, and now does.
+
+---
+
+## 29. Vortex Beast Is a Beholder
+
+**File:** `config/npcdesc.cfg` (+49 / -51, a move)
+
+- `NpcTemplate vortexbeast`: `CProp Type sGiantkin` -> `sBeholder`. Beholder slayers now double their damage against it; Giantkin slayers no longer do (`GetSlayMultiplier()` compares the weapon's `SlayType` with the `Type` CProp).
+- The template moved from "Giantkin Boss's" into "Beholder Boss's", replacing its "None Yet" line, so the file stays sorted by slayer type. Nothing else in the block changed.
+- Its summons (`klock`, `klock2`, "a Vortex Minion", under "//Vortex Beast Summons") stay Giantkin.
+
+---
+
+## 30. ZH3.0 3.1.4 - Reviewed, Not Ported
 
 ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
@@ -572,7 +643,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 27. Exhaustive File-by-File Change List
+## 31. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -581,7 +652,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `pkg/opt/warriorforhire/include/wfhcommon.inc` | 5.1 | `IsCurrentWfhHeart()` refuses unstamped hearts and hearts with no backup |
 | `scripts/ai/highpriest.src` | 5.2, 5.3 | Heart from anyone but its master is destroyed; memory revival applies `resnum` stat loss, floor 10 |
 | `pkg/systems/combat/include/hitscriptinc.inc` | 6.1, 10, 13 | `WFHModifyDamage()` reads each master once as `CInt` and compares only when set; `ModByProt()` uses `GetPhysicalProtection()`; Reactive Armor trigger clears `#ReactiveArmorPid` and its icon |
-| `pkg/opt/warriorforhire/warrior.src` | 6.2 | `gWeaponAmmoTypes` / `gHealPotionPowers` caches; new `WeaponAmmoType()`, `LoadHealPotionPowers()`; `HasBow()` and `HealPotionPower()` use them |
+| `pkg/opt/warriorforhire/warrior.src` | 6.2, 26 | `gWeaponAmmoTypes` / `gHealPotionPowers` caches; new `WeaponAmmoType()`, `LoadHealPotionPowers()`; `HasBow()` and `HealPotionPower()` use them; new `ResolveAttacker()` used by `fight()`'s retarget and the `ENGAGED` / `DAMAGED` handlers, no retarget onto the master (26) |
 | `pkg/opt/ArtifactSystem/eonprism.src` | 7 | `include/itemutil`; refused unless in the user's backpack |
 | `scripts/ai/merchant.src` | 8 | `MERCHANT_KEYRING_OBJTYPE`; new `CanMerchantBuy()`; `SellAll()` and `SellBag()` buy empty, unowned keyrings |
 | `pkg/opt/alryc/textcmd/test/aimovementsim.src` | 9 | `RebuildPolicyMaskCache("britannia")` after the run |
@@ -624,11 +695,14 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `scripts/include/smarttamedaoe.inc` | 20.2 | `SmartFilterTamedTargets()` is a wrapper for `NpcSmartAoE()` |
 | `pkg/opt/spawnpoint/textcmd/gm/newmobedit.src` | 21 | AI / Loot and Flags pages; staged Custom Hits Level and Spells; tame 0 writes `untamable`; provoke CProp; right-click close; dead fields removed |
 | `pkg/std/provocation/provocation.src`, `pkg/std/peacemaking/peacemaking.src` | 21.4 | A `provoke` CProp overrides the template; 0 = immune |
-| `config/npcdesc.cfg` | 22 | 64 Townsfolk-header templates `Type sHuman` -> `sTownsfolk`; header comment |
+| `config/npcdesc.cfg` | 22, 29 | 64 Townsfolk-header templates `Type sHuman` -> `sTownsfolk`; header comment; `vortexbeast` -> `sBeholder`, moved to "Beholder Boss's" (29) |
 | `pkg/std/tracking/tracking.src` | 22 | Townsfolk category |
 | `pkg/std/healing/healing.src` | 22 | Townsfolk in the Healing (`withheal`) list |
 | `scripts/textcmd/seer/npclist.src` | 23 | Rewritten: templates grouped by slayer type with script, loot and magic item columns |
-| `config/command_synopses.cfg` | 16, 23 | `newmobedit` -> Game Master; new `npclist` synopsis |
+| `config/command_synopses.cfg` | 16, 23, 27 | `newmobedit` -> Game Master; new `npclist` synopsis; new `arrows` entry (27) |
+| `scripts/textcmd/player/arrows.src` | 27 | New: `.arrows` gump counting arrows, fire arrows, ice arrows, bolts and thunder bolts in the backpack |
+| `scripts/include/areas.inc` | 28 | `IsInCityRegion()` reads the region's `Type` and matches `City` |
+| `pkg/systems/playervendor/playermerchant.src` | 28 | `CITY_MONTHLY_WAGE_GOLD` 40000 -> 50000 |
 | `scripts/textcmd/gm/newiteminfo.src` | 24 | Spell / effect / greater / special hitscript fixes, use-script picker and display, realm on X/Y/Z, redisplay loop, view-only regen page |
 | `pkg/opt/shilitems/usescriptdesc.cfg` | 24, 25 | `saferecall` entry fixed; blank `Name` lines removed; `lifestream` commented out |
 | `pkg/std/inscription/inscription.cfg` | 25 | `Inscription 0x1828` (of LifeStream) commented out |
@@ -639,7 +713,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 28. Risk and Regression Notes
+## 32. Risk and Regression Notes
 
 - **Old warrior hearts stop working (section 5.1).** The 1.1.4 notes promised that pre-1.1.4 hearts "still work until a new death writes a stamped backup". That promise is withdrawn: every unstamped heart now crumbles at the priest. Owners of those warriors can still use "resurrect warrior" if they have a backup. If they have neither, the warrior is gone. Worth a line in the Discord announcement.
 - **Hearts must be handed in by the master character (section 5.2).** A heart handed in by an alt on the same account, or by a friend, is destroyed, not returned. Stamped hearts handed in by anyone else already crumbled, so in practice only the message changes for them. The player notes say it plainly.
@@ -670,5 +744,10 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 - **`npcsummoning` (section 18.4) still has no cap, a Magery-based lifetime and no realm** for every NPC summon spell (`NpcSummonCreature()`). Not changed in this patch.
 - **Provoke difficulty 0 is provoke and peace only (section 21.4).** Song of Fright, Taunt, the Grark Shepherd and the mouse-over tooltip still use the template value, so the tooltip can show a number for an NPC that can't be provoked.
 - **Old Life Stream items (section 25).** Any item engraved with Life Stream before engraving was turned off still carries `:shilitems:lifestream` and does nothing when used.
+- **City vendors start paying the city tier (section 28).** Every player vendor in a `Type City` region goes from 333 to 1,666 gold a day at its next daily charge. Vendors with a small gold pool will start building debt, and after two months of debt they close. Worth a line in the Discord announcement so owners can top up or move to a Vendor Market.
+- **Champion relics now refuse cities (section 28).** Relic activation was already blocked in guarded and no-PK areas, so this only changes unguarded parts of a `Type City` region.
+- **`ResolveAttacker()` picks the first match (section 26).** If a player and their own pet both attack a warrior, the warrior answers the pet. It scans mobiles within 15 tiles on each damage event from a player, which is cheap but not free in a big fight.
+- **Existing Vortex Beasts stay Giantkin (section 29)** until they respawn, as with the Townsfolk change.
+- **Sections 26-29 were not compiled or run.**
 - **Sections 18-25 were not compiled.** Written and reviewed (`/code-review`, 2026-10-25) but neither compiled nor run. `ecompile -A -w` on the whole tree is owed before the deploy, since `spelldata.inc` and `npccast.inc` are included widely.
 - **Compiled, not run.** The whole tree was compiled with `ecompile -A -w` on 2026-10-19 (0 errors, no new warnings in the touched files), and `merchant.src` and the two test tools on 2026-10-20 (0 errors, 0 warnings). The spell round (sections 10-14) was compiled with `ecompile -A -w` on 2026-10-22: 1161 scripts, 0 errors, no new warnings in the touched files, and the buff icon round (section 15) on 2026-10-23 with the same result. The section 10.6 balance pass has **not been compiled**. Sections 10-15 were partly exercised on the test shard (jewelry interaction confirmed by a tester); the rest was not run in a client.
