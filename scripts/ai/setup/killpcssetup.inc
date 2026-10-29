@@ -9,7 +9,7 @@ include "ai/setup/dressCustom";
 set_critical(0);
 var me := self();
 
-var npccfg := readconfigfile("npcdesc");
+var npccfg := readconfigfile("::npcdesc");
 var speechelem := npccfg[me.npctemplate];
 var flee_point := speechelem.flee_point;
 if (!flee_point)

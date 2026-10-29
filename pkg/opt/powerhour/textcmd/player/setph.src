@@ -99,6 +99,16 @@ program textcmd_setPH(who)
 		return;
 	endif
 
+	// The same type running server-wide already gives everything a personal one would, so the
+	// week's powerhour would be wasted. A different type still adds something.
+	if(PH_ActiveType() == choice)
+		SendSysMessage(who, "A server-wide " + PH_TypeName(choice) + " Powerhour is already running. Save your personal powerhour for later, or pick another type.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return;
+	elseif(PH_PendingType() == choice)
+		SendSysMessage(who, "A server-wide " + PH_TypeName(choice) + " Powerhour is about to start. Save your personal powerhour for later, or pick another type.", FONT_NORMAL, PH_MSG_COLOR_BAD);
+		return;
+	endif
+
 	activateph(who, choice);
 
 endprogram

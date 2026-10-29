@@ -1,7 +1,7 @@
 use npc;
 use cfgfile;
 
-var speech_cfg := ReadConfigFile("speechgroup");
+var speech_cfg := ReadConfigFile("::speechgroup");
 
 
 function process_text(inspeech, mood, templatename)

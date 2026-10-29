@@ -12,6 +12,15 @@ function Fight( opponent )
 		return;
 	endif
 
+	// Nothing to fight: return before post_combat(). Otherwise look_around() picks the same ghost
+	// again a second later, one call deeper each time, until the core kills the AI script. Leave
+	// war mode as post_combat() would; the events are only switched by prepare_for_fight() below.
+	if (opponent.dead or opponent.hidden or opponent.concealed)
+		SetWarMode(0);
+		SetOpponent(0);
+		return;
+	endif
+
 	if (opponent.multi.serial)
 		if (me.multi.serial != opponent.multi.serial)
 			flee(opponent);

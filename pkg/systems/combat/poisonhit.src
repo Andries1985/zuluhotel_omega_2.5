@@ -34,7 +34,9 @@ program poisonhit(attacker, defender, weapon, armor, basedamage, rawdamage)
 		elseif((!attacker.cmdlevel && defender.isa(POLCLASS_MOBILE) && !defender.isa(POLCLASS_NPC) && defender != attacker) && (noPKatk || noPKdef))	
 		
 		else
-			SetPoison( targ , poison , "You have been poisoned by " + attacker.name);
+			// The wielder only gets the kill (credit), not the caster's damage table, so a dropped
+			// poison weapon hits as hard in a Thief's hands as anyone else's.
+			SetPoison( targ , poison , "You have been poisoned by " + attacker.name, 0, 0, attacker);
 		endif
         rawdamage := RecalcDmg( attacker , defender , weapon , armor , basedamage );
         DealDamage( attacker , defender , weapon , armor , basedamage , rawdamage );

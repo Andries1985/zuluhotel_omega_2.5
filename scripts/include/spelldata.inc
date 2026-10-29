@@ -100,7 +100,9 @@ const ERROR_MSG_WRONG_EQUIPMENT		:= "Your hands must be free to cast spells.";
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
+// unresistable skips Resisted(): no Magic Resistance roll and no class or Eval Int adjustment, so
+// only the elemental protection below reduces the damage (champfire, npccastspells.inc).
+function ApplyElementalDamage( caster, cast_on, circle, dmg, element, unresistable := 0 )
 
 	if(caster.dead) return; endif
 	if(cast_on.dead) return; endif
@@ -143,7 +145,10 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element )
 			PrintTextAbovePrivate( cast_on , "I received this much Elemental damage: " +dmg, cast_on );
 		endif
 
-		var final_dmg := Resisted( caster, cast_on, circle, dmg );
+		var final_dmg := dmg;
+		if( !unresistable )
+			final_dmg := Resisted( caster, cast_on, circle, dmg );
+		endif
 		ApplyTheDamage( cast_on , caster , final_dmg , DMGID_MAGIC + element );
 	else
 		// Toadstool - heals x% of the damage that;s over 100. so 120% protection heals 20% of the damage

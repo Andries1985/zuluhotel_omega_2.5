@@ -3,7 +3,7 @@ include "ai/setup/dressCustom";
 
 set_critical(0);
 var me := self();
-var npccfg := readconfigfile("npcdesc");
+var npccfg := readconfigfile("::npcdesc");
 var speechelem := npccfg[me.npctemplate];
 var speech := "";
 var saywords := 0;

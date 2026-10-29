@@ -24,7 +24,7 @@ var flee_point;
 
 	drop_anchor(me);
 
-var npccfg := readconfigfile("npcdesc");
+var npccfg := readconfigfile("::npcdesc");
 var speechelem := npccfg[me.npctemplate];
 speech := getconfigstring(speechelem, "speech") ;
 spells := GetConfigStringArray( speechelem, "spell" );

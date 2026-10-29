@@ -546,7 +546,7 @@ endfunction
 
 function PrepareToCast(caster, cast_on, spellid)
 
-	var npccfg := readconfigfile("npcdesc");
+	var npccfg := readconfigfile("::npcdesc");
 	// var me := Self();
 	// var spells := GetConfigStringArray( npccfg[me.npctemplate], "spell" );
 	var saywords := npccfg[caster.npctemplate].saywords;
@@ -591,7 +591,7 @@ function cast_offensive_spell(caster, cast_on)
 	// Per npc spell list set with newmobedit replaces the template's spell lines (an empty one means no spells)
 	var spells := GetObjProperty( caster, "CustomSpells" );
 	if( spells == error )
-		var npccfg := readconfigfile("npcdesc");
+		var npccfg := readconfigfile("::npcdesc");
 		spells := GetConfigStringArray( npccfg[caster.npctemplate], "spell" );
 	endif
 

@@ -20,7 +20,7 @@ program angry_bees (bees)
 	endif
 
 	repeat
-		foreach mobile in ListMobilesNearLocation( bees.x, bees.y, bees.z, 2 )
+		foreach mobile in ListMobilesNearLocation( bees.x, bees.y, bees.z, 2, bees.realm )
 			ApplyRawDamage (mobile, attack_damage);
 		endforeach
 		sleep (time_between_attacks);

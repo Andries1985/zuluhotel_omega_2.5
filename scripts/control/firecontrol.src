@@ -12,40 +12,54 @@ program field_control( item )
 
 	var diff    := 30;
 	var points  := 25;
-	var power   := 2;
-	var element := FIRE;
-	var specEle := GetObjProperty( item, "specialELE" );
-	var creator := 0;
-	var serial  := Cint( GetObjProperty( item , "Creator" ) );
-
-	if( specEle )
-		element := specEle;
-	endif
-	
-	if( GetObjProperty( item , "ByTrueMage" ) )
-		power := Cint( power * CLASSE_BONUS );
-	endif
-	
-	if( serial )
-		creator := SystemFindObjectBySerial( serial );
-		if( !creator ) 
-			creator := SystemFindObjectBySerial( serial , SYSFIND_SEARCH_OFFLINE_MOBILES );
-		endif
-	
-		if(creator)
-			SetScriptController(creator);
-		endif
-	endif
+	var controller := 0;
 
 	//var itemx:=cint(item.x), itemy:=cint(itemy), itemz:=cint(item.z);
 
 	while(item.x)
-		if(!item.realm)
+		// Read the location once: the field can be destroyed between a check and the lookup,
+		// which then got an uninit realm.
+		var realm := item.realm;
+		var fx := CInt(item.x), fy := CInt(item.y), fz := CInt(item.z);
+		if(!realm)
 			break;
 		endif
-		var dmg := RandomDiceStr( power + "d8" );
+
+		// The caster sets these props after CreateItemAtLocation has already started this script,
+		// so they are read every tick rather than once at startup, or a field that ran first kept
+		// the defaults for its whole life.
+		var power := 2;
+		if( GetObjProperty( item , "ByTrueMage" ) )
+			power := Cint( power * CLASSE_BONUS );
+		endif
+		var element := FIRE;
+		var specEle := GetObjProperty( item, "specialELE" );
+		if( specEle )
+			element := specEle;
+		endif
+		// A field can set its own damage dice and skip Magic Resistance (champfire's fields,
+		// npccastspells.inc); other fields roll power d8 and are resisted as before.
+		var dice := power + "d8";
+		if( GetObjProperty( item , "FieldDice" ) )
+			dice := CStr( GetObjProperty( item , "FieldDice" ) );
+		endif
+		var unresistable := CInt( GetObjProperty( item , "Unresistable" ) );
+
+		// Look the caster up again each tick: a monster's fields can outlive it, and a dead NPC's
+		// reference can't be used. Once it is gone the fallback below applies.
+		var creator := 0;
+		var serial  := Cint( GetObjProperty( item , "Creator" ) );
+		if( serial )
+			creator := SystemFindObjectBySerial( serial , SYSFIND_SEARCH_OFFLINE_MOBILES );
+			if( creator and !controller )
+				SetScriptController(creator);
+				controller := creator;
+			endif
+		endif
+
+		var dmg := RandomDiceStr( dice );
 		PlaySoundEffect( item , SFX_SPELL_FIRE_FIELD );
-		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0, item.realm );
+		var victims := ListMobilesNearLocation( fx , fy , fz , 0, realm );
 		victims := SmartAoE(creator, victims);
 		foreach mobile in victims
 			if(!creator) 
@@ -54,7 +68,7 @@ program field_control( item )
 			if(!mobile.multi)
 				PerformAction( mobile , ANIM_HIT );
 				PlayObjectCenteredEffectEx( mobile, 0x371A, 0 , 10, 0, 5);
-				ApplyElementalDamage( creator, mobile, 4, dmg, element );
+				ApplyElementalDamage( creator, mobile, 4, dmg, element, unresistable );
 			endif
 		endforeach
 		Sleepms( DELAY_BETWEEN_HITS_MS );

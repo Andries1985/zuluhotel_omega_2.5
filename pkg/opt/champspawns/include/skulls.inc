@@ -87,6 +87,12 @@ function createNextRedSkull(altar)
   return;
 endfunction
 
+function clearWhiteSkulls(altar)
+  WipeItemsArray(GetObjProperty(altar, "wskulls"));
+  SetObjProperty(altar, "wskulls", {});
+  EraseObjProperty(altar, "white_skull_level");
+endfunction
+
 function destroyLastRedSkull(altar)
   var lskull := CInt(GetObjProperty(altar, "wave"));
   var skulls := array;
