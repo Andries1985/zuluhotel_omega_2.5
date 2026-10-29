@@ -164,9 +164,13 @@ CustomNPCGump(who, point, o, vits, cprops, npc);
 
 endfunction
 
-function DressNPCCustom(me)
+// The point is passed in: CreateCustomNPC wipes the critter's CProps before dressing it, and its
+// SpawnPoint prop is only set after it is placed, so it can't be looked up from the critter here.
+function DressNPCCustom(me, point)
 
-var point := SystemFindObjectBySerial(GetObjProperty(me, "SpawnPoint"));
+if (!point)
+	return;
+endif
 
 foreach item in EnumerateItemsInContainer(point)
 	var copy := CreateItemCopyAtLocation(5273, 1181, 0, item);

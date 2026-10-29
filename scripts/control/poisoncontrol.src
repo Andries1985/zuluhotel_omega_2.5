@@ -32,11 +32,21 @@ program poison_control( item )
 			SetScriptController(creator);
 		endif
 	endif
-	
+
+	// The field's caster gets the kill. Kept apart from creator, which falls back to the first
+	// victim below when the caster can't be found.
+	var poisoner := creator;
+
 	while( item )
+		// Read the location once (see firecontrol.src): the field can be destroyed mid-tick.
+		var realm := item.realm;
+		var fx := CInt(item.x), fy := CInt(item.y), fz := CInt(item.z);
+		if( !realm )
+			break;
+		endif
 		var plvl := RandomDiceStr( "1d" + power );
 		PlaySoundEffect( item , SFX_SPELL_POISON_FIELD );
-		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0, item.realm );
+		var victims := ListMobilesNearLocation( fx , fy , fz , 0, realm );
 		victims := SmartAoE(creator, victims);
 		foreach mobile in victims
 			if( !creator )
@@ -47,7 +57,7 @@ program poison_control( item )
 			if( indiv_plvl )
 				if(!mobile.multi)
 					PlayObjectCenteredEffectEx( mobile, 0x33F6, 0 , 10, 63, 5);
-					SetPoison( mobile , indiv_plvl , "You've been poisoned!" );
+					SetPoison( mobile , indiv_plvl , "You've been poisoned!", 0, 0, poisoner );
 				endif
 			endif
 		endforeach

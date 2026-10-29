@@ -23,7 +23,8 @@ program use_sunderingsword(who, sword)
 	PrintTextAbove(casttarg, casttarg.name + " has been destroyed!");
 	PlaySoundEffect(casttarg, 0x202);
 	PlayObjectCenteredEffect(casttarg, 0x375a, 1, 0x10);
-	ApplyRawDamage(casttarg, casttarg.hp+3);
+	// No resist, so the summon always dies; ApplyTheDamage credits the wielder with the kill.
+	ApplyTheDamage(casttarg, who, casttarg.hp+3, DMGID_MAGIC + DMGID_NO_RESIST);
 	return;
 
 endprogram

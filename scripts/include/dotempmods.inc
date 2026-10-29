@@ -402,23 +402,32 @@ function RandomHairColor()
 endfunction
 
 
-function SetPoison( who , plvl , msg := 0, caster := 0, shuriken := 0)
-	
-	if( plvl < 1 ) 
+// caster picks the damage table, duration and protection rules in processpoisonmod (a Thief caster
+// gets the Thief table and pierces poison protection). credit is only who gets the kill: pass it
+// alone when the poisoner must not change the damage, e.g. a dropped poison weapon. It defaults to
+// the caster.
+function SetPoison( who , plvl , msg := 0, caster := 0, shuriken := 0, credit := 0)
+
+	if( plvl < 1 )
 		plvl := 1;
 	endif
 
 	if(caster)
-		SetObjProperty(who, "PoisonedBy", caster.name);
 		RecordCharacterPoisoning(who, CStr(caster.name), plvl);
 	endif
 
+	if( !credit )
+		credit := caster;
+	endif
+
+	// processpoisonmod records the credit, once it knows whether this poisoning lands.
 	var parms := {};
 	parms[1] := who;
 	parms[2] := plvl;
 	parms[3] := Cstr( msg );
 	parms[4] := caster;
 	parms[5] := shuriken;
+	parms[6] := credit;
 	
 	Start_script( ":summoning:processpoisonmod" , parms );
 	Sleepms(250);

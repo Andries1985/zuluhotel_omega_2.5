@@ -11,7 +11,7 @@ var flee_point;
 
 drop_anchor(me);
 
-var npccfg := readconfigfile("npcdesc");
+var npccfg := readconfigfile("::npcdesc");
 var speechelem := npccfg[me.npctemplate];
 flee_point := speechelem.flee_point;
 if (!flee_point)

@@ -56,10 +56,16 @@ program energy_control( item )
 	endif
 		
 	while( item )
+		// The realm was never passed, so fields outside Britannia searched Britannia's coordinates
+		// and never hit anyone. Read once per tick (see firecontrol.src).
+		var realm := item.realm;
+		if( !realm )
+			break;
+		endif
 		var dmg := RandomDiceStr( power + "d8" );
 		PlaySoundEffect( item , SFX_SPELL_ENERGY_FIELD );
 		foreach coord in coordinates
-			var victims := ListMobilesNearLocation( coord[1] , coord[2] , coord[3] , 0 );
+			var victims := ListMobilesNearLocation( coord[1] , coord[2] , coord[3] , 0, realm );
 			victims := SmartAoE(creator, victims);
 			foreach mobile in victims
 				if( !creator )

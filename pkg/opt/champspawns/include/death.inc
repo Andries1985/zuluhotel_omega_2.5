@@ -6,37 +6,113 @@ function ProcessChampSpawnCorpse(corpse)
 
 endfunction
 
+// An altar champion pays the reward bags from its altar's kill tally (rewards.inc), then rains its
+// gold. A champion with no altar - summoned by a champion relic (SummonedByRelic) or by staff - has
+// no tally, so it only rains gold.
 function ProcessChampionCorpse(corpse)
   if(!GetObjProperty(corpse, "Champion"))
     return;
   endif
 
+  // Read the altar now: the bags are paid at the moment of death, not after the corpse's 10 minutes.
+  var altar := GetAltarByCorpse(corpse);
+  if(altar)
+    GiveRewardsToPlayers(altar);
+    EraseObjProperty(altar, "players");
+  endif
+
   RainDownMoney(corpse);
   sleep(600); // Destroy the corpse in 10 minutes.
 
-  var altar := GetAltarByCorpse(corpse);
-  EraseObjProperty(altar, "players");
   DestroyItem(corpse);
 endfunction
 
+// One kill for the reward bag tally, kept on the altar as players[serial] := {kills, systime of
+// the last kill}. Only kills while the altar is active count, and only by players (pets and
+// Warriors for Hire count for their master, see ApplyTheDamage).
 function RegisterChampionSpawnKill(corpse)
   if(!GetObjProperty(corpse, "iChampSpawn"))
     return;
   endif
 
-  var killer := SystemFindObjectBySerial(GetObjProperty(corpse, "KilledBySerial"));
-  var altar := SystemFindObjectBySerial(GetObjProperty(corpse, "sAltarSerial"));
-  var players := GetObjProperty(altar, "players");
-
-  if(players[killer.serial])
-    players[killer.serial] := CInt(players[killer.serial]) + 1;
-  else
-    players[killer.serial] := 1;
+  var altar_serial := CInt(GetObjProperty(corpse, "sAltarSerial"));
+  if(!altar_serial)
+    return;
+  endif
+  var altar := SystemFindObjectBySerial(altar_serial);
+  if(!altar or !GetObjProperty(altar, "active"))
+    return;
   endif
 
+  var killer := FindChampionSpawnKiller(corpse);
+  if(!killer)
+    return;
+  endif
+
+  // Many spawn corpses can be processed at once (area spells): no other script may change the
+  // tally between the read and the write.
+  set_critical(1);
+  var players := GetObjProperty(altar, "players");
+  if(TypeOf(players) != "Dictionary")
+    players := dictionary;
+  endif
+
+  // An entry written before Patch 1.1.5 is the bare kill count.
+  var entry := players[killer.serial];
+  var kills;
+  if(TypeOf(entry) == "Array")
+    kills := CInt(entry[1]);
+  else
+    kills := CInt(entry);
+  endif
+  players[killer.serial] := array{kills + 1, POLCore().systime};
+
   SetObjProperty(altar, "players", players);
+  set_critical(0);
 endfunction
 
+// The player who killed a spawn creature: the corpse's KilledBySerial (set by ApplyTheDamage), or
+// failing that the player who hit it last according to its hitlist. 0 when neither is a player.
+function FindChampionSpawnKiller(corpse)
+  var serial := CInt(GetObjProperty(corpse, "KilledBySerial"));
+  if(serial)
+    var killer := SystemFindObjectBySerial(serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+    if(IsChampionCreditable(killer))
+      return killer;
+    endif
+  endif
+
+  // Hitlist entries are {serial, factor, game clock of the last hit}.
+  var hitlist := GetObjProperty(corpse, PROPID_MOBILE_HITLIST);
+  if(TypeOf(hitlist) != "Array")
+    return 0;
+  endif
+  var newest := 0;
+  var newest_time := -1;
+  foreach hit in hitlist
+    if(CInt(hit[3]) > newest_time)
+      var mobile := SystemFindObjectBySerial(CInt(hit[1]), SYSFIND_SEARCH_OFFLINE_MOBILES);
+      if(IsChampionCreditable(mobile))
+        newest := mobile;
+        newest_time := CInt(hit[3]);
+      endif
+    endif
+  endforeach
+  return newest;
+endfunction
+
+function IsChampionCreditable(mobile)
+  if(!mobile or !mobile.IsA(POLCLASS_MOBILE))
+    return 0;
+  endif
+  return (!mobile.npctemplate and !mobile.cmdlevel);
+endfunction
+
+// The altar that spawned this champion, or 0 for a champion with no altar.
 function GetAltarByCorpse(corpse)
-  return SystemFindObjectBySerial(GetObjProperty(corpse, "altar"));
+  var serial := CInt(GetObjProperty(corpse, "altar"));
+  if(!serial)
+    return 0;
+  endif
+  return SystemFindObjectBySerial(serial);
 endfunction

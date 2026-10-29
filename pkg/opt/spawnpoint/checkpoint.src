@@ -775,7 +775,7 @@ function CreateCustomNPC(point, template)
 	SetStamina(critter, vits.STAM);
 	SetObjProperty(critter, "customnpc", 1);
 
-	DressNPCCustom(critter);
+	DressNPCCustom(critter, point);
 	return critter;
 
 endfunction

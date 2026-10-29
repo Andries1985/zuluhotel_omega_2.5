@@ -45,11 +45,15 @@ program control(altar)
           if((ReadGameClock()>nextLVLDownCheck) and killPercent<90)
             kills:=0;
             totalKills:=0;
+            // Past 20% the wave only starts over (the white skulls go); below it a red skull goes too.
+            // This used to add a red skull and take it away again, which on the last wave marked
+            // the altar completed and spawned the champion early.
             if (killPercent>20)
-              createNextRedSkull(altar);
+              clearWhiteSkulls(altar);
+            else
+              destroyLastRedSkull(altar);
             endif
             nextLvlUp := 20;
-            destroyLastRedSkull(altar);
             nextLVLDownCheck:=ReadGameClock()+LVLDOWNCHECK;
           endif
 

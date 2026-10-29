@@ -1613,7 +1613,8 @@ function DoPoison( you )
 			return;
 		endif
 
-		SetPoison(you, p_level, "You have been poisoned by " + me.name +"!");
+		// Credit only: ApplyTheDamage hands the pet's poison kills to its master.
+		SetPoison(you, p_level, "You have been poisoned by " + me.name +"!", 0, 0, me);
 
 	endif
 

@@ -66,7 +66,7 @@ if (old < new)
 else
 
 	foreach priv in (currprivs.keys())
-		who.disable(who, priv);
+		who.disable(priv);
 		RevokePrivilege(who, priv);
 	endforeach
 

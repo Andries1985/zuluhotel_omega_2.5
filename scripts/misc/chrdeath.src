@@ -75,6 +75,9 @@ program chrdeath(corpse,ghost)
 	endif
 	EraseObjProperty( ghost, "KilledBy" );
 	EraseObjProperty( ghost, PROPID_MOBILE_KILLED_BY );
+	// Recorded above; the corpse keeps its own copy. Left on the ghost, it was still there at the
+	// next death and credited this killer if that death recorded none.
+	EraseObjProperty( ghost, "KilledBySerial" );
 	EraseObjProperty( ghost, PROPID_MOBILE_GUARD_KILLED );
 	EraseObjProperty( ghost, PROPID_MOBILE_MAGIC_REFLECTION );
 	SetObjProperty( corpse, PROPID_CORPSE_CORPSE_OF, ghost.serial );

@@ -488,7 +488,16 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 	// 		basedamage *= GetGlobalProperty("ReducePhysical");
 	// 	endif
 	// else
-		if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
+		// A pet, summon or Warrior for Hire hitting a player counts as its master, as in
+		// ApplyTheDamage(): a player's pet takes the same PvP cuts as the player.
+		var pvp_attacker := attacker;
+		if( attacker.isA(POLCLASS_NPC) )
+			var master := FindMaster(attacker);
+			if( master )
+				pvp_attacker := master;
+			endif
+		endif
+		if( !pvp_attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
 			//if( !defender.isA(POLCLASS_NPC))
 				//Print("Applying PvP Physical reduction. Basedamage is: " + basedamage);
 				basedamage := CInt( basedamage * 0.4 );

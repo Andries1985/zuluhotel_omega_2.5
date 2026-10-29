@@ -1,12 +1,13 @@
 # Developer Changelog - v1.1.5
-**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `a5c79d1` + working tree (sections 26-29, 2026-10-27)  
+**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `b3fa183` + working tree (sections 30-35, 2026-10-27 to 29)  
 **Branch:** Patch-1.1.5  
-**Date:** 2026-10-18 to 2026-10-25 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20; spell protections, Reactive Armor and Beastal Bond 2026-10-21/22; buff icons, `.newmobedit` and the NPC world-save fix 2026-10-23; class-level balance pass, NPC songs and spell lists, NPC area targeting, `.newmobedit` NPC pages, the Townsfolk type, `.npclist`, `.newiteminfo` and the use-script config 2026-10-25, working tree)  
+**Date:** 2026-10-18 to 2026-10-29 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20; spell protections, Reactive Armor and Beastal Bond 2026-10-21/22; buff icons, `.newmobedit` and the NPC world-save fix 2026-10-23; class-level balance pass, NPC songs and spell lists, NPC area targeting, `.newmobedit` NPC pages, the Townsfolk type, `.npclist`, `.newiteminfo` and the use-script config 2026-10-25, `a5c79d1`; Warrior for Hire targeting, `.arrows`, vendor wages and the Vortex Beast 2026-10-27, `b3fa183`; the live log review fixes, kill credit, champion reward bags and loot, and powerhour gold 2026-10-27/28, working tree)  
 **Commits in range:** 6 with content (`d11f181`, `ea4722a`, `2587db3`, `07e7bc6`, `ccc8d27`, `a5c79d1`), the merge `fd57000` of #345, plus merge commits that carry only 1.1.4 work (`git diff 4abd02c 469834b` is empty); see section 2.  
-**Files changed:** 43 code files modified, 1 renamed (`newmobedit.src`, admin -> gm) and 3 new includes (`scripts/include/spellprots.inc`, `scripts/include/buffs.inc`, `pkg/opt/versebook/include/beastalbond.inc`) in `4abd02c..fd57000`. In the working tree: 4 files for section 10.6 (`sanctuary.src`, `antidote.src`, `Dragon_Skin.src`, `spellprots.inc`), 32 files and 1 new include (`scripts/include/npcspellnames.inc`) for sections 18-25, plus this release's 3 `patchnotes/` files; those all landed in `a5c79d1`. In the working tree after `a5c79d1`: 5 files modified (`warrior.src`, `areas.inc`, `playermerchant.src`, `npcdesc.cfg`, `command_synopses.cfg`) and 1 new command (`scripts/textcmd/player/arrows.src`) for sections 26-29, plus the 3 `patchnotes/` files. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
+**Files changed:** 43 code files modified, 1 renamed (`newmobedit.src`, admin -> gm) and 3 new includes (`scripts/include/spellprots.inc`, `scripts/include/buffs.inc`, `pkg/opt/versebook/include/beastalbond.inc`) in `4abd02c..fd57000`. In the working tree: 4 files for section 10.6 (`sanctuary.src`, `antidote.src`, `Dragon_Skin.src`, `spellprots.inc`), 32 files and 1 new include (`scripts/include/npcspellnames.inc`) for sections 18-25, plus this release's 3 `patchnotes/` files; those all landed in `a5c79d1`. In the working tree after `a5c79d1`: 5 files modified (`warrior.src`, `areas.inc`, `playermerchant.src`, `npcdesc.cfg`, `command_synopses.cfg`) and 1 new command (`scripts/textcmd/player/arrows.src`) for sections 26-29, plus the 3 `patchnotes/` files; those landed in `b3fa183`. In the working tree after `b3fa183`: 52 files modified for sections 30-35, plus the 3 `patchnotes/` files (section 37). `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
 
 > Scope was computed against `4abd02c`, the last commit that edited the 1.1.4 notes, not `master`.
 > `archcure.src`, `archprot.src`, `nightsight.src`, `owlsight.src` and `angelicaura.src` show as modified in `git status` but differ from HEAD only in line endings: their per-file NPC branches were folded into `SmartBoost()` (section 20.4).
+> `pkg/std/treasuremap/digtreasure.src` (level 6 bards get an 8% chance at a level 7 chest) is modified in the working tree but is separate work, not covered by these notes.
 
 ---
 
@@ -41,9 +42,15 @@
 27. [`.arrows` Ammunition Counter](#27-arrows-ammunition-counter)
 28. [Player Vendors - The City Wage Tier Now Applies](#28-player-vendors---the-city-wage-tier-now-applies)
 29. [Vortex Beast Is a Beholder](#29-vortex-beast-is-a-beholder)
-30. [ZH3.0 3.1.4 - Reviewed, Not Ported](#30-zh30-314---reviewed-not-ported)
-31. [Exhaustive File-by-File Change List](#31-exhaustive-file-by-file-change-list)
-32. [Risk and Regression Notes](#32-risk-and-regression-notes)
+30. [Live Log Review - Script Errors and Runaways](#30-live-log-review---script-errors-and-runaways)
+31. [Kill Credit - Every Kill Records Its Killer](#31-kill-credit---every-kill-records-its-killer)
+32. [Champion Spawns - Kill Tally, Reward Bags, Relic Champions](#32-champion-spawns---kill-tally-reward-bags-relic-champions)
+33. [Champion Loot Rebalance](#33-champion-loot-rebalance)
+34. [Powerhour - Gold Piles and Overlapping Powerhours](#34-powerhour---gold-piles-and-overlapping-powerhours)
+35. [Champfire - Fixed Damage, Elemental Protection Only](#35-champfire---fixed-damage-elemental-protection-only)
+36. [ZH3.0 3.1.4 - Reviewed, Not Ported](#36-zh30-314---reviewed-not-ported)
+37. [Exhaustive File-by-File Change List](#37-exhaustive-file-by-file-change-list)
+38. [Risk and Regression Notes](#38-risk-and-regression-notes)
 
 ---
 
@@ -53,7 +60,7 @@ Patch 1.1.5 is a follow-up to 1.1.4.
 
 Section 3 gives the mayor a way out of a town. The townstone gump's "give up your citizenship" button (3000) was only drawn on the citizen screen, and the mayor branch is tested before the citizen branch, so a mayor had no in-game way to leave short of losing an election or a staff `.removetownmember`. ZH3.0 ported this commit to its own 3.1.4 as theme 11.
 
-Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 30.
+Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 36.
 
 Section 8 makes keyrings sellable. They already had `VendorBuysFor 1`, but they are `newbie 1` and the merchant AI refuses newbied items. They stay newbie, and the merchant's own sell paths accept empty ones.
 
@@ -69,6 +76,12 @@ Sections 22-25 are smaller: town NPCs become the `Townsfolk` creature type, `.np
 
 Sections 26-29 come from player reports and suggestions (2026-10-27). A Warrior for Hire told to attack another player's warrior turned on that warrior's owner, because pet damage is credited to the master. A new `.arrows` command counts ammunition the way `.pagans` counts reagents. `IsInCityRegion()` read a `City` key that no region has, so the player vendor city wage tier never applied; it now reads `Type City`, and the city tier is 50,000 gold a month. The Vortex Beast becomes a Beholder-slayer target.
 
+Section 30 comes from a review of the live server's logs and save (2026-10-27): custom spawnpoint NPCs that were never dressed, fields that read a destroyed item's realm or passed none, config files loaded by a bare name from package scripts (1,540 "stacking.cfg does not exist" lines alone), monster AIs recursing on ghosts until the core killed them, staff demotion failing, and an Omega Cache item list that ran away on a big cache.
+
+Sections 31-34 started from 53 champion spawn errors in the same log. A kill is credited through `KilledBySerial`, which only `ApplyTheDamage()` writes. Poison, Mind Blast and a few items dealt raw damage and recorded nobody, and a missing attacker was saved as Uninit. Every damage path that has an attacker now goes through `ApplyTheDamage()`, which also gives poison, Mind Blast and Vengeance the PvP reduction (section 31). The champion altar's per-player tally had nothing reading it since the initial import; it now pays Champion Reward Bags by kill count, with a one-hour activity window, and relic champions are recognised as having no altar (section 32). The bags take over the presents, vanity tokens and part of the tomes, scrolls and stat potions from the champion corpses (section 33). Section 34 fixes gold piles doubling only when both Hunting powerhours overlap, and stops `.setph` starting a personal powerhour that the server-wide one already covers.
+
+Section 35 retunes `champfire` (Rikktor, Nyx, The Summoner, the Soul Whisperers). Its fields had no `Creator`, so they hit players with the players' own skills. The bolt and fields now roll fixed dice that skip `Resisted()`: about 200 and 50 a tick for Rikktor and Nyx against no protection, cut only by protection in the rolled element, for every class alike.
+
 ## 2. Commit Timeline
 
 | Commit | Date | Subject | Sections |
@@ -81,7 +94,8 @@ Sections 26-29 come from player reports and suggestions (2026-10-27). A Warrior 
 | `ccc8d27` | 2026-10-23 | NPC class fixes: stop NPCs from breaking world saves | 17 |
 | `fd57000` | 2026-10-23 | Merge pull request #345 (NPC-Class-Fixes) | - |
 | `a5c79d1` | 2026-10-25 | Npc fixes, iteminfo fix, townsfolk type fix, npc bard groundwork, npc area of effect fixes sanc, antidote, and dragonskin patch | 10.6, 18-25 |
-| *(next commit)* | 2026-10-27 | Warrior for Hire attack target fix, `.arrows`, player vendor city wage, Vortex Beast slayer type, patch notes | 26-29 |
+| `b3fa183` | 2026-10-27 | WFH attack target fix, .arrows, vendor city wage, Vortex Beast slayer type, patch notes | 26-29 |
+| *(next commit)* | 2026-10-28 | Live log review fixes, kill credit through `ApplyTheDamage()`, champion reward bags and loot, powerhour gold piles and `.setph`, champfire, patch notes | 30-35 |
 
 ---
 
@@ -630,7 +644,236 @@ A player suggestion: a command like `.pagans` that shows your ammunition. `.arro
 
 ---
 
-## 30. ZH3.0 3.1.4 - Reviewed, Not Ported
+## 30. Live Log Review - Script Errors and Runaways
+
+From the live `debug.log`, `script.log` and `pol-*.log` (2026-10-13 to 10-27). Each count below is from those logs.
+
+### 30.1 Custom spawnpoint NPCs are dressed
+
+**Files:** `pkg/opt/spawnpoint/include/customnpc.inc`, `pkg/opt/spawnpoint/checkpoint.src` (155 errors, `checkpoint.ecl PC=12795`)
+
+`DressNPCCustom(me)` found its spawnpoint through the critter's `SpawnPoint` CProp. `CreateCustomNPC()` wipes the critter's CProps before dressing it, and `SpawnPoint` is only set once the critter is placed, so the lookup was `SystemFindObjectBySerial(error)` and custom NPCs came out undressed. The point is now passed in (`DressNPCCustom(critter, point)`), and a missing point returns.
+
+### 30.2 Field realms
+
+**Files:** `scripts/control/firecontrol.src`, `poisoncontrol.src`, `paracontrol.src`, `energycontrol.src` (915 errors, `firecontrol.ecl PC=125`)
+
+- Fire and poison fields read `item.realm` and `item.x/y/z` once per tick. The field could be destroyed between the `!item.realm` check and the `ListMobilesNearLocation()` call, which then got an Uninit realm.
+- Paralyze and energy fields never passed a realm at all, so outside Britannia they searched Britannia's coordinates and never caught anyone. Both now pass the realm, read the same way.
+
+### 30.3 Config files loaded from package scripts
+
+**Files:** `scripts/ai/main/` `animalsetup`, `criersetup`, `questiesetup`, `setup`; `scripts/ai/setup/` `animalsetup`, `archersetup`, `criersetup`, `killpcssetup`, `modsetup`, `questiesetup`, `setup`, `spellsetup`; `scripts/include/anchors.inc`, `canstack.inc`, `npccast.inc` (2), `speech.inc`
+
+- A bare `ReadConfigFile("npcdesc")` from a package script looks inside that package. These includes are used by package AIs (the Warrior for Hire) and package scripts (the packet hooks), so the files were not found: `stacking.cfg` 1,540 times, `npcdesc.cfg` 90, `speechgroup.cfg` 45.
+- All of them now read `::npcdesc`, `::speechgroup` and `::stacking`.
+- Effects: `IgnoreCprops` in `stacking.cfg` was never applied on those paths, so some items didn't stack; Warriors for Hire had no speech group; and `modsetup.inc`'s equip-from-template lookup silently did nothing for them.
+- **`modsetup.inc`:** the equip block was `if(1)`. With the path fixed it would re-equip a Warrior for Hire from its template on every AI start and hand out free items, so it now skips NPCs with the `WarriorForHire` CProp. Other NPCs behave as before (a non-package AI already found `npcdesc`).
+
+### 30.4 Monster AIs recursing on ghosts
+
+**Files:** `scripts/ai/combat/fight.inc`, `chaosfight.inc`, `raiderfight.inc` ("exceeded maximum call depth": `killpcsclock.ecl` 6, `wolf.ecl` 1)
+
+`Fight()` on a dead, hidden or concealed opponent went straight to `post_combat()`, whose `look_around()` picked the same ghost a second later and called `Fight()` again, one call deeper each time, until the core killed the AI. `Fight()` now returns at once for such an opponent, leaving war mode and clearing its opponent as `post_combat()` would (the events aren't switched yet; `prepare_for_fight()` comes after), but without `post_combat()`'s `look_around()`.
+
+### 30.5 Staff demotion
+
+**File:** `scripts/include/privs.inc` (18 errors, `makestaff.ecl`)
+
+`who.disable(who, priv)` passed the mobile as the privilege name, so a demotion revoked the privileges but never disabled them. It is `who.disable(priv)`.
+
+### 30.6 Omega Cache item list runaway
+
+**Files:** `pkg/opt/omegacache/omegacache.inc`, `scripts/include/resourcemanager.inc` (1 runaway, `omegacache.ecl`)
+
+`GetLeasedAmount()` scans the whole house DataFile for one item key, and the item list, `GetStoredAmountByObjtype()` and the crafting material pickers called it once per key. New `GetLeaseTotals()` sums every live lease per item key in one pass (cleaning up expired leases as `GetLeasedAmount()` does), and `LeaseItemKey()` takes the item key out of `RL#<item_key>|<lease_id>`. `GetStoredAmount()` takes the totals as an optional fourth parameter; without it, it behaves as before.
+
+---
+
+## 31. Kill Credit - Every Kill Records Its Killer
+
+**Files:** `scripts/include/damages.inc`, `scripts/include/dotempmods.inc`, `pkg/opt/summoning/processpoisonmod.src`, `pkg/systems/combat/poisonhit.src`, `pkg/systems/combat/poisononhit.src`, `scripts/control/poisoncontrol.src`, `scripts/items/walkon_pfield.src`, `scripts/ai/tamed.src`, `scripts/misc/chrdeath.src`, `pkg/std/spells/mindblast.src`, `pkg/opt/shilitems/vengeance.src`, `pkg/opt/necro/sunderingsword.src`, `pkg/opt/farming/swarmofbees.src`
+
+### 31.1 The defect
+
+The live log had 53 `death.ecl` errors. The local `death.lst` (same build) places them:
+
+- **50 at PC 14534:** `RegisterChampionSpawnKill()`'s `SystemFindObjectBySerial(GetObjProperty(corpse, "KilledBySerial"))`. 43 corpses had no `KilledBySerial`, 7 had it saved as Uninit.
+- **3 at PC 12191:** `GetAltarByCorpse()` on a champion with no `altar` CProp, i.e. a relic champion (section 32.4).
+
+`KilledBySerial` is written only by `ApplyTheDamage()`, on the killing blow. The corpse copies it from the mobile, and `RegisterNPC()` (KilledNPCS), the loot code (personal powerhour double drops, `#PPHH`) and the champion altar read it.
+
+- **Poison** ticks used `ApplyRawDamage()` and recorded nobody. Its fallback `SetObjProperty(who, "KilledBy", ...)` ran after the lethal tick, when the corpse already existed, and wrote a name, not a serial.
+- **Dropped poison weapons** (`poisonhit.src`), poison fields (`poisoncontrol.src`, `walkon_pfield.src`) and pet poison (`tamed.src`) didn't even pass the poisoner to `SetPoison()`.
+- **Mind Blast, Vengeance and Sundering Sword** dealt raw damage.
+- **`ApplyTheDamage()` saved a missing attacker** (`by_who` 0 or an error) as `by_who.serial`, which is Uninit, before its `!by_who` check.
+
+### 31.2 `RecordKiller()`
+
+New in `damages.inc`. It writes `KilledBy` and `KilledBySerial` only when `by_who` is a mobile, and `ApplyTheDamage()` uses it in both places. Pets and Warriors for Hire are already swapped for their master before it runs. A killing blow with no attacker erases both, so the death isn't credited to an earlier killer (the champion altar then falls back to the hitlist).
+
+`chrdeath.src` now also erases the ghost's `KilledBySerial` after `RecordCharacterDeath()`, as it already did `KilledBy`. It was never erased, so a player's next death with no recorded killer (raw damage) was logged as the previous killer's. The corpse keeps its own copy for `death.src`.
+
+### 31.3 Poison goes through `ApplyTheDamage()`
+
+- `SetPoison(who, plvl, msg, caster, shuriken, credit)`. The new `credit` defaults to `caster`. `caster` still picks the damage table, duration and protection rule in `processpoisonmod`; `credit` only decides who gets the kill. `SetPoison()` passes it on, and `processpoisonmod`'s new `SetPoisonCredit()` writes `PoisonedBy` (name) and the new `PoisonedBySerial` only when the poisoning lands: a fresh one, or one stronger than the current `psnDmg`, which it replaces. A blocked one (safe area, immunity) or an equal or weaker one on a poisoned victim leaves the credit with whoever's poison is ticking. A landed poisoning with no poisoner, or a self-poisoning, erases `PoisonedBySerial`, so a trap doesn't credit whoever poisoned the mobile last time.
+- New `PoisonTick()` in `processpoisonmod.src` reads `PoisonedBySerial` each tick. With a poisoner it calls `ApplyTheDamage(who, poisoner, dmg, DMGID_POISON, 0)`: credit, hitlist, repsys and lotto damage. The new last parameter of `ApplyTheDamage()`, `pvp_cut` (default 1), set to 0 skips the global PvP 0.6, so poison on a player does what it did as raw damage. With none, or a self-poisoning, it stays `ApplyRawDamage()`. The tick's own `StoreDamage()` call is removed (`ApplyTheDamage()` stores it), and so is the dead `KilledBy` line.
+- A Thief caster's ticks add `DMGID_NO_RESIST`, so Thief poison still pierces immunity as `PoisonProtected(..., 1)` already makes it pierce poison protection.
+- Callers: `poisonhit.src` passes the wielder as credit only, so a dropped poison weapon keeps the flat damage table in a Thief's hands; `poisoncontrol.src` and `walkon_pfield.src` credit the field's caster (`poisoncontrol` keeps a `poisoner` apart from `creator`, which falls back to the first victim); `tamed.src` credits the pet, which `ApplyTheDamage()` turns into its master; `poisononhit.src` (the Venomous/Envenomed armor enchantment, which poisons the attacker) credits the wearer, and cursed armor, which poisons the wearer, credits nobody.
+
+### 31.4 Mind Blast, Vengeance, Sundering Sword
+
+- **Mind Blast:** `ApplyTheDamage(cast_on, caster, ..., DMGID_MAGIC)`. A blast turned back by a superior intellect stays raw, since `ApplyTheDamage()` would apply the PvP cut to a player's own blast.
+- **Vengeance:** `DMGID_MAGIC + DMGID_NO_RESIST`, so only the PvP cut and the credit change. Now includes `include/damages`.
+- **Sundering Sword:** `DMGID_MAGIC + DMGID_NO_RESIST`, so the summon always dies, credited to the wielder.
+
+### 31.5 Left alone
+
+- **Song of Beckon** only kills the bard's own summon when the song ends; crediting it would give the bard karma for it.
+- **Swarm of Bees** is a beehive hazard: `gethoney.src` never sets its `creator`. Only the missing realm was added to its mobile scan.
+- **`thiefpoisonhit.src` and `chanceperm()`** are dead code: nothing calls `chanceperm()`, and no item on live carries `thiefpoisonhit`.
+- **Monster poison AIs** (`poisoncombatevent.inc`, `spidercombatevent.inc`) still pass no poisoner; their ticks stay raw.
+
+### 31.6 Pets take the PvP slowdown
+
+**Files:** `scripts/include/damages.inc`, `pkg/systems/combat/include/hitscriptinc.inc`
+
+A player's pet hitting a player took neither PvP cut. `ApplyTheDamage()` tested for PvP before it swapped a pet for its master, so it saw an NPC attacker and skipped the 0.6, and `CalcPhysicalDamage()`'s 0.4 melee cut only tested `attacker`. Both now treat anything with a `master` CProp (`FindMaster()`: tamed pets, summons, Warriors for Hire) as its master:
+
+- `ApplyTheDamage()` does the master swap first and the PvP test after it. Pet melee and pet spells on a player take the 0.6; pet poison doesn't (`pvp_cut` 0, section 31.3).
+- `CalcPhysicalDamage()` looks up the attacker's master for the 0.4 test. Pet melee on a player now takes 0.4 x 0.6 = 0.24, the same as a player's melee; pet spells take the ÷3 every spell on a player takes, then the 0.6.
+- A player hitting someone else's pet is unchanged (the target is an NPC), and so is a pet whose master is an NPC.
+
+---
+
+## 32. Champion Spawns - Kill Tally, Reward Bags, Relic Champions
+
+**Files:** `pkg/opt/champspawns/include/death.inc`, `rewards.inc`, `skulls.inc`, `scripts/control.src`, `pkg/opt/ArtifactSystem/championrelic.src`
+
+### 32.1 Before
+
+- `RegisterChampionSpawnKill()` kept a per-player kill count on the altar (`players`), but nothing read it: `GiveRewardsToPlayers()` in `rewards.inc` was commented out, and never called, in the initial import (`f8450b9`). The reward was the gold rain and the corpse loot.
+- Every altar in the live save held `players` as an error ("Property not found"): ten minutes after a champion died, `ProcessChampionCorpse()` erased it, and the next leftover spawn kill wrote `GetObjProperty()`'s error back.
+- Credit never expired, so a player who left an altar after 500 kills was still owed for them when someone else finished it a day later, though the altar had decayed back to wave 0 in the meantime.
+
+### 32.2 The tally
+
+- `players[serial] := {kills, systime of the last kill}`. An entry from before the patch (a bare count) is read as a count.
+- Only kills while the altar is `active` count. The killer is the corpse's `KilledBySerial`, or failing that the most recent hit on its hitlist; only players count (`IsChampionCreditable()`: no `npctemplate`, no `cmdlevel`). The read-modify-write runs under `set_critical`, because an area spell can kill many spawn creatures at once.
+- A tally that isn't a dictionary is rebuilt. A missing altar or `sAltarSerial` returns.
+
+### 32.3 Reward bags
+
+`ProcessChampionCorpse()` reads the altar first, before the gold rain and the ten-minute sleep, calls `GiveRewardsToPlayers(altar)` and then erases the tally.
+
+- **Eligible:** every character with at least `CHAMP_BAG_MIN_KILLS` (150) kills whose last kill was at most `CHAMP_CREDIT_WINDOW` (7200 seconds, two hours) before the newest kill on the tally. The newest kill is the reference, not the champion's death, because the champion fight adds no kills: measured from the death, a long champion fight paid nobody. Per character; there is no per-account limit, because credit needs killing blows. A player with kills in the window but fewer than 150 is told their count.
+- **Contents (cumulative):**
+
+| Kills | PowerTome | TranscendScroll | StatPotion | vanitytoken | Present (gift1-3) |
+|---|---|---|---|---|---|
+| 150 | - | 1 | - | 1 | 1 |
+| 300 | - | +1 | - | +1 | - |
+| 500 | - | - | +1 | - | - |
+| 750 | +1 | - | - | - | - |
+| 1000 | +1 | - | +1 | +2 | +1 |
+| **1000+ total** | **2** | **2** | **2** | **4** | **2** |
+
+- **Delivery:** the bag (`0x0E76`, "A Champion Reward Bag", random hue) goes in the backpack of an online player, or into the bank box (`util/bank` `FindBankBox()`) if the player is offline or the backpack is full. The script sets `SCRIPTOPT_CAN_ACCESS_OFFLINE_MOBILES` for that. Items are created one at a time. If neither container works, it is logged with `SysLog()`.
+- The `:Events:bag` include (the old random decoration bag) is no longer used and was dropped; `EligibleForLoot()` was removed.
+
+### 32.4 Relic and staff champions
+
+The four champion templates carry `CProp Champion`, so a champion from a relic or from staff went through `ProcessChampionCorpse()` too and logged `GetAltarByCorpse()`'s error. `GetAltarByCorpse()` returns 0 when there is no `altar` CProp, and such a champion only rains gold. `championrelic.src` marks its boss with `SummonedByRelic` (the summoner's serial). Relic champions get no bag and the reduced corpse loot of section 33.
+
+### 32.5 The last wave no longer completes early
+
+Every 10 minutes, if the current wave is under 90%, `control.src` resets it. Above 20% it called `createNextRedSkull()` and then `destroyLastRedSkull()`, meaning to keep the red skulls. On wave 16, `createNextRedSkull()` instead marks the altar `#completed` and wipes the red skulls, so the champion spawned with the last wave only about a fifth done. New `clearWhiteSkulls()` in `skulls.inc`: above 20% only the white skulls go; at 20% or less one red skull goes, as before.
+
+---
+
+## 33. Champion Loot Rebalance
+
+**Files:** `config/nlootgroup.cfg` (lootgroups 150, 151), `config/npcdesc.cfg` (4 templates)
+
+| | Lootgroup 150 (Barracoon, Erebus) | Lootgroup 151 (Rikktor, Nyx) |
+|---|---|---|
+| PowerTome | 3 -> **2** | 4 -> **3** |
+| TranscendScroll | 7 -> **4** | 10 -> **4** |
+| StatPotion | 5 -> **4** | 6 -> **5** |
+| vanitytoken | 7 -> **0** | 10 -> **0** |
+| ChampionPresents | 1d2 -> **0** | 2d2 -> **0** |
+| `magicitemchance` | 99 -> **85** | 99 -> **95** |
+
+Gold in the corpse (60,000 / 120,000), gear, GM items, Wonder Items, magic item levels (10 / 11), the gold rain and the champion skull are unchanged. The `ChampionPresents` group is now unused.
+
+**Per spawn, corpse plus bags, lootgroup 150** (about 2,250 kills, split evenly):
+
+| Spawn | Tomes | Scrolls | Stats | Tokens | Presents |
+|---|---|---|---|---|---|
+| Before | 3 | 7 | 5 | 7 | 1-2 |
+| Solo | 4 | 6 | 6 | 4 | 2 |
+| 2,000 / 225 | 4 | 7 | 6 | 5 | 3 |
+| 2 even | 6 | 8 | 8 | 8 | 4 |
+| 3 even | 5 | 10 | 7 | 6 | 3 |
+| 5 even | 2 | 14 | 4 | 10 | 5 |
+| 10 even | 2 | 14 | 4 | 10 | 10 |
+
+Lootgroup 151 adds one tome and one stat potion to each row. Duos and trios that do most of the killing get more tomes than before; groups of four or more get fewer. Scrolls, tokens and presents scale with the number of players over 150 kills.
+
+---
+
+## 34. Powerhour - Gold Piles and Overlapping Powerhours
+
+**Files:** `scripts/include/starteqp.inc`, `pkg/opt/powerhour/textcmd/player/setph.src`
+
+- **Gold piles:** `CreateFromStackString()` (the `Stack` lines: 91 of them are GoldCoin, the rest gems, ash, arrows and fertile dirt) doubles the drop chance under either Hunting powerhour (`PHH || #PPHH`), but doubled the pile only under `!PHH || !#PPHH` being false, i.e. with both running. It is now `PHH || #PPHH` too, so a single Hunting powerhour doubles gold piles, including the champions' corpse gold. Both lines date from the initial import.
+- **`.setph`:** nothing stopped a personal powerhour of the same type as the server-wide one, which then added nothing (the only thing overlap did was the gold pile bug above). After the type is chosen, `.setph` refuses when `PH_ActiveType()` or `PH_PendingType()` (the 2-minute warning) is that type. A different type is allowed. The scheduler can still start a server-wide powerhour during a personal one; the overlap is just lost time.
+
+---
+
+## 35. Champfire - Fixed Damage, Elemental Protection Only
+
+**Files:** `scripts/include/npccastspells.inc` (`SpecialChampFire()`), `scripts/include/spelldata.inc` (`ApplyElementalDamage()`), `scripts/control/firecontrol.src`
+
+`champfire` is cast by Rikktor, Nyx, The Summoner (`summonboss`) and the four Soul Whisperers. Each cast rolls one of six elements (earth, water, fire, air, necro, holy) and hits every player in 20 tiles and line of sight with a bolt, then lays 21 fields of that element around them (60 seconds, a tick every 5 seconds).
+
+### 35.1 The fields hit with the victim's own skills
+
+`SpecialChampFire()` never gave its fields a `Creator`, so `firecontrol.src` made the first mobile in the field the caster: every tick was the player damaging themselves, with their own Magery and Eval Int, and `ApplyTheDamage()` cut it by the PvP 0.6. About 20 a tick to a level 6 Warrior with no resist, 2 to a level 6 Mage with 150. Each field now gets `Creator` (the caster's serial), and firecontrol looks the caster up again each tick, since the fields outlive a champion that dies; once the caster is gone a field falls back to the old behaviour.
+
+### 35.2 Damage by class
+
+The bolt went through `CalcSpellDamage()` (circle 8, /3 against players) and `Resisted()`, so the class matchups swamped it. Against no elemental protection, from a Rikktor or Nyx bolt:
+
+| | Level 6 Warrior, 0 resist | Level 6 Paladin, 150 resist | Level 6 Mage, 150 resist |
+|---|---|---|---|
+| Bolt before | ~380 | ~89 | ~31 |
+| Field tick, 35.1 fix only | ~56 | ~12 | ~4 |
+
+Eval Int 200 doubled the hit against a Warrior with no resist and the class penalty added 1.75x; a Mage resists at 2.5x the chance and divides what lands by 2.5. The Summoner and the Soul Whisperers (`IsMage` commented out) did about a third of the Rikktor/Nyx bolt.
+
+### 35.3 Fixed dice, no `Resisted()`
+
+- `ApplyElementalDamage()` takes an optional `unresistable`. With it, the damage left after elemental protection goes straight to `ApplyTheDamage()`: no Magic Resistance roll, no class or Eval Int adjustment. The protection step is unchanged (a Mage caster pierces 3 points per level; 100% or more heals).
+- `SpecialChampFire()` rolls `CHAMPFIRE_BOLT_DICE` (`10d10+115`, about 170) instead of `CalcSpellDamage()`, and passes `unresistable`. Cursed equipment doubles the roll (it used to double the circle). Magic immunity items still block it (`IsProtected()`), and hidden targets and no-PK areas are still skipped (`ApplyElementalDamage()`).
+- Each field gets `FieldDice` (`CHAMPFIRE_FIELD_DICE`, `8d8+6`, about 42) and `Unresistable 1`. `firecontrol.src` rolls a field's `FieldDice` when it has one (otherwise `power` d8 as before) and passes `Unresistable` on. Other fire fields are unchanged.
+
+| Protection in the rolled element | Bolt (Rikktor, Nyx) | Field tick (Rikktor, Nyx) | Bolt / tick (Summoner, Soul Whisperers) |
+|---|---|---|---|
+| 0% | ~200 (147-253) | ~50 (16-82) | ~170 / ~42 |
+| 50% | ~116 | ~29 | ~85 / ~21 |
+| 95% | ~40 | ~10 | ~9 / ~3 |
+| 100%+ | heals | heals | heals |
+
+The same for every class. No Magic Resistance skill gain from champfire any more (`Resisted()` awarded it).
+
+### 35.4 Field props read every tick
+
+`CreateItemAtLocation()` starts a field's `firecontrol.src` at once, and the caster only sets `Creator`, `FieldDice`, `Unresistable`, `specialELE` and `ByTrueMage` afterwards, outside `set_critical`. firecontrol read them once at startup, so a field whose script ran before the caster finished kept the defaults for its whole life: 2d8, resisted, the victim as the caster, plain fire. It now reads all of them every tick (a few CProp reads every 5 s per field). `SetScriptController()` is still called once, when the caster is first found, and a field with no caster picks the victim again each tick instead of keeping the first one. This applies to every fire field (Wall of Fire, Fire Field and the NPC fields), not just champfire's.
+
+---
+
+## 36. ZH3.0 3.1.4 - Reviewed, Not Ported
 
 ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
@@ -643,7 +886,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 31. Exhaustive File-by-File Change List
+## 37. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -651,14 +894,14 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `pkg/opt/powerhour/include/powerhour.inc` | 4 | New `PPH_ResetTime()`; `PPH_IsEligible()` and `PPH_SecondsUntilEligible()` both use it; weekday from the use time |
 | `pkg/opt/warriorforhire/include/wfhcommon.inc` | 5.1 | `IsCurrentWfhHeart()` refuses unstamped hearts and hearts with no backup |
 | `scripts/ai/highpriest.src` | 5.2, 5.3 | Heart from anyone but its master is destroyed; memory revival applies `resnum` stat loss, floor 10 |
-| `pkg/systems/combat/include/hitscriptinc.inc` | 6.1, 10, 13 | `WFHModifyDamage()` reads each master once as `CInt` and compares only when set; `ModByProt()` uses `GetPhysicalProtection()`; Reactive Armor trigger clears `#ReactiveArmorPid` and its icon |
+| `pkg/systems/combat/include/hitscriptinc.inc` | 6.1, 10, 13, 31.6 | `WFHModifyDamage()` reads each master once as `CInt` and compares only when set; `ModByProt()` uses `GetPhysicalProtection()`; Reactive Armor trigger clears `#ReactiveArmorPid` and its icon; the 0.4 PvP melee cut tests the attacker's master (31.6) |
 | `pkg/opt/warriorforhire/warrior.src` | 6.2, 26 | `gWeaponAmmoTypes` / `gHealPotionPowers` caches; new `WeaponAmmoType()`, `LoadHealPotionPowers()`; `HasBow()` and `HealPotionPower()` use them; new `ResolveAttacker()` used by `fight()`'s retarget and the `ENGAGED` / `DAMAGED` handlers, no retarget onto the master (26) |
 | `pkg/opt/ArtifactSystem/eonprism.src` | 7 | `include/itemutil`; refused unless in the user's backpack |
 | `scripts/ai/merchant.src` | 8 | `MERCHANT_KEYRING_OBJTYPE`; new `CanMerchantBuy()`; `SellAll()` and `SellBag()` buy empty, unowned keyrings |
 | `pkg/opt/alryc/textcmd/test/aimovementsim.src` | 9 | `RebuildPolicyMaskCache("britannia")` after the run |
 | `pkg/opt/alryc/stresstest/areastressworker.src` | 9 | `RebuildPolicyMaskCache("britannia")` as each worker exits |
 | `scripts/include/spellprots.inc` | 10, 10.6 | New: `#SpellPoisonImmunity` / `#DragonSkin` `{ level, pid }` helpers, `GetPoisonImmunityLevel()`, `GetPhysicalProtection()`, `ResyncEquippedProt()`; `SpellProtCasterLevel()`, `SpellProtDuration()` (10.6) |
-| `scripts/include/dotempmods.inc` | 10, 11, 15 | Includes `spellprots` and `buffs`; `PoisonProtected()` uses `GetPoisonImmunityLevel()`; `WipeMods()` clears spell poison immunity, Dragon Skin, Reactive Armor, Incognito name; `poisonimmunity` / `dragonskin` buff icons (now in `buffs.inc`); `CurePoison()` turns the poison icon off; buff functions moved out |
+| `scripts/include/dotempmods.inc` | 10, 11, 15, 31 | Includes `spellprots` and `buffs`; `PoisonProtected()` uses `GetPoisonImmunityLevel()`; `WipeMods()` clears spell poison immunity, Dragon Skin, Reactive Armor, Incognito name; `poisonimmunity` / `dragonskin` buff icons (now in `buffs.inc`); `CurePoison()` turns the poison icon off; buff functions moved out; `SetPoison()` `credit` parameter, passed to `processpoisonmod` (31) |
 | `pkg/opt/holybook/sanctuary.src` | 10.3, 10.6 | Spell level via `SetSpellProt()`, applied when not weaker than current immunity; buff icon; ends only its own cast; level and duration from caster class level (10.6) |
 | `pkg/opt/earth/antidote.src` | 10.3, 10.6 | Same as Sanctuary; immunity goes to the target instead of the caster; level and duration from caster class level (10.6) |
 | `pkg/opt/versebook/Dragon_Skin.src` | 10.4, 10.6 | Rewritten as a one-play timed buff: 20 stamina per target, buff icon; protection = bard level 1-6 and 2-10 min (10.6) |
@@ -674,10 +917,10 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `scripts/misc/logoff.src` | 14 | `EndBeastalBond()` replaces the view-only cleanup |
 | `scripts/misc/reconnect.src` | 14 | `EndBeastalBond()` replaces the view-only cleanup |
 | `scripts/include/buffs.inc` | 15.1 | New: `BuffOn()`, `SendBuffPacket()`, `BuffOff()` moved from `dotempmods.inc`; `poison` text cliloc blanked |
-| `scripts/include/spelldata.inc` | 15.1, 15.4, 20.2 | Includes `buffs`; `Reflected()` turns the Magic Reflection icon off; `SmartAoE()` / `SmartBoost()` hand NPC casters on; new `IsBystanderNpc()`, `IsMonsterSide()`, `NpcPetCanHitPlayer()`, `NpcSmartAoE()`, `NpcSmartBoost()` |
+| `scripts/include/spelldata.inc` | 15.1, 15.4, 20.2, 35 | `ApplyElementalDamage()` optional `unresistable` skips `Resisted()` (35); includes `buffs`; `Reflected()` turns the Magic Reflection icon off; `SmartAoE()` / `SmartBoost()` hand NPC casters on; new `IsBystanderNpc()`, `IsMonsterSide()`, `NpcPetCanHitPlayer()`, `NpcSmartAoE()`, `NpcSmartBoost()` |
 | `pkg/std/spells/nightsight.src`, `pkg/opt/holybook/lightofday.src`, `pkg/opt/earth/owlsight.src`, `pkg/opt/songbook/songoflight.src`, `pkg/std/alchemy/blackpotion.src` | 15.2 | Night sight buff icon |
 | `pkg/opt/necro/darkcloak.src`, `pkg/systems/combat/blindingonhit.src`, `pkg/systems/combat/blindingscript.src` | 15.2 | Blinding turns the night sight icon off |
-| `pkg/opt/summoning/processpoisonmod.src` | 15.3 | Poison buff icon on a fresh poisoning |
+| `pkg/opt/summoning/processpoisonmod.src` | 15.3, 31 | Poison buff icon on a fresh poisoning; ticks through new `PoisonTick()` (`ApplyTheDamage()` with a poisoner, Thief ticks no-resist), separate `StoreDamage()` and post-death `KilledBy` removed; `SetPoisonCredit()` writes `PoisonedBy` / `PoisonedBySerial` only when a poisoning lands (31) |
 | `pkg/std/spells/reflect.src` | 15.4 | Magic Reflection buff icon |
 | `pkg/opt/spawnpoint/textcmd/gm/newmobedit.src` | 16 | Moved from `textcmd/admin` (renamed path only) |
 | `config/cmds.cfg` | 16 | `pkg/opt/spawnpoint/textcmd/gm` registered under GM |
@@ -689,13 +932,13 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `pkg/opt/songbook/songofsirens.src` | 18.2, 18.3, 20.4 | NPC singer; out-of-stamina branch returns instead of falling through to the paralyze |
 | `pkg/opt/songbook/songoffright.src` | 18.2, 18.3 | NPC singer; NPC target list through `NpcSmartAoE()` |
 | `pkg/opt/songbook/songofbeckon.src` | 18.4 | Takes `parms` and returns at once on a `"#MOB"` call; otherwise the committed player version |
-| `scripts/include/npccast.inc` | 18.4, 19 | `CustomSpells` overrides the template list; `IsNpcSelfSpell()`; `Random()` index fixed; `songofbeckon` commented out of `GetSpellID()` |
-| `scripts/ai/tamed.src` | 19 | Reads `CustomSpells` before the template spells |
+| `scripts/include/npccast.inc` | 18.4, 19, 30.3 | `CustomSpells` overrides the template list; `IsNpcSelfSpell()`; `Random()` index fixed; `songofbeckon` commented out of `GetSpellID()`; reads `::npcdesc` (30.3) |
+| `scripts/ai/tamed.src` | 19, 31 | Reads `CustomSpells` before the template spells; pet poison passes the pet as credit (31) |
 | `scripts/include/npcspellnames.inc` | 19 | New: `GetNpcSpellNames()` for `.newmobedit` |
 | `scripts/include/smarttamedaoe.inc` | 20.2 | `SmartFilterTamedTargets()` is a wrapper for `NpcSmartAoE()` |
 | `pkg/opt/spawnpoint/textcmd/gm/newmobedit.src` | 21 | AI / Loot and Flags pages; staged Custom Hits Level and Spells; tame 0 writes `untamable`; provoke CProp; right-click close; dead fields removed |
 | `pkg/std/provocation/provocation.src`, `pkg/std/peacemaking/peacemaking.src` | 21.4 | A `provoke` CProp overrides the template; 0 = immune |
-| `config/npcdesc.cfg` | 22, 29 | 64 Townsfolk-header templates `Type sHuman` -> `sTownsfolk`; header comment; `vortexbeast` -> `sBeholder`, moved to "Beholder Boss's" (29) |
+| `config/npcdesc.cfg` | 22, 29, 33 | 64 Townsfolk-header templates `Type sHuman` -> `sTownsfolk`; header comment; `vortexbeast` -> `sBeholder`, moved to "Beholder Boss's" (29); `magicitemchance` barracoon / erebuschaosgod 85, rikktor / nyxseductress 95 (33) |
 | `pkg/std/tracking/tracking.src` | 22 | Townsfolk category |
 | `pkg/std/healing/healing.src` | 22 | Townsfolk in the Healing (`withheal`) list |
 | `scripts/textcmd/seer/npclist.src` | 23 | Rewritten: templates grouped by slayer type with script, loot and magic item columns |
@@ -706,6 +949,33 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `scripts/textcmd/gm/newiteminfo.src` | 24 | Spell / effect / greater / special hitscript fixes, use-script picker and display, realm on X/Y/Z, redisplay loop, view-only regen page |
 | `pkg/opt/shilitems/usescriptdesc.cfg` | 24, 25 | `saferecall` entry fixed; blank `Name` lines removed; `lifestream` commented out |
 | `pkg/std/inscription/inscription.cfg` | 25 | `Inscription 0x1828` (of LifeStream) commented out |
+| `pkg/opt/spawnpoint/include/customnpc.inc`, `pkg/opt/spawnpoint/checkpoint.src` | 30.1 | `DressNPCCustom(me, point)` takes the spawnpoint; returns without one |
+| `scripts/control/firecontrol.src`, `poisoncontrol.src`, `paracontrol.src`, `energycontrol.src` | 30.2, 31, 35 | Realm and location read once per tick; para and energy pass the realm; `poisoncontrol` credits the field's caster (31); `firecontrol` reads the caster, element, `FieldDice` and `Unresistable` every tick (35) |
+| `scripts/include/npccastspells.inc` | 35 | `CHAMPFIRE_BOLT_DICE`, `CHAMPFIRE_FIELD_DICE`; `SpecialChampFire()` rolls fixed dice, unresistable, cursed doubles; its 21 fields get `Creator`, `FieldDice`, `Unresistable` |
+| `scripts/ai/main/` `animalsetup`, `criersetup`, `questiesetup`, `setup`; `scripts/ai/setup/` `animalsetup`, `archersetup`, `criersetup`, `killpcssetup`, `questiesetup`, `setup`, `spellsetup` | 30.3 | `::npcdesc` |
+| `scripts/ai/setup/modsetup.inc` | 30.3 | `::npcdesc`; template re-equip skipped for Warriors for Hire |
+| `scripts/include/anchors.inc`, `canstack.inc`, `speech.inc` | 30.3 | `::npcdesc`, `::stacking`, `::speechgroup` |
+| `scripts/ai/combat/fight.inc`, `chaosfight.inc`, `raiderfight.inc` | 30.4 | `Fight()` returns at once on a dead, hidden or concealed opponent, out of war mode |
+| `scripts/include/privs.inc` | 30.5 | `who.disable(priv)` |
+| `pkg/opt/omegacache/omegacache.inc` | 30.6 | New `GetLeaseTotals()`, `LeaseItemKey()`; `GetStoredAmount()` optional `lease_totals`; item list and `GetStoredAmountByObjtype()` sum leases once |
+| `scripts/include/resourcemanager.inc` | 30.6 | Material pickers sum leases once |
+| `scripts/include/damages.inc` | 31.2, 31.3, 31.6 | New `RecordKiller()`; `ApplyTheDamage()` records only a mobile killer and erases the old one otherwise; new `pvp_cut` parameter (31.3); master swap before the PvP slowdown (31.6) |
+| `scripts/misc/chrdeath.src` | 31.2 | Erases the ghost's `KilledBySerial` after recording the death |
+| `pkg/systems/combat/poisononhit.src` | 31.3 | Poison armor credits the wearer |
+| `pkg/systems/combat/poisonhit.src` | 31.3 | Player wielder passed as credit only |
+| `scripts/items/walkon_pfield.src` | 31.3 | Credits the field's caster |
+| `pkg/std/spells/mindblast.src` | 31.4 | `ApplyTheDamage(..., DMGID_MAGIC)`; a reflected blast stays raw |
+| `pkg/opt/shilitems/vengeance.src` | 31.4 | `include/damages`; `ApplyTheDamage(..., DMGID_MAGIC + DMGID_NO_RESIST)`, raw on self |
+| `pkg/opt/necro/sunderingsword.src` | 31.4 | `ApplyTheDamage(..., DMGID_MAGIC + DMGID_NO_RESIST)` |
+| `pkg/opt/farming/swarmofbees.src` | 31.5 | Realm on its mobile scan |
+| `pkg/opt/champspawns/include/death.inc` | 32.2-32.4 | `ProcessChampionCorpse()` pays the bags before the gold rain and skips altar-less champions; `RegisterChampionSpawnKill()` tally `{kills, last kill}`, active altars only, `set_critical`; new `FindChampionSpawnKiller()`, `IsChampionCreditable()`; `GetAltarByCorpse()` returns 0 without an `altar` CProp |
+| `pkg/opt/champspawns/include/rewards.inc` | 32.3 | `CHAMP_BAG_MIN_KILLS`, `CHAMP_CREDIT_WINDOW` (7200 s, from the newest kill); new `GiveRewardsToPlayers()`, `GiveChampionBag()`, `AddChampionReward()`; `:Events:bag` and `EligibleForLoot()` dropped; `include/random`, `util/bank` |
+| `pkg/opt/champspawns/include/skulls.inc` | 32.5 | New `clearWhiteSkulls()` |
+| `pkg/opt/champspawns/scripts/control.src` | 32.5 | Wave reset clears white skulls above 20%, removes a red skull at or below |
+| `pkg/opt/ArtifactSystem/championrelic.src` | 32.4 | `SummonedByRelic` CProp on the boss |
+| `config/nlootgroup.cfg` | 33 | Lootgroup 150: 2 tomes, 4 scrolls, 4 stat potions, no tokens or presents; lootgroup 151: 3 / 4 / 5, no tokens or presents |
+| `scripts/include/starteqp.inc` | 34 | `CreateFromStackString()` doubles the pile under either Hunting powerhour |
+| `pkg/opt/powerhour/textcmd/player/setph.src` | 34 | Refuses the type the server-wide powerhour is running or about to start |
 | `patchnotes/patch-v1.1.4.md` | - | (`d11f181`) 1.1.4 date set to October 12, 2026; "Warrior for Hire - Brought In Line With ZH3.0" heading shortened |
 | `patchnotes/developer-changelog-v1.1.5.md` | - | New - this file |
 | `patchnotes/patch-v1.1.5.md` | - | New - player patch notes |
@@ -713,7 +983,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 32. Risk and Regression Notes
+## 38. Risk and Regression Notes
 
 - **Old warrior hearts stop working (section 5.1).** The 1.1.4 notes promised that pre-1.1.4 hearts "still work until a new death writes a stamped backup". That promise is withdrawn: every unstamped heart now crumbles at the priest. Owners of those warriors can still use "resurrect warrior" if they have a backup. If they have neither, the warrior is gone. Worth a line in the Discord announcement.
 - **Hearts must be handed in by the master character (section 5.2).** A heart handed in by an alt on the same account, or by a friend, is destroyed, not returned. Stamped hearts handed in by anyone else already crumbled, so in practice only the message changes for them. The player notes say it plainly.
@@ -748,6 +1018,20 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 - **Champion relics now refuse cities (section 28).** Relic activation was already blocked in guarded and no-PK areas, so this only changes unguarded parts of a `Type City` region.
 - **`ResolveAttacker()` picks the first match (section 26).** If a player and their own pet both attack a warrior, the warrior answers the pet. It scans mobiles within 15 tiles on each damage event from a player, which is cheap but not free in a big fight.
 - **Existing Vortex Beasts stay Giantkin (section 29)** until they respawn, as with the Townsfolk change.
-- **Sections 26-29 were not compiled or run.**
-- **Sections 18-25 were not compiled.** Written and reviewed (`/code-review`, 2026-10-25) but neither compiled nor run. `ecompile -A -w` on the whole tree is owed before the deploy, since `spelldata.inc` and `npccast.inc` are included widely.
+- **PvP damage drops for Mind Blast and Vengeance (section 31).** A player's Mind Blast or Vengeance on another player now takes `ApplyTheDamage()`'s 0.6, like every other spell. Mind Blast casters will notice; worth a line in the announcement. Poison ticks skip the cut (`pvp_cut` 0), so poison's PvP damage is unchanged.
+- **Pets, summons and Warriors for Hire lose about three quarters of their melee damage on players (section 31.6).** Their melee now takes the 0.4 and 0.6 PvP cuts a player's melee does (0.24 in all), and their spells the 0.6. Tamers, summoners and Warrior for Hire owners in PvP will feel it the most; worth a line in the announcement. Pet poison is not cut.
+- **Poison is now an attack for repsys (section 31.3).** Each tick from a player's poison goes through `SetScriptController()` and `ApplyRawDamage()` as the poisoner, so poisoning an innocent keeps flagging the poisoner while it ticks, as melee does. Poison ticks also add the poisoner to the victim's hitlist.
+- **Magusbane and Magehunter resist more (section 31).** Their `AttackTypeImmunities 639` includes poison and magic, which raw damage ignored. Non-Thief poison and Mind Blast now do nothing to them; Thief poison, Vengeance and Sundering Sword still do.
+- **Personal powerhour now doubles poison kills' loot (section 31).** The loot code finds the poisoner through `KilledBySerial`.
+- **Reward bags are new loot (sections 32, 33).** The corpse loses its tokens and presents and part of its tomes, scrolls and stat potions; section 33's table is the balance check. Duos that carry a spawn get up to twice the tomes they did; big groups get fewer. Relic champions lose the tokens, presents and some tomes outright, by design.
+- **The two-hour window (section 32.3)** is measured from each player's last credited kill to the newest kill on the tally, i.e. the end of the last wave. A player who left more than two hours before then gets nothing, whatever their count; the champion fight's length doesn't count against anyone. Tune `CHAMP_CREDIT_WINDOW` in `rewards.inc`.
+- **Altars mid-spawn at the deploy (section 32.2)** keep their tally if it is a dictionary (old entries are bare counts and become `{count, time}` at the next kill). An old entry with no later kill has no time and pays nothing. Live altars all hold an error at the moment and reset at their next activation, so in practice every altar starts clean.
+- **Offline bags go to the bank (section 32.3).** `FindBankBox()` sleeps up to a second per offline player, in the champion's `death.ecl`, before the gold rain starts.
+- **The last wave is harder (section 32.5).** A champion can no longer appear with the final wave about a fifth done; players who relied on that now need the full 91%.
+- **Gold piles double under one powerhour (section 34).** Every `Stack` drop (mostly corpse gold) is twice as big during any Hunting powerhour, including champion corpse gold (60,000 -> 120,000). More gold enters the economy during powerhours.
+- **`.setph` refuses the server-wide type (section 34).** Including during the 2-minute warning, so a player who opened the gump before the warning is refused at Okay.
+- **`modsetup.inc` now re-equips package-AI NPCs (section 30.3).** With `::npcdesc` found, any package AI other than the Warrior for Hire that uses `modsetup.inc` is re-equipped from its `equip` template on each AI start, as script-AI NPCs already were.
+- **Champfire changes every matchup (section 35).** Mages and Paladins with high resist take several times more than before (a level 6 Mage's bolt goes from ~31 to ~200 against no protection); a Warrior with no resist takes about half (~380 to ~200). The Summoner and the Soul Whisperers go from about a third of that to ~170. Elemental protection is now the only defence, so players will notice which elements they lack. Tune `CHAMPFIRE_BOLT_DICE` / `CHAMPFIRE_FIELD_DICE` in `npccastspells.inc`.
+- **Fire fields look their caster up each tick (section 35.1).** This applies to every fire field, players' included: one `SystemFindObjectBySerial()` per field per 5 seconds.
+- **Compile state.** The whole tree, sections 18-35 included, compiled with `ecompile -A -w` on 2026-10-28: 1,162 scripts, 0 errors, no new warnings in the touched files. Section 35.4 and the review fixes (31.2 killer erase, 31.3 poison credit and armor, 32.3 window, 30.4 war mode) and the PvP changes (31.3 `pvp_cut`, 31.6 pets, 2026-10-29) were written after that and compiled the same way, 1,162 scripts, 0 errors. None of sections 18-35 was run in a client. Sections 18-25 were also reviewed (`/code-review`, 2026-10-25).
 - **Compiled, not run.** The whole tree was compiled with `ecompile -A -w` on 2026-10-19 (0 errors, no new warnings in the touched files), and `merchant.src` and the two test tools on 2026-10-20 (0 errors, 0 warnings). The spell round (sections 10-14) was compiled with `ecompile -A -w` on 2026-10-22: 1161 scripts, 0 errors, no new warnings in the touched files, and the buff icon round (section 15) on 2026-10-23 with the same result. The section 10.6 balance pass has **not been compiled**. Sections 10-15 were partly exercised on the test shard (jewelry interaction confirmed by a tester); the rest was not run in a client.

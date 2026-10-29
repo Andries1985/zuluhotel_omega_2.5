@@ -17,6 +17,7 @@ program processtempmods( parms )
 	var caster := parms[4];
 	var serial	:= who.serial;
 	var shuriken := parms[5];
+	var credit := parms[6];
 
 	if (IsInSafeArea(who) && !IsInBox(who, 5508, 5527, 1655, 1674))
 		return 0;
@@ -113,11 +114,13 @@ program processtempmods( parms )
 		var currPsnDmg := GetObjProperty(who, "psnDmg");
 		if(!currPsnDmg || (currPsnDmg < newPsnDmg) )
 			SetObjProperty(who, "psnDmg", newPsnDmg);
+			SetPoisonCredit(who, credit);
 		endif
 		set_critical(0);
 		return;
 	else
 		SetObjProperty(who, "psnDmg", newPsnDmg);
+		SetPoisonCredit(who, credit);
 	endif
 
 	var duration := Cint(30);
@@ -152,23 +155,26 @@ program processtempmods( parms )
 
 	set_critical(0);
 			
+	// A Thief's poison pierces poison protection (PoisonProtected above), so its ticks ignore
+	// attack-type immunity as well.
+	var tick_type := DMGID_POISON;
+	if( GetObjProperty( caster , CLASSEID_THIEF ) )
+		tick_type := tick_type + DMGID_NO_RESIST;
+	endif
+
 	var timer := 0;
 	repeat
-	
+
 	sleep(1);
-	
+
 	if(CInt(ReadGameClock() % 5) == 0)
-		if (Getobjproperty(who, "LottoDrops"))
-			StoreDamage(caster, who, Cint(GetObjProperty(who, "psnDmg")));
-		endif
-		ApplyRawDamage(who, Cint(GetObjProperty(who, "psnDmg")));
+		PoisonTick(who, Cint(GetObjProperty(who, "psnDmg")), tick_type);
 	endif
 
 	timer := timer + 1;
 
 	if (GetHP(who) < 1)
-		SetObjProperty(who, "KilledBy", GetObjProperty(who, "PoisonedBy"));
-		ApplyRawDamage(who, 5);
+		PoisonTick(who, 5, tick_type);
 		break;
 	endif
 
@@ -198,5 +204,39 @@ program processtempmods( parms )
 		endif
 		Set_Critical(0);
 	endif
-	
+
 endprogram
+
+
+// One tick of poison damage. With a poisoner (SetPoison's PoisonedBySerial) it goes through
+// ApplyTheDamage like any other attack: the poisoner, or a pet's master, gets the kill and the
+// hitlist entry, the PvP reduction applies, and lotto damage is stored there. With no poisoner, or
+// self-inflicted poison, it stays raw damage.
+// The ticks read PoisonedBySerial, so the kill goes to whoever's poison is doing the damage. It is
+// only written when a poisoning lands: a fresh one, or a stronger one that replaces psnDmg. A
+// blocked, equal or weaker poisoning leaves the credit where it is. A landed poisoning with no
+// poisoner (a trap, food, a failed Poisoning) clears it, so nobody is credited for its damage.
+function SetPoisonCredit( who, credit )
+	if( credit.IsA(POLCLASS_MOBILE) and credit != who )
+		SetObjProperty(who, "PoisonedBy", credit.name);
+		SetObjProperty(who, "PoisonedBySerial", credit.serial);
+	else
+		EraseObjProperty(who, "PoisonedBySerial");
+	endif
+endfunction
+
+function PoisonTick( who, dmg, tick_type )
+
+	var poisoner := 0;
+	var serial := CInt(GetObjProperty(who, "PoisonedBySerial"));
+	if( serial )
+		poisoner := SystemFindObjectBySerial(serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+	endif
+
+	if( poisoner.IsA(POLCLASS_MOBILE) and poisoner != who )
+		// No PvP slowdown: poison keeps the PvP damage it had as raw damage.
+		return ApplyTheDamage(who, poisoner, dmg, tick_type, 0);
+	endif
+	return ApplyRawDamage(who, dmg);
+
+endfunction

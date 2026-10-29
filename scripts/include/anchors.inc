@@ -10,7 +10,7 @@ function drop_anchor(me)
 
         // assumes that var me = npc::self
 
-        var cfg := readconfigfile("npcdesc");
+        var cfg := readconfigfile("::npcdesc");
 
         var dstart := cfg[me.npctemplate].dstart;
         var psub := cfg[me.npctemplate].psub;

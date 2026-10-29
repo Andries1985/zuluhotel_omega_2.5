@@ -192,6 +192,81 @@ Always check Discord announcements for all the patch notes.
 
 ---
 
+## Champion Spawns - Reward Bags
+
+### Player Impact
+
+- **Champion spawns hand out reward bags.** Kill at least **150** of an altar's creatures and you get a Champion Reward Bag when its champion dies. The more you kill, the more is in it:
+
+| Your kills | What the bag adds |
+|---|---|
+| 150 | 1 Transcendence Scroll, 1 Omega Token, 1 present |
+| 300 | 1 more Transcendence Scroll, 1 more Omega Token |
+| 500 | 1 stat potion |
+| 750 | 1 PowerTome |
+| 1000 | 1 more PowerTome, 1 more stat potion, 2 more Omega Tokens, 1 more present |
+
+  At 1000 kills that's 2 PowerTomes, 2 Transcendence Scrolls, 2 stat potions, 4 Omega Tokens and 2 presents.
+- **Only your own kills count.** That means the killing blow, from you, your pets or your Warrior for Hire. Kills by your poison count too. Standing near someone else who does the killing earns nothing.
+- **You must still be fighting.** Your last kill at the altar has to be within two hours of the last kill anyone made there. A long champion fight doesn't cost anyone their bag. If you leave an altar and someone else finishes it later, your earlier kills don't pay.
+- **Every character gets their own bag.** It goes into your backpack, or into your bank box if your backpack is full or you have logged out.
+- **The champion itself drops less, because the bag now carries part of its loot.** Barracoon and Erebus drop 2 PowerTomes, 4 Transcendence Scrolls and 4 stat potions. Rikktor and Nyx drop 3 PowerTomes, 4 Transcendence Scrolls and 5 stat potions. Champions no longer drop Omega Tokens or presents; those are in the bags now. Magic items drop a little less often: 85% for Barracoon and Erebus, 95% for Rikktor and Nyx. The gold rain, the gold on the body, the champion skull and the rest of the loot are unchanged.
+- **Champions from a Champion Relic get no reward bags** and drop the smaller loot above.
+- **The last wave can't end early any more.** A bug could bring the champion out when the final wave was only about a fifth done. You now have to finish it.
+
+---
+
+## Poison, Mind Blast and Vengeance
+
+### Player Impact
+
+- **Kills by poison now count as yours.** That includes your poisoned weapons, poison from a dropped poison weapon, your poison fields, your pets' poison and Venomous (Envenomed) armor poisoning whoever hits you. Those kills now get personal powerhour double loot, count toward champion reward bags, and give karma and fame.
+- **Against players, Mind Blast and Vengeance do 40% less damage,** the same as every other spell already did. Poison does the same damage to players as before.
+- **Poisoning an innocent player flags you while the poison works,** just as hitting them does.
+- **The kill goes to whoever's poison is doing the damage.** A weaker poison on a creature that is already poisoned, or one that doesn't take, no longer takes the kill from the player whose poison is ticking.
+- **Magusbane and Magehunter now resist poison and Mind Blast.** A Thief's poison still gets through.
+- **Thief poison is unchanged:** it still pierces poison protection. Dropped poison weapons hit the same in anyone's hands.
+- **Pets, summons and Warriors for Hire now take the same PvP damage cuts as their owner.** Against players, their melee does about a quarter of what it did, and their spells 40% less. Their poison is not cut. Fighting other people's pets is unchanged.
+
+---
+
+## Powerhour - Gold Piles
+
+### Player Impact
+
+- **A Hunting powerhour now doubles gold piles.** Gold dropped by monsters was only doubled when the server-wide and a personal Hunting powerhour ran at the same time. Now either one does it.
+- **`.setph` won't waste your weekly powerhour.** It refuses to start a personal powerhour of the same type as a server-wide one that is running or about to start. Pick another type or save it for later.
+
+---
+
+## Champfire - Stronger, and Only Elemental Protection Helps
+
+### Player Impact
+
+- **Champfire is the elemental fireball that Rikktor, Nyx, The Summoner and the Soul Whisperers rain on everyone nearby.** Each cast is one of six elements: earth, water, fire, air, necro or holy. It hits every player in range with a bolt and leaves burning fields around them.
+- **Magic Resistance and your class no longer change how hard it hits.** Only your protection against that cast's element does. From Rikktor or Nyx, against no protection in that element:
+  - the bolt hits for about **200**
+  - each tick of the fields hits for about **50**, every 5 seconds while you stand in them
+
+  With 50% protection that's about 115 and 30; with 95% about 40 and 10. The Summoner and the Soul Whisperers hit a little less.
+- **The fields really burn now.** Because of a bug, they hit you with your own skills and barely hurt. Step out of them.
+- **What this means for you:** Mages and high-resist players take much more than before, and Warriors with no resist take less. The elements you have no protection in are now what hurts.
+
+---
+
+## Other Fixes
+
+### Player Impact
+
+- **Some custom monsters appeared without their gear.** They are dressed again.
+- **Paralyze and energy fields work outside Britannia.** They never caught anyone in the other lands.
+- **Monsters no longer freeze after chasing a ghost.** A monster that kept going for a dead or hidden player could stop moving altogether. It now leaves war mode and goes back to wandering.
+- **Your death log no longer names an old killer.** A death with no killer could be logged as the work of whoever killed you last time.
+- **Some items that should stack now do.**
+- **The Omega Cache item list opens quickly on a big cache**, instead of stalling.
+
+---
+
 ## Summary
 
 - Mayors can resign from the townstone with "Resign and leave town"; the town can call a new election straight away.
@@ -214,5 +289,10 @@ Always check Discord announcements for all the patch notes.
 - New `.arrows` command counts your arrows and bolts.
 - Player vendors in a city now pay the city wage, 50,000 gold a month; elsewhere it stays 10,000. Champion relics can't be used in a city.
 - The Vortex Beast is a Beholder for slayer weapons.
+- Champion spawns give reward bags by kill count (150 minimum, still fighting in the last two hours); champions drop fewer tomes, scrolls and stat potions and no tokens or presents; relic champions give no bags; the last wave can't end early.
+- Poison kills count as yours; Mind Blast and Vengeance do 40% less to players (poison unchanged); Magusbane and Magehunter resist poison and Mind Blast; pets, summons and Warriors for Hire take their owner's PvP damage cuts.
+- A Hunting powerhour doubles gold piles on its own; `.setph` won't start the same type as a server-wide powerhour.
+- Champfire hits everyone the same (about 200 a bolt and 50 a field tick from Rikktor and Nyx), cut only by protection in its element; its fields burn properly.
+- Custom monsters are dressed again, paralyze and energy fields work in every land, monsters stop freezing after chasing ghosts, more items stack, and big Omega Caches list quickly.
 
 Thanks for playing Zuluhotel Omega 2.5.
