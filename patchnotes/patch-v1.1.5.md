@@ -261,6 +261,14 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 
 ---
 
+## Treasure Maps - Level 6 Bards
+
+### Player Impact
+
+- **Level 6 Bards find level 7 chests more often.** Digging up a level 6 treasure map, a Bard has a chance to find a level 7 chest instead. At bard level 6 that chance is now **8%** (it was 6%). Bards of level 1-5 keep 1% per level.
+
+---
+
 ## Other Fixes
 
 ### Player Impact
@@ -297,6 +305,7 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 - Player vendors in a city now pay the city wage, 50,000 gold a month; elsewhere it stays 10,000. Champion relics can't be used in a city.
 - The Vortex Beast is a Beholder for slayer weapons.
 - Champion spawns give reward bags by kill count (150 minimum, still fighting in the last two hours); champions drop fewer tomes, scrolls and stat potions and no tokens or presents; relic champions give no bags; the last wave can't end early.
+- Level 6 Bards have an 8% chance of a level 7 chest from a level 6 treasure map (was 6%).
 - Poison kills count as yours; Mind Blast and Vengeance do 40% less to players (poison unchanged); Magusbane and Magehunter resist poison and Mind Blast; pets, summons and Warriors for Hire take their owner's PvP damage cuts.
 - A Hunting powerhour doubles gold piles on its own; `.setph` won't start the same type as a server-wide powerhour.
 - Champfire hits everyone the same (about 200 a bolt and 50 a field tick from Rikktor and Nyx), cut only by protection in its element; its fields burn properly.
