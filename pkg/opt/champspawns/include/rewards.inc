@@ -126,6 +126,24 @@ const CHAMP_CREDIT_WINDOW := 7200;
 const CHAMP_BAG_GRAPHIC := 0x0E76;
 const CHAMP_REWARD_COLOR := 53;
 
+// The kill counts at which the bag grows (GiveChampionBag), for the milestone messages and .champkills.
+function ChampionBagTiers()
+	return array{CHAMP_BAG_MIN_KILLS, 300, 500, 750, 1000};
+endfunction
+
+// The systime of the newest kill on an altar's tally, the reference for CHAMP_CREDIT_WINDOW.
+function ChampionTallyNewest(players)
+
+	var newest := 0;
+	foreach entry in players
+		if(TypeOf(entry) == "Array" and CInt(entry[2]) > newest)
+			newest := CInt(entry[2]);
+		endif
+	endforeach
+	return newest;
+
+endfunction
+
 function GiveRewardsToPlayers(altar)
 
 	var players := GetObjProperty(altar, "players");
@@ -136,17 +154,16 @@ function GiveRewardsToPlayers(altar)
 	// An offline player's bag goes to their bank box.
 	set_script_option(SCRIPTOPT_CAN_ACCESS_OFFLINE_MOBILES, 1);
 
-	// Entries are {kills, systime of the last kill}; one from before Patch 1.1.5 has no time and
-	// can't show a recent kill.
-	var newest := 0;
-	foreach entry in players
-		if(TypeOf(entry) == "Array" and CInt(entry[2]) > newest)
-			newest := CInt(entry[2]);
-		endif
-	endforeach
+	// Entries are {kills, systime of the last kill}. One from before Patch 1.1.5 is a bare count
+	// with no time: an altar that was mid-run at the deploy. It counts as recent, so those kills
+	// still pay.
+	var newest := ChampionTallyNewest(players);
 
 	foreach serial in (players.keys())
 		var entry := players[serial];
+		if(TypeOf(entry) == "Integer")
+			entry := array{entry, newest};
+		endif
 		if(TypeOf(entry) == "Array")
 			if(newest - CInt(entry[2]) <= CHAMP_CREDIT_WINDOW)
 				var who := SystemFindObjectBySerial(CInt(serial), SYSFIND_SEARCH_OFFLINE_MOBILES);
@@ -209,15 +226,30 @@ function GiveChampionBag(who, kills)
 	bag.name := "A Champion Reward Bag";
 	bag.color := RandomInt(3000);
 
-	AddChampionReward(bag, "PowerTome", tomes);
-	AddChampionReward(bag, "TranscendScroll", scrolls);
-	AddChampionReward(bag, "StatPotion", stats);
-	AddChampionReward(bag, "vanitytoken", tokens);
+	var rewards := array{};
+	AddChampionReward(rewards, "PowerTome", tomes);
+	AddChampionReward(rewards, "TranscendScroll", scrolls);
+	AddChampionReward(rewards, "StatPotion", stats);
+	AddChampionReward(rewards, "vanitytoken", tokens);
 	var i;
 	for(i := 1; i <= presents; i := i + 1)
 		// The champions' old ChampionPresents group: gift1-3, equally likely.
-		CreateItemInContainer(bag, "gift" + (RandomInt(3) + 1), 1);
+		rewards.append("gift" + (RandomInt(3) + 1));
 	endfor
+
+	// A backpack can take the empty bag but not all of its contents (weight or item limit). The
+	// bag then moves to the bank box and the rest is created there.
+	var missing := FillChampionBag(bag, rewards);
+	if(missing.size() and !in_bank)
+		var bank := FindBankBox(who);
+		if(bank and MoveItemToContainer(bag, bank))
+			in_bank := 1;
+			missing := FillChampionBag(bag, missing);
+		endif
+	endif
+	if(missing.size())
+		SysLog("Champion reward bag for " + who.name + " (" + Hex(who.serial) + ", " + kills + " kills) is missing: " + missing);
+	endif
 
 	if(who.connected)
 		if(in_bank)
@@ -231,13 +263,26 @@ function GiveChampionBag(who, kills)
 
 endfunction
 
-// One at a time, as the loot code does: these items don't stack.
-function AddChampionReward(bag, objname, amount)
+// One entry per item, as the loot code does: these items don't stack.
+function AddChampionReward(byref rewards, objname, amount)
 
 	var i;
 	for(i := 1; i <= amount; i := i + 1)
-		CreateItemInContainer(bag, objname, 1);
+		rewards.append(objname);
 	endfor
+
+endfunction
+
+// Creates each reward in the bag and returns the ones that could not be created.
+function FillChampionBag(bag, rewards)
+
+	var missing := array{};
+	foreach objname in rewards
+		if(!CreateItemInContainer(bag, objname, 1))
+			missing.append(objname);
+		endif
+	endforeach
+	return missing;
 
 endfunction
 

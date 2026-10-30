@@ -69,6 +69,18 @@ function RegisterChampionSpawnKill(corpse)
 
   SetObjProperty(altar, "players", players);
   set_critical(0);
+
+  // Patch 1.1.5: tell the player when the bag grows. .champkills shows the count at any time.
+  kills := kills + 1;
+  if(killer.connected and kills in ChampionBagTiers())
+    var msg := " kills at this altar: your Champion Reward Bag grows.";
+    if(kills == CHAMP_BAG_MIN_KILLS)
+      msg := " kills at this altar: you have earned a Champion Reward Bag.";
+    elseif(kills == ChampionBagTiers()[ChampionBagTiers().size()])
+      msg := " kills at this altar: your Champion Reward Bag is as full as it gets.";
+    endif
+    SendSysMessage(killer, kills + msg, FONT_NORMAL, CHAMP_REWARD_COLOR);
+  endif
 endfunction
 
 // The player who killed a spawn creature: the corpse's KilledBySerial (set by ApplyTheDamage), or
@@ -78,6 +90,10 @@ function FindChampionSpawnKiller(corpse)
   if(serial)
     var killer := SystemFindObjectBySerial(serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
     if(IsChampionCreditable(killer))
+      return killer;
+    endif
+    // ".akill <range> credit" (testing altars): the staff member who ran it gets the kill.
+    if(killer and killer.cmdlevel and CInt(GetObjProperty(corpse, "StaffChampCredit")) == serial)
       return killer;
     endif
   endif

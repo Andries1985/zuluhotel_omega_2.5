@@ -1,0 +1,106 @@
+// Synopsis: Show your kills toward a Champion Reward Bag at the nearest active champion altar
+use uo;
+use os;
+
+include ":champspawns:rewards";
+
+const CHAMP_ALTAR_OBJTYPE := 0x9101;	// champaltarnocreate, the altar that runs the spawn
+const CHAMP_ALTAR_SEARCH_RANGE := 50;	// minions spawn up to 37 tiles from the altar on each axis
+
+program textcmd_champkills(who)
+
+	var altar := FindNearestActiveAltar(who);
+	if(!altar)
+		SendSysMessage(who, "There is no active champion altar near you.");
+		return;
+	endif
+
+	// The tally is players[serial] := {kills, systime of the last kill} (death.inc). An entry from
+	// before Patch 1.1.5 is a bare count with no time; it pays as recent (GiveRewardsToPlayers).
+	var players := GetObjProperty(altar, "players");
+	if(TypeOf(players) != "Dictionary")
+		players := dictionary;
+	endif
+	var entry := players[who.serial];
+	var kills := 0, last := 0;
+	if(TypeOf(entry) == "Array")
+		kills := CInt(entry[1]);
+		last := CInt(entry[2]);
+	elseif(TypeOf(entry) == "Integer")
+		kills := entry;
+	endif
+
+	if(!kills)
+		SendSysMessage(who, "You haven't slain any of this champion's minions yet. It takes " + CHAMP_BAG_MIN_KILLS + " to earn a Champion Reward Bag.", FONT_NORMAL, CHAMP_REWARD_COLOR);
+		return;
+	endif
+
+	var next := 0;
+	foreach tier in ChampionBagTiers()
+		if(kills < tier)
+			next := tier;
+			break;
+		endif
+	endforeach
+
+	var msg := "You have slain " + kills + " of this champion's minions.";
+	if(kills < CHAMP_BAG_MIN_KILLS)
+		msg := msg + " " + (CHAMP_BAG_MIN_KILLS - kills) + " more to earn a Champion Reward Bag.";
+	elseif(next)
+		msg := msg + " You have earned a Champion Reward Bag, and " + (next - kills) + " more makes it bigger (" + next + ").";
+	else
+		msg := msg + " Your Champion Reward Bag is as full as it gets.";
+	endif
+	SendSysMessage(who, msg, FONT_NORMAL, CHAMP_REWARD_COLOR);
+
+	if(last)
+		SendSysMessage(who, "Your last kill here was " + FormatAgo(POLCore().systime - last) + " ago.", FONT_NORMAL, CHAMP_REWARD_COLOR);
+		if(ChampionTallyNewest(players) - last > CHAMP_CREDIT_WINDOW)
+			SendSysMessage(who, "That was more than " + (CHAMP_CREDIT_WINDOW / 3600) + " hours before the latest kill at this altar. Slay another minion here or these kills won't pay.", FONT_NORMAL, 33);
+		endif
+	endif
+
+endprogram
+
+// The nearest altar within CHAMP_ALTAR_SEARCH_RANGE whose spawn is running (the champion fight
+// included), or 0.
+function FindNearestActiveAltar(who)
+
+	var nearest := 0;
+	foreach item in ListItemsNearLocationOfType(who.x, who.y, LIST_IGNORE_Z, CHAMP_ALTAR_SEARCH_RANGE, CHAMP_ALTAR_OBJTYPE, who.realm)
+		if(CInt(GetObjProperty(item, "active")))
+			if(!nearest or Distance(who, item) < Distance(who, nearest))
+				nearest := item;
+			endif
+		endif
+	endforeach
+	return nearest;
+
+endfunction
+
+function FormatAgo(seconds)
+
+	var minutes := CInt(seconds / 60);
+	if(minutes < 1)
+		return "less than a minute";
+	elseif(minutes < 60)
+		if(minutes == 1)
+			return "1 minute";
+		endif
+		return minutes + " minutes";
+	endif
+	var hours := CInt(minutes / 60);
+	minutes := minutes - hours * 60;
+	var text := hours + " hour";
+	if(hours != 1)
+		text := text + "s";
+	endif
+	if(minutes)
+		text := text + " " + minutes + " minute";
+		if(minutes != 1)
+			text := text + "s";
+		endif
+	endif
+	return text;
+
+endfunction
