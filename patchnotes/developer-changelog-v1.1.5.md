@@ -1,9 +1,9 @@
 # Developer Changelog - v1.1.5
-**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `b3fa183` -> `b5bcf55` (sections 30-35, 2026-10-27 to 29) -> `e950d4d` (section 36) + working tree (port review fixes, section 37, 2026-10-29)  
+**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `b3fa183` -> `b5bcf55` (sections 30-35, 2026-10-27 to 29) -> `e950d4d` (section 36) -> `3fe7a49` (port review fixes, 32.6, 37, 2026-10-29) + working tree (section 38, 2026-10-30)  
 **Branch:** Patch-1.1.5  
 **Date:** 2026-10-18 to 2026-10-29 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20; spell protections, Reactive Armor and Beastal Bond 2026-10-21/22; buff icons, `.newmobedit` and the NPC world-save fix 2026-10-23; class-level balance pass, NPC songs and spell lists, NPC area targeting, `.newmobedit` NPC pages, the Townsfolk type, `.npclist`, `.newiteminfo` and the use-script config 2026-10-25, `a5c79d1`; Warrior for Hire targeting, `.arrows`, vendor wages and the Vortex Beast 2026-10-27, `b3fa183`; the live log review fixes, kill credit, champion reward bags and loot, and powerhour gold 2026-10-27/28, champfire and the PvP cuts 2026-10-28/29, `b5bcf55`; the treasure map bard chance 2026-10-29, working tree)  
 **Commits in range:** 6 with content (`d11f181`, `ea4722a`, `2587db3`, `07e7bc6`, `ccc8d27`, `a5c79d1`), the merge `fd57000` of #345, plus merge commits that carry only 1.1.4 work (`git diff 4abd02c 469834b` is empty); see section 2.  
-**Files changed:** 43 code files modified, 1 renamed (`newmobedit.src`, admin -> gm) and 3 new includes (`scripts/include/spellprots.inc`, `scripts/include/buffs.inc`, `pkg/opt/versebook/include/beastalbond.inc`) in `4abd02c..fd57000`. In the working tree: 4 files for section 10.6 (`sanctuary.src`, `antidote.src`, `Dragon_Skin.src`, `spellprots.inc`), 32 files and 1 new include (`scripts/include/npcspellnames.inc`) for sections 18-25, plus this release's 3 `patchnotes/` files; those all landed in `a5c79d1`. In the working tree after `a5c79d1`: 5 files modified (`warrior.src`, `areas.inc`, `playermerchant.src`, `npcdesc.cfg`, `command_synopses.cfg`) and 1 new command (`scripts/textcmd/player/arrows.src`) for sections 26-29, plus the 3 `patchnotes/` files; those landed in `b3fa183`. After `b3fa183`: 52 files modified for sections 30-35, plus the 3 `patchnotes/` files, in `b5bcf55`; `digtreasure.src` (section 36) and the 3 `patchnotes/` files in `e950d4d`. In the working tree: 5 files for the ZH3.0 port review fixes (sections 31.3, 32.2, 32.3, 32.5, 35.4), 3 files modified (`death.inc`, `rewards.inc`, `scripts/textcmd/admin/akill.src`), `command_synopses.cfg` and 1 new command (`scripts/textcmd/player/champkills.src`) for section 32.6, 5 files for section 37, and the 3 `patchnotes/` files. The full list is section 39. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
+**Files changed:** 43 code files modified, 1 renamed (`newmobedit.src`, admin -> gm) and 3 new includes (`scripts/include/spellprots.inc`, `scripts/include/buffs.inc`, `pkg/opt/versebook/include/beastalbond.inc`) in `4abd02c..fd57000`. In the working tree: 4 files for section 10.6 (`sanctuary.src`, `antidote.src`, `Dragon_Skin.src`, `spellprots.inc`), 32 files and 1 new include (`scripts/include/npcspellnames.inc`) for sections 18-25, plus this release's 3 `patchnotes/` files; those all landed in `a5c79d1`. In the working tree after `a5c79d1`: 5 files modified (`warrior.src`, `areas.inc`, `playermerchant.src`, `npcdesc.cfg`, `command_synopses.cfg`) and 1 new command (`scripts/textcmd/player/arrows.src`) for sections 26-29, plus the 3 `patchnotes/` files; those landed in `b3fa183`. After `b3fa183`: 52 files modified for sections 30-35, plus the 3 `patchnotes/` files, in `b5bcf55`; `digtreasure.src` (section 36) and the 3 `patchnotes/` files in `e950d4d`. In the working tree: 5 files for the ZH3.0 port review fixes (sections 31.3, 32.2, 32.3, 32.5, 35.4), 3 files modified (`death.inc`, `rewards.inc`, `scripts/textcmd/admin/akill.src`), `command_synopses.cfg` and 1 new command (`scripts/textcmd/player/champkills.src`) for section 32.6, 5 files for section 37, and the 3 `patchnotes/` files; those landed in `3fe7a49`. In the working tree: 6 files modified and 1 new include (`pkg/opt/townstones/citizens.inc`) for section 38, plus the 3 `patchnotes/` files. The full list is section 40. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
 
 > Scope was computed against `4abd02c`, the last commit that edited the 1.1.4 notes, not `master`.
 > `archcure.src`, `archprot.src`, `nightsight.src`, `owlsight.src` and `angelicaura.src` show as modified in `git status` but differ from HEAD only in line endings: their per-file NPC branches were folded into `SmartBoost()` (section 20.4).
@@ -49,9 +49,10 @@
 35. [Champfire - Fixed Damage, Elemental Protection Only](#35-champfire---fixed-damage-elemental-protection-only)
 36. [Treasure Maps - Level 6 Bards Find Level 7 Chests More Often](#36-treasure-maps---level-6-bards-find-level-7-chests-more-often)
 37. [Rangers - Taming, Pet Resurrection, Full Heals, Magic Fish](#37-rangers---taming-pet-resurrection-full-heals-magic-fish)
-38. [ZH3.0 3.1.4 - Reviewed, Not Ported](#38-zh30-314---reviewed-not-ported)
-39. [Exhaustive File-by-File Change List](#39-exhaustive-file-by-file-change-list)
-40. [Risk and Regression Notes](#40-risk-and-regression-notes)
+38. [Townstones - Every Character Can Be a Citizen](#38-townstones---every-character-can-be-a-citizen)
+39. [ZH3.0 3.1.4 - Reviewed, Not Ported](#39-zh30-314---reviewed-not-ported)
+40. [Exhaustive File-by-File Change List](#40-exhaustive-file-by-file-change-list)
+41. [Risk and Regression Notes](#41-risk-and-regression-notes)
 
 ---
 
@@ -61,7 +62,7 @@ Patch 1.1.5 is a follow-up to 1.1.4.
 
 Section 3 gives the mayor a way out of a town. The townstone gump's "give up your citizenship" button (3000) was only drawn on the citizen screen, and the mayor branch is tested before the citizen branch, so a mayor had no in-game way to leave short of losing an election or a staff `.removetownmember`. ZH3.0 ported this commit to its own 3.1.4 as theme 11.
 
-Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 38.
+Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 39.
 
 Section 8 makes keyrings sellable. They already had `VendorBuysFor 1`, but they are `newbie 1` and the merchant AI refuses newbied items. They stay newbie, and the merchant's own sell paths accept empty ones.
 
@@ -100,7 +101,8 @@ Section 36 raises a level 6 Bard's chance of digging a level 7 chest from a leve
 | `b3fa183` | 2026-10-27 | WFH attack target fix, .arrows, vendor city wage, Vortex Beast slayer type, patch notes | 26-29 |
 | `b5bcf55` | 2026-10-29 | Kill credit, champion reward bags, champfire, PvP cuts for pets, log fixes, patch notes | 30-35 |
 | `e950d4d` | 2026-10-29 | Treasure map: level 6 bards get 8% at a level 7 chest, patch notes | 36 |
-| *(next commit)* | 2026-10-29 | ZH3.0 port review fixes, `.champkills` and kill milestones, ranger taming, pet healing and magic fish, patch notes | 31.3, 32.2, 32.3, 32.5, 32.6, 35.4, 37 |
+| `3fe7a49` | 2026-10-29 | ZH3.0 port review fixes, `.champkills` and kill milestones, ranger taming, pet healing and magic fish, patch notes | 31.3, 32.2, 32.3, 32.5, 32.6, 35.4, 37 |
+| *(next commit)* | 2026-10-30 | Townstones: one citizen per character, patch notes | 38 |
 
 ---
 
@@ -934,7 +936,40 @@ New `RANGER_LEVEL_FULL_HEAL_CHANCE := 3`. A ranger's pet bandage (`vet.src` `Try
 
 ---
 
-## 38. ZH3.0 3.1.4 - Reviewed, Not Ported
+## 38. Townstones - Every Character Can Be a Citizen
+
+**Files:** `pkg/opt/townstones/citizens.inc` (new), `tstone.src`, `tstone.inc`, `electionwatch.src`, `textcmd/admin/removetownmember.src`, `textcmd/admin/townbankstatus.src`, `textcmd/admin/cleartownmembers.src`
+
+### 38.1 Before
+
+A townstone's `citizen` CProp listed account names. `Citizenship()` refused any character whose account was already on the list ("You can't join more than once"), the population was the number of accounts, and a vote rune stored the voter's account name, so it was one citizen and one vote per account. On live most players keep their characters on separate accounts, so the limit barely held anyone back, while players with several characters on one account could only bring one of them into a town. Leaving with one character (`CanselCityzenship()`) removed the account entry and its vote even if another character on the account was still a citizen, and `.removetownmember` did the same.
+
+### 38.2 One entry per character
+
+New `citizens.inc`, included by `tstone.inc` (so by `tstone.src` and `electionwatch.src`) and the three staff tools:
+
+- An entry is `{character serial, account name}`: the account stays in the list. Helpers `CitizenSerial()`, `CitizenAccount()`, `NewCitizenEntry()`, `IsCitizenChar()`, `RemoveCitizenChar()`.
+- `Citizenship()` refuses only a character that is already on the list. `CanselCityzenship()` (leaving and resigning) removes only that character's entry.
+- `populacao` is the number of citizen characters, so the 3-member election minimum and the vote percentage count characters.
+- **Votes.** `voteto()` stores the character serial in the rune's `serial` and the account in a new `account` prop. `IsVoteRuneOf(runa, character)` matches a rune by serial, or, for a rune from before the deploy (`serial` is a string), by account.
+
+### 38.3 Converting the old lists
+
+`LoadCitizenList(stone)` replaces the `GetObjProperty(stone, "citizen")` reads that use the list: in `tstone.src` when the stone is used, in `electionwatch.src`, and in the staff tools. If the list still holds account names, each character on such an account whose `town` CProp is this town gets an entry, an account with none left is dropped, and `populacao` is set to the new list size. A list that is already per character is returned as is. No wipe or staff step is needed.
+
+A vote cast before the deploy in an election or poll that is still running holds an account name. It keeps blocking every character on that account until that vote ends, so nobody votes twice across the deploy.
+
+### 38.4 Staff tools
+
+- **`.removetownmember`** removes only the targeted character and its vote, drops entries whose character is gone or no longer wears the town, and sets the population to the list size. `RemoveCitizenAccount()` and `AccountHasTownMember()` are gone.
+- **`.townbankstatus` member list** shows one row per citizen character, with its account. Removing a row removes that character (new `RemoveTownMemberByChar()`, replacing `RemoveTownMemberByAccount()`), not every character on the account. The mayor check compares the character serial (`IsMayorAccount()` is gone). Old-format votes are matched by account in the new `IsRemovedVoter()`. `GetTownPopulation()` converts an old list before reading the population.
+- **`.cleartownmembers`** matches citizens by character (`IsCitizenChar()`) instead of by account, after converting the list. `IsCitizenAccount()` is gone.
+
+The datafile sync (`townstone_data` `citizen` prop) stores whatever is on the stone; `createtownstone` restores either format and `LoadCitizenList()` converts it on first use.
+
+---
+
+## 39. ZH3.0 3.1.4 - Reviewed, Not Ported
 
 ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
@@ -947,11 +982,11 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 39. Exhaustive File-by-File Change List
+## 40. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
-| `pkg/opt/townstones/tstone.src` | 3 | `:gumps:yesno` include; mayor screen button 3001 "Resign and leave town"; new `ResignMayorship()` (confirm, re-check, clear mayor, reset `nextcitizenelection`, `CanselCityzenship()`, broadcast) |
+| `pkg/opt/townstones/tstone.src` | 3 | `:gumps:yesno` include; mayor screen button 3001 "Resign and leave town"; new `ResignMayorship()` (confirm, re-check, clear mayor, reset `nextcitizenelection`, `CanselCityzenship()`, broadcast); 38: `LoadCitizenList()`, join and leave per character |
 | `pkg/opt/powerhour/include/powerhour.inc` | 4 | New `PPH_ResetTime()`; `PPH_IsEligible()` and `PPH_SecondsUntilEligible()` both use it; weekday from the use time |
 | `pkg/opt/warriorforhire/include/wfhcommon.inc` | 5.1 | `IsCurrentWfhHeart()` refuses unstamped hearts and hearts with no backup |
 | `scripts/ai/highpriest.src` | 5.2, 5.3 | Heart from anyone but its master is destroyed; memory revival applies `resnum` stat loss, floor 10 |
@@ -1044,13 +1079,19 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `pkg/std/treasuremap/digtreasure.src` | 36 | `lvl7_chance`: level 6 bards get 8% at a level 7 chest from a level 6 map |
 | `scripts/textcmd/admin/akill.src` | 32.6 | `.akill <range> credit`: champion minions count as the caller's kills, logged; new `AKillMobile()` |
 | `scripts/textcmd/player/champkills.src` | 32.6 | New - `.champkills`: your tally at the nearest active altar, the next tier and the two-hour warning |
+| `pkg/opt/townstones/citizens.inc` | 38 | New - per-character citizen entries `{serial, account}`, `LoadCitizenList()` conversion, `IsVoteRuneOf()` |
+| `pkg/opt/townstones/tstone.inc` | 38 | `voteto()`: one vote per character (`serial` = character, new `account` prop) |
+| `pkg/opt/townstones/electionwatch.src` | 38 | `LoadCitizenList()` |
+| `pkg/opt/townstones/textcmd/admin/removetownmember.src` | 38 | Removes one character and its vote; population = list size |
+| `pkg/opt/townstones/textcmd/admin/townbankstatus.src` | 38 | Member list and removal per character (`RemoveTownMemberByChar()`, `IsRemovedVoter()`) |
+| `pkg/opt/townstones/textcmd/admin/cleartownmembers.src` | 38 | Matches citizens by character |
 | `pkg/std/taming/taming.src` | 37 | Tame and calming difficulty `- 2 * ranger level` |
 | `pkg/std/veterinary/vet.src` | 37 | Resurrection difficulty `- 2 * ranger level` and 5 bandages; full heal `3% * level` |
 | `pkg/std/fishing/magicfish.src` | 37 | A ranger's cooldown key per fish type (`#magicfish<spellnum>`) |
 
 ---
 
-## 40. Risk and Regression Notes
+## 41. Risk and Regression Notes
 
 - **Old warrior hearts stop working (section 5.1).** The 1.1.4 notes promised that pre-1.1.4 hearts "still work until a new death writes a stamped backup". That promise is withdrawn: every unstamped heart now crumbles at the priest. Owners of those warriors can still use "resurrect warrior" if they have a backup. If they have neither, the warrior is gone. Worth a line in the Discord announcement.
 - **Hearts must be handed in by the master character (section 5.2).** A heart handed in by an alt on the same account, or by a friend, is destroyed, not returned. Stamped hearts handed in by anyone else already crumbled, so in practice only the message changes for them. The player notes say it plainly.
@@ -1101,6 +1142,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 - **Champfire changes every matchup (section 35).** Mages and Paladins with high resist take several times more than before (a level 6 Mage's bolt goes from ~31 to ~200 against no protection); a Warrior with no resist takes about half (~380 to ~200). The Summoner and the Soul Whisperers go from about a third of that to ~170. Elemental protection is now the only defence, so players will notice which elements they lack. Tune `CHAMPFIRE_BOLT_DICE` / `CHAMPFIRE_FIELD_DICE` in `npccastspells.inc`.
 - **Fire fields look their caster up each tick (section 35.1).** This applies to every fire field, players' included: one `SystemFindObjectBySerial()` per field per 5 seconds.
 - **`.akill <range> credit` on live (section 32.6).** An Administrator can earn reward bags with it. Every use is logged with the number of minions credited.
+- **Town citizens (section 38).** Population and votes now count characters: one player with several characters can make up the 3-member election minimum and cast several votes (accepted). Populations rise when the old lists are converted, since every citizen character on an account now counts. A town whose stone nobody uses keeps its old list until it is opened.
 - **Rangers (section 37).** Low-level rangers lose full heals: 3% at level 1 and 6% at level 2, against 8.3% for every level before. Pet resurrection costs 5 bandages where it cost 1. In PvP a ranger can chain a heal, a cure and an invisibility fish and bandage a teammate with no wait between them (accepted). Mystic Archers keep the shared fish cooldown and the bandage wait.
-- **Compile state.** The whole tree, sections 18-35 included, compiled with `ecompile -A -w` on 2026-10-28: 1,162 scripts, 0 errors, no new warnings in the touched files. Section 35.4 and the review fixes (31.2 killer erase, 31.3 poison credit and armor, 32.3 window, 30.4 war mode) and the PvP changes (31.3 `pvp_cut`, 31.6 pets, 2026-10-29) were written after that and compiled the same way, 1,162 scripts, 0 errors. Section 36 (`digtreasure.src`), the fixes from the ZH3.0 port review (2026-10-29: `firecontrol` and `poisoncontrol` caster handling, poison immunity and `PoisonedBy`, reward bag fallbacks, `skulls.inc`), section 32.6 (`.champkills`, milestones, `.akill credit`) and section 37 (rangers) were then compiled the same way on 2026-10-29: 1,163 scripts (the new `champkills.src` included), 0 errors, 0 warnings in the touched files. None of sections 18-35 was run in a client. Sections 18-25 were also reviewed (`/code-review`, 2026-10-25).
+- **Compile state.** The whole tree, sections 18-35 included, compiled with `ecompile -A -w` on 2026-10-28: 1,162 scripts, 0 errors, no new warnings in the touched files. Section 35.4 and the review fixes (31.2 killer erase, 31.3 poison credit and armor, 32.3 window, 30.4 war mode) and the PvP changes (31.3 `pvp_cut`, 31.6 pets, 2026-10-29) were written after that and compiled the same way, 1,162 scripts, 0 errors. Section 36 (`digtreasure.src`), the fixes from the ZH3.0 port review (2026-10-29: `firecontrol` and `poisoncontrol` caster handling, poison immunity and `PoisonedBy`, reward bag fallbacks, `skulls.inc`), section 32.6 (`.champkills`, milestones, `.akill credit`) and section 37 (rangers) were then compiled the same way on 2026-10-29: 1,163 scripts (the new `champkills.src` included), 0 errors, 0 warnings in the touched files. Section 38 (town citizens) was compiled the same way on 2026-10-30: 1,163 scripts, 0 errors, 0 warnings in the townstone scripts. None of sections 18-35 was run in a client. Sections 18-25 were also reviewed (`/code-review`, 2026-10-25).
 - **Compiled, not run.** The whole tree was compiled with `ecompile -A -w` on 2026-10-19 (0 errors, no new warnings in the touched files), and `merchant.src` and the two test tools on 2026-10-20 (0 errors, 0 warnings). The spell round (sections 10-14) was compiled with `ecompile -A -w` on 2026-10-22: 1161 scripts, 0 errors, no new warnings in the touched files, and the buff icon round (section 15) on 2026-10-23 with the same result. The section 10.6 balance pass has **not been compiled**. Sections 10-15 were partly exercised on the test shard (jewelry interaction confirmed by a tester); the rest was not run in a client.

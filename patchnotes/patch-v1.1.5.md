@@ -10,12 +10,14 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 
 ## What Changed
 
-## Towns - Mayors Can Resign
+## Towns - Mayors and Citizens
 
 ### Player Impact
 
 - **A mayor can now leave their town.** Until now the "give up your citizenship" button only appeared for ordinary citizens, so a mayor was stuck unless they lost an election or asked staff. The mayor's townstone menu now has **"Resign and leave town"**. After you confirm, you stop being mayor, you leave the town (your name loses its "of <town>"), and the whole shard is told you resigned.
 - **The town can choose a new mayor straight away.** With no mayor, citizens can call an election at once instead of waiting out the two-month cooldown, as long as the town has at least 3 members. An election or poll that is already running carries on, and an election in progress will seat the next mayor.
+- **All your characters can join a town.** Until now a town took only one character per account. Now every character on your account can become a citizen. Each one counts toward the town's population and gets its own vote in elections and polls.
+- **Leaving with one character doesn't affect the others.** Your other characters stay citizens, and their votes stand.
 
 ---
 
@@ -299,7 +301,7 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 
 ## Summary
 
-- Mayors can resign from the townstone with "Resign and leave town"; the town can call a new election straight away.
+- Mayors can resign from the townstone with "Resign and leave town"; the town can call a new election straight away. Every character on an account can join a town, and each one votes.
 - The personal powerhour weekly lock no longer comes back on the same weekday a week later; `.setph`, `.ph` and the Eon-Prism agree.
 - Warrior hearts from before Patch 1.1.4 no longer revive; only a warrior's owner can hand in its heart; a High Priest memory revival costs one point of each stat per death, like a heart.
 - The Eon-Prism works only from your backpack.
