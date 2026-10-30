@@ -216,11 +216,14 @@ endprogram
 // only written when a poisoning lands: a fresh one, or a stronger one that replaces psnDmg. A
 // blocked, equal or weaker poisoning leaves the credit where it is. A landed poisoning with no
 // poisoner (a trap, food, a failed Poisoning) clears it, so nobody is credited for its damage.
+// PoisonedBy (the name) goes with it: death.src's RegisterNPC() falls back to it for a poison
+// death with no KilledBySerial.
 function SetPoisonCredit( who, credit )
 	if( credit.IsA(POLCLASS_MOBILE) and credit != who )
 		SetObjProperty(who, "PoisonedBy", credit.name);
 		SetObjProperty(who, "PoisonedBySerial", credit.serial);
 	else
+		EraseObjProperty(who, "PoisonedBy");
 		EraseObjProperty(who, "PoisonedBySerial");
 	endif
 endfunction
@@ -236,6 +239,11 @@ function PoisonTick( who, dmg, tick_type )
 	if( poisoner.IsA(POLCLASS_MOBILE) and poisoner != who )
 		// No PvP slowdown: poison keeps the PvP damage it had as raw damage.
 		return ApplyTheDamage(who, poisoner, dmg, tick_type, 0);
+	endif
+	// The same attack-type immunity ApplyTheDamage() checks, so a poison-immune mobile resists the
+	// poison whether or not anyone gets the kill. A Thief's ticks (DMGID_NO_RESIST) still pierce it.
+	if( IsImmunedFromThisDamageType(who, dmg, tick_type) )
+		return 0;
 	endif
 	return ApplyRawDamage(who, dmg);
 

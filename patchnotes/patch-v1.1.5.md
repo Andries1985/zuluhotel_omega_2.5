@@ -216,7 +216,9 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
   At 1000 kills that's 2 PowerTomes, 2 Transcendence Scrolls, 2 stat potions, 4 Omega Tokens and 2 presents.
 - **Only your own kills count.** That means the killing blow, from you, your pets or your Warrior for Hire. Kills by your poison count too. Standing near someone else who does the killing earns nothing.
 - **You must still be fighting.** Your last kill at the altar has to be within two hours of the last kill anyone made there. A long champion fight doesn't cost anyone their bag. If you leave an altar and someone else finishes it later, your earlier kills don't pay.
-- **Every character gets their own bag.** It goes into your backpack, or into your bank box if your backpack is full or you have logged out.
+- **See your count with `.champkills`.** Near an active champion altar, it tells you how many of its minions you have slain, how many more you need for a bag or for the next tier, and how long ago your last kill was. If your last kill is more than two hours older than the latest kill at the altar, it warns you that your kills won't pay until you slay another minion.
+- **You are told when your bag grows.** A message tells you when you reach 150 kills at an altar, and again at 300, 500, 750 and 1000.
+- **Every character gets their own bag.** It goes into your backpack, or into your bank box if your backpack is full or you have logged out. If your backpack can't hold everything in it, the whole bag goes to your bank box.
 - **The champion itself drops less, because the bag now carries part of its loot.** Barracoon and Erebus drop 2 PowerTomes, 4 Transcendence Scrolls and 4 stat potions. Rikktor and Nyx drop 3 PowerTomes, 4 Transcendence Scrolls and 5 stat potions. Champions no longer drop Omega Tokens or presents; those are in the bags now. Magic items drop a little less often: 85% for Barracoon and Erebus, 95% for Rikktor and Nyx. The gold rain, the gold on the body, the champion skull and the rest of the loot are unchanged.
 - **Champions from a Champion Relic get no reward bags** and drop the smaller loot above.
 - **The last wave can't end early any more.** A bug could bring the champion out when the final wave was only about a fifth done. You now have to finish it.
@@ -257,6 +259,7 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 
   With 50% protection that's about 115 and 30; with 95% about 40 and 10. The Summoner and the Soul Whisperers hit a little less.
 - **The fields really burn now.** Because of a bug, they hit you with your own skills and barely hurt. Step out of them.
+- **Fields left behind by a dead champion no longer blame another player.** They used to count the first player in the field as the attacker, so a death in them could be logged as that player's kill.
 - **What this means for you:** Mages and high-resist players take much more than before, and Warriors with no resist take less. The elements you have no protection in are now what hurts.
 
 ---
@@ -266,6 +269,18 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 ### Player Impact
 
 - **Level 6 Bards find level 7 chests more often.** Digging up a level 6 treasure map, a Bard has a chance to find a level 7 chest instead. At bard level 6 that chance is now **8%** (it was 6%). Bards of level 1-5 keep 1% per level.
+
+---
+
+## Rangers - Pets and Magic Fish
+
+### Player Impact
+
+- **Taming and pet resurrection get easier with your ranger level.** Each level makes the roll 2 points easier, so level 6 is 12 points easier. With 150 skill against a 150 creature such as a Water or Golden Dragon, a level 6 ranger now succeeds about **80%** of the time (it was about 44%). Calming the creature during a tame gets the same help. You still need the same skill to try.
+- **Resurrecting a pet now uses the 5 bandages it asks for.** It used to take only 1.
+- **Your bandages fully heal a pet more often at higher levels.** The chance is 3% per ranger level, so **18%** at level 6. It used to be about 8% at every level, so level 1 and 2 rangers now get less (3% and 6%) and level 3 about the same (9%).
+- **You can use bandages right after a magic fish.** Other classes still have to wait, as before.
+- **Each kind of magic fish has its own cooldown.** A heal fish no longer stops you eating a cure or invisibility fish, and a cure fish no longer stops a heal fish. Eating the same kind twice still waits as before. Other classes, Mystic Archers included, keep one cooldown for all fish.
 
 ---
 
@@ -304,8 +319,9 @@ Welcome to **Patch 1.1.5**, a small follow-up to 1.1.4. Mayors can finally step 
 - New `.arrows` command counts your arrows and bolts.
 - Player vendors in a city now pay the city wage, 50,000 gold a month; elsewhere it stays 10,000. Champion relics can't be used in a city.
 - The Vortex Beast is a Beholder for slayer weapons.
-- Champion spawns give reward bags by kill count (150 minimum, still fighting in the last two hours); champions drop fewer tomes, scrolls and stat potions and no tokens or presents; relic champions give no bags; the last wave can't end early.
+- Champion spawns give reward bags by kill count (150 minimum, still fighting in the last two hours), `.champkills` shows your count and a message tells you when your bag grows; champions drop fewer tomes, scrolls and stat potions and no tokens or presents; relic champions give no bags; the last wave can't end early.
 - Level 6 Bards have an 8% chance of a level 7 chest from a level 6 treasure map (was 6%).
+- Rangers: taming and pet resurrection get 2 points easier per level (about 80% against a 150 creature at level 6); pet resurrection uses 5 bandages; a bandage fully heals a pet 3% of the time per level (18% at level 6); rangers can bandage right after a magic fish, and each kind of fish has its own cooldown.
 - Poison kills count as yours; Mind Blast and Vengeance do 40% less to players (poison unchanged); Magusbane and Magehunter resist poison and Mind Blast; pets, summons and Warriors for Hire take their owner's PvP damage cuts.
 - A Hunting powerhour doubles gold piles on its own; `.setph` won't start the same type as a server-wide powerhour.
 - Champfire hits everyone the same (about 200 a bolt and 50 a field tick from Rikktor and Nyx), cut only by protection in its element; its fields burn properly.

@@ -17,10 +17,7 @@ function createNextWhiteSkull(altar)
   wskulls := GetObjProperty(altar, "wskulls");
   
   if(white_skull_level == 4)
-    WipeItemsArray(wskulls);
-    wskulls:= {};
-    SetObjProperty(altar, "wskulls", wskulls);
-    EraseObjProperty(altar, "white_skull_level");
+    // createNextRedSkull() clears the white skulls.
     CreateNextRedSkull(altar);
     return;
   endif
@@ -50,12 +47,7 @@ function createNextRedSkull(altar)
   var skulls := array;
   skulls := GetObjProperty(altar, "rskulls");
 
-  var wskulls := array;
-  wskulls := GetObjProperty(altar, "wskulls");
-  WipeItemsArray(wskulls);
-  wskulls:= {};
-  SetObjProperty(altar, "wskulls", wskulls);
-  EraseObjProperty(altar, "white_skull_level");
+  clearWhiteSkulls(altar);
 
   if(lskull==16)
     WipeItemsArray(skulls);

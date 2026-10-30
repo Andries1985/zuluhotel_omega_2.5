@@ -30,18 +30,18 @@ include "include/math";
 var DELAY_BETWEEN_FISH := 20;
 //var DELAY_BETWEEN_FISH := 0;
 
-function CheckIfCanUseFish(character)
-	if(GetObjProperty(character , "#magicfish") and GetObjProperty(character , "#magicfish") > ReadGameClock())
+function CheckIfCanUseFish(character, cooldown_key)
+	if(GetObjProperty(character , cooldown_key) and GetObjProperty(character , cooldown_key) > ReadGameClock())
         SendSysmessage(character , "You must wait until you can eat another magic fish!");
         return 0;
     else
-        SetObjProperty(character , "#magicfish" , ReadGameClock() + DELAY_BETWEEN_FISH);   
+        SetObjProperty(character , cooldown_key , ReadGameClock() + DELAY_BETWEEN_FISH);
         return 1;
     endif
 endfunction
 
-function CanUseFish(character)
-	EraseObjProperty(character , "#magicfish");
+function CanUseFish(character, cooldown_key)
+	EraseObjProperty(character , cooldown_key);
 endfunction
 
 program use_magicfish( who, fish )
@@ -62,13 +62,21 @@ program use_magicfish( who, fish )
 	// indicate the bottle is in use.
 	if(!ReserveItem(fish)) return; endif
 
+	// Patch 1.1.5: each kind of fish has its own cooldown for a ranger, so a cure or invisibility
+	// fish can follow a heal fish. Everyone else shares one cooldown across all fish, which also
+	// holds off their bandages (healing.src).
+	var spellnum := GetObjProperty( fish, "spellnum" );
+	var cooldown_key := "#magicfish";
+	if( GetObjProperty(who, CLASSEID_RANGER) )
+		cooldown_key := "#magicfish" + CInt(spellnum);
+	endif
+
     // check if can drink.
-    if(!CheckIfCanUseFish(who))
+    if(!CheckIfCanUseFish(who, cooldown_key))
 		return;
 	endif
 
 	// get the cprops we need before destroying the fish
-	var spellnum := GetObjProperty( fish, "spellnum" );
 	var spellsound := GetObjProperty( fish, "spellsound" );
 	var spelleffect := GetObjProperty( fish, "spelleffect" );
 	var miscprop1 := GetObjProperty( fish, "miscprop1" );
@@ -232,7 +240,7 @@ program use_magicfish( who, fish )
     Detach();
 	ReleaseItem( fish );
     Sleep(DELAY_BETWEEN_FISH);
-    CanUseFish(who);
+    CanUseFish(who, cooldown_key);
 endprogram
 
 function GetModAmountFish( who, miscprop1 ) 

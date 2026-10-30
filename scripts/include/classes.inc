@@ -28,6 +28,8 @@ const HALF_BONUS_PER_LEVEL := 0.125;
 const THIEF_BACKSTAB_BONUS_DAMAGE := 10;
 const THIEF_AMBUSH_BONUS_DAMAGE := 10;
 const RANGER_LEVEL_ARCHERY_RANGE_BONUS := 1; 		//1 range per level further range before 1/4 base damage done
+const RANGER_LEVEL_TAME_BONUS := 2;		// Patch 1.1.5: tame and pet resurrection difficulty lower by this per level
+const RANGER_LEVEL_FULL_HEAL_CHANCE := 3;	// Patch 1.1.5: % chance per level that a bandage fully heals a pet
 
 const CRAFTER_REPAIR_DIFF_BONUS := 2.5; // used in util/repair.inc
 

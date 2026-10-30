@@ -218,59 +218,15 @@ function TryToHeal( who , patient , bandages )
 
 	//Added *1.5 extra healing on base... from 145 to 200 avg heals at max
 	
+	// A ranger's bandage fully heals the pet RANGER_LEVEL_FULL_HEAL_CHANCE % per level (Patch 1.1.5,
+	// 18% at level 6). It used to be a flat 2 in 24, whatever the level.
 	if( GetObjProperty( who , CLASSEID_RANGER ) )
-			case(RandomInt(24))
-			0 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			1 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			2 :
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			3 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			4 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			5 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			6 :
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			7 : 
-				healed := GetMaxHp(patient);
-			8 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			9 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			10 :
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			11 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			12 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			13 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			14 :
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			15 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			16 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			17 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			18 :
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			19 : 
-				healed := GetMaxHp(patient);
-			20 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			21 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			22 :
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-			23 : 
-				healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-		endcase
-		//healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
-	else 
+		if( RandomInt(100) < RANGER_LEVEL_FULL_HEAL_CHANCE * CInt(ranger) )
+			healed := GetMaxHp(patient);
+		else
+			healed := Trunc( ( Cint( healed * count / 10 ) * 2 ), 0);
+		endif
+	else
 		healed := Trunc( ( Cint( healed * count / 10 ) * 1.5 ), 0);
 	endif
 	
@@ -393,7 +349,8 @@ function ResAnimal( who , patient , bandages )
 		return;
 	endif
 
-	var diff := tameat+10;
+	// A ranger's level makes the roll easier, as in taming (Patch 1.1.5). The vet needed to try is unchanged.
+	var diff := tameat + 10 - ( RANGER_LEVEL_TAME_BONUS * CInt(ranger) );
 	var points 	:= tameat * POINTS_MULTIPLIER;
 
 	if( count < 1 )
@@ -457,7 +414,8 @@ function ResAnimal( who , patient , bandages )
 
 	EraseObjProperty(patient, "#Ressing");
 
-	SubtractAmount( bandages , BANDAGES_TO_HEAL );
-	CreateItemInBackpack( who , BLOODY_BANDAGE , BANDAGES_TO_HEAL );
+	// Patch 1.1.5: uses the BANDAGES_TO_RES it asks for; it used to take BANDAGES_TO_HEAL (1).
+	SubtractAmount( bandages , BANDAGES_TO_RES );
+	CreateItemInBackpack( who , BLOODY_BANDAGE , BANDAGES_TO_RES );
 
 endfunction

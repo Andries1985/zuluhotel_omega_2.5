@@ -62,13 +62,17 @@ program field_control( item )
 		var victims := ListMobilesNearLocation( fx , fy , fz , 0, realm );
 		victims := SmartAoE(creator, victims);
 		foreach mobile in victims
-			if(!creator) 
-				creator:=mobile; 
+			// With no caster (gone, e.g. a dead champion's fields), each victim takes the hit as its
+			// own. Making the first victim the caster blamed that player for the others' damage
+			// and deaths.
+			var source := creator;
+			if( !source )
+				source := mobile;
 			endif
 			if(!mobile.multi)
 				PerformAction( mobile , ANIM_HIT );
 				PlayObjectCenteredEffectEx( mobile, 0x371A, 0 , 10, 0, 5);
-				ApplyElementalDamage( creator, mobile, 4, dmg, element, unresistable );
+				ApplyElementalDamage( source, mobile, 4, dmg, element, unresistable );
 			endif
 		endforeach
 		Sleepms( DELAY_BETWEEN_HITS_MS );
