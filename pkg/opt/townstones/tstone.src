@@ -1148,7 +1148,10 @@ votos := cint(GetObjProperty(item, "votos"));
 timer := cint(GetObjProperty(item, "timer"));
 Pleibicito_Result := GetObjProperty(item, "Pleibicito_Result");
 nextcitizenelection := cint(GetObjProperty(item, "nextcitizenelection"));
-citizen := GetObjProperty(item, "citizen");
+// One entry per character (citizens.inc); an old per-account list is converted here, which also
+// recounts the population.
+citizen := LoadCitizenList(item);
+populacao := cint(GetObjProperty(item, "populacao"));
 
 if (!citizen)
 	citizen := { };
@@ -1308,8 +1311,6 @@ endfunction
 
 function CanselCityzenship(who, item)
 
-var i;
-
 if(eleicoes or pleibicito)
 
 	var newlist := {};
@@ -1326,7 +1327,7 @@ if(eleicoes or pleibicito)
 
 	foreach runa in EnumerateItemsInContainer( item )
 		if (runa.objtype == 0xa321)
-			if (GetObjProperty(runa, "serial") == who.acctname)
+			if (IsVoteRuneOf(runa, who))
 				destroyitem(runa);
 				votos := votos -1;
 				SetObjProperty(item, "votos", votos);
@@ -1358,14 +1359,8 @@ endif
 
 set_critical(1);
 
-var removed_from_citizen := 0;
-for(i:=1; i<=citizen.size(); i:=i+1)
-	if(citizen[i] == who.acctname)
-		citizen.erase(i);
-		removed_from_citizen := 1;
-		break;
-	endif
-endfor
+// Only this character leaves; the account's other characters stay citizens.
+var removed_from_citizen := RemoveCitizenChar(citizen, who.serial);
 
 if(removed_from_citizen and populacao > 0)
 	populacao := populacao -1;
@@ -1394,15 +1389,14 @@ endif
 
 set_critical(1);
 
-foreach dude in citizen
-	if (dude == who.acctname)
-		SendSysMessage(who, "You can't join more than once");
-		set_critical(0);
-		return;
-	endif
-endforeach
+// Patch 1.1.5: one entry per character, so every character on an account can join.
+if (IsCitizenChar(citizen, who.serial))
+	SendSysMessage(who, "You can't join more than once");
+	set_critical(0);
+	return;
+endif
 
-citizen.append(who.acctname);
+citizen.append(NewCitizenEntry(who));
 SetObjProperty(item, "citizen", citizen);
 SetObjProperty(who, "town", cint(stone));
 populacao := populacao +1;

@@ -3,6 +3,8 @@ use uo;
 use os;
 use datafile;
 
+include ":townstone:citizens";
+
 const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
 
 program textcmd_cleartownmembers(who)
@@ -32,10 +34,8 @@ program textcmd_cleartownmembers(who)
 		town_name := "Unknown Town";
 	endif
 
-	var citizens := GetObjProperty(stone, "citizen");
-	if(!citizens)
-		citizens := {};
-	endif
+	// One entry per character (citizens.inc); an old per-account list is converted first.
+	var citizens := LoadCitizenList(stone);
 
 	var scanned_characters := 0;
 	var cleared_members := 0;
@@ -54,7 +54,7 @@ program textcmd_cleartownmembers(who)
 				scanned_characters := scanned_characters + 1;
 
 				var char_town := CInt(GetObjProperty(character, "town"));
-				if((char_town == town_id) or IsCitizenAccount(citizens, character.acctname))
+				if((char_town == town_id) or IsCitizenChar(citizens, character.serial))
 					EraseObjProperty(character, "town");
 					cleared_members := cleared_members + 1;
 
@@ -179,22 +179,6 @@ function SyncTownstoneState(stone)
 	elem.SetProp("citizen", citizen_state);
 
 	UnloadDataFile(TOWNSTONE_DATAFILE);
-endfunction
-
-
-function IsCitizenAccount(citizen_list, account_name)
-	if(!citizen_list or !account_name)
-		return 0;
-	endif
-
-	var i;
-	for(i := 1; i <= citizen_list.size(); i := i + 1)
-		if(Lower(CStr(citizen_list[i])) == Lower(CStr(account_name)))
-			return 1;
-		endif
-	endfor
-
-	return 0;
 endfunction
 
 
