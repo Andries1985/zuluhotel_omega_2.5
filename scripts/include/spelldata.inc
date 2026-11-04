@@ -102,7 +102,9 @@ const ERROR_MSG_WRONG_EQUIPMENT		:= "Your hands must be free to cast spells.";
 
 // unresistable skips Resisted(): no Magic Resistance roll and no class or Eval Int adjustment, so
 // only the elemental protection below reduces the damage (champfire, npccastspells.inc).
-function ApplyElementalDamage( caster, cast_on, circle, dmg, element, unresistable := 0 )
+// prot_percent: the share of the target's elemental protection that counts (champfire uses 50),
+// taken before a Mage caster's piercing.
+function ApplyElementalDamage( caster, cast_on, circle, dmg, element, unresistable := 0, prot_percent := 100 )
 
 	if(caster.dead) return; endif
 	if(cast_on.dead) return; endif
@@ -114,6 +116,9 @@ function ApplyElementalDamage( caster, cast_on, circle, dmg, element, unresistab
 	endif
 
 	var resultprot := GetResultingElementalProt( cast_on, element );
+	if( prot_percent != 100 )
+		resultprot := CInt( resultprot * prot_percent / 100 );
+	endif
 	//var magebonusdamage := 0;
 	//var mageequippedint := 0;
 	//var newdamage := 0;

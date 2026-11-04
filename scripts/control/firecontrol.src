@@ -44,6 +44,11 @@ program field_control( item )
 			dice := CStr( GetObjProperty( item , "FieldDice" ) );
 		endif
 		var unresistable := CInt( GetObjProperty( item , "Unresistable" ) );
+		// The share of the victim's elemental protection that counts (champfire's fields: 50).
+		var prot_percent := 100;
+		if( GetObjProperty( item , "ProtPercent" ) != error )
+			prot_percent := CInt( GetObjProperty( item , "ProtPercent" ) );
+		endif
 
 		// Look the caster up again each tick: a monster's fields can outlive it, and a dead NPC's
 		// reference can't be used. Once it is gone the fallback below applies.
@@ -72,7 +77,7 @@ program field_control( item )
 			if(!mobile.multi)
 				PerformAction( mobile , ANIM_HIT );
 				PlayObjectCenteredEffectEx( mobile, 0x371A, 0 , 10, 0, 5);
-				ApplyElementalDamage( source, mobile, 4, dmg, element, unresistable );
+				ApplyElementalDamage( source, mobile, 4, dmg, element, unresistable, prot_percent );
 			endif
 		endforeach
 		Sleepms( DELAY_BETWEEN_HITS_MS );

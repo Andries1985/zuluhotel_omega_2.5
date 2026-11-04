@@ -1,3 +1,5 @@
+use cfgfile;
+
 include "include/client";
 include "include/random";
 include "util/bank";	// FindBankBox - the reward bag of an offline player or a full backpack
@@ -114,15 +116,18 @@ function GoldRainSpotZ(corpse, x, y)
 endfunction
 
 // Champion reward bags - Patch 1.1.5. When an altar's champion dies, every character with at least
-// CHAMP_BAG_MIN_KILLS kills on the altar's tally (death.inc) gets a bag, provided their last kill
-// came no more than CHAMP_CREDIT_WINDOW seconds before the newest kill on the tally: kills made at
-// an altar that was then left to decay don't pay when someone else finishes it. The newest kill,
-// not the champion's death, is the reference, because the champion fight itself adds no kills.
+// CHAMP_BAG_MIN_KILLS kills inside the altar's credit window gets a bag. A kill counts for the
+// window (CHAMP_CREDIT_WINDOW minutes, or the spawn's CreditWindow in spawns.cfg) and then drops
+// off. The window stops moving when the champion appears (the altar's ChampionAt), so a long
+// champion fight costs nobody their kills, and leftover minions slain during it still add to the
+// count. Holding a spawn below its next skull, or letting it decay and starting over, banks no
+// kills. The tally is wiped when the altar goes quiet (control.src), and paid and erased when the
+// champion dies (death.inc).
 // The tiers add up, so a 1000-kill bag holds everything below it. Part of the tomes, scrolls and
 // stat potions, and all the presents and vanity tokens, moved here from the champion's corpse
 // (nlootgroup.cfg lootgroups 150 and 151).
 const CHAMP_BAG_MIN_KILLS := 150;
-const CHAMP_CREDIT_WINDOW := 7200;
+const CHAMP_CREDIT_WINDOW := 60;	// minutes; a spawn's CreditWindow in spawns.cfg overrides it
 const CHAMP_BAG_GRAPHIC := 0x0E76;
 const CHAMP_REWARD_COLOR := 53;
 
@@ -131,16 +136,83 @@ function ChampionBagTiers()
 	return array{CHAMP_BAG_MIN_KILLS, 300, 500, 750, 1000};
 endfunction
 
-// The systime of the newest kill on an altar's tally, the reference for CHAMP_CREDIT_WINDOW.
-function ChampionTallyNewest(players)
+// The credit window of the altar's spawn, in minutes.
+function ChampionCreditWindow(altar)
 
-	var newest := 0;
-	foreach entry in players
-		if(TypeOf(entry) == "Array" and CInt(entry[2]) > newest)
-			newest := CInt(entry[2]);
+	var cfg := ReadConfigFile(":champspawns:spawns");
+	var window := CInt(GetConfigInt(cfg[GetObjProperty(altar, "spawn")], "CreditWindow"));
+	if(window <= 0)
+		window := CHAMP_CREDIT_WINDOW;
+	endif
+	return window;
+
+endfunction
+
+// The first minute (systime / 60) whose kills still count on the altar's tally. The window ends now,
+// or when the champion appeared once it has.
+function ChampionCreditStart(altar)
+
+	var ending := CInt(GetObjProperty(altar, "ChampionAt"));
+	if(!ending)
+		ending := POLCore().systime;
+	endif
+	return CInt(ending / 60) - ChampionCreditWindow(altar) + 1;
+
+endfunction
+
+// A character's tally entry as {minute, kills} buckets, oldest first (death.inc). An entry from an
+// earlier Patch 1.1.5 build, {kills, systime of the last kill}, becomes one bucket at that kill. A
+// bare count from before Patch 1.1.5 has no time and becomes one bucket at now_minute, so an altar
+// that was mid-run at the deploy still pays for it.
+function ChampionTallyBuckets(entry, now_minute)
+
+	if(TypeOf(entry) == "Integer")
+		if(entry > 0)
+			return array{array{now_minute, entry}};
+		endif
+		return array{};
+	elseif(TypeOf(entry) != "Array")
+		return array{};
+	elseif(entry.size() and TypeOf(entry[1]) == "Integer")
+		return array{array{CInt(CInt(entry[2]) / 60), CInt(entry[1])}};
+	endif
+	return entry;
+
+endfunction
+
+// The kills in buckets from start_minute on.
+function ChampionKillsSince(buckets, start_minute)
+
+	var kills := 0;
+	foreach bucket in buckets
+		if(CInt(bucket[1]) >= start_minute)
+			kills := kills + CInt(bucket[2]);
 		endif
 	endforeach
-	return newest;
+	return kills;
+
+endfunction
+
+// The altar has gone quiet (control.src): every kill on its tally is lost. Online characters who
+// had kills inside the window are told.
+function WipeChampionTally(altar)
+
+	var players := GetObjProperty(altar, "players");
+	SetObjProperty(altar, "players", dictionary);
+	if(TypeOf(players) != "Dictionary")
+		return;
+	endif
+
+	var start := ChampionCreditStart(altar);
+	var now_minute := CInt(POLCore().systime / 60);
+	foreach serial in (players.keys())
+		if(ChampionKillsSince(ChampionTallyBuckets(players[serial], now_minute), start))
+			var who := SystemFindObjectBySerial(CInt(serial));
+			if(who and who.connected)
+				SendSysMessage(who, "The champion altar has gone quiet: your kills toward a Champion Reward Bag are lost.", FONT_NORMAL, 33);
+			endif
+		endif
+	endforeach
 
 endfunction
 
@@ -154,26 +226,17 @@ function GiveRewardsToPlayers(altar)
 	// An offline player's bag goes to their bank box.
 	set_script_option(SCRIPTOPT_CAN_ACCESS_OFFLINE_MOBILES, 1);
 
-	// Entries are {kills, systime of the last kill}. One from before Patch 1.1.5 is a bare count
-	// with no time: an altar that was mid-run at the deploy. It counts as recent, so those kills
-	// still pay.
-	var newest := ChampionTallyNewest(players);
-
+	var start := ChampionCreditStart(altar);
+	var now_minute := CInt(POLCore().systime / 60);
 	foreach serial in (players.keys())
-		var entry := players[serial];
-		if(TypeOf(entry) == "Integer")
-			entry := array{entry, newest};
-		endif
-		if(TypeOf(entry) == "Array")
-			if(newest - CInt(entry[2]) <= CHAMP_CREDIT_WINDOW)
-				var who := SystemFindObjectBySerial(CInt(serial), SYSFIND_SEARCH_OFFLINE_MOBILES);
-				if(who)
-					var kills := CInt(entry[1]);
-					if(kills >= CHAMP_BAG_MIN_KILLS)
-						GiveChampionBag(who, kills);
-					elseif(who.connected)
-						SendSysMessage(who, "You slew " + kills + " of the champion's minions. It takes " + CHAMP_BAG_MIN_KILLS + " to earn a Champion Reward Bag.", FONT_NORMAL, CHAMP_REWARD_COLOR);
-					endif
+		var kills := ChampionKillsSince(ChampionTallyBuckets(players[serial], now_minute), start);
+		if(kills)
+			var who := SystemFindObjectBySerial(CInt(serial), SYSFIND_SEARCH_OFFLINE_MOBILES);
+			if(who)
+				if(kills >= CHAMP_BAG_MIN_KILLS)
+					GiveChampionBag(who, kills);
+				elseif(who.connected)
+					SendSysMessage(who, "You slew " + kills + " of the champion's minions. It takes " + CHAMP_BAG_MIN_KILLS + " to earn a Champion Reward Bag.", FONT_NORMAL, CHAMP_REWARD_COLOR);
 				endif
 			endif
 		endif

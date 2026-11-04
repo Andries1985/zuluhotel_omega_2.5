@@ -27,8 +27,9 @@ function ProcessChampionCorpse(corpse)
   DestroyItem(corpse);
 endfunction
 
-// One kill for the reward bag tally, kept on the altar as players[serial] := {kills, systime of
-// the last kill}. Only kills while the altar is active count, and only by players (pets and
+// One kill for the reward bag tally, kept on the altar as players[serial] := {minute, kills}
+// buckets (minute = systime / 60). Buckets older than the credit window are dropped as kills come
+// in (rewards.inc). Only kills while the altar is active count, and only by players (pets and
 // Warriors for Hire count for their master, see ApplyTheDamage).
 function RegisterChampionSpawnKill(corpse)
   if(!GetObjProperty(corpse, "iChampSpawn"))
@@ -49,6 +50,9 @@ function RegisterChampionSpawnKill(corpse)
     return;
   endif
 
+  var now_minute := CInt(POLCore().systime / 60);
+  var start := ChampionCreditStart(altar);
+
   // Many spawn corpses can be processed at once (area spells): no other script may change the
   // tally between the read and the write.
   set_critical(1);
@@ -57,21 +61,27 @@ function RegisterChampionSpawnKill(corpse)
     players := dictionary;
   endif
 
-  // An entry written before Patch 1.1.5 is the bare kill count.
-  var entry := players[killer.serial];
-  var kills;
-  if(TypeOf(entry) == "Array")
-    kills := CInt(entry[1]);
+  // Drop the minutes that no longer count, then add this kill to the current minute.
+  var buckets := array{};
+  foreach bucket in ChampionTallyBuckets(players[killer.serial], now_minute)
+    if(CInt(bucket[1]) >= start)
+      buckets.append(bucket);
+    endif
+  endforeach
+  var last := buckets.size();
+  if(last and CInt(buckets[last][1]) == now_minute)
+    buckets[last] := array{now_minute, CInt(buckets[last][2]) + 1};
   else
-    kills := CInt(entry);
+    buckets.append(array{now_minute, 1});
   endif
-  players[killer.serial] := array{kills + 1, POLCore().systime};
+  players[killer.serial] := buckets;
 
   SetObjProperty(altar, "players", players);
   set_critical(0);
 
-  // Patch 1.1.5: tell the player when the bag grows. .champkills shows the count at any time.
-  kills := kills + 1;
+  // Patch 1.1.5: tell the player when the bag grows. .champkills shows the count at any time. Kills
+  // dropping off the window can bring a tier back, and the message with it.
+  var kills := ChampionKillsSince(buckets, start);
   if(killer.connected and kills in ChampionBagTiers())
     var msg := " kills at this altar: your Champion Reward Bag grows.";
     if(kills == CHAMP_BAG_MIN_KILLS)

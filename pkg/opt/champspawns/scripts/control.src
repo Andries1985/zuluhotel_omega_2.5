@@ -8,13 +8,17 @@ use cfgfile;
 include ":champspawns:skulls";
 include ":champspawns:altar";
 include ":champspawns:spawning";
+include ":champspawns:rewards";
 include "include/client";
 
 program control(altar)
   var creatures := array;
 
   var kills:=0, totalKills:=0, nextLvlUp := 20;
-  if(POLCORE().systime > GetObjProperty(altar, "NextActiv"))
+  // Patch 1.1.5: only an altar that isn't running. A running altar's NextActiv is in the past too
+  // (set when its last run ended), so every server restart used to wipe the kill tally, the
+  // champion and the completed flag in the middle of a run.
+  if(!CInt(GetObjProperty(altar, "active")) and POLCORE().systime > GetObjProperty(altar, "NextActiv"))
     DeactivateAltar(altar);    //erases any junk prop that might've passed by in the itemdesc
     ActivateAltar(altar);    //and starts it
   endif
@@ -51,6 +55,11 @@ program control(altar)
             if (killPercent>20)
               clearWhiteSkulls(altar);
             else
+              // Patch 1.1.5: the altar goes quiet when it loses its last red skull, or has a quiet
+              // window with none left. Every kill on its tally is lost (rewards.inc).
+              if (CInt(GetObjProperty(altar, "wave")) <= 1)
+                WipeChampionTally(altar);
+              endif
               destroyLastRedSkull(altar);
             endif
             nextLvlUp := 20;

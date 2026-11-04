@@ -15,23 +15,20 @@ program textcmd_champkills(who)
 		return;
 	endif
 
-	// The tally is players[serial] := {kills, systime of the last kill} (death.inc). An entry from
-	// before Patch 1.1.5 is a bare count with no time; it pays as recent (GiveRewardsToPlayers).
+	// The tally is players[serial] := {minute, kills} buckets (death.inc); only the minutes inside
+	// the altar's credit window count (rewards.inc).
 	var players := GetObjProperty(altar, "players");
 	if(TypeOf(players) != "Dictionary")
 		players := dictionary;
 	endif
-	var entry := players[who.serial];
-	var kills := 0, last := 0;
-	if(TypeOf(entry) == "Array")
-		kills := CInt(entry[1]);
-		last := CInt(entry[2]);
-	elseif(TypeOf(entry) == "Integer")
-		kills := entry;
-	endif
+	var now_minute := CInt(POLCore().systime / 60);
+	var window := ChampionCreditWindow(altar);
+	var start := ChampionCreditStart(altar);
+	var buckets := ChampionTallyBuckets(players[who.serial], now_minute);
+	var kills := ChampionKillsSince(buckets, start);
 
 	if(!kills)
-		SendSysMessage(who, "You haven't slain any of this champion's minions yet. It takes " + CHAMP_BAG_MIN_KILLS + " to earn a Champion Reward Bag.", FONT_NORMAL, CHAMP_REWARD_COLOR);
+		SendSysMessage(who, "You haven't slain any of this champion's minions in the last " + FormatDuration(window * 60) + ". It takes " + CHAMP_BAG_MIN_KILLS + " to earn a Champion Reward Bag.", FONT_NORMAL, CHAMP_REWARD_COLOR);
 		return;
 	endif
 
@@ -43,7 +40,7 @@ program textcmd_champkills(who)
 		endif
 	endforeach
 
-	var msg := "You have slain " + kills + " of this champion's minions.";
+	var msg := "You have slain " + kills + " of this champion's minions in the last " + FormatDuration(window * 60) + ".";
 	if(kills < CHAMP_BAG_MIN_KILLS)
 		msg := msg + " " + (CHAMP_BAG_MIN_KILLS - kills) + " more to earn a Champion Reward Bag.";
 	elseif(next)
@@ -53,11 +50,21 @@ program textcmd_champkills(who)
 	endif
 	SendSysMessage(who, msg, FONT_NORMAL, CHAMP_REWARD_COLOR);
 
-	if(last)
-		SendSysMessage(who, "Your last kill here was " + FormatAgo(POLCore().systime - last) + " ago.", FONT_NORMAL, CHAMP_REWARD_COLOR);
-		if(ChampionTallyNewest(players) - last > CHAMP_CREDIT_WINDOW)
-			SendSysMessage(who, "That was more than " + (CHAMP_CREDIT_WINDOW / 3600) + " hours before the latest kill at this altar. Slay another minion here or these kills won't pay.", FONT_NORMAL, 33);
+	if(GetObjProperty(altar, "ChampionAt"))
+		SendSysMessage(who, "The champion has appeared: your count is locked in, and minions you slay now still add to it.", FONT_NORMAL, CHAMP_REWARD_COLOR);
+		return;
+	endif
+
+	// A minute's kills count until window minutes after it.
+	foreach bucket in buckets
+		if(CInt(bucket[1]) >= start)
+			SendSysMessage(who, "Your oldest " + CInt(bucket[2]) + " kills here drop off in " + FormatDuration((CInt(bucket[1]) + window - now_minute) * 60) + ".", FONT_NORMAL, CHAMP_REWARD_COLOR);
+			break;
 		endif
+	endforeach
+
+	if(CInt(GetObjProperty(altar, "wave")) <= 1)
+		SendSysMessage(who, "This altar is down to its last red skull or less. If ten minutes pass with little killing here, it goes quiet and every kill on it is lost.", FONT_NORMAL, 33);
 	endif
 
 endprogram
@@ -78,7 +85,7 @@ function FindNearestActiveAltar(who)
 
 endfunction
 
-function FormatAgo(seconds)
+function FormatDuration(seconds)
 
 	var minutes := CInt(seconds / 60);
 	if(minutes < 1)

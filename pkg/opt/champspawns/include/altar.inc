@@ -44,6 +44,7 @@ function ActivateAltar(altar)
 
   SetObjProperty(altar, "active", 1);
   SetObjProperty(altar, "players", dictionary);
+  EraseObjProperty(altar, "ChampionAt");
 endfunction
 
 function DeactivateAltar(altar)
@@ -61,4 +62,5 @@ function DeactivateAltar(altar)
   EraseObjProperty(altar, "#completed");
   EraseObjProperty(altar, "active");
   EraseObjProperty(altar, "champ");
+  EraseObjProperty(altar, "ChampionAt");
 endfunction
