@@ -50,6 +50,16 @@ Always check Discord announcements for all the patch notes.
 
 ---
 
+## Merchants - More Crafted Items Sell
+
+### Player Impact
+
+- **Merchants now buy 84 crafted items they used to refuse.** That includes the carpentry furniture deeds (ovens, forges, looms, beds, statues, stone furniture, fireplaces and more, up to 215 gold), metal chests, brass boxes and barrels, bridles, drinks and doughs, tinker parts, glass flasks, vials and goblets, clay mugs, plates and basins, silverware, scales, pitchforks, sledge hammers and the alchemical symbols.
+- **Prices follow the materials:** about 1 gold per ingot, log, hide, glass or clay used, plus 5. They are always less than buying those materials from a merchant.
+- **Still not bought:** keys, kindling, bandages and crafter boosts.
+
+---
+
 ## Sanctuary and Antidote - Poison Immunity
 
 ### Player Impact
@@ -308,6 +318,7 @@ Always check Discord announcements for all the patch notes.
 - Warrior hearts from before Patch 1.1.4 no longer revive; only a warrior's owner can hand in its heart; a High Priest memory revival costs one point of each stat per death, like a heart.
 - The Eon-Prism works only from your backpack.
 - Empty keyrings sell for 1 gold through "sell all" or "sell bag"; keyrings with keys on them are refused.
+- Merchants buy 84 more crafted items, from furniture deeds to glassware and tinker parts, at about 1 gold per material plus 5.
 - Sanctuary and Antidote no longer switch off your poison immunity jewelry when they end; Antidote protects its target; immunity (1-6) and duration (2-10 minutes) follow the caster's class level only; Dispel removes them.
 - Dragon Skin is a timed buff (protection 1-6 and 2-10 minutes by bard level, 20 stamina per person); it uses the higher of your gear and the song instead of adding; Dispel removes it; the stuck and stacking bugs are fixed.
 - Reactive Armor can be dispelled and has a buff icon.

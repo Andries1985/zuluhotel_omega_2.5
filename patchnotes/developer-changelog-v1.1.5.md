@@ -1,9 +1,9 @@
 # Developer Changelog - v1.1.5
-**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `b3fa183` -> `b5bcf55` (sections 30-35, 2026-10-27 to 29) -> `e950d4d` (section 36) -> `3fe7a49` (port review fixes, 32.6, 37, 2026-10-29) -> `b644df4` (section 38, 2026-10-30) -> `4bafd6a` + working tree (sections 32.7, 35.5, 39, 2026-11-03)  
+**Range:** `4abd02c` (last patchnotes commit of v1.1.4) -> `b3fa183` -> `b5bcf55` (sections 30-35, 2026-10-27 to 29) -> `e950d4d` (section 36) -> `3fe7a49` (port review fixes, 32.6, 37, 2026-10-29) -> `b644df4` (section 38, 2026-10-30) -> `4bafd6a` (section 39, 2026-10-31) + working tree (sections 32.7, 35.5, 40, 2026-11-03)  
 **Branch:** Patch-1.1.5  
-**Date:** 2026-10-18 to 2026-11-03 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20; spell protections, Reactive Armor and Beastal Bond 2026-10-21/22; buff icons, `.newmobedit` and the NPC world-save fix 2026-10-23; class-level balance pass, NPC songs and spell lists, NPC area targeting, `.newmobedit` NPC pages, the Townsfolk type, `.npclist`, `.newiteminfo` and the use-script config 2026-10-25, `a5c79d1`; Warrior for Hire targeting, `.arrows`, vendor wages and the Vortex Beast 2026-10-27, `b3fa183`; the live log review fixes, kill credit, champion reward bags and loot, and powerhour gold 2026-10-27/28, champfire and the PvP cuts 2026-10-28/29, `b5bcf55`; the treasure map bard chance 2026-10-29, `e950d4d`; the champion credit window, quiet altars and restarts, the champfire retune and the class armor graphics 2026-11-03, working tree)  
+**Date:** 2026-10-18 to 2026-11-03 (mayor resignation 2026-10-18; ZH3.0 3.1.4 review-fix port, keyrings and test-tool cache restore 2026-10-19/20; spell protections, Reactive Armor and Beastal Bond 2026-10-21/22; buff icons, `.newmobedit` and the NPC world-save fix 2026-10-23; class-level balance pass, NPC songs and spell lists, NPC area targeting, `.newmobedit` NPC pages, the Townsfolk type, `.npclist`, `.newiteminfo` and the use-script config 2026-10-25, `a5c79d1`; Warrior for Hire targeting, `.arrows`, vendor wages and the Vortex Beast 2026-10-27, `b3fa183`; the live log review fixes, kill credit, champion reward bags and loot, and powerhour gold 2026-10-27/28, champfire and the PvP cuts 2026-10-28/29, `b5bcf55`; the treasure map bard chance 2026-10-29, `e950d4d`; the crafted item buy prices 2026-10-31, `4bafd6a`; the champion credit window, quiet altars and restarts, the champfire retune and the class armor graphics 2026-11-03, working tree)  
 **Commits in range:** 6 with content (`d11f181`, `ea4722a`, `2587db3`, `07e7bc6`, `ccc8d27`, `a5c79d1`), the merge `fd57000` of #345, plus merge commits that carry only 1.1.4 work (`git diff 4abd02c 469834b` is empty); see section 2.  
-**Files changed:** 43 code files modified, 1 renamed (`newmobedit.src`, admin -> gm) and 3 new includes (`scripts/include/spellprots.inc`, `scripts/include/buffs.inc`, `pkg/opt/versebook/include/beastalbond.inc`) in `4abd02c..fd57000`. In the working tree: 4 files for section 10.6 (`sanctuary.src`, `antidote.src`, `Dragon_Skin.src`, `spellprots.inc`), 32 files and 1 new include (`scripts/include/npcspellnames.inc`) for sections 18-25, plus this release's 3 `patchnotes/` files; those all landed in `a5c79d1`. In the working tree after `a5c79d1`: 5 files modified (`warrior.src`, `areas.inc`, `playermerchant.src`, `npcdesc.cfg`, `command_synopses.cfg`) and 1 new command (`scripts/textcmd/player/arrows.src`) for sections 26-29, plus the 3 `patchnotes/` files; those landed in `b3fa183`. After `b3fa183`: 52 files modified for sections 30-35, plus the 3 `patchnotes/` files, in `b5bcf55`; `digtreasure.src` (section 36) and the 3 `patchnotes/` files in `e950d4d`. In the working tree: 5 files for the ZH3.0 port review fixes (sections 31.3, 32.2, 32.3, 32.5, 35.4), 3 files modified (`death.inc`, `rewards.inc`, `scripts/textcmd/admin/akill.src`), `command_synopses.cfg` and 1 new command (`scripts/textcmd/player/champkills.src`) for section 32.6, 5 files for section 37, and the 3 `patchnotes/` files; those landed in `3fe7a49`. In the working tree: 6 files modified and 1 new include (`pkg/opt/townstones/citizens.inc`) for section 38, plus the 3 `patchnotes/` files; those landed in `b644df4`. In the working tree after `4bafd6a`: 12 files modified for sections 32.7, 35.5 and 39 (`config/npcdesc.cfg`, `pkg/opt/champspawns/config/spawns.cfg`, `altar.inc`, `death.inc`, `rewards.inc`, `spawning.inc`, `scripts/control.src`, `scripts/textcmd/player/champkills.src`, `scripts/control/firecontrol.src`, `scripts/include/npccastspells.inc`, `spelldata.inc`, `itemutil.inc`), plus the 3 `patchnotes/` files. The full list is section 41. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
+**Files changed:** 43 code files modified, 1 renamed (`newmobedit.src`, admin -> gm) and 3 new includes (`scripts/include/spellprots.inc`, `scripts/include/buffs.inc`, `pkg/opt/versebook/include/beastalbond.inc`) in `4abd02c..fd57000`. In the working tree: 4 files for section 10.6 (`sanctuary.src`, `antidote.src`, `Dragon_Skin.src`, `spellprots.inc`), 32 files and 1 new include (`scripts/include/npcspellnames.inc`) for sections 18-25, plus this release's 3 `patchnotes/` files; those all landed in `a5c79d1`. In the working tree after `a5c79d1`: 5 files modified (`warrior.src`, `areas.inc`, `playermerchant.src`, `npcdesc.cfg`, `command_synopses.cfg`) and 1 new command (`scripts/textcmd/player/arrows.src`) for sections 26-29, plus the 3 `patchnotes/` files; those landed in `b3fa183`. After `b3fa183`: 52 files modified for sections 30-35, plus the 3 `patchnotes/` files, in `b5bcf55`; `digtreasure.src` (section 36) and the 3 `patchnotes/` files in `e950d4d`. In the working tree: 5 files for the ZH3.0 port review fixes (sections 31.3, 32.2, 32.3, 32.5, 35.4), 3 files modified (`death.inc`, `rewards.inc`, `scripts/textcmd/admin/akill.src`), `command_synopses.cfg` and 1 new command (`scripts/textcmd/player/champkills.src`) for section 32.6, 5 files for section 37, and the 3 `patchnotes/` files; those landed in `3fe7a49`. In the working tree: 6 files modified and 1 new include (`pkg/opt/townstones/citizens.inc`) for section 38, plus the 3 `patchnotes/` files; those landed in `b644df4`. `4bafd6a`: 5 `itemdesc.cfg` files for section 39. In the working tree after it: 12 files modified for sections 32.7, 35.5 and 40 (`config/npcdesc.cfg`, `pkg/opt/champspawns/config/spawns.cfg`, `altar.inc`, `death.inc`, `rewards.inc`, `spawning.inc`, `scripts/control.src`, `scripts/textcmd/player/champkills.src`, `scripts/control/firecontrol.src`, `scripts/include/npccastspells.inc`, `spelldata.inc`, `itemutil.inc`), plus the 3 `patchnotes/` files. The full list is section 42. `d11f181` also touched `patchnotes/patch-v1.1.4.md` (release date and one heading); that is a 1.1.4 document fix, not 1.1.5 content.
 
 > Scope was computed against `4abd02c`, the last commit that edited the 1.1.4 notes, not `master`.
 > `archcure.src`, `archprot.src`, `nightsight.src`, `owlsight.src` and `angelicaura.src` show as modified in `git status` but differ from HEAD only in line endings: their per-file NPC branches were folded into `SmartBoost()` (section 20.4).
@@ -50,10 +50,11 @@
 36. [Treasure Maps - Level 6 Bards Find Level 7 Chests More Often](#36-treasure-maps---level-6-bards-find-level-7-chests-more-often)
 37. [Rangers - Taming, Pet Resurrection, Full Heals, Magic Fish](#37-rangers---taming-pet-resurrection-full-heals-magic-fish)
 38. [Townstones - Every Character Can Be a Citizen](#38-townstones---every-character-can-be-a-citizen)
-39. [Class Armor Restrictions - Missing Graphics](#39-class-armor-restrictions---missing-graphics)
-40. [ZH3.0 3.1.4 - Reviewed, Not Ported](#40-zh30-314---reviewed-not-ported)
-41. [Exhaustive File-by-File Change List](#41-exhaustive-file-by-file-change-list)
-42. [Risk and Regression Notes](#42-risk-and-regression-notes)
+39. [Merchants - Buy Prices for Crafted Items](#39-merchants---buy-prices-for-crafted-items)
+40. [Class Armor Restrictions - Missing Graphics](#40-class-armor-restrictions---missing-graphics)
+41. [ZH3.0 3.1.4 - Reviewed, Not Ported](#41-zh30-314---reviewed-not-ported)
+42. [Exhaustive File-by-File Change List](#42-exhaustive-file-by-file-change-list)
+43. [Risk and Regression Notes](#43-risk-and-regression-notes)
 
 ---
 
@@ -63,7 +64,7 @@ Patch 1.1.5 is a follow-up to 1.1.4.
 
 Section 3 gives the mayor a way out of a town. The townstone gump's "give up your citizenship" button (3000) was only drawn on the citizen screen, and the mayor branch is tested before the citizen branch, so a mayor had no in-game way to leave short of losing an election or a staff `.removetownmember`. ZH3.0 ported this commit to its own 3.1.4 as theme 11.
 
-Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 40.
+Sections 4-7 port the fixes from ZH3.0 commit `9fbf224` (Patch 3.1.4, "theme 13", a `/code-review` round over 3.1.4) that apply to 2.5. ZH3.0's changelog itself notes that "ZH2.5 has the same code for the powerhour lock, both heart findings, the Eon-Prism, the damage compare and the memory-revival stats". Each one was checked against 2.5's current code first, and all were still present unchanged. The heart and memory-revival rules follow the choices made for ZH3.0: refuse unstamped hearts, destroy a heart handed in by anyone but the master, and apply stat loss on a memory revival. The warrior AI's itemdesc lookup caching (section 6) came with them. What was looked at and left out is in section 41.
 
 Section 8 makes keyrings sellable. They already had `VendorBuysFor 1`, but they are `newbie 1` and the merchant AI refuses newbied items. They stay newbie, and the merchant's own sell paths accept empty ones.
 
@@ -87,7 +88,9 @@ Section 35 retunes `champfire` (Rikktor, Nyx, The Summoner, the Soul Whisperers)
 
 Section 36 raises a level 6 Bard's chance of digging a level 7 chest from a level 6 treasure map to 8%.
 
-Sections 32.7, 35.5 and 39 come from a review on 2026-11-03. The first reward bag design let a group farm unlimited credit: the tally never expired and survived the altar decaying, so a group could hold a spawn just under its next red skull (143 kills per 10-minute window at level 0) and give four characters 1,000 kills each. Kills now count for a rolling window that freezes when the champion appears, an altar that goes quiet wipes its tally, and a server restart no longer resets a running altar. Champfire is retuned (bolt halved, field ticks doubled, half of the target's protection counts) and Rikktor and Nyx cast it twice as often. Four armor and shield graphics were missing from the class restriction lists.
+Section 39 (2026-10-31) gives NPC merchants a buy price for 84 crafted items they used to refuse.
+
+Sections 32.7, 35.5 and 40 come from a review on 2026-11-03. The first reward bag design let a group farm unlimited credit: the tally never expired and survived the altar decaying, so a group could hold a spawn just under its next red skull (143 kills per 10-minute window at level 0) and give four characters 1,000 kills each. Kills now count for a rolling window that freezes when the champion appears, an altar that goes quiet wipes its tally, and a server restart no longer resets a running altar. Champfire is retuned (bolt halved, field ticks doubled, half of the target's protection counts) and Rikktor and Nyx cast it twice as often. Four armor and shield graphics were missing from the class restriction lists.
 
 ## 2. Commit Timeline
 
@@ -106,8 +109,8 @@ Sections 32.7, 35.5 and 39 come from a review on 2026-11-03. The first reward ba
 | `e950d4d` | 2026-10-29 | Treasure map: level 6 bards get 8% at a level 7 chest, patch notes | 36 |
 | `3fe7a49` | 2026-10-29 | ZH3.0 port review fixes, `.champkills` and kill milestones, ranger taming, pet healing and magic fish, patch notes | 31.3, 32.2, 32.3, 32.5, 32.6, 35.4, 37 |
 | `b644df4` | 2026-10-30 | Townstones: one citizen per character, each character votes, patch notes | 38 |
-| `4bafd6a` | 2026-10-31 | Vendor buy prices for crafted items vendors refused | - (not covered in these notes) |
-| *(next commit)* | 2026-11-03 | Champion credit window, quiet altars, restart fix, champfire retune, class armor graphics, patch notes | 32.7, 35.5, 39 |
+| `4bafd6a` | 2026-10-31 | Vendor buy prices for crafted items vendors refused | 39 |
+| *(next commit)* | 2026-11-03 | Champion credit window, quiet altars, restart fix, champfire retune, class armor graphics, patch notes | 32.7, 35.5, 40 |
 
 ---
 
@@ -1018,7 +1021,27 @@ The datafile sync (`townstone_data` `citizen` prop) stores whatever is on the st
 
 ---
 
-## 39. Class Armor Restrictions - Missing Graphics
+## 39. Merchants - Buy Prices for Crafted Items
+
+**Commit:** `4bafd6a` (2026-10-31)
+**Files:** `config/itemdesc.cfg`, `pkg/std/carpentry/itemdesc.cfg`, `pkg/std/cooking/itemdesc.cfg`, `pkg/std/tailoring/itemdesc.cfg`, `pkg/std/tinkering/itemdesc.cfg`
+
+84 craftable items had no `VendorBuysFor`, or no itemdesc entry at all, so NPC merchants would not buy them.
+
+- **Pricing:** 1 gold per ingot, log, hide, glass or clay in the recipe, plus 5; cloth at 0.2 a piece. Every price is capped below what the materials cost from an NPC, so buying materials to craft and sell is no gold loop.
+- **50 existing entries get a `VendorBuysFor` line:**
+  - 36 carpentry deeds, 11 to 215 gold: music stand, water trough, ovens, forges, anvil, beds, looms, dress form, painting, statues, stone furniture, fireplaces, vats and the rest of the deed list.
+  - The metal chest (`0x0E40`, 20), barrel (`0x0E77`, 12) and brass box (`0x0E80`, 15).
+  - The bridle (20), the pitcher of cider and two other drinks (2-5), the five doughs, batters and crusts (1 each), the pot of wax (1) and the skull candle base (2).
+- **34 new itemdesc entries** for crafted objtypes that had none, each with `DestroyScript ::maindestroy` and a price:
+  - Carpentry: tambourine `0x0E9E` (22), barrel lid (3), barrel staves (4).
+  - Tinkering: springs, axle, clock parts, barrel hoops and tap (1-4); empty flasks, phial and vials (11-15); goblets (8); clay mug, plate and basin (6-8); silverware (10); scales (20); flask stand (9); pitchfork (20); sledge hammer (9); the eleven alchemical symbol foci (30 each).
+  - None of the 34 objtypes is defined in any other `itemdesc.cfg` (checked 2026-11-03).
+- **Left unpriced on purpose:** keys (explicit `VendorBuysFor 0`), kindling, bandages and the crafter boosts.
+
+---
+
+## 40. Class Armor Restrictions - Missing Graphics
 
 **File:** `scripts/include/itemutil.inc`
 
@@ -1032,7 +1055,7 @@ The graphic comments now name every entry that was marked "unused": flipped grap
 
 ---
 
-## 40. ZH3.0 3.1.4 - Reviewed, Not Ported
+## 41. ZH3.0 3.1.4 - Reviewed, Not Ported
 
 ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
@@ -1045,7 +1068,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 41. Exhaustive File-by-File Change List
+## 42. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -1097,6 +1120,11 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `scripts/include/smarttamedaoe.inc` | 20.2 | `SmartFilterTamedTargets()` is a wrapper for `NpcSmartAoE()` |
 | `pkg/opt/spawnpoint/textcmd/gm/newmobedit.src` | 21 | AI / Loot and Flags pages; staged Custom Hits Level and Spells; tame 0 writes `untamable`; provoke CProp; right-click close; dead fields removed |
 | `pkg/std/provocation/provocation.src`, `pkg/std/peacemaking/peacemaking.src` | 21.4 | A `provoke` CProp overrides the template; 0 = immune |
+| `config/itemdesc.cfg` | 39 | `VendorBuysFor` on the metal chest (20), barrel (12) and brass box (15) |
+| `pkg/std/carpentry/itemdesc.cfg` | 39 | `VendorBuysFor` on 36 furniture deeds; new tambourine `0x0E9E`, barrel lid, barrel staves entries |
+| `pkg/std/cooking/itemdesc.cfg` | 39 | `VendorBuysFor` on 3 drinks and the 5 doughs, batters and crusts |
+| `pkg/std/tailoring/itemdesc.cfg` | 39 | `VendorBuysFor 20` on the bridle |
+| `pkg/std/tinkering/itemdesc.cfg` | 39 | `VendorBuysFor` on the pot of wax and skull; 31 new entries (tinker parts, glassware, clayware, silverware, scales, flask stand, pitchfork, sledge hammer, alchemical symbols) |
 | `config/npcdesc.cfg` | 22, 29, 33, 35.5 | 64 Townsfolk-header templates `Type sHuman` -> `sTownsfolk`; header comment; `vortexbeast` -> `sBeholder`, moved to "Beholder Boss's" (29); `magicitemchance` barracoon / erebuschaosgod 85, rikktor / nyxseductress 95 (33); a second `spell champfire` for rikktor and nyxseductress (35.5) |
 | `pkg/std/tracking/tracking.src` | 22 | Townsfolk category |
 | `pkg/std/healing/healing.src` | 22, 37 | Townsfolk in the Healing (`withheal`) list; rangers skip the magic fish wait |
@@ -1145,7 +1173,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 | `pkg/std/treasuremap/digtreasure.src` | 36 | `lvl7_chance`: level 6 bards get 8% at a level 7 chest from a level 6 map |
 | `scripts/textcmd/admin/akill.src` | 32.6 | `.akill <range> credit`: champion minions count as the caller's kills, logged; new `AKillMobile()` |
 | `scripts/textcmd/player/champkills.src` | 32.6, 32.7 | New - `.champkills`: your tally at the nearest active altar and the next tier; 32.7: the windowed count, when the oldest kills drop off, the locked-in and last-red-skull messages; `FormatDuration()` |
-| `scripts/include/itemutil.inc` | 39 | Orc Helm in the bone list, Female Studded and Studded Bustier in the studded list, flipped Order Shield in both shield lists; graphic comments name the old "unused" entries |
+| `scripts/include/itemutil.inc` | 40 | Orc Helm in the bone list, Female Studded and Studded Bustier in the studded list, flipped Order Shield in both shield lists; graphic comments name the old "unused" entries |
 | `pkg/opt/townstones/citizens.inc` | 38 | New - per-character citizen entries `{serial, account}`, `LoadCitizenList()` conversion, `IsVoteRuneOf()` |
 | `pkg/opt/townstones/tstone.inc` | 38 | `voteto()`: one vote per character (`serial` = character, new `account` prop) |
 | `pkg/opt/townstones/electionwatch.src` | 38 | `LoadCitizenList()` |
@@ -1158,7 +1186,7 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 
 ---
 
-## 42. Risk and Regression Notes
+## 43. Risk and Regression Notes
 
 - **Old warrior hearts stop working (section 5.1).** The 1.1.4 notes promised that pre-1.1.4 hearts "still work until a new death writes a stamped backup". That promise is withdrawn: every unstamped heart now crumbles at the priest. Owners of those warriors can still use "resurrect warrior" if they have a backup. If they have neither, the warrior is gone. Worth a line in the Discord announcement.
 - **Hearts must be handed in by the master character (section 5.2).** A heart handed in by an alt on the same account, or by a friend, is destroyed, not returned. Stamped hearts handed in by anyone else already crumbled, so in practice only the message changes for them. The player notes say it plainly.
@@ -1208,12 +1236,13 @@ ZH3.0 `9fbf224` (Patch 3.1.4) was read theme by theme against 2.5.
 - **Gold piles double under one powerhour (section 34).** Every `Stack` drop (mostly corpse gold) is twice as big during any Hunting powerhour, including champion corpse gold (60,000 -> 120,000). More gold enters the economy during powerhours.
 - **`.setph` refuses the server-wide type (section 34).** Including during the 2-minute warning, so a player who opened the gump before the warning is refused at Okay.
 - **`modsetup.inc` now re-equips package-AI NPCs (section 30.3).** With `::npcdesc` found, any package AI other than the Warrior for Hire that uses `modsetup.inc` is re-equipped from its `equip` template on each AI start, as script-AI NPCs already were.
+- **More crafted items turn into gold (section 39).** Crafters can sell 84 more item types. Prices stay below NPC material cost, but crafters who gather their own materials can now turn furniture deeds (up to 215 gold) and alchemical symbols (30) into gold. Not tried in a client: which merchants list each item in the "sell" window is untested.
 - **Champfire changes every matchup (section 35).** Mages and Paladins with high resist take several times more than before (a level 6 Mage's bolt goes from ~31 to ~200 against no protection); a Warrior with no resist takes about half (~380 to ~200). The Summoner and the Soul Whisperers go from about a third of that to ~170. Elemental protection is now the only defence, so players will notice which elements they lack. Tune `CHAMPFIRE_BOLT_DICE` / `CHAMPFIRE_FIELD_DICE` / `CHAMPFIRE_PROT_PERCENT` in `npccastspells.inc`.
 - **The champfire retune (section 35.5) cuts the bolt but makes the fields much stronger.** Against no protection the bolt halves (~200 -> ~101). Against 95% it rises (~40 -> ~61), because only half of protection counts. A field tick goes from ~10 to ~60 at 95%, every 5 seconds for 60 seconds, and Rikktor and Nyx cast champfire twice as often. Players with elemental protection between 100% and 235% no longer heal from it. A player who stands in the fields for the whole minute takes 12 ticks: about 700 at 95% protection, about 1,200 with none.
-- **Class armor restrictions (section 39).** Mages and Paladins wearing an Orc Helm, Bladesingers and Paladins wearing Female Studded or a Studded Bustier, and shield-restricted classes holding a flipped Order Shield lose them at their next class check (`AssignClasse()` -> `unequipRestrictedItems()`).
+- **Class armor restrictions (section 40).** Mages and Paladins wearing an Orc Helm, Bladesingers and Paladins wearing Female Studded or a Studded Bustier, and shield-restricted classes holding a flipped Order Shield lose them at their next class check (`AssignClasse()` -> `unequipRestrictedItems()`).
 - **Fire fields look their caster up each tick (section 35.1).** This applies to every fire field, players' included: one `SystemFindObjectBySerial()` per field per 5 seconds.
 - **`.akill <range> credit` on live (section 32.6).** An Administrator can earn reward bags with it. Every use is logged with the number of minions credited.
 - **Town citizens (section 38).** Population and votes now count characters: one player with several characters can make up the 3-member election minimum and cast several votes (accepted). Populations rise when the old lists are converted, since every citizen character on an account now counts. A town whose stone nobody uses keeps its old list until it is opened.
 - **Rangers (section 37).** Low-level rangers lose full heals: 3% at level 1 and 6% at level 2, against 8.3% for every level before. Pet resurrection costs 5 bandages where it cost 1. In PvP a ranger can chain a heal, a cure and an invisibility fish and bandage a teammate with no wait between them (accepted). Mystic Archers keep the shared fish cooldown and the bandage wait.
-- **Compile state.** The whole tree, sections 18-35 included, compiled with `ecompile -A -w` on 2026-10-28: 1,162 scripts, 0 errors, no new warnings in the touched files. Section 35.4 and the review fixes (31.2 killer erase, 31.3 poison credit and armor, 32.3 window, 30.4 war mode) and the PvP changes (31.3 `pvp_cut`, 31.6 pets, 2026-10-29) were written after that and compiled the same way, 1,162 scripts, 0 errors. Section 36 (`digtreasure.src`), the fixes from the ZH3.0 port review (2026-10-29: `firecontrol` and `poisoncontrol` caster handling, poison immunity and `PoisonedBy`, reward bag fallbacks, `skulls.inc`), section 32.6 (`.champkills`, milestones, `.akill credit`) and section 37 (rangers) were then compiled the same way on 2026-10-29: 1,163 scripts (the new `champkills.src` included), 0 errors, 0 warnings in the touched files. Section 38 (town citizens) was compiled the same way on 2026-10-30: 1,163 scripts, 0 errors, 0 warnings in the townstone scripts. Sections 32.7, 35.5 and 39 were compiled with `ecompile -A -w` on 2026-11-03: 1,163 scripts, 0 errors, 0 warnings in `control.src`, `misc/death.src`, `champkills.src` and `firecontrol.src`. `rikktor.src` has 1 warning, which predates this patch (unused `opponent` in `spellcombatevent.inc`). None of the three was run in a client. None of sections 18-35 was run in a client. Sections 18-25 were also reviewed (`/code-review`, 2026-10-25).
+- **Compile state.** The whole tree, sections 18-35 included, compiled with `ecompile -A -w` on 2026-10-28: 1,162 scripts, 0 errors, no new warnings in the touched files. Section 35.4 and the review fixes (31.2 killer erase, 31.3 poison credit and armor, 32.3 window, 30.4 war mode) and the PvP changes (31.3 `pvp_cut`, 31.6 pets, 2026-10-29) were written after that and compiled the same way, 1,162 scripts, 0 errors. Section 36 (`digtreasure.src`), the fixes from the ZH3.0 port review (2026-10-29: `firecontrol` and `poisoncontrol` caster handling, poison immunity and `PoisonedBy`, reward bag fallbacks, `skulls.inc`), section 32.6 (`.champkills`, milestones, `.akill credit`) and section 37 (rangers) were then compiled the same way on 2026-10-29: 1,163 scripts (the new `champkills.src` included), 0 errors, 0 warnings in the touched files. Section 38 (town citizens) was compiled the same way on 2026-10-30: 1,163 scripts, 0 errors, 0 warnings in the townstone scripts. Section 39 is config only; its new objtypes were checked against every other `itemdesc.cfg` for duplicates. Sections 32.7, 35.5 and 40 were compiled with `ecompile -A -w` on 2026-11-03: 1,163 scripts, 0 errors, 0 warnings in `control.src`, `misc/death.src`, `champkills.src` and `firecontrol.src`. `rikktor.src` has 1 warning, which predates this patch (unused `opponent` in `spellcombatevent.inc`). None of the three was run in a client. None of sections 18-35 was run in a client. Sections 18-25 were also reviewed (`/code-review`, 2026-10-25).
 - **Compiled, not run.** The whole tree was compiled with `ecompile -A -w` on 2026-10-19 (0 errors, no new warnings in the touched files), and `merchant.src` and the two test tools on 2026-10-20 (0 errors, 0 warnings). The spell round (sections 10-14) was compiled with `ecompile -A -w` on 2026-10-22: 1161 scripts, 0 errors, no new warnings in the touched files, and the buff icon round (section 15) on 2026-10-23 with the same result. The section 10.6 balance pass has **not been compiled**. Sections 10-15 were partly exercised on the test shard (jewelry interaction confirmed by a tester); the rest was not run in a client.
