@@ -339,10 +339,12 @@ endfunction
 
 // Champfire hits for fixed dice, whatever the caster's skills or the target's resist and class:
 // only the elemental protection of the rolled element reduces it (ApplyElementalDamage's
-// unresistable). About 170 for the bolt and 42 a field tick before protection; a level 6 Mage
-// caster pierces 18 points of protection, which makes those about 200 and 50 against none.
-const CHAMPFIRE_BOLT_DICE  := "10d10+115";
-const CHAMPFIRE_FIELD_DICE := "8d8+6";
+// unresistable), and only half of that protection counts (CHAMPFIRE_PROT_PERCENT). About 85 for
+// the bolt and 84 a field tick before protection. A level 6 Mage caster (Rikktor, Nyx) then
+// pierces 18 points, so both land at about 100 against no protection and 58 against 100%.
+const CHAMPFIRE_BOLT_DICE  := "5d10+58";
+const CHAMPFIRE_FIELD_DICE := "16d8+12";
+const CHAMPFIRE_PROT_PERCENT := 50;
 
 function SpecialChampFire(caster, cast_on, element)
 	var circle := 8;
@@ -382,10 +384,10 @@ function SpecialChampFire(caster, cast_on, element)
 		dmg := dmg * 2;
 	endif
 
-	ApplyElementalDamage( caster , cast_on , circle , dmg , element , 1 );
+	ApplyElementalDamage( caster , cast_on , circle , dmg , element , 1 , CHAMPFIRE_PROT_PERCENT );
 
-	// Each field gets the caster as its Creator, its dice and Unresistable next to its other
-	// props: firecontrol reads them when it starts. Without a Creator, firecontrol made the victim
+	// Each field gets the caster as its Creator, its dice, Unresistable and ProtPercent next to its
+	// other props: firecontrol reads them every tick. Without a Creator, firecontrol made the victim
 	// the caster, so the fields hit with the victim's own skills and the PvP reduction.
 	var fields := {};
 	var counter := 0;
@@ -399,6 +401,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -408,6 +411,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x+2 , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -417,6 +421,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -426,6 +431,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x-2 , cast_on.y , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -435,6 +441,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
@@ -445,6 +452,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -454,6 +462,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x+2 , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -463,6 +472,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -472,6 +482,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x-2 , cast_on.y+1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -481,6 +492,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
@@ -491,6 +503,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -500,6 +513,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x+2 , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -509,6 +523,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -518,6 +533,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x-2 , cast_on.y-1 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -527,6 +543,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 
 	
 	counter := counter  + 1;
@@ -538,6 +555,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y+2 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -547,6 +565,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y+2 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -556,6 +575,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x , cast_on.y-2 , cast_on.z , 0x398c , 1, cast_on.realm );
@@ -566,6 +586,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x+1 , cast_on.y-2 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -575,6 +596,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 	counter := counter  + 1;
 	fields[counter] := CreateItemAtLocation( cast_on.x-1 , cast_on.y-2 , cast_on.z , 0x398c , 1, cast_on.realm );
 	fields[counter].color := elecolor;
@@ -584,6 +606,7 @@ function SpecialChampFire(caster, cast_on, element)
 	SetObjProperty( fields[counter] , "Creator" , caster.serial );
 	SetObjProperty( fields[counter] , "FieldDice" , CHAMPFIRE_FIELD_DICE );
 	SetObjProperty( fields[counter] , "Unresistable" , 1 );
+	SetObjProperty( fields[counter] , "ProtPercent" , CHAMPFIRE_PROT_PERCENT );
 
 	MoveObjectToLocation( cast_on, cast_on.x, cast_on.y, cast_on.z, cast_on.realm, MOVEOBJECT_FORCELOCATION);
 	var buffParms := {fields, duration};

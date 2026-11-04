@@ -50,6 +50,16 @@ Always check Discord announcements for all the patch notes.
 
 ---
 
+## Merchants - More Crafted Items Sell
+
+### Player Impact
+
+- **Merchants now buy 84 crafted items they used to refuse.** That includes the carpentry furniture deeds (ovens, forges, looms, beds, statues, stone furniture, fireplaces and more, up to 215 gold), metal chests, brass boxes and barrels, bridles, drinks and doughs, tinker parts, glass flasks, vials and goblets, clay mugs, plates and basins, silverware, scales, pitchforks, sledge hammers and the alchemical symbols.
+- **Prices follow the materials:** about 1 gold per ingot, log, hide, glass or clay used, plus 5. They are always less than buying those materials from a merchant.
+- **Still not bought:** keys, kindling, bandages and crafter boosts.
+
+---
+
 ## Sanctuary and Antidote - Poison Immunity
 
 ### Player Impact
@@ -198,7 +208,7 @@ Always check Discord announcements for all the patch notes.
 
 ### Player Impact
 
-- **Champion spawns hand out reward bags.** Kill at least **150** of an altar's creatures and you get a Champion Reward Bag when its champion dies. The more you kill, the more is in it:
+- **Champion spawns hand out reward bags.** Kill at least **150** of an altar's creatures in the hour before its champion appears and you get a Champion Reward Bag when the champion dies. The more you kill, the more is in it:
 
 | Your kills | What the bag adds |
 |---|---|
@@ -210,8 +220,10 @@ Always check Discord announcements for all the patch notes.
 
   At 1000 kills that's 2 PowerTomes, 2 Transcendence Scrolls, 2 stat potions, 4 Omega Tokens and 2 presents.
 - **Only your own kills count.** That means the killing blow, from you, your pets or your Warrior for Hire. Kills by your poison count too. Standing near someone else who does the killing earns nothing.
-- **You must still be fighting.** Your last kill at the altar has to be within two hours of the last kill anyone made there. A long champion fight doesn't cost anyone their bag. If you leave an altar and someone else finishes it later, your earlier kills don't pay.
-- **See your count with `.champkills`.** Near an active champion altar, it tells you how many of its minions you have slain, how many more you need for a bag or for the next tier, and how long ago your last kill was. If your last kill is more than two hours older than the latest kill at the altar, it warns you that your kills won't pay until you slay another minion.
+- **Only your last hour of kills counts.** Each kill counts toward your bag for one hour, then drops off your count. When the champion appears your count is locked in, so a long champion fight costs you nothing, and minions you slay during the fight still add to it. A normal run fits easily inside the hour. Holding a spawn back to pile up kills, or letting it fall and starting over, no longer adds up.
+- **If an altar goes quiet, every kill on it is lost.** An altar goes quiet when it loses its last red skull, or when ten minutes pass with little killing while it has none. Everyone's count at that altar starts again from zero.
+- **A server restart no longer resets a running altar.** It used to wipe everyone's kill count in the middle of a run. Your count, the skulls and the champion now carry through a restart.
+- **See your count with `.champkills`.** Near an active champion altar, it tells you how many of its minions you have slain in the last hour, how many more you need for a bag or for the next tier, and when your oldest kills drop off. It warns you when the altar is down to its last red skull, and tells you when the champion has appeared and your count is locked in.
 - **You are told when your bag grows.** A message tells you when you reach 150 kills at an altar, and again at 300, 500, 750 and 1000.
 - **Every character gets their own bag.** It goes into your backpack, or into your bank box if your backpack is full or you have logged out. If your backpack can't hold everything in it, the whole bag goes to your bank box.
 - **The champion itself drops less, because the bag now carries part of its loot.** Barracoon and Erebus drop 2 PowerTomes, 4 Transcendence Scrolls and 4 stat potions. Rikktor and Nyx drop 3 PowerTomes, 4 Transcendence Scrolls and 5 stat potions. Champions no longer drop Omega Tokens or presents; those are in the bags now. Magic items drop a little less often: 85% for Barracoon and Erebus, 95% for Rikktor and Nyx. The gold rain, the gold on the body, the champion skull and the rest of the loot are unchanged.
@@ -248,12 +260,18 @@ Always check Discord announcements for all the patch notes.
 ### Player Impact
 
 - **Champfire is the elemental fireball that Rikktor, Nyx, The Summoner and the Soul Whisperers rain on everyone nearby.** Each cast is one of six elements: earth, water, fire, air, necro or holy. It hits every player in range with a bolt and leaves burning fields around them.
-- **Magic Resistance and your class no longer change how hard it hits.** Only your protection against that cast's element does. From Rikktor or Nyx, against no protection in that element:
-  - the bolt hits for about **200**
-  - each tick of the fields hits for about **50**, every 5 seconds while you stand in them
+- **Magic Resistance and your class no longer change how hard it hits.** Only your protection against that cast's element does, and champfire counts only **half** of it. From Rikktor or Nyx, the bolt and each tick of the fields hit about the same:
 
-  With 50% protection that's about 115 and 30; with 95% about 40 and 10. The Summoner and the Soul Whisperers hit a little less.
-- **The fields really burn now.** Because of a bug, they hit you with your own skills and barely hurt. Step out of them.
+| Your protection in that element | Bolt | Each field tick |
+|---|---|---|
+| None | about 100 | about 100 |
+| 50% | about 80 | about 78 |
+| 95% | about 61 | about 60 |
+| 100% | about 58 | about 57 |
+
+  Even 100% protection no longer makes you immune or heals you. The Summoner and the Soul Whisperers hit a little less: about 85 with no protection and 43 with 100%.
+- **The fields really burn now.** Because of a bug, they hit you with your own skills and barely hurt. They tick every 5 seconds while you stand in them, about as hard as the bolt. Step out of them.
+- **Rikktor and Nyx cast champfire about twice as often.**
 - **Fields left behind by a dead champion no longer blame another player.** They used to count the first player in the field as the attacker, so a death in them could be logged as that player's kill.
 - **What this means for you:** Mages and high-resist players take much more than before, and Warriors with no resist take less. The elements you have no protection in are now what hurts.
 
@@ -289,6 +307,7 @@ Always check Discord announcements for all the patch notes.
 - **Your death log no longer names an old killer.** A death with no killer could be logged as the work of whoever killed you last time.
 - **Some items that should stack now do.**
 - **The Omega Cache item list opens quickly on a big cache**, instead of stalling.
+- **A few armor pieces slipped past class restrictions.** The Orc Helm now counts as bone armor (Mages and Paladins can't wear it), Female Studded Armor and the Studded Bustier count as studded leather (Bladesingers and Paladins can't wear them), and the Order Shield turned the other way counts as a shield for every class that can't use shields. If you are wearing one your class can't use, it comes off.
 
 ---
 
@@ -299,6 +318,7 @@ Always check Discord announcements for all the patch notes.
 - Warrior hearts from before Patch 1.1.4 no longer revive; only a warrior's owner can hand in its heart; a High Priest memory revival costs one point of each stat per death, like a heart.
 - The Eon-Prism works only from your backpack.
 - Empty keyrings sell for 1 gold through "sell all" or "sell bag"; keyrings with keys on them are refused.
+- Merchants buy 84 more crafted items, from furniture deeds to glassware and tinker parts, at about 1 gold per material plus 5.
 - Sanctuary and Antidote no longer switch off your poison immunity jewelry when they end; Antidote protects its target; immunity (1-6) and duration (2-10 minutes) follow the caster's class level only; Dispel removes them.
 - Dragon Skin is a timed buff (protection 1-6 and 2-10 minutes by bard level, 20 stamina per person); it uses the higher of your gear and the song instead of adding; Dispel removes it; the stuck and stacking bugs are fixed.
 - Reactive Armor can be dispelled and has a buff icon.
@@ -314,12 +334,12 @@ Always check Discord announcements for all the patch notes.
 - New `.arrows` command counts your arrows and bolts.
 - Player vendors in a city now pay the city wage, 50,000 gold a month; elsewhere it stays 10,000. Champion relics can't be used in a city.
 - The Vortex Beast is a Beholder for slayer weapons.
-- Champion spawns give reward bags by kill count (150 minimum, still fighting in the last two hours), `.champkills` shows your count and a message tells you when your bag grows; champions drop fewer tomes, scrolls and stat potions and no tokens or presents; relic champions give no bags; the last wave can't end early.
+- Champion spawns give reward bags by kill count (150 minimum, counting your kills in the hour before the champion appears); an altar that goes quiet loses every kill, and a restart no longer resets it; `.champkills` shows your count and a message tells you when your bag grows; champions drop fewer tomes, scrolls and stat potions and no tokens or presents; relic champions give no bags; the last wave can't end early.
 - Level 6 Bards have an 8% chance of a level 7 chest from a level 6 treasure map (was 6%).
 - Rangers: taming and pet resurrection get 2 points easier per level (about 80% against a 150 creature at level 6); pet resurrection uses 5 bandages; a bandage fully heals a pet 3% of the time per level (18% at level 6); rangers can bandage right after a magic fish, and each kind of fish has its own cooldown.
 - Poison kills count as yours; Mind Blast and Vengeance do 40% less to players (poison unchanged); Magusbane and Magehunter resist poison and Mind Blast; pets, summons and Warriors for Hire take their owner's PvP damage cuts.
 - A Hunting powerhour doubles gold piles on its own; `.setph` won't start the same type as a server-wide powerhour.
-- Champfire hits everyone the same (about 200 a bolt and 50 a field tick from Rikktor and Nyx), cut only by protection in its element; its fields burn properly.
-- Custom monsters are dressed again, paralyze and energy fields work in every land, monsters stop freezing after chasing ghosts, more items stack, and big Omega Caches list quickly.
+- Champfire hits everyone the same, cut only by half your protection in its element: from Rikktor and Nyx about 100 a bolt or field tick with no protection and about 58 with 100%; Rikktor and Nyx cast it twice as often; its fields burn properly.
+- Custom monsters are dressed again, paralyze and energy fields work in every land, monsters stop freezing after chasing ghosts, more items stack, and big Omega Caches list quickly. The Orc Helm, Female Studded Armor, the Studded Bustier and the turned Order Shield follow class armor restrictions.
 
 Thanks for playing Zuluhotel Omega 2.5.
