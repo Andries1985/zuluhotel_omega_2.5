@@ -14,6 +14,7 @@ use cfgfile;
 
 include "food";
 include ":gumps:yesno";
+include "include/harvesttiles";
 
 Const SOUND_EFFECT_SPLASH	:= 0x0026;
 Const SOUND_EFFECT_MOO		:= 0x007a;
@@ -214,30 +215,9 @@ endfunction
 ///////////////////
 
 function check_for_water (character, theobj)
-	//static water tiles
-	if( (theobj.objtype >=0x346E) and (theobj.objtype <= 0x3485) )
-		return 1;
-	elseif( (theobj.objtype >= 0x3494) and (theobj.objtype <= 0x34AB) )
-		return 1;
-	elseif( (theobj.objtype >= 0x34B8) and (theobj.objtype <= 0x34BB) )
-		return 1;
-	elseif( (theobj.objtype >= 0x34BD) and (theobj.objtype <= 0x34C0) )
-		return 1;
-	elseif( (theobj.objtype >= 0x34C2) and (theobj.objtype <= 0x34C5) )
-		return 1;
-	elseif( (theobj.objtype >= 0x34C7) and (theobj.objtype <= 0x34CA) )
-		return 1;
-	elseif( (theobj.objtype >= 0x1796) and (theobj.objtype <= 0x17B2) )
-		return 1;
-	//water troughs
-	elseif ((theobj.item.objtype >= 0xb41) and (theobj.item.objtype <= 0xb44))
-		return 1;
-	//water barrel and tub
-	elseif (theobj.item.objtype == 0x0e7b or theobj.item.objtype == 0x154d)
-		return 1;
-	else
-		return 0;
-	endif
+	// A real water static or water land at the spot, or a placed trough, tub or
+	// barrel. The graphic the client sends is not trusted.
+	return IsWater( theobj, character.realm );
 endfunction
 
 

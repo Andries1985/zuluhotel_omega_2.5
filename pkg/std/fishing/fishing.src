@@ -32,7 +32,6 @@ program use_fishpole( character , pole )
 
 	var equipped := whatequipped(character, pole);
 	var use_on := Targetcoordinates(character);
-	var water := check_for_water(use_on);
 
 	if (!use_on) SendSysMessage(character, "Canceled"); return; endif
 
@@ -60,7 +59,7 @@ program use_fishpole( character , pole )
 		return 0;
 	endif
 
-	if(!water)
+	if(!check_for_water(use_on, character.realm))
 		SendSysmessage(character,"You can't use that on this");
 		return 0;
 	endif
@@ -134,34 +133,23 @@ program use_fishpole( character , pole )
 		return 0;
 	endif
 
-	var water, difficulty := cint(GetHarvestDifficulty( "fish", use_on.x, use_on.y,use_on.objtype ));
-	if (!difficulty)
-		water := GetMapInfo(use_on.x, use_on.y).landtile;	
-		difficulty := cint(GetHarvestDifficulty( "fish", use_on.x, use_on.y, water ));
-	endif
-
-	if (!difficulty)
-		SendSysmessage(character, "You can't seem to get any fish here.");
-		Autoloop_finish ();
-		return;
-	endif
 	var thepoints := get_default_points(SKILLID_FISHING);
 	if (CheckSkill(character, SKILLID_FISHING, -1, thepoints))
 		if (Random(70)<5)
 			do_something(character);
 			else
 			var fish_amount := HarvestResource( "fish", use_on.x, use_on.y, 1, 1 );
+			if (!fish_amount)
+				SendSysMessage(character, "There's not enough fish here.");
+				Autoloop_finish ();
+				return;
+			endif
+
 			var level := GetClasseLevel(character);
 			fish_amount := Cint(Random(fish_amount)+1);
 		
 			if( GetObjProperty( character , CLASSEID_RANGER ) || GetObjProperty( character , CLASSEID_MYSTIC_ARCHER ) )	
 				fish_amount := Cint( fish_amount + level);
-			endif
-
-			if (fish_amount==0)
-				SendSysMessage(character, "There's not enough fish here.");
-				Autoloop_finish ();
-				return;
 			endif
 		
 			SendSysmessage(character, "You catch a fish!");
