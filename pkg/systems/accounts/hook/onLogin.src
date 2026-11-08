@@ -69,6 +69,15 @@ exported function LoginHook( connection, byref packet )
 		ACCT_NOT_EXIST:	 // Account doesn't yet exist.
 			break;
 		ACCT_LOGIN_OKAY: // Account credentials are valid.
+			// Per-IP client limit (MaxIpsOnline) is enforced here, before the character
+			// enters the world. Kicking over-limit characters from logon.ecl instead froze
+			// new logins server-wide for ~150s per kick, and auto-reconnecting clients kept
+			// that going for hours (live, 2026-11-08).
+			if( ACCT_IPLimitReached( username, connection.ip, 1, 1 ))
+				SysLog( "LoginAccount() Denied: too many accounts online from IP "+connection.ip+" (account "+username+")." );
+				DeniedMSG( connection, 6 );
+				return 1;
+			endif
 			return 0;
 			break;
 		ACCT_LOGIN_FAIL: // Account credentials are invalid.
@@ -120,6 +129,13 @@ exported function LoginHook( connection, byref packet )
 				DeniedMSG( connection, 1);
                 return 0;
         endif
+
+	// Same per-IP limit for brand-new accounts, before the account is created.
+	if( ACCT_IPLimitReached( username, connection.ip, 1, 1 ))
+		SysLog( "LoginAccount() Denied: too many accounts online from IP "+connection.ip+" (new account "+username+")." );
+		DeniedMSG( connection, 6 );
+		return 1;
+	endif
 
 	var account := CreateNewAccount( username, password, 0, settings.DefaultExpansion );
 
@@ -232,36 +248,18 @@ function DeniedMSG( who, reason)
 		return;
 	endif
 
+	// 0x82 Login Denied is 2 bytes: [0] = 0x82, [1] = reason code (reason - 1):
+	//	1 Incorrect name/password.		5 Communication problem.
+	//	2 Someone is already using this account.	6 The IGR concurrency limit has been met.
+	//	3 Your account has been blocked.	7 The IGR time limit has been met.
+	//	4 Your account credentials are invalid.	8 General IGR authentication failure.
+	// (Previously wrote the code at offset 2, so every denial went out as code 0.)
+	if( reason < 1 || reason > 8 )
+		reason := 1;
+	endif
+
 	var newpacket := CreatePacket(0x82, 2);
-	newpacket.SetInt8(1, 0);
-
-	case(reason)
-		1:	//Incorrect name/password.
-			newpacket.SetInt8(2, 0x00);
-			break;
-		2:	//Someone is already using this account.
-			newpacket.SetInt8(2, 0x00);
-			break;
-		3:	//Your account has been blocked.
-			newpacket.SetInt8(2, 0x00);
-			break;
-		4:	//Your account credentials are invalid.	
-			newpacket.SetInt8(2, 0x00);
-			break;
-		5:	//Communication problem.
-			newpacket.SetInt8(2, 0x00);
-			break;
-		6:	//The IGR concurrency limit has been met.
-			newpacket.SetInt8(2, 0x00);
-			break;
-		7:	//The IGR time limit has been met.
-			newpacket.SetInt8(2, 0x00);
-			break;
-		8:	//General IGR authentication failure.
-			newpacket.SetInt8(2, 0x00);
-			break;
-	endcase
-
+	newpacket.SetInt8(1, reason - 1);
 	newpacket.SendPacket(who);
 	return;
 endfunction
