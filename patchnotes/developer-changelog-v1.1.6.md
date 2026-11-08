@@ -1,12 +1,12 @@
 # Developer Changelog - v1.1.6
 **Range:** `b640f5c` (merge of #353, the last 1.1.5 patchnotes state) -> working tree (this commit)
 **Branch:** Patch-1.1.6 (branched from `origin/Test-Shard` at `b640f5c`)
-**Date:** 2026-11-03 to 2026-11-07 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07)
-**Commits in range:** 2 (`8d85c3e` harvest, and this one).
-**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); this commit: 16 scripts and configs, 1 new include (`charm.inc`); plus this release's 3 `patchnotes/` files. The full list is section 15.
+**Date:** 2026-11-03 to 2026-11-08 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07; login limit hotfix 2026-11-08)
+**Commits in range:** 2 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
+**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `3f9d67b`: 3 account scripts; plus this release's 3 `patchnotes/` files. The full list is section 16.
 
 > Scope was computed against `b640f5c`. `origin/Test-Shard` was still at `b640f5c` when this commit was made, so the whole delta is the two commits.
-> Built with `ecompile -A`: 1,163 scripts, 0 errors (the 6 `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). Not yet run in a client (section 16).
+> Built with `ecompile -A`: 1,163 scripts, 0 errors (the 6 `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). Not yet run in a client (section 17). The login hotfix (section 15) has not been compiled yet.
 
 ---
 
@@ -26,8 +26,9 @@
 12. [Control Undead and Spell Bind - `charm.inc`](#12-control-undead-and-spell-bind---charminc)
 13. [Review of the Branch](#13-review-of-the-branch)
 14. [`npcdesc.cfg` Rewrite](#14-npcdesccfg-rewrite)
-15. [Exhaustive File-by-File Change List](#15-exhaustive-file-by-file-change-list)
-16. [Risk and Regression Notes](#16-risk-and-regression-notes)
+15. [Login Limit per IP - No More In-World Kicks](#15-login-limit-per-ip---no-more-in-world-kicks)
+16. [Exhaustive File-by-File Change List](#16-exhaustive-file-by-file-change-list)
+17. [Risk and Regression Notes](#17-risk-and-regression-notes)
 
 ---
 
@@ -51,12 +52,16 @@ The second commit is a separate theme, built on the same branch:
 - **Control Undead and Spell Bind (section 12).** The freed creature kept the caster as its core master (so its attacks were the caster's in the repsys), and a reboot, a recast or a town release left a permanent pet.
 - **Review (section 13)** of the whole branch, and the `npcdesc.cfg` rewrite that carries sections 9 and 11 (section 14).
 
+A live hotfix rides along (section 15): kicking the third account on an IP after it entered the world stopped the server accepting new logins for about 150 s per kick, and on 2026-11-08 one player's auto-reconnecting clients kept that going for about three hours. Over-limit logins are now refused at the login server.
+
 ## 2. Commit Timeline
 
 | Commit | Date | Subject | Sections |
 |---|---|---|---|
 | `8d85c3e` | 2026-11-07 | Harvest: check real tiles instead of client graphics, rebuilt tile lists, patch notes | 3-8 |
-| *(this commit)* | 2026-11-07 | Regen, pet mana, karma/fame from npcdesc, Control Undead / Spell Bind charm state, review fixes, patch notes | 9-14 |
+| `1cf11dc` | 2026-11-07 | Regen, pet mana, karma/fame from npcdesc, Control Undead / Spell Bind charm state, review fixes, patch notes | 9-14 |
+| `3f9d67b` | 2026-11-08 | Refuse over-limit IP logins at the login server instead of kicking in world (on Patch-1.1.5; PR #355 into Test-Shard, PR #356 into Live-Shard) | 15 |
+| *(this commit)* | 2026-11-08 | Patch notes for the login limit hotfix | - |
 
 ---
 
@@ -371,7 +376,42 @@ Generated from the Karma and Fame Table defaults by a script that edits each act
 
 ---
 
-## 15. Exhaustive File-by-File Change List
+## 15. Login Limit per IP - No More In-World Kicks
+
+Commit `3f9d67b`, made on Patch-1.1.5 as a live hotfix (PR #355 into Test-Shard, PR #356 into Live-Shard). It is documented here because it reaches Test-Shard together with 1.1.6.
+
+### 15.1 The incident (live, 2026-11-08)
+
+- `MaxIpsOnline 2` (`pkg/systems/accounts/config/settings.cfg`) was enforced in `pkg/systems/accounts/logon.src`: the third non-staff, non-`ExtraClient` character on an IP entered the world and was then `DisconnectClient`ed.
+- After each of those kicks the server accepted no new connection from anyone for 150-153 s: 68 kicks out of 68 between 08:18 and 11:12 server time. Players already in the world kept playing, and sysload stayed at its normal 30-40.
+- One player ran four accounts from one IP with clients that reconnect on their own. When a freeze ended, the queued connections were all accepted in the same second (about 30 per burst, logged as `disconnected (account unknown)`, 1,894 in total). The clients logged back in, the third was kicked, and the next freeze started.
+- Everyone else could only get in during the one-second window at the end of each freeze. One player who dropped needed 15 minutes to get back in. A reboot did not help, because the clients came back and started the loop again.
+- Earlier single freezes after a kick, from other players: 2026-10-23 (two, 150 s), 2026-10-25 (95 s), 2026-11-06 (180 s). Not every kick freezes; some players reconnected 3 s later.
+- Why the core stops accepting is not known. `UseSingleThreadLogin=1` in `pol.cfg` handles every pre-login client in the listener thread, which fits, but it is unconfirmed. The fix avoids the in-world kick rather than the stall.
+
+### 15.2 The fix (`pkg/systems/accounts/`)
+
+| Where | Change |
+|---|---|
+| `hook/onLogin.src` `LoginHook` (0x80) | When `AcctHackChecks` returns `ACCT_LOGIN_OKAY`, and for a new auto-account before `CreateNewAccount`: `ACCT_IPLimitReached(username, connection.ip, 1, 1)`. Over the limit: `SysLog`, `DeniedMSG(connection, 6)` (0x82 code 5, "The IGR concurrency limit has been met") and `return 1`, so the core drops the packet and the character never enters the world. |
+| `include/accounts.inc` `ACCT_IsIPLimitExempt(account)` | New. Exempt: `defaultcmdlevel`, the `ExtraClient` account prop, or any character in slots 1-7 with a cmdlevel (a staff character on an account whose default was never raised). |
+| `include/accounts.inc` `ACCT_GetPendingIPLogins()` | New. Reads the global `#IPLimitPendingLogins` (`dictionary{ ip -> dictionary{ acct_name -> expiry } }`, `ReadGameClock` seconds) with expired entries dropped. |
+| `include/accounts.inc` `ACCT_IPLimitReached(acct_name, ip, include_pending := 0, reserve := 0)` | New. Counts distinct accounts on the IP other than `acct_name`: characters in the world (not staff, not `ExtraClient`), plus pending logins when `include_pending`. Returns 1 when the count is `>= MaxIpsOnline`. With `reserve`, an allowed login is recorded as pending for `ACCT_IPLOGIN_PENDING_SECS` (120). No sleeps, because it runs inside the run-to-completion packet hook. |
+| `include/accounts.inc` `CheckForMaxClientsOnline(who)` | Now `!ACCT_IPLimitReached(who.acctname, who.ip)`, counting characters in the world only, as before; staff skipped. The `SleepMS(10)` per online player is gone. `logon.src` and `reconnect.src` still use it as a backstop. |
+| `logon.src` | The duplicated kick block is now one block. |
+| `hook/onLogin.src` `DeniedMSG` | Wrote the reason byte at offset 2 of a 2-byte 0x82, so every denial went out as code 0 ("Incorrect name/password"). Now writes `reason - 1` at offset 1. |
+
+### 15.3 Why pending logins count
+
+At 08:18:56 two of the four accounts passed the login server in the same second, before either was in the world. Counting characters in the world alone would have let both through, and the backstop would have kicked one and frozen logins again. With pending logins counted, replaying that morning's login order gives two accounts in and two refused at the login screen, with no kicks.
+
+### 15.4 Code review
+
+A code review of the first version found the pending-login gap above, the unchecked auto-account path and the staff-character exemption. All three are fixed in `3f9d67b`. Left as they were: the startup `blockLogin` path still returns 0 after its denial, so it does not actually block (it never did); a wrong password gets the hook's 0x82 and then the core's own; a refused connection is left for the client to close.
+
+---
+
+## 16. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -408,13 +448,16 @@ Generated from the Karma and Fame Table defaults by a script that edits each act
 | `pkg/opt/necro/spellbind.src` | 12.4 | Refusals; offline owners; `StartCharm` / `EndCharm`; taken pets go back |
 | `scripts/items/pitcher.src` | 13 | `IsWater(where, character.realm)` |
 | `config/npcdesc.cfg` | 14 | Header; karma/fame fields and regen CProps on all 752 active templates |
+| `pkg/systems/accounts/hook/onLogin.src` | 15.2 | IP limit checked in the 0x80 hook (existing and new auto-accounts), refused with 0x82 code 5; `DeniedMSG` writes the reason at offset 1 (`3f9d67b`) |
+| `pkg/systems/accounts/include/accounts.inc` | 15.2 | `ACCT_IsIPLimitExempt`, `ACCT_GetPendingIPLogins`, `ACCT_IPLimitReached`; `CheckForMaxClientsOnline` rewritten on top of them (`3f9d67b`) |
+| `pkg/systems/accounts/logon.src` | 15.2 | Kick block deduplicated (`3f9d67b`) |
 | `patchnotes/developer-changelog-v1.1.6.md` | - | New - this file |
 | `patchnotes/patch-v1.1.6.md` | - | New - player patch notes |
 | `patchnotes/launchernotes.md` | - | Refreshed with the 1.1.6 player notes |
 
 ---
 
-## 16. Risk and Regression Notes
+## 17. Risk and Regression Notes
 
 - **Build.** `attributes.inc`, `itemutil.inc` and `modsetup.inc` are included almost everywhere: deploy with a full `ecompile -A` (1,163 scripts, 0 errors at this commit).
 - **Region configs are read at server start.** The new `wood.cfg`, `ore.cfg`, `sand.cfg`, `clay.cfg` and `fish.cfg` lists need a restart (or a resource reload) to match the scripts. Until then `GetHarvestDifficulty()` checks the old lists and `FindHarvestTile` can refuse newly added tiles.
@@ -429,5 +472,6 @@ Generated from the Karma and Fame Table defaults by a script that edits each act
 - **Karma shifts.** Killing neutral animals no longer raises karma; killing the 23 loss templates costs 250 karma and 100 fame per attacker on the hit list. Wrath of God damage and the reanimate AIs follow the new NPC karma (section 11.5).
 - **Charmed creatures released in town vanish**, they are not confiscated; this also applies to Spell Bind. Players used to the ticket lose the creature (it was never theirs to keep). A pet taken with Spell Bind goes back to its owner instead.
 - **Stale charm cleanup** runs on wild AI start and on pet AI start. A pre-1.1.6 charm with no end time is ended at once; a real pet carrying the old flag is kept if it has `PreviouslyTamed`.
+- **Login limit per IP (section 15).** Not compiled yet: compile `pkg/systems/accounts/hook/onLogin.src`, `logon.src` and `reconnect.src`. Over-limit logins now stop at the login screen with "The IGR concurrency limit has been met". A login that passed the login screen holds its IP slot for up to 120 s, so cancelling at character select can get the same IP's other accounts refused for up to 2 minutes. Because `DeniedMSG` now sends real codes, a wrong password shows "credentials invalid" and the startup `blockLogin` shows "General IGR authentication failure". The in-world kick is still there as a backstop for clients that skip the login server or wait at character select for more than 120 s. On the test shard, check that a refusal is followed straight away by `disconnected (account unknown)` in pol.log, which means the client closed the socket. Players who run more than 2 accounts at once need `.extralogin` on the extra accounts.
 - **Spell Bind debug line.** The spell still prints `difficulty: <n>` to the caster; it predates this patch and was left as is.
 - **Not run in a client.** Worth testing on the test shard: a poison and a temporary mod ending (HP regen stays normal), a pet's special spell mana, a kill of a neutral animal and of a townsperson, Control Undead and Spell Bind running out, a reboot mid-charm, and a release in town.

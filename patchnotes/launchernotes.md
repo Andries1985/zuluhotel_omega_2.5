@@ -117,6 +117,18 @@ Always check Discord announcements for all the patch notes.
 
 ---
 
+## Logging In - Too Many Accounts From One Connection
+
+### Player Impact
+
+- **Logging in no longer freezes for everyone.** You can have 2 accounts online from one connection. Before, a third one still got into the world and was then kicked. Each kick stopped the server letting anyone log in for about 2½ minutes. Game clients that reconnect on their own kept repeating it, and on November 8 almost nobody could log in for about three hours.
+- **The extra account is now refused at the login screen**, with the message "The IGR concurrency limit has been met". Nobody is kicked, and nobody else has to wait.
+- **The limit itself is unchanged:** 2 accounts at once per connection. Staff and accounts that staff have given an extra login are not limited. Logging the same account back in after a disconnect still works.
+- Once an account passes the login screen, it keeps its place for up to 2 minutes while you choose a character. If you cancel there, your other accounts on the same connection can be refused for up to 2 minutes.
+- Login error messages now give the real reason. Before, every refusal said "Incorrect name/password".
+
+---
+
 ## Summary
 
 - Every gathering skill (lumberjacking, kindling, mining, clay, sand, fishing, nets, pitchers, bandages, seeds) checks what is really at the spot instead of trusting the client, and reads the right map outside Britannia.
@@ -130,5 +142,6 @@ Always check Discord announcements for all the patch notes.
 - Pets pay mana for special spells, and tamed casters wait 2 seconds between spells.
 - Every creature has a set karma and fame value: evil gives karma, neutral gives fame only, townsfolk and good creatures cost 250 karma and 100 fame.
 - Control Undead and Spell Bind: freed creatures no longer attack in your name, control ends on time even after a restart, no more permanent pets from town releases, stolen pets go back to their owner, and champion spawns can't be taken.
+- A third account from one connection is refused at the login screen instead of being kicked from the world, which froze logins for everyone for about 2½ minutes each time.
 
 Thanks for playing Zuluhotel Omega 2.5.
