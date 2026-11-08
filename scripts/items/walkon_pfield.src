@@ -81,7 +81,8 @@ program walkon_pfield( who , item )
 		endif
 		var plvl := Cint(ResistedDefinedSkillGain( creator,who,RandomDiceStr( "1d" + power ),diff,points ));
 		if( plvl )
-			SetPoison( who , plvl , "You've been poisoned!" );
+			// Credit only: the field's caster gets the kill (see control/poisoncontrol.src).
+			SetPoison( who , plvl , "You've been poisoned!", 0, 0, creator );
 		endif
 	endif
 

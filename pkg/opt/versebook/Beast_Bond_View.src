@@ -26,4 +26,10 @@ program Beast_Bond_View(parms)
 		sleep(1);
 	until (!GetObjProperty(who, "#ViewingBeast") || !GetHP(beast) || GetObjProperty(who, "BeastalBondTimer") < ReadGameClock());
 
+	// Always clean up the view state (from ZH3.0), so the bard can't be left frozen and concealed
+	// if the parent Beastal_Bond script died or never ran BringBackToPosition.
+	who.frozen := 0;
+	who.concealed := 0;
+	EraseObjProperty(who, "#ViewingBeast");
+
 endprogram

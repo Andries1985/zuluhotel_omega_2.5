@@ -61,10 +61,12 @@ if( GetObjProperty( modnpc , "BaseStaminaRegen" ) and GetStaminaRegenRate(modnpc
 	SetStaminaRegenRate(modnpc, base_stamina_regen * 12);
 endif
 
-if(1)
+// This runs on every AI start. A Warrior for Hire dresses itself once (SetMeUp) and keeps what its
+// master gives it, so re-equipping its template here would hand out free items on each restart.
+if( !GetObjProperty(modnpc, "WarriorForHire") )
 	var equip_cfg := ReadConfigFile(":*:equip");
 	if( equip_cfg )
-	var npccfg := readconfigfile("npcdesc");
+	var npccfg := readconfigfile("::npcdesc");
 		var equip_elem := FindConfigelem(equip_cfg, npccfg[modnpc.npctemplate].equip);
 		if( equip_elem )
 			EquipFromTemplate(modnpc, npccfg[modnpc.npctemplate].equip);

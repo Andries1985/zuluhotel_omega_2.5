@@ -493,5 +493,6 @@ function IsInRPArea(who)
 endfunction
 
 function IsInCityRegion(who)
-	return CInt(GetRegionString("regions", who.x, who.y, "City", who.realm)) == 1;
+	// regions.cfg marks towns with "Type City"; there is no "City" key.
+	return lower(GetRegionString("regions", who.x, who.y, "Type", who.realm)) == "city";
 endfunction

@@ -35,8 +35,15 @@ program para_control( item )
 	endif
 	
 	while( item )
+		// Read the location once (see firecontrol.src). The realm was never passed, so fields
+		// outside Britannia searched Britannia's coordinates and never caught anyone.
+		var realm := item.realm;
+		var fx := CInt(item.x), fy := CInt(item.y), fz := CInt(item.z);
+		if( !realm )
+			break;
+		endif
 		PlaySoundEffect( item , SFX_SPELL_PARALYZE_FIELD );
-		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0 );
+		var victims := ListMobilesNearLocation( fx , fy , fz , 0, realm );
 		victims := SmartAoE(creator, victims);
 		foreach mobile in victims
 			if( CanMod( mobile , "p" ) )

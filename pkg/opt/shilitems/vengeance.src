@@ -2,6 +2,7 @@ use uo;
 use os;
 use vitals;
 include "include/attributes";
+include "include/damages";
 
 const DELAY_BETWEEN_USE	:= 20;
 
@@ -36,7 +37,13 @@ program item_vengeance( who , item )
 	endif
 		
 	var dmg := Cint(GetMaxHP(who) - GetHp(who));
-	ApplyRawDamage( victim , dmg );
+	// Through ApplyTheDamage for the kill credit and the PvP reduction. No resist, as the raw
+	// damage it replaces had none.
+	if( victim == who )
+		ApplyRawDamage( victim , dmg );
+	else
+		ApplyTheDamage( victim , who , dmg , DMGID_MAGIC + DMGID_NO_RESIST );
+	endif
 	
 	Detach();
 	Sleep( DELAY_BETWEEN_USE );

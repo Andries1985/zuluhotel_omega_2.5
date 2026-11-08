@@ -101,6 +101,12 @@ program cast_mind_blast( parms, spell_id )
 		PrintTextAbovePrivate( caster , "I've done this much Mind Blast damage: " +dmg, caster );
 	endif
 
-	ApplyRawDamage( cast_on, Resisted( caster , cast_on , circle , dmg ) );
+	// ApplyTheDamage gives the caster the kill and applies the PvP reduction. A blast turned back by
+	// a superior intellect stays raw, as before: ApplyTheDamage would cut a player's own blast too.
+	if( cast_on == caster )
+		ApplyRawDamage( cast_on, Resisted( caster , cast_on , circle , dmg ) );
+	else
+		ApplyTheDamage( cast_on, caster, Resisted( caster , cast_on , circle , dmg ), DMGID_MAGIC );
+	endif
 
 endprogram

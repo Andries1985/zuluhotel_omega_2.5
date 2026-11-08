@@ -3,6 +3,8 @@ use uo;
 use os;
 use datafile;
 
+include ":townstone:citizens";
+
 const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
 const TOWNSTONE_OBJTYPE := 0xa320;
 const VOTE_RUNE_OBJTYPE := 0xa321;
@@ -35,43 +37,24 @@ program textcmd_removetownmember(who)
 		return;
 	endif
 
-	var citizen := GetObjProperty(stone, "citizen");
-	if(!citizen)
-		citizen := {};
-	endif
-
-	var removed_from_list := RemoveCitizenAccount(citizen, target_char.acctname);
-	if(removed_from_list)
-		SetObjProperty(stone, "citizen", citizen);
-	endif
+	// One entry per character (citizens.inc): only the targeted character is removed. Entries
+	// whose character is gone or no longer wears this town are dropped on the way.
+	var citizen := LoadCitizenList(stone);
+	var removed_from_list := RemoveCitizenChar(citizen, target_char.serial);
 
 	var refreshed_citizens := {};
-	var citizen_idx;
-	for(citizen_idx := 1; citizen_idx <= citizen.size(); citizen_idx := citizen_idx + 1)
-		var citizen_account := Trim(CStr(citizen[citizen_idx]));
-		if(!citizen_account)
-			continue;
+	foreach entry in citizen
+		var character := SystemFindObjectBySerial(CitizenSerial(entry), SYSFIND_SEARCH_OFFLINE_MOBILES);
+		if(character and CInt(GetObjProperty(character, "town")) == CInt(town_id))
+			refreshed_citizens.append(entry);
 		endif
-		if(Lower(citizen_account) == Lower(CStr(target_char.acctname)))
-			continue;
-		endif
-
-		if(AccountHasTownMember(citizen_account, town_id))
-			refreshed_citizens.append(citizen_account);
-		endif
-	endfor
+	endforeach
 	if(refreshed_citizens.size() != citizen.size() or removed_from_list)
 		SetObjProperty(stone, "citizen", refreshed_citizens);
 	endif
 
-	var populacao := CInt(GetObjProperty(stone, "populacao"));
-	if(populacao < 0)
-		populacao := 0;
-	endif
-	if(removed_from_list and populacao > 0)
-		populacao := populacao - 1;
-		SetObjProperty(stone, "populacao", populacao);
-	endif
+	var populacao := refreshed_citizens.size();
+	SetObjProperty(stone, "populacao", populacao);
 
 	CleanupElectionMembership(stone, target_char, populacao);
 
@@ -191,7 +174,7 @@ function CleanupElectionMembership(stone, target_char, populacao)
 	endif
 
 	foreach runa in EnumerateItemsInContainer(stone)
-		if(runa.objtype == VOTE_RUNE_OBJTYPE and GetObjProperty(runa, "serial") == target_char.acctname)
+		if(runa.objtype == VOTE_RUNE_OBJTYPE and IsVoteRuneOf(runa, target_char))
 			DestroyItem(runa);
 			if(votos > 0)
 				votos := votos - 1;
@@ -206,51 +189,6 @@ function CleanupElectionMembership(stone, target_char, populacao)
 	else
 		SetObjProperty(stone, "votepercent", 0);
 	endif
-endfunction
-
-
-function RemoveCitizenAccount(citizen_list, account_name)
-	if(!citizen_list or !account_name)
-		return 0;
-	endif
-
-	var i;
-	for(i := 1; i <= citizen_list.size(); i := i + 1)
-		if(Lower(CStr(citizen_list[i])) == Lower(CStr(account_name)))
-			citizen_list.erase(i);
-			return 1;
-		endif
-	endfor
-
-	return 0;
-endfunction
-
-
-function AccountHasTownMember(account_name, town_id)
-	if(!account_name)
-		return 0;
-	endif
-
-	var account := FindAccount(account_name);
-	if(!account)
-		return 0;
-	endif
-
-	var slot;
-	for(slot := 1; slot <= 7; slot := slot + 1)
-		var character := account.GetCharacter(slot);
-		if(!character)
-			continue;
-		endif
-
-		if(town_id and CInt(GetObjProperty(character, "town")) != CInt(town_id))
-			continue;
-		endif
-
-		return 1;
-	endfor
-
-	return 0;
 endfunction
 
 

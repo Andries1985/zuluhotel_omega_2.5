@@ -63,7 +63,7 @@ function CanStack(item1, item2)
 	// Note: POL core reads config/stacking.cfg IgnoreCprops for this.
 	// We read it here to match core behaviour from eScript.
 	var ignore_list := dictionary;
-	var stacking_cfg := ReadConfigFile("stacking");
+	var stacking_cfg := ReadConfigFile("::stacking");
 	if(stacking_cfg)
 		var stacking_elem := FindConfigElem(stacking_cfg, "Stacking");
 		if(stacking_elem)

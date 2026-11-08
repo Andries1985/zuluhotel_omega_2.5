@@ -21,7 +21,7 @@ var summons := 3;
 var will_cast;
 var flee_point;
 
-var npccfg := readconfigfile("npcdesc");
+var npccfg := readconfigfile("::npcdesc");
 var speechelem := npccfg[me.npctemplate];
 speech := getconfigstring(speechelem, "speech") ;
 spells := GetConfigStringArray( speechelem, "spell" );

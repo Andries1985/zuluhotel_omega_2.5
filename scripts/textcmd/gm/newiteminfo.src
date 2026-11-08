@@ -241,9 +241,11 @@ var layout := array(
 			"text 150 220 40 77",			//Stamina regeneration mod value
 			
 			"button 260 120 2645 2644 0 2",		//Button to Page 2 (General continuation)
-			"button 260 170 2640 2641 1 1 13",	//Button to set an hp regeneration mod
-			"button 260 195 2640 2641 1 1 14",	//Button to set a mana regeneration mod
-			"button 260 220 2640 2641 1 1 15",	//Button to set a stamina regeneration mod
+			//Regen mods are view-only: DoRegenMods is disabled in skilladvancerequip.src on 2.5,
+			//so these props do nothing when worn. Restore the buttons (13/14/15) if that is re-enabled.
+			"",					//Button to set an hp regeneration mod
+			"",					//Button to set a mana regeneration mod
+			"",					//Button to set a stamina regeneration mod
 			
 			
 			
@@ -547,9 +549,22 @@ program textcmd_iteminfo( who )
 		return;
 	endif
 	
+	//Redisplay loop: keeps the gump open across edits so the result of each edit is visible.
+	//FillInArrays only fills slots that apply, so restore the untouched arrays every pass or
+	//rows from the previous state (e.g. an old hitscript's props) would linger.
+	var base_layout := layout;
+	var base_data := data;
+	var done := 0;
+
+	while( !done )
+	layout := base_layout;
+	data := base_data;
 	FillInArrays( item );
 
-	var result := SendDialogGump( who , layout , data );   
+	var result := SendDialogGump( who , layout , data );
+	if( !result[0] )
+		break;
+	endif
 
 	case( result[0] )
 		1:	
@@ -600,18 +615,16 @@ program textcmd_iteminfo( who )
 		43:	//Create Stack in Backpack
 			SendSysmessage( who , "How many do you wish to create?" );
 			var val := Cint(RequestInput( who , who.backpack , "Enter a value."));
-			if( !val )
-				return;
+			if( val )
+				var what := CreateItemInBackpack( who , item.objtype , val );
+				if( what )
+					DupeItem( item , what );
+					LogCommand(who, GetProcess(GetPid()).name, "Createstack: "+item.desc+"/"+item.serial, "Created : "+what.desc+"/"+what.serial);
+        				PrintTextAbovePrivate( who , "Created " + what.desc + " in my backpack." , who );
+    				else
+        				PrintTextAbovePrivate( who , "Couldn't create that: " + what.errortext , who );
+    				endif
 			endif
-			
-			var what := CreateItemInBackpack( who , item.objtype , val );
-			if( what )
-				DupeItem( item , what );
-				LogCommand(who, GetProcess(GetPid()).name, "Createstack: "+item.desc+"/"+item.serial, "Created : "+what.desc+"/"+what.serial);
-        			PrintTextAbovePrivate( who , "Created " + what.desc + " in my backpack." , who );
-    			else
-        			PrintTextAbovePrivate( who , "Couldn't create that: " + what.errortext , who );
-    			endif
     			break;
     			
 		44:	//Dupe in backpack
@@ -638,22 +651,34 @@ program textcmd_iteminfo( who )
 				EraseObjProperty( item , "OnHitScript" );
 				LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Reset OnHitScript");
 			else
-				item.hitscript := ":combat:mainhit";
+				//Back to the weapon's own itemdesc hitscript, not always mainhit
+				var item_cfg := ReadConfigFile( ":*:itemdesc" );
+				var basehit := item_cfg[item.objtype].Hitscript;
+				if( basehit )
+					item.hitscript := basehit;
+				else
+					item.hitscript := ":combat:mainhit";
+				endif
 				LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Reset HitScript");
 			endif
-			
+
 			ResetAllHitscriptPropsExcep( item );
+			//The config row is what naming looks up, so leaving it would bring the old name back on ID
+			EraseObjProperty( item , "HitscriptNumber" );
+			EraseObjProperty( item , "OnHitscriptNumber" );
 			break;
-		
+
 		48:	//Set a Spell Hitscript/OnHitscript
-			if( SetSpellFromList( who , item ) )
+			selecttype := SetSpellFromList( who );
+			if( selecttype )
 				if( item.ar )
 					SetObjProperty( item , "OnHitScript" , ":combat:spellonhit" );
 				else
 					item.hitscript := ":combat:spellstrikescript";
 				endif
 
-				ResetAllHitscriptPropsExcep( item , "HitWithSpell" );
+				ResetAllHitscriptPropsExcep( item );
+				SetSpellHitscriptProps( item , selecttype );
 				var one := AskForIntPropVal( who , item , "ChanceOfEffect" , "What is the chance of effect? Hit Esc to cancel." , "Enter a value." );
 				var two := AskForIntPropVal( who , item , "EffectCircle" , "Use with which circle efficiency? Hit Esc to cancel." , "Enter a value." );
 				LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Set Spell Hitscript: "+one+" "+two);
@@ -676,32 +701,33 @@ program textcmd_iteminfo( who )
 			break;
 			
 		50:	//Set an Effect Hitscript/OnHitscript
+			//The pickers clear the old hitscript props themselves, before writing the new CProp
 			selecttype := SetAnEffectScriptFromList( who , item );
 			if (selecttype)
-				ResetAllHitscriptPropsExcep( item );
 				LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Set Effect Hitscript: "+selecttype[1]+" "+selecttype[2]);
 			endif
 			break;
-			
+
 		51:	//Set a Greater Hitscript/OnHitscript
-			var selecttype := SetAGreaterScriptFromList( who , item );
+			selecttype := SetAGreaterScriptFromList( who , item );
 			if (selecttype)
-				ResetAllHitscriptPropsExcep( item );
 				LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Set Greater Hitscript: "+selecttype[1]+" "+selecttype[2]);
 			endif
 			break;
-			
+
 		52:	//Set a Special Hitscript/OnHitscript
-			var selecttype := SetASpecialScriptFromList( who , item );
+			selecttype := SetASpecialScriptFromList( who , item );
 			if (selecttype)
-				ResetAllHitscriptPropsExcep( item );
 				LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Set Special Hitscript: "+selecttype[1]+" "+selecttype[2]);
 			endif
 			break;
-			
+
 		53:	//Change the casted spell
-			selecttype := SetSpellFromList( who , item );
-			LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Change Casted Spell: "+selecttype);
+			selecttype := SetSpellFromList( who );
+			if( selecttype )
+				SetSpellHitscriptProps( item , selecttype );
+				LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Change Casted Spell: "+selecttype);
+			endif
 			break;
 			
 		54:	//Change the Slay/Protected Type
@@ -763,17 +789,14 @@ program textcmd_iteminfo( who )
 				SendSysMessage( who , "Select the owner. Hit Esc to cancel" );
 				var owner := Target( who );
 				if( !owner )
-					return;
-				endif
-				
-				if( !owner.serial )
+					SendSysmessage( who , "Canceled." );
+				elseif( !owner.serial )
 					SendSysmessage( who , "Invalid Selection." );
-					return;
+				else
+					SetObjProperty( item , "ownerserial" , owner.serial );
+					SetObjProperty( item , "ownername" , owner.name );
+					LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Set Owner: "+owner.name+"/"+owner.serial);
 				endif
-				
-				SetObjProperty( item , "ownerserial" , owner.serial );
-				SetObjProperty( item , "ownername" , owner.name );
-			LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Set Owner: "+owner.name+"/"+owner.serial);
 			endif
 			break;
 			
@@ -846,9 +869,10 @@ program textcmd_iteminfo( who )
 			LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Disable Casting With No Skill Check");
 			break;
 			
-		74:	//Destroy the item
-			DestroyItem( item );
+		74:	//Destroy the item - log first, the reference is dead afterwards
 			LogCommand(who, GetProcess(GetPid()).name, item.desc+"/"+item.serial, "Destroy Item");
+			DestroyItem( item );
+			done := 1;
 			break;
 			
 		75:	//Bounce the item in backpack
@@ -902,7 +926,11 @@ program textcmd_iteminfo( who )
 			endif
 			break;
 	endcase
-  IncRevision(item);
+
+	if( !done )
+		IncRevision(item);
+	endif
+	endwhile
 endprogram
 			
 function FillInArrays( item )
@@ -960,7 +988,7 @@ function FillInArrays( item )
 		data[21] := item.quality;
 	else
 		data[20] := "";
-		layout[39] := 0;
+		layout[39] := "";
 	endif
 
 
@@ -1028,12 +1056,14 @@ function FillInArrays( item )
 	
 	//OnUseScript
 	if( item.usescript )
-		var usecfg := ReadConfigFile( ":magic:usescriptdesc" );
+		//The cfg keys are short names (castspell, regeneration...), so match on the Script line
+		var usecfg := ReadConfigFile( ":shilitems:usescriptdesc" );
 		var usescripts := GetConfigStringKeys( usecfg );
-		
+		data[109] := TruncPkgName( item.usescript );
+
 		foreach usescript in usescripts
-			if( item.usescript == usescript )
-				data[109] := usecfg[usescript].Name;
+			if( item.usescript == usecfg[usescript].Script )
+				data[109] := usecfg[usescript].Desc;
 				if( usecfg[usescript].RequireCharges )
 					data[110] := "Nb Charges";
 					layout[231] := "button 260 170 2640 2641 1 1 31";
@@ -1130,7 +1160,7 @@ function FillInArrays( item )
 		
 		//Set the mods features
 		data[29] := "Stats Mods";
-		data[30] := "Regeneration Mods";
+		data[30] := "Regen Mods (inactive)";
 		data[31] := "Elemental Protections";
 		data[32] := "Special Protections";
 		layout[37] := "button 260 295 2644 2645 0 6";
@@ -1364,9 +1394,11 @@ function FillInArrays( item )
 					var hitcfg := ReadConfigFile( ":combat:onhitscriptdesc" );
 					var scriptnum := GetObjProperty( item , "OnHitscriptNumber" );
 					var CProp := hitcfg[scriptnum].CProp;
-					data[57] := CProp;
-					data[58] := GetObjProperty( item , CProp );
-					layout[133] := "button 260 195 2640 2641 1 1 38";
+					if( CProp )
+						data[57] := CProp;
+						data[58] := GetObjProperty( item , CProp );
+						layout[133] := "button 260 195 2640 2641 1 1 38";
+					endif
 				endif
 
 			else
@@ -1477,15 +1509,15 @@ function EditItemInt( who , item , result )
 	
 	case( result )
 		1:	//x value
-			MoveObjectToLocation( item , val , item.y , item.z , MOVEOBJECT_FORCELOCATION );
+			MoveObjectToLocation( item , val , item.y , item.z , item.realm , MOVEOBJECT_FORCELOCATION );
 			break;
-			
+
 		2:	//y value
-			MoveObjectToLocation( item , item.x , val , item.z , MOVEOBJECT_FORCELOCATION );
+			MoveObjectToLocation( item , item.x , val , item.z , item.realm , MOVEOBJECT_FORCELOCATION );
 			break;
-			
+
 		3:	//z value
-			MoveObjectToLocation( item , item.x , item.y , val , MOVEOBJECT_FORCELOCATION );
+			MoveObjectToLocation( item , item.x , item.y , val , item.realm , MOVEOBJECT_FORCELOCATION );
 			break;
 			
 		4:	//graphic number
@@ -1885,10 +1917,7 @@ function ChangeFromSkillList( who , item )
 		SetObjProperty( item , "WeapAdv" , 1);
 	endif
 
-	EraseObjProperty( item , "IDed" );
-	EraseObjProperty( item , "UnIDedMagicalItem" );
-	SetObjProperty( item , "UnIDedMagicalItem" , 1 );
-	SetObjProperty(item, "isRare", 1);
+	FlagForRenameOnID( item , "isRare" );
 
 endfunction
 
@@ -1940,7 +1969,8 @@ function SetUseScriptFromList( who , item )
 		y 	:= y + 20;
 		done 	:= done + 1;
 		count 	:= count + 1;
-		
+		buttonret := buttonret + 1;
+
 	endforeach
 			
 	
@@ -1951,7 +1981,7 @@ function SetUseScriptFromList( who , item )
 	endif
 	
 	var script := usescripts[result[0]];
-	item.usescript := script.Script;
+	item.usescript := usecfg[script].Script;
 	
 	if( usecfg[script].RequireCharges )
 		if( YesNo( who , "Use Charges?" ) )
@@ -1963,13 +1993,9 @@ function SetUseScriptFromList( who , item )
 	endif
 	
 	if( usecfg[script].CastSpell )
-		var previous := GetObjProperty( item , "HitWithSpell" );
-		if( SetSpellFromList( who , item ) )
-			var current := GetObjProperty( item , "HitWithSpell" );
-			SetObjProperty( item , "SpellId" , current );
-			if( previous )
-				SetObjProperty( item , "HitWithSpell" , previous );
-			endif
+		var spellid := SetSpellFromList( who );
+		if( spellid )
+			SetObjProperty( item , "SpellId" , spellid );
 		endif
 	endif
 		
@@ -1996,7 +2022,9 @@ function SetUseScriptFromList( who , item )
 
 endfunction
 
-function SetSpellFromList( who , item )
+function SetSpellFromList( who )
+//Only picks the spell and returns its id (0 on cancel) - the callers decide which props to set,
+//since the hitscript buttons and the spell-casting usescript store it differently.
 
 	var layout2 := array(
 				"page 0",
@@ -2084,16 +2112,46 @@ function SetSpellFromList( who , item )
 	if( !result[0] )
 		return 0;
 	endif
-	
-	//SetObjProperty( item , "HitWithSpell" , result[0] );
+
+	return result[0];
+
+endfunction
+
+function SetSpellHitscriptProps( item , spellid )
+//Loot stores the spell id in HitWithSpell and the hitscriptdesc/onhitscriptdesc row in
+//(On)HitscriptNumber, which is what naming reads. Only spells that have a row get a name.
+
+	var cfg;
+	var numprop;
+	if( item.ar )
+		cfg	:= ReadConfigFile( ":combat:onhitscriptdesc" );
+		numprop	:= "OnHitscriptNumber";
+	else
+		cfg	:= ReadConfigFile( ":combat:hitscriptdesc" );
+		numprop	:= "HitscriptNumber";
+	endif
+
+	SetObjProperty( item , "HitWithSpell" , spellid );
+	EraseObjProperty( item , numprop );
+
+	var i;
+	for( i := 1 ; i <= Cint(cfg["data"].NbSpell) ; i := i + 1 )
+		if( Cint(cfg[i].Spellid) == spellid )
+			SetObjProperty( item , numprop , i );
+			break;
+		endif
+	endfor
+
+	FlagForRenameOnID( item , "isCommon" );
+
+endfunction
+
+function FlagForRenameOnID( item , rarityprop )
+//Marks the item unidentified so SetNameByEnchant renames it from its new props when it is IDed
 
 	EraseObjProperty( item , "IDed" );
-	EraseObjProperty( item , "UnIDedMagicalItem" );
 	SetObjProperty( item , "UnIDedMagicalItem" , 1 );
-	SetObjProperty(item, "isCommon", 1);
-	SetObjProperty(item, "HitWithSpell", result[0] );
-
-	//return result[0];
+	SetObjProperty( item , rarityprop , 1 );
 
 endfunction
 
@@ -2182,24 +2240,14 @@ function SetCreatureTypeFromList( who , item )
 
 	if( item.ar )
 		SetObjProperty( item , "ProtectedType" , cfg[result[0]].Type );
+		SetObjProperty( item , "OnHitscriptNumber" , result[0] );
 	else
 		SetObjProperty( item , "SlayType" , cfg[result[0]].Type );
+		SetObjProperty( item , "HitscriptNumber" , result[0] );
 	endif
 
-	if( item.ar )
-		EraseObjProperty( item , "IDed" );
-		EraseObjProperty( item , "UnIDedMagicalItem" );
-		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
-		SetObjProperty(item, "isRare", 1);
-		SetObjProperty(item, "OnHitscriptNumber", result[0] );
-	else
-		EraseObjProperty( item , "IDed" );
-		EraseObjProperty( item , "UnIDedMagicalItem" );
-		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
-		SetObjProperty(item, "isRare", 1);
-		SetObjProperty(item, "HitscriptNumber", result[0] );
-	endif
-	
+	FlagForRenameOnID( item , "isRare" );
+
 	return cfg[result[0]].Type;
 	
 endfunction
@@ -2237,7 +2285,6 @@ function SetAnEffectScriptFromList( who , item )
 	var perpage	:= 9;
 	var y 	:= 60;
 	var i;
-	var CProp, CPropVal;
 
 	layout2[len(layout2)+1] := "page " + page;
 	if( amount > perpage )
@@ -2273,53 +2320,8 @@ function SetAnEffectScriptFromList( who , item )
 		return 0;
 	endif
 
-	if( item.ar )
-		SetObjProperty( item , "OnHitScript" , cfg[result[0]].OnHitscript );
-	else
-		item.hitscript := cfg[result[0]].Hitscript;
-	endif
-	
-	CProp := cfg[result[0]].CProp;
-	var cpropoption1 := "Poisonlvl";
-	var cpropoption2 := "ChanceOfEffect";
-	
-	if( CProp )
-		CPropVal := cfg[result[0]].CPropVal;
-		if( !CPropVal )
-			SendSysmessage( who, "What is the value of " + CProp + "? Integer only. Hit Esc to cancel." );
-        		CPropVal := Cint(RequestInput( who, who.backpack, "Enter the value."));
-			if( !CPropVal )
-				CPropVal := 0;
-			endif
-		endif
+	return ApplyHitscriptRow( who , item , cfg , result[0] );
 
-		// Print( "CProp: " + CProp );
-		// Print( "CPropVal: " + CPropVal );
-
-		if( Cprop == cpropoption1)
-			//Print("Setting PoisonLvl");
-			SetObjProperty( item , "PoisonLvl" , CInt(CPropVal) );
-		elseif( Cprop == cpropoption2)
-			//Print("Setting ChanceOfEffect");
-			SetObjProperty( item , "ChanceOfEffect" , CInt(CPropVal) );
-		endif
-	endif
-	
-	if( item.ar )
-		EraseObjProperty( item , "IDed" );
-		EraseObjProperty( item , "UnIDedMagicalItem" );
-		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
-		SetObjProperty(item, "isRare", 1);
-		SetObjProperty(item, "OnHitscriptNumber", result[0] );
-	else
-		EraseObjProperty( item , "IDed" );
-		EraseObjProperty( item , "UnIDedMagicalItem" );
-		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
-		SetObjProperty(item, "isRare", 1);
-		SetObjProperty(item, "HitscriptNumber", result[0] );
-	endif
-	//return {CProp, CPropVal};
-	
 endfunction
 
 function SetAGreaterScriptFromList( who , item )
@@ -2360,7 +2362,6 @@ function SetAGreaterScriptFromList( who , item )
 	var perpage	:= 9;
 	var y 	:= 60;
 	var i;
-	var CProp, CPropVal;
 
 	layout2[len(layout2)+1] := "page " + page;
 	if( amount > perpage )
@@ -2392,74 +2393,12 @@ function SetAGreaterScriptFromList( who , item )
 	
 	SendSysmessage( who , "Select an effect." );
 	var result := SendDialogGump( who , layout2 , data2 );
-	//Print( "Result: " + result[0] );
 	if( !result[0] )
 		return 0;
 	endif
 
-	if( item.ar )
-		SetObjProperty( item , "OnHitScript" , cfg[result[0]].OnHitscript );
-	else
-		item.hitscript := cfg[result[0]].Hitscript;
-	endif
-	
-	// CProp := cfg[result[0]].CProp;
-	// if( CProp )
-	// 	CPropVal := cfg[result[0]].CPropVal;
-	// 	if( !CPropVal )
-	// 		SendSysmessage( who, "What is the value of " + CProp + "? Integer only. Hit Esc to cancel." );
-    //     		CPropVal := Cint(RequestInput( who, who.backpack, "Enter the value."));
-	// 		if( !CPropVal )
-	// 			CPropVal := 0;
-	// 		endif
-	// 	endif
-	// 	SetObjProperty( item , CProp , CPropVal );
-	// endif
-	
-	// return {CProp, CPropVal};
+	return ApplyHitscriptRow( who , item , cfg , result[0] );
 
-	CProp := cfg[result[0]].CProp;
-
-	var cpropoption1 := "Powerlevel";
-	var cpropoption2 := "ChanceOfEffect";
-	
-	if( CProp )
-		CPropVal := cfg[result[0]].CPropVal;
-		if( !CPropVal )
-			SendSysmessage( who, "What is the value of " + CProp + "? Integer only. Hit Esc to cancel." );
-        		CPropVal := Cint(RequestInput( who, who.backpack, "Enter the value."));
-			if( !CPropVal )
-				CPropVal := 0;
-			endif
-		endif
-
-		//Print( "CProp: " + CProp );
-		//Print( "CPropVal: " + CPropVal );
-
-		if( Cprop == cpropoption1)
-			//Print("Setting Powerlevel");
-			SetObjProperty( item , "Powerlevel" , CInt(CPropVal) );
-		elseif( Cprop == cpropoption2)
-			//Print("Setting ChanceOfEffect");
-			SetObjProperty( item , "ChanceOfEffect" , CInt(CPropVal) );
-		endif
-	endif
-	if( item.ar )
-		EraseObjProperty( item , "IDed" );
-		EraseObjProperty( item , "UnIDedMagicalItem" );
-		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
-		SetObjProperty(item, "isRare", 1);
-		SetObjProperty(item, "OnHitscriptNumber", result[0] );
-	else
-		EraseObjProperty( item , "IDed" );
-		EraseObjProperty( item , "UnIDedMagicalItem" );
-		SetObjProperty( item , "UnIDedMagicalItem" , 1 );
-		SetObjProperty(item, "isRare", 1);
-		SetObjProperty(item, "HitscriptNumber", result[0] );
-	endif
-	//SetNameByEnchant(item);
-	//return {CProp, CPropVal};
-	
 endfunction
 
 function SetASpecialScriptFromList( who , item )
@@ -2485,8 +2424,12 @@ function SetASpecialScriptFromList( who , item )
 		start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + cfg["data"].NbEffect + cfg["data"].NbGreater + 1;
 	endif
 	
-	var amount	:= cfg["data"].NbSpecial;
-	//var start	:= cfg["data"].NbSpell + cfg["data"].NbSlayer + cfg["data"].NbEffect + cfg["data"].NbGreater + 1;
+	var amount	:= Cint(cfg["data"].NbSpecial);
+	if( !amount )
+		//Neither hitscriptdesc.cfg nor onhitscriptdesc.cfg defines NbSpecial or any special rows yet
+		SendSysmessage( who , "There are no special hitscripts defined." );
+		return 0;
+	endif
 	var last	:= start + amount;
 	var count	:= 0;
 	var done	:= 0;
@@ -2494,7 +2437,6 @@ function SetASpecialScriptFromList( who , item )
 	var perpage	:= 9;
 	var y 	:= 60;
 	var i;
-	var CProp, CPropVal;
 	layout2[len(layout2)+1] := "page " + page;
 	if( amount > perpage )
 		layout2[len(layout2)+1] := "button 190 256 5540 5541 0 " + (page + 1);
@@ -2529,27 +2471,43 @@ function SetASpecialScriptFromList( who , item )
 		return 0;
 	endif
 
+	return ApplyHitscriptRow( who , item , cfg , result[0] );
+
+endfunction
+
+function ApplyHitscriptRow( who , item , cfg , row )
+//Shared tail of the Effect/Greater/Special pickers: sets the (on)hitscript from the config
+//row the way loot does (SetHitscript/SetOnHitscript in starteqp.inc). The old props are
+//cleared first - clearing them afterwards would wipe the Poisonlvl/Powerlevel/ChanceOfEffect
+//just written. The CProp name comes straight from the cfg, so it matches what the hitscripts read.
+
+	ResetAllHitscriptPropsExcep( item );
+
 	if( item.ar )
-		SetObjProperty( item , "OnHitScript" , cfg[result[0]].OnHitscript );
+		SetObjProperty( item , "OnHitScript" , cfg[row].OnHitscript );
+		SetObjProperty( item , "OnHitscriptNumber" , row );
 	else
-		item.hitscript := cfg[result[0]].Hitscript;
+		item.hitscript := cfg[row].Hitscript;
+		SetObjProperty( item , "HitscriptNumber" , row );
 	endif
-	
-	CProp := cfg[result[0]].CProp;
+
+	var CProp := cfg[row].CProp;
+	var CPropVal := 0;
 	if( CProp )
-		CPropVal := cfg[result[0]].CPropVal;
+		CPropVal := Cint(cfg[row].CPropVal);
 		if( !CPropVal )
 			SendSysmessage( who, "What is the value of " + CProp + "? Integer only. Hit Esc to cancel." );
         		CPropVal := Cint(RequestInput( who, who.backpack, "Enter the value."));
-			if( !CPropVal )
-				CPropVal := 0;
-			endif
 		endif
 		SetObjProperty( item , CProp , CPropVal );
+	else
+		CProp := "none";	//for the LogCommand line only
 	endif
-	
+
+	FlagForRenameOnID( item , "isRare" );
+
 	return {CProp, CPropVal};
-	
+
 endfunction
 
 function AddCastingOption( item , option )
@@ -2605,7 +2563,7 @@ endfunction
 
 function GetMiscPropForUseScript( item )
 
-	var usecfg := ReadConfigFile( ":usescripts:usescriptdesc" );
+	var usecfg := ReadConfigFile( ":shilitems:usescriptdesc" );
 	var elem := FindConfigElem( usecfg , TruncPkgName( item.usescript ) );
 	if( elem )
 		return elem.MiscProp;

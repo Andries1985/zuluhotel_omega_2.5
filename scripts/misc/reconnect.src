@@ -2,6 +2,7 @@ use uo;
 use datafile;
 
 include "include/NameChecker";
+include ":versebook:include/beastalbond";
 
 // Toadstool ADD
 const BANNED_IPS := ":ipban:bannedips";
@@ -20,12 +21,9 @@ program reconnect( who )
 
 	CheckIPBan(who);
 
-	var temp := GetObjProperty(who, "#ViewingBeast");
-	if (temp)
-		who.frozen := 0;
-		who.concealed := 0;
-		EraseObjProperty(who, "#ViewingBeast");
-	endif
+	// Beastal Bond: the bond ends when the bard leaves, and a bard viewing the beast is put
+	// back where they started playing (see beastalbond.inc)
+	EndBeastalBond(who);
 
 	EraseObjProperty( who , "Windsbreath" );
 

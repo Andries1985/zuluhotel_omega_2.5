@@ -90,8 +90,13 @@ program dig_treasure( character , unused shovel )
 	var lvl := GetObjProperty( map , "level" );
 	var bard_lvl7_roll := 0;
 	var bard_level := IsBard(character);
+	var lvl7_chance := bard_level;
 
-	if( lvl == 6 and bard_level > 0 and Random(100) < bard_level )
+	if( bard_level == 6 )
+		lvl7_chance := 8;	// level 6 bards get a boosted 8% chance
+	endif
+
+	if( lvl == 6 and bard_level > 0 and Random(100) < lvl7_chance )
 		lvl := 7;
 		bard_lvl7_roll := 1;
 	endif

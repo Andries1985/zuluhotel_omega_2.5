@@ -53,6 +53,12 @@ var wasownerOnline := 0;
 
 var TRACKED_SKILLS := WfhTrackedSkills();
 
+// Per-script caches for the fight loop (ZH3.0 3.1.4). Weapon objtype -> ammo objtype (0 = not a
+// bow), and heal potion objtype -> Strength, built from :alchemy:itemdesc on the first drink.
+var gWeaponAmmoTypes := dictionary;
+var gHealPotionPowers := dictionary;
+var gHealPotionsLoaded := 0;
+
 program Warrior()
 
 	if( me.name["<random>"] )
@@ -211,11 +217,7 @@ function HasBow()
 		return 0;
 	endif
 
-	var elem := FindConfigElem(ReadConfigFile(":*:itemdesc"), weapon.objtype);
-	if (!elem or !GetConfigInt(elem, "Projectile"))
-		return 0;
-	endif
-	var ammotype := GetConfigInt(elem, "ProjectileType");
+	var ammotype := WeaponAmmoType(weapon.objtype);
 	if (!ammotype)
 		return 0;
 	endif
@@ -461,10 +463,11 @@ function fight(opponent)
 		SYSEVENT_ENGAGED:
 			if (ev.source)
 				AddToHitList(ev);
-				if (ev.source != opponent)
+				var attacker := ResolveAttacker(ev.source);
+				if ( (attacker != opponent) and (attacker.serial != masterserial) )
 					if ( (Random(6)==1) or
-					     (distance(ev.source,me) < distance(me, opponent)) )
-						opponent := ev.source;
+					     (distance(attacker,me) < distance(me, opponent)) )
+						opponent := attacker;
 						SetOpponent( opponent );
 						turntoward( opponent );
 					endif
@@ -506,6 +509,23 @@ function AddToHitList(ev)
 	endforeach
 	hitlist.append(ev.source.serial);
 	SetObjProperty(me,"hitlist",hitlist);
+
+endfunction
+
+// Damage dealt by a pet or another warrior is credited to its owner (ApplyTheDamage swaps in the
+// master), so DAMAGED/ENGAGED events name the owner instead of the mobile actually hitting us.
+// Without this, attacking another player's warrior made both warriors turn on the owners. If an
+// NPC owned by the source is fighting us, answer that NPC instead.
+function ResolveAttacker(source)
+
+	if ( (!source) or (source.npctemplate) ) return source; endif
+	foreach mob in ListMobilesNearLocation(me.x, me.y, me.z, 15, me.realm)
+		if ( (mob.npctemplate) and (mob.opponent.serial == me.serial) and
+		     (CInt(GetObjProperty(mob, "master")) == source.serial) )
+			return mob;
+		endif
+	endforeach
+	return source;
 
 endfunction
 
@@ -580,14 +600,14 @@ function ProcessMasterEvents(byref ev, byref wanders, byref next_wander)
 		wanders := 0;
 		next_wander := readgameclock()+60;
 		if ( (ev.source) and (!ev.source.dead) and (!guarding) )
-			Fight( ev.source );
+			Fight( ResolveAttacker(ev.source) );
 		endif
 	SYSEVENT_DAMAGED:
 		AddToHitList(ev);
 		wanders := 0;
 		next_wander := readgameclock()+60;
 		if ( (ev.source) and (!ev.source.dead) )
-			Fight( ev.source );
+			Fight( ResolveAttacker(ev.source) );
 		endif
 	SYSEVENT_ENTEREDAREA:
 		return;
@@ -1501,13 +1521,50 @@ endfunction
 // 0 unless the item is a heal potion, i.e. an :alchemy:itemdesc entry drunk by yellowpotion
 // (Light Heal, Heal, Greater Heal and their true-mage levels). Otherwise its power, as
 // drinkpotion.inc's GetPotionStrength works it out: itemdesc Strength + ByTrueMage.
+// Reads a table built once per script instead of one cfg lookup per pack item.
 function HealPotionPower(potion)
 
-	var elem := FindConfigElem(ReadConfigFile(":alchemy:itemdesc"), potion.objtype);
-	if (!elem or lower(GetConfigString(elem, "Script")) != "yellowpotion")
+	if (!gHealPotionsLoaded)
+		LoadHealPotionPowers();
+	endif
+	if (!gHealPotionPowers.exists(potion.objtype))
 		return 0;
 	endif
-	return GetConfigInt(elem, "Strength") + CInt(GetObjProperty(potion, "ByTrueMage"));
+	return gHealPotionPowers[potion.objtype] + CInt(GetObjProperty(potion, "ByTrueMage"));
+
+endfunction
+
+function LoadHealPotionPowers()
+
+	gHealPotionsLoaded := 1;
+	var cfg := ReadConfigFile(":alchemy:itemdesc");
+	if (!cfg)
+		return;
+	endif
+	foreach key in GetConfigIntKeys(cfg)
+		var elem := FindConfigElem(cfg, key);
+		if (elem and lower(GetConfigString(elem, "Script")) == "yellowpotion")
+			gHealPotionPowers[key] := GetConfigInt(elem, "Strength");
+		endif
+	endforeach
+
+endfunction
+
+// A weapon's ammo objtype from its itemdesc (0 when it fires nothing), looked up once per
+// weapon objtype; HasBow used to read the merged :*:itemdesc on every fight-loop call.
+function WeaponAmmoType(objtype)
+
+	if (gWeaponAmmoTypes.exists(objtype))
+		return gWeaponAmmoTypes[objtype];
+	endif
+
+	var ammotype := 0;
+	var elem := FindConfigElem(ReadConfigFile(":*:itemdesc"), objtype);
+	if (elem and GetConfigInt(elem, "Projectile"))
+		ammotype := CInt(GetConfigInt(elem, "ProjectileType"));
+	endif
+	gWeaponAmmoTypes[objtype] := ammotype;
+	return ammotype;
 
 endfunction
 

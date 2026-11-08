@@ -81,8 +81,9 @@ function CalculateImmunities(who)
 	holy := CInt(GetObjProperty(who, "HolyProtection"));
 
 	necro := CInt(GetObjProperty(who, "NecroProtection"));
-	physical := CInt(GetObjProperty(who, "PhysicalProtection"));
-	poison := CInt(GetObjProperty(who, "PermPoisonImmunity"));
+	// Include active Sanctuary / Antidote / Dragon Skin
+	physical := CInt(GetPhysicalProtection(who));
+	poison := CInt(GetPoisonImmunityLevel(who));
 	freeaction := CInt(GetObjProperty(who, "FreeAction"));
 
 	healing := CInt(GetObjProperty(who, "HealingIncrease"));

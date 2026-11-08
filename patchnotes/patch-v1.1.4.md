@@ -1,6 +1,6 @@
 # Patch Notes - v1.1.4
 **Zuluhotel Omega 2.5 | Live Shard**  
-**Date: October 7, 2026**
+**Date: October 12, 2026**
 
 ---
 
@@ -34,7 +34,7 @@ Welcome to **Patch 1.1.4**. Two headline items, plus a server-load fix to how ar
 
 ---
 
-## Warrior for Hire - Brought In Line With ZH3.0
+## Warrior for Hire
 
 ### Player Impact
 

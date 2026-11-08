@@ -1,5 +1,8 @@
+use cfgfile;
+
 include "include/client";
-include ":Events:bag";
+include "include/random";
+include "util/bank";	// FindBankBox - the reward bag of an offline player or a full backpack
 
 // The gold rain: a champion's gold is dropped in GOLD_RAIN_PILES piles on random tiles within
 // GOLD_RAIN_RANGE of its body, only where a player can walk to the pile and pick it up. A pile's
@@ -112,50 +115,238 @@ function GoldRainSpotZ(corpse, x, y)
 
 endfunction
 
-//function GiveRewardsToPlayers(corpse)
-  /*
-  var altar := GetAltarByCorpse(corpse); 
-  var players := GetObjProperty(altar, "players");
-  
-  foreach mobile in EnumerateOnlineCharacters()
-    if(EligibleForLoot(mobile, players))
-      PlayRewardFX(mobile);
-      CreateBagWithPrize(mobile);
+// Champion reward bags - Patch 1.1.5. When an altar's champion dies, every character with at least
+// CHAMP_BAG_MIN_KILLS kills inside the altar's credit window gets a bag. A kill counts for the
+// window (CHAMP_CREDIT_WINDOW minutes, or the spawn's CreditWindow in spawns.cfg) and then drops
+// off. The window stops moving when the champion appears (the altar's ChampionAt), so a long
+// champion fight costs nobody their kills, and leftover minions slain during it still add to the
+// count. Holding a spawn below its next skull, or letting it decay and starting over, banks no
+// kills. The tally is wiped when the altar goes quiet (control.src), and paid and erased when the
+// champion dies (death.inc).
+// The tiers add up, so a 1000-kill bag holds everything below it. Part of the tomes, scrolls and
+// stat potions, and all the presents and vanity tokens, moved here from the champion's corpse
+// (nlootgroup.cfg lootgroups 150 and 151).
+const CHAMP_BAG_MIN_KILLS := 150;
+const CHAMP_CREDIT_WINDOW := 60;	// minutes; a spawn's CreditWindow in spawns.cfg overrides it
+const CHAMP_BAG_GRAPHIC := 0x0E76;
+const CHAMP_REWARD_COLOR := 53;
 
-      var kills := players[mobile.serial];
-      var event_bag := CreateItemInContainer(mobile.backpack, "backpack", 1);
-      event_bag.name := "A Champion Reward Bag";
-      event_bag.color := Random(3000);
+// The kill counts at which the bag grows (GiveChampionBag), for the milestone messages and .champkills.
+function ChampionBagTiers()
+	return array{CHAMP_BAG_MIN_KILLS, 300, 500, 750, 1000};
+endfunction
 
-      CreateItemInContainer(event_bag, "statpotion", 1);
+// The credit window of the altar's spawn, in minutes.
+function ChampionCreditWindow(altar)
 
-      if(kills >= 150)
-        CreateItemInContainer(event_bag, "statpotion", 1);
-        CreateItemInContainer(event_bag, "transcendscroll", 1);
-      endif
+	var cfg := ReadConfigFile(":champspawns:spawns");
+	var window := CInt(GetConfigInt(cfg[GetObjProperty(altar, "spawn")], "CreditWindow"));
+	if(window <= 0)
+		window := CHAMP_CREDIT_WINDOW;
+	endif
+	return window;
 
-      if(kills >= 300)
-        CreateItemInContainer(event_bag, "statpotion", 1);
-        CreateItemInContainer(event_bag, "transcendscroll", 1);
-      endif
+endfunction
 
-      if(kills >= 500)
-        CreateItemInContainer(event_bag, "powertome", 1);
-      endif
+// The first minute (systime / 60) whose kills still count on the altar's tally. The window ends now,
+// or when the champion appeared once it has.
+function ChampionCreditStart(altar)
 
-      if(kills >= 1000)
-        CreateItemInContainer(event_bag, "powertome", 1);
-      endif
-    endif
-  endforeach*/
-//endfunction
+	var ending := CInt(GetObjProperty(altar, "ChampionAt"));
+	if(!ending)
+		ending := POLCore().systime;
+	endif
+	return CInt(ending / 60) - ChampionCreditWindow(altar) + 1;
 
-function EligibleForLoot(who, players)
-  if(players[who.serial])
-    return 1;
-  else
-    return 0;
-  endif
+endfunction
+
+// A character's tally entry as {minute, kills} buckets, oldest first (death.inc). An entry from an
+// earlier Patch 1.1.5 build, {kills, systime of the last kill}, becomes one bucket at that kill. A
+// bare count from before Patch 1.1.5 has no time and becomes one bucket at now_minute, so an altar
+// that was mid-run at the deploy still pays for it.
+function ChampionTallyBuckets(entry, now_minute)
+
+	if(TypeOf(entry) == "Integer")
+		if(entry > 0)
+			return array{array{now_minute, entry}};
+		endif
+		return array{};
+	elseif(TypeOf(entry) != "Array")
+		return array{};
+	elseif(entry.size() and TypeOf(entry[1]) == "Integer")
+		return array{array{CInt(CInt(entry[2]) / 60), CInt(entry[1])}};
+	endif
+	return entry;
+
+endfunction
+
+// The kills in buckets from start_minute on.
+function ChampionKillsSince(buckets, start_minute)
+
+	var kills := 0;
+	foreach bucket in buckets
+		if(CInt(bucket[1]) >= start_minute)
+			kills := kills + CInt(bucket[2]);
+		endif
+	endforeach
+	return kills;
+
+endfunction
+
+// The altar has gone quiet (control.src): every kill on its tally is lost. Online characters who
+// had kills inside the window are told.
+function WipeChampionTally(altar)
+
+	var players := GetObjProperty(altar, "players");
+	SetObjProperty(altar, "players", dictionary);
+	if(TypeOf(players) != "Dictionary")
+		return;
+	endif
+
+	var start := ChampionCreditStart(altar);
+	var now_minute := CInt(POLCore().systime / 60);
+	foreach serial in (players.keys())
+		if(ChampionKillsSince(ChampionTallyBuckets(players[serial], now_minute), start))
+			var who := SystemFindObjectBySerial(CInt(serial));
+			if(who and who.connected)
+				SendSysMessage(who, "The champion altar has gone quiet: your kills toward a Champion Reward Bag are lost.", FONT_NORMAL, 33);
+			endif
+		endif
+	endforeach
+
+endfunction
+
+function GiveRewardsToPlayers(altar)
+
+	var players := GetObjProperty(altar, "players");
+	if(TypeOf(players) != "Dictionary")
+		return;
+	endif
+
+	// An offline player's bag goes to their bank box.
+	set_script_option(SCRIPTOPT_CAN_ACCESS_OFFLINE_MOBILES, 1);
+
+	var start := ChampionCreditStart(altar);
+	var now_minute := CInt(POLCore().systime / 60);
+	foreach serial in (players.keys())
+		var kills := ChampionKillsSince(ChampionTallyBuckets(players[serial], now_minute), start);
+		if(kills)
+			var who := SystemFindObjectBySerial(CInt(serial), SYSFIND_SEARCH_OFFLINE_MOBILES);
+			if(who)
+				if(kills >= CHAMP_BAG_MIN_KILLS)
+					GiveChampionBag(who, kills);
+				elseif(who.connected)
+					SendSysMessage(who, "You slew " + kills + " of the champion's minions. It takes " + CHAMP_BAG_MIN_KILLS + " to earn a Champion Reward Bag.", FONT_NORMAL, CHAMP_REWARD_COLOR);
+				endif
+			endif
+		endif
+	endforeach
+
+endfunction
+
+// Builds the bag for this many kills, in the backpack of an online player or else in the bank box.
+function GiveChampionBag(who, kills)
+
+	var tomes := 0, scrolls := 0, stats := 0, tokens := 0, presents := 0;
+	if(kills >= 150)
+		scrolls := scrolls + 1;
+		tokens := tokens + 1;
+		presents := presents + 1;
+	endif
+	if(kills >= 300)
+		scrolls := scrolls + 1;
+		tokens := tokens + 1;
+	endif
+	if(kills >= 500)
+		stats := stats + 1;
+	endif
+	if(kills >= 750)
+		tomes := tomes + 1;
+	endif
+	if(kills >= 1000)
+		tomes := tomes + 1;
+		stats := stats + 1;
+		tokens := tokens + 2;
+		presents := presents + 1;
+	endif
+
+	var bag := 0;
+	var in_bank := 0;
+	if(who.connected)
+		bag := CreateItemInContainer(who.backpack, CHAMP_BAG_GRAPHIC, 1);
+	endif
+	if(!bag)
+		var bankbox := FindBankBox(who);
+		if(bankbox)
+			bag := CreateItemInContainer(bankbox, CHAMP_BAG_GRAPHIC, 1);
+			in_bank := 1;
+		endif
+	endif
+	if(!bag)
+		SysLog("Champion reward bag for " + who.name + " (" + Hex(who.serial) + ", " + kills + " kills) could not be created: " + bag.errortext);
+		return 0;
+	endif
+	bag.name := "A Champion Reward Bag";
+	bag.color := RandomInt(3000);
+
+	var rewards := array{};
+	AddChampionReward(rewards, "PowerTome", tomes);
+	AddChampionReward(rewards, "TranscendScroll", scrolls);
+	AddChampionReward(rewards, "StatPotion", stats);
+	AddChampionReward(rewards, "vanitytoken", tokens);
+	var i;
+	for(i := 1; i <= presents; i := i + 1)
+		// The champions' old ChampionPresents group: gift1-3, equally likely.
+		rewards.append("gift" + (RandomInt(3) + 1));
+	endfor
+
+	// A backpack can take the empty bag but not all of its contents (weight or item limit). The
+	// bag then moves to the bank box and the rest is created there.
+	var missing := FillChampionBag(bag, rewards);
+	if(missing.size() and !in_bank)
+		var bank := FindBankBox(who);
+		if(bank and MoveItemToContainer(bag, bank))
+			in_bank := 1;
+			missing := FillChampionBag(bag, missing);
+		endif
+	endif
+	if(missing.size())
+		SysLog("Champion reward bag for " + who.name + " (" + Hex(who.serial) + ", " + kills + " kills) is missing: " + missing);
+	endif
+
+	if(who.connected)
+		if(in_bank)
+			SendSysMessage(who, "Your backpack is full, so your Champion Reward Bag was placed in your bank box.", FONT_NORMAL, CHAMP_REWARD_COLOR);
+		else
+			PlayRewardFX(who);
+		endif
+		SendSysMessage(who, "You slew " + kills + " of the champion's minions.", FONT_NORMAL, CHAMP_REWARD_COLOR);
+	endif
+	return bag;
+
+endfunction
+
+// One entry per item, as the loot code does: these items don't stack.
+function AddChampionReward(byref rewards, objname, amount)
+
+	var i;
+	for(i := 1; i <= amount; i := i + 1)
+		rewards.append(objname);
+	endfor
+
+endfunction
+
+// Creates each reward in the bag and returns the ones that could not be created.
+function FillChampionBag(bag, rewards)
+
+	var missing := array{};
+	foreach objname in rewards
+		if(!CreateItemInContainer(bag, objname, 1))
+			missing.append(objname);
+		endif
+	endforeach
+	return missing;
+
 endfunction
 
 function PlayRewardFX(who)

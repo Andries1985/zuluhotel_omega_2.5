@@ -92,13 +92,15 @@ program tame( character )
 		prev_tame := 0;
 	endif
 
-	difficulty := Cint(difficulty - ( PREV_TAMED_MINUS * prev_tame ));
+	// A ranger's level makes both the calming and the taming roll easier, RANGER_LEVEL_TAME_BONUS
+	// per level (Patch 1.1.5). The skill needed to try at all is unchanged.
+	var ranger := GetObjProperty( character , CLASSEID_RANGER );
+	difficulty := Cint(difficulty - ( PREV_TAMED_MINUS * prev_tame ) - ( RANGER_LEVEL_TAME_BONUS * CInt(ranger) ));
 	if( difficulty < 1 )
 		difficulty := 1;
 	endif
 
 	var calming_diff := difficulty + 10;
-	var ranger := GetObjProperty( character , CLASSEID_RANGER );
 
 	if( calming_diff < 1 )
 		calming_diff := 1;

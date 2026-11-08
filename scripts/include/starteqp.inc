@@ -1554,10 +1554,12 @@ function CreateFromStackString( who, str )
 			if(GetObjProperty(who, "KilledBySerial"))
 				killer := SystemFindObjectBySerial(GetObjProperty(who, "KilledBySerial"),SYSFIND_SEARCH_OFFLINE_MOBILES );
 			endif
-			if(!GetGlobalProperty("PHH") || !GetObjProperty(killer, "#PPHH"))
-        		item := CreateItemInContainer( who , objname , count );
-			else
+			// Either Hunting powerhour doubles the pile, as either doubles the chance above. (This
+			// read !PHH || !PPHH, which only doubled it with both running.)
+			if(GetGlobalProperty("PHH") || GetObjProperty(killer, "#PPHH"))
 				item := CreateItemInContainer( who , objname , count*2 );
+			else
+        		item := CreateItemInContainer( who , objname , count );
 			endif
         	if (!item)
 				return;

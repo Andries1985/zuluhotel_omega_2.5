@@ -47,6 +47,11 @@ program aimovementsim( who )
 		endif
 	endfor
 
+	// Put the shared mask cache back: InvalidatePolicyMaskCache() erases it and
+	// nothing else rebuilds it until a reboot or an .areas Save, so every area
+	// check on the shard would keep falling back to the datafile.
+	RebuildPolicyMaskCache( "britannia" );
+
 	SysLog("[aimovesim] end calls="+AIMOVESIM_TOTAL_CALLS);
 	Print("[aimovesim] end calls="+AIMOVESIM_TOTAL_CALLS);
 

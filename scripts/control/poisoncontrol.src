@@ -14,29 +14,39 @@ program poison_control( item )
 
 	var diff    := 40;
 	var points  := 25;
-	var power   := 2;
-	var creator := 0;
-	var serial  := Cint( GetObjProperty( item , "Creator" ) );
-	
-	if( GetObjProperty( item , "ByTrueMage" ) )
-		power := Cint( power * CLASSE_BONUS );
-	endif
-	
-	if( serial )
-		creator := SystemFindObjectBySerial( serial );
-		if( !creator ) 
-			creator := SystemFindObjectBySerial( serial , SYSFIND_SEARCH_OFFLINE_MOBILES );
-		endif
-	
-		if(creator)
-			SetScriptController(creator);
-		endif
-	endif
-	
+	var controller := 0;
+
 	while( item )
+		// Read the location once (see firecontrol.src): the field can be destroyed mid-tick.
+		var realm := item.realm;
+		var fx := CInt(item.x), fy := CInt(item.y), fz := CInt(item.z);
+		if( !realm )
+			break;
+		endif
+
+		// Creator and ByTrueMage are set after CreateItemAtLocation() has already started this
+		// script, so they are read every tick, as in firecontrol.src: read once at startup, a field
+		// whose script ran first lost its caster, and the kill credit, for its whole life.
+		var power := 2;
+		if( GetObjProperty( item , "ByTrueMage" ) )
+			power := Cint( power * CLASSE_BONUS );
+		endif
+		var creator := 0;
+		var serial  := Cint( GetObjProperty( item , "Creator" ) );
+		if( serial )
+			creator := SystemFindObjectBySerial( serial , SYSFIND_SEARCH_OFFLINE_MOBILES );
+			if( creator and !controller )
+				SetScriptController(creator);
+				controller := creator;
+			endif
+		endif
+		// The field's caster gets the kill. Kept apart from creator, which falls back to the first
+		// victim below when the caster can't be found.
+		var poisoner := creator;
+
 		var plvl := RandomDiceStr( "1d" + power );
 		PlaySoundEffect( item , SFX_SPELL_POISON_FIELD );
-		var victims := ListMobilesNearLocation( cint(item.x) , cint(item.y) , cint(item.z) , 0, item.realm );
+		var victims := ListMobilesNearLocation( fx , fy , fz , 0, realm );
 		victims := SmartAoE(creator, victims);
 		foreach mobile in victims
 			if( !creator )
@@ -47,7 +57,7 @@ program poison_control( item )
 			if( indiv_plvl )
 				if(!mobile.multi)
 					PlayObjectCenteredEffectEx( mobile, 0x33F6, 0 , 10, 63, 5);
-					SetPoison( mobile , indiv_plvl , "You've been poisoned!" );
+					SetPoison( mobile , indiv_plvl , "You've been poisoned!", 0, 0, poisoner );
 				endif
 			endif
 		endforeach

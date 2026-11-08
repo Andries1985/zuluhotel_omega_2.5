@@ -32,7 +32,9 @@ include "include/math";
 
 const MAX_SERIAL_IN_HITLIST := 5;
 
-function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
+// pvp_cut 0 skips the global PvP slowdown below: poison ticks (processpoisonmod's PoisonTick()),
+// which dealt raw damage before Patch 1.1.5 and keep their old PvP damage.
+function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL, pvp_cut := 1 )
 
 	//Print("In ApplyTheDamage with damage: " + dmg);
 	var olddmg := 0;
@@ -54,17 +56,8 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 	endif
 
 	//================================= Global changes ===================================\\
-	// Global PvP slowdown.
-	if( !by_who.isA(POLCLASS_NPC) && !who.isA(POLCLASS_NPC))
-		//if( !defender.isA(POLCLASS_NPC))
-		//Print("Applying Overall PvP reduction. Damage is: " + dmg);
-		olddmg := CInt(dmg);
-		dmg := CInt( dmg * 0.6);
-		newdmg := CInt(dmg);
-		//Print("Damage after Overall PvP reduction is: " + dmg);
-		//endif
-	endif
-	
+	// A pet, summon or Warrior for Hire counts as its master from here on: the PvP slowdown below,
+	// the kill credit, the hitlist and repsys.
 	var factor := 1.0;
 	if( by_who.IsA(POLCLASS_NPC) )
 		var master := FindMaster(by_who);
@@ -73,20 +66,29 @@ function ApplyTheDamage( who, by_who, dmg, attack_type := DMGID_PHYSICAL )
 			factor := factor * VALUE_MULTIPLIER_FOR_TAMED;
 		endif
 	endif
-	
+
+	// Global PvP slowdown. After the master swap, so a player's pet hitting a player is cut too.
+	if( pvp_cut && !by_who.isA(POLCLASS_NPC) && !who.isA(POLCLASS_NPC))
+		//if( !defender.isA(POLCLASS_NPC))
+		//Print("Applying Overall PvP reduction. Damage is: " + dmg);
+		olddmg := CInt(dmg);
+		dmg := CInt( dmg * 0.6);
+		newdmg := CInt(dmg);
+		//Print("Damage after Overall PvP reduction is: " + dmg);
+		//endif
+	endif
+
 	if( dmg < GetHP(who) )
 		factor := factor*VALUE_MULTIPLIER_FOR_ALLIES;
 	else
 		if( GetObjProperty( who, PROPID_MOBILE_RISE) )
 			if( TryToInflictFinalDeath( who, attack_type ) )
-				SetObjProperty( who, PROPID_MOBILE_KILLED_BY, by_who.name );
-				SetObjProperty( who, "KilledBySerial", by_who.serial );
+				RecordKiller( who, by_who );
 			else
 				factor := factor * VALUE_MULTIPLIER_FOR_ALLIES;
 			endif
 		else
-			SetObjProperty( who, PROPID_MOBILE_KILLED_BY, by_who.name );
-			SetObjProperty( who, "KilledBySerial", by_who.serial );
+			RecordKiller( who, by_who );
 		endif
 	endif
 	
@@ -236,6 +238,25 @@ function ApplyTheAstralDamage( who, by_who, dmg, attack_type := DMGID_ASTRAL )
 
 		return 1;
 	endif
+
+endfunction
+
+// The corpse copies these props when the mobile dies: death.src, the loot code and the champion
+// altar read the killer from them. Only a mobile is recorded, since by_who.serial of a missing
+// attacker (0 or an error) would be saved as Uninit. A blow with no attacker clears any earlier
+// killer, so this death isn't credited to whoever killed the mobile last time; the champion altar
+// then falls back to the hitlist.
+function RecordKiller( who, by_who )
+
+	if( !by_who.IsA(POLCLASS_MOBILE) )
+		EraseObjProperty( who, PROPID_MOBILE_KILLED_BY );
+		EraseObjProperty( who, "KilledBySerial" );
+		return 0;
+	endif
+
+	SetObjProperty( who, PROPID_MOBILE_KILLED_BY, by_who.name );
+	SetObjProperty( who, "KilledBySerial", by_who.serial );
+	return 1;
 
 endfunction
 

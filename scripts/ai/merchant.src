@@ -26,6 +26,10 @@ const MAX_SKILLS      := 48;
 
 const IDENTIFY := 50;
 
+// Keyrings are newbie (kept on death) but merchants still buy empty ones through
+// "sell all" and "sell bag". The engine's "sell" window skips newbie items regardless.
+const MERCHANT_KEYRING_OBJTYPE := 0x1011;
+
 var me := Self();
 var storage, inv_fs, inv_pb, inv_1c;
 var gldamt := 0 ;
@@ -419,6 +423,33 @@ endforeach
 
 endfunction
 
+// Newbied items are never bought, except keyrings with no keys on them. A keyring's keys
+// live in a "Tamed Storage" box named after its serial, which keyringdestroy deletes, so
+// selling a loaded keyring would destroy the keys. Owned or undestructible keyrings are
+// returned by keyringdestroy instead of being destroyed, so they would be paid for twice.
+function CanMerchantBuy(item)
+
+	if (item.objtype != MERCHANT_KEYRING_OBJTYPE)
+		return (!item.newbie);
+	endif
+
+	if (GetObjProperty(item, "ownerserial") or GetObjProperty(item, "undestructible"))
+		return 0;
+	endif
+
+	var keystorage := FindStorageArea("Tamed Storage");
+	if (!keystorage)
+		return 1;
+	endif
+	var keybox := FindRootItemInStorageArea(keystorage, "Bankbox  " + hex(item.serial));
+	if (keybox and len(EnumerateItemsInContainer(keybox)) > 0)
+		return 0;
+	endif
+
+	return 1;
+
+endfunction
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Toadstool
 //
@@ -450,8 +481,12 @@ function SellAll(who)
 		Say("It doesn't seem as if you're ready to sell that");
 		return 0;
 
-	elseif (item.newbie)
-		Say("I don't buy newbied items");
+	elseif (!CanMerchantBuy(item))
+		if (item.objtype == MERCHANT_KEYRING_OBJTYPE)
+			Say("Take the keys off that keyring first");
+		else
+			Say("I don't buy newbied items");
+		endif
 		return 0;
 	elseif ( (GetObjProperty(item, "LFucker")))
 		Say("That item is tainted with corruption!");
@@ -462,7 +497,7 @@ function SellAll(who)
 		Say("I won't buy anything you're not carrying");
 		return 0;
 	endif
-	
+
 	// No buy price set in config file
 	if (!item.buyprice) 
 		Say("I'm not interested in that");
@@ -478,7 +513,7 @@ function SellAll(who)
 		if (item.objtype == thing.objtype) // HAS to be the same object type
 			if (Accessible( who, thing )) // Make sure the palyer can get to it
 				if (thing.color == item.color) // different colours generally mean different items
-					if (!thing.newbie) // We don't want newbied items grouped in
+					if (CanMerchantBuy(thing)) // We don't want newbied items grouped in
 						if(thing.buyprice)
 							if (thing.isa(POLCLASS_CONTAINER) && thing.item_count > 1) // If one of the items has items in it, send a confirm message
 								Say("I won't buy containers with items in them!");
@@ -572,7 +607,7 @@ function SellBag(who)
 	foreach thing in EnumerateItemsInContainer( item, ENUMERATE_ROOT_ONLY )
 		if (thing.buyprice) // item has a vendorbuysfor price, or it's own .buyprice
 			if (Accessible( who, thing )) // Make sure the palyer can get to it
-				if (!thing.newbie) // We don't want newbied items grouped in
+				if (CanMerchantBuy(thing)) // We don't want newbied items grouped in
 					if(thing.buyprice)
 						if (thing.isa(POLCLASS_CONTAINER) && thing.item_count > 1) // If theres a container to sell in this container, AND it has items, ask player if he wants to sell those items
 							// item_count is > 1 because an empty bag says 1..

@@ -380,34 +380,29 @@ function PPH_SecondsRemaining(who, time_now)
 endfunction
 
 // The weekly lock lifts on the first Sunday 00:00 GMT after the last use, or a full
-// week after it if it was used on a Sunday.
-function PPH_IsEligible(who, time_now)
+// week after it if it was used on a Sunday. One reset time feeds both the rule and the
+// countdown: the old rule mixed a weekday test with a 7-day test, so a week later, on the
+// use weekday, the lock came back until the use hour while .ph said "less than a minute".
+// The weekday is taken from the use time itself (ported from ZH3.0 3.1.4).
+function PPH_ResetTime(who)
 	var use_time := PPH_UseTime(who);
 	if(!use_time)
-		return 1;
+		return 0;
 	endif
-	time_now := CInt(time_now);
-	var weekday_now := PH_WeekdayOf(time_now);
-	var use_weekday := PPH_UseWeekday(who);
-	return ((weekday_now < use_weekday) || (time_now > use_time + PH_WEEK));
+	var use_weekday := PH_WeekdayOf(use_time);
+	if(use_weekday == 0)
+		return use_time + PH_WEEK + 1;
+	endif
+	return (CInt(use_time / PH_DAY) + (7 - use_weekday)) * PH_DAY;
+endfunction
+
+function PPH_IsEligible(who, time_now)
+	return (CInt(time_now) >= PPH_ResetTime(who));
 endfunction
 
 // Seconds until PPH_IsEligible() becomes true (0 if it already is).
 function PPH_SecondsUntilEligible(who, time_now)
-	time_now := CInt(time_now);
-	if(PPH_IsEligible(who, time_now))
-		return 0;
-	endif
-	var use_time    := PPH_UseTime(who);
-	var use_weekday := PPH_UseWeekday(who);
-	var reset_time;
-	if(use_weekday == 0)
-		// Used on a Sunday: "weekday_now < 0" can never be true, so only the full week applies.
-		reset_time := use_time + PH_WEEK + 1;
-	else
-		reset_time := (CInt(use_time / PH_DAY) + (7 - use_weekday)) * PH_DAY;
-	endif
-	var left := reset_time - time_now;
+	var left := PPH_ResetTime(who) - CInt(time_now);
 	if(left < 0)
 		left := 0;
 	endif

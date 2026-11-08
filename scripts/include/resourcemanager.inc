@@ -401,13 +401,15 @@ function SelectMaterialFromCache(who)
 		return 0;
 	endif
 
-	// Build list of keys with available qty > 0 (skip leases, lease-aware)
+	// Build list of keys with available qty > 0 (skip leases, lease-aware). Leases are summed once
+	// (GetLeaseTotals) instead of rescanning the cache for every key.
+	var lease_totals := GetLeaseTotals(df);
 	var valid_keys := array{};
 	foreach key in all_keys
 		if(key[1, 3] == "RL#")
 			continue;
 		endif
-		var available := GetStoredAmount(df, key);
+		var available := GetStoredAmount(df, key, 0, lease_totals);
 		if(available > 0)
 			valid_keys.append(key);
 		endif
@@ -560,6 +562,7 @@ function SelectMaterialFromList(who, access, valid_keys)
 	// Use string-concat sort: "name|||key" — sort as strings, then extract keys
 	var sort_strings := array{};
 	var df := access.df;
+	var lease_totals := GetLeaseTotals(df);
 	foreach key in valid_keys
 		var ot := CInt(GetObjtypeFromKey(key));
 		var elem := df.FindElement(key);
@@ -652,7 +655,7 @@ function SelectMaterialFromList(who, access, valid_keys)
 		GFResizePic(gump, 18, row_y - 2, 9350, 465, 32);
 
 		var elem := df.FindElement(key);
-		var qty := GetStoredAmount(df, key);
+		var qty := GetStoredAmount(df, key, 0, lease_totals);
 		var objtype := CInt(elem.GetProp("objtype"));
 		var desc_info := GetItemDescriptor(objtype);
 

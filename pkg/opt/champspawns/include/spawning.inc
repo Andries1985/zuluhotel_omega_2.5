@@ -91,6 +91,8 @@ function SpawnChampion(altar)
   endif
 
   SetObjProperty(altar, "champ", creature.serial);
+  // The kill tally's credit window stops moving here (rewards.inc ChampionCreditStart).
+  SetObjProperty(altar, "ChampionAt", POLCore().systime);
   return creature;
 endfunction
 

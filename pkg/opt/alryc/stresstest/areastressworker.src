@@ -45,6 +45,12 @@ program areastressworker( params )
 		endif
 	endwhile
 
+	// Put the shared mask cache back: InvalidatePolicyMaskCache() erases it and
+	// nothing else rebuilds it until a reboot or an .areas Save, so every area
+	// check on the shard would keep falling back to the datafile. Each worker
+	// rebuilds as it finishes; the last one to finish leaves the final copy.
+	RebuildPolicyMaskCache( "britannia" );
+
 	SysLog("[shardstress] area-worker="+worker_id+" done calls="+calls);
 	Print("[shardstress] area-worker="+worker_id+" done calls="+calls);
 

@@ -54,6 +54,8 @@ program championrelic(who, item)
 		SendSysMessage(who, "The relic fizzles and fails to summon.", FONT_NORMAL, 2595);
 		return 0;
 	endif
+	// A relic champion has no altar, so no kill tally and no reward bags (champspawns death.inc).
+	SetObjProperty(boss, "SummonedByRelic", who.serial);
 
 	PlayStationaryEffect(boss.x, boss.y, boss.z, 0x3728, 10, 0x10, 0);
 	PlaySoundEffect(boss, 0x01FE);

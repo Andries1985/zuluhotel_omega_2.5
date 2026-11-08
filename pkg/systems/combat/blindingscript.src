@@ -42,6 +42,7 @@ program blindingscript( attacker, defender, weapon, armor, basedamage, rawdamage
                 PlaySoundEffect( targ , SFX_SPELL_NIGHT_SIGHT );
                     PlayObjectCenteredEffect( targ , FX_SPELL_OWL_SIGHT , SPEED_SPELL_OWL_SIGHT , LOOP_SPELL_OWL_SIGHT );
                     targ.setlightlevel( 30 , 60 );
+                    BuffOff( targ , "nightsight" );	// blinded: any night sight is overridden
                 endif
         endif
 

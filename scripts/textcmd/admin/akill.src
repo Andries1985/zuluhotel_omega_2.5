@@ -1,34 +1,61 @@
-// Synopsis: Instantly kill all NPCs within a specified tile range
+// Synopsis: Instantly kill all NPCs within a tile range; add "credit" to count champion minions as your kills
 //Edited August 25, 2024
 
 use os;
 use uo;
 
+include ":staff:include/staff";
 include "include/attributes";
 
-program akill( who, dist )
-	
-	dist := CInt(dist);
-        SendSysMessage( who, "Killing all npcs in range of "+dist+" tiles." );
+// .akill <range> [credit]. With "credit", every champion minion killed counts as the caller's kill
+// on its altar's tally (Patch 1.1.5, for testing altars): pkg/opt/champspawns/include/death.inc
+// accepts a staff killer only when the corpse carries a matching StaffChampCredit.
+program akill( who, text )
 
+	var args := SplitWords(text);
+	var dist := CInt(args[1]);
+	var credit := (Lower(CStr(args[2])) == "credit");
+	if (credit)
+		SendSysMessage( who, "Killing all npcs in range of "+dist+" tiles. Champion minions count as your kills." );
+	else
+		SendSysMessage( who, "Killing all npcs in range of "+dist+" tiles." );
+	endif
+
+	var credited := 0;
 	foreach mob in ListMobilesNearLocation( who.x, who.y, LIST_IGNORE_Z, dist, who.realm )
 		if (mob != who && !mob.cmdlevel)
-			RevokePrivilege( mob, "invul" );
-			mob.kill();
+			credited := credited + AKillMobile( who, mob, credit );
 		endif
 	endforeach
-		
+
 	foreach mob in ListMobilesNearLocationEx( who.x, who.y, LIST_IGNORE_Z, dist, LISTEX_FLAG_HIDDEN, who.realm )
 		if (mob != who && !mob.cmdlevel)
-			RevokePrivilege( mob, "invul" );
-			mob.kill();
+			credited := credited + AKillMobile( who, mob, credit );
 		endif
 	endforeach
 
 	foreach mob in ListMobilesNearLocationEx( who.x, who.y, LIST_IGNORE_Z, dist, LISTEX_FLAG_CONCEALED, who.realm )
 		if (mob != who && !mob.cmdlevel)
-			RevokePrivilege( mob, "invul" );
-			mob.kill();
+			credited := credited + AKillMobile( who, mob, credit );
 		endif
 	endforeach
+
+	if (credit)
+		LogCommand(who, GetProcess(GetPid()).name, "credit, range " + dist + ": " + credited + " champion minions");
+	endif
 endprogram
+
+// Kills mob; returns 1 when it was a champion minion credited to who.
+function AKillMobile( who, mob, credit )
+
+	var credited := 0;
+	if (credit && mob.isa(POLCLASS_NPC) && GetObjProperty(mob, "iChampSpawn"))
+		SetObjProperty(mob, "KilledBySerial", who.serial);
+		SetObjProperty(mob, "StaffChampCredit", who.serial);
+		credited := 1;
+	endif
+	RevokePrivilege( mob, "invul" );
+	mob.kill();
+	return credited;
+
+endfunction

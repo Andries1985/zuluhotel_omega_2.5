@@ -38,5 +38,6 @@ program cast_reflect( caster, spell_id )
 	PlaySoundEffect( caster, SFX_SPELL_MAGIC_REFLECTION );
 	PlayObjectCenteredEffect( caster , FX_SPELL_MAGIC_REFLECTION , 10 , 10 );
 	SetObjProperty( caster , "mr" , amount );
+	BuffOn( caster , "magicreflection" , amount , 0 );	// no timer: it lasts until it reflects a spell
 
 endprogram

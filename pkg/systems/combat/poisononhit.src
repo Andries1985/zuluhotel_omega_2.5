@@ -21,7 +21,9 @@ program poisononhit( parms )
 		targ := attacker;
 	endif
 
-	SetPoison(targ , poison , "You have been poisoned by " + defender.name);
+	// The wearer gets the kill if the poison finishes the attacker (SetPoison skips self-credit,
+	// so cursed armor credits nobody).
+	SetPoison(targ , poison , "You have been poisoned by " + defender.name, 0, 0, defender);
 
 	ApplyTheDamage( defender , attacker , rawdamage );
  

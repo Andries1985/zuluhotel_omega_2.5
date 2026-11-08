@@ -8,7 +8,7 @@ include "ai/setup/dressCustom";
 	drop_anchor(me);
 
 	if (!me.backpack)
-		var npccfg := readconfigfile("npcdesc");
+		var npccfg := readconfigfile("::npcdesc");
 		var newbackpack := CreateItemAtLocation(5288 , 1176 , 0, 0xe75,1);
 		EquipItem(me, newbackpack);
 		if (npccfg[me.npctemplate].colorrange)

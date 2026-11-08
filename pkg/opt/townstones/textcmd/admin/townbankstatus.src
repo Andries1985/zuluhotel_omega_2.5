@@ -5,6 +5,7 @@ use basic;
 use datafile;
 use cfgfile;
 include ":gumps:gumps";
+include ":townstone:citizens";
 include ":gumps:yesno";
 
 const TOWNSTONE_DATAFILE := ":townstone:townstone_data";
@@ -26,7 +27,6 @@ const MEMBER_BTN_PREV := 16001;
 const MEMBER_BTN_NEXT := 16002;
 const MEMBER_BTN_CLOSE := 16003;
 const MEMBER_BTN_REMOVE_BASE := 17000;
-const TOWN_MAX_CHAR_SLOTS := 7;
 const VOTE_RUNE_OBJTYPE := 0xa321;
 
 program textcmd_townbankstatus(who)
@@ -257,12 +257,12 @@ function ShowTownMemberManagerGump(who, region_name, town_id)
 			endif
 
 			var member_name := CStr(remove_entry[1]);
-			var member_acct := CStr(remove_entry[2]);
+			var member_serial := CInt(remove_entry[3]);
 			if(!YesNo(who, "Remove " + member_name + " from " + CStr(region_name) + "?", "Remove", "Cancel"))
 				continue;
 			endif
 
-			var remove_result := RemoveTownMemberByAccount(stone, region_name, CInt(GetObjProperty(stone, "town")), member_acct);
+			var remove_result := RemoveTownMemberByChar(stone, region_name, CInt(GetObjProperty(stone, "town")), member_serial);
 			if(remove_result)
 				SendSysMessage(who, "Removed " + member_name + " from " + CStr(region_name) + ".");
 			else
@@ -282,131 +282,64 @@ function GetTownMembersForStone(stone, town_id)
 		return members;
 	endif
 
-	var citizen := GetObjProperty(stone, "citizen");
-	if(!citizen)
-		citizen := {};
-	endif
-
-	var i;
-	for(i := 1; i <= citizen.size(); i := i + 1)
-		var account_name := Trim(CStr(citizen[i]));
-		if(!account_name)
+	// One row per citizen character (citizens.inc): {name, account, serial}. A character that is
+	// gone or no longer wears this town is left out.
+	foreach entry in LoadCitizenList(stone)
+		var character := SystemFindObjectBySerial(CitizenSerial(entry), SYSFIND_SEARCH_OFFLINE_MOBILES);
+		if(!character)
 			continue;
 		endif
-
-		var display := ResolveTownMemberDisplay(account_name, town_id);
-		if(!display[2])
+		if(town_id and CInt(GetObjProperty(character, "town")) != CInt(town_id))
 			continue;
 		endif
-		members.append({display[1], account_name, display[2]});
-	endfor
+		members.append({CStr(character.name), CitizenAccount(entry), CInt(character.serial)});
+	endforeach
 
 	return members;
 endfunction
 
 
-function ResolveTownMemberDisplay(account_name, town_id)
-	var result := {account_name, 0};
-	if(!account_name)
-		return result;
-	endif
-
-	var account := FindAccount(account_name);
-	if(!account)
-		return result;
-	endif
-
-	var slot;
-	for(slot := 1; slot <= TOWN_MAX_CHAR_SLOTS; slot := slot + 1)
-		var character := account.GetCharacter(slot);
-		if(!character)
-			continue;
-		endif
-
-		if(town_id and CInt(GetObjProperty(character, "town")) != CInt(town_id))
-			continue;
-		endif
-
-		result[1] := CStr(character.name);
-		result[2] := CInt(character.serial);
-		return result;
-	endfor
-
-	return result;
-endfunction
-
-
-function RemoveTownMemberByAccount(stone, region_name, town_id, account_name)
-	if(!stone or !region_name or !account_name)
+// Removes one citizen character: its entry, town tag and name suffix, its candidacy and vote, and
+// the mayorship if it held it. The account's other characters stay citizens (Patch 1.1.5).
+function RemoveTownMemberByChar(stone, region_name, town_id, serial)
+	if(!stone or !region_name or !serial)
 		return 0;
 	endif
 
-	var citizen := GetObjProperty(stone, "citizen");
-	if(!citizen)
-		citizen := {};
-	endif
+	var citizen := LoadCitizenList(stone);
+	RemoveCitizenChar(citizen, serial);
 
-	var removed_from_list := RemoveCitizenAccount(citizen, account_name);
-	if(removed_from_list)
-		SetObjProperty(stone, "citizen", citizen);
-	endif
-
-	var removed_serials := {};
+	var removed_serials := {CInt(serial)};
 	var removed_names := {};
-	var account := FindAccount(account_name);
-	if(account)
-		var slot;
-		for(slot := 1; slot <= TOWN_MAX_CHAR_SLOTS; slot := slot + 1)
-			var character := account.GetCharacter(slot);
-			if(!character)
-				continue;
-			endif
-
-			if(town_id and CInt(GetObjProperty(character, "town")) != CInt(town_id))
-				continue;
-			endif
-
-			removed_serials.append(CInt(character.serial));
-			removed_names.append(CStr(character.name));
-
+	var account_name := "";
+	var character := SystemFindObjectBySerial(serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+	if(character)
+		account_name := CStr(character.acctname);
+		removed_names.append(CStr(character.name));
+		if(!town_id or CInt(GetObjProperty(character, "town")) == CInt(town_id))
 			EraseObjProperty(character, "town");
 			var cleaned_name := StripTownSuffix(CStr(character.name), CStr(region_name));
 			if(cleaned_name != CStr(character.name))
 				character.name := cleaned_name;
 			endif
 			SendSysMessage(character, "You are no longer citizen of " + CStr(region_name) + ".");
-		endfor
+		endif
 	endif
 
+	// Entries whose character is gone or no longer wears this town are dropped on the way.
 	var refreshed_citizens := {};
-	var citizen_idx;
-	for(citizen_idx := 1; citizen_idx <= citizen.size(); citizen_idx := citizen_idx + 1)
-		var citizen_account := Trim(CStr(citizen[citizen_idx]));
-		if(!citizen_account)
-			continue;
+	foreach entry in citizen
+		var member := SystemFindObjectBySerial(CitizenSerial(entry), SYSFIND_SEARCH_OFFLINE_MOBILES);
+		if(member and (!town_id or CInt(GetObjProperty(member, "town")) == CInt(town_id)))
+			refreshed_citizens.append(entry);
 		endif
-		if(Lower(citizen_account) == Lower(CStr(account_name)))
-			continue;
-		endif
+	endforeach
+	SetObjProperty(stone, "citizen", refreshed_citizens);
 
-		var citizen_display := ResolveTownMemberDisplay(citizen_account, town_id);
-		if(citizen_display[2])
-			refreshed_citizens.append(citizen_account);
-		endif
-	endfor
-	if(refreshed_citizens.size() != citizen.size() or removed_from_list)
-		SetObjProperty(stone, "citizen", refreshed_citizens);
-	endif
+	var mayor_serial := CInt(GetObjProperty(stone, "mayorserial"));
+	var is_mayor := (mayor_serial and mayor_serial == CInt(serial));
 
-	var is_mayor := IsMayorAccount(stone, account_name, removed_serials);
-
-	var populacao := CInt(GetObjProperty(stone, "populacao"));
-	if(populacao < 0)
-		populacao := 0;
-	endif
-	if(removed_from_list and populacao > 0)
-		populacao := populacao - 1;
-	endif
+	var populacao := refreshed_citizens.size();
 	SetObjProperty(stone, "populacao", populacao);
 
 	CleanupElectionMembershipForAccount(stone, account_name, removed_serials, removed_names, populacao, is_mayor);
@@ -457,7 +390,7 @@ function CleanupElectionMembershipForAccount(stone, account_name, removed_serial
 	endif
 
 	foreach runa in EnumerateItemsInContainer(stone)
-		if(runa.objtype == VOTE_RUNE_OBJTYPE and Lower(CStr(GetObjProperty(runa, "serial"))) == Lower(CStr(account_name)))
+		if(runa.objtype == VOTE_RUNE_OBJTYPE and IsRemovedVoter(runa, account_name, removed_serials))
 			DestroyItem(runa);
 			if(votos > 0)
 				votos := votos - 1;
@@ -536,16 +469,15 @@ endfunction
 function GetTownPopulation(region_name, town_id)
 	var stone := FindTownstoneByRegion(region_name, town_id);
 	if(stone)
+		// Converts an old per-account list (citizens.inc), which recounts populacao.
+		var citizen := LoadCitizenList(stone);
 		var pop := CInt(GetObjProperty(stone, "populacao"));
 		if(pop < 0)
 			pop := 0;
 		endif
 
-		if(pop <= 0)
-			var citizen := GetObjProperty(stone, "citizen");
-			if(citizen and citizen.size())
-				pop := citizen.size();
-			endif
+		if(pop <= 0 and citizen.size())
+			pop := citizen.size();
 		endif
 
 		return pop;
@@ -593,46 +525,14 @@ function GetTownIdByRegionName(region_name)
 endfunction
 
 
-function IsMayorAccount(stone, account_name, removed_serials)
-	if(!stone or !account_name)
-		return 0;
+// Whether a vote rune was cast by one of the removed characters. A vote from before Patch 1.1.5
+// holds the account name instead of a serial (citizens.inc IsVoteRuneOf()).
+function IsRemovedVoter(runa, account_name, removed_serials)
+	var voter := GetObjProperty(runa, "serial");
+	if(TypeOf(voter) == "String")
+		return (account_name and Lower(voter) == Lower(CStr(account_name)));
 	endif
-
-	var mayor_serial := CInt(GetObjProperty(stone, "mayorserial"));
-	if(mayor_serial and IsSerialInList(mayor_serial, removed_serials))
-		return 1;
-	endif
-
-	if(!mayor_serial)
-		return 0;
-	endif
-
-	var mayor_mobile := SystemFindObjectBySerial(mayor_serial, SYSFIND_SEARCH_OFFLINE_MOBILES);
-	if(!mayor_mobile)
-		mayor_mobile := SystemFindObjectBySerial(mayor_serial);
-	endif
-	if(!mayor_mobile)
-		return 0;
-	endif
-
-	return (Lower(CStr(mayor_mobile.acctname)) == Lower(CStr(account_name)));
-endfunction
-
-
-function RemoveCitizenAccount(citizen_list, account_name)
-	if(!citizen_list or !account_name)
-		return 0;
-	endif
-
-	var i;
-	for(i := 1; i <= citizen_list.size(); i := i + 1)
-		if(Lower(CStr(citizen_list[i])) == Lower(CStr(account_name)))
-			citizen_list.erase(i);
-			return 1;
-		endif
-	endfor
-
-	return 0;
+	return IsSerialInList(CInt(voter), removed_serials);
 endfunction
 
 

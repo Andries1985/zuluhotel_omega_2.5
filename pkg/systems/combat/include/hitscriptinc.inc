@@ -488,7 +488,16 @@ function CalcPhysicalDamage( attacker, defender, weapon, basedamage )
 	// 		basedamage *= GetGlobalProperty("ReducePhysical");
 	// 	endif
 	// else
-		if( !attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
+		// A pet, summon or Warrior for Hire hitting a player counts as its master, as in
+		// ApplyTheDamage(): a player's pet takes the same PvP cuts as the player.
+		var pvp_attacker := attacker;
+		if( attacker.isA(POLCLASS_NPC) )
+			var master := FindMaster(attacker);
+			if( master )
+				pvp_attacker := master;
+			endif
+		endif
+		if( !pvp_attacker.isA(POLCLASS_NPC) && !defender.isA(POLCLASS_NPC))
 			//if( !defender.isA(POLCLASS_NPC))
 				//Print("Applying PvP Physical reduction. Basedamage is: " + basedamage);
 				basedamage := CInt( basedamage * 0.4 );
@@ -536,7 +545,7 @@ endfunction
 
 function ModByProt( defender, basedamage )
 
-	var physicalprot := GetObjProperty( defender , "PhysicalProtection" );
+	var physicalprot := GetPhysicalProtection( defender );
 	if( !physicalprot )
 		return basedamage;
 	else
@@ -644,8 +653,19 @@ endfunction
 // multipliers otherwise.
 function WFHModifyDamage(attacker, defender, rawdamage)
 
+	// Each master read once and compared only when set; an absent CProp and an errored
+	// serial compared equal, halving hits on masterless warriors (ZH3.0 3.1.4).
+	var attacker_master := 0;
 	if (attacker.npctemplate == "warriorforhire")
-		if (GetObjProperty(attacker,"master") == defender.serial)
+		attacker_master := CInt(GetObjProperty(attacker,"master"));
+	endif
+	var defender_master := 0;
+	if (defender.npctemplate == "warriorforhire")
+		defender_master := CInt(GetObjProperty(defender,"master"));
+	endif
+
+	if (attacker.npctemplate == "warriorforhire")
+		if (attacker_master and attacker_master == defender.serial)
 			rawdamage := CInt(rawdamage / 2);
 		elseif (defender.isa(POLCLASS_NPC))
 			if (GetObjProperty(defender,"Boss") or GetObjProperty(defender,"SuperBoss"))
@@ -654,7 +674,7 @@ function WFHModifyDamage(attacker, defender, rawdamage)
 				rawdamage := CInt(rawdamage * WFHDamageMultiplier("WFHDamageToNPCs"));
 			endif
 		endif
-	elseif (defender.npctemplate == "warriorforhire" and GetObjProperty(defender,"master") == attacker.serial)
+	elseif (defender_master and defender_master == attacker.serial)
 		rawdamage := CInt(rawdamage / 2);
 	elseif (defender.npctemplate == "warriorforhire" and attacker.isa(POLCLASS_NPC))
 		if (GetObjProperty(attacker,"Boss") or GetObjProperty(attacker,"SuperBoss"))
@@ -753,6 +773,8 @@ function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 		//Check if reactive armor spell is on
 		if( reactive )
 			EraseObjProperty( defender , "ReactiveArmor" );
+			EraseObjProperty( defender , "#ReactiveArmorPid" );
+			BuffOff( defender , "reactivearmor" );
 			start_script( ":combat:reactivearmoronhit" , { attacker, defender, basedamage, rawdamage, reactive} );
 		endif
 

@@ -406,10 +406,9 @@ function DoImmunity( who , item )
 		SetObjProperty(who, "NecroProtection", necro);
 	endif
 	
-	// Phys prot done as well for dragon skin.  will eventuall incorporate everything into a nice little function if these work
-	if (GetObjProperty(item, "PhysicalProtection") || GetObjProperty(who, "#DragonSkin") )
+	// Phys prot: highest equipped item. Dragon Skin no longer touches this cprop (see spellprots.inc).
+	if (GetObjProperty(item, "PhysicalProtection"))
 
-		var dskin := CInt(GetObjProperty(who, "#DragonSkin"));
 		var phys := 0;
 		var tphys := 0;
 		
