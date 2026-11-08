@@ -2,8 +2,8 @@
 **Range:** `b640f5c` (merge of #353, the last 1.1.5 patchnotes state) -> working tree (this commit)
 **Branch:** Patch-1.1.6 (branched from `origin/Test-Shard` at `b640f5c`)
 **Date:** 2026-11-03 to 2026-11-08 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07; login limit hotfix 2026-11-08)
-**Commits in range:** 2 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
-**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `3f9d67b`: 3 account scripts; plus this release's 3 `patchnotes/` files. The full list is section 16.
+**Commits in range:** 3 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest, `a7c3dfc` tree items), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
+**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `a7c3dfc`: 3 harvest scripts (section 7.7); `3f9d67b`: 3 account scripts; plus this release's 3 `patchnotes/` files. The full list is section 16.
 
 > Scope was computed against `b640f5c`. `origin/Test-Shard` was still at `b640f5c` when this commit was made, so the whole delta is the two commits.
 > Built with `ecompile -A`: 1,163 scripts, 0 errors (the 6 `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). Not yet run in a client (section 17). The login hotfix (section 15) has not been compiled yet.
@@ -18,7 +18,7 @@
 4. [`harvesttiles.inc` - One Place for the Tile Lists](#4-harvesttilesinc---one-place-for-the-tile-lists)
 5. [The Tile Lists](#5-the-tile-lists)
 6. [Region Configs](#6-region-configs)
-7. [Per-Script Changes](#7-per-script-changes)
+7. [Per-Script Changes](#7-per-script-changes) (7.7: tree items)
 8. [Fishing - Magic Fish Above 129 Skill](#8-fishing---magic-fish-above-129-skill)
 9. [Regeneration](#9-regeneration)
 10. [Pets - Special Spell Mana and Cast Cooldown](#10-pets---special-spell-mana-and-cast-cooldown)
@@ -61,7 +61,9 @@ A live hotfix rides along (section 15): kicking the third account on an IP after
 | `8d85c3e` | 2026-11-07 | Harvest: check real tiles instead of client graphics, rebuilt tile lists, patch notes | 3-8 |
 | `1cf11dc` | 2026-11-07 | Regen, pet mana, karma/fame from npcdesc, Control Undead / Spell Bind charm state, review fixes, patch notes | 9-14 |
 | `3f9d67b` | 2026-11-08 | Refuse over-limit IP logins at the login server instead of kicking in world (on Patch-1.1.5; PR #355 into Test-Shard, PR #356 into Live-Shard) | 15 |
-| *(this commit)* | 2026-11-08 | Patch notes for the login limit hotfix | - |
+| `ed5d187` | 2026-11-08 | Patch notes for the login limit hotfix | - |
+| `a7c3dfc` | 2026-11-08 | Lumberjacking and kindling: tree items on the ground give wood again (PR #358) | 7.7 |
+| *(this commit)* | 2026-11-08 | Patch notes for the tree item fix | - |
 
 ---
 
@@ -83,7 +85,7 @@ A live hotfix rides along (section 15): kicking the third account on an IP after
 
 ### 3.3 The fix
 
-Each script asks `FindHarvestTile(resource, x, y, realm)` (section 4), which only returns a tile that is both in the script-side list and accepted by the engine at that spot. The client's objtype is never read. Water for pitchers and bandages has no region config, so `IsWater(where, realm)` reads the real statics and land directly, and accepts a placed item only by its own `graphic` and only when it is not in a container.
+Each script asks `FindHarvestTile(resource, x, y, realm)` (section 4), which only returns a tile that is both in the script-side list and accepted by the engine at that spot. The client's objtype is never read. Water for pitchers and bandages has no region config, so `IsWater(where, realm)` reads the real statics and land directly, and accepts a placed item only by its own `graphic` and only when it is not in a container. Wood does the same for tree items (planted and decoration trees) through `IsTreeItem()` (section 7.7).
 
 ---
 
@@ -96,6 +98,7 @@ New file `scripts/include/harvesttiles.inc`, included by `scripts/include/itemut
 | `FindHarvestTile(resource, x, y, realm := 0)` | `"wood"`, `"ore"`, `"sand"`, `"clay"` or `"fish"`. Checks statics at x,y (`LIST_IGNORE_Z`, `ITEMS_IGNORE_MULTIS`) first, then the land tile. Returns the matching tile id, or 0. Realm defaults to `_DEFAULT_REALM`. |
 | `HarvestTileAt(resource, x, y, tile, realm)` | Calls `GetHarvestDifficulty()` and tests `.errortext`, not the value: a difficulty roll of 0 is valid. `"Resource is depleted"` still counts as present, so the skill can say "none left" instead of "can't use that". |
 | `HarvestTileListed(resource, tile, is_land)` | Dispatches to the list predicates. Wood is statics only; sand and clay are land only; ore and fish are both. |
+| `IsTreeItem(use_on, realm := 0)` | Lumberjacking and kindling (`a7c3dfc`, section 7.7). The targeted `use_on.item` is on the ground (no container), in `realm`, and its own `graphic` passes `IsTree`. The server resolves the item, so the graphic is trusted. |
 | `IsWater(where, realm := 0)` | Pitchers and bandages. A placed item not in a container whose `graphic` is a water static; a real water static at x,y; or water land at x,y. Replaces the old `itemutil.inc` `IsWater(theobj)`. |
 | `IsTree`, `IsOreLand`, `IsOreStatic`, `IsSand`, `IsSwamp`, `IsFishLand`, `IsFishStatic`, `IsWaterLand`, `IsWaterStatic` | The tile lists (section 5). Each takes a tile id. |
 
@@ -173,13 +176,13 @@ The range extensions are cosmetic. In pol-core, a resource zone that no `Range` 
 
 ### 7.1 `lumberjack.src`
 
-- Yucca check replaced by `FindHarvestTile("wood", use_on.x, use_on.y, character.realm)` before the loop; failure: "You can't get any wood from that."
+- Yucca check replaced by `IsTreeItem(use_on, character.realm)` or `FindHarvestTile("wood", use_on.x, use_on.y, character.realm)` before the loop (the `IsTreeItem` half was added in `a7c3dfc`, section 7.7); failure: "You can't get any wood from that."
 - The `IsTree(use_on.objtype)` branch and the z-search fallback (four `ListStaticsAtLocation` calls at z+1, z-1, z-2, z+2) are gone. `FindHarvestTile` ignores z, so clicking the ground under a tree still finds it.
 - The unused `GetMapInfo()` in the loop and `ChopTree()`'s `info` parameter are removed.
 
 ### 7.2 `bladed.src`
 
-- The tree branch is `!use_on.item and !use_on.mobile and FindHarvestTile("wood", ...)`. The item/mobile guard keeps a blade used on a tree-graphic item or a creature out of kindling.
+- The tree branch is `IsTreeItem(use_on, user.realm) or (!use_on.item and !use_on.mobile and FindHarvestTile("wood", ...))`. A tree item on the ground gives kindling (`a7c3dfc`, section 7.7); any other item, and creatures, stay out of the map-tree check.
 - The z-search fallback and `CarveTree()`'s yucca check are removed.
 
 ### 7.3 `mining.src`
@@ -202,6 +205,15 @@ Each local `check_for_water(character, theobj)` becomes `return IsWater(theobj, 
 
 - Returns at once if the target is cancelled.
 - `is_plantable(theobj, realm)`: fertile dirt `0x31F4-0x31FB` is accepted from a placed item (not in a container, by its `graphic`) or a real static at x,y; the land tile is read in the caster's realm.
+
+### 7.7 Tree items (`a7c3dfc`, PR #358)
+
+- **Found in testing:** a planted banana tree gave "You can't get any wood from that." `FindHarvestTile` only reads map statics and the land tile, so every tree that is an *item* was refused. That means Botanik trees grown from tree seeds (`pkg/opt/botanik/maketree.src`, carrying a `PlacedBy` CProp) and decoration trees.
+- **Before 1.1.6** these gave wood: `IsTree(use_on.objtype)` matched the item, and `HarvestResource("wood", x, y, ...)` takes from the region pool without checking for a tile. The live save of 2026-11-08 has 2,891 tree items on the ground (trunks and leaves): 2,465 planted by players and 426 with no `PlacedBy`.
+- **Fix:** `IsTreeItem(use_on, realm)` in `harvesttiles.inc` (section 4). `lumberjack.src` accepts `IsTreeItem` or `FindHarvestTile("wood")`; `bladed.src` sends a tree item to `CarveTree()` and keeps the map check for non-item, non-mobile targets.
+- **Still safe from spoofing:** the client sends the item's serial and the server looks up the item, so its `graphic` is the server's. A macro claiming a tree graphic on bare ground still reaches only `FindHarvestTile`.
+- **Unchanged:** wood comes from the region pool, as before 1.1.6 and as for map trees, so a tree item doesn't run dry by itself. The 2-tile distance check (and line of sight for kindling) still applies.
+- Built with `ecompile -A`: 1,163 scripts, 0 errors.
 
 ---
 
@@ -415,10 +427,10 @@ A code review of the first version found the pending-login gap above, the unchec
 
 | File | Section | Summary |
 |---|---|---|
-| `scripts/include/harvesttiles.inc` | 4, 5 | New - `FindHarvestTile()`, `HarvestTileAt()`, `HarvestTileListed()`, `IsWater(where, realm)`, and the list predicates `IsTree`, `IsOreLand`, `IsOreStatic`, `IsSand`, `IsSwamp`, `IsFishLand`, `IsFishStatic`, `IsWaterLand`, `IsWaterStatic` |
+| `scripts/include/harvesttiles.inc` | 4, 5, 7.7 | New - `FindHarvestTile()`, `HarvestTileAt()`, `HarvestTileListed()`, `IsTreeItem(use_on, realm)` (`a7c3dfc`), `IsWater(where, realm)`, and the list predicates `IsTree`, `IsOreLand`, `IsOreStatic`, `IsSand`, `IsSwamp`, `IsFishLand`, `IsFishStatic`, `IsWaterLand`, `IsWaterStatic` |
 | `scripts/include/itemutil.inc` | 4 | Includes `include/harvesttiles`; `IsMinable`, `IsSand`, `IsSwamp`, `IsTree`, `IsWater` removed |
-| `pkg/std/lumberjacking/lumberjack.src` | 7.1 | `FindHarvestTile("wood")` gate; objtype branch, z-search fallback, yucca check and `info` removed |
-| `scripts/items/bladed.src` | 7.2 | Kindling branch uses `FindHarvestTile("wood")` on non-item, non-mobile targets; z-search and yucca check removed |
+| `pkg/std/lumberjacking/lumberjack.src` | 7.1, 7.7 | `IsTreeItem` or `FindHarvestTile("wood")` gate; objtype branch, z-search fallback, yucca check and `info` removed |
+| `scripts/items/bladed.src` | 7.2, 7.7 | Kindling branch: `IsTreeItem`, or `FindHarvestTile("wood")` on non-item, non-mobile targets; z-search and yucca check removed |
 | `pkg/std/mining/mining.src` | 7.3 | Ore / clay / sand chosen once by `FindHarvestTile`; realm passed to `GetHarvestDifficulty`; `info` parameters removed |
 | `pkg/std/fishing/fishing.inc` | 7.4, 8 | `check_for_water(theobj, realm)` via `FindHarvestTile("fish")`; `RandomFish()` last branch is `else` |
 | `pkg/std/fishing/fishing.src` | 7.4 | Water check after cancel, with realm; second difficulty block removed; depleted check before the random amount |
@@ -464,7 +476,7 @@ A code review of the first version found the pending-login gap above, the unchec
 - **Shore fishing is the visible change.** About 165,000 shoreline cells stop being fishable. Expect questions from fishers who stood on the beach and targeted the first water square; casting further out works.
 - **Cave floor tiles `0x24A-0x26D` now give ore.** Some dungeon areas that gave nothing or clay now give ore. Ore regions in `ore.cfg` were not changed, so difficulty and ore type follow the existing regions.
 - **Troughs, tubs, barrels, buckets and fountains as map statics** now fill pitchers. Alryc has not explicitly confirmed this part of the water list (it stands at Claude's suggestion).
-- **`bladed.src` kindling refuses items.** A tree placed as an item (house decoration) no longer gives kindling; before, its graphic matched `IsTree`.
+- **Tree items still give wood and kindling** (section 7.7). Any tree item on the ground counts, planted or decoration, including decoration trees players may not expect to be choppable. They take from the region pool like before 1.1.6.
 - **Multis are ignored** (`ITEMS_IGNORE_MULTIS`): trees and water that are part of a house or boat multi don't count.
 - **Regen applies on the next AI start.** Existing NPCs and pets pick up template regen and the karma/fame CProps when their AI restarts (a reboot does it); kill awards read npcdesc live. Players are repaired at logon.
 - **Fast-healing and fast-mana creatures.** 126 templates heal faster and 68 regain mana faster than before (their values were never applied). Bosses such as balrons and the Dragon King now regain mana at the core cap; watch fight lengths.
