@@ -23,6 +23,23 @@
 use uo;
 
 
+// A tree that is an item on the ground: Botanik planted trees and decoration
+// trees. The server resolves the targeted item itself, so its graphic can be
+// trusted, unlike the graphic the client reports for a map tile. Before 1.1.6
+// these gave wood, and they still do; the wood comes from the region's pool.
+function IsTreeItem( use_on, realm := 0 )
+
+	var item := use_on.item;
+	if( !item || item.container )
+		return 0;
+	elseif( realm && item.realm != realm )
+		return 0;
+	endif
+	return IsTree( item.graphic );
+
+endfunction
+
+
 // Returns the real tile at x,y that resource ("wood", "ore", "sand", "clay"
 // or "fish") can be gathered from, or 0 if there is none.
 // Statics are checked before the land tile, since they sit on top of it.

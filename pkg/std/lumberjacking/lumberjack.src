@@ -55,7 +55,8 @@ program use_axe( character , axe )
 	endif*/
 
 	// Find a real tree at the spot; the graphic the client sends is not trusted.
-	if( !FindHarvestTile( "wood" , use_on.x , use_on.y , character.realm ) )
+	// A tree item on the ground (planted or decoration) counts too.
+	if( !IsTreeItem( use_on , character.realm ) && !FindHarvestTile( "wood" , use_on.x , use_on.y , character.realm ) )
 		SendSysmessage( character , "You can't get any wood from that." );
 		return;
 	endif
