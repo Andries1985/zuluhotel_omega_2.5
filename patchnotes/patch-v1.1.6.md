@@ -30,6 +30,7 @@ Welcome to **Patch 1.1.6**. This patch is mostly about gathering, with a second 
 - **More trees give wood:** coconut and date palms, yew trees, some leafy tree tops and the Tuscany pine.
 - **Plants that aren't trees no longer give wood.** Grasses, ferns, rushes, weeds, cattails, pampas grass, snake plants, ponytail palms and flowers were on the old list. The juniper bush still gives wood.
 - **Yucca still gives no wood.**
+- **Trees you plant still give wood**, and so do decoration trees. Chopping a tree grown from a tree seed, or carving kindling from it, works as before.
 - Carving kindling with a blade uses the same tree list.
 
 ---
@@ -141,7 +142,7 @@ Welcome to **Patch 1.1.6**. This patch is mostly about gathering, with a second 
 ## Summary
 
 - Every gathering skill (lumberjacking, kindling, mining, clay, sand, fishing, nets, pitchers, bandages, seeds) checks what is really at the spot instead of trusting the client, and reads the right map outside Britannia.
-- Wood: palms, yews, some leaves and the Tuscany pine added; grasses, ferns, flowers and other plants removed; yucca stays out.
+- Wood: palms, yews, some leaves and the Tuscany pine added; grasses, ferns, flowers and other plants removed; yucca stays out; planted and decoration trees still give wood.
 - Mining: more cave floors give ore; dungeon floors give ore instead of clay; the Occlo bank forest tile gives nothing; clay only from swamp; sand list corrected.
 - Fishing: only real fishable water; shoreline strips, waterfalls, fountains and troughs are out; casts above 129 skill no longer come up empty.
 - Pitchers and bandages accept waterfalls, fountains, troughs, tubs, barrels and buckets on the map.
