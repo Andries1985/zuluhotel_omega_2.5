@@ -288,7 +288,7 @@ function DoRegenMods( who , item )
 	var stamina := GetObjProperty( item , "StamRegen" );
 	if( stamina )
 		if( GetObjProperty( who , "basestamregen" ) )
-			SetObjProperty( who , "basestamregen" , GetObjProperty( who , "basemanaregen" ) + stamina );
+			SetObjProperty( who , "basestamregen" , GetObjProperty( who , "basestamregen" ) + stamina );
 		else
 			SetObjProperty( who , "basestamregen" , stamina );
 		endif

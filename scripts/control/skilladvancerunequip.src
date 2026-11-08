@@ -61,23 +61,10 @@ program unequip( who, it )
 	UnequipSkillItem(who,it);
 
 
-	var hp := GetObjProperty( it , "HpRegen" );
-	if( hp )
-		SetHPRegenRate(who, GetHPRegenRate(who) - hp); //who.hp_regen_rate := who.hp_regen_rate - hp;
-		SetObjProperty( who , "baseregen" , GetObjProperty( who , "baseregen" ) - hp );
-	endif
-	
-	var mana := GetObjProperty( it , "ManaRegen" );
-	if( mana )
-		SetManaRegenRate(who, GetManaRegenRate(who)- mana); //who.mana_regen_rate := who.mana_regen_rate - mana;
-		SetObjProperty( who , "basemanaregen" , GetObjProperty( who , "basemanaregen" ) - mana );
-	endif
-	
-	var stamina := GetObjProperty( it , "StamRegen" );
-	if( stamina )
-		SetStaminaRegenRate(who, GetStaminaRegenRate(who) - stamina); //who.stamina_regen_rate := who.stamina_regen_rate - stamina;
-		SetObjProperty( who , "basestamregen" , GetObjProperty( who , "basemanaregen" ) - stamina );
-	endif
+	// Item regen is not applied on equip (DoRegenMods is commented out in skilladvancerequip.src),
+	// so there is nothing to take off. Subtracting it anyway lowered the wearer's regen for good.
+	// Turn both back on together.
+	//UndoRegenMods( who , it );
 
 	UndoImmunity( who , it );
 	UndoProt( who , it );
@@ -391,4 +378,28 @@ function GetMaxGain(item)
 		endcase
 
 		return MaxGain;
+endfunction
+
+
+// Mirror of DoRegenMods in skilladvancerequip.src. Not called while that one is off.
+function UndoRegenMods( who , it )
+
+	var hp := GetObjProperty( it , "HpRegen" );
+	if( hp )
+		SetHPRegenRate(who, GetHPRegenRate(who) - hp);
+		SetObjProperty( who , "baseregen" , GetObjProperty( who , "baseregen" ) - hp );
+	endif
+
+	var mana := GetObjProperty( it , "ManaRegen" );
+	if( mana )
+		SetManaRegenRate(who, GetManaRegenRate(who)- mana);
+		SetObjProperty( who , "basemanaregen" , GetObjProperty( who , "basemanaregen" ) - mana );
+	endif
+
+	var stamina := GetObjProperty( it , "StamRegen" );
+	if( stamina )
+		SetStaminaRegenRate(who, GetStaminaRegenRate(who) - stamina);
+		SetObjProperty( who , "basestamregen" , GetObjProperty( who , "basestamregen" ) - stamina );
+	endif
+
 endfunction

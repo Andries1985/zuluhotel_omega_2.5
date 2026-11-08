@@ -17,7 +17,7 @@ if (thisone<50 )
 elseif (thisone<100)
 	fishtype := Random(UOBJ_SFISH_END - UOBJ_SFISH_START);
 	fishtype := UOBJ_SFISH_START + fishtype;
-elseif (thisone<130)
+else
         fishtype := Random(9) + 0xA368;
 endif
 return fishtype;
@@ -58,27 +58,13 @@ return hands;
 
 endfunction
 
-function check_for_water (theobj)
-	//static water tiles
-	if( (theobj.objtype >=0x346E) and (theobj.objtype <= 0x3485) )
-		return 1;
-	elseif( (theobj.objtype >= 0x3494) and (theobj.objtype <= 0x34AB) )
-		return 1;
-	elseif( (theobj.objtype >= 0x34B8) and (theobj.objtype <= 0x34BB) )
-		return 1;
-	elseif( (theobj.objtype >= 0x34BD) and (theobj.objtype <= 0x34C0) )
-		return 1;
-	elseif( (theobj.objtype >= 0x34C2) and (theobj.objtype <= 0x34C5) )
-		return 1;
-	elseif( (theobj.objtype >= 0x34C7) and (theobj.objtype <= 0x34CA) )
-		return 1;
-	elseif( (theobj.objtype >= 0x1796) and (theobj.objtype <= 0x17B2) )
-		return 1;
-	elseif(IsWater(theobj))
-		return 1;
-	else
+// Fishable water at the target: a real water static or land tile listed in
+// regions/fish.cfg. The graphic the client sends is not trusted.
+function check_for_water (theobj, realm := 0)
+	if( !theobj )
 		return 0;
 	endif
+	return FindHarvestTile( "fish", theobj.x, theobj.y, realm );
 endfunction
 
 //Depreciated Code

@@ -7,6 +7,7 @@ include "include/classes";
 include "include/client";
 include "include/attributes";
 include "include/managers";
+include "include/charm";
 
 const SPELL_EFFECT_TYPE_MOVING 	:= MOVING_SPELL_CONTROL_UNDEAD;
 const SPELL_EFFECT_ID		:= FX_SPELL_CONTROL_UNDEAD;
@@ -55,14 +56,26 @@ program cast_controlundead( parms )
                                          SPELL_EFFECT_LOOP);
 	endif
 	
-	if( GetObjProperty( cast_on , "Type" ) != "Undead" )
+	if( !cast_on.isa(POLCLASS_NPC) or GetObjProperty( cast_on , "Type" ) != "Undead" )
 		SendSysmessage( caster , "That isn't an undead!" );
 		EraseObjProperty( caster , "#Casting" );
 		return;
 	endif
 	
-	if( GetObjProperty( cast_on , "untamable" ) )
+	if( GetObjProperty( cast_on , "untamable" ) or GetObjProperty( cast_on , "iChampSpawn" ) )
 		SendSysmessage( caster , "You can't take the control of this creature." );
+		EraseObjProperty( caster , "#Casting" );
+		return;
+	endif
+
+	// Someone's pet, animated dead or summon, or already under this spell. Taking it used to
+	// steal it, and casting again on your own saved "tamed" as its script, so it never went back.
+	if( cast_on.script == "tamed" or GetObjProperty( cast_on , "master" ) or IsSpellCharmed( cast_on ) )
+		if( CInt(GetObjProperty( cast_on , "master" )) == caster.serial )
+			SendSysmessage( caster , "This creature is already under your control." );
+		else
+			SendSysmessage( caster , "That creature already has a master." );
+		endif
 		EraseObjProperty( caster , "#Casting" );
 		return;
 	endif
@@ -100,22 +113,22 @@ program cast_controlundead( parms )
 		endif
 	endif
 	
-	var oldscript := cast_on.script;
 	SendSysmessage( caster , "Control Undead is successful!" );
+	// Tell its spawnpoint it's gone, so the spawnpoint makes a new one.
 	WarnManagerOfNpcDeath(cast_on);
-	SetObjProperty( cast_on , "master" , caster.serial );
 	EraseObjProperty( cast_on, "SpawnPoint" );
 	EraseObjProperty( cast_on, "Anchor" );
-	SetObjProperty( cast_on, "charmed", 1 );
 	PrintTextAbove( cast_on, "You take control of " + cast_on.name );
-	cast_on.script := "tamed";
-	RestartScript( cast_on );
-	
+	var control_until := StartCharm( cast_on, caster, duration, "controlundead" );
+
 	EraseObjProperty( caster , "#Casting" );
-	Sleep( duration );
-	
-	cast_on.script := oldscript;
-	RestartScript( cast_on );
-	EraseObjProperty( cast_on , "master" );	
+	Sleep( CInt(duration) );
+
+	// End it unless it already ended (released, or the tamed AI saw the time pass) or a later
+	// cast now holds it. The tamed AI also ends it if this script dies, e.g. in a reboot.
+	var control_data := GetObjProperty( cast_on, PROPID_CHARM );
+	if( cast_on and control_data and control_data.ends_at == control_until and control_data.master == caster.serial )
+		EndCharm( cast_on );
+	endif
 
 endprogram

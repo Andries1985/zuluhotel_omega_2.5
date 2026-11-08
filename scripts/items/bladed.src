@@ -65,7 +65,8 @@ program use_blade( user )
 	elseif( IsFish(use_on.objtype ) )
 		CarveFish(user,use_on.item);
 
-	elseif( IsTree(use_on.objtype ) )
+	// A real tree at the spot; the graphic the client sends is not trusted.
+	elseif( !use_on.item and !use_on.mobile and FindHarvestTile( "wood", use_on.x, use_on.y, user.realm ) )
 		CarveTree(user,use_on);
 	
 	elseif( IsArrow(use_on) )
@@ -74,42 +75,6 @@ program use_blade( user )
 	elseif (use_on.mobile && IsThief(user) && blade.graphic == 3921)
 		return Start_Script(":combat:hitscript/balanceddagger", {user, use_on.mobile, blade});
 */
-	elseif(!use_on.objtype)
-		var found := 0;
-			foreach item in ListStaticsAtLocation( use_on.x, use_on.y, use_on.z+1, 0, user.realm )
-				if(IsTree( item.objtype ))
-					use_on := item;
-					found := 1;
-				endif
-			endforeach
-			if(!found)
-				foreach item in ListStaticsAtLocation( use_on.x, use_on.y, use_on.z-1, 0, user.realm )
-					if(IsTree( item.objtype ))
-						use_on := item;
-						found := 1;
-					endif
-				endforeach
-			endif
-			if(!found)
-				foreach item in ListStaticsAtLocation( use_on.x, use_on.y, use_on.z-2, 0, user.realm )
-					if(IsTree( item.objtype ))
-						use_on := item;
-						found := 1;
-					endif
-				endforeach
-			endif
-			if(!found)
-				foreach item in ListStaticsAtLocation( use_on.x, use_on.y, use_on.z+2, 0, user.realm )
-					if(IsTree( item.objtype ))
-						use_on := item;
-						found := 1;
-					endif
-				endforeach
-			endif
-
-			if(found)
-				CarveTree(user,use_on);
-			endif
 	else
 		SendSysmessage( user , "You don't know how to use those items together." );
 	endif
@@ -126,11 +91,6 @@ function CarveTree( user , use_on )
 	
 	if( !CheckLosBetween(user.x, user.y, user.z, use_on.x, use_on.y, use_on.z) )
 		SendSysMessage(user, "You can't see that.");
-		return 0;
-	endif
-
-	if( use_on.objtype == 0x0d37 )
-		SendSysmessage( user , "Don't know how to carve from that." );
 		return 0;
 	endif
 

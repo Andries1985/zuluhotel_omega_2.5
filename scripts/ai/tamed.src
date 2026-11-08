@@ -18,6 +18,7 @@ include "include/random";
 include "include/attributes";
 include ":housing:utility";
 include "include/areas";
+include "include/charm";
 
 const HALT_THRESHOLD := 10;
 Const MOVING_EFFECT_FIREBALL	:= 0x36D4;
@@ -90,6 +91,14 @@ program TamedAI()
 		endif
 	endif
 	EraseObjProperty(me,"#restarting");
+
+	// Control Undead / Spell Bind that ran out while its spell script wasn't running
+	// (reboot), or a pre-1.1.6 one that never stored an end time.
+	ClearStaleCharmFlag(me);
+	if( CharmExpired(me) )
+		EndCharm(me);
+		return;
+	endif
 
 	if (getobjproperty(me, "frozen"))
 		me.frozen := 1;
@@ -233,7 +242,9 @@ function Fight( opponent )
 				nextbreath := readgameclock()+Random(5)+5;
 			endif
 		elseif (caster)
-			if ( nextbreath <= readgameclock() )
+			// Same 2 second cast cooldown as a wild caster (spellcombatevent.inc). This used to
+			// test nextbreath, which casters never advance, so pets cast on every loop.
+			if ( CInt(GetObjProperty(me,"#lastbreath")) <= ReadGameClock() )
 				if (Random(3) != 1)
 					sleep(1);
 					cast_offensive_spell( me, opponent );
@@ -448,6 +459,16 @@ function Release()
 		return;
 	endif
 
+	// Control Undead / Spell Bind: checked first, a taken pet may be someone's summon.
+	if( IsSpellCharmed(me) )
+		if( !CharmPrevMaster(me) and ( IsInNOPKArea(me) || IsInGuardedArea(me) || IsInSafeArea(me) || IsInSafeArea(me.master) ) )
+			ConfiscatePetForRestrictedRelease();
+		else
+			EndCharm(me);
+		endif
+		return;
+	endif
+
 	var summoned := GetObjProperty( me , "summoned" );
 	var animated := GetObjProperty( me , "animated" );
 	var totem := Cint(GetObjProperty( me , "totem" ));
@@ -493,6 +514,21 @@ function Release()
 endfunction
 
 function ConfiscatePetForRestrictedRelease()
+
+	// A charmed creature isn't the master's to keep: a ticket would let the Animal Trainer
+	// hand it back as a real pet. A taken pet goes back to its owner; anything else vanishes
+	// like a summon rather than running loose in town.
+	if( IsSpellCharmed(me) )
+		if( CharmPrevMaster(me) )
+			EndCharm(me);
+		else
+			PlayStationaryEffect( me.x, me.y, me.z, FX_SMOKE, 0xA, 0xA, 0, me.realm );
+			MoveObjectToLocation(me, 5288, 1176, 0, "britannia", MOVEOBJECT_FORCELOCATION);
+			RevokePrivilege( me, "invul" );
+			me.kill();
+		endif
+		return;
+	endif
 	if (!master)
 		if (DEBUG_MODE)
 			PrintTextAbove(me, "OpenMyPack denied: no master");
@@ -947,6 +983,11 @@ function MainAILoop()
 
 	while (1)
 		ev := os::wait_for_event( waittime );
+
+		if( CharmExpired(me) )
+			EndCharm(me);
+			return;
+		endif
 		if ( ev )
 			if (!ev.source.npctemplate)
 				waittime := 2;

@@ -54,8 +54,9 @@ program use_axe( character , axe )
 		return 0;
 	endif*/
 
-	if( use_on.objtype == 0x0d37 || use_on.objtype == 0x0d38 )
-		SendSysmessage( character , "Don't know how to lumberjack from that." );
+	// Find a real tree at the spot; the graphic the client sends is not trusted.
+	if( !FindHarvestTile( "wood" , use_on.x , use_on.y , character.realm ) )
+		SendSysmessage( character , "You can't get any wood from that." );
 		return;
 	endif
 
@@ -63,7 +64,6 @@ program use_axe( character , axe )
 
 	while (Autoloop_more ())
 
-        	var info := GetMapInfo( use_on.x , use_on.y );
 		var result;
 	
 		/*
@@ -71,62 +71,12 @@ program use_axe( character , axe )
 		    result = 0  - Failure	- autoloop goes on
 		    result < 0  - Nomore logs	- autoloop stops
 		*/
-		if( IsTree( use_on.objtype ) )
+		SendSysmessage( character , "You start lumberjacking..." );
+		result := ChopTree( character , use_on , axe );
 
-			SendSysmessage( character , "You start lumberjacking..." );
-			result := ChopTree( character , use_on , info , axe );
-
-			if (!axe) //Tool broken
-				SendSysMessage( character , "You stop lumberjacking." );			
-			        Autoloop_finish ();
-				return;
-			endif
-		elseif(!use_on.objtype)
-		var found := 0;
-			foreach item in ListStaticsAtLocation( use_on.x, use_on.y, use_on.z+1, 0, character.realm )
-				if(IsTree( item.objtype ))
-					use_on := item;
-					found := 1;
-				endif
-			endforeach
-			if(!found)
-				foreach item in ListStaticsAtLocation( use_on.x, use_on.y, use_on.z-1, 0, character.realm )
-					if(IsTree( item.objtype ))
-						use_on := item;
-						found := 1;
-					endif
-				endforeach
-			endif
-			if(!found)
-				foreach item in ListStaticsAtLocation( use_on.x, use_on.y, use_on.z-2, 0, character.realm )
-					if(IsTree( item.objtype ))
-						use_on := item;
-						found := 1;
-					endif
-				endforeach
-			endif
-			if(!found)
-				foreach item in ListStaticsAtLocation( use_on.x, use_on.y, use_on.z+2, 0, character.realm )
-					if(IsTree( item.objtype ))
-						use_on := item;
-						found := 1;
-					endif
-				endforeach
-			endif
-
-			if(found)
-				SendSysmessage( character , "You start lumberjacking..." );
-				result := ChopTree( character , use_on , info , axe );
-
-				if (!axe) //Tool broken
-					SendSysMessage( character , "You stop lumberjacking." );			
-					Autoloop_finish ();
-					return;
-				endif
-			endif
-		else
-			SendSysmessage( character , "You can't get any wood from that." );
-		        Autoloop_finish ();
+		if (!axe) //Tool broken
+			SendSysMessage( character , "You stop lumberjacking." );
+			Autoloop_finish ();
 			return;
 		endif
 
@@ -153,7 +103,7 @@ program use_axe( character , axe )
 endprogram
 
 
-function ChopTree( character , use_on , info , tool )
+function ChopTree( character , use_on , tool )
 	
 	var initial_x	:= character.x;
 	var initial_y	:= character.y;

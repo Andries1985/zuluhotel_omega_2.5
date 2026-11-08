@@ -167,19 +167,6 @@ function TempModConflicts( existing_mod , incoming_mod )
 endfunction
 
 
-function BaseRegenRate( who )
-
-	var baseregen := GetObjProperty(who,"baseregen");
-	
-	if (!baseregen)
-		return 100;
-	endif
-	
-	return baseregen;
-
-endfunction
-
-
 function CanMod( who , stat , persistedprop := 0 )
 
 	var modarray := "#mods";
@@ -215,7 +202,7 @@ function CurePoison( who , sound := 0 , msg := 0)
 
 	EraseObjProperty(who, "poison_level");
 	EraseObjProperty( who , "poison" );
-	SetHpRegenRate(who , ( BaseRegenRate(who)) * 12);
+	RestoreHpRegenRate( who );
 	who.SetPoisoned( 0 );
 	IncRevision(who);
 	Set_Critical( 0 );
@@ -553,7 +540,7 @@ function UndoTheMod( who , prop , amt , liche := 0 )
 						EquipItem(who,newhair);
 					endif
 		"poison":
-					SetHpRegenRate( who,  Cint(BaseRegenRate( who )));
+					RestoreHpRegenRate( who );
 					who.SetPoisoned( 0 );
 	endcase
 

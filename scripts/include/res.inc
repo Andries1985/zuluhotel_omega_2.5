@@ -15,7 +15,7 @@ function ResurrectMobile( who, by_who := 0 )
 	Resurrect( who );
 	FixColor( who );
 	
-	SetHpRegenRate(who , 1200);
+	RestoreHpRegenRate( who );
 
 	// Destroy a base colour non newbie robe in players pack after res
 	var robe := GetEquipmentByLayer( who, 0x16 );
