@@ -21,6 +21,15 @@ include "include/smarttamedaoe";
 // New spell names here or in GetSpellID() also go in include/npcspellnames.inc (newmobedit's spell list)
 function castspell( caster, cast_on, spellname )
 
+	// The special spells below cost no mana for a wild boss. A tamed pet pays the mana of the
+	// spell each one copies, so it can't cast them without end.
+	var special_mana_spellid := NpcSpecialSpellManaID( spellname );
+	if( special_mana_spellid and PaysForSpecialSpells( caster ) )
+		if( !ConsumeMana( caster, special_mana_spellid ) )
+			return 0;
+		endif
+	endif
+
 	case (spellname)
 	"summondrag":
 		SummonDrag(caster);	
@@ -83,6 +92,53 @@ function castspell( caster, cast_on, spellname )
 		start_script( GetScript( spellid ), parms );
 	endcase
 endfunction
+
+// The spell whose mana a special spell costs a pet (see castspell). 0 = not a special.
+function NpcSpecialSpellManaID( spellname )
+
+	case( spellname )
+		"massvatten":			return SPELLID_SORCERERS_BANE;
+		"massgust":				return SPELLID_GUST_OF_AIR;
+		"masswyvern":			return SPELLID_WYVERN_STRIKE;
+		"masskill":				return SPELLID_KILL;
+		"masscalllightning":	return SPELLID_CALL_LIGHTNING;
+		"massicestrike":		return SPELLID_ICE_STRIKE;
+		"massshiftingearth":	return SPELLID_SHIFTING_EARTH;
+		"massholybolt":			return SPELLID_HOLY_BOLT;
+		"masseld":				return SPELLID_METEOR_SWARM;
+		"champfire":			return SPELLID_METEOR_SWARM;
+		"summondrag":			return SPELLID_SUMMON_DAEMON;
+		"summonskel":			return SPELLID_SUMMON_DAEMON;
+		"summonskelarmy":		return SPELLID_SUMMON_DAEMON;
+		"gluttons":				return SPELLID_SUMMON_DAEMON;
+		"superspider":			return SPELLID_SUMMON_DAEMON;
+		"summonsshiftingearth":	return SPELLID_SHIFTING_EARTH;
+		"summonsgustofair":		return SPELLID_GUST_OF_AIR;
+		"summonsrisingfire":	return SPELLID_RISING_FIRE;
+		"summonsicestrike":		return SPELLID_ICE_STRIKE;
+		"summonsspectretouch":	return SPELLID_SPECTER_TOUCH;
+	endcase
+
+	return 0;
+
+endfunction
+
+
+// A pet pays for special spells; a summoned creature (earth magic spirit elementals,
+// summon spells) and a wild NPC don't.
+function PaysForSpecialSpells( caster )
+
+	if( !caster.master and !GetObjProperty( caster, "master" ) )
+		return 0;
+	endif
+	if( GetObjProperty( caster, "summoned" ) or GetObjProperty( caster, "EBSummons" ) )
+		return 0;
+	endif
+
+	return 1;
+
+endfunction
+
 
 function Massvatten(me)
 	var players := ListMobilesNearLocation( me.x , me.y , me.z , 20 , me.realm );

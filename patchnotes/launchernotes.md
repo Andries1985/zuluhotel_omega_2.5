@@ -9,7 +9,7 @@ Always check Discord announcements for all the patch notes.
 
 - **The game checks the real ground, not what your client reports.** When you target a tree, a rock, sand, a swamp or water, the server now looks at the map and the objects really at that spot. A spot that has nothing to gather says so: "You can't get any wood from that." or "You can't mine or dig anything there."
 - **This covers every gathering skill.** Lumberjacking, carving kindling with a blade, mining, digging clay and sand, fishing with a pole or a net, filling jugs and pitchers, cleaning bandages and planting seeds.
-- **Other lands work properly.** Mining, digging, fishing and seed planting outside Britannia read the map of the land you are standing in. Before, some of them read the Britannia map at the same coordinates.
+- **Other lands work properly.** Mining, digging, fishing, seed planting and filling an empty pitcher outside Britannia read the map of the land you are standing in. Before, some of them read the Britannia map at the same coordinates.
 - **Clicking the ground at the foot of a tree still works.** You don't have to hit the trunk exactly: anything gatherable in the square you click counts.
 
 ---
@@ -68,6 +68,55 @@ Always check Discord announcements for all the patch notes.
 
 ---
 
+## Health, Mana and Stamina Regeneration
+
+### Player Impact
+
+- **Your health regeneration no longer gets stuck at 1 point a minute.** When poison or a temporary spell effect wore off, health regeneration could drop to 1 point a minute and stay there. About 1,400 characters were stuck like this. It now goes back to normal, and logging in fixes any character that is still stuck.
+- **Taking off an item no longer lowers your regeneration.** Items with health, mana or stamina regeneration were never adding it when worn, but taking one off still took it away, for good. That is fixed, and logging in puts mana and stamina regeneration back to normal too. Wearing such an item still doesn't change your regeneration.
+- **Creatures regenerate at their own rates.** Every creature has health, mana and stamina regeneration rates, but they were almost never applied. They are now:
+  - 126 creatures heal faster than normal, among them the Tainted Shrines, Gluttons, Chief Paroxysmus, Mounds of Maggots and Kappas.
+  - 68 creatures get mana back faster, among them balrons, golden dragons, fallen angels, the Dragon King and the Soul Whisperers.
+  - The five champion Spawns (of the Earth, Storm, Fire, Water and Dead) heal slower than normal.
+  - Pets keep their own creature's rates.
+
+---
+
+## Pets
+
+### Player Impact
+
+- **Pets pay mana for their special spells.** A tamed creature with a special spell (the water dragon's mass spells, mass Gust of Air, Champfire, the summoning specials and others) now pays the mana of the normal spell it copies. Before, pets cast them for free, without end. Summoned creatures, such as the earth magic spirit elementals, still cast them for free.
+- **Tamed spellcasters wait between spells.** Wild casters wait 2 seconds between spells, but a tamed caster could cast on every step of its fight. Tamed casters now wait 2 seconds too.
+
+---
+
+## Karma and Fame
+
+### Player Impact
+
+- **Each creature has a set karma and fame value.** What a kill is worth no longer comes from a formula based on the creature's stats, armour and weapons. Every creature now has its own value, in steps of 100, 750, 1,500, 3,000, 6,000, 11,000 and 15,000.
+- **Evil creatures give karma; neutral creatures give fame only.** Before, a typo made every creature count as evil, so killing a deer or a rabbit raised your karma. Neutral animals and creatures now give fame but no karma.
+- **Killing townsfolk or good creatures costs you.** Killing a townsperson, peasant, noble, castle guard and the like, or a good creature, takes 250 karma and 100 fame and gives nothing.
+- **How much you gain is unchanged.** You still gain more from creatures far above your own karma and fame and less as you catch up, and a kill shared by several players is split between them.
+- Only players gain karma and fame from kills: hired warriors and other creatures that join a fight no longer do.
+
+---
+
+## Control Undead and Spell Bind
+
+### Player Impact
+
+- **A freed undead no longer attacks in your name.** When Control Undead ran out, the creature stayed linked to you. Anyone it attacked saw "*Your Name* is attacking you!", and you could be flagged as the aggressor, or as a criminal against an innocent. Freed creatures are now fully wild again, and those already roaming the world are fixed when they next wake.
+- **Control ends on time, even across a server restart.** Before, a restart while a creature was under Control Undead or Spell Bind left it as your pet for good. Casting Control Undead again on your own creature had the same effect. The end time is now kept on the creature.
+- **Releasing a controlled or bound creature in town makes it vanish.** Before, it was confiscated like a pet, and the Animal Trainer gave it back as a real pet. The same happens if you order it to attack in a safe area. A pet you took from another player with Spell Bind goes back to its owner instead.
+- **When Spell Bind ends on someone's pet, it goes back to its owner.** Before, it went wild and the owner lost it.
+- **Pets of players who are offline are protected too.** Spell Bind now checks their owner's taming or magery as well, the same as for players who are online.
+- **These can no longer be taken:** a creature that already has a master (someone's pet, summon or animated dead), a creature already under Control Undead or Spell Bind, a Warrior for Hire, and champion spawn creatures.
+- When a spell takes a creature from a spawn, the spawn makes a new one, as before.
+
+---
+
 ## Summary
 
 - Every gathering skill (lumberjacking, kindling, mining, clay, sand, fishing, nets, pitchers, bandages, seeds) checks what is really at the spot instead of trusting the client, and reads the right map outside Britannia.
@@ -76,5 +125,10 @@ Always check Discord announcements for all the patch notes.
 - Fishing: only real fishable water; shoreline strips, waterfalls, fountains and troughs are out; casts above 129 skill no longer come up empty.
 - Pitchers and bandages accept waterfalls, fountains, troughs, tubs, barrels and buckets on the map.
 - Seeds plant only in real fertile dirt or farmland.
+- Health regeneration no longer gets stuck at 1 a minute, and taking off items no longer lowers regeneration; logging in repairs both.
+- Creatures regenerate health and mana at their own rates.
+- Pets pay mana for special spells, and tamed casters wait 2 seconds between spells.
+- Every creature has a set karma and fame value: evil gives karma, neutral gives fame only, townsfolk and good creatures cost 250 karma and 100 fame.
+- Control Undead and Spell Bind: freed creatures no longer attack in your name, control ends on time even after a restart, no more permanent pets from town releases, stolen pets go back to their owner, and champion spawns can't be taken.
 
 Thanks for playing Zuluhotel Omega 2.5.

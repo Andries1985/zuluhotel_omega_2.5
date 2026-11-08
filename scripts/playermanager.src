@@ -37,6 +37,12 @@ program logon( who )
 	set_critical(1);
 	WipeMods(who);
 	CurePoison(who);
+	// Expiring mods used to drop hp regen to 1 a minute and leave it there, and taking off
+	// an item used to subtract mana/stamina regen it never added. Nothing else changes a
+	// player's rates, so put all three back to normal (CurePoison above always clears poison).
+	RestoreHpRegenRate(who);
+	SetVitalRegenRateOrDefault(who, VITALID_MANA, DEFAULT_REGEN_RATE);
+	SetVitalRegenRateOrDefault(who, VITALID_STAMINA, DEFAULT_REGEN_RATE);
 	set_critical(0);
 
 	// The old Sanctuary / Antidote / Dragon Skin code wrote straight into these cprops and a

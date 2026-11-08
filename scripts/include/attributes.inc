@@ -35,6 +35,7 @@ use os;
 use math;
 use util;
 use cfgfile;
+use basic;
 use attributes;
 use vitals;
 
@@ -2153,8 +2154,155 @@ function SetStaminaRegenRate( who, hundreth_per_minute )
 	endif
 	
 	SetObjProperty(who, CPROP_NAME_PREFIX_REGEN_RATE+VITALID_STAMINA, hundreth_per_minute);
-	
+
 	return RecalcVitalsIfOnline(who);
+
+endfunction
+
+
+// The rate every mobile regenerates at when nothing changes it: 1200 hundredths
+// per minute (12 points a minute). regen.src uses it when no NewRegenRateFor<vital>
+// CProp is set.
+const DEFAULT_REGEN_RATE		:= 1200;
+
+// npcdesc.cfg Base<X>Regen CProps are in units of 1/12 of the regen rate:
+// 100 is the default 1200 (12 a minute), 2500 is the core cap 30000 (300 a minute).
+const NPC_BASE_REGEN_DEFAULT	:= 100;
+const NPC_BASE_REGEN_MULTIPLIER	:= 12;
+
+
+/***********************************************************************************
+**
+** function NpcTemplateRegenRate( who, base_prop )
+**
+** Usage:
+**	The regen rate an NPC's template asks for, from its BaseHpRegen,
+**	BaseManaRegen or BaseStaminaRegen CProp. Missing or 0 means the default.
+**	Read live from npcdesc.cfg, so template changes reach NPCs that already
+**	exist (tamed pets never respawn); the NPC's own copy of the CProp is only
+**	used if its template is gone.
+**
+** return:
+**	The rate in hundredths per minute.
+**
+***********************************************************************************/
+function NpcTemplateRegenRate( who, base_prop )
+
+	var npc_base_regen := CInt(NpcTemplateRegenBase(who, base_prop));
+	if( npc_base_regen <= 0 )
+		npc_base_regen := NPC_BASE_REGEN_DEFAULT;
+	endif
+
+	return npc_base_regen * NPC_BASE_REGEN_MULTIPLIER;
+
+endfunction
+
+
+// The Base<X>Regen number from the NPC's npcdesc template ("CProp BaseHpRegen i100"),
+// or from the NPC itself when the template has none.
+function NpcTemplateRegenBase( who, base_prop )
+
+	var regen_tmpl := CStr(who.npctemplate);
+	if( regen_tmpl[1] == ":" )
+		// ":pkg:name" -> "name"
+		var regen_tmpl_parts := SplitWords(regen_tmpl, ":");
+		regen_tmpl := regen_tmpl_parts[regen_tmpl_parts.size()];
+	endif
+
+	var regen_cfg := ReadConfigFile("::npcdesc");
+	if( regen_cfg )
+		var regen_elem := regen_cfg[regen_tmpl];
+		if( regen_elem )
+			foreach regen_line in GetConfigStringArray(regen_elem, "CProp")
+				var regen_words := SplitWords(regen_line);
+				if( Lower(regen_words[1]) == Lower(base_prop) )
+					var regen_packed := CStr(regen_words[2]);
+					return CInt(regen_packed[2, Len(regen_packed) - 1]);
+				endif
+			endforeach
+		endif
+	endif
+
+	return CInt(GetObjProperty(who, base_prop));
+
+endfunction
+
+
+/***********************************************************************************
+**
+** function NormalHpRegenRate( who )
+**
+** Usage:
+**	The hp regen rate a mobile should have when it is not poisoned: its
+**	template's BaseHpRegen for an NPC, the default for a player.
+**	(Item HpRegen is not applied: DoRegenMods is off in skilladvancerequip.)
+**
+** return:
+**	The rate in hundredths per minute.
+**
+***********************************************************************************/
+function NormalHpRegenRate( who )
+
+	if( who.isa(POLCLASS_NPC) )
+		return NpcTemplateRegenRate(who, "BaseHpRegen");
+	endif
+
+	return DEFAULT_REGEN_RATE;
+
+endfunction
+
+
+/***********************************************************************************
+**
+** function SetVitalRegenRateOrDefault( who, vitalid, hundreth_per_minute )
+**
+** Usage:
+**	Sets a vital's regen rate. The default rate erases the CProp instead of
+**	storing it, so the mobile reads as "no change".
+**
+** return:
+**	0/1
+**
+***********************************************************************************/
+function SetVitalRegenRateOrDefault( who, vitalid, hundreth_per_minute )
+
+	hundreth_per_minute := CInt(hundreth_per_minute);
+	if( hundreth_per_minute < CORE_SETTINGS_MIN_REGEN_RATE )
+		hundreth_per_minute := CORE_SETTINGS_MIN_REGEN_RATE;
+	elseif( hundreth_per_minute > CORE_SETTINGS_MAX_REGEN_RATE )
+		hundreth_per_minute := CORE_SETTINGS_MAX_REGEN_RATE;
+	endif
+
+	var regen_prop := CPROP_NAME_PREFIX_REGEN_RATE+vitalid;
+	var current_regen := GetObjProperty(who, regen_prop);
+	if( hundreth_per_minute == DEFAULT_REGEN_RATE )
+		if( current_regen.errortext )
+			return 1;
+		endif
+		EraseObjProperty(who, regen_prop);
+	elseif( !current_regen.errortext and CInt(current_regen) == hundreth_per_minute )
+		return 1;
+	else
+		SetObjProperty(who, regen_prop, hundreth_per_minute);
+	endif
+
+	return RecalcVitalsIfOnline(who);
+
+endfunction
+
+
+/***********************************************************************************
+**
+** function RestoreHpRegenRate( who )
+**
+** Usage:
+**	Puts hp regen back to NormalHpRegenRate(), e.g. when poison ends or on
+**	resurrection.
+**
+***********************************************************************************/
+function RestoreHpRegenRate( who )
+
+	return SetVitalRegenRateOrDefault(who, VITALID_LIFE, NormalHpRegenRate(who));
 
 endfunction
 
