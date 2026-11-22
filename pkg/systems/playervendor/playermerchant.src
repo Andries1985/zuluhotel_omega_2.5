@@ -15,6 +15,7 @@ include ":gumps:yesno";
 include "include/myutil";
 include "include/npcboosts";
 include "include/escrow";
+include "include/checkcity";
 
 const STARTHAIR		:= 0x2006;
 const ENDHAIR		:= 0x2079;
@@ -237,7 +238,10 @@ function CalculateDailyWage()
 	endif
 
 	var monthly := MONTHLY_WAGE_GOLD;
-	if(IsInCityRegion(me))
+	// CheckCity() reads Type City from regions/regions.cfg. The 1.1.5 version used
+	// GetRegionString("regions", ...), which only reads resource regions (ore, wood...),
+	// so it always failed and city vendors paid the normal wage.
+	if(CheckCity(me))
 		monthly := CITY_MONTHLY_WAGE_GOLD;
 	endif
 
@@ -772,7 +776,8 @@ function SavePackToEscrow(payout_pack, ownerserial, vendor_name)
 		return 0;
 	endif
 
-	escrow_root.name := "Player Merchant Escrow - " + vendor_name;
+	// Never rename escrow_root: POL files storage roots under their name on load, so a renamed
+	// root can't be found by escrow_name after a restart. vendorname below keeps the label.
 	var root_id := ownerserial + "-" + ReadGameClock() + "-" + Random(100000);
 	SetObjProperty(escrow_root, "root_id", root_id);
 	SetObjProperty(escrow_root, "ownerserial", ownerserial);

@@ -3,14 +3,14 @@ use uo;
 
 program warriorforhire(who, deed)
 
-	var hm := GetObjProperty(who, "henchman");
-	var hme := SystemFindObjectBySerial(hm);
+	var hme := SystemFindObjectBySerial(CInt(GetObjProperty(who, "henchman")));
 	if (hme)
 		SendSysMessage(who, "You already have a henchman");
 		return;
 	endif
 
-	var wfh := CreateNpcFromTemplate("warriorforhire", who.x, who.y, who.z);
+	// Realm passed so a deed used outside Felucca doesn't create the warrior in Felucca.
+	var wfh := CreateNpcFromTemplate("warriorforhire", who.x, who.y, who.z, 0, who.realm);
 	if (wfh)
 		DestroyItem(deed);
 		SendSysMessage(who, "Warrior for hire created!");

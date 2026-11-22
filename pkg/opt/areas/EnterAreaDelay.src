@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 use os;
 use uo;
-use datafile;
 
 include "include/areas";
 include ":areas:include/areafunctions";
@@ -19,21 +18,7 @@ program EnterAreaDelay(who)
 // calls (IsInSafeArea, IsInNOPKArea, IsInGuardedArea) via areas.inc.
 // That meant every region entry blocked the server for ~100k+ instructions
 // with no chance to yield. We now resolve the mask ONCE and check bits.
-
-// var file := OpenDataFile(":areas:EnterArea");
-var regionname := GetRegionName(who);
-
-// if (!file)
-// 	CreateDataFile( ":areas:EnterArea");
-// endif
-
-// var region := file.FindElement(regionname);
-// UnloadDataFile(":areas:EnterArea");
-
-// // No custom message for the region, play default.
-// if (!region)
-// 	SendSysMessage(who, "You have entered "+regionname, 3, 1001);
-// endif
+// The "You have entered ..." text comes from regions.cfg EnterText.
 
 // who is scheduled via Start_Script() in EnterArea.src, so by the time this
 // program actually runs, who may have logged out / been destroyed. Accessing

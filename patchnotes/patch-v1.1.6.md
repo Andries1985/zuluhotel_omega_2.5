@@ -139,6 +139,54 @@ Welcome to **Patch 1.1.6**. This patch is mostly about gathering, with a second 
 
 ---
 
+## Areas
+
+### Player Impact
+
+- **Wrong's third level now follows the same rules as the rest of Wrong.** A mistake in its map area meant level 3 was never recognised, so you could recall into it and mark runes there. Like levels 1, 2 and 4, you can no longer recall to level 3 or mark a rune there.
+
+---
+
+## Escrow - Packages No Longer Lost on a Restart
+
+### Player Impact
+
+- **Escrow packages survive server restarts.** Items put in escrow when a house was demolished, a player vendor was dismissed or a Warrior for Hire's corpse decayed could not be found after the next server restart. Claiming them said "That escrow package was not found." and the entry disappeared from your list.
+- **Packages still in storage are being put back.** Staff are re-linking every package that is still there, so it shows up in `.houseescrow`, `.escrow` or at the High Priest again. If an entry vanished from your list after that message, check again after this patch.
+- **Some packages could not be saved.** When two packages had the same kind of house (for example two Small Towers), only one survived the restart. Staff have the list; page staff if you lost a package this way.
+
+---
+
+## Player Vendors in Cities
+
+### Player Impact
+
+- **Vendors in a city now pay the city wage.** Patch 1.1.5 meant vendors standing in a city to pay a higher wage (50,000 gold a month instead of 10,000), but a mistake meant every vendor kept paying the normal wage. City vendors now pay the city wage, about 1,666 gold a day. Make sure your city vendors have enough gold.
+- **Champion relics can't be used in a city.** This 1.1.5 rule never worked for the same reason; it does now.
+
+---
+
+## Warriors for Hire
+
+### Player Impact
+
+- **New command: `.wherewarrior`.** Shows where your warrior is: its coordinates and land. When it is in the same land as you, it also says how far away it is, and in Felucca or Trammel its sextant position.
+- **"<name> drop" works.** Telling your warrior to drop everything did nothing; it now drops its pack at its feet.
+- **A warrior deed works in every land.** Using a Warrior for Hire deed outside Felucca put the warrior in Felucca at your coordinates; it now appears next to you.
+
+---
+
+## Other Fixes
+
+### Player Impact
+
+- **No more "your uniform is gone, page staff!" for everyone.** When one player's entwined guild uniform went missing, that message went to every player online, again each time they died. Only that player sees it now, once.
+- **Vortex Minions** no longer stop working after chasing players at the edge of their sight. They now notice players at 19 tiles instead of 24.
+- **Earthquake outside Felucca** hits the creatures around you. It used to look for them at the same coordinates in Felucca.
+- **Guild applicants list fixed.** From the second page of Manage Guild Applicants on, accepting, removing or banning an applicant acted on the next applicant in the list. Each applicant's buttons now act on that applicant.
+
+---
+
 ## Summary
 
 - Every gathering skill (lumberjacking, kindling, mining, clay, sand, fishing, nets, pitchers, bandages, seeds) checks what is really at the spot instead of trusting the client, and reads the right map outside Britannia.
@@ -153,5 +201,10 @@ Welcome to **Patch 1.1.6**. This patch is mostly about gathering, with a second 
 - Every creature has a set karma and fame value: evil gives karma, neutral gives fame only, townsfolk and good creatures cost 250 karma and 100 fame.
 - Control Undead and Spell Bind: freed creatures no longer attack in your name, control ends on time even after a restart, no more permanent pets from town releases, stolen pets go back to their owner, and champion spawns can't be taken.
 - A third account from one connection is refused at the login screen instead of being kicked from the world, which froze logins for everyone for about 2½ minutes each time.
+- Wrong level 3 now blocks recalling in and marking runes, like the other levels of Wrong.
+- Escrow packages (house demolish, player vendor, Warrior for Hire) survive restarts again, and packages still in storage are being put back.
+- Vendors in a city pay the city wage, and champion relics can't be used in a city.
+- `.wherewarrior` shows where your Warrior for Hire is; "drop" works; a deed used outside Felucca puts the warrior next to you.
+- The missing guild uniform message no longer goes to everyone; Vortex Minions no longer freeze; Earthquake works outside Felucca.
 
 Thanks for playing Zuluhotel Omega 2.5.

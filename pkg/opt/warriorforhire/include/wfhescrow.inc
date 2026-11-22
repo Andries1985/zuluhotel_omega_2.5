@@ -26,7 +26,6 @@ include "include/myutil";
 
 const WFH_ESCROW_REGISTRY_DATAFILE := ":warriorforhire:wfhescrowregistry";
 const WFH_ESCROW_EXPIRE_SECONDS := 7776000; // 90 days
-const WFH_ESCROW_ROOT_NAME := "Warrior for Hire Escrow";
 
 ///////////////////////////////////////////////////////////////////////////
 // Filing
@@ -53,7 +52,8 @@ function WFH_SaveToEscrow(payout_pack, ownerserial, sourceserial)
 
 	var created := POLCORE().systime;
 
-	escrow_root.name := WFH_ESCROW_ROOT_NAME;
+	// Never rename escrow_root: POL files storage roots under their name on load, so a renamed
+	// root can't be found by escrow_name after a restart (see houseescrow.inc SaveHouseEscrowPack).
 	SetObjProperty(escrow_root, "ownerserial", ownerserial);
 	SetObjProperty(escrow_root, "vendorserial", sourceserial);
 	SetObjProperty(escrow_root, "vendorname", ESCROW_WFH_VENDOR_NAME);

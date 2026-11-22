@@ -1,0 +1,415 @@
+// Synopsis: .recoverescrow [commit] - Re-file escrow packages stranded by the old root rename (dry run without commit)
+// Command: .recoverescrow [commit]
+//
+// Patch 1.1.6. House demolish, player vendor and Warrior for Hire escrow used to rename each
+// storage root after creating it ("a Small Tower Escrow", "Player Merchant Escrow - X",
+// "Warrior for Hire Escrow"). POL files storage roots under their *name* when it loads
+// storage.txt, so after a restart every renamed root was filed under its display name and
+// FindRootItemInStorageArea(escrow_name) stopped finding it: claims said "That escrow package
+// was not found." and deleted the player's index entry. Roots that shared a display name
+// collapsed into one on load; the others were dropped at the next world save and are gone.
+//
+// This command walks both escrow storage areas and, for every root that is not filed under a
+// proper escrow key:
+//   1. creates a new root under a fresh key (HouseEscrow / PMEscrow / WFHEscrow ...),
+//      copies the CProps and moves the contents across, then destroys the old root;
+//   2. points the owner's index at the new key: the first index entry for the same house /
+//      vendor and label whose package can no longer be found is re-linked, otherwise a new
+//      entry is added (the old one was already pruned by a failed claim);
+//   3. for Warrior for Hire, updates or adds the sweeper registry row as well.
+// A root that is filed correctly but was renamed since the last restart only gets its name
+// set back to its key, so it survives the next restart.
+//
+// Without "commit" nothing is changed; the report shows what would happen. Every line is also
+// written to log/escrowrecovery.log. Index entries that still point at nothing after the run
+// are listed as LOST: those packages were dropped by the collapse and can't be recovered here.
+
+use uo;
+use os;
+use storage;
+use datafile;
+use file;
+use polsys;
+
+include "include/objtype";
+include "include/myutil";
+include ":housing:houseescrow";
+include ":warriorforhire:wfhescrow";
+
+const RECOVER_LOG_FILE := "::log/escrowrecovery.log";
+const KIND_HOUSE := "house";
+const KIND_PM := "vendor";
+const KIND_WFH := "wfh";
+
+var g_who;
+var g_commit := 0;
+var g_counts := struct{ ok := 0, renamed := 0, rekeyed := 0, relinked := 0, added := 0, failed := 0, lost := 0 };
+// Keys a dry run made up for roots it would re-key; they don't exist in storage, but entries
+// pointing at them are not lost.
+var g_pending_keys := dictionary;
+
+program recoverescrow(who, text)
+
+	g_who := who;
+	g_commit := (Lower(CStr(text)) == "commit");
+
+	Report("=== Escrow recovery " + (g_commit ? "(COMMIT)" : "(dry run - nothing is changed)") + " by " + who.name + " ===");
+
+	ProcessArea(HOUSE_ESCROW_STORAGE_NAME);
+	ProcessArea(ESCROW_STORAGE_NAME);
+	ReportLostWfhRegistry();
+
+	Report("Summary: ok=" + g_counts.ok + " renamed-back=" + g_counts.renamed + " re-keyed=" + g_counts.rekeyed + " re-linked=" + g_counts.relinked + " new-entries=" + g_counts.added + " failed=" + g_counts.failed + " lost-entries=" + g_counts.lost);
+	if (!g_commit)
+		Report("Dry run only. Run .recoverescrow commit to apply.");
+	endif
+	SendSysMessage(who, "Full report in log/escrowrecovery.log.");
+
+endprogram
+
+///////////////////////////////////////////////////////////////////////////
+// Areas and roots
+///////////////////////////////////////////////////////////////////////////
+
+function ProcessArea(area_name)
+
+	var area := FindStorageArea(area_name);
+	var area_imp := StorageAreas()[area_name];
+	if (!area or !area_imp)
+		Report("[" + area_name + "] storage area not found, skipped.");
+		return;
+	endif
+
+	// Snapshot first: re-keying creates and destroys roots in this same area.
+	var roots := {};
+	foreach eroot in (area_imp)
+		roots.append({CStr(_eroot_iter), eroot});
+	endforeach
+	Report("[" + area_name + "] " + len(roots) + " root(s).");
+
+	foreach pair in roots
+		var key := pair[1];
+		var eroot := pair[2];
+		var kind := RootKind(area_name, eroot);
+
+		if (IsProperKey(kind, key))
+			if (eroot.name != key)
+				Report("  " + key + ": filed correctly, name '" + eroot.name + "' set back to the key.");
+				if (g_commit)
+					eroot.name := key;
+				endif
+				g_counts.renamed := g_counts.renamed + 1;
+			else
+				g_counts.ok := g_counts.ok + 1;
+			endif
+			continue;
+		endif
+
+		RecoverRoot(area, kind, key, eroot);
+	endforeach
+
+endfunction
+
+function RootKind(area_name, eroot)
+
+	if (area_name == HOUSE_ESCROW_STORAGE_NAME)
+		return KIND_HOUSE;
+	endif
+	if (GetObjProperty(eroot, "vendorname") == ESCROW_WFH_VENDOR_NAME)
+		return KIND_WFH;
+	endif
+	return KIND_PM;
+
+endfunction
+
+function IsProperKey(kind, key)
+
+	case (kind)
+		KIND_HOUSE: return (Find(key, "HouseEscrow ", 1) == 1);
+		KIND_WFH:   return (Find(key, "WFHEscrow ", 1) == 1);
+		// "PMEscrowTest " roots are seeded by .pmescrowtest and were never renamed.
+		default:    return (Find(key, "PMEscrow ", 1) == 1 or Find(key, "PMEscrowTest ", 1) == 1);
+	endcase
+
+endfunction
+
+function NewKey(area, kind, ownerserial, house_serial)
+
+	var key;
+	repeat
+		case (kind)
+			KIND_HOUSE: key := "HouseEscrow " + ownerserial + " " + house_serial + " " + ReadGameClock() + " " + Random(99999);
+			KIND_WFH:   key := "WFHEscrow " + ownerserial + " " + ReadGameClock() + " " + Random(99999);
+			default:    key := "PMEscrow " + ownerserial + " " + ReadGameClock() + " " + Random(99999);
+		endcase
+	until (!FindRootItemInStorageArea(area, key));
+	return key;
+
+endfunction
+
+function RecoverRoot(area, kind, old_key, old_root)
+
+	var ownerserial := CInt(GetObjProperty(old_root, "ownerserial"));
+	var house_serial := CInt(GetObjProperty(old_root, "house_serial"));
+	var label := RootLabel(kind, old_root);
+	var item_count := len(ListRootItemsInContainer(old_root));
+	var desc := "'" + old_key + "' (" + kind + ", owner=" + ownerserial + ", label=" + label + ", " + item_count + " item(s))";
+
+	if (!ownerserial)
+		Report("  FAILED " + desc + ": no ownerserial prop, left as is.");
+		g_counts.failed := g_counts.failed + 1;
+		return;
+	endif
+
+	var new_key := NewKey(area, kind, ownerserial, house_serial);
+
+	if (!g_commit)
+		g_pending_keys[new_key] := 1;
+		Report("  would re-key " + desc + " -> '" + new_key + "'");
+		g_counts.rekeyed := g_counts.rekeyed + 1;
+		LinkIndex(area, kind, old_root, ownerserial, label, new_key);
+		return;
+	endif
+
+	var new_root := CreateRootItemInStorageArea(area, new_key, UOBJ_BACKPACK);
+	if (!new_root)
+		Report("  FAILED " + desc + ": could not create '" + new_key + "': " + new_root.errortext);
+		g_counts.failed := g_counts.failed + 1;
+		return;
+	endif
+
+	foreach propname in (old_root.propnames())
+		SetObjProperty(new_root, propname, GetObjProperty(old_root, propname));
+	endforeach
+
+	var moved := {};
+	foreach item in ListRootItemsInContainer(old_root)
+		if (!MoveItemToContainer(item, new_root))
+			// Put back what was moved and leave this root untouched.
+			foreach back in moved
+				MoveItemToContainer(back, old_root);
+			endforeach
+			DestroyRootItemInStorageArea(area, new_key);
+			Report("  FAILED " + desc + ": could not move item " + Hex(item.serial) + " (" + item.desc + "), root left as is.");
+			g_counts.failed := g_counts.failed + 1;
+			return;
+		endif
+		moved.append(item);
+	endforeach
+
+	DestroyRootItemInStorageArea(area, old_key);
+	Report("  re-keyed " + desc + " -> '" + new_key + "'");
+	g_counts.rekeyed := g_counts.rekeyed + 1;
+
+	LinkIndex(area, kind, new_root, ownerserial, label, new_key);
+
+endfunction
+
+function RootLabel(kind, eroot)
+
+	if (kind == KIND_HOUSE)
+		var house_label := GetObjProperty(eroot, "house_label");
+		return house_label ? CStr(house_label) : "House";
+	endif
+	var vendorname := GetObjProperty(eroot, "vendorname");
+	return vendorname ? CStr(vendorname) : "Unknown Vendor";
+
+endfunction
+
+function OwnerName(ownerserial)
+
+	var owner := SystemFindObjectBySerial(ownerserial, SYSFIND_SEARCH_OFFLINE_MOBILES);
+	if (owner and owner.name)
+		return owner.name;
+	endif
+	return "Unknown Owner";
+
+endfunction
+
+///////////////////////////////////////////////////////////////////////////
+// Index re-linking
+///////////////////////////////////////////////////////////////////////////
+
+function LinkIndex(area, kind, eroot, ownerserial, label, new_key)
+
+	if (kind == KIND_HOUSE)
+		LinkHouseIndex(area, eroot, ownerserial, label, new_key);
+	else
+		LinkMerchantIndex(area, kind, eroot, ownerserial, label, new_key);
+	endif
+
+endfunction
+
+function LinkHouseIndex(area, eroot, ownerserial, label, new_key)
+
+	var house_serial := CInt(GetObjProperty(eroot, "house_serial"));
+	var df_name := BuildHouseEscrowDatafileNameForSerial(ownerserial);
+	var df := OpenIndexFile(df_name);
+	if (!df)
+		Report("    index: could not open " + df_name + "; package is safe in storage under the new key.");
+		return;
+	endif
+
+	var elem_key := CStr(house_serial);
+	var elem := df.FindElement(elem_key);
+	if (!elem and g_commit)
+		elem := df.CreateElement(elem_key);
+	endif
+
+	var entries := elem ? DecodeHouseEscrowEntries(elem.GetProp("entries")) : {};
+	var linked := 0;
+	var i;
+	for (i := 1; i <= len(entries); i := i + 1)
+		var entry_name := HouseEntryEscrowName(entries[i]);
+		if (HouseEntryLabel(entries[i]) == label and !FindRootItemInStorageArea(area, entry_name) and !IsPendingKey(entry_name))
+			Report("    index: re-link entry " + HouseEntryId(entries[i]) + " (" + entry_name + ")");
+			MarkRelinkedInDryRun(entry_name);
+			entries[i][HOUSE_ENTRY_ESCROWNAME_IDX] := new_key;
+			linked := 1;
+			break;
+		endif
+	endfor
+
+	if (linked)
+		g_counts.relinked := g_counts.relinked + 1;
+	else
+		var entry_id := ownerserial + "-" + ReadGameClock() + "-" + Random(100000);
+		Report("    index: no entry left for house " + house_serial + " '" + label + "', adding " + entry_id);
+		entries.append({entry_id, ownerserial, new_key, label, house_serial, CInt(GetObjProperty(eroot, "created")), OwnerName(ownerserial)});
+		g_counts.added := g_counts.added + 1;
+	endif
+
+	if (g_commit and elem)
+		elem.SetProp("entries", EncodeHouseEscrowEntries(entries));
+	endif
+
+	ReportLostEntries(area, entries, "house");
+	UnloadDataFile(df_name);
+
+endfunction
+
+function LinkMerchantIndex(area, kind, eroot, ownerserial, label, new_key)
+
+	var vendorserial := CInt(GetObjProperty(eroot, "vendorserial"));
+	var df_name := BuildEscrowDatafileNameForSerial(ownerserial);
+	var df := OpenIndexFile(df_name);
+	if (!df)
+		Report("    index: could not open " + df_name + "; package is safe in storage under the new key.");
+		return;
+	endif
+
+	var elem_key := CStr(vendorserial);
+	var elem := df.FindElement(elem_key);
+	if (!elem and g_commit)
+		elem := df.CreateElement(elem_key);
+	endif
+
+	var entries := elem ? DecodeEscrowEntries(elem.GetProp("entries")) : {};
+	var linked_id := "";
+	var i;
+	for (i := 1; i <= len(entries); i := i + 1)
+		var entry_name := EntryEscrowName(entries[i]);
+		if (EntryVendorName(entries[i]) == label and !FindRootItemInStorageArea(area, entry_name) and !IsPendingKey(entry_name))
+			linked_id := EntryId(entries[i]);
+			Report("    index: re-link entry " + linked_id + " (" + entry_name + ")");
+			MarkRelinkedInDryRun(entry_name);
+			entries[i][ENTRY_ESCROWNAME_IDX] := new_key;
+			break;
+		endif
+	endfor
+
+	if (linked_id)
+		g_counts.relinked := g_counts.relinked + 1;
+	else
+		linked_id := ownerserial + "-" + CInt(GetObjProperty(eroot, "created")) + "-" + Random(100000);
+		Report("    index: no entry left for " + label + " " + vendorserial + ", adding " + linked_id);
+		entries.append({linked_id, ownerserial, new_key, label, vendorserial, CInt(GetObjProperty(eroot, "created")), OwnerName(ownerserial)});
+		g_counts.added := g_counts.added + 1;
+	endif
+
+	if (g_commit and elem)
+		elem.SetProp("entries", EncodeEscrowEntries(entries));
+	endif
+
+	ReportLostEntries(area, entries, kind);
+	UnloadDataFile(df_name);
+
+	// The sweeper's registry row carries its own copy of escrow_name.
+	if (kind == KIND_WFH and g_commit)
+		WFH_RegisterEscrowEntry(linked_id, ownerserial, new_key, CInt(GetObjProperty(eroot, "created")));
+	endif
+
+endfunction
+
+function OpenIndexFile(df_name)
+
+	var df := OpenDataFile(df_name);
+	if (!df and g_commit)
+		CreateDataFile(df_name);
+		df := OpenDataFile(df_name);
+	endif
+	return df;
+
+endfunction
+
+// Entries in the same index element that still point at no package after re-linking.
+function ReportLostEntries(area, entries, kind)
+
+	foreach entry in entries
+		var escrow_name := (kind == "house") ? HouseEntryEscrowName(entry) : EntryEscrowName(entry);
+		if (!FindRootItemInStorageArea(area, escrow_name) and !IsPendingKey(escrow_name))
+			Report("    LOST: entry " + ((kind == "house") ? HouseEntryId(entry) : EntryId(entry)) + " (" + escrow_name + ") has no package.");
+			g_counts.lost := g_counts.lost + 1;
+		endif
+	endforeach
+
+endfunction
+
+// A dry run doesn't write the re-link, so the next call reloads the entry with its old, missing
+// name; marking that name keeps later roots from claiming the same entry and keeps it out of the
+// LOST list, so the dry run reports what commit will do.
+function MarkRelinkedInDryRun(old_escrow_name)
+	if (!g_commit)
+		g_pending_keys[old_escrow_name] := 1;
+	endif
+endfunction
+
+function IsPendingKey(escrow_name)
+	return g_pending_keys.Exists(escrow_name);
+endfunction
+
+// Registry rows whose package is gone and whose owner has no recoverable root.
+function ReportLostWfhRegistry()
+
+	var area := FindStorageArea(ESCROW_STORAGE_NAME);
+	var df := OpenDataFile(WFH_ESCROW_REGISTRY_DATAFILE);
+	if (!area or !df)
+		return;
+	endif
+
+	var lost := 0;
+	foreach entry_id in (df.Keys())
+		var elem := df.FindElement(entry_id);
+		if (!elem)
+			continue;
+		endif
+		var escrow_name := CStr(elem.GetProp("escrow_name"));
+		if (!FindRootItemInStorageArea(area, escrow_name) and !IsPendingKey(escrow_name))
+			lost := lost + 1;
+			Report("  WFH registry LOST: " + entry_id + " owner=" + CInt(elem.GetProp("ownerserial")) + " (" + escrow_name + ")");
+		endif
+	endforeach
+	UnloadDataFile(WFH_ESCROW_REGISTRY_DATAFILE);
+
+	Report("[WFH registry] " + lost + " row(s) with no package. A claim at the High Priest prunes them.");
+
+endfunction
+
+///////////////////////////////////////////////////////////////////////////
+// Output
+///////////////////////////////////////////////////////////////////////////
+
+function Report(line)
+	SendSysMessage(g_who, line);
+	LogToFile(RECOVER_LOG_FILE, line, LOG_DATETIME);
+endfunction

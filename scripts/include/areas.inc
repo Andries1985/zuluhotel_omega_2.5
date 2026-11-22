@@ -491,8 +491,3 @@ endfunction
 function IsInRPArea(who)
 	return HasPolicy(GetAreaPolicyMaskForWho(who), AREA_POLICY_RP_AREA);
 endfunction
-
-function IsInCityRegion(who)
-	// regions.cfg marks towns with "Type City"; there is no "City" key.
-	return lower(GetRegionString("regions", who.x, who.y, "Type", who.realm)) == "city";
-endfunction

@@ -1,12 +1,12 @@
 # Developer Changelog - v1.1.6
 **Range:** `b640f5c` (merge of #353, the last 1.1.5 patchnotes state) -> working tree (this commit)
 **Branch:** Patch-1.1.6 (branched from `origin/Test-Shard` at `b640f5c`)
-**Date:** 2026-11-03 to 2026-11-08 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07; login limit hotfix 2026-11-08)
-**Commits in range:** 3 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest, `a7c3dfc` tree items), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
-**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `a7c3dfc`: 3 harvest scripts (section 7.7); `3f9d67b`: 3 account scripts; plus this release's 3 `patchnotes/` files. The full list is section 16.
+**Date:** 2026-11-03 to 2026-11-22 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07; login limit hotfix 2026-11-08; areas package cleanup and live review fixes 2026-11-22)
+**Commits in range:** 5 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest, `a7c3dfc` tree items, the areas cleanup in section 16, the live review fixes in section 17), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
+**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `a7c3dfc`: 3 harvest scripts (section 7.7); `3f9d67b`: 3 account scripts; areas cleanup: 5 files in `pkg/opt/areas`, 1 deleted, plus `.gitignore` (section 16); live review fixes: 17 scripts and configs, 2 new commands (section 17); plus this release's 3 `patchnotes/` files. The full list is section 18.
 
 > Scope was computed against `b640f5c`. `origin/Test-Shard` was still at `b640f5c` when this commit was made, so the whole delta is the two commits.
-> Built with `ecompile -A`: 1,163 scripts, 0 errors (the 6 `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). Not yet run in a client (section 17). The login hotfix (section 15) has not been compiled yet.
+> Built with `ecompile -A` on 2026-11-22 with everything through section 17: 1,165 scripts, 0 errors (the `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). The login hotfix (section 15) was also built and running on live since 11/08. Not yet run in a client (section 19).
 
 ---
 
@@ -27,8 +27,10 @@
 13. [Review of the Branch](#13-review-of-the-branch)
 14. [`npcdesc.cfg` Rewrite](#14-npcdesccfg-rewrite)
 15. [Login Limit per IP - No More In-World Kicks](#15-login-limit-per-ip---no-more-in-world-kicks)
-16. [Exhaustive File-by-File Change List](#16-exhaustive-file-by-file-change-list)
-17. [Risk and Regression Notes](#17-risk-and-regression-notes)
+16. [Areas Package Cleanup](#16-areas-package-cleanup)
+17. [Live Review Fixes (2026-11-22)](#17-live-review-fixes-2026-11-22)
+18. [Exhaustive File-by-File Change List](#18-exhaustive-file-by-file-change-list)
+19. [Risk and Regression Notes](#19-risk-and-regression-notes)
 
 ---
 
@@ -54,6 +56,8 @@ The second commit is a separate theme, built on the same branch:
 
 A live hotfix rides along (section 15): kicking the third account on an IP after it entered the world stopped the server accepting new logins for about 150 s per kick, and on 2026-11-08 one player's auto-reconnecting clients kept that going for about three hours. Over-limit logins are now refused at the login server.
 
+Section 16 is the parked cleanup list from the 2026-10-08 areas package review (the bug and performance items from that review shipped in 1.1.4, section 18 of its changelog). It fixes the inverted Wrong Level 3 box, so that level gets its no-recall/no-mark flags, and makes the world-wide flags work on every facet.
+
 ## 2. Commit Timeline
 
 | Commit | Date | Subject | Sections |
@@ -63,7 +67,8 @@ A live hotfix rides along (section 15): kicking the third account on an IP after
 | `3f9d67b` | 2026-11-08 | Refuse over-limit IP logins at the login server instead of kicking in world (on Patch-1.1.5; PR #355 into Test-Shard, PR #356 into Live-Shard) | 15 |
 | `ed5d187` | 2026-11-08 | Patch notes for the login limit hotfix | - |
 | `a7c3dfc` | 2026-11-08 | Lumberjacking and kindling: tree items on the ground give wood again (PR #358) | 7.7 |
-| *(this commit)* | 2026-11-08 | Patch notes for the tree item fix | - |
+| `ab229bd` | 2026-11-08 | Patch notes for the tree item fix (PR #359) | - |
+| *(this commit)* | 2026-11-22 | Areas package cleanup: Wrong Level 3 box, world flags on every facet, `.areas` parses once, dead code, patch notes | 16 |
 
 ---
 
@@ -423,7 +428,95 @@ A code review of the first version found the pending-login gap above, the unchec
 
 ---
 
-## 16. Exhaustive File-by-File Change List
+## 16. Areas Package Cleanup
+
+The parked (non-bug) list from the 2026-10-08 review of `pkg/opt/areas`, plus the one data fix kept in the plan.
+
+### 16.1 Wrong Level 3 box (`areas.cfg`)
+
+`Area 5784 5723 620 667 id=wronglevel3` had min_x above max_x, so the box never matched and the level fell through to `zuludungeonterritory`. min_x is now `5684`. No earlier line overlaps 5684-5723 x 620-667, so this is the first match there. It was the only inverted box in the file.
+
+On the live save (2026-11-08) `wronglevel3` already has `Mask i10` (no recall to + no marking), like `wronglevel`, `wronglevel2` and `wronglevel4`. Those flags start applying on Wrong level 3 with this fix.
+
+### 16.2 World-wide flags on every facet (`include/areapolicy.inc`)
+
+- **Before:** `GetGlobalBypassMaskLocal()` OR-merged the masks of four hardcoded ids into every resolve: `feluccawholeworld`, `wholeworld`, `britannia` and `trammelwholeworld`. `wholeworld` and `britannia` are not in `areas.cfg` (and `PruneStaleRealmPolicies` deletes ids that aren't), so only the two whole-world lines worked. A flag on the `ilshenar`, `malas`, `tokuno` or `termur` world lines applied only to points no other area on that facet matched.
+- **After:** a world catch-all is any area whose id ends in `wholeworld` (`IsWorldCatchallId()`). `areas.cfg` gains one such line at the end of each other facet, like Britannia's: `ilshenarwholeworld`, `malaswholeworld`, `tokunowholeworld` and `termurwholeworld`, each covering the whole map. The plain facet lines (`ilshenar`, `malas`, `tokuno`, `termur`) stay ordinary fallback areas, so a flag on them still covers only ground no other area claims, while a flag on the new Whole World line applies across the facet. (A first version treated an id equal to the realm name as the catch-all; the code review pointed out that this turned every flag on e.g. Malas into a facet-wide override, Luna and Umbra included, that smaller areas could no longer turn off.) `EnsureLocalParsedAreas()` collects them into `g_areapolicy_global_ids` when a script switches realm, and `GetGlobalBypassMaskLocal()` ORs only those, normally one lookup instead of four. `GetGlobalBypassMask()` now also calls `EnsureLocalParsedAreas()`.
+- The four `AREA_POLICY_GLOBAL_ID_*` constants and the seeding of those ids in `RebuildPolicyMaskCache()` are removed: catch-alls are ordinary area ids and are already in the mask cache.
+- **No change on live today:** the `ilshenar`, `malas`, `tokuno` and `termur` policy files are empty in the 2026-11-08 save, and Britannia / Britannia_alt resolve the same ids as before.
+
+### 16.3 `.areas` parses each line once (`textcmd/admin/areas.src`)
+
+- Area lines were parsed 4 times per command (`BuildCategoryDisplayOrder`, `BuildAreaSortKey`, `LoadAreaFlagArrays`, `SaveAreaFlagArrays`). `LoadAreasForRealm()` now fills `area_infos[]` with one `ParseAreaLine()` per line, and all four read it.
+- `GetAreaName()`, which re-implemented the name parsing with weaker validation, is replaced by `GetAreaDisplayName(idx)` reading the parsed name. A line `ParseAreaLine()` rejects shows as `(invalid) <raw line>`.
+- `EnsureAreaFlagArrays()` and its call are removed: `LoadAreaFlagArrays()` always fills every array to `areas.size()`.
+
+### 16.4 Dead code
+
+- `LeaveArea.src`, `EnterAreaDelay.src`: the commented-out datafile message blocks and `use datafile` are removed. The enter/leave text comes from `regions.cfg` `EnterText` / `LeaveText`, which a header comment now says.
+- `EnterAreaDelay.src`: the unused `regionname` variable is removed, saving a `GetRegionName()` call on every region entry.
+- `include/areapolicy.inc.bak` (an old 330-line copy) is deleted, and `*.bak` is added to `.gitignore`.
+
+---
+
+## 17. Live Review Fixes (2026-11-22)
+
+From a review of the live logs (11/08-11/22, 1.1.5 live, no restart in that time) and the 11/22 save against the 1.1.5 and 1.1.4 notes. Fixes that checked out: the login IP limit (449 refusals at the login screen, no kicks, no freezes), kill credit, champion bags and tallies, the 1.1.5 log fixes, the areas cache, powerhour, WFH vitals and hearts, world saves (0-1 s).
+
+### 17.1 Escrow packages lost on restart
+
+- **Defect:** `SaveHouseEscrowPack()` (`houseescrow.inc`), `WFH_SaveToEscrow()` (`wfhescrow.inc`) and `SavePackToEscrow()` (`playermerchant.src`) renamed each storage root right after `CreateRootItemInStorageArea(area, escrow_name, ...)`, to `"<house label> Escrow"`, `"Warrior for Hire Escrow"` and `"Player Merchant Escrow - <vendor>"`.
+- POL 100.2.0 files a storage root under its *name* when it loads `storage.txt` (`StorageArea::load_item` -> `insert_root_item`, `_items.insert({item->name(), item})`, case-insensitive map). After a restart every renamed root was filed under its display name: `FindRootItemInStorageArea(escrow_name)` failed, the claim said "That escrow package was not found." and deleted the index entry. Roots with the same display name collided on load; `insert` keeps the first, and the others were left out of the area and dropped at the next save.
+- **Live evidence (11/22 save):** 24 house escrow index entries against 18 roots in "House Demolish Escrow", each display name exactly once. The WFH registry has 17 entries and 1 root ("Warrior for Hire Escrow"); the 11-08 morning save had 3.
+- **Fix:** the renames are removed (also in `pmescrowtest.src`). The labels already live in CProps (`house_label`, `vendorname`), and nothing displays a root's name. `WFH_ESCROW_ROOT_NAME` is removed.
+
+### 17.2 `.recoverescrow` (new, Administrator)
+
+`scripts/textcmd/admin/recoverescrow.src`. Dry run by default; `.recoverescrow commit` applies. Report to the caller and `log/escrowrecovery.log`.
+
+- Walks "House Demolish Escrow" and "Merchant Escrow" (`foreach root in StorageAreas()[name]`, `_root_iter` = the filing key), snapshot first.
+- A root filed under a proper key (`HouseEscrow `, `PMEscrow `, `WFHEscrow `) whose name differs (renamed since the last boot): name set back to the key, so it survives the next restart.
+- Any other root: a new root under a fresh key, CProps copied, contents moved (all moved back and the new root destroyed if any move fails), old root destroyed. Then the owner's index (`:housing:houseescrow_<owner>` element `<house>`, or `:playervendor:merchantescrow_<owner>` element `<vendor/corpse>`) is re-linked: the first entry with the same label whose package can't be found gets the new key; if none is left (a failed claim pruned it), a new entry is added. WFH also re-registers the sweeper row.
+- `PMEscrowTest ` roots seeded by `.pmescrowtest` count as properly filed. In a dry run, an entry that one root would re-link is not offered to the next root and not reported as LOST, so the dry-run counts match what commit does.
+- Index entries and WFH registry rows still pointing at nothing are reported as LOST: those packages were dropped by the collision and can't be recovered.
+- **Order on go-live:** run `.recoverescrow commit` on the old server before shutting it down (it only needs its own `.ecl`), then again after the 1.1.6 boot, before players claim.
+
+### 17.3 City vendor wage and the champion relic
+
+`IsInCityRegion()` (`scripts/include/areas.inc`, 1.1.5) called `GetRegionString("regions", x, y, "Type", realm)`. That function reads *resource* regions (`gamestate.resourcedefs`: ore, wood, ...), so it returned "No resource by that name" every time and the check was never true. The 14 Ocllo vendors paid the 10,000 tier (333 gold a day) instead of the city tier (1,666), and the champion relic's "not in a city" refusal never fired.
+
+The function is removed. `playermerchant.src` `CalculateDailyWage()` and `championrelic.src` call `CheckCity()` from `include/checkcity` (Type City ranges in `regions/regions.cfg`, realm-scoped), the same check house placement uses. It was not added to `areas.inc` because `go.src` defines its own `NormalizeRegionType()`.
+
+Left as is: `NameChecker.inc` reads a `City` key that `regions.cfg` doesn't have, but the cached town list already holds every town (Papua, Delucia, Randorin, Empath Abbey and both castles come in through `townlist`).
+
+### 17.4 Smaller fixes
+
+| Where | Defect | Fix |
+|---|---|---|
+| `pkg/opt/guilds/include/guilds.inc` `UnEntwine()` | A missing entwined uniform sent "This is odd, your uniform is gone!, page staff!" to every player online (`Broadcast`), and returned before erasing `Entwined`, so every unequip on death repeated it (6 times for one character). | Props erased first; the message goes to the wearer only; the syslog line names the item. |
+| `scripts/ai/killpcsclock.src` | `HALT_THRESHOLD` 24, but `Fight()` only chases inside 20 tiles: a target 20-24 tiles away ended the fight at once, `post_combat()` called `look_around()` again, until "exceeded maximum call depth" (2 in 14 days, Vortex Minions). | `HALT_THRESHOLD` 19. |
+| `pkg/opt/warriorforhire/warrior.src` `DropEverything()` | `MoveObjectToLocation(..., 0)`: realm 0, so "<name> drop" never moved anything. | `me.realm`, `MOVEOBJECT_FORCELOCATION`. |
+| `pkg/opt/warriorforhire/warriorforhire.src` | No realm on `CreateNpcFromTemplate`, so a deed used outside Felucca made the warrior in Felucca; `henchman` lookup without `CInt`. | `who.realm`; `CInt()`. |
+| `scripts/ai/highpriest.src` | "give up warrior" and a heart hand-in passed an unset `henchman` to `SystemFindObjectBySerial` (debug.log, PC 2213). | `CInt()`. |
+| `scripts/textcmd/player/guilds.src` applicants gump | Always builds `perpage+1` pages; pages past the last applicant read `list[startat+z]` out of range (debug.log PC 7691/7702). | Detail page only when `startat+z <= list.size()`. The code review also found that from page 2 on the rows were one applicant off from their detail pages (rows started at `startat`, details at `startat+1`), so Accept/Remove/Ban acted on the next applicant: rows are now `startat+1 .. startat+perpage`, and the next-page arrow shows only when more applicants remain. |
+| `pkg/std/spells/earthquake.src` | No realm on `ListMobilesNearLocation`, `ListItemsNearLocation` and the four `ListItemsNearLocationOfType` calls, so outside Felucca it searched Felucca; a mobile gone mid-loop gave `z` Uninit. | Realms passed; skip a mobile whose `z` is no longer an integer. |
+| `pkg/opt/loot/lootgump.src` | The loop read `corpse.realm` after the corpse decayed. | Break when `corpse.realm` is no longer a string. |
+| `scripts/include/speech.inc` `process_text()` | `GetConfigString(elem, "default")` with an error `elem` for templates without a speech.cfg entry (merchant.ecl). | Only when `elem` is valid. |
+| `pkg/opt/spawnpoint/textcmd/admin/restartspawnpointarea.src` | Read the bare `golocs_by_id` first, which looks in the package and logged "does not exist". | `::golocs_by_id` first. |
+
+### 17.5 `.wherewarrior` (new, player)
+
+`scripts/textcmd/player/wherewarrior.src`, like `.whereboat`. Finds the warrior from the player's `henchman` CProp, checks it is a live NPC whose `master` CProp is the player, and prints its x, y, z and facet; on the same facet also the distance, and in Felucca or Trammel the sextant position (`include/coords` `ToSextant`, which is centred on Britannia's map).
+
+### 17.6 Not code: log noise
+
+- `pol.cfg` `ShowWarningItem=1` (line 194) prints the "tried to drop item ... had not gotten an item" / equip warnings (about 3,000 in 14 days, players' dress and organiser agents). The "used out of sequence cursor" warnings (about 2,000, mostly one character) are `ShowWarningCursorSequence`, not listed in `pol.cfg` and so on by default. Setting either to 0 only silences the console/log line.
+- The HTTP/SSH probes on the game port (56 in 14 days) are the Infrawatch scanner (`+https://infrawat.ch/` in the user agent), rotating through 69.5.169.0/24, 64.205.72.0/24, 77.67.26.0/24, 86.38.187.0/24, 200.138.46.0/24 and a few single addresses. 142.134.86.159 also logged "unexpected message" lines but is a player's IP.
+- The `eleanor` account: 4,050 wrong passwords 11/08-11/12, one every 60 s from the IPs it also logs in from, a client reconnecting with an old saved password.
+
+---
+
+## 18. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -463,13 +556,39 @@ A code review of the first version found the pending-login gap above, the unchec
 | `pkg/systems/accounts/hook/onLogin.src` | 15.2 | IP limit checked in the 0x80 hook (existing and new auto-accounts), refused with 0x82 code 5; `DeniedMSG` writes the reason at offset 1 (`3f9d67b`) |
 | `pkg/systems/accounts/include/accounts.inc` | 15.2 | `ACCT_IsIPLimitExempt`, `ACCT_GetPendingIPLogins`, `ACCT_IPLimitReached`; `CheckForMaxClientsOnline` rewritten on top of them (`3f9d67b`) |
 | `pkg/systems/accounts/logon.src` | 15.2 | Kick block deduplicated (`3f9d67b`) |
+| `pkg/opt/areas/areas.cfg` | 16.1, 16.2 | Wrong Level 3 min_x `5784` -> `5684`; Whole World lines for Ilshenar, Malas, Tokuno and Ter Mur |
+| `pkg/opt/areas/include/areapolicy.inc` | 16.2 | World catch-alls are ids ending in `wholeworld` (`IsWorldCatchallId`, `g_areapolicy_global_ids`); hardcoded global ids and their cache seeding removed |
+| `pkg/opt/areas/textcmd/admin/areas.src` | 16.3 | `area_infos[]` parsed once; `GetAreaDisplayName()` replaces `GetAreaName()`; `EnsureAreaFlagArrays()` removed |
+| `pkg/opt/areas/LeaveArea.src` | 16.4 | Commented datafile block and `use datafile` removed |
+| `pkg/opt/areas/EnterAreaDelay.src` | 16.4 | Commented datafile block, `use datafile` and unused `regionname` removed |
+| `pkg/opt/areas/include/areapolicy.inc.bak` | 16.4 | Deleted |
+| `.gitignore` | 16.4 | `*.bak` |
+| `pkg/std/housing/houseescrow.inc` | 17.1 | Escrow root no longer renamed |
+| `pkg/opt/warriorforhire/include/wfhescrow.inc` | 17.1 | Escrow root no longer renamed; `WFH_ESCROW_ROOT_NAME` removed |
+| `pkg/systems/playervendor/playermerchant.src` | 17.1, 17.3 | Escrow root no longer renamed; daily wage uses `CheckCity()` |
+| `pkg/systems/playervendor/commands/test/pmescrowtest.src` | 17.1 | Test roots no longer renamed |
+| `scripts/textcmd/admin/recoverescrow.src` | 17.2 | New - `.recoverescrow [commit]` |
+| `scripts/include/areas.inc` | 17.3 | Broken `IsInCityRegion()` removed |
+| `pkg/opt/ArtifactSystem/championrelic.src` | 17.3 | City refusal uses `CheckCity()` |
+| `pkg/opt/guilds/include/guilds.inc` | 17.4 | `UnEntwine()`: props erased first, message to the wearer only |
+| `scripts/ai/killpcsclock.src` | 17.4 | `HALT_THRESHOLD` 24 -> 19 |
+| `pkg/opt/warriorforhire/warrior.src` | 17.4 | `DropEverything()` passes the realm |
+| `pkg/opt/warriorforhire/warriorforhire.src` | 17.4 | Deed creates the warrior in the player's realm; `CInt` on `henchman` |
+| `scripts/ai/highpriest.src` | 17.4 | `CInt` on `henchman` lookups |
+| `scripts/textcmd/player/guilds.src` | 17.4 | Applicant detail pages bounded by the list; row/detail off-by-one from page 2 fixed |
+| `pkg/std/spells/earthquake.src` | 17.4 | Realm on all area searches; gone mobiles skipped |
+| `pkg/opt/loot/lootgump.src` | 17.4 | Stops when the corpse is gone |
+| `scripts/include/speech.inc` | 17.4 | No `GetConfigString` on a missing element |
+| `pkg/opt/spawnpoint/textcmd/admin/restartspawnpointarea.src` | 17.4 | `::golocs_by_id` read first |
+| `scripts/textcmd/player/wherewarrior.src` | 17.5 | New - `.wherewarrior` |
+| `config/command_synopses.cfg` | 17.2, 17.5 | Regenerated (`.recoverescrow`, `.wherewarrior`) |
 | `patchnotes/developer-changelog-v1.1.6.md` | - | New - this file |
 | `patchnotes/patch-v1.1.6.md` | - | New - player patch notes |
 | `patchnotes/launchernotes.md` | - | Refreshed with the 1.1.6 player notes |
 
 ---
 
-## 17. Risk and Regression Notes
+## 19. Risk and Regression Notes
 
 - **Build.** `attributes.inc`, `itemutil.inc` and `modsetup.inc` are included almost everywhere: deploy with a full `ecompile -A` (1,163 scripts, 0 errors at this commit).
 - **Region configs are read at server start.** The new `wood.cfg`, `ore.cfg`, `sand.cfg`, `clay.cfg` and `fish.cfg` lists need a restart (or a resource reload) to match the scripts. Until then `GetHarvestDifficulty()` checks the old lists and `FindHarvestTile` can refuse newly added tiles.
@@ -484,6 +603,10 @@ A code review of the first version found the pending-login gap above, the unchec
 - **Karma shifts.** Killing neutral animals no longer raises karma; killing the 23 loss templates costs 250 karma and 100 fame per attacker on the hit list. Wrath of God damage and the reanimate AIs follow the new NPC karma (section 11.5).
 - **Charmed creatures released in town vanish**, they are not confiscated; this also applies to Spell Bind. Players used to the ticket lose the creature (it was never theirs to keep). A pet taken with Spell Bind goes back to its owner instead.
 - **Stale charm cleanup** runs on wild AI start and on pet AI start. A pre-1.1.6 charm with no end time is ended at once; a real pet carrying the old flag is kept if it has `PreviouslyTamed`.
-- **Login limit per IP (section 15).** Not compiled yet: compile `pkg/systems/accounts/hook/onLogin.src`, `logon.src` and `reconnect.src`. Over-limit logins now stop at the login screen with "The IGR concurrency limit has been met". A login that passed the login screen holds its IP slot for up to 120 s, so cancelling at character select can get the same IP's other accounts refused for up to 2 minutes. Because `DeniedMSG` now sends real codes, a wrong password shows "credentials invalid" and the startup `blockLogin` shows "General IGR authentication failure". The in-world kick is still there as a backstop for clients that skip the login server or wait at character select for more than 120 s. On the test shard, check that a refusal is followed straight away by `disconnected (account unknown)` in pol.log, which means the client closed the socket. Players who run more than 2 accounts at once need `.extralogin` on the extra accounts.
+- **Login limit per IP (section 15).** Live since 11/08: 449 over-limit logins refused in 14 days, no in-world kicks and no login freezes. Over-limit logins now stop at the login screen with "The IGR concurrency limit has been met". A login that passed the login screen holds its IP slot for up to 120 s, so cancelling at character select can get the same IP's other accounts refused for up to 2 minutes. Because `DeniedMSG` now sends real codes, a wrong password shows "credentials invalid" and the startup `blockLogin` shows "General IGR authentication failure". The in-world kick is still there as a backstop for clients that skip the login server or wait at character select for more than 120 s. On the test shard, check that a refusal is followed straight away by `disconnected (account unknown)` in pol.log, which means the client closed the socket. Players who run more than 2 accounts at once need `.extralogin` on the extra accounts.
+- **Areas package (section 16).** `areapolicy.inc` is included by the AI and spell code that checks area flags, so deploy with a full `ecompile -A`. `areas.cfg` is parsed into the shared cache by the package start script, so the Wrong Level 3 box takes effect after a restart; from then on recall and marking are blocked on that level. The four new Whole World areas show up in `.areas ilshenar` / `malas` / `tokuno` / `termur` at the top of World; a flag set on them applies across that whole facet, towns included, the same way Felucca Whole World does on Britannia. The plain facet lines behave as before.
+- **Escrow recovery order (section 17.2).** Run `.recoverescrow commit` on the old server just before the 1.1.6 restart and again right after it, before players claim. A claim on a package that hasn't been re-keyed yet still says "not found" and prunes its entry; the recovery then adds a fresh entry, so the package isn't lost, but the player sees the error once. Packages already dropped by name collisions can't be recovered; the LOST lines in `log/escrowrecovery.log` list them for refunds.
+- **City wage (section 17.3).** Vendors in Type City regions start paying 1,666 gold a day instead of 333. On 11/22 the 14 Ocllo vendors were all paying the lower rate; 0x772204 held 10,000 gold and 0x771b7c 18,667, so their owners should be told.
+- **Vortex Minions** now notice players at 19 tiles instead of 24.
 - **Spell Bind debug line.** The spell still prints `difficulty: <n>` to the caster; it predates this patch and was left as is.
 - **Not run in a client.** Worth testing on the test shard: a poison and a temporary mod ending (HP regen stays normal), a pet's special spell mana, a kill of a neutral animal and of a townsperson, Control Undead and Spell Bind running out, a reboot mid-charm, and a release in town.
