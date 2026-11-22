@@ -3,10 +3,10 @@
 **Branch:** Patch-1.1.6 (branched from `origin/Test-Shard` at `b640f5c`)
 **Date:** 2026-11-03 to 2026-11-22 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07; login limit hotfix 2026-11-08; areas package cleanup and live review fixes 2026-11-22)
 **Commits in range:** 5 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest, `a7c3dfc` tree items, the areas cleanup in section 16, the live review fixes in section 17), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
-**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `a7c3dfc`: 3 harvest scripts (section 7.7); `3f9d67b`: 3 account scripts; areas cleanup: 5 files in `pkg/opt/areas`, 1 deleted, plus `.gitignore` (section 16); live review fixes: 17 scripts and configs, 2 new commands (section 17); plus this release's 3 `patchnotes/` files. The full list is section 18.
+**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `a7c3dfc`: 3 harvest scripts (section 7.7); `3f9d67b`: 3 account scripts; areas cleanup: 5 files in `pkg/opt/areas`, 1 deleted, plus `.gitignore` (section 16); live review fixes: 17 scripts and configs, 3 new commands (section 17); plus this release's 3 `patchnotes/` files. The full list is section 18.
 
 > Scope was computed against `b640f5c`. `origin/Test-Shard` was still at `b640f5c` when this commit was made, so the whole delta is the two commits.
-> Built with `ecompile -A` on 2026-11-22 with everything through section 17: 1,165 scripts, 0 errors (the `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). The login hotfix (section 15) was also built and running on live since 11/08. Not yet run in a client (section 19).
+> Built with `ecompile -A` on 2026-11-22 with everything through section 17: 1,165 scripts, 0 errors (`.pets`, 17.6, built on its own afterwards: 0 errors, 0 warnings) (the `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). The login hotfix (section 15) was also built and running on live since 11/08. Not yet run in a client (section 19).
 
 ---
 
@@ -508,7 +508,11 @@ Left as is: `NameChecker.inc` reads a `City` key that `regions.cfg` doesn't have
 
 `scripts/textcmd/player/wherewarrior.src`, like `.whereboat`. Finds the warrior from the player's `henchman` CProp, checks it is a live NPC whose `master` CProp is the player, and prints its x, y, z and facet; on the same facet also the distance, and in Felucca or Trammel the sextant position (`include/coords` `ToSextant`, which is centred on Britannia's map).
 
-### 17.6 Not code: log noise
+### 17.6 `.pets` (new, player)
+
+`scripts/textcmd/player/pets.src`. Pets pay mana for specials since section 10, but the client only shows a pet's health: the core sends a mobile's mana and stamina (0xA2/0xA3) to that mobile's own client and its party (`send_mana_level`, `Party::on_mana_changed`), never to an owner. `.pets` lists every NPC within 20 tiles on the `tamed` AI whose `master` CProp is the caller (pets, summons, charmed creatures) with `GetHp`/`GetMaxHp`, `GetMana`/`GetMaxMana` and `GetStamina`/`GetMaxStamina`.
+
+### 17.7 Not code: log noise
 
 - `pol.cfg` `ShowWarningItem=1` (line 194) prints the "tried to drop item ... had not gotten an item" / equip warnings (about 3,000 in 14 days, players' dress and organiser agents). The "used out of sequence cursor" warnings (about 2,000, mostly one character) are `ShowWarningCursorSequence`, not listed in `pol.cfg` and so on by default. Setting either to 0 only silences the console/log line.
 - The HTTP/SSH probes on the game port (56 in 14 days) are the Infrawatch scanner (`+https://infrawat.ch/` in the user agent), rotating through 69.5.169.0/24, 64.205.72.0/24, 77.67.26.0/24, 86.38.187.0/24, 200.138.46.0/24 and a few single addresses. 142.134.86.159 also logged "unexpected message" lines but is a player's IP.
@@ -581,7 +585,8 @@ Left as is: `NameChecker.inc` reads a `City` key that `regions.cfg` doesn't have
 | `scripts/include/speech.inc` | 17.4 | No `GetConfigString` on a missing element |
 | `pkg/opt/spawnpoint/textcmd/admin/restartspawnpointarea.src` | 17.4 | `::golocs_by_id` read first |
 | `scripts/textcmd/player/wherewarrior.src` | 17.5 | New - `.wherewarrior` |
-| `config/command_synopses.cfg` | 17.2, 17.5 | Regenerated (`.recoverescrow`, `.wherewarrior`) |
+| `scripts/textcmd/player/pets.src` | 17.6 | New - `.pets` |
+| `config/command_synopses.cfg` | 17.2, 17.5, 17.6 | Regenerated (`.recoverescrow`, `.wherewarrior`, `.pets`) |
 | `patchnotes/developer-changelog-v1.1.6.md` | - | New - this file |
 | `patchnotes/patch-v1.1.6.md` | - | New - player patch notes |
 | `patchnotes/launchernotes.md` | - | Refreshed with the 1.1.6 player notes |

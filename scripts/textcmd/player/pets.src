@@ -1,0 +1,31 @@
+// Synopsis: Show health, mana and stamina of your pets nearby
+// Command: .pets
+//
+// Patch 1.1.6. Pets now pay mana for their special spells, but the client only shows a pet's
+// health: the core sends mana and stamina to the mobile itself and its party, never to an
+// owner. This lists every creature within PETS_RANGE tiles that follows you (tamed pets,
+// summons, charmed creatures: anything on the "tamed" AI whose master is you).
+use uo;
+
+include "include/attributes";
+
+const PETS_RANGE := 20;
+
+program pets(who)
+
+	var count := 0;
+	foreach mob in ListMobilesNearLocation(who.x, who.y, who.z, PETS_RANGE, who.realm)
+		if (mob.isa(POLCLASS_NPC) and mob.script == "tamed" and CInt(GetObjProperty(mob, "master")) == who.serial)
+			count := count + 1;
+			SendSysMessage(who, mob.name + ": Health " + GetHp(mob) + "/" + GetMaxHp(mob)
+				+ ", Mana " + GetMana(mob) + "/" + GetMaxMana(mob)
+				+ ", Stamina " + GetStamina(mob) + "/" + GetMaxStamina(mob), 3, 90);
+		endif
+	endforeach
+
+	if (!count)
+		SendSysMessage(who, "You have no pets within " + PETS_RANGE + " tiles.");
+	endif
+	return count;
+
+endprogram
