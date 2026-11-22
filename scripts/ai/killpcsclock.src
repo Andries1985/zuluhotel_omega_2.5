@@ -21,7 +21,11 @@ include "ai/main/sleepmode";
 include "include/attributes";
 include "include/attributes";
 
-const HALT_THRESHOLD := 24; // how close before he attacks?
+// How close before he attacks. Must stay under 20: Fight() only chases inside 20 tiles, so a
+// target 20-24 tiles away ended the fight at once, post_combat() called look_around() again,
+// and the AI recursed until the core killed the script (killpcsclock.ecl "exceeded maximum
+// call depth", 1.1.6).
+const HALT_THRESHOLD := 19;
 
 program KillPlayers()
 

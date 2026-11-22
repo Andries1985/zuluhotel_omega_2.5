@@ -23,14 +23,15 @@ const AREA_POLICY_SAFE_AREA := 128;
 const AREA_POLICY_NO_PK := 256;
 const AREA_POLICY_RP_AREA := 512;
 
-// World-catchall area ids whose masks are OR-merged into every location's
-// policy so that setting a flag on e.g. "feluccawholeworld" makes it apply to
-// every point in that realm regardless of which specific area actually
-// matches first. This preserves the pre-rewrite override behavior.
-const AREA_POLICY_GLOBAL_ID_WHOLEWORLD := "feluccawholeworld";
-const AREA_POLICY_GLOBAL_ID_WHOLEWORLD_LEGACY := "wholeworld";
-const AREA_POLICY_GLOBAL_ID_BRITANNIA := "britannia";
-const AREA_POLICY_GLOBAL_ID_TRAMMEL_WHOLEWORLD := "trammelwholeworld";
+// World-catchall areas: their masks are OR-merged into every location's
+// policy in that realm, so a flag set on e.g. "feluccawholeworld" applies to
+// every point regardless of which specific area matches first. A catch-all is
+// any area whose id ends in "wholeworld": feluccawholeworld, trammelwholeworld,
+// and ilshenar/malas/tokuno/termurwholeworld (areas.cfg, last line of each
+// facet). The plain facet lines (id=malas etc.) stay ordinary fallback areas,
+// so a flag on them covers only ground no other area claims. See
+// IsWorldCatchallId().
+const AREA_POLICY_WHOLEWORLD_SUFFIX := "wholeworld";
 
 ///////////////////////////////////////////////////////////////////////////////
 // Script-local caches
@@ -45,6 +46,7 @@ const AREA_POLICY_GLOBAL_ID_TRAMMEL_WHOLEWORLD := "trammelwholeworld";
 // GlobalProperty) and refreshed only when that counter moves.
 var g_areapolicy_parsed_realm := "";
 var g_areapolicy_parsed := array{};
+var g_areapolicy_global_ids := array{};
 var g_areapolicy_masks_realm := "";
 var g_areapolicy_masks_version := -1;
 var g_areapolicy_masks := dictionary;
@@ -286,7 +288,29 @@ function EnsureLocalParsedAreas(realm)
 
 	g_areapolicy_parsed := parsed;
 	g_areapolicy_parsed_realm := realm;
+
+	// Collect the realm's world-catchall ids once per realm change, so the hot
+	// path only does one mask lookup per catch-all (normally exactly one).
+	g_areapolicy_global_ids := array{};
+	var i;
+	for(i := 1; i <= parsed.size(); i := i + 1)
+		if(IsWorldCatchallId(parsed[i].area_id))
+			g_areapolicy_global_ids.append(CStr(parsed[i].area_id));
+		endif
+	endfor
 	return 1;
+endfunction
+
+
+// 1 if area_id is a world-catchall (see the note at the top).
+function IsWorldCatchallId(area_id)
+	area_id := CStr(area_id);
+	var id_len := Len(area_id);
+	var suffix_len := Len(AREA_POLICY_WHOLEWORLD_SUFFIX);
+	if(id_len >= suffix_len && SubStr(area_id, id_len - suffix_len + 1, suffix_len) == AREA_POLICY_WHOLEWORLD_SUFFIX)
+		return 1;
+	endif
+	return 0;
 endfunction
 
 
@@ -297,6 +321,7 @@ function InvalidateParsedAreaLinesCache(realm := "")
 		if(realm == g_areapolicy_parsed_realm)
 			g_areapolicy_parsed_realm := "";
 			g_areapolicy_parsed := array{};
+			g_areapolicy_global_ids := array{};
 		endif
 	endif
 	return 1;
@@ -389,24 +414,27 @@ endfunction
 ///////////////////////////////////////////////////////////////////////////////
 // Global (world-catchall) bypass mask
 ///////////////////////////////////////////////////////////////////////////////
-// Reads the masks assigned to the well-known catch-all area ids and OR-merges
-// them so any flag set on them applies world-wide. These ids are always
-// present in the realm mask cache (RebuildPolicyMaskCache seeds them), so the
-// 4 extra lookups per resolve are local dictionary hits.
+// Reads the masks of the realm's world-catchall areas and OR-merges them so
+// any flag set on them applies realm-wide. Catch-alls are ordinary area ids,
+// so they are always in the realm mask cache and each lookup is a local
+// dictionary hit.
 
-// Assumes EnsureLocalRealmMasks(realm) has run.
+// Assumes EnsureLocalParsedAreas(realm) and EnsureLocalRealmMasks(realm) have run.
 function GetGlobalBypassMaskLocal(realm)
 	var mask := 0;
-	mask := mask | CInt(GetPolicyMaskLocal(realm, AREA_POLICY_GLOBAL_ID_WHOLEWORLD));
-	mask := mask | CInt(GetPolicyMaskLocal(realm, AREA_POLICY_GLOBAL_ID_WHOLEWORLD_LEGACY));
-	mask := mask | CInt(GetPolicyMaskLocal(realm, AREA_POLICY_GLOBAL_ID_BRITANNIA));
-	mask := mask | CInt(GetPolicyMaskLocal(realm, AREA_POLICY_GLOBAL_ID_TRAMMEL_WHOLEWORLD));
+	var global_id;
+	foreach global_id in g_areapolicy_global_ids
+		mask := mask | CInt(GetPolicyMaskLocal(realm, global_id));
+	endforeach
 	return CInt(mask);
 endfunction
 
 
 function GetGlobalBypassMask(realm)
 	realm := SanitizePolicyRealm(realm);
+	if(EnsureLocalParsedAreas(realm) == error)
+		return 0;
+	endif
 	EnsureLocalRealmMasks(realm);
 	return GetGlobalBypassMaskLocal(realm);
 endfunction
@@ -447,8 +475,8 @@ endfunction
 // Mirrors the parsed-line cache above, but for the mask VALUE itself. Every
 // GetPolicyMask() call used to hit the datafile subsystem (OpenDataFile +
 // FindElement + GetProp) on every single area-policy check - and since
-// GetGlobalBypassMask() calls this 4 more times per resolve for the world
-// catch-all ids, that's up to 5 datafile round trips per check, called every
+// GetGlobalBypassMask() calls this again for each world catch-all id, that
+// was several datafile round trips per check, called every
 // AI tick for every mobile shard-wide. Cached per-realm as one dictionary
 // (area_id -> mask) so this stays one GlobalProperty per realm.
 //
@@ -543,8 +571,8 @@ endfunction
 
 
 // Rebuilds the whole realm mask dictionary from the datafile in one pass and
-// stores it with a single SetGlobalProperty. Every parsed area id plus the
-// world catch-all ids get an entry (0 when absent) so the hot path never
+// stores it with a single SetGlobalProperty. Every parsed area id (the world
+// catch-alls included) gets an entry (0 when absent) so the hot path never
 // misses on a known id. If the config or datafile cannot be read the realm
 // cache is erased instead, so readers fall back to the datafile rather than
 // serving a dictionary that may be stale. Returns the entry count, or error.
@@ -573,22 +601,6 @@ function RebuildPolicyMaskCache(realm)
 		endif
 		realm_cache[area_id] := CInt(mask);
 	endfor
-
-	var global_ids := array{
-		AREA_POLICY_GLOBAL_ID_WHOLEWORLD,
-		AREA_POLICY_GLOBAL_ID_WHOLEWORLD_LEGACY,
-		AREA_POLICY_GLOBAL_ID_BRITANNIA,
-		AREA_POLICY_GLOBAL_ID_TRAMMEL_WHOLEWORLD
-	};
-	foreach global_id in global_ids
-		if(!realm_cache.Exists(global_id))
-			var global_mask := ReadPolicyMaskFromFile(file_ref, global_id);
-			if(global_mask == error)
-				global_mask := 0;
-			endif
-			realm_cache[global_id] := CInt(global_mask);
-		endif
-	endforeach
 	UnloadDataFile(GetRealmPolicyDescriptor(realm));
 
 	SetGlobalProperty(AREA_POLICY_MASK_CACHE_PREFIX + realm, realm_cache);

@@ -347,12 +347,14 @@ endfunction
 
 
 function ReadGoLocCfg()
-	var cfg := ReadConfigFile("golocs_by_id");
+	// config/golocs_by_id.cfg first: a bare name looks in this package first, and the failed
+	// read logged "Config File pkg/opt/spawnpoint/golocs_by_id.cfg does not exist" each time.
+	var cfg := ReadConfigFile("::golocs_by_id");
 	if(cfg)
 		return cfg;
 	endif
 
-	cfg := ReadConfigFile("::golocs_by_id");
+	cfg := ReadConfigFile("golocs_by_id");
 	if(cfg)
 		return cfg;
 	endif

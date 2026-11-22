@@ -1085,7 +1085,8 @@ endfunction
 function DropEverything()
 
 	foreach item in ListRootItemsInContainer(me.backpack)
-		MoveObjectToLocation(item, me.x, me.y, me.z, 0);
+		// The realm was a literal 0, so the core rejected every move and "drop" did nothing.
+		MoveObjectToLocation(item, me.x, me.y, me.z, me.realm, MOVEOBJECT_FORCELOCATION);
 	endforeach
 
 endfunction

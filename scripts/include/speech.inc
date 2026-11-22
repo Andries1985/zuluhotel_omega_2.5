@@ -26,7 +26,8 @@ foreach word in words
 		endif
 endforeach
 
-if (!retval)
+// elem is an error when the template (or its word group) has no speech.cfg entry.
+if (!retval and elem)
         retval := GetConfigString(elem, "default" );
 endif
 

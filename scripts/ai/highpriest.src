@@ -331,7 +331,7 @@ while (1)
 					var player := event.source;
 					TurnToward(player);
 					var giveuphm := GetObjProperty(player, "henchman");
-					var giveupwfh := SystemFindObjectBySerial(giveuphm);
+					var giveupwfh := SystemFindObjectBySerial(CInt(giveuphm));
 					if (giveupwfh)
 						if (!YesNo(player, "Your companion still lives - to give them up now means their death, and nothing will remain of them. Art thou certain?", "Yes", "No", WFH_PROMPT_TIMEOUT))
 							Say("As thou wishest.");
@@ -425,7 +425,7 @@ while (1)
 					wdex := Max(Cint(GetObjProperty(heart,"Dex")) - resnum, 10);
 					wname := GetObjProperty(heart,"Name");
 					hm := GetObjProperty(event.source,"henchman");
-					hme := SystemFindObjectBySerial(hm);
+					hme := SystemFindObjectBySerial(CInt(hm));
 					var hhme := GetObjProperty(heart,"master");
 					if (CInt(hhme) != event.source.serial)
 						// Only the warrior's own master may bring a heart; one handed in by anyone
