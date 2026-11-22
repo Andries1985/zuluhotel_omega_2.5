@@ -98,6 +98,7 @@ Welcome to **Patch 1.1.6**. This patch is mostly about gathering, with a second 
 
 - **Pets pay mana for their special spells.** A tamed creature with a special spell (the water dragon's mass spells, mass Gust of Air, Champfire, the summoning specials and others) now pays the mana of the normal spell it copies. Before, pets cast them for free, without end. Summoned creatures, such as the earth magic spirit elementals, still cast them for free.
 - **Tamed spellcasters wait between spells.** Wild casters wait 2 seconds between spells, but a tamed caster could cast on every step of its fight. Tamed casters now wait 2 seconds too.
+- **New command: `.pets`.** Lists every pet, summon or controlled creature of yours within 20 tiles with its health, mana and stamina, so you can see when a pet is running out of mana for its specials.
 
 ---
 
@@ -204,7 +205,7 @@ Welcome to **Patch 1.1.6**. This patch is mostly about gathering, with a second 
 - Wrong level 3 now blocks recalling in and marking runes, like the other levels of Wrong.
 - Escrow packages (house demolish, player vendor, Warrior for Hire) survive restarts again, and packages still in storage are being put back.
 - Vendors in a city pay the city wage, and champion relics can't be used in a city.
-- `.wherewarrior` shows where your Warrior for Hire is; "drop" works; a deed used outside Felucca puts the warrior next to you.
+- `.pets` shows your pets' health, mana and stamina; `.wherewarrior` shows where your Warrior for Hire is; "drop" works; a deed used outside Felucca puts the warrior next to you.
 - The missing guild uniform message no longer goes to everyone; Vortex Minions no longer freeze; Earthquake works outside Felucca.
 
 Thanks for playing Zuluhotel Omega 2.5.
