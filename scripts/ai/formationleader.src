@@ -154,6 +154,8 @@ SetObjProperty(me,"myy",me.y);
 					endif
 					weaponone := CreateItemInInventory(me.backpack,0x9a19,1);
 					SetObjProperty( weaponone, "SkillPoisoned" , 18 );
+					// Without charges the hit script cleared the poison on the first swing (same as the other AIs).
+					SetObjProperty( weaponone, "PoisonCharges" , 100 );
 					EquipItem(me,weaponone);	
 				endif
 			Sleepms(sleepdelay);
