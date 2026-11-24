@@ -1,12 +1,12 @@
 # Developer Changelog - v1.1.6
 **Range:** `b640f5c` (merge of #353, the last 1.1.5 patchnotes state) -> working tree (this commit)
 **Branch:** Patch-1.1.6 (branched from `origin/Test-Shard` at `b640f5c`)
-**Date:** 2026-11-03 to 2026-11-22 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07; login limit hotfix 2026-11-08; areas package cleanup and live review fixes 2026-11-22)
-**Commits in range:** 5 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest, `a7c3dfc` tree items, the areas cleanup in section 16, the live review fixes in section 17), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
-**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `a7c3dfc`: 3 harvest scripts (section 7.7); `3f9d67b`: 3 account scripts; areas cleanup: 5 files in `pkg/opt/areas`, 1 deleted, plus `.gitignore` (section 16); live review fixes: 17 scripts and configs, 3 new commands (section 17); plus this release's 3 `patchnotes/` files. The full list is section 18.
+**Date:** 2026-11-03 to 2026-11-23 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07; login limit hotfix 2026-11-08; areas package cleanup and live review fixes 2026-11-22; weapon elemental damage order and poison charges 2026-11-23)
+**Commits in range:** 6 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest, `a7c3dfc` tree items, `af43cfb` the areas cleanup and live review fixes in sections 16-17, `89fa19e` `.pets`, and the combat fixes in section 18), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
+**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `a7c3dfc`: 3 harvest scripts (section 7.7); `3f9d67b`: 3 account scripts; areas cleanup: 5 files in `pkg/opt/areas`, 1 deleted, plus `.gitignore` (section 16); live review fixes: 17 scripts and configs, 3 new commands (section 17); combat: 2 scripts (section 18); plus this release's 3 `patchnotes/` files. The full list is section 19.
 
 > Scope was computed against `b640f5c`. `origin/Test-Shard` was still at `b640f5c` when this commit was made, so the whole delta is the two commits.
-> Built with `ecompile -A` on 2026-11-22 with everything through section 17: 1,165 scripts, 0 errors (`.pets`, 17.6, built on its own afterwards: 0 errors, 0 warnings) (the `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). The login hotfix (section 15) was also built and running on live since 11/08. Not yet run in a client (section 19).
+> Built with `ecompile -A` on 2026-11-22 with everything through section 17: 1,165 scripts, 0 errors (`.pets`, 17.6, built on its own afterwards: 0 errors, 0 warnings) (the `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). The login hotfix (section 15) was also built and running on live since 11/08. Section 18 built with `ecompile -A` on 2026-11-23: 1,166 scripts, 0 errors. Not yet run in a client (section 20).
 
 ---
 
@@ -29,8 +29,9 @@
 15. [Login Limit per IP - No More In-World Kicks](#15-login-limit-per-ip---no-more-in-world-kicks)
 16. [Areas Package Cleanup](#16-areas-package-cleanup)
 17. [Live Review Fixes (2026-11-22)](#17-live-review-fixes-2026-11-22)
-18. [Exhaustive File-by-File Change List](#18-exhaustive-file-by-file-change-list)
-19. [Risk and Regression Notes](#19-risk-and-regression-notes)
+18. [Combat - Weapon Elemental Damage Order and Poison Charges](#18-combat---weapon-elemental-damage-order-and-poison-charges)
+19. [Exhaustive File-by-File Change List](#19-exhaustive-file-by-file-change-list)
+20. [Risk and Regression Notes](#20-risk-and-regression-notes)
 
 ---
 
@@ -58,6 +59,8 @@ A live hotfix rides along (section 15): kicking the third account on an IP after
 
 Section 16 is the parked cleanup list from the 2026-10-08 areas package review (the bug and performance items from that review shipped in 1.1.4, section 18 of its changelog). It fixes the inverted Wrong Level 3 box, so that level gets its no-recall/no-mark flags, and makes the world-wide flags work on every facet.
 
+Section 17 is the round of fixes from the 2026-11-22 live log and save review. Section 18 (2026-11-23) comes from a player report: the Bow of the Air Element and the War Fork of the Water Element dropped the wielder out of war mode on a kill. Weapon elemental damage was dealt in the middle of the damage calculation, before the No-PK check, so the kill landed before the check and the check misread the destroyed NPC as a player. Elemental damage now lands after the checks. A poisoned weapon also lost one swing's damage when its charges ran out.
+
 ## 2. Commit Timeline
 
 | Commit | Date | Subject | Sections |
@@ -68,7 +71,9 @@ Section 16 is the parked cleanup list from the 2026-10-08 areas package review (
 | `ed5d187` | 2026-11-08 | Patch notes for the login limit hotfix | - |
 | `a7c3dfc` | 2026-11-08 | Lumberjacking and kindling: tree items on the ground give wood again (PR #358) | 7.7 |
 | `ab229bd` | 2026-11-08 | Patch notes for the tree item fix (PR #359) | - |
-| *(this commit)* | 2026-11-22 | Areas package cleanup: Wrong Level 3 box, world flags on every facet, `.areas` parses once, dead code, patch notes | 16 |
+| `af43cfb` | 2026-11-22 | Escrow restart fix and recovery, city wage, areas cleanup, live review fixes, patch notes (PR #359) | 16, 17 |
+| `89fa19e` | 2026-11-22 | `.pets`, patch notes (PR #360) | 17.6 |
+| *(this commit)* | 2026-11-23 | Weapon elemental damage applied after the No-PK checks (war mode drop), poison charge fix, patch notes | 18 |
 
 ---
 
@@ -520,7 +525,53 @@ Left as is: `NameChecker.inc` reads a `City` key that `regions.cfg` doesn't have
 
 ---
 
-## 18. Exhaustive File-by-File Change List
+## 18. Combat - Weapon Elemental Damage Order and Poison Charges
+
+All in `pkg/systems/combat/include/hitscriptinc.inc`, which every weapon hit script includes.
+
+### 18.1 The war mode drop
+
+Reported on 2026-11-23: the Bow of the Air Element and the War Fork of the Water Element take the wielder out of war mode after a kill. Both weapons are `ElementalDamage AIR:100` / `WATER:100`.
+
+A hit script runs `RecalcDmg()` then `DealDamage()`. `RecalcPhysicalDmg()` worked out each element in the weapon's `ElementalDamage` CProp and dealt it on the spot with `ApplyElementalDamageNoResist()`; only the physical remainder went on to `DealDamage()`. A 100% elemental weapon therefore killed the defender inside `RecalcDmg()`.
+
+The core destroys an NPC as soon as it dies (`NPC::on_death` ends with `destroy()`), and every method on a destroyed mobile returns an error (`ECharacterRefObjImp::call_polmethod_id`: "That object no longer exists"). `DealDamage()` then ran its No-PK check: `defender.isa(POLCLASS_NPC)` read the error as false, so `_any_npc` stayed 0, the pair looked like player against player, and with the attacker's `NOPKAREA` CProp set it called `attacker.setwarmode(0)`. On live the No-PK areas are Scourge Outlands, Ocllo / Ocllo Isle / Ocllo Mine, Randorin, Empath Abbey, the jail, the vendor markets, the wedding chapel and the staff areas.
+
+Weapons whose damage is physical were never affected: their kill is the last line of `DealDamage()`, after the check. Every NPC is destroyed on death the same way; the bug was the order.
+
+### 18.2 The fix
+
+- New global `g_pending_elemental` (`{ {element_ID, amount}, ... }`). `RecalcPhysicalDmg()` resets it, computes the same amounts as before and stores them instead of dealing them. The physical remainder is unchanged.
+- New `ApplyPendingElementalDamage(attacker, defender)`: deals the stored amounts once with `ApplyElementalDamageNoResist()` and clears them.
+- `DealDamage()` calls it right after the No-PK check and the `LottoDrops` damage store, before the poison block. Before the poison block on purpose: a Cursed poisoned weapon swaps `defender` to the attacker there, and that swap never applied to elemental damage.
+
+Amounts, resists and the target are the same as before; only the moment changes.
+
+### 18.3 Who carries elemental damage
+
+The five elemental-NPC weapons (`waterfork`, `bowofair`, `WarHammerofearth`, `Katanaoffire`, `Pitchforkofshadow`, made by `scripts/ai/water.src`, `air.src`, `earth.src`, `fire.src`, `shadow.src`) and every blacksmith weapon made from an ore with `ElemDamage` in `pkg/std/blacksmithy/blacksmithy.cfg` (several hundred in the 2026-11-22 live save). In that save every elemental weapon's hit script is `mainhit`, `slayerscript` or `lifedrainscript`; the first two always reach `DealDamage()`.
+
+### 18.4 Paths that skip `DealDamage()`
+
+Scripts that compute damage and then do not call `DealDamage()` no longer deal the elemental share on that path:
+
+- `lifedrainscript.src` returns early when the defender has `InSafeArea`. On live only the Demonic Termites in Zulu Dungeon 6 (not a safe area) and one loose hammer carry `lifedrainscript` with elemental damage; a termite following a player into a safe area now deals nothing there, which is what a safe area means.
+- The cursed branches of `piercingscript.src`, `voidscript.src` and `manadrainscript.src`, and Blackrock's summoned/animated branch. No live elemental weapon uses them (all 637 void weapons on live have no elemental damage), and only loot enchanting or `.newiteminfo` can change a weapon's hit script; loot never makes elemental weapons.
+- The armor on-hit scripts `piercingonhit.src` and `raceresistonhit.src` call `RecalcDmg()` again when `basedamage == rawdamage` and used to deal the elemental share a second time. With armor on the wearer that equality only happens when the physical part is 0 (a 100% elemental weapon), and then the recomputed elemental is 0 too. No practical change.
+
+### 18.5 Poison charges
+
+In `DealDamage()`, a `SkillPoisoned` weapon within 14 tiles with `PoisonCharges` 0 erased both CProps and hit `return 0`, so that swing also lost its physical damage, the defender's reactive armor and the armor's on-hit script. Charges only drop when the target is not already poisoned, and the swing that used the last charge left the weapon at 0, so every poisoned weapon lost the next swing when it ran dry (610 poisoned weapons on live, one sitting at 0).
+
+- 0 charges (saved at 0, or poisoned with none): erase both CProps, `IncRevision`, and skip only the poisoning.
+- The swing that uses the last charge still poisons and erases both CProps at once, so a weapon never sits at 0 charges.
+- Cursed poisoned weapons still swap the target to the wielder while they have charges (intended).
+
+`scripts/ai/formationleader.src` created its poisoned weapon with `SkillPoisoned` 18 and no charges, so the poison was erased on its first swing; it now also gets `PoisonCharges` 100 like the other AIs. No template uses that AI.
+
+---
+
+## 19. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
@@ -587,13 +638,15 @@ Left as is: `NameChecker.inc` reads a `City` key that `regions.cfg` doesn't have
 | `scripts/textcmd/player/wherewarrior.src` | 17.5 | New - `.wherewarrior` |
 | `scripts/textcmd/player/pets.src` | 17.6 | New - `.pets` |
 | `config/command_synopses.cfg` | 17.2, 17.5, 17.6 | Regenerated (`.recoverescrow`, `.wherewarrior`, `.pets`) |
+| `pkg/systems/combat/include/hitscriptinc.inc` | 18.2, 18.5 | `g_pending_elemental`, `ApplyPendingElementalDamage()`; elemental damage dealt in `DealDamage()` after the No-PK check; empty poison charges no longer end the hit |
+| `scripts/ai/formationleader.src` | 18.5 | Poisoned weapon gets `PoisonCharges` 100 |
 | `patchnotes/developer-changelog-v1.1.6.md` | - | New - this file |
 | `patchnotes/patch-v1.1.6.md` | - | New - player patch notes |
 | `patchnotes/launchernotes.md` | - | Refreshed with the 1.1.6 player notes |
 
 ---
 
-## 19. Risk and Regression Notes
+## 20. Risk and Regression Notes
 
 - **Build.** `attributes.inc`, `itemutil.inc` and `modsetup.inc` are included almost everywhere: deploy with a full `ecompile -A` (1,163 scripts, 0 errors at this commit).
 - **Region configs are read at server start.** The new `wood.cfg`, `ore.cfg`, `sand.cfg`, `clay.cfg` and `fish.cfg` lists need a restart (or a resource reload) to match the scripts. Until then `GetHarvestDifficulty()` checks the old lists and `FindHarvestTile` can refuse newly added tiles.
@@ -613,5 +666,7 @@ Left as is: `NameChecker.inc` reads a `City` key that `regions.cfg` doesn't have
 - **Escrow recovery order (section 17.2).** Run `.recoverescrow commit` on the old server just before the 1.1.6 restart and again right after it, before players claim. A claim on a package that hasn't been re-keyed yet still says "not found" and prunes its entry; the recovery then adds a fresh entry, so the package isn't lost, but the player sees the error once. Packages already dropped by name collisions can't be recovered; the LOST lines in `log/escrowrecovery.log` list them for refunds.
 - **City wage (section 17.3).** Vendors in Type City regions start paying 1,666 gold a day instead of 333. On 11/22 the 14 Ocllo vendors were all paying the lower rate; 0x772204 held 10,000 gold and 0x771b7c 18,667, so their owners should be told.
 - **Vortex Minions** now notice players at 19 tiles instead of 24.
+- **Elemental damage order (section 18).** `hitscriptinc.inc` is included by every weapon hit script: deploy with a full `ecompile -A`. Damage per hit should not change; a kill with a 100% elemental weapon in a No-PK area no longer drops war mode. Elemental damage is now skipped on the few paths that never call `DealDamage()` (18.4); no live item uses them.
+- **Poison charges (section 18.5).** A poisoned weapon's tooltip stops showing "0 charges": the poison disappears on the swing that uses the last charge.
 - **Spell Bind debug line.** The spell still prints `difficulty: <n>` to the caster; it predates this patch and was left as is.
-- **Not run in a client.** Worth testing on the test shard: a poison and a temporary mod ending (HP regen stays normal), a pet's special spell mana, a kill of a neutral animal and of a townsperson, Control Undead and Spell Bind running out, a reboot mid-charm, and a release in town.
+- **Not run in a client.** Worth testing on the test shard: a poison and a temporary mod ending (HP regen stays normal), a pet's special spell mana, a kill of a neutral animal and of a townsperson, Control Undead and Spell Bind running out, a reboot mid-charm, and a release in town; a kill with the Bow of the Air Element or the War Fork of the Water Element in a No-PK area (stays in war mode); a weapon poisoned with one charge hit twice (both swings do damage).

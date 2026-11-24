@@ -176,6 +176,8 @@ Always check Discord announcements for all the patch notes.
 - **Vortex Minions** no longer stop working after chasing players at the edge of their sight. They now notice players at 19 tiles instead of 24.
 - **Earthquake outside Felucca** hits the creatures around you. It used to look for them at the same coordinates in Felucca.
 - **Guild applicants list fixed.** From the second page of Manage Guild Applicants on, accepting, removing or banning an applicant acted on the next applicant in the list. Each applicant's buttons now act on that applicant.
+- **Elemental weapons no longer drop you out of war mode.** Killing a creature in a No-PK area (Ocllo, Scourge Outlands, Randorin and others) with the Bow of the Air Element, the War Fork of the Water Element, or another weapon whose elemental damage lands the killing blow took you out of war mode. You now stay in war mode. Damage is unchanged.
+- **A poisoned weapon no longer loses a swing when its poison runs out.** The hit after the last poison charge did no damage at all. That hit now lands normally, and the poison comes off the weapon as soon as the last charge is used.
 
 ---
 
@@ -198,5 +200,6 @@ Always check Discord announcements for all the patch notes.
 - Vendors in a city pay the city wage, and champion relics can't be used in a city.
 - `.pets` shows your pets' health, mana and stamina; `.wherewarrior` shows where your Warrior for Hire is; "drop" works; a deed used outside Felucca puts the warrior next to you.
 - The missing guild uniform message no longer goes to everyone; Vortex Minions no longer freeze; Earthquake works outside Felucca.
+- Elemental weapons no longer drop you out of war mode on a kill in a No-PK area; a poisoned weapon no longer loses the swing after its last charge.
 
 Thanks for playing Zuluhotel Omega 2.5.
