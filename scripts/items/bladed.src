@@ -27,6 +27,10 @@ const APPEAR_AT		:= -10;
 const POINTS_MULTIPLIER	:= 8;
 const FAME_BONUS	:= 10;
 
+// Bows that can be repaired but not crafted, so they are not in bowcraft.cfg (that file is the craft menu).
+// Composite Bow, Repeating Crossbow, Yumi.
+var REPAIR_ONLY_BOW_GRAPHICS := array{ 0x26c2, 0x26c3, 0x27a5 };
+
 
 program use_blade( user )
 
@@ -56,7 +60,7 @@ program use_blade( user )
 	
 	elseif(use_on.item.isa(POLCLASS_WEAPON))
 		var bowcraft_cfg	:= ReadConfigFile( "bowcraft" );
-		if(bowcraft_cfg[use_on.item.graphic])
+		if(bowcraft_cfg[use_on.item.graphic] or (use_on.item.graphic in REPAIR_ONLY_BOW_GRAPHICS))
 			repair_item( user, use_on.item , SKILLID_BOWCRAFT );
 		endif
 	elseif( use_on.objtype == UOBJ_CORPSE )

@@ -1,12 +1,12 @@
 # Developer Changelog - v1.1.6
 **Range:** `b640f5c` (merge of #353, the last 1.1.5 patchnotes state) -> working tree (this commit)
 **Branch:** Patch-1.1.6 (branched from `origin/Test-Shard` at `b640f5c`)
-**Date:** 2026-11-03 to 2026-11-23 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07; login limit hotfix 2026-11-08; areas package cleanup and live review fixes 2026-11-22; weapon elemental damage order and poison charges 2026-11-23)
-**Commits in range:** 6 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest, `a7c3dfc` tree items, `af43cfb` the areas cleanup and live review fixes in sections 16-17, `89fa19e` `.pets`, and the combat fixes in section 18), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
-**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `a7c3dfc`: 3 harvest scripts (section 7.7); `3f9d67b`: 3 account scripts; areas cleanup: 5 files in `pkg/opt/areas`, 1 deleted, plus `.gitignore` (section 16); live review fixes: 17 scripts and configs, 3 new commands (section 17); combat: 2 scripts (section 18); plus this release's 3 `patchnotes/` files. The full list is section 19.
+**Date:** 2026-11-03 to 2026-11-25 (harvest tile audit 2026-11-03; tile lists picked and code written 2026-11-04; regen, karma/fame, pets, charm spells and review 2026-11-07; login limit hotfix 2026-11-08; areas package cleanup and live review fixes 2026-11-22; weapon elemental damage order and poison charges 2026-11-23; bow repair and repair material 2026-11-25)
+**Commits in range:** 7 code commits on this branch (`8d85c3e` harvest, `1cf11dc` regen and the rest, `a7c3dfc` tree items, `af43cfb` the areas cleanup and live review fixes in sections 16-17, `89fa19e` `.pets`, `f1e6173` the combat fixes in section 18, and the repair fixes in section 19), plus the login limit hotfix `3f9d67b`, made on Patch-1.1.5 for live and merged into Test-Shard by PR #355 (section 15).
+**Files changed:** harvest: 13 scripts and region configs, 1 new include (`harvesttiles.inc`); `1cf11dc`: 16 scripts and configs, 1 new include (`charm.inc`); `a7c3dfc`: 3 harvest scripts (section 7.7); `3f9d67b`: 3 account scripts; areas cleanup: 5 files in `pkg/opt/areas`, 1 deleted, plus `.gitignore` (section 16); live review fixes: 17 scripts and configs, 3 new commands (section 17); combat: 2 scripts (section 18); repair: 2 scripts (section 19); plus this release's 3 `patchnotes/` files. The full list is section 20.
 
 > Scope was computed against `b640f5c`. `origin/Test-Shard` was still at `b640f5c` when this commit was made, so the whole delta is the two commits.
-> Built with `ecompile -A` on 2026-11-22 with everything through section 17: 1,165 scripts, 0 errors (`.pets`, 17.6, built on its own afterwards: 0 errors, 0 warnings) (the `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). The login hotfix (section 15) was also built and running on live since 11/08. Section 18 built with `ecompile -A` on 2026-11-23: 1,166 scripts, 0 errors. Not yet run in a client (section 20).
+> Built with `ecompile -A` on 2026-11-22 with everything through section 17: 1,165 scripts, 0 errors (`.pets`, 17.6, built on its own afterwards: 0 errors, 0 warnings) (the `.src` files not built are in the disabled packages `astralfights`, `convertworld` and `timer`). The login hotfix (section 15) was also built and running on live since 11/08. Section 18 built with `ecompile -A` on 2026-11-23: 1,166 scripts, 0 errors. Section 19 built with `ecompile -A` on 2026-11-25: 1,166 scripts, 0 errors. Not yet run in a client (section 21).
 
 ---
 
@@ -30,8 +30,9 @@
 16. [Areas Package Cleanup](#16-areas-package-cleanup)
 17. [Live Review Fixes (2026-11-22)](#17-live-review-fixes-2026-11-22)
 18. [Combat - Weapon Elemental Damage Order and Poison Charges](#18-combat---weapon-elemental-damage-order-and-poison-charges)
-19. [Exhaustive File-by-File Change List](#19-exhaustive-file-by-file-change-list)
-20. [Risk and Regression Notes](#20-risk-and-regression-notes)
+19. [Crafting - Bow Repair and Repair Material](#19-crafting---bow-repair-and-repair-material)
+20. [Exhaustive File-by-File Change List](#20-exhaustive-file-by-file-change-list)
+21. [Risk and Regression Notes](#21-risk-and-regression-notes)
 
 ---
 
@@ -61,6 +62,8 @@ Section 16 is the parked cleanup list from the 2026-10-08 areas package review (
 
 Section 17 is the round of fixes from the 2026-11-22 live log and save review. Section 18 (2026-11-23) comes from a player report: the Bow of the Air Element and the War Fork of the Water Element dropped the wielder out of war mode on a kill. Weapon elemental damage was dealt in the middle of the damage calculation, before the No-PK check, so the kill landed before the check and the check misread the destroyed NPC as a player. Elemental damage now lands after the checks. A poisoned weapon also lost one swing's damage when its charges ran out.
 
+Section 19 (2026-11-25) is crafting repair: a knife now repairs the composite bow, repeating crossbow and yumi, which it ignored, and a repair always uses at least one piece of material (small repairs with good material were free).
+
 ## 2. Commit Timeline
 
 | Commit | Date | Subject | Sections |
@@ -73,7 +76,8 @@ Section 17 is the round of fixes from the 2026-11-22 live log and save review. S
 | `ab229bd` | 2026-11-08 | Patch notes for the tree item fix (PR #359) | - |
 | `af43cfb` | 2026-11-22 | Escrow restart fix and recovery, city wage, areas cleanup, live review fixes, patch notes (PR #359) | 16, 17 |
 | `89fa19e` | 2026-11-22 | `.pets`, patch notes (PR #360) | 17.6 |
-| *(this commit)* | 2026-11-23 | Weapon elemental damage applied after the No-PK checks (war mode drop), poison charge fix, patch notes | 18 |
+| `f1e6173` | 2026-11-23 | Weapon elemental damage applied after the No-PK checks (war mode drop), poison charge fix, patch notes (PR #361) | 18 |
+| *(this commit)* | 2026-11-25 | Composite bow, repeating crossbow and yumi repairable with a knife; repairs use at least one piece of material, patch notes | 19 |
 
 ---
 
@@ -571,14 +575,35 @@ In `DealDamage()`, a `SkillPoisoned` weapon within 14 tiles with `PoisonCharges`
 
 ---
 
-## 19. Exhaustive File-by-File Change List
+## 19. Crafting - Bow Repair and Repair Material
+
+### 19.1 Composite bow, repeating crossbow and yumi (`scripts/items/bladed.src`)
+
+Using a bladed item on a weapon repairs it with `repair_item(..., SKILLID_BOWCRAFT)` only when the weapon's graphic is a key in `config/bowcraft.cfg`. That file is also the bowcraft craft menu (`CarveLogs()` lists its keys), so it only holds what bowyers make: bow `0x13B2`, crossbow `0x0F4F`, heavy crossbow `0x13FD`, and the fire bow, ice bow and thunder crossbow, which use the bow and heavy crossbow graphics. Magic loot bows and the elemental bows share those graphics and were already repairable.
+
+The composite bow `0x26C2`, repeating crossbow `0x26C3` and yumi `0x27A5` (base items and the magic versions `0xF20C`, `0xF225`, `0xF20F`) matched no key, so the knife did nothing and said nothing.
+
+New `REPAIR_ONLY_BOW_GRAPHICS := array{ 0x26c2, 0x26c3, 0x27a5 }`; the repair branch accepts a weapon whose graphic is in `bowcraft.cfg` or in that list. `bowcraft.cfg` is unchanged, so the three bows stay uncraftable.
+
+### 19.2 Repair material rounding (`scripts/util/repair.inc`)
+
+`repair_item()` is shared by blacksmithy, carpentry, tailoring and bowcraft repairs. Each piece of material restores `(10 + crafter level) * (material quality / item quality)^2` HP, and the material used was `CInt(damage / that)`, rounded down. Damage below one piece's worth cost nothing: a quality 1.0 bow missing 30 HP repaired with Zulu logs (quality 2.0, 40 HP a log for a non-crafter) used 0 logs, and a failure lost 0 too.
+
+- `to_consume := Max( 1, CInt(to_repair / repair_efficiency) )`: at least one piece.
+- The "use up all the material" branch now caps the HP: `item.hp := Min( item.maxhp, item.hp + CInt(material.amount * repair_efficiency) )`. With the minimum of one, a stack of one could restore more than the damage, and an item above its max HP is destroyed by the next repair attempt (`item.hp > item.maxhp` check). Before the change that branch could not overshoot, because `to_consume` was rounded down.
+
+Unchanged: the success check, the Arms Lore requirement and the damage on a failure. The material lost on a failure is still `CInt(to_consume * destroy / 100)` with `destroy` at most 50, so a failed one-piece repair still loses nothing.
+
+---
+
+## 20. Exhaustive File-by-File Change List
 
 | File | Section | Summary |
 |---|---|---|
 | `scripts/include/harvesttiles.inc` | 4, 5, 7.7 | New - `FindHarvestTile()`, `HarvestTileAt()`, `HarvestTileListed()`, `IsTreeItem(use_on, realm)` (`a7c3dfc`), `IsWater(where, realm)`, and the list predicates `IsTree`, `IsOreLand`, `IsOreStatic`, `IsSand`, `IsSwamp`, `IsFishLand`, `IsFishStatic`, `IsWaterLand`, `IsWaterStatic` |
 | `scripts/include/itemutil.inc` | 4 | Includes `include/harvesttiles`; `IsMinable`, `IsSand`, `IsSwamp`, `IsTree`, `IsWater` removed |
 | `pkg/std/lumberjacking/lumberjack.src` | 7.1, 7.7 | `IsTreeItem` or `FindHarvestTile("wood")` gate; objtype branch, z-search fallback, yucca check and `info` removed |
-| `scripts/items/bladed.src` | 7.2, 7.7 | Kindling branch: `IsTreeItem`, or `FindHarvestTile("wood")` on non-item, non-mobile targets; z-search and yucca check removed |
+| `scripts/items/bladed.src` | 7.2, 7.7, 19.1 | Kindling branch: `IsTreeItem`, or `FindHarvestTile("wood")` on non-item, non-mobile targets; z-search and yucca check removed; `REPAIR_ONLY_BOW_GRAPHICS` (composite bow, repeating crossbow, yumi repairable) |
 | `pkg/std/mining/mining.src` | 7.3 | Ore / clay / sand chosen once by `FindHarvestTile`; realm passed to `GetHarvestDifficulty`; `info` parameters removed |
 | `pkg/std/fishing/fishing.inc` | 7.4, 8 | `check_for_water(theobj, realm)` via `FindHarvestTile("fish")`; `RandomFish()` last branch is `else` |
 | `pkg/std/fishing/fishing.src` | 7.4 | Water check after cancel, with realm; second difficulty block removed; depleted check before the random amount |
@@ -640,13 +665,14 @@ In `DealDamage()`, a `SkillPoisoned` weapon within 14 tiles with `PoisonCharges`
 | `config/command_synopses.cfg` | 17.2, 17.5, 17.6 | Regenerated (`.recoverescrow`, `.wherewarrior`, `.pets`) |
 | `pkg/systems/combat/include/hitscriptinc.inc` | 18.2, 18.5 | `g_pending_elemental`, `ApplyPendingElementalDamage()`; elemental damage dealt in `DealDamage()` after the No-PK check; empty poison charges no longer end the hit |
 | `scripts/ai/formationleader.src` | 18.5 | Poisoned weapon gets `PoisonCharges` 100 |
+| `scripts/util/repair.inc` | 19.2 | At least one piece of material per repair; HP capped at `maxhp` when the stack runs out |
 | `patchnotes/developer-changelog-v1.1.6.md` | - | New - this file |
 | `patchnotes/patch-v1.1.6.md` | - | New - player patch notes |
 | `patchnotes/launchernotes.md` | - | Refreshed with the 1.1.6 player notes |
 
 ---
 
-## 20. Risk and Regression Notes
+## 21. Risk and Regression Notes
 
 - **Build.** `attributes.inc`, `itemutil.inc` and `modsetup.inc` are included almost everywhere: deploy with a full `ecompile -A` (1,163 scripts, 0 errors at this commit).
 - **Region configs are read at server start.** The new `wood.cfg`, `ore.cfg`, `sand.cfg`, `clay.cfg` and `fish.cfg` lists need a restart (or a resource reload) to match the scripts. Until then `GetHarvestDifficulty()` checks the old lists and `FindHarvestTile` can refuse newly added tiles.
@@ -668,5 +694,6 @@ In `DealDamage()`, a `SkillPoisoned` weapon within 14 tiles with `PoisonCharges`
 - **Vortex Minions** now notice players at 19 tiles instead of 24.
 - **Elemental damage order (section 18).** `hitscriptinc.inc` is included by every weapon hit script: deploy with a full `ecompile -A`. Damage per hit should not change; a kill with a 100% elemental weapon in a No-PK area no longer drops war mode. Elemental damage is now skipped on the few paths that never call `DealDamage()` (18.4); no live item uses them.
 - **Poison charges (section 18.5).** A poisoned weapon's tooltip stops showing "0 charges": the poison disappears on the swing that uses the last charge.
+- **Repair material (section 19.2).** Small repairs now cost one piece of material instead of nothing; players who topped up with high-quality logs, ingots or hides will notice. `repair.inc` is included by the blacksmithy, carpentry, tailoring, tinkering and bag renamer scripts and `bladed.src`: deploy with a full `ecompile -A`.
 - **Spell Bind debug line.** The spell still prints `difficulty: <n>` to the caster; it predates this patch and was left as is.
-- **Not run in a client.** Worth testing on the test shard: a poison and a temporary mod ending (HP regen stays normal), a pet's special spell mana, a kill of a neutral animal and of a townsperson, Control Undead and Spell Bind running out, a reboot mid-charm, and a release in town; a kill with the Bow of the Air Element or the War Fork of the Water Element in a No-PK area (stays in war mode); a weapon poisoned with one charge hit twice (both swings do damage).
+- **Not run in a client.** Worth testing on the test shard: a poison and a temporary mod ending (HP regen stays normal), a pet's special spell mana, a kill of a neutral animal and of a townsperson, Control Undead and Spell Bind running out, a reboot mid-charm, and a release in town; a kill with the Bow of the Air Element or the War Fork of the Water Element in a No-PK area (stays in war mode); a weapon poisoned with one charge hit twice (both swings do damage); a knife on a damaged composite bow, repeating crossbow and yumi with logs (repairs); a small repair with Zulu logs (uses one log) and a one-log stack on a lightly damaged item (stops at max HP).
