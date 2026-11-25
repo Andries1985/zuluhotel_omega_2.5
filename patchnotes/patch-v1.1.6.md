@@ -187,6 +187,8 @@ Welcome to **Patch 1.1.6**. This patch is mostly about gathering, with a second 
 - **Guild applicants list fixed.** From the second page of Manage Guild Applicants on, accepting, removing or banning an applicant acted on the next applicant in the list. Each applicant's buttons now act on that applicant.
 - **Elemental weapons no longer drop you out of war mode.** Killing a creature in a No-PK area (Ocllo, Scourge Outlands, Randorin and others) with the Bow of the Air Element, the War Fork of the Water Element, or another weapon whose elemental damage lands the killing blow took you out of war mode. You now stay in war mode. Damage is unchanged.
 - **A poisoned weapon no longer loses a swing when its poison runs out.** The hit after the last poison charge did no damage at all. That hit now lands normally, and the poison comes off the weapon as soon as the last charge is used.
+- **Knives repair every bow.** Composite bows, repeating crossbows and yumis, magic ones included, can now be repaired with a knife and logs like other bows. Before, the knife did nothing on them.
+- **Repairs always use at least one piece of material.** A small repair with high-quality logs, ingots or hides used to cost nothing. It now uses one piece.
 
 ---
 
@@ -210,5 +212,6 @@ Welcome to **Patch 1.1.6**. This patch is mostly about gathering, with a second 
 - `.pets` shows your pets' health, mana and stamina; `.wherewarrior` shows where your Warrior for Hire is; "drop" works; a deed used outside Felucca puts the warrior next to you.
 - The missing guild uniform message no longer goes to everyone; Vortex Minions no longer freeze; Earthquake works outside Felucca.
 - Elemental weapons no longer drop you out of war mode on a kill in a No-PK area; a poisoned weapon no longer loses the swing after its last charge.
+- Knives repair composite bows, repeating crossbows and yumis; every repair uses at least one piece of material.
 
 Thanks for playing Zuluhotel Omega 2.5.
