@@ -20,11 +20,8 @@ program processpersistedmods( parms )
 	detach();
 
 	if( (!who.poisoned) )
-		// this person should not be poisoned
-		if ( GetHpRegenRate(who) != BaseRegenRate(who) )
-			SetHpRegenRate( who,  Cint(BaseRegenRate( who ) ));
-			who.setPoisoned(0);
-		endif
+		// Not poisoned: make sure no poison regen penalty is left behind (no-op if it's right).
+		RestoreHpRegenRate( who );
 	endif
 	
 	Set_Critical(1);

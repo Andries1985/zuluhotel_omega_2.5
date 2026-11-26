@@ -22,6 +22,9 @@ include "include/constants/propids";
 
 var areas_cfg := 0;
 var areas := {};
+// ParseAreaLine() result per areas[] index (error for an invalid line), parsed
+// once in LoadAreasForRealm() and reused by every function below.
+var area_infos := {};
 var display_order := {};
 var AREA_POLICY_EDITOR_REALM := "";
 
@@ -103,7 +106,6 @@ Program areas(who, text)
 	SendSysMessage(who, "Editing facet: " + AREA_POLICY_EDITOR_REALM);
 
 	LoadAreaFlagArrays();
-	EnsureAreaFlagArrays();
 	display_order := BuildCategoryDisplayOrder();
 
 	var totalpages := CInt(((areas.size() - 1) / AREAS_PER_PAGE)) + 1;
@@ -204,6 +206,12 @@ function LoadAreasForRealm(who, realm)
 		return 0;
 	endif
 
+	area_infos := {};
+	var i;
+	for(i := 1; i <= areas.size(); i := i + 1)
+		area_infos[i] := ParseAreaLine(areas[i], i);
+	endfor
+
 	return 1;
 endfunction
 
@@ -219,7 +227,7 @@ function BuildCategoryDisplayOrder()
 	var buckets := dictionary;
 	var i;
 	for(i := 1; i <= areas.size(); i := i + 1)
-		var area_info := ParseAreaLine(areas[i], i);
+		var area_info := area_infos[i];
 		var cat := "other";
 		if(area_info != error && area_info.category)
 			cat := area_info.category;
@@ -290,14 +298,13 @@ endfunction
 //
 ////////////////////////////////////////////////////////////////////////////////////
 function BuildAreaSortKey(idx, cat_name)
-	var area := areas[idx];
-	var name := Lower(GetAreaName(area));
+	var name := Lower(GetAreaDisplayName(idx));
 
 	if(cat_name != "world")
 		return name;
 	endif
 
-	var area_info := ParseAreaLine(area, idx);
+	var area_info := area_infos[idx];
 	var area_id := "";
 	if(area_info != error)
 		area_id := CStr(area_info.area_id);
@@ -410,9 +417,8 @@ function BuildAreasPageGump(page, totalpages)
 	for (pos := start_idx; pos <= end_idx; pos := pos + 1)
 		var orig_i := display_order[pos];
 		var retval := orig_i * 100;
-		var area := areas[orig_i];
 
-		GFTextLine(gump, 35, y, 0, GetAreaName(area));
+		GFTextLine(gump, 35, y, 0, GetAreaDisplayName(orig_i));
 		GFCheckBox(gump, 205, y, 9026, 9027, guarded[orig_i], retval + 1);
 		GFCheckBox(gump, 263, y, 9026, 9027, norecallto[orig_i], retval + 2);
 		GFCheckBox(gump, 321, y, 9026, 9027, norecallfrom[orig_i], retval + 3);
@@ -448,78 +454,6 @@ endfunction
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
-// EnsureAreaFlagArrays() - Ensures every flag array exists and is sized to areas.
-//
-////////////////////////////////////////////////////////////////////////////////////
-function EnsureAreaFlagArrays()
-	if (!guarded)
-		guarded := {};
-	endif
-	if (!norecallto)
-		norecallto := {};
-	endif
-	if (!norecallfrom)
-		norecallfrom := {};
-	endif
-	if (!disabledmarking)
-		disabledmarking := {};
-	endif
-	if (!disablemagic)
-		disablemagic := {};
-	endif
-	if (!forbiddenarea)
-		forbiddenarea := {};
-	endif
-	if (!nolooting)
-		nolooting := {};
-	endif
-	if (!safearea)
-		safearea := {};
-	endif
-	if (!nopk)
-		nopk := {};
-	endif
-	if (!rparea)
-		rparea := {};
-	endif
-
-	var i;
-	for (i := 1; i <= areas.size(); i := i + 1)
-		if (guarded.size() < i)
-			guarded.append(0);
-		endif
-		if (norecallto.size() < i)
-			norecallto.append(0);
-		endif
-		if (norecallfrom.size() < i)
-			norecallfrom.append(0);
-		endif
-		if (disabledmarking.size() < i)
-			disabledmarking.append(0);
-		endif
-		if (disablemagic.size() < i)
-			disablemagic.append(0);
-		endif
-		if (forbiddenarea.size() < i)
-			forbiddenarea.append(0);
-		endif
-		if (nolooting.size() < i)
-			nolooting.append(0);
-		endif
-		if (safearea.size() < i)
-			safearea.append(0);
-		endif
-		if (nopk.size() < i)
-			nopk.append(0);
-		endif
-		if (rparea.size() < i)
-			rparea.append(0);
-		endif
-	endfor
-endfunction
-
-////////////////////////////////////////////////////////////////////////////////////
-//
 // LoadAreaFlagArrays() - Loads area flags from datastore policy masks.
 //
 ////////////////////////////////////////////////////////////////////////////////////
@@ -538,7 +472,7 @@ function LoadAreaFlagArrays()
 
 	var i;
 	for(i := 1; i <= areas.size(); i := i + 1)
-		var area_info := ParseAreaLine(areas[i], i);
+		var area_info := area_infos[i];
 		var mask := 0;
 		if(area_info != error)
 			mask := GetPolicyMask(AREA_POLICY_EDITOR_REALM, area_info.area_id);
@@ -623,7 +557,7 @@ function SaveAreaFlagArrays(who)
 	var changes := dictionary;
 	var i;
 	for(i := 1; i <= areas.size(); i := i + 1)
-		var area_info := ParseAreaLine(areas[i], i);
+		var area_info := area_infos[i];
 		if(area_info == error)
 			Print("[areas.save] skip invalid area line index=" + CStr(i));
 			continue;
@@ -713,37 +647,17 @@ function RefreshOnlineAreaStatus()
 	endforeach
 endfunction
 ////////////////////////////////////////////////////////////////////////////////////
-// Toadstool
 //
-// GetAreaName() - function to extract the areas name from a string
+// GetAreaDisplayName() - Area name for the gump, from the parsed line. A line
+// ParseAreaLine() rejected shows as "(invalid) <raw line>" so it stands out.
 //
 ////////////////////////////////////////////////////////////////////////////////////
-function GetAreaName(area)
-
-	var areaname := "";
-	var parts := SplitWords(area);
-	if(!parts)
-		return areaname;
+function GetAreaDisplayName(idx)
+	var area_info := area_infos[idx];
+	if(area_info == error)
+		return "(invalid) " + CStr(areas[idx]);
 	endif
-
-	var start_index := 5;
-	if(parts[5] && Lower(SubStr(CStr(parts[5]), 1, 3)) == "id=")
-		start_index := 6;
-	endif
-	if(parts[start_index] && Lower(SubStr(CStr(parts[start_index]), 1, 4)) == "cat=")
-		start_index := start_index + 1;
-	endif
-
-	var i;
-	for(i := start_index; i <= parts.size(); i := i + 1)
-		if(i > start_index)
-			areaname := areaname + " ";
-		endif
-		areaname := areaname + CStr(parts[i]);
-	endfor
-
-	return areaname;
-
+	return CStr(area_info.name);
 endfunction
 
 ////////////////////////////////////////////////////////////////////////////////////

@@ -73,29 +73,34 @@ program use_picktool( character , tool )
 		return;
 	endif
 
+	// Work out what is really at the spot; the graphic the client sends is not trusted.
+	// Ore first, since cave floor statics sit on top of the land tile.
+	var resource := "ore";
+	var tile := FindHarvestTile( resource , use_on.x , use_on.y , character.realm );
+	if( !tile )
+		resource := "clay";
+		tile := FindHarvestTile( resource , use_on.x , use_on.y , character.realm );
+	endif
+	if( !tile )
+		resource := "sand";
+		tile := FindHarvestTile( resource , use_on.x , use_on.y , character.realm );
+	endif
+	if( !tile )
+		SendSysmessage( character , "You can't mine or dig anything there." );
+		return;
+	endif
+
   Autoloop_init ( character );
 
   while (Autoloop_more() && NOT character.dead)
 
-	var info := GetMapInfo( use_on.x , use_on.y );
-
 	var result;
-	if( IsSwamp( info.landtile ) )
-		SendSysMessage( character , "You start mining..." );
-		result := DigForClay( character , use_on , info );
-		
-	elseif( IsMinable( info.landtile , use_on.objtype ) )
-		SendSysMessage( character , "You start mining..." );
-		result := MineForOre( character , use_on , info , tool );
-		
-	elseif( IsSand( info.landtile ) )
-		SendSysMessage( character , "You start mining..." );
-		result := DigForSand( character , use_on , info );
-		
-	else
-		SendSysmessage( character , "You can't mine or dig anything there." );
-		return;
-	endif
+	SendSysMessage( character , "You start mining..." );
+	case( resource )
+		"ore":		result := MineForOre( character , use_on , tool );
+		"clay":		result := DigForClay( character , use_on , tile );
+		"sand":		result := DigForSand( character , use_on , tile );
+	endcase
 
 	Sleep( 3 );
 
@@ -268,12 +273,12 @@ endfunction
 
 
 
-function DigForClay( character , use_on , info )
+function DigForClay( character , use_on , tile )
 
 	var initial_x	:= character.x;
 	var initial_y	:= character.y;
 	
-	var tdiff := GetHarvestDifficulty( "clay" , use_on.x , use_on.y , info.landtile );
+	var tdiff := GetHarvestDifficulty( "clay" , use_on.x , use_on.y , tile , character.realm );
 	var clay_amount := HarvestResource( "clay" , use_on.x , use_on.y , 1 , 2 );
 	if( !clay_amount )
 		SendSysmessage(character, "There's no clay left there.");
@@ -318,12 +323,12 @@ endfunction
 
 
 
-function DigForSand( character , use_on , info )
+function DigForSand( character , use_on , tile )
 
 	var initial_x	:= character.x;
 	var initial_y	:= character.y;
 	
-	var tdiff := GetHarvestDifficulty( "sand" , use_on.x , use_on.y , info.landtile );
+	var tdiff := GetHarvestDifficulty( "sand" , use_on.x , use_on.y , tile , character.realm );
 	var sandamount := HarvestResource( "sand" , use_on.x , use_on.y , 1 , 2 );
 	if( !sandamount )
 		SendSysmessage(character, "There's no sand left there.");
@@ -368,7 +373,7 @@ endfunction
 
 
 
-function MineForOre( character , use_on , unused info , tool )
+function MineForOre( character , use_on , tool )
 	
 	var initial_x	:= character.x;
 	var initial_y	:= character.y;

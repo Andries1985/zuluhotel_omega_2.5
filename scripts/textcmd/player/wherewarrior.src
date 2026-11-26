@@ -1,0 +1,45 @@
+// Synopsis: Display the map coordinates of your Warrior for Hire
+// Command: .wherewarrior
+//
+// Patch 1.1.6. Like .whereboat, for the warrior a player has hired (the "henchman" CProp the
+// High Priest and the deed set on the master). Works across facets and with the master far away.
+use os;
+use uo;
+
+include "include/coords";
+
+program wherewarrior(who)
+
+	var warrior := SystemFindObjectBySerial(CInt(GetObjProperty(who, "henchman")));
+	if (!warrior or !warrior.isa(POLCLASS_NPC) or CInt(GetObjProperty(warrior, "master")) != who.serial)
+		SendSysMessage(who, "You have no living warrior.");
+		return 0;
+	endif
+
+	var where := warrior.x + ", " + warrior.y + ", " + warrior.z + " in " + FacetName(warrior.realm);
+	if (warrior.realm == who.realm)
+		// ToSextant() is centred on Britannia's map, so the sextant only means something there.
+		if (warrior.realm == "britannia" or warrior.realm == "britannia_alt")
+			where := where + " (" + ToSextant(warrior.x, warrior.y) + ")";
+		endif
+		where := where + ", " + Distance(who, warrior) + " tiles from you";
+	endif
+
+	SendSysMessage(who, warrior.name + " is at " + where + ".");
+	return 1;
+
+endprogram
+
+function FacetName(realm)
+
+	case (Lower(CStr(realm)))
+		"britannia":     return "Felucca";
+		"britannia_alt": return "Trammel";
+		"ilshenar":      return "Ilshenar";
+		"malas":         return "Malas";
+		"tokuno":        return "Tokuno";
+		"termur":        return "Ter Mur";
+	endcase
+	return CStr(realm);
+
+endfunction

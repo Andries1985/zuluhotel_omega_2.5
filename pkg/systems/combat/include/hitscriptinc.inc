@@ -17,6 +17,13 @@ include "include/skillpoints";
 
 var combat_settingscfg := ReadConfigFile(":combat:settings");
 
+// The weapon's elemental damage for this hit, { {element_ID, amount}, ... }. RecalcPhysicalDmg()
+// works it out, DealDamage() applies it next to the physical damage, after the PvP / No-PK checks.
+// Applying it inside RecalcPhysicalDmg() let it kill the defender before those checks: a dead NPC is
+// destroyed, its isa() reads an error, and DealDamage() took it for a player and dropped the
+// attacker out of war mode in a No-PK area (Bow of the Air Element, War Fork of the Water Element).
+var g_pending_elemental := array{};
+
 function GetSlayMultiplier(weapon, defender)
 
 	var slaytype := GetObjProperty(weapon, "SlayType");
@@ -136,7 +143,8 @@ function RecalcPhysicalDmg( attacker, defender, weapon, armor, byref basedamage,
 		basedamage := CalcPhysicalDamage( attacker, defender, weapon, basedamage );
 	endif
 
-	//Start Elemental Damage calculations
+	//Start Elemental Damage calculations (applied later by DealDamage, see g_pending_elemental)
+	g_pending_elemental := array{};
 	var ElementalDamage := GetObjProperty(weapon, "ElementalDamage");
 	if (ElementalDamage)
 		var totalelemental := 0;
@@ -167,7 +175,7 @@ function RecalcPhysicalDmg( attacker, defender, weapon, armor, byref basedamage,
 				has_physical := 1;
 				continue;
 			endif
-			ApplyElementalDamageNoResist( defender, attacker, dmg_amount, element_ID );
+			g_pending_elemental.append( array{ element_ID, dmg_amount } );
 		endforeach
 		if (!has_physical) // if no physical damage was specified, it'll process the remainder as physical
 			basedamage := Max(basedamage - totalelemental, 0);
@@ -688,6 +696,17 @@ function WFHModifyDamage(attacker, defender, rawdamage)
 
 endfunction
 
+// Applies the elemental damage RecalcPhysicalDmg() worked out for this hit, once.
+function ApplyPendingElementalDamage( attacker, defender )
+
+	var pending := g_pending_elemental;
+	g_pending_elemental := array{};
+	foreach entry in pending
+		ApplyElementalDamageNoResist( defender, attacker, entry[2], entry[1] );
+	endforeach
+
+endfunction
+
 function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 
 	//Print("In DealDamage with basedamage: " + basedamage);
@@ -714,6 +733,11 @@ function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 		StoreDamage(attacker, defender, rawdamage);
 	endif
 
+	// The weapon's elemental damage lands here, after the checks above. Before the poison block on
+	// purpose: a Cursed poisoned weapon swaps defender to the attacker there, and an empty poison
+	// charge returns early; neither ever changed who took the elemental damage.
+	ApplyPendingElementalDamage( attacker, defender );
+
 	if( !GetObjProperty( weapon, "Astral" ) )
 		var poisoned := GetObjProperty( weapon   , "SkillPoisoned" );
 		var reactive := GetObjProperty( defender , "ReactiveArmor" );
@@ -729,39 +753,43 @@ function DealDamage( attacker, defender, weapon, armor, basedamage, rawdamage )
 				var charges := CInt( GetObjProperty( weapon, "PoisonCharges" ));
 
 				if( !charges )
+					// No charges left (a weapon saved at 0, or poisoned without any): clear the poison and
+					// skip only the poisoning. This used to return here, so that swing also lost its
+					// physical damage, the target's reactive armor and the armor's on-hit script.
 					EraseObjProperty( weapon, "PoisonCharges" );
 					EraseObjProperty( weapon , "SkillPoisoned" );
-					return 0;
-				endif
-
-				if(GetObjProperty( weapon, "Cursed"))
-					defender := attacker;
-				endif
-
-				if(!GetObjProperty( defender , "poison"))
-					if( charges >= 1 )
-						SetObjProperty( weapon, "PoisonCharges", charges - 1 );
-					else
-						EraseObjProperty( weapon, "PoisonCharges" );
-						EraseObjProperty( weapon , "SkillPoisoned" );
-					endif
-				endif
-				IncRevision(weapon);
-				if( GetObjProperty( attacker , CLASSEID_THIEF ) )
-					if( defender.isa(POLCLASS_NPC) )
-						SetObjProperty( defender , "poisonnpc" , 1 );
-					endif
-				endif
-
-				var maxx := plvl + psnboost;
-				if(maxx >= 9)
-					maxx := 9;
-				endif
-
-				if( !GetObjProperty( attacker , CLASSEID_THIEF ) )
-					SetPoison( defender, plvl, "You have been poisoned by " + attacker.name + ".", attacker );
+					IncRevision(weapon);
 				else
-					SetPoison( defender, maxx, "You have been poisoned by " + attacker.name + ".", attacker );
+					if(GetObjProperty( weapon, "Cursed"))
+						defender := attacker;
+					endif
+
+					if(!GetObjProperty( defender , "poison"))
+						if( charges > 1 )
+							SetObjProperty( weapon, "PoisonCharges", charges - 1 );
+						else
+							// Last charge used: clear it now so the weapon never sits at 0 charges.
+							EraseObjProperty( weapon, "PoisonCharges" );
+							EraseObjProperty( weapon , "SkillPoisoned" );
+						endif
+					endif
+					IncRevision(weapon);
+					if( GetObjProperty( attacker , CLASSEID_THIEF ) )
+						if( defender.isa(POLCLASS_NPC) )
+							SetObjProperty( defender , "poisonnpc" , 1 );
+						endif
+					endif
+
+					var maxx := plvl + psnboost;
+					if(maxx >= 9)
+						maxx := 9;
+					endif
+
+					if( !GetObjProperty( attacker , CLASSEID_THIEF ) )
+						SetPoison( defender, plvl, "You have been poisoned by " + attacker.name + ".", attacker );
+					else
+						SetPoison( defender, maxx, "You have been poisoned by " + attacker.name + ".", attacker );
+					endif
 				endif
 			endif
 		else

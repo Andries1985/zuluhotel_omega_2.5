@@ -2586,7 +2586,7 @@ function ManageGuildRecruits(who, startat := 0)
 
 		endif
 
-		if (startat+perpage <= list.size())
+		if (startat+perpage < list.size())
 			// down arrow, next page
 			GFAddButton(gump, 495, 290, 5602, 5606, 1,20);
 		endif
@@ -2604,7 +2604,10 @@ function ManageGuildRecruits(who, startat := 0)
 			// Add each button on the current page
 			foreach member in list
 	
-				if (_member_iter >= startat && _member_iter < startat+perpage)
+				// Rows are list[startat+1 .. startat+perpage]: row i opens page i+1, which shows
+				// list[startat+z] with z = i. The old ">= startat" filter showed one applicant
+				// early from page 2 on, so a row's Accept/Remove/Ban acted on the next applicant.
+				if (_member_iter > startat && _member_iter <= startat+perpage)
 				
 					var chr:=SystemFindObjectBySerial(member);
 					if(!chr)
@@ -2627,7 +2630,9 @@ function ManageGuildRecruits(who, startat := 0)
 				var text := "<BASEFONT COLOR=DARKBLUE><u>Managing Guild Applicants:</u><br><br><BASEFONT COLOR=BLACK>This section allows you to review/accept applicants into your guild. Accepting them into your guild will allow them to attack/loot your guild members without becoming a criminal.";
 				// Do a check for notifications to display
 				GFHTMLArea(gump, 85, 340, 430, 130, text ,1,1 );
-			else
+			// The loop always builds perpage+1 pages; pages past the last applicant have no
+			// entry, and list[startat+z] there passed an error to SystemFindObjectBySerial.
+			elseif (startat+z <= list.size())
 				GFTextLine(gump, 115, 344, 78, "Accept applicant");
 				GFAddbutton(gump, 85, 344, 9026, 9027, 1, (4000+startat+z));
 

@@ -147,7 +147,7 @@ function SeedEscrowTests(who, entry_count, packs_per_entry, items_per_pack)
 			continue;
 		endif
 
-		escrow_root.name := "Player Merchant Escrow - " + TEST_VENDOR_NAME;
+		// Not renamed: POL files storage roots under their name on load (see SavePackToEscrow).
 		SetObjProperty(escrow_root, "ownerserial", who.serial);
 		SetObjProperty(escrow_root, "vendorserial", 0);
 		SetObjProperty(escrow_root, "vendorname", TEST_VENDOR_NAME);

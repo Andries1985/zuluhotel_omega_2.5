@@ -315,17 +315,20 @@ function UnEntwine(who, uniform)
 	SetName(uniform, newname);
 	uniform.color := GetObjProperty(uniform, "OriginalColour");
 
-	var uni := SystemFindObjectBySerial(GetObjProperty(uniform, "Entwined"));
+	var uni := SystemFindObjectBySerial(CInt(GetObjProperty(uniform, "Entwined")));
 
-	if (!uni)
-		Broadcast("This is odd, your uniform is gone!, page staff!",3, 33);
-		syslog(who.name+"/"+who.serial+" This is odd, your uniform is gone!, page staff!");
-		return 0;
-	endif
-
+	// The item is un-entwined either way. Before 1.1.6 a missing uniform returned here with the
+	// props still set, so every later unequip repeated this, and the message went out with
+	// Broadcast() to every player online.
 	EraseObjProperty(uniform, "Entwined");
 	EraseObjProperty(uniform, "OriginalColour");
 	uniform.usescript := "";
+
+	if (!uni)
+		SendSysMessage(who, "Your entwined guild uniform could not be found. Page staff if it is missing.", 3, 33);
+		syslog(who.name+"/"+who.serial+" UnEntwine: uniform for "+Hex(uniform.serial)+" is gone");
+		return 0;
+	endif
 
 	uni.movable := 1;
 	uni.invisible := 0;

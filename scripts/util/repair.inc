@@ -97,12 +97,14 @@ function repair_item( character, item, skillid )
 	//Efficency based on qualities and crafter level
 	var repair_efficiency := (10 + crafter_level) * (pow(material_quality,2)/pow(item_quality,2));
 	//Consumption of material based on quality and damage
-	var to_consume := Cint(to_repair / repair_efficiency);
-		
+	//At least one piece: rounding down made repairs smaller than one piece's worth free.
+	var to_consume := Max( 1, Cint(to_repair / repair_efficiency) );
+
 	//Check if he repair it
 	if( CheckSkill( character, skillid, diff, 0 ) )
 		if ( to_consume >= material.amount)
-			item.hp += CInt(material.amount * repair_efficiency);
+			//Capped: hp above maxhp makes the next repair attempt destroy the item.
+			item.hp := Min( item.maxhp, item.hp + CInt(material.amount * repair_efficiency) );
 			DestroyItem(material);
 			SendSysMessage( character, "Your use up all the material.", FONT_NORMAL, TEXT_COLOR );
 		else

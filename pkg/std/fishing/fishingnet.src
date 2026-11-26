@@ -27,7 +27,7 @@ if ( coordist(character.x,character.y,use_on.x, use_on.y) > 10 )
 	return;
 endif
 
-if(!IsWater(use_on))
+if(!check_for_water(use_on, character.realm))
         SendSysmessage(character,"You can't use that on this.");
         return;
 endif

@@ -49,7 +49,7 @@ else
         var where := targetcoordinates(character);
             if (Accessible( character , where ))
                 //he's close enough
-                if (IsWater(where))
+                if (IsWater(where, character.realm))
                        item.graphic := UOBJ_PITCHER_FULL;
                        playsoundeffect(character, 0x11);
                 else

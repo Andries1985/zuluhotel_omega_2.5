@@ -11,7 +11,10 @@ program plant_seed(character, seed)
 
 	var where := character;
 	var use_on := Targetcoordinates(character);
-	var plantable := is_plantable(use_on);
+	if( !use_on )
+		return;
+	endif
+	var plantable := is_plantable(use_on, character.realm);
 	
 	 if(!ReserveItem(seed)) 
 		 return; 
@@ -59,15 +62,23 @@ program plant_seed(character, seed)
 
 endprogram
 
-function is_plantable(theobj)
+function is_plantable(theobj, realm)
 
-	//check valid static dirt tiles
-	if( (theobj.objtype >=0x31F4) and (theobj.objtype <= 0x31FB) )
-		return 1;
+	//fertile dirt 0x31F4-0x31FB: a placed item or a real static at the spot,
+	//never just the graphic the client sends
+	if( theobj.item )
+		if( !theobj.item.container and theobj.item.graphic >= 0x31F4 and theobj.item.graphic <= 0x31FB )
+			return 1;
+		endif
 	endif
+	foreach thing in ListStaticsAtLocation( cint(theobj.x), cint(theobj.y), LIST_IGNORE_Z, ITEMS_IGNORE_MULTIS, realm )
+		if( thing.objtype >= 0x31F4 and thing.objtype <= 0x31FB )
+			return 1;
+		endif
+	endforeach
 
 	//check valid maptiles
-	var info := GetMapInfo( cint(theobj.x) , cint(theobj.y) );
+	var info := GetMapInfo( cint(theobj.x) , cint(theobj.y) , realm );
 	var tile := info.landtile;
 
 	if (tile >= 0x9 and tile <= 0x15) 

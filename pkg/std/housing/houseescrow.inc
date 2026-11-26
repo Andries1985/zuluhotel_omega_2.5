@@ -274,7 +274,10 @@ function SaveHouseEscrowPack(hpack, ownerserial, house_serial, house_label)
 		return "";
 	endif
 
-	escrow_root.name := house_label + " Escrow";
+	// Never rename escrow_root. POL files storage root items under their name when it loads
+	// storage.txt, so a renamed root comes back after a restart filed under the new name and
+	// FindRootItemInStorageArea(escrow_name) no longer finds it. Roots that share a name also
+	// collapse into one. The label lives in the house_label prop instead.
 	SetObjProperty(escrow_root, "ownerserial", CInt(ownerserial));
 	SetObjProperty(escrow_root, "house_serial", CInt(house_serial));
 	SetObjProperty(escrow_root, "house_label", house_label);

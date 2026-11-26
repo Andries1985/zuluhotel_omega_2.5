@@ -1,5 +1,6 @@
 use uo;
 use os;
+use basic;
 use math;
 use cfgfile;
 
@@ -69,6 +70,12 @@ endfunction
 
 function AffectKarmaAndFameForKill( attacker, defender, factor := 1.0 )
 
+	// Only players earn or lose karma and fame. NPCs on the hit list (monsters, Warriors for
+	// Hire) are skipped; a pet's damage is already credited to its master.
+	if( attacker.npctemplate )
+		return;
+	endif
+
 	// Check if the creature was killed by his owner
 	if( GetObjProperty( defender , "master" ) == attacker.serial )
 		AwardFame( attacker , -200 );
@@ -89,9 +96,40 @@ function AffectKarmaAndFameForKill( attacker, defender, factor := 1.0 )
 			return;
 		endif
 	endif
- 
+
+	// What the kill is worth. An NPC's comes from its npcdesc template (the corpse keeps the
+	// template name), not from CProps; a player's from their own karma and fame.
+	var kill_fame, NotoDefKarma;
+	var kill_template := GetObjProperty( defender, "npctemplate" );
+	if( !kill_template )
+		kill_template := defender.npctemplate;
+	endif
+	var kill_kf := 0;
+	if( kill_template )
+		kill_kf := NpcTemplateKarmaFame( kill_template );
+	endif
+
+	if( kill_kf )
+		// Killing it is wrong (killable townsfolk, good creatures): every attacker on the
+		// hit list loses the full amounts and gains nothing.
+		if( kill_kf.karmaloss > 0 or kill_kf.fameloss > 0 )
+			if( kill_kf.fameloss > 0 )
+				AwardFame( attacker , 0 - kill_kf.fameloss );
+			endif
+			if( kill_kf.karmaloss > 0 )
+				AwardKarma( attacker , 0 - kill_kf.karmaloss );
+			endif
+			return;
+		endif
+		kill_fame := kill_kf.fame;
+		NotoDefKarma  := kill_kf.karma;
+	else
+		kill_fame := GetFame(defender);
+		NotoDefKarma  := GetKarma(defender);
+	endif
+
 	// Award the fame if you killed something more famous than you, if so award fame
-	var delta_fame := GetFame(defender) - GetFame(attacker);
+	var delta_fame := kill_fame - GetFame(attacker);
 	if( delta_fame > 0 )
 		delta_fame := CInt( delta_fame * FACTOR_FAME * factor );
 		if( delta_fame <= 0 )
@@ -100,8 +138,12 @@ function AffectKarmaAndFameForKill( attacker, defender, factor := 1.0 )
 		AwardFame( attacker , delta_fame );
 	endif
 
+	// A neutral NPC (karma 0) is worth fame only.
+	if( kill_kf and NotoDefKarma == 0 )
+		return;
+	endif
+
 	var attacker_karma := GetKarma(attacker);
-	var NotoDefKarma   := GetKarma(defender);
 	var delta_karma    := 0.0;
 	if( attacker_karma >= 0 ) // Attacker got positive or null karma
 
@@ -143,6 +185,54 @@ function AffectKarmaAndFameForKill( attacker, defender, factor := 1.0 )
 	if( delta_karma <> 0.0 )
 		AwardKarma( attacker , delta_karma );
 	endif
+
+endfunction
+
+
+// What killing an NPC of this template is worth, from npcdesc.cfg (see its header):
+//   karma      signed by alignment: evil negative, good positive, neutral 0
+//   fame       0 or more
+//   karmaloss  if karmaloss or fameloss is above 0, each attacker loses these instead
+//   fameloss
+// Returns 0 if the template isn't found.
+function NpcTemplateKarmaFame( tmpl_name )
+
+	tmpl_name := CStr( tmpl_name );
+	if( tmpl_name[1] == ":" )
+		// ":pkg:name" -> "name"
+		var tmpl_parts := SplitWords( tmpl_name, ":" );
+		tmpl_name := tmpl_parts[Len(tmpl_parts)];
+	endif
+
+	var tmpl_cfg := ReadConfigFile( "::npcdesc" );
+	if( !tmpl_cfg )
+		return 0;
+	endif
+	var tmpl_elem := tmpl_cfg[tmpl_name];
+	if( !tmpl_elem )
+		return 0;
+	endif
+
+	// The sign always follows alignment (consecutive case labels would share a block, so if/else)
+	var tmpl_karma := Abs( CInt( tmpl_elem.Karma ) );
+	var tmpl_alignment := Lower( CStr( tmpl_elem.alignment ) );
+	if( tmpl_alignment == "evil" )
+		tmpl_karma := 0 - tmpl_karma;
+	elseif( tmpl_alignment != "good" )
+		tmpl_karma := 0;
+	endif
+
+	var tmpl_fame := CInt( tmpl_elem.Fame );
+	if( tmpl_fame < 0 )
+		tmpl_fame := 0;
+	endif
+
+	var tmpl_result := struct;
+	tmpl_result.+karma     := tmpl_karma;
+	tmpl_result.+fame      := tmpl_fame;
+	tmpl_result.+karmaloss := CInt( tmpl_elem.KarmaLoss );
+	tmpl_result.+fameloss  := CInt( tmpl_elem.FameLoss );
+	return tmpl_result;
 
 endfunction
 

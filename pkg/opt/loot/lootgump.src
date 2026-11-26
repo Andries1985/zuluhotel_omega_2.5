@@ -10,6 +10,11 @@ var mobs;
 var whoserial := GetObjProperty( corpse, PROPID_CORPSE_CORPSE_OF);
 repeat
 
+// The corpse can decay while this script sleeps; its members then read Uninit.
+if (TypeOf(corpse.realm) != "String")
+	break;
+endif
+
 mobs := ListMobilesNearLocationEx( corpse.x, corpse.y, corpse.z, 2, 0x02+0x01, corpse.realm );
 
 foreach mobile in mobs

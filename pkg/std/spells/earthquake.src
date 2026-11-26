@@ -64,10 +64,10 @@ program earthquake( parms, spell_id )
 	var chklos;
 	var victims;
 	if(parms[3])
-		victims := ListMobilesNearLocation( cint(parms[3].x), cint(parms[3].y), cint(parms[3].z), range );
+		victims := ListMobilesNearLocation( cint(parms[3].x), cint(parms[3].y), cint(parms[3].z), range, caster.realm );
 		chklos := parms[3];
 	else
-		victims := ListMobilesNearLocation( cint(caster.x), cint(caster.y), cint(caster.z), range );
+		victims := ListMobilesNearLocation( cint(caster.x), cint(caster.y), cint(caster.z), range, caster.realm );
 		chklos := caster;
 	endif
 
@@ -95,11 +95,15 @@ program earthquake( parms, spell_id )
 					PrintTextAbovePrivate( mobile, "You are tossed about as the earth trembles below your feet!", mobile );
 					PlaySoundEffect( mobile, SFX_SPELL_EARTHQUAKE1 );
 					PlayObjectCenteredEffect( mobile, FX_SPELL_EARTHQUAKE, SPEED_SPELL_EARTHQUAKE, LOOP_SPELL_EARTHQUAKE );
+					// The mobile can be gone by now; its members then read Uninit.
+					if( TypeOf(mobile.z) != "Integer" )
+						continue;
+					endif
 					okay:=0;
 					if(!mobile.multi.components)
 						okay:=1;
 					endif
-					Near_Items := ListItemsNearLocation(mobile.x, mobile.y, mobile.z,10);
+					Near_Items := ListItemsNearLocation(mobile.x, mobile.y, mobile.z, 10, mobile.realm);
 					foreach thing in Near_Items
 						if (thing.objtype == 0xf156)
 								okay := 0;
@@ -115,28 +119,28 @@ program earthquake( parms, spell_id )
 
 	PlaySoundEffect( caster, SFX_SPELL_EARTHQUAKE2 );
 
-        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_STONEWALL_NS)
+        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_STONEWALL_NS, caster.realm)
 			if( GetObjProperty(item, "f") )
 				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
 				DestroyItem(item);
 			endif
         endforeach
 
-        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_STONEWALL_EW)
+        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_STONEWALL_EW, caster.realm)
 			if( GetObjProperty(item, "f") )
 				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
 				DestroyItem(item);
 			endif
         endforeach
         
-		foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_EFIELD_NS)
+		foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_EFIELD_NS, caster.realm)
 			if( GetObjProperty(item, "f") )
 				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
                 DestroyItem(item);
 			endif
         endforeach
 
-        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_EFIELD_EW)
+        foreach item in ListItemsNearLocationOfType (cint(chklos.x), cint(chklos.y), cint(chklos.z), cint(range), UOBJ_EFIELD_EW, caster.realm)
 			if( GetObjProperty(item, "f") )
 				PlayStationaryEffect( item.x , item.y , item.z , FX_SPELL_DISPEL_FIELD , SPEED_SPELL_DISPEL_FIELD , LOOP_SPELL_DISPEL_FIELD );
                 DestroyItem(item);

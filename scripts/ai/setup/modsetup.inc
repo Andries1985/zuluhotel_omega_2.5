@@ -7,6 +7,8 @@ use cfgfile;
 
 include "include/attributes";
 include "include/random";
+include ":karmafame:karmafame";
+include "include/charm";
 
 var modnpc := Self();
 
@@ -41,24 +43,25 @@ if( !GetDexterityMod(modnpc) )
 endif
 
 
-if( GetObjProperty( modnpc , "BaseHpRegen" ) and GetHpRegenRate( modnpc ) == 100 )
-	var base_hp_regen := GetObjProperty( modnpc , "BaseHpRegen" );
-	SetObjProperty( modnpc , "baseregen" , base_hp_regen );
-	SetHpRegenRate( modnpc, base_hp_regen  * 12);
+// Regeneration from the template's BaseHpRegen / BaseManaRegen / BaseStaminaRegen CProps
+// (units: x12 hundredths a minute, 100 = normal; see the npcdesc.cfg header), read live from
+// npcdesc.cfg. Runs on every AI start, so a changed template or a stale rate is corrected,
+// tamed pets included. HP is left alone while the NPC is poisoned: poison sets its own
+// rate and CurePoison restores this one.
+if( !modnpc.poisoned )
+	SetVitalRegenRateOrDefault( modnpc, VITALID_LIFE, NpcTemplateRegenRate( modnpc, "BaseHpRegen" ) );
 endif
+SetVitalRegenRateOrDefault( modnpc, VITALID_MANA, NpcTemplateRegenRate( modnpc, "BaseManaRegen" ) );
+SetVitalRegenRateOrDefault( modnpc, VITALID_STAMINA, NpcTemplateRegenRate( modnpc, "BaseStaminaRegen" ) );
 
-
-if( GetObjProperty( modnpc , "BaseManaRegen" ) and GetManaRegenRate(modnpc) == 100 )
-	var base_mana_regen := GetObjProperty( modnpc , "BaseManaRegen" );
-	SetObjProperty( modnpc , "basemanaregen" , base_mana_regen);
-	SetManaRegenRate(modnpc,  base_mana_regen * 12);
-endif
-
-
-if( GetObjProperty( modnpc , "BaseStaminaRegen" ) and GetStaminaRegenRate(modnpc) == 100 )
-	var base_stamina_regen := GetObjProperty( modnpc , "BaseStaminaRegen" );
-	SetObjProperty( modnpc , "basestaminaregen" , base_stamina_regen);
-	SetStaminaRegenRate(modnpc, base_stamina_regen * 12);
+// A wild NPC still marked by Control Undead / Spell Bind: before 1.1.6 Control Undead left
+// the caster as the core master of the freed creature, so its attacks were reported (and
+// flagged) as the caster's, and "charmed" stayed on it. The tamed AI ends a live charm itself.
+if( modnpc.script != "tamed" and IsSpellCharmed( modnpc ) )
+	modnpc.setmaster( 0 );
+	EraseObjProperty( modnpc, PROPID_CHARM );
+	EraseObjProperty( modnpc, "charmed" );
+	EraseObjProperty( modnpc, "master" );
 endif
 
 // This runs on every AI start. A Warrior for Hire dresses itself once (SetMeUp) and keeps what its
@@ -75,90 +78,17 @@ if( !GetObjProperty(modnpc, "WarriorForHire") )
 endif
 
 
-if( !GetObjProperty( modnpc , "Karma" ) )
-	var npc_cfg	:= ReadConfigFile( "::npcdesc" );
-	var stat_tot	:= GetStrength(modnpc) + GetDexterity(modnpc) + GetIntelligence(modnpc);
-	var ar	:= modnpc.ar + 3;
-	var base	:= Cint(stat_tot * ar / 12);
-	if( !base )
-		base	:= 1;
+// Karma and fame come from the template's alignment / Karma / Fame fields (npcdesc.cfg header).
+// Kill awards read the template directly; these CProps are kept for the other checks that
+// read an NPC's karma or fame. Set on every AI start so template changes take effect.
+var kf_values := NpcTemplateKarmaFame( modnpc.npctemplate );
+if( kf_values )
+	if( CInt(GetObjProperty( modnpc , "Karma" )) != kf_values.karma )
+		SetObjProperty( modnpc , "Karma" , kf_values.karma );
 	endif
-	
-	var multiply	:= 1;
-	case( modnpc.script )
-		"spellkillpcs":	
-		"firebreather":	multiply := 1.2;
-				break;	
-		default:
-	endcase
-	
-	base := Cint(base * multiply);
-		
-	var bonus := 0;
-	foreach item in ListEquippedItems( modnpc )
-		if( item.attribute )
-			case( item.hitscript )
-				":combat:mainhit":			break;
-				":combat:banishscript":		bonus := 250;	break;
-				":combat:poisonhit":			bonus := 100 + (GetObjProperty( item , "Poisonlvl" ) * 150);	break;
-				":combat:piercingscript":		bonus := 500;
-				":combat:voidscript":			bonus := 1000;
-				":combat:lifedrainscript":	bonus := 250;
-				":combat:manadrainscript":	bonus := 200;
-				":combat:spellstrikescript":	bonus := 100 + (GetObjProperty( item , "EffectCircle" ) * 50);	break;
-				default:
-			endcase
-		endif
-	endforeach
-
-	if( GetObjProperty( modnpc , "BaseHpRegen" ) )
-		bonus := bonus + GetObjProperty( modnpc , "BaseHpRegen" );
+	if( CInt(GetObjProperty( modnpc , "Fame" )) != kf_values.fame )
+		SetObjProperty( modnpc , "Fame" , kf_values.fame );
 	endif
-	
-	if( GetObjProperty( modnpc , "BaseManaRegen" ) )
-		bonus := bonus + GetObjProperty( modnpc , "BaseManaRegen" );
-	endif
-	
-	if( GetObjProperty( modnpc , "BaseStaminaRegen" ) )
-		bonus := bonus + GetObjProperty( modnpc , "BaseStaminaRegen" );
-	endif
-	
-	var possible_prots := { "PermPoisonImmunity",
-			 	  "PermMagicImmunity",
-			 	  "Permmr",
-			 	  "FireProtection",
-			 	  "WaterProtection",
-			 	  "AirProtection",
-			 	  "EarthProtection",
-			 	  "FreeAction",
-			 	  "NecroProtection",
-			 	  "HolyProtection",
-			 	  "PhysicalProtection",
-			 	  "HealingIncrease" };
-			 	  
-	foreach prot in possible_prots
-		if( GetObjProperty( modnpc , prot ) )
-			bonus := bonus + (GetObjProperty( modnpc , prot ) * 100);
-		endif
-	endforeach
-	
-	base := base + bonus;
-	if( base > 15000 )
-		base := 15000;
-	endif
-	
-	var karma := Cint( base * (Random(21)+90) / 100 );
-	var famodnpc  := Cint( base * (Random(21)+90) / 100 * 0.875 );
-
-	case( npc_cfg[modnpc.npctemplate].alignmodnpcnt )
-		"evil":		karma := 0 - karma;	break;
-		"good":		break;
-		
-		default:	karma := 0 - karma;	break;
-	endcase
-	
-	SetObjProperty( modnpc , "Karma" , karma );
-	SetObjProperty( modnpc , "Fame"  , famodnpc  );
 endif
 
 

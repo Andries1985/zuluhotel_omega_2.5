@@ -4,6 +4,7 @@ include "include/objtype";
 include "include/attributes";
 include "include/constants/settings";
 include "include/constants/propids";
+include "include/harvesttiles";
 
 function ConsumeObjType( who , objtype , amount )
 
@@ -677,38 +678,6 @@ function IsGem2( item )
 endfunction
 
 
-function IsMinable( theobj , othertype )
-
-	if( (othertype >= 0x053b) and (othertype <= 0x0553) and (othertype != 0x0550 ) )
-	
-		return 1;
-		
-	elseif( ((theobj >= 0xe2)  and (theobj <= 0xe7))  or
-	    ((theobj >= 0xf3)  and (theobj <= 0xf7))  or
-	    ((theobj >= 0x104) and (theobj <= 0x107)) or
-	    ((theobj >= 0x110) and (theobj <= 0x113)) or
-	    ((theobj >= 0x122) and (theobj <= 0x125)) or
-	    ((theobj >= 0x1d3) and (theobj <= 0x1da)) or
-	    ((theobj >= 0x21f) and (theobj <= 0x230)) or
-	    ((theobj >= 0x232) and (theobj <= 0x23B)) or
-	    ((theobj >= 0x6cd) and (theobj <= 0x6d1)) or
-	    ((theobj >= 0x6da) and (theobj <= 0x6dd)) or
-	    ((theobj >= 0x6eb) and (theobj <= 0x6fe)) or
-	    ((theobj >= 0x70d) and (theobj <= 0x714)) or
-	    ((theobj >= 0x71d) and (theobj <= 0x720)) or
-	    ((theobj >= 0x72b) and (theobj <= 0x732)) or
-	    ((theobj >= 0x73b) and (theobj <= 0x73e)) or
-	    ((theobj >= 0x749) and (theobj <= 0x750)) or
-	    ((theobj >= 0x759) and (theobj <= 0x75c)) or
-	    ((theobj >= 0x245) and (theobj <= 0x249)) )
-	
-		return 1;
-	else
-		return 0;
-	endif
-	
-endfunction
-
 function IsOre( item )
 
 	if( item.objtype >= UOBJ_ORE_START  and item.objtype <= UOBJ_ORE_END )
@@ -746,85 +715,6 @@ function IsReagent( item )
 	
 endfunction
 
-function IsSand( theobj )
-
-	if( ((theobj >= 0x0016 ) and (theobj <= 0x004b )) or
-	    ((theobj >= 0x011e ) and (theobj <= 0x012d )) or
-	    ((theobj >= 0x0192 ) and (theobj <= 0x01ab )) or
-	    ((theobj >= 0x01b9 ) and (theobj <= 0x01d1 )) or
-	    ((theobj >= 0x0282 ) and (theobj <= 0x0291 )) or
-	    ((theobj >= 0x03b7 ) and (theobj <= 0x03ca )) or
-	    ((theobj >= 0x064b ) and (theobj <= 0x0672 )) )
-		return 1;
-	else
-		return 0;
-	endif
-
-endfunction
-
-function IsSwamp( theobjtype )
-
-	if( (theobjtype >= 0x053b) and (theobjtype <= 0x0553) and (theobjtype != 0x0550 ) )
-		return 0;
-	endif
-	if( ((theobjtype >= 0x240 ) and (theobjtype <= 0x244 )) or
-	    (theobjtype == 0x250) or
-	    ((theobjtype >= 0x3d65) and (theobjtype <= 0x3ef0)) )
-		return 1;
-	else
-		return 0;
-	endif
-	
-endfunction
-
-function IsTree( theobj )
-
-	if((theobj == 0x0c9e) or (theobj == 0x0ca8) or (theobj == 0x0caa) or (theobj == 0x0cab))
-		return 1;
-	elseif((theobj >= 0x0c99) and (theobj <= 0x0cea))
-		return 1;
-	elseif((theobj >= 0x0cf3) and (theobj <= 0x0d03))
-		return 1;
-	elseif((theobj >= 0x0d41) and (theobj <= 0x0dab))
-		return 1;
-	elseif((theobj >= 0x0d37) and (theobj <= 0x0d38))
-		return 1;
-	else
-		return 0;
-	endif
-		
-endfunction
-
-function IsWater( theobj )
-
-	if( theobj.item )
-		if( (theobj.objtype >=0x346E) and (theobj.objtype <= 0x3485) )
-			return 1;
-		elseif( (theobj.objtype >= 0x3494) and (theobj.objtype <= 0x34AB) )
-			return 1;
-		elseif( (theobj.objtype >= 0x34B8) and (theobj.objtype <= 0x34CA) )
-			return 1;
-		elseif( (theobj.objtype >= 0x1796) and (theobj.objtype <= 0x17B2) )
-			return 1;
-		endif
-	endif
-	
-	var info := GetMapInfo( cint(theobj.x) , cint(theobj.y) );
-	var tile := info.landtile;
-
-	if( tile >= 0x04c and tile <= 0x06f )
-		return 1;
-	elseif( tile >= 0x0a8 and tile <= 0x0ab )
-		return 1;
-	elseif( tile == 0x0136 or tile == 0x0137 )
-		return 1;
-	elseif( tile >= 0x3ff0 and tile <= 0x3ff3 )
-    		return 1;
-    	endif
-    	
-	return 0;
-
-endfunction
 
 function PlayMagicCircleEffect( who ) 
 
