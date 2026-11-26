@@ -1,6 +1,6 @@
 # Patch Notes - v1.1.6
 **Zuluhotel Omega 2.5 | Live Shard**  
-**Date: November 7, 2026**
+**Date: November 25, 2026**
 
 ---
 
